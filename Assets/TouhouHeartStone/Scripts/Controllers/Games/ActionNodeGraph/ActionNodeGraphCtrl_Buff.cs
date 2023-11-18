@@ -78,7 +78,7 @@ namespace Controllers
             }
 
 
-            var cardPoolRef = game.card.getLocalCardPoolReference(cardPoolId, false);
+            var cardPoolRef = game.card.getLocalCardPoolReference(cardPoolId);
             if (cardPoolRef != null)
             {
                 return game.card.tryGetBuffDefine(cardPoolRef, cardId, out buffDefine);

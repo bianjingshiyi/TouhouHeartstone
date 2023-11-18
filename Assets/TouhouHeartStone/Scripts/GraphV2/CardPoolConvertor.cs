@@ -62,7 +62,7 @@ namespace Game
                 }
                 else
                 {
-                    def = cardManager.getActionDefine(actRef);
+                    def = cardManager.getLocalActionDefine(actRef);
                 }
             }
             else
@@ -70,7 +70,7 @@ namespace Game
                 actRef = cardManager.getBuiltinActionReferenceFromName(name);
                 if (actRef != null)
                 {
-                    def = cardManager.getActionDefine(actRef);
+                    def = cardManager.getLocalActionDefine(actRef);
                 }
                 if (def == null)
                 {

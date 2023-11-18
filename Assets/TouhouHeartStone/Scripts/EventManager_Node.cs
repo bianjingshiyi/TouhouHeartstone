@@ -71,7 +71,7 @@ namespace Game
                 if (node is ActionNode action)
                 {
                     var actionRef = action.defineRef;
-                    var actionDefine = game.card.getActionDefine(actionRef);
+                    var actionDefine = game.card.getLocalActionDefine(actionRef);
                     if (actionDefine is GeneratedActionDefine gen && gen.type == NodeDefineType.Event) // 自定义事件。
                     {
                         var eventRef = CardManager.getEventReferenceOfAction(gen);
@@ -81,7 +81,7 @@ namespace Game
                     }
                     else if (game.card.isBuiltinCardPool(actionRef.cardPoolId)) // 内置节点事件。
                     {
-                        game.card.getActionBindedEventsRecursive(actionRef);
+                        game.card.getAnyActionBindedEventsRecursive(actionRef);
                         var names = getBuiltinActionBindedEventsRecursive(actionRef.defineId);
                         foreach (var name in names)
                         {

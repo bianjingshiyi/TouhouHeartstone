@@ -167,11 +167,11 @@ namespace Controllers
         #region 动作定义
         private ActionDefine getActionDefine(ActionReference actRef)
         {
-            return game.card.getActionDefine(actRef);
+            return game.card.getLocalActionDefine(actRef);
         }
         private ActionDefine[] getAllActionDefines()
         {
-            return game.card.getAllActionDefines(_curCardPoolId);
+            return game.card.getAllLocalActionDefines(_curCardPoolId);
         }
         private string getActionDefineCategory(ActionDefine actionDefine)
         {

@@ -77,7 +77,7 @@ namespace Controllers
                     return true;
                 }
             }
-            foreach (var actionDefine in game.card.getActionDefines(_curCardPoolId))
+            foreach (var actionDefine in game.card.getLocalActionDefines(_curCardPoolId))
             {
                 if (actionDefine.editorName == name)
                 {

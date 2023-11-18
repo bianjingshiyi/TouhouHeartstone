@@ -992,7 +992,7 @@ namespace Controllers
 
         private void saveCard()
         {
-            if (game.card.getCardDefine(_cardPoolId, _cardDefine.id) != null)
+            if (game.card.getLocalCardDefine(_cardPoolId, _cardDefine.id) != null)
             {
                 game.card.removeCard(_cardPoolId, _cardDefine.id);
                 game.card.removeAllCardSkins(_cardPoolId, _cardDefine.id);

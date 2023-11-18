@@ -38,7 +38,7 @@ namespace UI
         }
         public void updateNodeDefines()
         {
-            var actionDefines = game.card.getAllActionDefines(_cardPoolId); ;
+            var actionDefines = game.card.getAllLocalActionDefines(_cardPoolId);
             var nodeDefines = actionDefines.Select(a => new NodeDefine(a));
             nodeDefines = nodeDefines.Union(_eventTriggerTimes.Select(e => new NodeDefine(e)));
 

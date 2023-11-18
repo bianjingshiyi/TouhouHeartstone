@@ -212,7 +212,7 @@ namespace Controllers
             {
                 var cardDefine = _selectableMasters[i];
                 var cardPoolRef = game.card.getCardPoolReferenceOfCard(cardDefine);
-                CardSkinData skin = game.card.getDefaultSkin(cardDefine);
+                CardSkinData skin = game.card.getCardSkin(cardDefine);
                 viewData[i].name = skin.name;
                 viewData[i].image = await game.card.loadCardImage(
                     cardPoolRef,
@@ -430,9 +430,7 @@ namespace Controllers
         #endregion
         private bool cardFilter(CardDefine c)
         {
-            if (_disableStandardCardPool &&
-                game.card.getCardPoolInfoOfCard(c) is CardPoolInfo cardPoolInfo &&
-                game.card.isInnateCardPool(cardPoolInfo))
+            if (_disableStandardCardPool && game.card.isInnateCardPool(c.cardPoolId))
             {
                 return false;
             }
@@ -622,13 +620,12 @@ namespace Controllers
             for (int i = 0; i < cards.Length; i++)
             {
                 CardDefine cardDefine = game.card.getLocalCardDefine(cards[i].cardRef);
-                CardSkinData skin = cardDefine != null ? game.card.getDefaultSkin(cardDefine) : null;
+                CardSkinData skin = cardDefine != null ? game.card.getCardSkin(cardDefine) : null;
 
                 string name;
                 Sprite image;
                 if (skin != null)
                 {
-                    var cardPoolId = cardDefine.cardPoolId;
                     name = skin.name;
                     image = await game.card.loadCardImage(cardDefine);
                 }
@@ -652,7 +649,7 @@ namespace Controllers
                 //更新UI
                 if (_dragCard != null)
                 {
-                    CardSkinData skin = game.card.getDefaultSkin(_dragCard);
+                    CardSkinData skin = game.card.getCardSkin(_dragCard);
                     var cardPoolRef = game.card.getLocalCardPoolReference(_dragCard.cardPoolId);
                     Sprite image = await game.card.loadCardImage(cardPoolRef, _dragCard.id);
                     if (isDeckListItem)

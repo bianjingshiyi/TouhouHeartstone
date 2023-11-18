@@ -1374,7 +1374,7 @@ namespace Controllers
         {
             foreach (var cardPool in pools.Where(p => game.card.getCardPoolInfo(p) == null))
             {
-                await game.card.loadCachedCardDefinesAsync(cardPool.cardPoolId, cardPool.version);
+                await game.card.loadCachedCardPoolAsync(cardPool.cardPoolId, cardPool.version);
             }
         }
         /// <summary>

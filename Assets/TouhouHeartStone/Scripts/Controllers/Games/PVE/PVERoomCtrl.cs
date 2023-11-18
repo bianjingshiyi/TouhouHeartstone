@@ -121,7 +121,7 @@ namespace Controllers
                 var clonedCard = game.card.cloneCardDefine(pveCard);
                 var cardSkins = game.card.cloneCardSkins(pvePoolInfo, pveCard.id);
                 clonedCard.cardPoolId = genPoolInfo.cardPoolId;
-                game.card.addCard(genPoolInfo, clonedCard);
+                game.card.addCard(genPoolInfo.cardPoolId, clonedCard);
                 foreach (var skin in cardSkins)
                 {
                     var image = await game.card.loadCardImage(pveCard);
@@ -249,8 +249,8 @@ namespace Controllers
             }
 
             var dataName = getPVEDataName();
-            var standardPoolInfo = game.card.getCardPoolInfo(CardManager.STANDARD_POOL_ID);
-            var pvePoolInfo = game.card.getCardPoolInfo(CardManager.PVE_POOL_ID);
+            var standardPoolInfo = game.card.getLocalCardPoolInfo(CardManager.STANDARD_POOL_ID);
+            var pvePoolInfo = game.card.getLocalCardPoolInfo(CardManager.PVE_POOL_ID);
             var genPoolInfo = await game.pve.getGeneratedCardPool(dataName);
             var cardPools = new CardPoolInfoPack[]
             {
@@ -385,7 +385,7 @@ namespace Controllers
                 for (int i = 0; i < cards.Length; i++)
                 {
                     CardDefine cardDefine = game.card.getLocalCardDefine(cards[i].cardRef);
-                    CardSkinData skin = cardDefine != null ? game.card.getDefaultSkin(cardDefine) : null;
+                    CardSkinData skin = cardDefine != null ? game.card.getCardSkin(cardDefine) : null;
 
                     string name;
                     Sprite image;

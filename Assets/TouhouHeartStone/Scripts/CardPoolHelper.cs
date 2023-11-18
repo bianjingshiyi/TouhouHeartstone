@@ -21,14 +21,14 @@ namespace Game
 
             void addCardPoolDeps(long poolId)
             {
-                var poolInfo = cardManager.getCardPoolInfo(poolId);
+                var poolInfo = cardManager.getLocalCardPoolInfo(poolId);
                 if (poolInfo != null && poolInfo.dependencyRefs != null)
                 {
-                    foreach (var poolRef in poolInfo.dependencyRefs)
+                    foreach (var depRef in poolInfo.dependencyRefs)
                     {
-                        if (dependencies.Add(poolRef.cardPoolId))
+                        if (dependencies.Add(depRef.cardPoolId))
                         {
-                            addCardPoolDeps(poolRef.cardPoolId);
+                            addCardPoolDeps(depRef.cardPoolId);
                         }
                     }
                 }
@@ -52,7 +52,7 @@ namespace Game
             {
                 foreach (var checkId in cardPoolFullSet)
                 {
-                    var poolInfo = cardManager.getCardPoolInfo(checkId);
+                    var poolInfo = cardManager.getLocalCardPoolInfo(checkId);
                     if (poolInfo == null || poolInfo.dependencyRefs == null)
                         continue;
                     if (poolInfo.dependencyRefs.Any(p => p.cardPoolId == poolId))

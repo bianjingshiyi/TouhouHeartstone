@@ -22,15 +22,6 @@ namespace Game
                 }
             }
         }
-        public int getNodeVisualEffectCount(Node node)
-        {
-            if (node is ActionNode action)
-            {
-                var actionRef = action.defineRef;
-                return main.card.getActionBindedEventsRecursive(actionRef).Length;
-            }
-            return 1;
-        }
         public VisualEffectDialogInfo getNodeAnimationViewData(Node node, ISkin skin)
         {
             var defines = getAllAnimationDefines();
@@ -76,7 +67,7 @@ namespace Game
             if (node is ActionNode action)
             {
                 var actionRef = action.defineRef;
-                return main.card.getActionBindedEventsRecursive(actionRef);
+                return main.card.getAnyActionBindedEventsRecursive(actionRef);
             }
             return null;
         }

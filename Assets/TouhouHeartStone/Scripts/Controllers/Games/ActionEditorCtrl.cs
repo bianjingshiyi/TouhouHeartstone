@@ -300,7 +300,7 @@ namespace Controllers
         }
         private void saveAction()
         {
-            if (game.card.getActionDefine(_actionDefine.cardPoolId, _actionDefine.defineId) is GeneratedActionDefine gen)
+            if (game.card.getLocalActionDefine(_actionDefine.cardPoolId, _actionDefine.defineId) is GeneratedActionDefine gen)
             {
                 game.card.removeActionDefine(gen);
             }

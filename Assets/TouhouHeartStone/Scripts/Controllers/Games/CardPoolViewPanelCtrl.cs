@@ -452,8 +452,8 @@ namespace Controllers
                 //名称排序
                 cardDefines.Sort((a, b) =>
                 {
-                    string nameA = game.card.getDefaultSkin(a).name;
-                    string nameB = game.card.getDefaultSkin(b).name;
+                    string nameA = game.card.getCardSkin(a).name;
+                    string nameB = game.card.getCardSkin(b).name;
                     var compared = nameA.CompareTo(nameB);
                     if (compared == 0)
                     {
@@ -502,7 +502,7 @@ namespace Controllers
                 var character = game.card.getCardDefine(localPoolRef, characterRef.defineId);
                 if (character == null)
                     continue;
-                characterNameList.Add(game.card.getDefaultSkin(character).name);
+                characterNameList.Add(game.card.getCardSkin(character).name);
             }
             return characterNameList.ToArray();
         }

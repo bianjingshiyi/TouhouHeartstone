@@ -210,7 +210,7 @@ namespace Controllers
             var cardManager = game.card;
             foreach (var poolRef in meta.requiredCardPools)
             {
-                if (!cardManager.hasCardPool(poolRef, true))
+                if (!cardManager.isCardPoolLoaded(poolRef, true))
                 {
                     msg = getMissingPoolString(meta);
                     return false;
@@ -225,7 +225,7 @@ namespace Controllers
             var pools = meta.requiredCardPools;
             var cardManager = game.card;
             var poolStrings = pools
-                .Where(p => !cardManager.hasCardPool(p))
+                .Where(p => !cardManager.isCardPoolLoaded(p))
                 .Take(maxDisplayPoolCount)
                 .Select(p => game.lang._(REPLAY_MISSING_CARDPOOL_NAME_TEMPLATE, p.cardPoolName, p.version));
             var cardPools = string.Join(",", poolStrings);

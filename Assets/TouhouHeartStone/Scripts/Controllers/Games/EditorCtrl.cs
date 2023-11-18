@@ -582,7 +582,7 @@ namespace Controllers
                 }
                 else if (actionId != 0)
                 {
-                    var actionDefine = game.card.getActionDefine(cardPoolId, actionId);
+                    var actionDefine = game.card.getActionDefine(cardPoolRef, actionId);
                     string actionName = actionDefine?.editorName ?? EDITOR_UNKNOWN_ACTION_NAME;
                     descs.Add(actionName);
                 }
@@ -665,7 +665,7 @@ namespace Controllers
             (string name, Sprite image, int count)[] viewData = new (string name, Sprite image, int count)[cardDefines.Length];
             for (int i = 0; i < viewData.Length; i++)
             {
-                CardSkinData skin = game.card.getDefaultSkin(cardDefines[i]);
+                CardSkinData skin = game.card.getCardSkin(cardDefines[i]);
                 viewData[i].name = skin.name;
                 viewData[i].image = await game.card.loadCardImage(poolRef, skin);
                 viewData[i].count = 0;
@@ -678,7 +678,7 @@ namespace Controllers
             markCardPoolUnsaved(cardPoolId);
             var cardPoolInfo = getCardPoolInfo(cardPoolId);
             game.card.createCard(cardPoolInfo, out newCardDefine, out skin);
-            game.card.addCard(cardPoolInfo, newCardDefine);
+            game.card.addCard(cardPoolId, newCardDefine);
             game.card.addCardSkin(cardPoolId, skin);
         }
         private async Task createNewCardAndOpen(Action<CardDefine> setPropAction)
@@ -711,7 +711,7 @@ namespace Controllers
                 else if (infoData.buffDefine is GeneratedBuffDefine buffDefine)
                 {
                     var newBuff = game.card.cloneBuffDefine(buffDefine);
-                    var newBuffSkins = game.card.cloneBuffSkins(buffDefine.cardPoolId, buffDefine.id);
+                    var newBuffSkins = game.card.cloneBuffSkins(buffDefine);
                     var displayObj = new CardPoolDisplayObject(newBuff);
                     displayInfo = new CardPoolDisplayPage()
                     {

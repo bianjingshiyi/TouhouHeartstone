@@ -97,15 +97,6 @@ namespace Game
             }
             return cardPool.buffDefineList.ToDictionary(b => b.id, b => b as BuffDefine);
         }
-        public Dictionary<CardPoolReference, Dictionary<int, BuffDefine>> getBuffDefines(IEnumerable<CardPoolReference> cardPoolsRef)
-        {
-            Dictionary<CardPoolReference, Dictionary<int, BuffDefine>> buffDefDict = new Dictionary<CardPoolReference, Dictionary<int, BuffDefine>>();
-            foreach (var cardPoolRef in cardPoolsRef)
-            {
-                buffDefDict.Add(cardPoolRef, getBuffDefines(cardPoolRef));
-            }
-            return buffDefDict;
-        }
         #endregion
 
         #endregion
@@ -131,15 +122,20 @@ namespace Game
             }
             return buffSkin;
         }
-        public BuffSkin[] cloneBuffSkins(long cardPoolId, int buffId)
+        public BuffSkin[] cloneLocalBuffSkins(long cardPoolId, int buffId)
         {
             var poolRef = getLocalCardPoolReference(cardPoolId);
-            var skins = getBuffSkins(poolRef, buffId);
+            return cloneBuffSkins(poolRef, buffId);
+        }
+        public BuffSkin[] cloneBuffSkins(BuffDefine buff)
+        {
+            var skins = getBuffSkins(buff);
             return cloneBuffSkins(skins);
         }
-        public BuffSkin[] cloneBuffSkins(CardPoolInfo info, int buffId)
+        public BuffSkin[] cloneBuffSkins(ICardPoolReference poolRef, int buffId)
         {
-            return cloneBuffSkins(getBuffSkins(info.ToReference(), buffId));
+            var skins = getBuffSkins(poolRef, buffId);
+            return cloneBuffSkins(skins);
         }
         public BuffSkin[] cloneBuffSkins(BuffSkin[] skins)
         {

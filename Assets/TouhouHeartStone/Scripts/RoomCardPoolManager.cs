@@ -150,7 +150,7 @@ namespace Game
 
                 foreach (var cardPool in _targetPools.Where(p => game.card.getCardPoolInfo(p) == null))
                 {
-                    await game.card.loadCachedCardDefinesAsync(cardPool.cardPoolId, cardPool.version);
+                    await game.card.loadCachedCardPoolAsync(cardPool.cardPoolId, cardPool.version);
                 }
             }
             catch (OperationCanceledException)

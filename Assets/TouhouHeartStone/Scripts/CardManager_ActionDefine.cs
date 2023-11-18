@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Controllers;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 
 namespace Game
@@ -89,34 +90,42 @@ namespace Game
         }
         public bool removeActionDefine(long cardPoolId, int id)
         {
-            return removeActionDefine(getActionDefine(cardPoolId, id) as GeneratedActionDefine);
+            if (getLocalActionDefine(cardPoolId, id) is not GeneratedActionDefine gen)
+                return false;
+            return removeActionDefine(gen);
         }
         #endregion
 
         #region 获取
-        public ActionDefine getActionDefine(ActionReference actRef)
+        public ActionDefine getActionDefine(ICardPoolReference poolRef, int id)
+        {
+            if (tryGetCardPool(poolRef, out CardPool cardPool))
+            {
+                //自定义
+                return cardPool.actionDefineList.Find(g => g.defineId == id);
+            }
+            else if (isBuiltinCardPool(poolRef.CardPoolID))
+            {
+                //内置
+                if (builtinActionDefines.TryGetValue(id, out ActionDefine actionDefine))
+                    return actionDefine;
+                // 过时内置。
+                var obsoleteDefine = builtinActionDefines.Values.FirstOrDefault(d => d.obsoleteNames.Contains(name));
+                if (obsoleteDefine != null)
+                    return obsoleteDefine;
+            }
+            return null;
+        }
+        public ActionDefine getLocalActionDefine(long poolId, int id)
+        {
+            var poolRef = getLocalCardPoolReference(poolId);
+            return getActionDefine(poolRef, id);
+        }
+        public ActionDefine getLocalActionDefine(ActionReference actRef)
         {
             if (actRef == null)
                 return null;
-            return getActionDefine(actRef.cardPoolId, actRef.defineId);
-        }
-        public ActionDefine getActionDefine(long cardPoolId, int id)
-        {
-            //自定义
-            var cardPoolRef = getLocalCardPoolReference(cardPoolId);
-            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
-                return cardPool.actionDefineList.Find(g => g.defineId == id);
-
-            //内置
-            if (builtinActionDefines.TryGetValue(id, out ActionDefine actionDefine))
-                return actionDefine;
-
-            // 过时内置。
-            var obsoleteDefine = builtinActionDefines.Values.FirstOrDefault(d => d.obsoleteNames.Contains(name));
-            if (obsoleteDefine != null)
-                return obsoleteDefine;
-
-            return null;
+            return getLocalActionDefine(actRef.cardPoolId, actRef.defineId);
         }
         /// <summary>
         /// 根据名称获取过时的内置动作定义。
@@ -133,11 +142,10 @@ namespace Game
         /// <summary>
         /// 获取一个自定义卡池内的所有动作定义。
         /// </summary>
-        /// <param name="cardPoolId"></param>
+        /// <param name="cardPoolRef"></param>
         /// <returns></returns>
-        public GeneratedActionDefine[] getActionDefines(long cardPoolId)
+        public GeneratedActionDefine[] getActionDefines(ICardPoolReference cardPoolRef)
         {
-            var cardPoolRef = getLocalCardPoolReference(cardPoolId);
             if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
                 return cardPool.actionDefineList.ToArray();
@@ -145,11 +153,21 @@ namespace Game
             return new GeneratedActionDefine[0];
         }
         /// <summary>
+        /// 获取一个本地自定义卡池内的所有动作定义。
+        /// </summary>
+        /// <param name="cardPoolRef"></param>
+        /// <returns></returns>
+        public GeneratedActionDefine[] getLocalActionDefines(long cardPoolId)
+        {
+            var poolRef = getLocalCardPoolReference(cardPoolId);
+            return getActionDefines(poolRef);
+        }
+        /// <summary>
         /// 获取内置的所有动作定义，以及几个自定义卡池内的所有动作定义。
         /// </summary>
         /// <param name="includedCardPools"></param>
         /// <returns></returns>
-        public ActionDefine[] getAllActionDefines(params long[] includedCardPools)
+        public ActionDefine[] getAllActionDefines(params ICardPoolReference[] includedCardPools)
         {
             //内置
             List<ActionDefine> actionDefineList = new List<ActionDefine>();
@@ -160,12 +178,21 @@ namespace Game
             //自定义
             if (includedCardPools != null)
             {
-                foreach (long poolId in includedCardPools)
+                foreach (var poolRef in includedCardPools)
                 {
-                    actionDefineList.AddRange(getActionDefines(poolId));
+                    actionDefineList.AddRange(getActionDefines(poolRef));
                 }
             }
             return actionDefineList.ToArray();
+        }
+        /// <summary>
+        /// 获取内置的所有动作定义，以及几个本地自定义卡池内的所有动作定义。
+        /// </summary>
+        /// <param name="includedCardPools"></param>
+        /// <returns></returns>
+        public ActionDefine[] getAllLocalActionDefines(params long[] includedCardPools)
+        {
+            return getAllActionDefines(includedCardPools.Select(id => getLocalCardPoolReference(id)).ToArray());
         }
         #endregion
 

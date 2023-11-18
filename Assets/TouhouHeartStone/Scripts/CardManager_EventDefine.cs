@@ -87,15 +87,26 @@ namespace Game
             }
             return null;
         }
-        public EventReference[] getActionBindedEvents(ActionReference actionRef)
+        public EventReference[] getAnyActionBindedEvents(ActionReference actionRef)
         {
-            if (isBuiltinCardPool(actionRef.cardPoolId))
+            if (actionRef == null)
+                return null;
+            return getAnyActionBindedEvents(actionRef.cardPoolId, actionRef.defineId);
+        }
+        public EventReference[] getAnyActionBindedEvents(long poolId, int actionId)
+        {
+            var poolRef = getCardPoolReference(poolId);
+            return getActionBindedEvents(poolRef, actionId);
+        }
+        public EventReference[] getActionBindedEvents(ICardPoolReference poolRef, int actionId)
+        {
+            if (isBuiltinCardPool(poolRef))
             {
-                return game.eventManager.getBuiltinActionBindedEvents(actionRef.defineId);
+                return game.eventManager.getBuiltinActionBindedEvents(actionId);
             }
             else
             {
-                var actionDefine = getActionDefine(actionRef);
+                var actionDefine = getActionDefine(poolRef, actionId);
                 if (actionDefine is GeneratedActionDefine gen && actionDefine.type == NodeDefineType.Event)
                 {
                     return new EventReference[] { getEventReferenceOfAction(gen) };
@@ -103,13 +114,24 @@ namespace Game
             }
             return null;
         }
-        public EventReference[] getActionBindedEventsRecursive(ActionReference actionRef)
+        public EventReference[] getAnyActionBindedEventsRecursive(ActionReference actionRef)
         {
-            if (isBuiltinCardPool(actionRef.cardPoolId))
+            if (actionRef == null)
+                return null;
+            return getAnyActionBindedEventsRecursive(actionRef.cardPoolId, actionRef.defineId);
+        }
+        public EventReference[] getAnyActionBindedEventsRecursive(long poolId, int actionId)
+        {
+            var poolRef = getCardPoolReference(poolId);
+            return getActionBindedEventsRecursive(poolRef, actionId);
+        }
+        public EventReference[] getActionBindedEventsRecursive(ICardPoolReference poolRef, int actionId)
+        {
+            if (isBuiltinCardPool(poolRef))
             {
-                return game.eventManager.getBuiltinActionBindedEventsRecursive(actionRef.defineId);
+                return game.eventManager.getBuiltinActionBindedEventsRecursive(actionId);
             }
-            else if (getActionDefine(actionRef) is GeneratedActionDefine gen && gen.type == NodeDefineType.Event)
+            else if (getActionDefine(poolRef, actionId) is GeneratedActionDefine gen && gen.type == NodeDefineType.Event)
             {
                 var eventRef = getEventReferenceOfAction(gen);
                 List<EventReference> refs = new List<EventReference>

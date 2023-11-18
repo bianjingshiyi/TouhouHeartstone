@@ -1,24 +1,24 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using UnityEngine;
-using TouhouCardEngine;
-using BJSYGameCore;
-using UI;
-using System.IO;
-using System.Threading.Tasks;
-using System.Reflection;
 using System.Data;
-using IGensoukyo.Utilities;
-using TouhouHeartstone;
-using MongoDB.Bson;
-using ILogger = TouhouCardEngine.Shared.ILogger;
-using IGensoukyo;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
-using TouhouCardEngine.Shared;
-using TouhouHeartstone.Builtin;
+using System.Threading.Tasks;
+using BJSYGameCore;
 using Controllers;
+using IGensoukyo;
+using IGensoukyo.Utilities;
+using MongoDB.Bson;
 using MukioI18n;
+using TouhouCardEngine;
+using TouhouCardEngine.Shared;
+using TouhouHeartstone;
+using TouhouHeartstone.Builtin;
+using UI;
+using UnityEngine;
+using ILogger = TouhouCardEngine.Shared.ILogger;
 
 namespace Game
 {
@@ -74,7 +74,7 @@ namespace Game
                             // 去重
                             foreach (var item in pathes)
                             {
-                                if (!pathList.Contains(item)) 
+                                if (!pathList.Contains(item))
                                     pathList.Add(item);
                             }
                         }
@@ -86,7 +86,7 @@ namespace Game
                             {
                                 if (Regex.Match(item, regexp).Success)
                                 {
-                                    if (!pathList.Contains(item)) 
+                                    if (!pathList.Contains(item))
                                         pathList.Add(item);
                                 }
                             }
@@ -94,7 +94,7 @@ namespace Game
                     }
                     else
                     {
-                        if (!pathList.Contains(excelPath)) 
+                        if (!pathList.Contains(excelPath))
                             pathList.Add(excelPath);
                     }
                 }
@@ -237,11 +237,11 @@ namespace Game
         #endregion
 
         #region 创建卡牌定义
-        public void createCard(CardPoolInfo cardPoolInfo, out CardDefine cardDefine, out CardSkinData cardSkin)
+        public void createCard(ICardPoolReference poolRef, out CardDefine cardDefine, out CardSkinData cardSkin)
         {
-            if (!tryGetCardPool(cardPoolInfo.ToReference(), out CardPool cardPool))
+            if (!tryGetCardPool(poolRef, out CardPool cardPool))
             {
-                throw new KeyNotFoundException($"不存在卡池{cardPoolInfo.cardPoolId}");
+                throw new KeyNotFoundException($"不存在卡池{poolRef}");
             }
             int cardId = 0;
             for (int i = 1; i < 0xFFFF; i++)
@@ -252,7 +252,7 @@ namespace Game
                 break;
             }
             cardDefine = new CardDefine(cardId, DEFINE.SERVANT);
-            cardDefine.cardPoolId = cardPoolInfo.cardPoolId;
+            cardDefine.cardPoolId = poolRef.CardPoolID;
             cardSkin = createSkin(cardDefine.cardPoolId, cardDefine.id);
         }
         public CardDefine cloneCardDefine(CardDefine define)
@@ -267,16 +267,12 @@ namespace Game
         #endregion
 
         #region 添加卡牌定义
-        public void addCard(CardPoolInfo cardPoolInfo, CardDefine cardDefine)
-        {
-            addCard(cardPoolInfo.cardPoolId, cardDefine);
-        }
         public void addCard(long cardPoolId, CardDefine cardDefine)
         {
             var cardPool = getLocalCardPool(cardPoolId);
             if (cardPool == null)
             {
-                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
+                throw new KeyNotFoundException($"不存在可编辑的卡池{cardPoolId}");
             }
             cardPool.cardDefineList.Add(cardDefine);
         }
@@ -285,8 +281,8 @@ namespace Game
         #region 移除卡牌定义
         public bool removeCard(CardDefine card)
         {
-            var cardPool = getCardPoolOfCard(card);
-            if (cardPool != null)
+            var poolRef = getCardPoolReferenceOfCard(card);
+            if (tryGetCardPool(poolRef, out CardPool cardPool))
             {
                 if (cardPool.cardDefineList.Remove(card))
                 {
@@ -296,9 +292,15 @@ namespace Game
             }
             return false;
         }
-        public bool removeCard(long cardPoolId, int cardId)
+        public bool removeCard(DefineReference defineRef)
         {
-            return removeCard(getCardDefine(cardPoolId, cardId));
+            var cardDefine = getLocalCardDefine(defineRef);
+            return removeCard(cardDefine);
+        }
+        public bool removeCard(long cardPoolId, int defineId)
+        {
+            var cardDefine = getLocalCardDefine(cardPoolId, defineId);
+            return removeCard(cardDefine);
         }
         #endregion
 
@@ -335,19 +337,8 @@ namespace Game
         /// <returns></returns>
         public CardDefine getCardDefine(long cardPoolId, int cardId)
         {
-            // 老版本卡牌定义的兼容。
-            if (cardPoolId == 0 && cardId < 0)
-                cardPoolId = cardId << 1 >> 17;
-
-            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
-            {
-                return cardPool.cardDefineList.Find(d => d.id == cardId);
-            }
-            else if (builtinDefineDic.ContainsKey(cardId))
-            {
-                return builtinDefineDic[cardId];
-            }
-            return null;
+            var poolRef = game.card.getCardPoolReference(cardPoolId);
+            return getCardDefine(poolRef, cardId);
         }
         /// <summary>
         /// 根据卡牌引用获取卡片定义
@@ -357,12 +348,20 @@ namespace Game
         /// <returns></returns>
         public CardDefine getCardDefine(DefineReference defRef)
         {
+            if (defRef == null)
+                return null;
             return getCardDefine(defRef.cardPoolId, defRef.defineId);
+        }
+        public CardDefine getLocalCardDefine(long cardPoolId, int id)
+        {
+            var poolRef = game.card.getLocalCardPoolReference(cardPoolId);
+            return getCardDefine(poolRef, id);
         }
         public CardDefine getLocalCardDefine(DefineReference defRef)
         {
-            var poolRef = game.card.getLocalCardPoolReference(defRef.cardPoolId);
-            return getCardDefine(poolRef, defRef.defineId);
+            if (defRef == null)
+                return null;
+            return getLocalCardDefine(defRef.cardPoolId, defRef.defineId);
         }
         /// <summary>
         /// 根据条件获取卡片定义
@@ -457,7 +456,7 @@ namespace Game
         public INodeDefiner getLocalNodeDefiner()
         {
             return new THHNodeDefiner(
-                (a, n) => getActionDefine(a),
+                (a, n) => getLocalActionDefine(a),
                 (poolId, name) => getEventTriggerTime(getLocalCardPoolReference(poolId), name, true));
         }
         #endregion
@@ -520,17 +519,6 @@ namespace Game
         [SerializeField]
         private string[] _externalCardPaths = new string[0];
         #endregion
-    }
-
-    [Serializable]
-    public class SkinNotFoundException : Exception
-    {
-        public SkinNotFoundException() { }
-        public SkinNotFoundException(string message) : base(message) { }
-        public SkinNotFoundException(string message, Exception inner) : base(message, inner) { }
-        protected SkinNotFoundException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 
     public class StageLogger
