@@ -195,12 +195,7 @@ namespace Game
             if (_creatingCardPoolInfo == cardPoolInfo)
                 finishCreatingCardPool();
 
-            SerializableCardPool seriCardPool = new SerializableCardPool(cardPool);
-            // 检查并修复老旧大卡图
-            await fixLargeImage(cardPoolInfo.cardPoolId, cardPool);
-            // 对缓存的图片进行保存
-            await saveExternalImages(cardPoolInfo.cardPoolId, cardPool);
-            //保存文件
+
             if (isInnateCardPool(cardPoolInfo))
             {
                 //官方卡池只能保存到指定路径下面，也就是工程文件
@@ -211,26 +206,31 @@ namespace Game
                 //如果是StreamingAssets，那要转存成可持续化文件
                 path = path.Substring(3, path.Length - 3);
             }
+            // 卡池版本+1。
+            cardPoolInfo.editTime++;
             cardPoolInfo.version = 0;
             cardPoolInfo.versionNumber = CURRENT_CARD_POOL_VERSION;
+            _cardPoolInfoDict[path] = cardPoolInfo;
+            _cardPoolDict.Remove(cardPoolRef);
+            _cardPoolDict.Add(cardPoolInfo.ToReference(), cardPool);
+
+            // 检查并修复老旧大卡图
+            await fixLargeImage(cardPoolInfo.cardPoolId, cardPool);
+            // 对缓存的图片进行保存
+            await saveExternalImages(cardPoolInfo.cardPoolId, cardPool);
+
             //初始化JSON
             if (!JsonHelper.isInited)
             {
                 JsonHelper.init();
             }
-
-            // 卡池版本+1。
-            cardPoolInfo.editTime++;
-            _cardPoolInfoDict[path] = cardPoolInfo;
-            _cardPoolDict.Remove(cardPoolRef);
-            _cardPoolDict.Add(cardPoolInfo.ToReference(), cardPool);
-
             bool readFriendly;
 #if UNITY_EDITOR
             readFriendly = true;
 #else
             readFriendly = false;
 #endif
+            SerializableCardPool seriCardPool = new SerializableCardPool(cardPool);
             await game.fileManager.saveFile(path, new string[]
             {
                 cardPoolInfo.toJson(),//文件头信息
