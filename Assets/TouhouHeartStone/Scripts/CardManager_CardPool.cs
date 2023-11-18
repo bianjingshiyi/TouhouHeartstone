@@ -425,6 +425,11 @@ namespace Game
             {
                 return await loadCardPool(path, handleException);
             }
+            var cache = await loadCachedCardPoolAsync(poolRef);
+            if (cache.info != null && cache.cardPool != null)
+            {
+                return cache;
+            }
             return (null, null);
         }
 
@@ -574,6 +579,10 @@ namespace Game
                 return false;
         }
 
+        public Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPoolAsync(ICardPoolReference poolRef)
+        {
+            return loadCachedCardPoolAsync(poolRef.CardPoolID, poolRef.CardPoolVersion);
+        }
         public async Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPoolAsync(long cardPoolId, int version)
         {
             try
