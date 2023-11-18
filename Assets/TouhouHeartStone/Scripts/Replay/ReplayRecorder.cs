@@ -30,8 +30,9 @@ namespace Game.Replays
             {
                 version = REPLAY_VERSION,
                 option = game.getOption(),
-                playerA = new ReplayPlayerData(localPlayer),
-                playerB = new ReplayPlayerData(otherPlayer),
+                players = players.Select(p => new ReplayPlayerData(p)).ToArray(),
+                playerAId = localPlayer.id,
+                playerBId = otherPlayer.id,
                 responses = new List<IResponse>()
             };
             game.answers.onResponse += onPlayerResponseCallback;
