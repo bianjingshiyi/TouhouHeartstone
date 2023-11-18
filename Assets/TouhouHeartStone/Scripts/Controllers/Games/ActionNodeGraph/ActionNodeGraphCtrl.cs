@@ -1970,8 +1970,7 @@ namespace Controllers
             if (cardDefine != null)
             {
                 cardSkin = game.card.getDefaultSkin(cardDefine);
-                image = cardSkin.image ??
-                    await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
+                image = await game.card.loadCardImage(cardDefine);
             }
             cardInputField.setCard(cardDefine, cardSkin, image);
         }

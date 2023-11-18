@@ -73,7 +73,7 @@ namespace Controllers
                 }
                 var poolInfo = getCardPoolInfo(poolId);
                 //更新牌库信息
-                Sprite image = await game.card.loadImage(poolInfo.imageResPath, poolId);
+                Sprite image = await game.card.loadCardPoolImage(poolInfo);
                 //更新UI
                 gameObject.SetActive(true);
                 _ui.setDeckListActive(false);
@@ -653,7 +653,7 @@ namespace Controllers
                 var cardPoolId = _cardPoolIdList[i];
                 var cardPoolInfo = getCardPoolInfo(cardPoolId);
                 viewData[i].name = cardPoolInfo.cardPoolName;
-                viewData[i].image = await game.card.loadImage(cardPoolInfo.imageResPath, cardPoolId);
+                viewData[i].image = await game.card.loadCardPoolImage(cardPoolInfo);
             }
             _ui.updateDeckList(viewData);
         }
@@ -667,7 +667,7 @@ namespace Controllers
             {
                 CardSkinData skin = game.card.getDefaultSkin(cardDefines[i]);
                 viewData[i].name = skin.name;
-                viewData[i].image = await game.card.loadImage(skin.imagePath, cardPoolId);
+                viewData[i].image = await game.card.loadCardImage(poolRef, skin);
                 viewData[i].count = 0;
             }
             _ui.updateDeckCardList(viewData);

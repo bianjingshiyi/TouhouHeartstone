@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
-using UnityEngine;
 using Card = TouhouCardEngine.Card;
 using UICard = Game.BattleTable.TableCard;
 
@@ -97,14 +96,8 @@ namespace Game.BattleTable
             var skin = cardManager.getCardSkin(card);
             ui.setCardDefine(card, skin, table, isFaceUp);
 
-            Sprite image = skin.image;
-            if (!image)
-            {
-                ui.setImageSprite(null);
-                var cardPoolRef = cardManager.getCardPoolReferenceOfCard(card);
-                image = await cardManager.loadCardImage(cardPoolRef, card.id);
-            }
-            ui.setImageSprite(image);
+            ui.setImageSprite(null);
+            ui.setImageSprite(await cardManager.loadCardImage(card));
         }
         public static async Task setCard(this UICard ui, CardEngine game, Card card, CardManager cardManager, BattleTableManager table, bool isFaceUp = true)
         {
@@ -112,13 +105,8 @@ namespace Game.BattleTable
             var skin = cardManager.getCardSkin(define);
             ui.setCard(game, card, skin, table, isFaceUp);
 
-            Sprite image = skin.image;
-            if (!image)
-            {
-                ui.setImageSprite(null);
-                image = await cardManager.loadImage(skin.imagePath, define.cardPoolId);
-            }
-            ui.setImageSprite(image);
+            ui.setImageSprite(null);
+            ui.setImageSprite(await cardManager.loadCardImage(define));
         }
         public static async Task setCard(this UICard ui, CardDescriptor desc, CardManager cardManager, BattleTableManager table, bool isFaceUp = true)
         {
@@ -126,13 +114,8 @@ namespace Game.BattleTable
             var skin = cardManager.getCardSkin(define);
             ui.setCard(desc, skin, table, isFaceUp);
 
-            Sprite image = skin.image;
-            if (!image)
-            {
-                ui.setImageSprite(null);
-                image = await cardManager.loadImage(skin.imagePath, define.cardPoolId);
-            }
-            ui.setImageSprite(image);
+            ui.setImageSprite(null);
+            ui.setImageSprite(await cardManager.loadCardImage(define));
         }
         public static void setTranslatedTag(this UICard ui, CardManager cardManager, string tag)
         {

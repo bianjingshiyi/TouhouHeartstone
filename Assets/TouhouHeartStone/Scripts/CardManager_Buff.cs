@@ -189,52 +189,43 @@ namespace Game
         /// </summary>
         /// <param name="buffDefine"></param>
         /// <returns></returns>
-        public BuffSkin getBuffSkin(BuffDefine buffDefine)
+        public BuffSkin getDefaultBuffSkin(BuffDefine buffDefine)
         {
-            long cardPoolId = buffDefine.cardPoolId;
-            if (!tryGetCardPool(getCardPoolReferenceOfBuff(buffDefine), out CardPool cardPool))
-            {
-                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
-            }
-            var buffSkinList = cardPool.buffSkinList.FindAll(s => s.buffId == buffDefine.id);
-            BuffSkin buffSkin = buffSkinList.Find(s => s.language == game.langManager.getLanguage());
-            if (buffSkin == null)
-                buffSkin = buffSkinList.Count > 0 ? buffSkinList[0] : null;
-            return buffSkin;
+            var poolRef = getCardPoolReferenceOfBuff(buffDefine);
+            return getDefaultBuffSkin(poolRef, buffDefine.id);
+        }
+        /// <summary>
+        /// 获取增益定义的皮肤，有当前语言优先获取当前语言，没有就获取第一个，再没有就返回空
+        /// </summary>
+        /// <param name="cardPoolRef"></param>
+        /// <param name="buffId"></param>
+        /// <returns></returns>
+        public BuffSkin getDefaultBuffSkin(ICardPoolReference cardPoolRef, int buffId)
+        {
+            var buffSkinList = getBuffSkins(cardPoolRef, buffId);
+            return buffSkinList.FirstOrDefault(s => s.language == game.langManager.getLanguage()) ?? buffSkinList.FirstOrDefault();
+        }
+        public BuffSkin getBuffSkin(BuffDefine buffDefine) => getDefaultBuffSkin(buffDefine);
+        public BuffSkin getBuffSkin(ICardPoolReference cardPoolRef, int buffId) => getDefaultBuffSkin(cardPoolRef, buffId);
+        /// <summary>
+        /// 获取增益定义的皮肤，有当前语言优先获取当前语言，没有就获取第一个，再没有就返回空
+        /// </summary>
+        /// <param name="buffDefine"></param>
+        /// <returns></returns>
+        public BuffSkin[] getBuffSkins(BuffDefine buffDefine)
+        {
+            var poolRef = getCardPoolReferenceOfBuff(buffDefine);
+            return getBuffSkins(poolRef, buffDefine.id);
         }
         public BuffSkin[] getBuffSkins(ICardPoolReference cardPoolRef, int buffId)
         {
             if (!tryGetCardPool(cardPoolRef, out CardPool cardPool))
-            {
                 throw new KeyNotFoundException($"不存在卡池{cardPoolRef}");
-            }
-            List<BuffSkin> buffSkinList = new List<BuffSkin>();
-            for (int i = 0; i < cardPool.buffSkinList.Count; i++)
-            {
-                if (cardPool.buffSkinList[i].buffId == buffId)
-                {
-                    buffSkinList.Add(cardPool.buffSkinList[i]);
-                }
-            }
-            return buffSkinList.ToArray();
-        }
-        public BuffSkin[] getBuffSkins(ICardPoolReference cardPoolRef)
-        {
-            if (!tryGetCardPool(cardPoolRef, out CardPool cardPool))
-            {
-                throw new KeyNotFoundException($"不存在卡池{cardPoolRef}");
-            }
-            return cardPool.buffSkinList.ToArray();
+            return cardPool.buffSkinList.Where(s => s.buffId == buffId).ToArray();
         }
         public string[] getBuffDefineNames(BuffDefine[] buffDefines)
         {
-            string[] buffDefineNames = new string[buffDefines.Length];
-            for (int i = 0; i < buffDefines.Length; i++)
-            {
-                BuffSkin buffSkin = getBuffSkin(buffDefines[i]);
-                buffDefineNames[i] = buffSkin != null ? buffSkin.name : buffDefines[i].ToString();
-            }
-            return buffDefineNames;
+            return buffDefines.Select(b => getDefaultBuffSkin(b)?.name ?? b.ToString()).ToArray();
         }
         #endregion
 

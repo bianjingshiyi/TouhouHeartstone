@@ -2207,7 +2207,7 @@ namespace Game.BattleTable
                 else
                 {
                     var skin = cards.getBuffSkin(buffDefine);
-                    sprite = await cards.loadImage(skin.imagePath, defineRef.cardPoolId);
+                    sprite = await cards.loadBuffImage(buffDefine);
                     name = skin.name ?? string.Empty;
                     desc = skin.desc ?? string.Empty;
                 }

@@ -460,22 +460,10 @@ namespace Controllers
         /// <returns></returns>
         private async Task<Sprite> loadDeckImage(Deck deck)
         {
-            var cardPoolRef = game.card.getLocalCardPoolReference(deck.masterCardRef.cardPoolId);
+            var cardRef = deck.masterCardRef;
+            var cardPoolRef = game.card.getLocalCardPoolReference(cardRef.cardPoolId);
             await game.card.getOrLoadCardPool(cardPoolRef, true);
-            if (!game.card.tryGetCardSkin(cardPoolRef, deck.masterCardRef.defineId, out CardSkinData skin))
-            {
-                Debug.LogError($"不存在卡组角色{deck.masterCardRef}的对应皮肤");
-                return null;
-            }
-            if (skin.image != null)
-                return skin.image;
-            else
-            {
-                return await game.card.loadImage(skin.imagePath,
-                    game.card.getLocalCardDefine(deck.masterCardRef) is CardDefine cardDefine &&
-                    game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo ?
-                    cardPoolInfo.cardPoolId : 0);
-            }
+            return await game.card.loadCardImage(cardPoolRef, cardRef.defineId);
         }
         private bool tryAddCardToDeck(CardDefine card, out string errorTip)
         {
@@ -642,7 +630,7 @@ namespace Controllers
                 {
                     var cardPoolId = cardDefine.cardPoolId;
                     name = skin.name;
-                    image = skin.image ?? await game.card.loadImage(skin.imagePath, cardPoolId);
+                    image = await game.card.loadCardImage(cardDefine);
                 }
                 else
                 {

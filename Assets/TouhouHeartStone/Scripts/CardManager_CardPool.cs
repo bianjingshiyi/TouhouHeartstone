@@ -1152,7 +1152,7 @@ namespace Game
                 if (!string.IsNullOrEmpty(skin.imagePath) && !isHashNamedImage(skin.imagePath))
                 {
                     //图片地址必须是32位哈希.jpg
-                    Sprite sprite = await loadImage(skin.imagePath, cardPoolInfo.cardPoolId, false);
+                    Sprite sprite = await loadImage(cardPoolInfo, skin.imagePath, false);
                     // 不保存丢失的贴图。
                     if (sprite != null)
                     {
@@ -1168,7 +1168,7 @@ namespace Game
                 if (!isHashNamedImage(buffSkin.imagePath))
                 {
                     //图片地址必须是32位哈希.jpg
-                    Sprite sprite = await loadImage(buffSkin.imagePath, cardPoolInfo.cardPoolId, false);
+                    Sprite sprite = await loadBuffImage(cardPoolInfo, buffSkin, false);
                     // 不保存丢失的贴图。
                     if (sprite != null)
                     {

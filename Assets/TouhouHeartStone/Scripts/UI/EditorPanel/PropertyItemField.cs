@@ -80,11 +80,7 @@ namespace UI
             await cardManager.getOrLoadCardPool(poolRef);
             var cardDefine = cardManager.getCardDefine(poolRef, defRef.defineId);
             var skin = cardManager.getCardSkin(cardDefine);
-            Sprite image = null;
-            if (skin != null)
-            {
-                image = await cardManager.loadImage(skin.imagePath, defRef.cardPoolId);
-            }
+            Sprite image = await cardManager.loadCardImage(poolRef, skin);
             inputField.setCard(cardDefine, skin, image);
         }
 

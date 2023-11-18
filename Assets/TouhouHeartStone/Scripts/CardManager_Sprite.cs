@@ -23,85 +23,16 @@ namespace Game
         /// </summary>
         public Task<Sprite> selectExternalImage(int width = 512, int height = 512)
         {
-            TaskCompletionSource<Sprite> tcs = new TaskCompletionSource<Sprite>();
             if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
             {
                 //手机端
-                var permission = NativeGallery.GetImageFromGallery(async path =>
-                {
-                    if (path != null)
-                    {
-                        Sprite sprite = getSpriteFromCache(path);
-                        if (sprite == null)
-                        {
-                            Texture2D orig = NativeGallery.LoadImageAtPath(path, markTextureNonReadable: false);
-                            var texture = ResizeAndCropImage(orig, width, height);
-                            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
-                            //缓存外部图片
-                            addSpriteToCache(path, sprite);
-                        }
-                        //更改贴图路径为外部文件路径
-                        tcs.SetResult(sprite);
-                    }
-                    else
-                    {
-                        tcs.SetResult(null);
-                    }
-                });
-                if (permission == NativeGallery.Permission.Denied)
-                {
-                    Debug.LogError("没有打开相册的权限");
-                    // 拒绝权限后应当弹出框提示需要设置权限
-                    NativeGallery.OpenSettings();
-                }
+                return selectExternalImageForMobile(width, height);
             }
             else
             {
                 //默认PC
-                string[] paths = StandaloneFileBrowser.OpenFilePanel("", "", new ExtensionFilter[]
-                {
-                    new ExtensionFilter("Image Files", "png","jpg")
-                }, false);
-                if (paths == null || paths.Length < 1)
-                {
-                    Debug.Log($"没有选择文件");
-                    return Task.FromResult<Sprite>(null);
-                }
-                string path = paths[0];
-
-                if (!File.Exists(path))
-                {
-                    Debug.Log($"选择的文件 {path} 不存在");
-                    return Task.FromResult<Sprite>(null);
-                }
-
-                Sprite sprite = getSpriteFromCache(path);
-                if (sprite == null)
-                {
-                    try
-                    {
-                        Texture2D orig = new Texture2D(2, 2);
-                        bool success = orig.LoadImage(File.ReadAllBytes(path));
-                        if (!success)
-                        {
-                            Debug.Log($"文件 {path} 读取出错");
-                            return Task.FromResult<Sprite>(null);
-                        }
-                        var texture = ResizeAndCropImage(orig, width, height);
-                        sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
-                        //缓存外部图片
-                        addSpriteToCache(path, sprite);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError(e);
-                        return Task.FromException<Sprite>(e);
-                    }
-                }
-                //更改贴图路径为外部文件路径
-                tcs.SetResult(sprite);
+                return selectExternalImageForPC(width, height);
             }
-            return tcs.Task;
         }
         /// <summary>
         /// 保存外部图片，并将指定卡池中所有对外部图片的引用都替换为保存后的路径。
@@ -114,55 +45,52 @@ namespace Game
             List<KeyValuePair<string, Sprite>> savedPathSpritePairList = new List<KeyValuePair<string, Sprite>>();
             foreach (var pair in _externalSpriteCacheDict)
             {
+                var cachePath = pair.Key;
+                var cacheSprite = pair.Value;
                 //已经存在的资源图片不需要保存
-                if (isHashNamedImage(pair.Key))
+                if (isHashNamedImage(cachePath))
                     continue;
-                //获取使用这张图片的第一个皮肤
-                CardSkinData cardSkin = cardPool.cardSkinList.FirstOrDefault(s => s.imagePath == pair.Key);
-                BuffSkin buffSkin = cardPool.buffSkinList.FirstOrDefault(s => s.imagePath == pair.Key);
-                string path;
+
+                //获取使用这张图片的所有皮肤
+                var cardSkins = cardPool.cardSkinList.Where(s => s.imagePath == cachePath);
+                var buffSkins = cardPool.buffSkinList.Where(s => s.imagePath == cachePath);
+
                 //没有皮肤使用，跳过
-                if (buffSkin == null && cardSkin == null)
+                if (buffSkins.Count() <= 0 && cardSkins.Count() <= 0)
                     continue;
+                // 图片为空。
+                if (cacheSprite is not Sprite sprite)
+                {
+                    Debug.LogWarning($"图片{cachePath}为空");
+                    continue;
+                }
+
                 //另存为图片
-                if (pair.Value is Sprite sprite)
-                {
-                    //是Sprite，啥也不做
-                }
-                else
-                {
-                    Debug.LogWarning($"图片{pair.Key}为空");
-                    continue;
-                }
-                path = await saveImage(cardPoolId, sprite.texture);
-                removeSpritePathList.Add(pair.Key);
+                string path = await saveImage(cardPoolId, sprite.texture);
+                removeSpritePathList.Add(cachePath);
                 savedPathSpritePairList.Add(new KeyValuePair<string, Sprite>(path, sprite));
+
                 //替换所有引用这个图片的皮肤的图片地址
-                foreach (var otherCardSkin in cardPool.cardSkinList)
+                foreach (var otherCardSkin in cardSkins)
                 {
-                    if (otherCardSkin.imagePath == pair.Key)
-                    {
-                        otherCardSkin.imagePath = path;
-                    }
+                    otherCardSkin.imagePath = path;
                 }
-                foreach (var otherBuffSkin in cardPool.buffSkinList)
+                foreach (var otherBuffSkin in buffSkins)
                 {
-                    if (otherBuffSkin.imagePath == pair.Key)
-                    {
-                        otherBuffSkin.imagePath = path;
-                    }
+                    otherBuffSkin.imagePath = path;
                 }
             }
-            for (int i = 0; i < removeSpritePathList.Count; i++)
+            foreach (var path in removeSpritePathList)
             {
-                _externalSpriteCacheDict.Remove(removeSpritePathList[i]);
+                _externalSpriteCacheDict.Remove(path);
             }
-            for (int i = 0; i < savedPathSpritePairList.Count; i++)
+            foreach (var pair in savedPathSpritePairList)
             {
-                string path = savedPathSpritePairList[i].Key;
+                var path = pair.Key;
+                var sprite = pair.Value;
                 if (!_externalSpriteCacheDict.ContainsKey(path))
                 {
-                    _externalSpriteCacheDict.Add(path, savedPathSpritePairList[i].Value);
+                    _externalSpriteCacheDict.Add(path, sprite);
                 }
             }
         }
@@ -175,37 +103,9 @@ namespace Game
         /// <returns></returns>
         public async Task fixLargeImage(long cardPoolId, CardPool cardPool)
         {
+            var cardPoolRef = getLocalCardPoolReference(cardPoolId);
             // 已处理的图片列表，若为null则不需要替换
             Dictionary<string, string> replacedImages = new Dictionary<string, string>();
-
-            Func<string, Task<string>> replaceImage = async (string imagePath) =>
-            {
-                if (string.IsNullOrEmpty(imagePath))
-                    return imagePath;
-
-                if (replacedImages.ContainsKey(imagePath))
-                    return replacedImages[imagePath];
-
-                string newPath = ""; // 加载失败或图像尺寸正常的设定为空
-                var image = await loadImage(imagePath, cardPoolId, false);
-                if (image != null)
-                {
-                    if (image.texture.width > 512 && image.texture.height > 512)
-                    {
-                        var scaledTexture = ResizeImage(image.texture, 512, 512);
-                        newPath = await saveImage(cardPoolId, scaledTexture);
-                        Debug.Log($"卡图 {imagePath} 已缩小，新路径为 {newPath}");
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning($"卡图 {imagePath} 加载失败，跳过缩放检查");
-                }
-
-                replacedImages[imagePath] = newPath;
-                return newPath;
-            };
-
             foreach (var skin in cardPool.cardSkinList)
             {
                 var newPath = await replaceImage(skin.imagePath);
@@ -218,14 +118,45 @@ namespace Game
                 if (!string.IsNullOrEmpty(newPath))
                     skin.imagePath = newPath;
             }
+
+
+            async Task<string> replaceImage(string imagePath)
+            {
+                if (string.IsNullOrEmpty(imagePath))
+                    return imagePath;
+
+                if (replacedImages.ContainsKey(imagePath))
+                    return replacedImages[imagePath];
+
+                string newPath = ""; // 加载失败或图像尺寸正常的设定为空
+                var image = await loadImage(cardPoolRef, imagePath, false);
+                if (image == null)
+                {
+                    Debug.LogWarning($"卡图 {imagePath} 加载失败，跳过缩放检查");
+                }
+                else if (image.texture.width > 512 && image.texture.height > 512)
+                {
+                    var scaledTexture = ResizeImage(image.texture, 512, 512);
+                    newPath = await saveImage(cardPoolId, scaledTexture);
+                    Debug.Log($"卡图 {imagePath} 已缩小，新路径为 {newPath}");
+                }
+
+                replacedImages[imagePath] = newPath;
+                return newPath;
+            };
+
         }
 
         public async Task<string> saveImage(long cardPoolId, Texture2D texture, bool saveAsJpg = true, int jpgQuality = 90)
         {
             byte[] bytes = saveAsJpg ? texture.EncodeToJPG(jpgQuality) : texture.EncodeToPNG();
             string hash = calcHashString(bytes);
-            string fileName = saveAsJpg ? string.Format("{0}.jpg", hash) : string.Format("{0}.png", hash);
-            string filePath = Path.Combine(getCardPoolTexturesDirectory(getCardPoolInfo(cardPoolId)), fileName);
+            string fileName = saveAsJpg ? $"{hash}.jpg" : $"{hash}.png";
+
+            var poolRef = getLocalCardPoolReference(cardPoolId);
+            var poolInfo = getCardPoolInfo(poolRef);
+            var texDir = getCardPoolTexturesDirectory(poolInfo);
+            string filePath = Path.Combine(texDir, fileName);
             if (!game.fileManager.isFileExist(filePath))
             {
                 await game.fileManager.saveFile(filePath, bytes);
@@ -235,279 +166,116 @@ namespace Game
         }
 
         #region 加载
-        /// <summary>
-        /// 加载指定卡池，指定路径的图片并转换为Sprite。
-        /// </summary>
-        /// <param name="path">图片路径（要求是相对路径）。</param>
-        /// <param name="cardPoolId">卡池的ID。</param>
-        /// <param name="useFallbackSprite">如果加载失败，是否应该使用默认的丢失贴图。</param>
-        /// <returns>读取到的Sprite。</returns>
-        /// <exception cref="KeyNotFoundException">不存在卡池时抛出该异常。</exception>
-        public async Task<Sprite> loadImage(string path, long cardPoolId, bool useFallbackSprite = true)
+        public async Task<Sprite> loadExternalImage(string path, bool fallbackDefault = true)
         {
+            // 路径为空
             if (string.IsNullOrEmpty(path))
-            {
                 return null;
-            }
+
             Sprite sprite = getSpriteFromCache(path);
             if (sprite != null)
-            {
-                //存在缓存，直接返回缓存
                 return sprite;
-            }
-            if (path.isStreamingAssetsPath(out var streamingPath))
-            {
-                //读取文件
-                byte[] bytes;
-                try
-                {
-                    try
-                    {
-                        bytes = await game.fileManager.readStreamingBinaryFile(streamingPath);
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        //可能是后缀不对
-                        bytes = await game.fileManager.readStreamingBinaryFile(
-                            path.EndsWith(".png") ?
-                            streamingPath.Replace(".png", ".jpg") :
-                            streamingPath.Replace(".jpg", ".png"));
-                    }
-                    Texture2D texture = new Texture2D(512, 512);
-                    texture.LoadImage(bytes);
-                    sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"加载图片{path}失败：{e}");
-                }
-            }
-            else if (path.isResourcesPath(out var resourcesPath))
-            {
-                //读取文件
-                sprite = Resources.Load<Sprite>(resourcesPath);
-                if (sprite == null)
-                {
-                    Debug.LogError($"加载图片{path}为空");
-                }
-            }
-            else
-            {
-                //外部文件
-                byte[] bytes;
-                if (getCardPoolInfo(cardPoolId) is CardPoolInfo cardPoolInfo &&
-                    getCardPoolPath(cardPoolInfo) is string cardPoolPath)
-                {
-                    if (cardPoolPath.isStreamingAssetsPath(out _) &&
-                        !path.isStreamingAssetsPath(out _) &&
-                        !path.isResourcesPath(out _))
-                    {
-                        //卡池在StreamingAssets中，但是卡图是相对路径
-                        //需要从StreamingAssets中读取相对路径上的图片
-                        string saPath = Path.Combine(textureDirName, path);
-                        bytes = await game.fileManager.readStreamingBinaryFile(saPath);
-                    }
-                    else
-                    {
-                        //存在卡池，要考虑一下记载这个路径的卡池的路径，综合得到绝对路径
-                        //因为无法区分可持续化文件和工程文件的相对路径，所以需要通过绝对路径来读取文件
-                        //外部图片路径无法记载绝对路径，因为不确定安装平台和目录，所以一定是相对路径
-                        string picId = Path.GetFileNameWithoutExtension(path);
-                        string absPath = Path.Combine(getCardPoolTexturesDirectory(cardPoolInfo), path);
-                        try
-                        {
-                            if (game.fileManager.isFileExist(absPath))
-                            {
-                                bytes = await game.fileManager.readBinaryFile(absPath);
-                            }
-                            else if (game.cache.FileExists(game.fileManager, ResourceType.Picture, picId))
-                            {
-                                //如果图片不存在，尝试从缓存资源中读取。
-                                bytes = await game.cache.ReadCache(game.fileManager, ResourceType.Picture, picId);
-                            }
-                            else
-                            {
-                                throw new FileNotFoundException();
-                            }
-                        }
-                        catch (FileNotFoundException)
-                        {
-                            Debug.LogWarning($"读取外部卡池的图片{absPath}时遇到问题：无法找到该图片文件。");
-                            return useFallbackSprite ? getDefaultSprite() : null;
-                        }
-                    }
-                }
-                else
-                {
-                    throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
-                }
-                // 如果是空数组，返回默认Sprite.
-                if (bytes.Length <= 0)
-                {
-                    return useFallbackSprite ? getDefaultSprite() : null;
-                }
-                Texture2D texture = new Texture2D(512, 512);
-                texture.LoadImage(bytes);
-                sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
-            }
-            if (sprite != null)
-            {
-                addSpriteToCache(path, sprite);
-            }
-            return sprite;
-        }
-        public async Task<Sprite> loadExternalImage(string path, string dirName)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                return null;
-            }
-            Sprite sprite;
+
             if (path.isResourcesPath(out var resourcesPath))
-            {
-                sprite = getSpriteFromCache(path);
-                if (sprite != null)
-                {
-                    return sprite;
-                }
-                //Unity资源
-                sprite = Resources.Load<Sprite>(resourcesPath);
-                if (sprite == null)
-                {
-                    Debug.LogError($"加载图片{path}为空");
-                }
-            }
+                sprite = loadResourcesSprite(resourcesPath);
             else if (path.isStreamingAssetsPath(out var streamingPath))
-            {
-                sprite = getSpriteFromCache(path);
-                if (sprite != null)
-                {
-                    return sprite;
-                }
-                byte[] bytes;
-                try
-                {
-                    try
-                    {
-                        bytes = await game.fileManager.readStreamingBinaryFile(streamingPath);
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        //可能是后缀不对
-                        bytes = await game.fileManager.readStreamingBinaryFile(
-                            path.EndsWith(".png") ?
-                            streamingPath.Replace(".png", ".jpg") :
-                            streamingPath.Replace(".jpg", ".png"));
-                    }
-                    Texture2D texture = new Texture2D(512, 512);
-                    texture.LoadImage(bytes);
-                    sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
-                }
-                catch (IOException e)
-                {
-                    Debug.LogError($"加载图片{path}失败：{e}");
-                    sprite = null;
-                }
-            }
+                sprite = await loadStreamingAssetSprite(streamingPath);
             else
-            {
-                if (!string.IsNullOrEmpty(dirName))
-                {
-                    path = Path.Combine(dirName, path);
-                }
-                sprite = getSpriteFromCache(path);
-                if (sprite != null)
-                {
-                    return sprite;
-                }
-                //外部贴图
-                var fileManager = game.fileManager;
-                bool fullPath = Path.GetFullPath(path) == path;
-                byte[] bytes;
-                if (fullPath && fileManager.isFileExist(path))
-                {
-                    //如果直接给出完整路径就直接从完整路径上读
-                    bytes = await fileManager.readBinaryFile(path);
-                }
-                else if (fileManager.isPersistentFileExist(path))
-                {
-                    // 从外部图片路径读取图片。
-                    bytes = await fileManager.readPersistentBinaryFile(path);
-                }
-                else
-                {
-                    //如果图片不存在，尝试从缓存资源中读取。
-                    string picId = Path.GetFileNameWithoutExtension(path);
-                    if (game.cache.FileExists(game.fileManager, ResourceType.Picture, picId))
-                    {
-                        bytes = await game.cache.ReadCache(fileManager, ResourceType.Picture, picId);
-                    }
-                    else
-                    {
-                        // 实在找不到了，返回一个空数组
-                        Debug.LogWarning($"未找到路径为{path}的图片。");
-                        bytes = Array.Empty<byte>();
-                    }
-                }
-                // 如果是空数组，返回默认Sprite.
-                if (bytes.Length <= 0)
-                {
-                    return getDefaultSprite();
-                }
-                Texture2D texture = new Texture2D(512, 512);
-                texture.LoadImage(bytes);
-                sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
-            }
+                sprite = await loadExternalSprite(path);
+
+            if (sprite == null && fallbackDefault)
+                return getDefaultSprite();
+
             //添加到缓存
-            if (sprite != null)
-            {
-                addSpriteToCache(path, sprite);
-            }
+            addSpriteToCache(path, sprite);
             return sprite;
         }
-        public Task<Sprite> loadCardImage(CardDefine define)
+        public Task<Sprite> loadCardImage(CardDefine define, bool fallbackDefault = true)
         {
-            CardSkinData skin = getCardSkin(define);
+            var cardPoolRef = getCardPoolReferenceOfCard(define);
+            return loadCardImage(cardPoolRef, define.id, fallbackDefault);
+        }
+        public Task<Sprite> loadCardImage(ICardPoolReference cardPoolRef, int cardId, bool fallbackDefault = true)
+        {
+            CardSkinData skin = getCardSkin(cardPoolRef, cardId);
+            return loadCardImage(cardPoolRef, skin, fallbackDefault);
+        }
+        public Task<Sprite> loadCardImage(ICardPoolReference cardPoolRef, CardSkinData skin, bool fallbackDefault = true)
+        {
+            var defaultImage = fallbackDefault ? getDefaultSprite() : null;
+            // 不存在卡池引用参数
+            if (cardPoolRef == null)
+                return Task.FromResult(defaultImage);
+
+            // 不存在皮肤
             if (skin == null)
-            {
-                return Task.FromResult(getDefaultSprite());
-            }
+                return Task.FromResult(defaultImage);
+
+            // 内置贴图存在
             if (skin.image != null)
                 return Task.FromResult(skin.image);
-            else
-            {
-                string path = skin.imagePath;
-                var cardPoolRef = getCardPoolReferenceOfCard(define);
-                if (string.IsNullOrEmpty(path))
-                {
-                    return Task.FromResult<Sprite>(null);
-                }
-                else if (getCardPoolInfo(cardPoolRef) is CardPoolInfo cardPool &&
-                    game.card.getCardPoolPath(cardPool) is string cardPoolPath)
-                {
-                    if (cardPoolPath.isStreamingAssetsPath(out _) &&
-                        !path.isStreamingAssetsPath(out _) &&
-                        !path.isResourcesPath(out _))
-                    {
-                        //流文件
-                        return loadExternalImage($"sa:{Path.Combine(textureDirName, path)}", null);
-                    }
-                    else
-                    {
-                        //绝对路径
-                        return loadExternalImage(path, getCardPoolTexturesDirectory(cardPool));
-                    }
-                }
-                else
-                {
-                    //没有卡池信息
-                    return loadExternalImage(path, game.card.textureDirName);
-                }
-            }
+
+            string imagePath = skin.imagePath;
+            return loadImage(cardPoolRef, imagePath, fallbackDefault);
         }
-        public Task<Sprite> loadCardImage(ICardPoolReference cardPoolRef, int cardId)
+        public Task<Sprite> loadBuffImage(BuffDefine define, bool fallbackDefault = true)
         {
-            return loadCardImage(getCardDefine(cardPoolRef, cardId));
+            var cardPoolRef = getCardPoolReferenceOfBuff(define);
+            return loadBuffImage(cardPoolRef, define.id, fallbackDefault);
+        }
+        public Task<Sprite> loadBuffImage(ICardPoolReference cardPoolRef, int buffId, bool fallbackDefault = true)
+        {
+            var skin = getDefaultBuffSkin(cardPoolRef, buffId);
+            return loadBuffImage(cardPoolRef, skin, fallbackDefault);
+        }
+        public Task<Sprite> loadBuffImage(ICardPoolReference cardPoolRef, BuffSkin skin, bool fallbackDefault = true)
+        {
+            var defaultImage = fallbackDefault ? getDefaultSprite() : null;
+            // 不存在卡池引用参数
+            if (cardPoolRef == null)
+                return Task.FromResult(defaultImage);
+
+            // 不存在皮肤
+            if (skin == null)
+                return Task.FromResult(defaultImage);
+
+            string imagePath = skin.imagePath;
+            return loadImage(cardPoolRef, imagePath, fallbackDefault);
+        }
+        public Task<Sprite> loadCardPoolImage(ICardPoolReference cardPoolRef)
+        {
+            var cardPoolInfo = getCardPoolInfo(cardPoolRef);
+            return loadCardPoolImage(cardPoolInfo);
+        }
+        public Task<Sprite> loadCardPoolImage(CardPoolInfo cardPoolInfo)
+        {
+            return loadImage(cardPoolInfo, cardPoolInfo.imageResPath, false);
+        }
+        public async Task<Sprite> loadImage(ICardPoolReference cardPoolRef, string imagePath, bool fallbackDefault = true)
+        {
+            var defaultImage = fallbackDefault ? getDefaultSprite() : null;
+            // 不存在卡池引用参数
+            if (cardPoolRef == null)
+                return defaultImage;
+
+            // 图片路径为空
+            if (string.IsNullOrEmpty(imagePath))
+                return null;
+
+            // 缓存路径
+            if (!isLocalCardPool(cardPoolRef))
+            {
+                var picId = Path.GetFileNameWithoutExtension(imagePath);
+                if (game.cache.FileExists(game.fileManager, ResourceType.Picture, picId))
+                    return await loadCacheSprite(picId) ?? defaultImage;
+            }
+
+            //绝对路径
+            var fullPath = getFullImagePath(cardPoolRef, imagePath);
+            if (fullPath == null)
+                return defaultImage;
+
+            return await loadExternalImage(fullPath, fallbackDefault);
         }
         #endregion
 
@@ -746,6 +514,178 @@ namespace Game
                 Texture2D texture = await getManager<THHResourceManager>().loadTexture(_defaultImagePath, null);
                 _defaultImage = Sprite.Create(texture, new Rect(0, 0, 512, 512), new Vector2(.5f, .5f), 100);
             }
+        }
+
+        private Task<Sprite> selectExternalImageForMobile(int width, int height)
+        {
+            TaskCompletionSource<Sprite> tcs = new TaskCompletionSource<Sprite>();
+            var permission = NativeGallery.GetImageFromGallery(func);
+            if (permission == NativeGallery.Permission.Denied)
+            {
+                Debug.LogError("没有打开相册的权限");
+                // 拒绝权限后应当弹出框提示需要设置权限
+                NativeGallery.OpenSettings();
+            }
+            return tcs.Task;
+
+            void func(string path)
+            {
+                if (path == null)
+                {
+                    tcs.SetResult(null);
+                    return;
+                }
+
+                Sprite sprite = getSpriteFromCache(path);
+                if (sprite != null)
+                {
+                    // 创建贴图。
+                    Texture2D orig = NativeGallery.LoadImageAtPath(path, markTextureNonReadable: false);
+                    var texture = ResizeAndCropImage(orig, width, height);
+                    sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
+                    //缓存外部图片
+                    addSpriteToCache(path, sprite);
+                }
+                //更改贴图路径为外部文件路径
+                tcs.SetResult(sprite);
+            }
+        }
+        private Task<Sprite> selectExternalImageForPC(int width, int height)
+        {
+            TaskCompletionSource<Sprite> tcs = new TaskCompletionSource<Sprite>();
+
+            var extFilters = new ExtensionFilter[] { new ExtensionFilter("Image Files", "png", "jpg") };
+            string[] paths = StandaloneFileBrowser.OpenFilePanel("", "", extFilters, false);
+            if (paths == null || paths.Length < 1)
+            {
+                Debug.Log($"没有选择文件");
+                return Task.FromResult<Sprite>(null);
+            }
+
+            string path = paths[0];
+            if (!File.Exists(path))
+            {
+                Debug.Log($"选择的文件 {path} 不存在");
+                return Task.FromResult<Sprite>(null);
+            }
+
+            Sprite sprite = getSpriteFromCache(path);
+            if (sprite == null)
+            {
+                try
+                {
+                    Texture2D orig = new Texture2D(2, 2);
+                    bool success = orig.LoadImage(File.ReadAllBytes(path));
+                    if (!success)
+                    {
+                        Debug.Log($"文件 {path} 读取出错");
+                        return Task.FromResult<Sprite>(null);
+                    }
+                    var texture = ResizeAndCropImage(orig, width, height);
+                    sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
+                    //缓存外部图片
+                    addSpriteToCache(path, sprite);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                    return Task.FromException<Sprite>(e);
+                }
+            }
+            //更改贴图路径为外部文件路径
+            tcs.SetResult(sprite);
+            return tcs.Task;
+        }
+        private async Task<Sprite> loadStreamingAssetSprite(string path)
+        {
+            try
+            {
+                byte[] bytes;
+                try
+                {
+                    bytes = await game.fileManager.readStreamingBinaryFile(path);
+                }
+                catch (FileNotFoundException)
+                {
+                    //可能是后缀不对
+                    bytes = await game.fileManager.readStreamingBinaryFile(
+                        path.EndsWith(".png") ?
+                        path.Replace(".png", ".jpg") :
+                        path.Replace(".jpg", ".png"));
+                }
+                return createSprite(bytes);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"加载流文件中的图片{path}失败：{e}");
+            }
+            return null;
+        }
+        private Sprite loadResourcesSprite(string path)
+        {
+            return Resources.Load<Sprite>(path);
+        }
+        private async Task<Sprite> loadExternalSprite(string path)
+        {
+            var fileManager = game.fileManager;
+            bool isFullPath = Path.GetFullPath(path) == path;
+            byte[] bytes;
+            // 绝对路径
+            if (isFullPath && fileManager.isFileExist(path))
+            {
+                //如果直接给出完整路径就直接从完整路径上读
+                bytes = await fileManager.readBinaryFile(path);
+                return createSprite(bytes);
+            }
+            // 相对路径
+            else if (fileManager.isPersistentFileExist(path))
+            {
+                // 从外部图片路径读取图片。
+                bytes = await fileManager.readPersistentBinaryFile(path);
+                return createSprite(bytes);
+            }
+            // 实在找不到了
+            Debug.LogWarning($"未找到路径为{path}的图片。");
+            return null;
+        }
+        private async Task<Sprite> loadCacheSprite(string picId)
+        {
+            var fileManager = game.fileManager;
+            byte[] bytes = await game.cache.ReadCache(fileManager, ResourceType.Picture, picId);
+            return createSprite(bytes);
+        }
+        private Sprite createSprite(byte[] bytes)
+        {
+            // 如果是空数组，返回默认Sprite.
+            if (bytes == null || bytes.Length <= 0)
+                return null;
+            Texture2D texture = new Texture2D(512, 512);
+            texture.LoadImage(bytes);
+            return createSprite(texture);
+        }
+        private Sprite createSprite(Texture2D texture)
+        {
+            // 如果是空数组，返回默认Sprite.
+            if (texture == null)
+                return null;
+            return Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
+        }
+        private string getFullImagePath(ICardPoolReference cardPoolRef, string relativePath)
+        {
+            // 是内置卡池。
+            if (isBuiltinCardPool(cardPoolRef.CardPoolID))
+                return relativePath;
+
+            // 卡池信息不存在。
+            if (getCardPoolInfo(cardPoolRef) is not CardPoolInfo cardPool || game.card.getCardPoolPath(cardPool) is not string cardPoolPath)
+                return null;
+
+            // 卡池路径是流文件路径。
+            if (cardPoolPath.isStreamingAssetsPath(out _) && !relativePath.isStreamingAssetsPath(out _) && !relativePath.isResourcesPath(out _))
+                return $"sa:{Path.Combine(textureDirName, relativePath)}";
+
+            //绝对路径
+            return Path.Combine(getCardPoolTexturesDirectory(cardPool), relativePath);
         }
         #endregion
 

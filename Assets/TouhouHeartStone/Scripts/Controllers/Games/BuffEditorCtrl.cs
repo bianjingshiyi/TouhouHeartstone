@@ -232,7 +232,8 @@ namespace Controllers
             _ui.setDesc(targetSkin.desc);
             _ui.setSkin(getCurrentLangSkins().indexOf(targetSkin));
             string path = targetSkin.imagePath;
-            Sprite image = await game.card.loadImage(targetSkin.imagePath, _buffDefine.cardPoolId);
+            var poolRef = game.card.getLocalCardPoolReference(_cardPoolId);
+            Sprite image = await game.card.loadBuffImage(poolRef, targetSkin);
             _ui.setImage(image);
         }
 
@@ -487,7 +488,8 @@ namespace Controllers
             _ui.setSkin(skinIndex);
             _ui.setName(skin.name);
             _ui.setDesc(skin.desc);
-            Sprite image = await game.card.loadImage(skin.imagePath, _buffDefine.cardPoolId);
+            var poolRef = game.card.getLocalCardPoolReference(_cardPoolId);
+            Sprite image = await game.card.loadImage(poolRef, skin.imagePath);
             _ui.setImage(image);
         }
         private int getSkinCount()

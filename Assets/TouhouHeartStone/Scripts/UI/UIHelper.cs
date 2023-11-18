@@ -57,14 +57,8 @@ namespace Game
             var skin = cardManager.getCardSkin(card);
             ui.setCardDefine(card, skin, isFaceUp);
             // 先设置卡牌定义再加载卡图，不然卡框会和卡图一起被突然改变，看起来会有些别扭
-            Sprite image = skin.image;
-            if (!image)
-            {
-                ui.setImage(null);
-                var cardPoolRef = cardManager.getCardPoolReferenceOfCard(card);
-                image = await cardManager.loadCardImage(cardPoolRef, card.id);
-            }
-            ui.setImage(image);
+            ui.setImage(null);
+            ui.setImage(await cardManager.loadCardImage(card));
         }
         public static void setCard(this UICard ui, CardEngine game, Card card, CardSkinData skin, bool isFaceUp = true)
         {
@@ -123,14 +117,8 @@ namespace Game
             var define = card.define;
             var skin = cardManager.getCardSkin(define);
             ui.setCard(game, card, skin, isFaceUp);
-
-            Sprite image = skin.image;
-            if (!image)
-            {
-                ui.setImage(null);
-                image = await cardManager.loadImage(skin.imagePath, define.cardPoolId);
-            }
-            ui.setImage(image);
+            ui.setImage(null);
+            ui.setImage(await cardManager.loadCardImage(define));
         }
 
         public static void setCard(this UICard ui, CardDescriptor card, CardSkinData skin, bool isFaceUp = true)
@@ -191,13 +179,8 @@ namespace Game
             var skin = cardManager.getCardSkin(define);
             ui.setCard(desc, skin, isFaceUp);
 
-            Sprite image = skin.image;
-            if (!image)
-            {
-                ui.setImage(null);
-                image = await cardManager.loadImage(skin.imagePath, define.cardPoolId);
-            }
-            ui.setImage(image);
+            ui.setImage(null);
+            ui.setImage(await cardManager.loadCardImage(define));
         }
         public static void setAttack(this UICard ui, string attack)
         {

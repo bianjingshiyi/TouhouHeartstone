@@ -944,7 +944,8 @@ namespace Controllers
             _ui.setName(skin.name);
             _ui.setSubName(skin.subname);
             _ui.setDesc(skin.desc);
-            Sprite image = await game.card.loadImage(skin.imagePath, _cardDefine.cardPoolId);
+            var poolRef = game.card.getLocalCardPoolReference(_cardPoolId);
+            Sprite image = await game.card.loadCardImage(poolRef, skin);
             _ui.setImage(image);
         }
         #endregion
@@ -978,7 +979,7 @@ namespace Controllers
             string name;
             if (skin != null)
             {
-                spr = await game.card.loadImage(skin.imagePath, defRef.cardPoolId);
+                spr = await game.card.loadCardImage(poolRef, skin);
                 name = skin.name;
             }
             else
