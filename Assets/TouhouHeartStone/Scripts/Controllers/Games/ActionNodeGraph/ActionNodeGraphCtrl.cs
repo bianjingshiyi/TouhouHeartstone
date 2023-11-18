@@ -835,6 +835,12 @@ namespace Controllers
             updatePortModes(null);
 
             updateReadonly();
+            // 更新事件变量节点的事件变量名。
+            foreach (var node in graph.nodes)
+            {
+                var actionNodeItem = getActionNodeItem(node);
+                checkEventVariableNodeItemVarNames(actionNodeItem, node);
+            }
         }
 
         private async Task<ActionNodeItem> createNodeUI4Node(Node node)
