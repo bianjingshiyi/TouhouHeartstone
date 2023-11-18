@@ -61,7 +61,7 @@ namespace Game.BattleTable
             }
 
             // 播放音效。
-            CardSkinData skin = table.getSkin(_card);
+            CardSkinData skin = table.getCardSkin(_card);
             yield return loadAndPlaySound(table, skin?.soundPath_onUse);
             // 播放指向目标动画。
             yield return tryTargetedAnim(table, sourceTransform);
@@ -181,7 +181,7 @@ namespace Game.BattleTable
             if (targets != null && targets.Length > 0 && targets[0] is var targetCard)
             {
                 var card = targetCard.card;
-                if (table.getSkin(_card) is var skin && !string.IsNullOrEmpty(skin.projectilePath))
+                if (table.getCardSkin(_card) is var skin && !string.IsNullOrEmpty(skin.projectilePath))
                 {
                     var loadProjectileTask = table.resources.loadObject<Projectile>(skin.projectilePath);
 

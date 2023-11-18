@@ -201,9 +201,7 @@ namespace Game.BattleTable
             master.setShield(desc.hasShield);
             master.setStealth(desc.isStealth);
             master.setShackle(desc.isFrozen);
-            var cards = cardManager;
-            var poolRef = cards.getCardPoolReferenceOfCard(desc.define);
-            master.setImageSprite(await cards.loadCardImage(poolRef, desc.define.id));
+            master.setImageSprite(await loadCardImage(desc));
             setCardControlDirty(desc.id);
         }
         /// <summary>
@@ -255,9 +253,7 @@ namespace Game.BattleTable
             skill.setCost(cost);
             skill.costNumber.setTextColor(skillColor);
 
-            var cards = cardManager;
-            var poolRef = cards.getCardPoolReferenceOfCard(desc.define);
-            skill.setImageSprite(await cards.loadCardImage(poolRef, desc.define.id));
+            skill.setImageSprite(await loadCardImage(desc));
 
             setCardControlDirty(desc.id);
         }
@@ -320,9 +316,7 @@ namespace Game.BattleTable
             item.setLife(life);
             item.setLifeColor(life == desc.getLife() ? (life > desc.define.getLife() ? PropertyNumberColor.Green : PropertyNumberColor.White) : PropertyNumberColor.Red);
 
-            var cards = cardManager;
-            var poolRef = cards.getCardPoolReferenceOfCard(desc.define);
-            item.setImageSprite(await cards.loadCardImage(poolRef, desc.define.id));
+            item.setImageSprite(await loadCardImage(desc));
         }
         public bool removeItem(ICardData card) => removeItem(card.id);
         public bool removeItem(int id)
@@ -395,7 +389,7 @@ namespace Game.BattleTable
             item.isDraggable = selfHand;
             setCardDesc(item.card, desc, canSeeCardOfOwner(owner));
 
-            var skin = cardManager.getCardSkin(desc.define);
+            var skin = getCardSkin(desc.define);
             item.gameObject.name = $"{skin?.name ?? "Hand"}<{desc.id}>";
             cardHandDic.Add(desc.id, item);
             return item;
@@ -541,7 +535,7 @@ namespace Game.BattleTable
             {
                 servant = field.insertServant(position);
             }
-            var skin = cardManager.getCardSkin(desc.define);
+            var skin = getCardSkin(desc.define);
             servant.gameObject.name = $"{skin?.name ?? "Card"}<{desc.id}>";
             UberDebug.LogChannel(servant, "UI", $"为{desc.id}创建{servant}");
             setServant(servant, desc);
@@ -580,9 +574,7 @@ namespace Game.BattleTable
             servant.setShackle(desc.isFrozen);
             servant.setSealed(desc.isSilenced);
 
-            var cards = cardManager;
-            var poolRef = cards.getCardPoolReferenceOfCard(desc.define);
-            servant.setImageSprite(await cards.loadCardImage(poolRef, desc.define.id));
+            servant.setImageSprite(await loadCardImage(desc));
             setCardControlDirty(desc.id);
         }
         /// <summary>
@@ -603,9 +595,7 @@ namespace Game.BattleTable
             servant.setShackle(cardDefine.hasKeyword(KEYWORD.FROZEN) || cardDefine.hasKeyword(KEYWORD.PERMANENT_FROZEN));
             servant.setSealed(false);
 
-            var cards = cardManager;
-            var poolRef = cards.getCardPoolReferenceOfCard(cardDefine);
-            servant.setImageSprite(await cards.loadCardImage(poolRef, cardDefine.id));
+            servant.setImageSprite(await loadCardImage(cardDefine));
         }
         /// <summary>
         /// 从卡获取对应的随从UI
@@ -1180,14 +1170,12 @@ namespace Game.BattleTable
         /// <param name="isFaceup"></param>
         public async void setCardDesc(UICard card, CardDescriptor desc, bool isFaceup = true)
         {
-            var cards = cardManager;
-            await card.setCard(desc, cards, this, isFaceup);
+            await card.setCard(desc, this, isFaceup);
             setCardDescriptor(desc);
         }
         public async void setCardDefine(UICard card, CardDefine define, bool isFaceUp = true)
         {
-            var cards = cardManager;
-            await card.setCardDefine(define, cards, this, isFaceUp);
+            await card.setCardDefine(define, this, isFaceUp);
         }
         /// <summary>
         /// 显示文本提示
@@ -1734,7 +1722,7 @@ namespace Game.BattleTable
 
         private void onSkillPointerEnterCallback(Skill skill, PointerEventData pointer)
         {
-            string desc = getSkin(skill == table.SelfSkill ? player.getSkill() : game.getOpponent(player).getSkill()).desc;
+            string desc = getCardSkin(skill == table.SelfSkill ? player.getSkill() : game.getOpponent(player).getSkill()).desc;
             var tablePos = ScreenToTablePosition(pointer.position);
             tablePos.y = 0;
             showTipBox(desc, tablePos, skill.gameObject);
@@ -2168,8 +2156,6 @@ namespace Game.BattleTable
         private async Task<CardBuffListItemViewData[]> getCardBuffViewDatas(IEnumerable<Buff> buffs)
         {
             // 增益列表。
-            var cards = cardManager;
-
             // 合并同样的增益。
             var buffCountList = new List<(DefineReference defRef, int count)>();
             DefineReference curBuffRef = null;
@@ -2200,14 +2186,14 @@ namespace Game.BattleTable
                 string desc;
                 if (buffDefine == null)
                 {
-                    sprite = cards.getDefaultSprite();
+                    sprite = cardManager.getDefaultSprite();
                     name = lang._(CARD_BUFF_UNKNOWN_NAME);
                     desc = lang._(CARD_BUFF_UNKNOWN_DESC);
                 }
                 else
                 {
-                    var skin = cards.getBuffSkin(buffDefine);
-                    sprite = await cards.loadBuffImage(buffDefine);
+                    var skin = getBuffSkin(buffDefine);
+                    sprite = await loadBuffImage(buffDefine);
                     name = skin.name ?? string.Empty;
                     desc = skin.desc ?? string.Empty;
                 }

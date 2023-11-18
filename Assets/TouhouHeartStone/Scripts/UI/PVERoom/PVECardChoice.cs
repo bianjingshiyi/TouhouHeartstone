@@ -14,7 +14,7 @@ namespace UI
         }
         public async Task update(CardDefine card, CardManager cardManager)
         {
-            await _card.setCardDefine(card, cardManager);
+            await _card.setLocalCardDefine(card, cardManager);
         }
         private void Awake()
         {

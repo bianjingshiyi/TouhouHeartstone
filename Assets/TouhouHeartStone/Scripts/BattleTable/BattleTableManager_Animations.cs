@@ -123,7 +123,7 @@ namespace Game.BattleTable
         {
             var card = game.getCard(cardId);
             var cardDefine = card.define;
-            var name = cardManager.getCardSkin(cardDefine)?.name ?? card.ToString();
+            var name = getCardSkin(cardDefine)?.name ?? card.ToString();
             Transform transform;
             if (deadCardAnchors.ContainsKey(cardId))
             {
@@ -208,7 +208,7 @@ namespace Game.BattleTable
             if (buff is GeneratedBuff genBuff)
             {
                 var define = game.getBuffDefine(genBuff.defineRef);
-                var skin = cardManager.getBuffSkin(define);
+                var skin = getBuffSkin(define);
                 if (effectArg.effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
 
                 var node = genEffect.graph.findNodeById(arg.flowNodeId);
@@ -218,7 +218,7 @@ namespace Game.BattleTable
             else if (card != null)
             {
                 var define = card.define;
-                var skin = cardManager.getCardSkin(define);
+                var skin = getCardSkin(define);
                 if (effectArg.effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
 
                 var node = genEffect.graph.findNodeById(arg.flowNodeId);
@@ -233,7 +233,7 @@ namespace Game.BattleTable
             if (buff is GeneratedBuff genBuff)
             {
                 var define = game.getBuffDefine(genBuff.defineRef);
-                var skin = cardManager.getBuffSkin(define);
+                var skin = getBuffSkin(define);
                 if (effectArg.effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
 
                 var node = entryNodeEffect.entryNode;
@@ -242,7 +242,7 @@ namespace Game.BattleTable
             else if (card != null)
             {
                 var define = card.define;
-                var skin = cardManager.getCardSkin(define);
+                var skin = getCardSkin(define);
                 if (effectArg.effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
 
                 var node = entryNodeEffect.entryNode;
@@ -292,12 +292,12 @@ namespace Game.BattleTable
                 return false;
             var eventRef = animRef.eventReference;
             if (eventRef == null) // 不存在事件名，可能是老版本的引用，获取之前设置的默认的事件
-                eventRef = _main.eventManager.getDefaultNodeEvent(node);
+                eventRef = eventManager.getDefaultNodeEvent(node);
 
             if (eventRef == null) // 还是不存在，获取该节点可能事件的第一个。
             {
                 var cardPoolSet = getCardPoolSet();
-                var eventRefs = _main.anims.getNodeVisualEffectEventRefs(node, cardPoolSet);
+                var eventRefs = animManager.getNodeVisualEffectEventRefs(node, cardPoolSet);
                 // 该节点的所有事件可能也会因为是入口节点导致是null，那就不改
                 if (eventRefs != null)
                     eventRef = eventRefs.FirstOrDefault();

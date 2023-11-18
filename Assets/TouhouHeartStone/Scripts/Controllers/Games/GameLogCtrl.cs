@@ -277,8 +277,7 @@ namespace Controllers
                     {
                         if (int.TryParse(m.Groups["id"].Value, out var id) && long.TryParse(m.Groups["poolId"].Value, out var poolId))
                         {
-                            var cardPoolRef = cards.getCardPoolReferenceInSet(poolId, _game?.getOption()?.cardPools);
-                            return cards.getDefaultSkin(cardPoolRef, id).name;
+                            return tableManager.getCardSkin(poolId, id).name;
                         }
                         return "未知卡牌";
                     });
@@ -344,15 +343,15 @@ namespace Controllers
                     if (cardSnapshot != null)
                     {
                         var descriptor = new CardDescriptor(_game, cardSnapshot);
-                        await ui.setCard(descriptor, _main.card);
+                        await ui.setCard(descriptor, tableManager);
                         return;
                     }
                 }
-                await ui.setCardDefine(cardObj.define, _main.card);
+                await ui.setCardDefine(cardObj.define, tableManager);
             }
             else if (card.define is CardDefine cardDefine)
             {
-                await ui.setCardDefine(cardDefine, _main.card);
+                await ui.setCardDefine(cardDefine, tableManager);
             }
         }
 
@@ -362,9 +361,8 @@ namespace Controllers
         }
         private Task<Sprite> getCardDefineSprite(CardDefine cardDefine)
         {
-            return cards.loadCardImage(cardDefine);
+            return tableManager.loadCardImage(cardDefine);
         }
-        public CardManager cards => _main.card;
         public LangManager lang => _main.lang;
         public BattleTableManager tableManager => _battleTableManager;
 

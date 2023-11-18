@@ -469,10 +469,6 @@ namespace Game
         {
             var poolRef = getLocalCardPoolReference(cardPoolId);
             return tryGetCardPool(poolRef, out cardPool);
-        public Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPoolAsync(ICardPoolReference poolRef)
-        {
-            return loadCachedCardPoolAsync(poolRef.CardPoolID, poolRef.CardPoolVersion);
-        }
         }
         /// <summary>
         /// 根据卡池引用获取卡池路径（结果为第一个符合ID的卡池）。

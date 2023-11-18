@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Game.BattleTable;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -52,13 +55,21 @@ namespace Game
             ui.setLife(card.getLife().ToString());
             ui.setTag(card.getTags().FirstOrDefault());
         }
-        public static async Task setCardDefine(this UICard ui, CardDefine card, CardManager cardManager, bool isFaceUp = true)
+        public static async Task setLocalCardDefine(this UICard ui, CardDefine card, CardManager cardManager, bool isFaceUp = true)
         {
             var skin = cardManager.getCardSkin(card);
             ui.setCardDefine(card, skin, isFaceUp);
             // 先设置卡牌定义再加载卡图，不然卡框会和卡图一起被突然改变，看起来会有些别扭
             ui.setImage(null);
             ui.setImage(await cardManager.loadCardImage(card));
+        }
+        public static async Task setCardDefine(this UICard ui, CardDefine card, BattleTableManager table, bool isFaceUp = true)
+        {
+            var skin = table.getCardSkin(card);
+            ui.setCardDefine(card, skin, isFaceUp);
+            // 先设置卡牌定义再加载卡图，不然卡框会和卡图一起被突然改变，看起来会有些别扭
+            ui.setImage(null);
+            ui.setImage(await table.loadCardImage(card));
         }
         public static void setCard(this UICard ui, CardEngine game, Card card, CardSkinData skin, bool isFaceUp = true)
         {
@@ -173,14 +184,14 @@ namespace Game
 
             setTag(ui, card.getTags().FirstOrDefault());
         }
-        public static async Task setCard(this UICard ui, CardDescriptor desc, CardManager cardManager, bool isFaceUp = true)
+        public static async Task setCard(this UICard ui, CardDescriptor desc, BattleTableManager table, bool isFaceUp = true)
         {
             var define = desc.define;
-            var skin = cardManager.getCardSkin(define);
+            var skin = table.getCardSkin(define);
             ui.setCard(desc, skin, isFaceUp);
 
             ui.setImage(null);
-            ui.setImage(await cardManager.loadCardImage(define));
+            ui.setImage(await table.loadCardImage(define));
         }
         public static void setAttack(this UICard ui, string attack)
         {

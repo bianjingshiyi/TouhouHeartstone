@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using BJSYGameCore;
 using Game.BattleTable.UI;
 using TouhouCardEngine;
@@ -112,17 +113,22 @@ namespace Game.BattleTable
         {
             return game.getOption().cardPools;
         }
-        public CardSkinData getSkin(ICardData card)
+        public ICardPoolReference getCardPoolReference(long cardPoolId)
         {
-            return getSkin(card.define);
+            var poolRefs = getCardPoolSet();
+            return cardManager.getCardPoolReferenceInSet(cardPoolId, poolRefs);
         }
-        public CardSkinData getSkin(CardDescriptor desc)
+        public CardSkinData getCardSkin(ICardData card)
         {
-            return getSkin(desc.define);
+            return getCardSkin(card.define);
         }
-        public CardSkinData getSkin(CardDefine define)
+        public CardSkinData getCardSkin(CardDescriptor desc)
         {
-            CardSkinData skin = cardManager.getCardSkin(define);
+            return getCardSkin(desc.define);
+        }
+        public CardSkinData getCardSkin(CardDefine define)
+        {
+            CardSkinData skin = getCardSkin(define.cardPoolId, define.id);
             if (skin != null)
                 return skin;
             else
@@ -131,11 +137,35 @@ namespace Game.BattleTable
                 return new CardSkinData()
                 {
                     id = define.id,
-                    desc = $"{define.ToString()}（这张卡随时可能爆炸！）",
+                    desc = $"{define}（这张卡随时可能爆炸！）",
                     image = cardManager.getDefaultSprite(),
                     name = define.GetType().Name
                 };
             }
+        }
+        public CardSkinData getCardSkin(long cardPoolId, int id)
+        {
+            var poolRef = getCardPoolReference(cardPoolId);
+            return cardManager.getCardSkin(poolRef, id);
+        }
+        public BuffSkin getBuffSkin(BuffDefine define)
+        {
+            var poolRef = getCardPoolReference(define.cardPoolId);
+            return cardManager.getBuffSkin(poolRef, define.id);
+        }
+        public Task<Sprite> loadCardImage(CardDescriptor desc)
+        {
+            return loadCardImage(desc.define);
+        }
+        public Task<Sprite> loadCardImage(CardDefine define)
+        {
+            var poolRef = getCardPoolReference(define.cardPoolId);
+            return cardManager.loadCardImage(poolRef, define.id);
+        }
+        public Task<Sprite> loadBuffImage(BuffDefine define)
+        {
+            var poolRef = getCardPoolReference(define.cardPoolId);
+            return cardManager.loadBuffImage(poolRef, define.id);
         }
         #endregion
         #region 私有方法
@@ -531,7 +561,9 @@ namespace Game.BattleTable
         public CardManager cardManager => _main.card;
         public LangManager lang => _main.lang;
         public GameManager gameManager => _main.game;
-        public SEManager sounds => _main.getManager<SEManager>();
+        public EventManager eventManager => _main.eventManager;
+        public AnimationManager animManager => _main.anims;
+        public SEManager sounds => _main.seManager;
         public THHResourceManager resources => _main.getManager<THHResourceManager>();
         private ActionEventCache eventCache = new ActionEventCache();
         private List<Card> _mulliganedCards = new List<Card>();

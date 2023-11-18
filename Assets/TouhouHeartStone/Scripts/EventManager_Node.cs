@@ -34,7 +34,7 @@ namespace Game
         {
             var eventRefs = getBuiltinActionBindedEvents(defineId);
             if (eventRefs == null)
-                return Array.Empty<EventReference>();
+                return null;
             List<EventReference> names = new List<EventReference>();
             foreach (var eventRef in eventRefs)
             {

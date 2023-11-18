@@ -91,31 +91,31 @@ namespace Game.BattleTable
             ui.setTranslatedTag(table.cardManager, desc.getTags().FirstOrDefault());
         }
 
-        public static async Task setCardDefine(this UICard ui, CardDefine card, CardManager cardManager, BattleTableManager table, bool isFaceUp = true)
+        public static async Task setCardDefine(this UICard ui, CardDefine card, BattleTableManager table, bool isFaceUp = true)
         {
-            var skin = cardManager.getCardSkin(card);
+            var skin = table.getCardSkin(card);
             ui.setCardDefine(card, skin, table, isFaceUp);
 
             ui.setImageSprite(null);
-            ui.setImageSprite(await cardManager.loadCardImage(card));
+            ui.setImageSprite(await table.loadCardImage(card));
         }
-        public static async Task setCard(this UICard ui, CardEngine game, Card card, CardManager cardManager, BattleTableManager table, bool isFaceUp = true)
+        public static async Task setCard(this UICard ui, CardEngine game, Card card, BattleTableManager table, bool isFaceUp = true)
         {
             var define = card.define;
-            var skin = cardManager.getCardSkin(define);
+            var skin = table.getCardSkin(define);
             ui.setCard(game, card, skin, table, isFaceUp);
 
             ui.setImageSprite(null);
-            ui.setImageSprite(await cardManager.loadCardImage(define));
+            ui.setImageSprite(await table.loadCardImage(define));
         }
-        public static async Task setCard(this UICard ui, CardDescriptor desc, CardManager cardManager, BattleTableManager table, bool isFaceUp = true)
+        public static async Task setCard(this UICard ui, CardDescriptor desc, BattleTableManager table, bool isFaceUp = true)
         {
             var define = desc.define;
-            var skin = cardManager.getCardSkin(define);
+            var skin = table.getCardSkin(define);
             ui.setCard(desc, skin, table, isFaceUp);
 
             ui.setImageSprite(null);
-            ui.setImageSprite(await cardManager.loadCardImage(define));
+            ui.setImageSprite(await table.loadCardImage(define));
         }
         public static void setTranslatedTag(this UICard ui, CardManager cardManager, string tag)
         {

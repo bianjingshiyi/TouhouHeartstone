@@ -175,7 +175,7 @@ namespace Controllers
                 item.hideCount();
             }
             CardDefine card = _filteredCardDefineList[index];
-            await item.card.setCardDefine(card, game.card);
+            await item.card.setLocalCardDefine(card, game.card);
             onUpdateCardListItem?.Invoke(index, item);
         }
         private void onClickCardListItem(EditorCardListItem item)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using BJSYGameCore;
 using Controllers;
@@ -11,6 +12,7 @@ using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using UI;
 using UnityEngine;
+using UnityEngine.XR;
 using ResourceType = TouhouCardEngine.ResourceType;
 
 namespace Game
@@ -166,30 +168,6 @@ namespace Game
         }
 
         #region 加载
-        public async Task<Sprite> loadExternalImage(string path, bool fallbackDefault = true)
-        {
-            // 路径为空
-            if (string.IsNullOrEmpty(path))
-                return null;
-
-            Sprite sprite = getSpriteFromCache(path);
-            if (sprite != null)
-                return sprite;
-
-            if (path.isResourcesPath(out var resourcesPath))
-                sprite = loadResourcesSprite(resourcesPath);
-            else if (path.isStreamingAssetsPath(out var streamingPath))
-                sprite = await loadStreamingAssetSprite(streamingPath);
-            else
-                sprite = await loadExternalSprite(path);
-
-            if (sprite == null && fallbackDefault)
-                return getDefaultSprite();
-
-            //添加到缓存
-            addSpriteToCache(path, sprite);
-            return sprite;
-        }
         public Task<Sprite> loadCardImage(CardDefine define, bool fallbackDefault = true)
         {
             var cardPoolRef = getCardPoolReferenceOfCard(define);
@@ -262,12 +240,24 @@ namespace Game
             if (string.IsNullOrEmpty(imagePath))
                 return null;
 
+            Sprite sprite = getSpriteFromCache(imagePath);
+            if (sprite != null)
+                return sprite;
+
             // 缓存路径
             if (!isLocalCardPool(cardPoolRef))
             {
                 var picId = Path.GetFileNameWithoutExtension(imagePath);
                 if (game.cache.FileExists(game.fileManager, ResourceType.Picture, picId))
-                    return await loadCacheSprite(picId) ?? defaultImage;
+                {
+                    //添加到缓存
+                    sprite = await loadCacheSprite(picId);
+                    if (sprite == null)
+                        return defaultImage;
+
+                    addSpriteToCache(imagePath, sprite);
+                    return sprite;
+                }
             }
 
             //绝对路径
@@ -275,7 +265,13 @@ namespace Game
             if (fullPath == null)
                 return defaultImage;
 
-            return await loadExternalImage(fullPath, fallbackDefault);
+            sprite = await loadFullPathImage(fullPath);
+            if (sprite == null)
+                return defaultImage;
+
+            //添加到缓存
+            addSpriteToCache(imagePath, sprite);
+            return sprite;
         }
         #endregion
 
@@ -669,6 +665,22 @@ namespace Game
             if (texture == null)
                 return null;
             return Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
+        }
+        private async Task<Sprite> loadFullPathImage(string path)
+        {
+            // 路径为空
+            if (string.IsNullOrEmpty(path))
+                return null;
+
+            Sprite sprite;
+            if (path.isResourcesPath(out var resourcesPath))
+                sprite = loadResourcesSprite(resourcesPath);
+            else if (path.isStreamingAssetsPath(out var streamingPath))
+                sprite = await loadStreamingAssetSprite(streamingPath);
+            else
+                sprite = await loadExternalSprite(path);
+
+            return sprite;
         }
         private string getFullImagePath(ICardPoolReference cardPoolRef, string relativePath)
         {
