@@ -432,10 +432,8 @@ namespace Controllers
             {
                 CardPoolInfo cardPool = pair.Value;
                 var poolId = cardPool.cardPoolId;
-#if !UNITY_EDITOR
                 if (game.card.isCardPoolHidden(poolId))
                     continue;
-#endif
                 int index = _cardPoolIdList.FindIndex(id => id == poolId);
                 if (index >= 0)
                 {

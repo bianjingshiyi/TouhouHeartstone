@@ -288,7 +288,7 @@ namespace Controllers
             {
                 var result = await game.card.loadCardPoolInfosAsync();
                 cardPoolIdList.Add(0); //内置卡池
-                cardPoolIdList.AddRange(result.Values.Select(a => a.cardPoolId));
+                cardPoolIdList.AddRange(result.Values.Where(p => !game.card.isCardPoolHidden(p.cardPoolId)).Select(a => a.cardPoolId));
             }
             cardPoolIdList.Sort();
             _cardPoolIdList = cardPoolIdList.ToArray();

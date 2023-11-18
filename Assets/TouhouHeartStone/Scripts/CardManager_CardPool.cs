@@ -1099,7 +1099,11 @@ namespace Game
         }
         public bool isCardPoolHidden(long cardPoolId)
         {
+#if UNITY_EDITOR
+            return false;
+#else
             return _hiddenCardPoolsId.Contains(cardPoolId);
+#endif
         }
 
         /// <summary>
