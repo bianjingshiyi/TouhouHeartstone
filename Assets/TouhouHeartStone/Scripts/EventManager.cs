@@ -4,6 +4,7 @@ using System.Linq;
 using BJSYGameCore;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using UnityEngine;
 
 namespace Game
@@ -56,7 +57,7 @@ namespace Game
         {
             string eventName = actionDefine.getEventName();
             List<EventReference> childrenList = new List<EventReference>();
-            getGeneratedActionChildrenEventsNonAlloc(actionDefine, childrenList);
+            generateActionChildrenEventsNonAlloc(actionDefine, childrenList);
             var define = new EventDefine()
             {
                 cardPoolId = actionDefine.cardPoolId,
@@ -72,18 +73,19 @@ namespace Game
         {
             return _hiddenEvents.Contains(define.eventName);
         }
-        public EventReference[] getEventReferenceChildren(EventReference eventRef)
+        public EventReference[] getEventReferenceChildren(EventReference eventRef, IEnumerable<ICardPoolReference> poolSet)
         {
             var list = new List<EventReference>()
             {
                 eventRef
             };
-            getEventReferenceChildrenNonAlloc(eventRef, list);
+            getEventReferenceChildrenNonAlloc(eventRef, poolSet, list);
             return list.ToArray();
         }
-        public void getEventReferenceChildrenNonAlloc(EventReference eventRef, List<EventReference> list)
+        public void getEventReferenceChildrenNonAlloc(EventReference eventRef, IEnumerable<ICardPoolReference> poolSet, List<EventReference> list)
         {
-            var eventDefine = game.card.getEventDefine(eventRef);
+            var poolRef = game.card.getCardPoolReferenceInSet(eventRef.cardPoolId, poolSet);
+            var eventDefine = game.card.getEventDefine(poolRef, eventRef.eventName);
             if (eventDefine?.childrenEvents == null)
                 return;
             foreach (var childRef in eventDefine.childrenEvents)
@@ -91,7 +93,7 @@ namespace Game
                 if (list.Contains(childRef))
                     continue;
                 list.Add(childRef);
-                getEventReferenceChildrenNonAlloc(childRef, list);
+                getEventReferenceChildrenNonAlloc(childRef, poolSet, list);
             }
         }
         #endregion

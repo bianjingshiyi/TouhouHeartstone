@@ -132,7 +132,7 @@ namespace Game
             var cardPoolRef = cardPoolInfo.ToReference();
             // 获取卡池中对其他卡池的卡牌的引用。
             // TODO: 在被引用的卡池有新版本后，卡池保存时会提示玩家需要将卡池引用修改到新版本。
-            cardPoolInfo.dependencyRefs = evaluateCardPoolDependencies(cardPoolRef);
+            cardPoolInfo.dependencyRefs = evaluateLocalCardPoolDependencies(cardPoolInfo.cardPoolId);
             // 如果该卡池正在被创建，将正在创建的卡池设为空。
             if (_creatingCardPoolInfo == cardPoolInfo)
                 finishCreatingCardPool();
@@ -573,9 +573,8 @@ namespace Game
         /// </summary>
         /// <param name="cardPoolId">卡池ID。</param>
         /// <param name="set">卡池引用集合。</param>
-        /// <param name="fallbackLocal">如果没有找到卡池引用，是否获取本地的卡池引用。</param>
         /// <returns>获取到的卡池引用。</returns>
-        public ICardPoolReference getCardPoolReferenceInSet(long cardPoolId, IEnumerable<ICardPoolReference> set, bool fallbackLocal = true)
+        public ICardPoolReference getCardPoolReferenceInSet(long cardPoolId, IEnumerable<ICardPoolReference> set)
         {
             // 集合不存在，返回null。
             if (set == null)
@@ -589,24 +588,8 @@ namespace Game
             if (pool != null)
                 return pool.ToReference();
 
-            // 没有找到，获取本地卡池。
-            if (fallbackLocal)
-                return getLocalCardPoolReference(cardPoolId);
+            // 没有找到。
             return null;
-        }
-        /// <summary>
-        /// 根据卡池ID获取卡池引用（优先获取不是缓存中的，并且可以在编辑器内看到的卡池）。
-        /// </summary>
-        /// <param name="cardPoolId">卡池ID。</param>
-        /// <returns></returns>
-        public ICardPoolReference getCardPoolReference(long cardPoolId)
-        {
-            var localPoolRef = getLocalCardPoolReference(cardPoolId);
-            // 没有找到，找缓存中的卡池。
-            if (localPoolRef == null)
-                return _cardPoolInfoDict.Values.FirstOrDefault(p => p.cardPoolId == cardPoolId)?.ToReference();
-            // 返回引用。
-            return localPoolRef;
         }
         /// <summary>
         /// 根据卡池ID获取本地的卡池引用（不会获取缓存中的的卡池）。
@@ -627,6 +610,21 @@ namespace Game
             var info = _cardPoolInfoDict.Values.FirstOrDefault(p => p.cardPoolId == cardPoolId && isLocalCardPool(p));
             // 返回引用。
             return info?.ToReference();
+        }
+        /// <summary>
+        /// 获取所有本地卡池。
+        /// </summary>
+        /// <returns></returns>
+        public ICardPoolReference[] getLocalCardPoolReferences()
+        {
+            List<ICardPoolReference> set = new List<ICardPoolReference>
+            {
+                builtinCardPoolReference
+            };
+            if (_creatingCardPoolInfo != null)
+                set.Add(new CardPoolReference(_creatingCardPoolInfo.cardPoolId, 0));
+            set.AddRange(_cardPoolInfoDict.Values.Where(p => isLocalCardPool(p)).Select(p => p.ToReference()));
+            return set.ToArray();
         }
         #endregion
 
@@ -807,14 +805,14 @@ namespace Game
         #endregion
 
         /// <summary>
-        /// 重新获取一个卡池内对其他卡池的引用。
+        /// 重新获取一个本地卡池内对其他卡池的引用。
         /// </summary>
         /// <param name="cardPoolRef">要检查的卡池ID。</param>
         /// <returns>引用的其他卡池列表。</returns>
-        public CardPoolReference[] evaluateCardPoolDependencies(ICardPoolReference cardPoolRef)
+        public CardPoolReference[] evaluateLocalCardPoolDependencies(long cardPoolId)
         {
             HashSet<CardPoolReference> poolList = new HashSet<CardPoolReference>();
-            if (!tryGetCardPool(cardPoolRef, out var cardPool))
+            if (!tryGetLocalCardPool(cardPoolId, out var cardPool))
             {
                 return new CardPoolReference[0];
             }
@@ -849,9 +847,9 @@ namespace Game
 
             void addCardPoolOfDefRef(DefineReference defRef)
             {
-                if (defRef.cardPoolId != cardPoolRef.CardPoolID)
+                if (defRef.cardPoolId != cardPoolId)
                 {
-                    var poolRef = getCardPoolReference(defRef.cardPoolId);
+                    var poolRef = getLocalCardPoolReference(defRef.cardPoolId);
                     var info = getCardPoolInfo(poolRef);
                     if (info != null)
                         poolList.Add(info.ToReference());

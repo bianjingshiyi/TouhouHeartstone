@@ -1345,7 +1345,7 @@ namespace Controllers
                     var cardPoolRef = cardPoolPack.GetReference();
                     await game.card.getOrLoadCardPool(cardPoolRef, true);
                 }
-                var masterPoolRef = game.card.getCardPoolReferenceInSet(deck.masterCardRef.cardPoolId, _currentRoomData.getCardPools());
+                var masterPoolRef = game.card.getLocalCardPoolReference(deck.masterCardRef.cardPoolId);
                 viewData[i].image = await game.card.loadCardImage(masterPoolRef, deck.masterCardRef.defineId);
 
                 bool warning;

@@ -296,7 +296,8 @@ namespace Game.BattleTable
 
             if (eventRef == null) // 还是不存在，获取该节点可能事件的第一个。
             {
-                var eventRefs = _main.anims.getNodeVisualEffectEventRefs(node);
+                var cardPoolSet = getCardPoolSet();
+                var eventRefs = _main.anims.getNodeVisualEffectEventRefs(node, cardPoolSet);
                 // 该节点的所有事件可能也会因为是入口节点导致是null，那就不改
                 if (eventRefs != null)
                     eventRef = eventRefs.FirstOrDefault();

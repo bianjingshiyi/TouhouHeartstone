@@ -5,6 +5,7 @@ using BJSYGameCore;
 using Game.BattleTable.UI;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -107,6 +108,10 @@ namespace Game.BattleTable
         public Vector3 ScreenToTablePosition(Vector3 screenPos) => WorldToTablePosition(ScreenToWorldPosition(screenPos));
         #endregion
         #region 皮肤
+        public IEnumerable<ICardPoolReference> getCardPoolSet()
+        {
+            return game.getOption().cardPools;
+        }
         public CardSkinData getSkin(ICardData card)
         {
             return getSkin(card.define);

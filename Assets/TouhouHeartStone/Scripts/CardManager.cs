@@ -329,29 +329,6 @@ namespace Game
             }
             return null;
         }
-        /// <summary>
-        /// 根据卡池ID和卡牌ID获取卡片定义
-        /// </summary>
-        /// <param name="cardPoolRef">卡池引用。</param>
-        /// <param name="cardId">卡牌ID。</param>
-        /// <returns></returns>
-        public CardDefine getCardDefine(long cardPoolId, int cardId)
-        {
-            var poolRef = game.card.getCardPoolReference(cardPoolId);
-            return getCardDefine(poolRef, cardId);
-        }
-        /// <summary>
-        /// 根据卡牌引用获取卡片定义
-        /// </summary>
-        /// <param name="cardPoolRef">卡池引用。</param>
-        /// <param name="cardId">卡牌ID。</param>
-        /// <returns></returns>
-        public CardDefine getCardDefine(DefineReference defRef)
-        {
-            if (defRef == null)
-                return null;
-            return getCardDefine(defRef.cardPoolId, defRef.defineId);
-        }
         public CardDefine getLocalCardDefine(long cardPoolId, int id)
         {
             var poolRef = game.card.getLocalCardPoolReference(cardPoolId);

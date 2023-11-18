@@ -1877,7 +1877,7 @@ namespace Controllers
                 node.getInputPort<ValueInput>(EffectEditorLibrary.EVENT_RECORD_VARIABLE_NODE_EVENT_PARAM_KEY) :
                 node.getInputPort<ValueInput>(EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_PARAM_KEY);
             var eventRef = getConnectedEventReference(inputPort);
-            var eventDefine = game.card.getEventDefine(eventRef);
+            var eventDefine = game.card.getLocalEventDefine(eventRef);
 
             var varInfos = eventDefine?.afterVariableInfos;
 

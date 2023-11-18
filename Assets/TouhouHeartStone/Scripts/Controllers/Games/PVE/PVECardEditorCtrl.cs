@@ -447,7 +447,7 @@ namespace Controllers
         {
             if (gem == null)
                 return null;
-            var cardDefine = game.card.getCardDefine(gem.cardRef);
+            var cardDefine = game.card.getLocalCardDefine(gem.cardRef);
             var image = await game.card.loadCardImage(cardDefine);
             return new CardGemViewData()
             {

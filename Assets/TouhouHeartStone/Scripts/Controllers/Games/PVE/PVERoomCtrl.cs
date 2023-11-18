@@ -111,7 +111,7 @@ namespace Controllers
             {
                 cardDefine = generatedCard;
                 var defRef = generatedCard.getProp<DefineReference>(PVEManager.CARD_PROP_TEMPLATE_DEFINE);
-                srcCardDefine = game.card.getCardDefine(defRef);
+                srcCardDefine = game.card.getLocalCardDefine(defRef);
             }
             else
             {
@@ -417,7 +417,7 @@ namespace Controllers
             {
                 var poolRef = game.card.getLocalCardPoolReference(charRef.cardPoolId);
                 await game.card.getOrLoadCardPool(poolRef);
-                var cardDefine = game.card.getCardDefine(charRef);
+                var cardDefine = game.card.getCardDefine(poolRef, charRef.defineId);
                 var skin = game.card.getCardSkin(cardDefine);
                 return (skin.name, await game.card.loadCardImage(cardDefine));
             }

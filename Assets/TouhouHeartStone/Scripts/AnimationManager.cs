@@ -60,7 +60,7 @@ namespace Game
         }
         public bool canActionAddEffect(ActionReference actionRef)
         {
-            return main.card.getAnyActionBindedEventsRecursive(actionRef) != null;
+            return main.card.getLocalActionBindedEventsRecursive(actionRef) != null;
         }
         #endregion
 

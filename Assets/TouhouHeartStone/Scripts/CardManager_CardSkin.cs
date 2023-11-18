@@ -171,6 +171,11 @@ namespace Game
         }
         public bool tryGetDefaultCardSkin(ICardPoolReference cardPoolRef, int cardId, out CardSkinData skin)
         {
+            if (cardPoolRef == null)
+            {
+                skin = null;
+                return false;
+            }
             if (isBuiltinCardPool(cardPoolRef.CardPoolID) && builtinSkinDic.ContainsKey(cardId))
             {
                 skin = builtinSkinDic[cardId];

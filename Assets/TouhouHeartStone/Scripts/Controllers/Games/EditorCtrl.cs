@@ -144,7 +144,7 @@ namespace Controllers
             }
             else 
             {
-                var cardDefine = game.card.getCardDefine(defRef);
+                var cardDefine = game.card.getLocalCardDefine(defRef);
                 if (cardDefine == null)
                 {
                     // 如果卡牌定义不存在，改为新建一个卡牌并打开。

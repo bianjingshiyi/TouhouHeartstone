@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 
 namespace Game
@@ -31,14 +32,16 @@ namespace Game
         /// <returns></returns>
         public EventReference[] getBuiltinActionBindedEventsRecursive(int defineId)
         {
-            List<EventReference> names = new List<EventReference>();
             var eventRefs = getBuiltinActionBindedEvents(defineId);
+            if (eventRefs == null)
+                return Array.Empty<EventReference>();
+            List<EventReference> names = new List<EventReference>();
             foreach (var eventRef in eventRefs)
             {
                 if (names.Contains(eventRef))
                     continue;
                 names.Add(eventRef);
-                getEventReferenceChildrenNonAlloc(eventRef, names);
+                getEventReferenceChildrenNonAlloc(eventRef, new ICardPoolReference[] { CardManager.builtinCardPoolReference }, names);
             }
             return names.ToArray();
         }
@@ -60,11 +63,11 @@ namespace Game
 
         #region 私有方法
         /// <summary>
-        /// 根据自定义动作的节点图内的节点，获取该自定义动作所具有的所有可能的事件引用。
+        /// 根据自定义动作的节点图内的节点，生成该自定义动作所具有的所有可能的事件引用。
         /// </summary>
         /// <param name="generatedActionDefine">自定义动作。</param>
         /// <param name="list">传入列表。</param>
-        private void getGeneratedActionChildrenEventsNonAlloc(GeneratedActionDefine generatedActionDefine, List<EventReference> list)
+        private void generateActionChildrenEventsNonAlloc(GeneratedActionDefine generatedActionDefine, List<EventReference> list)
         {
             foreach (var node in generatedActionDefine.graph.nodes)
             {
@@ -77,11 +80,11 @@ namespace Game
                         var eventRef = CardManager.getEventReferenceOfAction(gen);
                         if (list.Contains(eventRef))
                             continue;
-                        getGeneratedActionChildrenEventsNonAlloc(gen, list);
+                        generateActionChildrenEventsNonAlloc(gen, list);
                     }
                     else if (game.card.isBuiltinCardPool(actionRef.cardPoolId)) // 内置节点事件。
                     {
-                        game.card.getAnyActionBindedEventsRecursive(actionRef);
+                        game.card.getLocalActionBindedEventsRecursive(actionRef);
                         var names = getBuiltinActionBindedEventsRecursive(actionRef.defineId);
                         foreach (var name in names)
                         {

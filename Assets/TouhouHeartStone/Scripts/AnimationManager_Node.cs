@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using UI;
 
 namespace Game
@@ -28,7 +29,7 @@ namespace Game
             var key = getOrInitNodeAnimationKey(node, skin);
             SkinAnimationRef animRef = skin.getAnimRef(key);
 
-            var eventRefs = getNodeVisualEffectEventRefs(node);
+            var eventRefs = getLocalNodeVisualEffectEventRefs(node);
             var eventIndex = 0;
             int animIndex = -1;
             int sourcePosition = 0;
@@ -62,23 +63,27 @@ namespace Game
             return eventViewData;
         }
 
-        public EventReference[] getNodeVisualEffectEventRefs(Node node)
+        public EventReference[] getNodeVisualEffectEventRefs(Node node, IEnumerable<ICardPoolReference> cardPoolset)
         {
             if (node is ActionNode action)
             {
                 var actionRef = action.defineRef;
-                return main.card.getAnyActionBindedEventsRecursive(actionRef);
+                return main.card.getActionBindedEventsRecursive(actionRef, cardPoolset);
             }
             return null;
         }
+        public EventReference[] getLocalNodeVisualEffectEventRefs(Node node)
+        {
+            return getNodeVisualEffectEventRefs(node, main.card.getLocalCardPoolReferences());
+        }
         public string[] getNodeVisualEffectEventEditorNames(Node node)
         {
-            var eventRefs = getNodeVisualEffectEventRefs(node);
+            var eventRefs = getLocalNodeVisualEffectEventRefs(node);
             if (eventRefs == null)
                 return null;
             return eventRefs.Select(r =>
             {
-                var def = main.card.getEventDefine(r);
+                var def = main.card.getLocalEventDefine(r);
                 return main.eventManager.translateEventDefineNameForEditor(def);
             }).ToArray();
         }
@@ -111,7 +116,7 @@ namespace Game
         {
             var animRef = getOrInitNodeAnimationRef(node, skin);
             var defines = getAllAnimationDefines();
-            var eventRefs = getNodeVisualEffectEventRefs(node);
+            var eventRefs = getLocalNodeVisualEffectEventRefs(node);
             var animIndex = info.animIndex;
             if (animIndex < 0)
             {
