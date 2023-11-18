@@ -1008,15 +1008,11 @@ namespace Game
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_GET_ALL_BUFFS_ON_CARD = "获取卡牌上的所有增益";
         [TranslateMsg("节点参数")]
-        private const string EDITOR_PARAM_NAME_ADD_BUFF_EVENT = "添加增益事件";
-        [TranslateMsg("节点参数")]
         private const string EDITOR_PARAM_NAME_REMOVE_BUFF_EVENT = "移除增益事件";
         [TranslateMsg("节点参数")]
         private const string EDITOR_PARAM_NAME_ENTER_FIELD_EVENT = "入场事件";
         [TranslateMsg("节点参数")]
         private const string EDITOR_PARAM_NAME_MASS_ADD_BUFF_EVENT = "群体添加增益事件";
-        [TranslateMsg("节点参数")]
-        private const string EDITOR_PARAM_NAME_MASS_REMOVE_BUFF_EVENT = "群体移除增益事件";
         [TranslateMsg("节点参数")]
         private const string EDITOR_PARAM_NAME_MASS_ENTER_FIELD_EVENT = "群体入场事件";
         [TranslateMsg("节点参数")]
@@ -1250,7 +1246,7 @@ namespace Game
         public static async Task<Card[]> moveToGrave(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
-            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] MassMoveCardEventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_MASS_MOVE_CARD_EVENT, isOut: true)] MassMoveCardEventArg outEvent)
         {
             if (cards == null)
                 return Array.Empty<Card>();
