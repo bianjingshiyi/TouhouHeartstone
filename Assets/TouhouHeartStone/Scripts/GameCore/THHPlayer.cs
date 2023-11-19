@@ -40,7 +40,7 @@ namespace TouhouHeartstone
         #endregion
 
         #region 设置玩家属性
-        public static void setIsPrepared(this Player player, bool value) => player.setProp(PLAYER.ISPREPARED, value);
+        public static void setIsPrepared(this Player player, CardEngine game, bool value) => player.setProp(game, PLAYER.ISPREPARED, value);
         public static bool getIsPrepared(this Player player) => player.getProp<bool>(PLAYER.ISPREPARED);
         public static int getGem(this Player player) => player.getProp<int>(PLAYER.GEM);
         public static int getMaxGem(this Player player) => player.getProp<int>(PLAYER.MAXGEM);
@@ -51,7 +51,7 @@ namespace TouhouHeartstone
                 arg.value = Mathf.Clamp(arg.value, 0, 10);
                 var argPlayer = arg.player;
                 var argValue = arg.value;
-                argPlayer.setProp(PLAYER.GEM, argValue);
+                argPlayer.setProp(game, PLAYER.GEM, argValue);
                 game.logger.logTrace($"{argPlayer}的灵力值变为{argValue}");
                 return Task.CompletedTask;
             });
@@ -60,16 +60,16 @@ namespace TouhouHeartstone
         {
             return game.triggers.doEvent(new HearthStoneRule.SetMaxGemEventArg() { player = player, value = value }, arg =>
             {
-                arg.player.setProp(PLAYER.MAXGEM, arg.value);
+                arg.player.setProp(game, PLAYER.MAXGEM, arg.value);
                 if (arg.player.getMaxGem() < 0)
-                    arg.player.setProp(PLAYER.MAXGEM, 0);
+                    arg.player.setProp(game, PLAYER.MAXGEM, 0);
                 if (arg.player.getMaxGem() > 10)
-                    arg.player.setProp(PLAYER.MAXGEM, 10);
+                    arg.player.setProp(game, PLAYER.MAXGEM, 10);
                 game.logger.logTrace($"{arg.player}的法力水晶上限变为{arg.player.getMaxGem()}");
                 return Task.CompletedTask;
             });
         }
-        public static void setFatigue(this Player player, int value) => player.setProp(PLAYER.FATIGUE, value);
+        public static void setFatigue(this Player player, CardEngine game, int value) => player.setProp(game, PLAYER.FATIGUE, value);
         public static int getFatigue(this Player player) => player.getProp<int>(PLAYER.FATIGUE);
         #endregion
 
@@ -86,7 +86,7 @@ namespace TouhouHeartstone
                 {
                     Player p = arg.player;
                     var damage = p.getFatigue() + 1;
-                    p.setFatigue(damage);
+                    p.setFatigue(game, damage);
                     game.logger.logTrace($"{p}已经没有卡牌了，当前疲劳值：{damage}");
                     arg.damage = damage;
                     await p.getMaster().damage(game, null, damage);

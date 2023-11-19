@@ -101,7 +101,7 @@ namespace TouhouHeartstone
                     var argCard = arg.card;
                     var argPosition = arg.position;
 
-                    var success = Pile.moveCard(game, argCard, argFrom, argTo, argPosition, arg);
+                    var success = Pile.moveCard(game, argCard, argFrom, argTo, argPosition);
                     arg.success = success;
                     if (success)
                     {
@@ -113,15 +113,6 @@ namespace TouhouHeartstone
                     }
                 }
                 await game.triggers.doEvent(eventArg, func);
-            }
-            else
-            {
-                var success = Pile.moveCard(card, from, to, position, eventArg);
-                eventArg.success = success;
-                if (success)
-                {
-                    await tryResetCardPropsAfterMove(game, eventArg.resetProps, card, from, to);
-                }
             }
             return eventArg;
         }

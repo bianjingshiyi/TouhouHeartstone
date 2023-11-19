@@ -376,20 +376,20 @@ namespace TouhouHeartstone
         #region 重写
         public override async Task onPlayerInit(CardEngine game, Player player)
         {
-            player.addPile(new Pile(game, PILE.MASTER, 1));
-            player.addPile(new Pile(game, PILE.SKILL, 1));
-            player.addPile(new Pile(game, PILE.DECK));
-            player.addPile(new Pile(game, PILE.HAND, maxCount: 10));
-            player.addPile(new Pile(game, PILE.INIT, maxCount: 4));
-            player.addPile(new Pile(game, PILE.FIELD, maxCount: 7));
-            player.addPile(new Pile(game, PILE.GRAVE));
-            player.addPile(new Pile(game, PILE.WARP));
-            player.addPile(new Pile(game, PILE.HEAD, maxCount: 5));
-            player.addPile(new Pile(game, PILE.ITEM, 1));
-            player.setIsPrepared(false);
+            player.addPile(game, new Pile(PILE.MASTER, 1));
+            player.addPile(game, new Pile(PILE.SKILL, 1));
+            player.addPile(game, new Pile(PILE.DECK));
+            player.addPile(game, new Pile(PILE.HAND, maxCount: 10));
+            player.addPile(game, new Pile(PILE.INIT, maxCount: 4));
+            player.addPile(game, new Pile(PILE.FIELD, maxCount: 7));
+            player.addPile(game, new Pile(PILE.GRAVE));
+            player.addPile(game, new Pile(PILE.WARP));
+            player.addPile(game, new Pile(PILE.HEAD, maxCount: 5));
+            player.addPile(game, new Pile(PILE.ITEM, 1));
+            player.setIsPrepared(game, false);
             await player.setGem(game, 0);
             await player.setMaxGem(game, 0);
-            player.setFatigue(0);
+            player.setFatigue(game, 0);
         }
         public override Task onGameInit(CardEngine game, GameOption options, IRoomPlayer[] players)
         {
@@ -580,7 +580,7 @@ namespace TouhouHeartstone
 
                 var curPlayer = getCurrentPlayer(game);
                 var playerTurnCount = curPlayer.getTurnCount();
-                curPlayer.setProp(PLAYER.TURNCOUNT, playerTurnCount + 1);
+                curPlayer.setProp(game, PLAYER.TURNCOUNT, playerTurnCount + 1);
 
                 await updateSecrets(game);
                 await turnStart(game, game.getCurrentPlayer());
@@ -890,7 +890,7 @@ namespace TouhouHeartstone
             if (modi == null)
             {
                 modi = new AttackModifier(0);
-                player.setProp(modifierPropName, modi);
+                player.setProp(game, modifierPropName, modi);
             }
             if (!master.getModifiers().Contains(modi))
             {

@@ -351,8 +351,8 @@ namespace Game
             {
                 return existedPile;
             }
-            var pile = new Pile(game, pileName, capacity);
-            player.addPile(pile);
+            var pile = new Pile(pileName, capacity);
+            player.addPile(game, pile);
             return pile;
         }
         /// <summary>
@@ -480,12 +480,12 @@ namespace Game
         /// <param name="propName"></param>
         /// <param name="value"></param>
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetPlayerProp, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_SET_PLAYER_PROP)]
-        public static void setPlayerProp(
+        public static void setPlayerProp(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
-            player?.setProp(propName, value);
+            player?.setProp(game, propName, value);
         }
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetPlayerOpponent, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_PLAYER_OPPONENT)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_OPPONENT_PLAYER)]
