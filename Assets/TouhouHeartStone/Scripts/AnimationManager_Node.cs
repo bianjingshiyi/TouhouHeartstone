@@ -44,7 +44,7 @@ namespace Game
             int targetPosition = 0;
             if (animRef != null)
             {
-                if (eventRefs != null)
+                if (eventRefs != null && animRef.eventReference != null)
                 {
                     eventIndex = Array.IndexOf(eventRefs, animRef.eventReference);
                     if (eventIndex < 0)
@@ -131,7 +131,7 @@ namespace Game
                 var define = defines[animIndex];
                 animRef.animRef = new DefineReference(define.cardPoolId, define.id);
             }
-            animRef.eventReference = eventRefs[info.eventIndex];
+            animRef.eventReference = eventRefs == null || info.eventIndex < 0 ? null : eventRefs[info.eventIndex];
             animRef.sourcePosition = info.sourcePosition;
             animRef.targetPosition = info.targetPosition;
         }
