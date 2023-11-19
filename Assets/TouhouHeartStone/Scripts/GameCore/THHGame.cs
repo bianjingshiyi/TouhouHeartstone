@@ -211,7 +211,7 @@ namespace TouhouHeartstone
             game.logger.logTrace($"{player}要从卡牌{string.Join("，", cards)}中选择一个");
             DefineReference[] cardArray = cards.Select(c => c.define.getDefineRef()).ToArray();
             var res = await game.answers.ask(player.id, new DiscoverRequest(cardArray, title), float.MaxValue);
-            Card selectedCard = cards.First(c => 
+            Card selectedCard = cards.First(c =>
             {
                 var defRef = (res as DiscoverResponse).cardDefRef;
                 return c.define.cardPoolId == defRef.cardPoolId && c.define.id == defRef.defineId;
@@ -651,7 +651,7 @@ namespace TouhouHeartstone
                 initRuleTriggers(game);
 
                 var orderLog = string.Join("、", sortPlayers.Select(p => p.ToString()));
-                var masterLog = string.Join("，", sortPlayers.Select(p => $"{p.getMaster()}({ p.getSkill()})"));
+                var masterLog = string.Join("，", sortPlayers.Select(p => $"{p.getMaster()}({p.getSkill()})"));
                 var cardsLog = string.Join("；", sortPlayers.Select(p => string.Join("、", p.getInit().Select(c => c.ToString()))));
                 game.logger.logTrace($"游戏初始化，玩家行动顺序：{orderLog}，玩家英雄：{masterLog}，初始卡牌：{cardsLog}");
             });
@@ -884,24 +884,21 @@ namespace TouhouHeartstone
         }
         private async Task updateMasterItemAttack(CardEngine game, Player player)
         {
-            const string modifierPropName = "MASTER_ITEM_ATK_MODI";
+            const string buffPlayerPropName = "MASTER_ITEM_ATK_MODI";
             var master = player.getMaster();
-            var modi = player.getProp<PropModifier>(modifierPropName);
-            if (modi == null)
+            var buff = player.getProp<MasterItemAttackBuff>(buffPlayerPropName);
+            if (buff == null)
             {
-                modi = new AttackModifier(0);
-                player.setProp(game, modifierPropName, modi);
-            }
-            if (!master.getModifiers().Contains(modi))
-            {
-                await master.addModifier(game, modi);
+                buff = new MasterItemAttackBuff();
+                await master.addBuff(game, buff);
+                player.setProp(game, buffPlayerPropName, buff);
             }
             var attack = 0;
             if (game.getCurrentPlayer() == player)
             {
                 attack = player.getItem()?.getAttack(game) ?? 0;
             }
-            await modi.setValue(game, master, attack);
+            await buff.setProp(game, MasterItemAttackBuff.buffPropName, attack);
         }
 
         public class InitEventArg : EventArg
@@ -1227,7 +1224,7 @@ namespace TouhouHeartstone
             }
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是选项。")]
             const string TEMPLATE = "{0} 选择 {1}";
-            [MukioI18n.TranslateMsg("{0}是玩家")] 
+            [MukioI18n.TranslateMsg("{0}是玩家")]
             const string TEMPLATE_NotShow = "{0} 进行了选择";
             public const string VAR_OPTIONS = "选项";
             public const string VAR_SEEN_CARD = "明牌";

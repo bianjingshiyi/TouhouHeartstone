@@ -10,12 +10,12 @@ namespace TouhouHeartstone
         public CustomPropertyModifier(string propName, int value)
         {
             propertyName = propName;
-            this.value = value;
+            defaultValue = value;
         }
         public CustomPropertyModifier(string propName, int value, bool isSet)
         {
             propertyName = propName;
-            this.value = value;
+            defaultValue = value;
             this.isSet = isSet;
         }
         public CustomPropertyModifier(string propName, string relatedPropName, bool isSet)
@@ -27,34 +27,30 @@ namespace TouhouHeartstone
         protected CustomPropertyModifier(CustomPropertyModifier origin)
         {
             propertyName = origin.getPropName();
-            value = origin.value;
+            defaultValue = origin.defaultValue;
             isSet = origin.isSet;
             relatedPropName = origin.relatedPropName;
         }
         #endregion
-        public override object calcGeneric(IGame game, Card card, object value)
+        public override object calcGeneric(IGame game, ICardData card, object prop, object value)
         {
             if (isSet)
-                value = this.value;
+                prop = value;
             else
             {
-                if (this.value is int thisIntValue)
+                if (value is int thisIntValue)
                 {
-                    if (value is int intValue)
+                    if (prop is int intValue)
                     {
-                        value = intValue + thisIntValue;
+                        prop = intValue + thisIntValue;
                     }
-                    else if (value == null)
+                    else if (prop == null)
                     {
-                        value = thisIntValue;
+                        prop = thisIntValue;
                     }
                 }
             }
-            return value;
-        }
-        public override PropModifier clone()
-        {
-            return new CustomPropertyModifier(this);
+            return prop;
         }
         public override string ToString()
         {
@@ -62,10 +58,14 @@ namespace TouhouHeartstone
             {
                 return $"{getPropName()}=<{relatedPropName}>";
             }
-            else if (isSet)
-                return $"{getPropName()}={value}";
             else
-                return $"{getPropName()}+{value}";
+            {
+                var value = defaultValue;
+                if (isSet)
+                    return $"{getPropName()}={value}";
+                else
+                    return $"{getPropName()}+{value}";
+            }
         }
         #endregion
         #region 属性字段

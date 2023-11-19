@@ -1337,30 +1337,6 @@ namespace Game
             outEvent = await card.setChargeLevel(game, level);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
-
-
-        [ObsoletedKeyMethod(ObsoletedActionDefineID.AddIntModifier, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_ADD_INT_MODIFIER)]
-        [return: ActionNodeParam(StringTable.EDITOR_NODE_PARAM_NAME_MODIFIER)]
-        [Obsolete]
-        public static IntPropModifier addIntModifier(IGame game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value,
-            [ActionNodeParam(EDITOR_PARAM_IS_SET)] bool isSet)
-        {
-            IntPropModifier modifier = new IntPropModifier(propName, value, isSet);
-            card.addModifier(game, modifier);
-            return modifier;
-        }
-        [ObsoletedKeyMethod(ObsoletedActionDefineID.RemoveModifier, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_REMOVE_MODIFIER)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_REMOVE_MODIFIER_EVENT)]
-        [Obsolete]
-        public static Task<IRemoveModiEventArg> removeModifier(IGame game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
-            [ActionNodeParam(StringTable.EDITOR_NODE_PARAM_NAME_MODIFIER)] PropModifier modifier)
-        {
-            return card.removeModifier(game, modifier);
-        }
     }
 }
 

@@ -4,7 +4,6 @@ namespace Game
 {
     public static class ObsoletedActionDefineID
     {
-        public const int AddIntModifier = -1;
         public const int DealSpecificDamageToSpecificNumberOfRandomTarget = -2;
         public const int DealSpecificSpellDamageToSpecificNumberOfRandomTarget = -3;
         public const int DealSpecificSpellDamageToTargets = -4;
@@ -18,7 +17,6 @@ namespace Game
         public const int IsCardDefineCollectible = -12;
         public const int IsPlayerPileChanged = -13;
         public const int IsSpellCard = -14;
-        public const int RemoveModifier = -15;
     }
     public static class BuiltinActionDefineID
     {

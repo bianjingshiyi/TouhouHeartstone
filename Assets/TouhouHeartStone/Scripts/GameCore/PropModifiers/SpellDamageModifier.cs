@@ -13,9 +13,5 @@ namespace TouhouHeartstone
         protected SpellDamageModifier(IntPropModifier origin) : base(origin)
         {
         }
-        public override PropModifier clone()
-        {
-            return new SpellDamageModifier(this);
-        }
     }
 }

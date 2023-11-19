@@ -367,15 +367,15 @@ namespace Controllers
             {
                 if (propModifier is IntPropModifier intPropModifier)
                 {
-                    intPropModifier.value = (int)value;
+                    intPropModifier.defaultValue = (int)value;
                 }
                 else if (propModifier is KeywordsModifier keywordsModifier)
                 {
-                    keywordsModifier.value = ((KeywordCollection)value).ToArray();
+                    keywordsModifier.defaultValue = ((KeywordCollection)value).ToArray();
                 }
                 else if (propModifier is CustomPropertyModifier customPropModifier)
                 {
-                    customPropModifier.value = value;
+                    customPropModifier.defaultValue = value;
                 }
             }
             updateModifiers();
@@ -710,9 +710,9 @@ namespace Controllers
             if (!string.IsNullOrWhiteSpace(propModifier.relatedPropName))
                 return propModifier.relatedPropName;
             else if (propModifier is KeywordsModifier keywordsModifier)
-                return new KeywordCollection(keywordsModifier.value);
+                return new KeywordCollection(keywordsModifier.defaultValue);
             else
-                return propModifier.getValue();
+                return propModifier.getDefaultValue();
         }
         private PropModifier createPropertyModifierByIndex(int index)
         {

@@ -120,11 +120,11 @@ namespace Game
         /// </summary>
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardSnapshotProp, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_PROPERTY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
-        public static object getCardSnapshotProp(
+        public static object getCardSnapshotProp(CardEngine game,
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName)
         {
-            return card?.getProp(propName);
+            return card?.getProp(game, propName);
         }
         /// <summary>
         /// 获取卡牌快照花费

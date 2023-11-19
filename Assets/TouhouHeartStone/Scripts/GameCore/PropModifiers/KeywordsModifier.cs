@@ -1,11 +1,8 @@
-﻿using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections;
-using System.Collections.Generic;
-using System;
-using ExcelLibrary.BinaryFileFormat;
+using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
@@ -15,17 +12,17 @@ namespace TouhouHeartstone
         {
             propertyName = DEFINE.KEYWORDS;
             this.modifyType = modifyType;
-            value = keywords;
+            defaultValue = keywords;
         }
         protected KeywordsModifier(KeywordsModifier origin)
         {
-            value = origin.value;
+            defaultValue = origin.defaultValue;
             modifyType = origin.modifyType;
             propertyName = origin.propertyName;
         }
-        public override async Task afterAdd(IGame game, Card card)
+        public override async Task afterAdd(IGame game, Card card, string[] value)
         {
-            await base.afterAdd(game, card);
+            await base.afterAdd(game, card, value);
             if (modifyType != ModifyType.remove)
             {
                 if (value.Contains(KEYWORD.SHIELD))
@@ -43,35 +40,30 @@ namespace TouhouHeartstone
             }
             await card.updateConsumableKeywords(game);
         }
-        public override async Task afterRemove(IGame game, Card card)
+        public override async Task afterRemove(IGame game, Card card, string[] value)
         {
-            await base.afterRemove(game, card);
+            await base.afterRemove(game, card, value);
             await card.updateConsumableKeywords(game);
         }
-        public override async Task<IPropChangeEventArg> setValue(IGame game, Card card, string[] value)
+        public override async Task updateModifierValue(IGame game, Card card, string[] beforeValue, string[] afterValue)
         {
-            var arg = await base.setValue(game, card, value);
             await card.updateConsumableKeywords(game);
-            return arg;
         }
-        public override string[] calcGeneric(IGame game, Card card, string[] value)
+        public override string[] calcGeneric(IGame game, ICardData card, string[] prop, string[] value)
         {
             switch (modifyType)
             {
                 case ModifyType.set:
-                    return this.value;
+                    return value;
                 case ModifyType.remove:
-                    return value != null ? value.Except(this.value).ToArray() : new string[0];
+                    return prop != null ? prop.Except(value).ToArray() : new string[0];
                 default:
-                    return value != null ? value.Union(this.value).ToArray() : this.value;
+                    return prop != null ? prop.Union(value).ToArray() : value;
             }
-        }
-        public override PropModifier clone()
-        {
-            return new KeywordsModifier(this);
         }
         public override string ToString()
         {
+            var value = defaultValue;
             switch (modifyType)
             {
                 case ModifyType.set:

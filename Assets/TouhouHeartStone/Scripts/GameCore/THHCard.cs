@@ -985,7 +985,7 @@ namespace TouhouHeartstone
         public static async Task resetCard(this Card card, CardEngine game)
         {
             var define = card.define;
-            await card.removeBuff(game, card.getBuffs());
+            await card.removeAllBuffs(game);
             await card.setSpellDamage(game, define.getSpellDamage());
             await card.setDamageReduce(game, define.getDamageReduce());
             await card.setKeywords(game, define.getKeywords());
@@ -1730,12 +1730,15 @@ namespace TouhouHeartstone
                 arg.buffs = buffList.ToArray();
             });
         }
-        public static async Task removeBuff(this IEnumerable<Card> cards, IGame game, int buffId)
+        /// <summary>
+        /// 移除所有增益（不包括固有增益）
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static Task<int> removeAllBuffs(this Card card, IGame game)
         {
-            foreach (var card in cards)
-            {
-                await card.removeBuff(game, card.getBuffs(b => b.id == buffId));
-            }
+            return card.removeBuff(game, card.getBuffs().Where(b => b is not IInnateBuff));
         }
         #endregion
 

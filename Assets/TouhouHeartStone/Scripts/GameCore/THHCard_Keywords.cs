@@ -191,7 +191,7 @@ namespace TouhouHeartstone
                 if (argCard == null)
                     return;
                 await argCard.setProp(game, CARD.SILENCE, true);
-                await argCard.removeBuff(game, argCard.getBuffs());
+                await argCard.removeAllBuffs(game);
                 foreach (var effect in argCard.define.getEffects().OfType<IPassiveEffect>())
                 {
                     await effect.onDisable(game, argCard, null);

@@ -1224,7 +1224,8 @@ namespace Game.BattleTable
             ui.CardDisplayer.setVisible(true);
             setCardDesc(ui.CardDisplayer.card, desc, true);
 
-            var buffViewDatas = await getCardBuffViewDatas(desc.getBuffs());
+            var buffs = desc.getBuffs().Where(b => b is not IInnateBuff);
+            var buffViewDatas = await getCardBuffViewDatas(buffs);
             ui.CardDisplayer.setBuffs(buffViewDatas);
 
             _isDisplayingCard = true;

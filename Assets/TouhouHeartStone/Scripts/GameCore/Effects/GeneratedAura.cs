@@ -131,7 +131,6 @@ namespace TouhouHeartstone
                 // 卡牌仍然具有增益条件。
                 // 更新增益。
                 await updateAuraBuff(game, card, buff, buffedCard, cardBuff);
-                cardBuff.updateModifierProps(game as CardEngine);
             }
         }
         private async Task checkAndAddBuffedCards(IGame game, ICard card, IBuff buff, Dictionary<Card, Buff> buffDict, IEnumerable<Pile> ranges, IEnumerable<Card> excludedCards)
