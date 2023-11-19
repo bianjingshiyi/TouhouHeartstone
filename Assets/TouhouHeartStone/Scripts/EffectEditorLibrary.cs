@@ -1189,13 +1189,13 @@ namespace Game
         /// <returns></returns>
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetBuffProp, StringTable.EDITOR_NODE_CATEGORY_BUFF, EDITOR_NODE_NAME_GET_BUFF_PROP)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
-        public static object getBuffProp(CardEngine game,
+        public static object getBuffProp(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName)
         {
             if (buff == null)
                 return default;
-            return buff.getProp(game, propName);
+            return buff.getProp(propName);
         }
 
         [THHActionMethod(BuiltinActionDefineID.GetBuffDefineOfBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, EDITOR_NODE_NAME_GET_DEFINE_OF_BUFF)]

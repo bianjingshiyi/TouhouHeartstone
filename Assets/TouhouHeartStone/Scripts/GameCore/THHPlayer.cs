@@ -35,7 +35,7 @@ namespace TouhouHeartstone
         {
             if (pile?.name == null || THHPile.vanillaPileNames.Contains(pile?.name))
                 return false;
-            return player.pileList.Remove(pile);
+            return player.removePile(pile);
         }
         #endregion
 

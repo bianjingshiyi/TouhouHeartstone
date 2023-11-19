@@ -207,7 +207,7 @@ namespace TouhouHeartstone
                 propName = $"Buff{buff.instanceID}/{propName}";
             }
 
-            Dictionary<Card, Buff> buffDict = buff != null ? buff.getProp<Dictionary<Card, Buff>>(game, propName) : card.getProp<Dictionary<Card, Buff>>(game, propName);
+            Dictionary<Card, Buff> buffDict = buff != null ? buff.getProp<Dictionary<Card, Buff>>(propName) : card.getProp<Dictionary<Card, Buff>>(game, propName);
             if (buffDict == null)
             {
                 buffDict = new Dictionary<Card, Buff>();
