@@ -2038,12 +2038,15 @@ namespace TouhouHeartstone
         public class BeChargedEventArg : EventArg
         {
             public Card card;
+            public int beforeValue;
             public int value;
             public override void Record(IGame game, EventRecord record)
             {
                 record.setCardState(EVENTVAR.CARD, card);
+                record.setVar(VAR_BEFORE_VALUE, beforeValue);
                 record.setVar(EVENTVAR.VALUE, value);
             }
+            public const string VAR_BEFORE_VALUE = "原数值";
         }
         [EventChildren(typeof(PropChangeEventArg))]
         public class SilenceEventArg : EventArg, IDescribableEventArg, ICardEventArg

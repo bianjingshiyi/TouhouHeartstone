@@ -135,9 +135,10 @@ namespace TouhouHeartstone
         }
         public static Task<BeChargedEventArg> setChargeLevel(this Card card, CardEngine game, int value)
         {
-            if (value == card.getChargedLevel(game))
+            var beforeValue = card.getChargedLevel(game);
+            if (value == beforeValue)
                 return Task.FromResult<BeChargedEventArg>(null);
-            return game.triggers.doEvent(new BeChargedEventArg() { card = card, value = value }, arg =>
+            return game.triggers.doEvent(new BeChargedEventArg() { card = card, beforeValue = beforeValue, value = value }, arg =>
             {
                 card = arg.card;
                 value = arg.value;

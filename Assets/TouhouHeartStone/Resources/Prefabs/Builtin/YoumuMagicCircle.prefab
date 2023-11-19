@@ -23,13 +23,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2597962816614474177}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5451919338726073622}
   m_Father: {fileID: 5953858223070850174}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7274042245659645234
 GameObject:
@@ -42,6 +43,7 @@ GameObject:
   - component: {fileID: 5953858223070850174}
   - component: {fileID: 3131012405803427870}
   - component: {fileID: 7128317401256350186}
+  - component: {fileID: 3959655436622231983}
   m_Layer: 0
   m_Name: YoumuMagicCircle
   m_TagString: Untagged
@@ -56,13 +58,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7274042245659645234}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 4}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 208036090528536194}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!114 &3131012405803427870
 MonoBehaviour:
@@ -95,11 +98,29 @@ MonoBehaviour:
   defineName: "\u5996\u68A6\u6CD5\u672F"
   duration: 2
   blockTime: 2
+--- !u!114 &3959655436622231983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7274042245659645234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98973c954961bb8408d5c6a1e3815c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _manager: {fileID: 0}
+  se_name: 
+  clip: {fileID: 8300000, guid: 9849355361e356144a6ba39a3475a729, type: 3}
+  playOnEnable: 1
+  _fadeoutTime: 1
 --- !u!1001 &8424007161015762624
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 208036090528536194}
     m_Modifications:
     - target: {fileID: 654079959387480730, guid: f5e5c3b3a8d9e1a4cb63443ec38ef38e,
@@ -173,6 +194,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f5e5c3b3a8d9e1a4cb63443ec38ef38e, type: 3}
 --- !u!4 &5451919338726073622 stripped
 Transform:
