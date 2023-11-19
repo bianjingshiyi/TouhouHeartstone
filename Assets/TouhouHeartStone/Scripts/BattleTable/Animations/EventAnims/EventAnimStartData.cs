@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
+using TouhouCardEngine.Histories;
 using TouhouCardEngine.Interfaces;
 
 namespace Game.BattleTable

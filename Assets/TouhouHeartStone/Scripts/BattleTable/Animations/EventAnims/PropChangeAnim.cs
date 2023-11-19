@@ -15,7 +15,6 @@ namespace Game.BattleTable
             var propName = record.getVar<string>(Arg.VAR_PROP_NAME);
             var value = record.getVar(Arg.VAR_VALUE_AFTER);
 
-            card.setProp(propName, value);
             getSimpleAnimAndAnimator(table, card, out var animator, out var simpleAnim);
             table.updateCardBySnapshot(card);
             if (!animator || !animator.isActiveAndEnabled || simpleAnim == null)

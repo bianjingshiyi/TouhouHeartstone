@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using TouhouCardEngine;
+using TouhouCardEngine.Histories;
 using TouhouHeartstone;
 
 namespace Game.BattleTable

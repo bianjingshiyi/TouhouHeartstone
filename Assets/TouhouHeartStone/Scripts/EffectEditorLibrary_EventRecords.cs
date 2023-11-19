@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Histories;
 using TouhouHeartstone;
 
 namespace Game

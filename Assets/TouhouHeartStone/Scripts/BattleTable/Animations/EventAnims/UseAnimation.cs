@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using TouhouCardEngine;
+using TouhouCardEngine.Histories;
 using TouhouHeartstone;
 using UnityEngine;
 using ActorNotFoundException = UI.ActorNotFoundException;

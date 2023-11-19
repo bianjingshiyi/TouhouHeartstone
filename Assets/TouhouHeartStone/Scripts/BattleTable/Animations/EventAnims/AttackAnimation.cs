@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Linq;
-using TouhouCardEngine;
+using TouhouCardEngine.Histories;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
