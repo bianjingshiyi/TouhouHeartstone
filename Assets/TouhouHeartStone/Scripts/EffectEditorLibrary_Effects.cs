@@ -90,7 +90,7 @@ namespace Game
             }
             foreach (var buff in card.getBuffs())
             {
-                effects.AddRange(buff.getEffects(game));
+                effects.AddRange(buff.getEffects());
             }
             return effects.ToArray();
         }
@@ -104,7 +104,7 @@ namespace Game
         {
             if (buff == null)
                 return Array.Empty<IEffect>();
-            return buff.getEffects(game).ToArray();
+            return buff.getEffects().ToArray();
         }
         /// <summary>
         /// 获取卡牌定义的所有效果

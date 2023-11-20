@@ -29,10 +29,7 @@ namespace Game
                     newBuffDefineId = cardPool.buffDefineList[i].id;
             }
             newBuffDefineId++;
-            GeneratedBuffDefine buffDefine = new GeneratedBuffDefine(newBuffDefineId)
-            {
-                cardPoolId = cardPoolId
-            };
+            GeneratedBuffDefine buffDefine = new GeneratedBuffDefine(cardPoolId, newBuffDefineId);
             return buffDefine;
         }
         public GeneratedBuffDefine cloneBuffDefine(GeneratedBuffDefine buffDefine)

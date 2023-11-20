@@ -898,7 +898,7 @@ namespace TouhouHeartstone
                 // BUFF给予的效果。
                 foreach (var buff in card.getBuffs())
                 {
-                    foreach (var effect in buff.getEffects(game).OfType<IPileRangedEffect>().Where(e => !e.piles.Contains(PILE.GRAVE) && !e.isDeathRattle()))
+                    foreach (var effect in buff.getEffects().OfType<IPileRangedEffect>().Where(e => !e.piles.Contains(PILE.GRAVE) && !e.isDeathRattle()))
                     {
                         await effect.onDisable(game, card, buff);
                     }
@@ -1047,7 +1047,7 @@ namespace TouhouHeartstone
                 }
                 foreach (var buff in card.getBuffs())
                 {
-                    var effects = buff.getEffects(game as CardEngine);
+                    var effects = buff.getEffects();
                     results.AddRange(effects.Where(e => e.isSpellActiveEffect()).Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
                 }
             }
@@ -1063,7 +1063,7 @@ namespace TouhouHeartstone
             }
             foreach (var buff in card.getBuffs())
             {
-                var effects = buff.getEffects(game as CardEngine);
+                var effects = buff.getEffects();
                 results.AddRange(effects.Where(e =>
                 {
                     if (e.isBattlecry())
@@ -1084,7 +1084,7 @@ namespace TouhouHeartstone
             }
             foreach (var buff in card.getBuffs())
             {
-                var effects = buff.getEffects(game as CardEngine);
+                var effects = buff.getEffects();
                 results.AddRange(effects.Where(e => e.isDeathRattle())
                     .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
             }
@@ -1097,7 +1097,7 @@ namespace TouhouHeartstone
                 .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, null)));
             foreach (var buff in card.getBuffs())
             {
-                var effects = buff.getEffects(game as CardEngine);
+                var effects = buff.getEffects();
                 results.AddRange(effects.Where(e => e.isAura())
                     .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
             }
@@ -1112,7 +1112,7 @@ namespace TouhouHeartstone
             }
             foreach (var buff in card.getBuffs())
             {
-                var effects = buff.getEffects(game as CardEngine);
+                var effects = buff.getEffects();
                 if (effects.Any(e => e.isBattlecry()))
                     return true;
             }
@@ -1129,7 +1129,7 @@ namespace TouhouHeartstone
             }
             foreach (var buff in card.getBuffs())
             {
-                var effects = buff.getEffects(game as CardEngine);
+                var effects = buff.getEffects();
                 if (effects.Any(e => e.isDeathRattle()))
                 {
                     return true;
