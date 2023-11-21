@@ -230,42 +230,23 @@ namespace Game.BattleTable
             if (_showCardTimer.isExpired())
             {
                 // 显示卡面
-                Card hoveringCard = null;
-                Vector3 centerPosition = WorldToTablePosition(table.CenterDisplayTransform.position);
-                Vector3 targetPosition = centerPosition;
-                if (_hoveredServant != null)
-                {
-                    hoveringCard = getCard(_hoveredServant);
-                    targetPosition = WorldToTablePosition(_hoveredServant.transform.position);
-                    targetPosition.x += targetPosition.x < centerPosition.x ? 250 : -250;
-                }
-                else if (_hoveredItem != null)
-                {
-                    hoveringCard = _hoveredItem == table.SelfItem ? player.getItem() : game.getOpponent(player).getItem();
-                    targetPosition = WorldToTablePosition(_hoveredItem.transform.position);
-                    targetPosition.z = targetPosition.z < centerPosition.z ? 250 : -250;
-                }
-                else if (_hoveredHeadItem != null)
-                {
-                    var headCard = getCard(_hoveredHeadItem);
-                    if (!headCard.isTrap(game) || canSeeCardOfOwner(headCard.getOwner()))
-                    {
-                        hoveringCard = headCard;
-                        targetPosition = WorldToTablePosition(_hoveredHeadItem.transform.position);
-                        targetPosition.z = targetPosition.z < centerPosition.z ? 250 : -250;
-                    }
-                }
+                var hoveringCard = getHoveringCard(out Vector3 targetPosition);
 
                 if (hoveringCard != null)
                 {
                     var worldPosition = TableToWorldPosition(targetPosition);
                     showCardDisplayer(worldPosition, getCardDescriptor(hoveringCard));
                 }
-                else
+                _showCardTimer.reset();
+            }
+
+            if (_isDisplayingCard)
+            {
+                var hoveringCard = getHoveringCard(out _);
+                if (hoveringCard == null)
                 {
                     hideCardDisplayer();
                 }
-                _showCardTimer.reset();
             }
 
             if (_tipTimer.isExpired())

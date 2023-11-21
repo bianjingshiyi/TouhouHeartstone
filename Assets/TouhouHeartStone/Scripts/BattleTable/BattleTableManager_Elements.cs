@@ -1189,10 +1189,13 @@ namespace Game.BattleTable
 
             var buffViewDatas = await getCardBuffViewDatas(desc.getBuffs());
             ui.CardDisplayer.setBuffs(buffViewDatas);
+
+            _isDisplayingCard = true;
         }
         public void hideCardDisplayer()
         {
             ui.CardDisplayer.setVisible(false);
+            _isDisplayingCard = false;
         }
 
 
@@ -2189,6 +2192,35 @@ namespace Game.BattleTable
             }
             return viewDatas;
         }
+        private Card getHoveringCard(out Vector3 targetPosition)
+        {
+            Card hoveringCard = null;
+            Vector3 centerPosition = WorldToTablePosition(table.CenterDisplayTransform.position);
+            targetPosition = centerPosition;
+            if (_hoveredServant != null)
+            {
+                hoveringCard = getCard(_hoveredServant);
+                targetPosition = WorldToTablePosition(_hoveredServant.transform.position);
+                targetPosition.x += targetPosition.x < centerPosition.x ? 250 : -250;
+            }
+            else if (_hoveredItem != null)
+            {
+                hoveringCard = _hoveredItem == table.SelfItem ? player.getItem() : game.getOpponent(player).getItem();
+                targetPosition = WorldToTablePosition(_hoveredItem.transform.position);
+                targetPosition.z = targetPosition.z < centerPosition.z ? 250 : -250;
+            }
+            else if (_hoveredHeadItem != null)
+            {
+                var headCard = getCard(_hoveredHeadItem);
+                if (!headCard.isTrap(game) || canSeeCardOfOwner(headCard.getOwner()))
+                {
+                    hoveringCard = headCard;
+                    targetPosition = WorldToTablePosition(_hoveredHeadItem.transform.position);
+                    targetPosition.z = targetPosition.z < centerPosition.z ? 250 : -250;
+                }
+            }
+            return hoveringCard;
+        }
 
         #region 更新可控制高光
         private void updateAllControlable()
@@ -2361,6 +2393,7 @@ namespace Game.BattleTable
         Servant _hoveredServant;
         Item _hoveredItem;
         Secret _hoveredHeadItem;
+        bool _isDisplayingCard;
         /// <summary>
         /// 需要更新所有卡牌的可控绿光。
         /// </summary>
