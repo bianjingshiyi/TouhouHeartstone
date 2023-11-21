@@ -390,18 +390,6 @@ namespace UI
             _descInputField.onEndEdit.AddListener(onDescInputFieldEndEdit);
             _tagDropdown.onValueChanged.AddListener(onTagDropdownValueChangedCallback);
             _tagInputField.onEndEdit.AddListener(onTagInputFieldEndEdit);
-            EventTrigger trigger = _tagDropdown.gameObject.AddComponent<EventTrigger>();
-            EventTrigger.Entry entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.Deselect;
-            entry.callback.AddListener(e =>
-            {
-                if (_tagDropdown.template.gameObject.activeSelf)
-                {
-                    return;
-                }
-                onTagDropdownValueChangedCallback(_tagDropdown.value);
-            });
-            trigger.triggers.Add(entry);
             _costInputField.onEndEdit.AddListener(onCostInputFieldEndEdit);
             _attackInputField.onEndEdit.AddListener(onAttackInputFieldEndEdit);
             _lifeInputField.onEndEdit.AddListener(onLifeInputFieldEndEdit);
