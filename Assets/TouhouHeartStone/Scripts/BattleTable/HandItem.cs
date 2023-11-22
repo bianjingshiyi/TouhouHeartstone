@@ -16,6 +16,11 @@ namespace Game.BattleTable
             _animator.SetBool("SpellReady", ready);
         }
 
+        public override float getHeight()
+        {
+            return card.height;
+        }
+
         #region 生命周期
         private void Awake()
         {

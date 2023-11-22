@@ -4,7 +4,7 @@ namespace Game.BattleTable
 {
     public abstract class TableUnit : MonoBehaviour
     {
-        public float getHeight()
+        public virtual float getHeight()
         {
             return _height;
         }
