@@ -10,7 +10,7 @@ namespace Game.BattleTable
     class RevealAnim : EventAnimation<Arg>
     {
         private CardSnapshot _card;
-        public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
         {
             _card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
             var player = arg.player;

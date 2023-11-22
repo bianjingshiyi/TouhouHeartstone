@@ -9,7 +9,7 @@ namespace Game.BattleTable
     using Arg = Card.SetDefineEventArg;
     class SetDefineAnim : EventAnimation<Arg>
     {
-        public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
         {
             var card = table.getRecordCardSnapshot(record, Arg.VAR_CARD);
             SimpleAnim simpleAnim = null;

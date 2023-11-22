@@ -290,12 +290,24 @@ namespace Game.BattleTable
             return eventRef == argRef;
         }
         #endregion
+        /// <summary>
+        /// 等待被加入到待播放队列中的动画。
+        /// </summary>
         [SerializeField]
         List<TableAnimation> _animationCache = new List<TableAnimation>();
+        /// <summary>
+        /// 待播放队列，会在所有事件都结束，或者需要玩家进行操作时才会加入动画组进行播放。
+        /// </summary>
         [SerializeField]
         List<TableAnimation> _animationQueue = new List<TableAnimation>();
+        /// <summary>
+        /// 正在播放的动画组列表。
+        /// </summary>
         [SerializeField]
         List<AnimationGroup> _animationGroups = new List<AnimationGroup>();
+        /// <summary>
+        /// 正在被加入待播放队列中的动画列表。
+        /// </summary>
         List<TableAnimation> insertingAnims = new List<TableAnimation>();
         public void addAnim(TableAnimation anim)
         {
@@ -339,11 +351,27 @@ namespace Game.BattleTable
                 insertingAnims.Insert(0, anim);
                 _animationCache.RemoveAt(i);
             }
-            if (insertingAnims.Count > 0)
+            // 为内部的事件动画设置插入事件的动画。
+            foreach (var anim in insertingAnims)
             {
-                _animationQueue.AddRange(insertingAnims);
-                insertingAnims.Clear();
+                if (anim is EventAnimation eventAnim)
+                {
+                    var parentArg = eventAnim.eventArg;
+                    var beforeChildren = parentArg.getChildEvents(EventState.Before);
+                    eventAnim.insertedAnims = insertingAnims.OfType<EventAnimation>().Where(e => {
+                        var evt = e.eventArg;
+                        while (evt != null)
+                        {
+                            if (beforeChildren.Contains(evt))
+                                return true;
+                            evt = evt.parent;
+                        }
+                        return false;
+                    }).ToArray();
+                }
             }
+            _animationQueue.AddRange(insertingAnims);
+            insertingAnims.Clear();
         }
         public bool isPlayingAnimation()
         {

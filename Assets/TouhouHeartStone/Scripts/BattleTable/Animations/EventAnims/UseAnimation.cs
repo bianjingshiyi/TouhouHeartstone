@@ -12,7 +12,7 @@ namespace Game.BattleTable
     class UseAnimation : EventAnimation<Arg>
     {
         CardSnapshot _card;
-        public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
         {
             yield return pauseWhileNotCompleted();
             yield return updateCard(table, record, arg);

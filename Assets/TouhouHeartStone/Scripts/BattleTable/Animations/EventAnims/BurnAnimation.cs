@@ -12,7 +12,7 @@ namespace Game.BattleTable
     {
         private Timer _timer = new Timer() { duration = .2f };
 
-        public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
         {
             yield break; // 以MoveCardAnim暂时代替
 

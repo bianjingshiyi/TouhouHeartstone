@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using TouhouHeartstone;
 using UnityEngine;
 
 namespace Game.BattleTable
@@ -94,6 +95,7 @@ namespace Game.BattleTable
     public abstract class EventAnimation : TableAnimation
     {
         public IEventArg eventArg { get; set; }
+        public TableAnimation[] insertedAnims { get; set; }
         public EventRecord record { get; set; }
         public virtual void postEvent(BattleTableManager table)
         {
@@ -151,11 +153,42 @@ namespace Game.BattleTable
         }
         public sealed override IEnumerator update(BattleTableManager table)
         {
-            return update(table, record, tEventArg);
+            yield return startUpdate(table, record, tEventArg);
+            while (!record.isCompleted || (insertedAnims != null && insertedAnims.Length > 0 && !insertedAnims.All(a => a.isFinished())))
+            {
+                yield return null;
+            }
+            if (!record.isCanceled)
+            {
+                yield return logicUpdate(table, record, tEventArg);
+            }
+            yield return endUpdate(table, record, tEventArg);
         }
-        public virtual IEnumerator update(BattleTableManager table, EventRecord record, T arg)
+        public virtual IEnumerator startUpdate(BattleTableManager table, EventRecord record, T arg)
         {
             yield break;
+        }
+        public virtual IEnumerator logicUpdate(BattleTableManager table, EventRecord record, T arg)
+        {
+            yield break;
+        }
+        public virtual IEnumerator endUpdate(BattleTableManager table, EventRecord record, T arg)
+        {
+            yield break;
+        }
+        private bool isAnimGroupInsertedAnimOfThis(AnimationGroup nextGroup)
+        {
+            if (insertedAnims == null || insertedAnims.Length <= 0)
+                return false;
+            return nextGroup.Any(a => insertedAnims.Contains(a));
+        }
+        public override bool continueNextGroup(AnimationGroup nextGroup)
+        {
+            if (isAnimGroupInsertedAnimOfThis(nextGroup))
+            {
+                return true;
+            }
+            return base.continueNextGroup(nextGroup);
         }
     }
 }

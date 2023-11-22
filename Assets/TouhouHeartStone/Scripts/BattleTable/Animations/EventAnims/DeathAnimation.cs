@@ -20,7 +20,7 @@ namespace Game.BattleTable
         /// <param name="table">游戏桌面UI管理器</param>
         /// <param name="record">死亡事件</param>
         /// <returns></returns>
-        public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
         {
             var card = arg.card;
             AnimAnim anim = null;

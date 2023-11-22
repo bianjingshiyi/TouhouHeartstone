@@ -7,7 +7,7 @@ namespace Game.BattleTable
     using Arg = THHCard.MissionCompleteEventArg;
     public class MissionTriggerAnim : EventAnimation<Arg>
     {
-        public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
         {
             var card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
             if (table.tryGetSecret(card, out var secret))

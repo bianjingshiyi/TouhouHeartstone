@@ -10,7 +10,7 @@ namespace Game.BattleTable
     using Arg = THHCard.DamageEventArg;
     class DamageAnimation : EventAnimation<Arg>
     {
-        public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
         {
             yield return pauseWhileNotCompleted();
             yield return stopWhenCanceled();

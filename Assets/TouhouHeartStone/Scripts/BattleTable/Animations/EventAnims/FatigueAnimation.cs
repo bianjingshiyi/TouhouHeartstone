@@ -9,7 +9,7 @@ namespace Game.BattleTable
     {
         AnimAnim _anim;
 
-        public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
         {
             yield return stopWhenCanceled();
 

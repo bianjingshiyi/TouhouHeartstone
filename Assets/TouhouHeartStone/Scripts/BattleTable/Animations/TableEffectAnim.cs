@@ -22,10 +22,12 @@ namespace Game.Animations
                 if (source != null)
                 {
                     srcTransform = table.getCardTransform(source);
+                    _sourceConfirmed = true;
                 }
                 if (target != null)
                 {
                     targetTransform = table.getCardTransform(target);
+                    _destConfirmed = true;
                 }
                 var info = new VisualEffectInfo()
                 {
@@ -36,14 +38,15 @@ namespace Game.Animations
             }
             while (!effect.isFinished() && !(!effect.isStarted && _duration >= 10f)) // 十秒没播放算超时
             {
-                // 这里不用Unity.Object的boolean隐式转换，因为Transform被销毁后会返回false，但它不是null
                 // 防止类似飞刀的弹射物特效在击杀目标后又突然插在其他卡牌上之类的
-                if (effect.sourceTransform == null && source != null)
+                if (!_sourceConfirmed && !effect.sourceTransform && source != null)
                 {
+                    _sourceConfirmed = true;
                     effect.sourceTransform = table.getCardTransform(source);
                 }
-                if (effect.destTransform == null && target != null)
+                if (!_destConfirmed && !effect.destTransform && target != null)
                 {
+                    _destConfirmed = true;
                     effect.destTransform = table.getCardTransform(target);
                 }
                 effect.update(_deltaTime);
@@ -66,5 +69,7 @@ namespace Game.Animations
         protected Card source;
         protected Card target;
         protected TableEffect effect;
+        private bool _sourceConfirmed;
+        private bool _destConfirmed;
     }
 }

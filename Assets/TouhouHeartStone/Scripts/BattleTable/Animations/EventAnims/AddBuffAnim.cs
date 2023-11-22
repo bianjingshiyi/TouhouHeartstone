@@ -7,7 +7,7 @@ namespace Game.BattleTable
     class AddBuffAnim : EventAnimation<Arg>
     {
         CardSnapshot _card;
-        public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
         {
             _card = table.getRecordCardSnapshot(record, Arg.VAR_CARD);
             table.updateCardBySnapshot(_card, record);

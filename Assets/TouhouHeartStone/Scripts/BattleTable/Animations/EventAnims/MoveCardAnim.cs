@@ -18,7 +18,7 @@ namespace Game.BattleTable
         float _breakDuration = 2f;
         bool _breakDurationEvaluated;
         private const float _minBreakDuration = 0.05f;
-        public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
         {
             evaluateBreakDurations(table);
             yield return pauseWhileNotCompleted();

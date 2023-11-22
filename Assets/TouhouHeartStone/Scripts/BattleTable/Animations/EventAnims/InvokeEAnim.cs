@@ -9,7 +9,7 @@ namespace Game.BattleTable
     using Arg = THHPlayer.RevealDuelEventArg;
     class InvokeEAnim : EventAnimation<Arg>
     {
-        public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
         {
             if (record == null || record.isCanceled)
                 yield break;
