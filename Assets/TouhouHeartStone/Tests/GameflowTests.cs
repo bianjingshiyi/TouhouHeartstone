@@ -234,7 +234,7 @@ namespace Tests
             you.cmdTurnEnd(game);
             HearthStoneRule.FatigueEventArg fatigue = game.triggers.getRecordedEvents().OfType<HearthStoneRule.FatigueEventArg>().First();
             Assert.AreEqual(you, fatigue.player);
-            THHCard.DamageEventArg damage = fatigue.getChildEvents().OfType<THHCard.DamageEventArg>().First();
+            THHCard.DamageEventArg damage = fatigue.getAllChildEvents().OfType<THHCard.DamageEventArg>().First();
             Assert.AreEqual(you.getMaster(), damage.target);
             Assert.AreEqual(1, damage.damagedValue);
             while (you.getMaster().getCurrentLife(game) > 0)
@@ -244,12 +244,12 @@ namespace Tests
                 {
                     oppo.cmdTurnEnd(game);
                     HearthStoneRule.TurnStartEventArg turnStart = game.triggers.getRecordedEvents().OfType<HearthStoneRule.TurnStartEventArg>().Last();
-                    fatigue = turnStart.getChildEvents().OfType<HearthStoneRule.FatigueEventArg>().Last();
-                    damage = fatigue.getChildEvents().OfType<THHCard.DamageEventArg>().Last();
+                    fatigue = turnStart.getAllChildEvents().OfType<HearthStoneRule.FatigueEventArg>().Last();
+                    damage = fatigue.getAllChildEvents().OfType<THHCard.DamageEventArg>().Last();
                     Assert.NotNull(damage);
-                    THHCard.DeathEventArg death = fatigue.getChildEvents().OfType<THHCard.DeathEventArg>().Last();
+                    THHCard.DeathEventArg death = fatigue.getAllChildEvents().OfType<THHCard.DeathEventArg>().Last();
                     Assert.NotNull(death);
-                    HearthStoneRule.GameEndEventArg gameEnd = fatigue.getChildEvents().OfType<HearthStoneRule.GameEndEventArg>().Last();
+                    HearthStoneRule.GameEndEventArg gameEnd = fatigue.getAllChildEvents().OfType<HearthStoneRule.GameEndEventArg>().Last();
                     Assert.NotNull(gameEnd);
                     break;
                 }
@@ -281,10 +281,10 @@ namespace Tests
 
             THHCard.AttackEventArg attack = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.AttackEventArg) as THHCard.AttackEventArg;
             Assert.NotNull(attack);
-            THHCard.DamageEventArg d1 = attack.getChildEvents()[0] as THHCard.DamageEventArg;
+            THHCard.DamageEventArg d1 = attack.getAllChildEvents()[0] as THHCard.DamageEventArg;
             Assert.NotNull(d1);
             Assert.AreEqual(2, d1.damagedValue);
-            THHCard.DamageEventArg d2 = attack.getChildEvents()[1] as THHCard.DamageEventArg;
+            THHCard.DamageEventArg d2 = attack.getAllChildEvents()[1] as THHCard.DamageEventArg;
             Assert.NotNull(d2);
             Assert.AreEqual(2, d2.damagedValue);
             THHCard.DeathEventArg d3 = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DeathEventArg) as THHCard.DeathEventArg;
