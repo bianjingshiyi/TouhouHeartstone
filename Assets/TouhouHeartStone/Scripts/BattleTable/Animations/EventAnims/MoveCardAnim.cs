@@ -109,6 +109,15 @@ namespace Game.BattleTable
                 // 移除原先手牌UI。
                 table.removeHand(_card);
             }
+            else if (table.tryGetServant(_card, out var servant) && _to?.name != PILE.FIELD)
+            {
+                // 如果能获取到这张手牌对应的仆从，就获取仆从。
+                // 使用卡牌动画在使用仆从时，会先将仆从置入战场，然后才会播放插入的事件动画。
+                var lossyScale = table.WorldToTableScale(servant.transform.lossyScale);
+                startHeight = servant.getHeight() * lossyScale.z;
+                worldPos = servant.transform.position;
+                table.removeServant(_card);
+            }
             else
             {
                 startHeight = -1;
@@ -309,8 +318,7 @@ namespace Game.BattleTable
             }
             else
             {
-                if (!table.tryGetServant(_card, out var servant))
-                    servant = table.createServant(_card, _position);
+                var servant = table.createServant(_card, _position);
                 AnimAnim anim = null;
                 while (!SimpleAnimHelper.update(table, ref anim, servant.onSummon, servant.animator, _deltaTime))
                 {

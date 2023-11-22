@@ -11,223 +11,146 @@ namespace Game.BattleTable
     using Arg = HearthStoneRule.UseEventArg;
     class UseAnimation : EventAnimation<Arg>
     {
-        CardSnapshot _card;
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
-        {
-            yield return pauseWhileNotCompleted();
-            yield return updateCard(table, record, arg);
-        }
-        private IEnumerator updateCard(BattleTableManager table, EventRecord record, Arg arg)
+        #region 公有方法
+        public override IEnumerator startUpdate(BattleTableManager table, EventRecord record, Arg arg)
         {
             _card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
-            if (_card.isServant())
+            var player = arg.player;
+
+            bool isEnemy = player != table.player;
+            bool isReplay = table.canSeeAllCards;
+            bool isServant = _card.isServant();
+            bool showPlayedCard = isEnemy || isReplay;
+            if (isServant)
             {
-                yield return updateServant(table, record, arg);
+                yield return playServantToFieldAnim(table, record);
             }
-            else if (_card.isSpell())
+            else if (showPlayedCard)
             {
-                yield return updateSpell(table, record, arg);
-            }
-            else if (_card.isSkill())
-            {
-                yield return updateSkill(table, record, arg);
-            }
-            else if (_card.isItem())
-            {
-                yield return updateItem(table, record, arg);
+                yield return playUseCardAnim(table);
             }
         }
-        #region Servant
-        private IEnumerator updateServant(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
         {
             var player = arg.player;
-            var isCanceled = record.isCanceled;
             if (player == table.player)
-            {
                 // 自己使用
-                if (!isCanceled)
-                {
-                    // 成功使用。
-
-                    // 播放目标被指向的动画。
-                    var transform = table.transform;
-                    if (table.tryGetServant(_card.id, out Servant servant))
-                    {
-                        transform = servant.transform;
-                    }
-                    yield return tryTargetedAnim(table, transform, record, arg);
-                }
-                else
-                {
-                    // 被取消。
-                    if (table.tryGetHand(_card, out var item)) // 如果有这张手牌
-                    {
-                        // 重置手牌显示。
-                        table.resetHand(_card);
-                    }
-                    else // 没有这张手牌。
-                    {
-                        var handPosition = _card.position;
-                        table.updateCardDescriptor(_card);
-                        // 如果有这个随从，播放回手动画。
-                        if (table.tryGetServant(_card, out _))
-                        {
-                            var moveAnim = new FieldToHandAnim(_card.id, handPosition);
-                            while (!moveAnim.update(table, _deltaTime))
-                                yield return null;
-                        }
-                        else //没有这个随从，直接创建手牌。
-                        {
-                            table.createHand(table.getCardDescriptor(_card.id), handPosition);
-                        }
-                    }
-                }
-            }
+                yield return selfUseCard(table, record, arg);
             else
-            {
-                if (isCanceled)
-                {
-                    table.tryGetHand(_card, out var hand);
-
-                    yield return playEnemyUseCardAnim(table, hand, record);
-
-                    cancelEnemyUseCard(table, record);
-                }
-            }
+                // 对手使用
+                yield return enemyUseCard(table, record, arg);
+        }
+        public override IEnumerator canceledUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        {
+            // 被取消
+            yield return cancelUseCard(table);
         }
         #endregion
 
-        #region Spell
-        private IEnumerator updateSpell(BattleTableManager table, EventRecord record, Arg arg)
-        {
+        #region 私有方法
 
-            var player = arg.player;
-            var isCanceled = record.isCanceled;
-            if (player == table.player && !table.canSeeAllCards)
+        #region 成功使用卡牌
+        IEnumerator successUseCard(BattleTableManager table, EventRecord record, Arg arg, Transform sourceTransform)
+        {
+            if (_card.isSkill())
             {
-                if (!isCanceled)
+                if (table.tryGetSkill(_card, out var skillUI))
                 {
-                    if (table.tryGetHand(_card.id, out var hand))
-                    {
-                        AnimAnim useAnim = null;
-                        while (!SimpleAnimHelper.update(table, ref useAnim, hand.onSelfUse, hand.animator, _deltaTime))
-                            yield return null;
-                        table.removeHand(_card);
-                    }
-                    table.sounds.playSE(table.getSkin(_card).sound_onUse);
-                    yield return tryTargetedAnim(table, table.table.SelfMaster.transform, record, arg);
-                }
-                else
-                {
-                    var handPosition = _card.position;
-                    if (table.tryGetHand(_card, out _)) // 手上有这张牌
-                    {
-                        // 重置手牌显示。
-                        table.resetHand(_card);
-                    }
-                    else //没有这个手牌，直接创建手牌。
-                    {
-                        table.createHand(table.getCardDescriptor(_card.id), handPosition);
-                    }
+                    table.setSkill(skillUI, _card);
                 }
             }
-            else
-            {
-                table.tryGetHand(_card, out var hand);
 
-                yield return playEnemyUseCardAnim(table, hand, record);
-
-                if (!isCanceled)
-                {
-                    // 播放音效。
-                    CardSkinData skin = table.getSkin(_card);
-                    yield return loadAndPlaySound(table, skin?.soundPath_onUse);
-                    yield return tryTargetedAnim(table, table.table.EnemyMaster.transform, record, arg);
-                }
-                else
-                {
-                    cancelEnemyUseCard(table, record);
-                }
-            }
-        }
-        #endregion
-
-        #region Skill
-        private IEnumerator updateSkill(BattleTableManager table, EventRecord record, Arg arg)
-        {
-
-            var player = arg.player;
-            var isCanceled = record.isCanceled;
-            if (isCanceled)
-                yield break;
-
-            Skill sourceActor = player == table.player ? table.table.SelfSkill : table.table.EnemySkill;
-
-            table.setSkill(sourceActor, _card);
-
+            // 播放音效。
             CardSkinData skin = table.getSkin(_card);
             yield return loadAndPlaySound(table, skin?.soundPath_onUse);
-
-            yield return tryTargetedAnim(table, sourceActor.transform, record, arg);
+            // 播放指向目标动画。
+            yield return tryTargetedAnim(table, sourceTransform, record, arg);
+        }
+        IEnumerator selfUseCard(BattleTableManager table, EventRecord record, Arg arg)
+        {
+            var sourceTransform = table.table.SelfMaster.transform;
+            if (_card.isServant())
+            {
+                // 自己成功使用仆从牌。
+                if (table.tryGetServant(_card.id, out Servant servant))
+                {
+                    sourceTransform = servant.transform;
+                }
+            }
+            else if (_card.isSpell() || _card.isItem())
+            {
+                // 自己成功使用法术牌/道具牌。
+                if (table.tryGetHand(_card.id, out var hand))
+                {
+                    AnimAnim useAnim = null;
+                    while (!SimpleAnimHelper.update(table, ref useAnim, hand.onSelfUse, hand.animator, _deltaTime))
+                        yield return null;
+                    table.removeHand(_card);
+                }
+            }
+            yield return successUseCard(table, record, arg, sourceTransform);
+        }
+        IEnumerator enemyUseCard(BattleTableManager table, EventRecord record, Arg arg)
+        {
+            yield return successUseCard(table, record, arg, table.table.EnemyMaster.transform);
         }
         #endregion
 
-        #region Item
-        private IEnumerator updateItem(BattleTableManager table, EventRecord record, Arg arg)
+        #region 取消使用卡牌
+        IEnumerator playServantToFieldAnim(BattleTableManager table, EventRecord record)
         {
-
-            var player = arg.player;
-            var isCanceled = record.isCanceled;
-            if (player == table.player && !table.canSeeAllCards)
+            if (table.tryGetHand(_card, out var hand))
             {
-                if (!isCanceled)
-                {
-                    if (table.tryGetHand(_card, out var hand))
-                    {
-                        AnimAnim useAnim = null;
-                        while (!SimpleAnimHelper.update(table, ref useAnim, hand.onSelfUse, hand.animator, _deltaTime))
-                            yield return null;
-                        table.removeHand(_card);
-                    }
-                    yield return tryTargetedAnim(table, table.table.SelfItem.transform, record, arg);
-                }
-                else
-                {
-                    var handPosition = _card.position;
-                    if (table.tryGetHand(_card, out _)) // 手上有这张牌
-                    {
-                        // 重置手牌显示。
-                        table.resetHand(_card);
-                    }
-                    else //没有这个手牌，直接创建手牌。
-                    {
-                        table.createHand(table.getCardDescriptor(_card.id), handPosition);
-                    }
-                }
+                var fieldIndex = record.getVar<int>(EVENTVAR.POSITION);
+                var pos = table.WorldToTablePosition(hand.transform.position);
+                var moveAnim = new HandToFieldAnim(pos, table.getCardDescriptor(_card.id), fieldIndex);
+                while (!moveAnim.update(table, _deltaTime))
+                    yield return null;
             }
+        }
+        IEnumerator cancelUseCard(BattleTableManager table)
+        {
+            // 使用卡牌被取消。
+            if (table.tryGetHand(_card, out _))
+                // 手上有这张牌，重置手牌显示。
+                table.resetHand(_card);
             else
+                // 没有这张手牌，回手。
+                yield return returnToHand(table);
+        }
+        IEnumerator returnToHand(BattleTableManager table)
+        {
+            var handPosition = _card.position;
+            if (_card.isServant())
             {
-                table.tryGetHand(_card, out var hand);
-
-                yield return playEnemyUseCardAnim(table, hand, record);
-
-                if (!isCanceled)
+                // 使用仆从牌被取消。
+                // 防止卡牌进入错误的玩家手牌中，先更新卡牌描述器。
+                table.updateCardDescriptor(_card);
+                // 如果有这个随从，播放回手动画。
+                if (table.tryGetServant(_card, out _))
                 {
-                    yield return tryTargetedAnim(table, table.table.EnemyItem.transform, record, arg);
+                    var moveAnim = new FieldToHandAnim(_card.id, handPosition);
+                    while (!moveAnim.update(table, _deltaTime))
+                        yield return null;
                 }
                 else
                 {
-                    cancelEnemyUseCard(table, record);
+                    // 直接创建手牌。
+                    table.createHand(table.getCardDescriptor(_card.id), handPosition);
                 }
+            }
+            else if (_card.isSpell() || _card.isSpell())
+            {
+                // 使用法术牌/道具牌被取消。
+                // 直接创建手牌。
+                table.createHand(table.getCardDescriptor(_card.id), handPosition);
             }
         }
         #endregion
-
-        IEnumerator playEnemyUseCardAnim(BattleTableManager table, HandItem hand, EventRecord record)
+        IEnumerator playUseCardAnim(BattleTableManager table)
         {
-
             // 播放使用动画。
-            if (hand)
+            if (table.tryGetHand(_card, out var hand))
             {
                 table.setCard(hand.card, _card, !_card.isTrap(table.game) || table.canSeeCardOfOwner(_card.owner));
                 hand.positionLerp.setStartPositionToCurrent();
@@ -237,10 +160,6 @@ namespace Game.BattleTable
                     yield return null;
                 table.removeHand(_card);
             }
-        }
-        void cancelEnemyUseCard(BattleTableManager table, EventRecord record)
-        {
-            table.createHand(_card, _card.position);
         }
         IEnumerator loadAndPlaySound(BattleTableManager table, string path)
         {
@@ -309,5 +228,10 @@ namespace Game.BattleTable
                 }
             }
         }
+        #endregion
+
+        #region 属性字段
+        CardSnapshot _card;
+        #endregion
     }
 }
