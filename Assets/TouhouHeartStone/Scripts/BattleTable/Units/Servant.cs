@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 namespace Game.BattleTable
 {
-    public class Servant : TableUnit, IPointerClickHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
+    public class Servant : TableCharacter, IPointerClickHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
     {
         #region 公有方法
         public void setHighlight(bool highlight, bool yellow = false)
@@ -136,19 +136,8 @@ namespace Game.BattleTable
         public PropertyNumber attackNumber => _attackText;
         public PropertyNumber lifeNumber => _lifeText;
         public SimpleAnim onSummon;
-        public SimpleAnim onTargeted;
-        public SimpleAnim onAttackStart;
-        public SimpleAnim onAttack;
-        public SimpleAnim onAttackEnd;
-        public SimpleAnim onAttacked;
-        public SimpleAnim onDamage;
-        public ParticleSystem damageEffectPrefab;
-        public SimpleAnim onHeal;
-        public ParticleSystem healEffectPrefab;
-        public SimpleAnim onSetDefine;
         public SimpleAnim onSilenceTrue;
         public SimpleAnim onSilenceFalse;
-        public SimpleAnim onDeath;
         [SerializeField]
         private PropertyNumber _attackText;
         [SerializeField]

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 namespace Game.BattleTable
 {
-    public class Master : TableUnit, IPointerClickHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public class Master : TableCharacter, IPointerClickHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         #region 公有事件
         public void updateMaster(float deltaTime)
@@ -126,17 +126,6 @@ namespace Game.BattleTable
         public PropertyNumber attackNumber => _attackText;
         public PropertyNumber lifeNumber => _lifeText;
         public HeadSlots HeadSlots => _headSlots;
-        public SimpleAnim onTargeted;
-        public SimpleAnim onAttackStart;
-        public SimpleAnim onAttack;
-        public SimpleAnim onAttackEnd;
-        public SimpleAnim onAttacked;
-        public SimpleAnim onDamage;
-        public ParticleSystem damageEffectPrefab;
-        public SimpleAnim onSetDefine;
-        public SimpleAnim onHeal;
-        public ParticleSystem healEffectPrefab;
-        public SimpleAnim onDeath;
         [SerializeField]
         private GameObject _armorObj;
         [SerializeField]

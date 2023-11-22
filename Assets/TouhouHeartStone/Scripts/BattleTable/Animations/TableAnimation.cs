@@ -135,6 +135,7 @@ namespace Game.BattleTable
     public abstract class EventAnimation<T> : EventAnimation where T : IEventArg
     {
         public T tEventArg => eventArg is T t ? t : default;
+        public EventAnimState animState;
         public sealed override void init(BattleTableManager table)
         {
             base.init(table);
@@ -153,16 +154,24 @@ namespace Game.BattleTable
         }
         public sealed override IEnumerator update(BattleTableManager table)
         {
+            animState = EventAnimState.Started;
             yield return startUpdate(table, record, tEventArg);
+            animState = EventAnimState.StartFinished;
             while (!record.isCompleted || (insertedAnims != null && insertedAnims.Length > 0 && !insertedAnims.All(a => a.isFinished())))
             {
                 yield return null;
             }
             if (!record.isCanceled)
             {
+                animState = EventAnimState.Logic;
                 yield return logicUpdate(table, record, tEventArg);
             }
-            yield return endUpdate(table, record, tEventArg);
+            else
+            {
+                animState = EventAnimState.Canceled;
+                yield return canceledUpdate(table, record, tEventArg);
+            }
+            animState = EventAnimState.Finished;
         }
         public virtual IEnumerator startUpdate(BattleTableManager table, EventRecord record, T arg)
         {
@@ -172,7 +181,7 @@ namespace Game.BattleTable
         {
             yield break;
         }
-        public virtual IEnumerator endUpdate(BattleTableManager table, EventRecord record, T arg)
+        public virtual IEnumerator canceledUpdate(BattleTableManager table, EventRecord record, T arg)
         {
             yield break;
         }
@@ -184,11 +193,20 @@ namespace Game.BattleTable
         }
         public override bool continueNextGroup(AnimationGroup nextGroup)
         {
-            if (isAnimGroupInsertedAnimOfThis(nextGroup))
+            if (animState == EventAnimState.StartFinished && isAnimGroupInsertedAnimOfThis(nextGroup))
             {
                 return true;
             }
             return base.continueNextGroup(nextGroup);
         }
+    }
+    public enum EventAnimState
+    {
+        NotStarted,
+        Started,
+        StartFinished,
+        Logic,
+        Canceled,
+        Finished
     }
 }

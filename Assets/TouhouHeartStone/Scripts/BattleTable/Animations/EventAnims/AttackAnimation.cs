@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Linq;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -10,37 +11,13 @@ namespace Game.BattleTable
     using Arg = THHCard.AttackEventArg;
     class AttackAnimation : EventAnimation<Arg>
     {
-        bool _attacked = false;
-        AnimAnim _attackAnim;
-        AnimAnim _attackedAnim;
         public override IEnumerator startUpdate(BattleTableManager table, EventRecord record, Arg arg)
         {
             var card = arg.card;
             var target = arg.target;
-            SimpleAnim attackStartSimpleAnim = null;
-
-            TableUnit attackObj = null;
-            TableUnit attackedObj = null;
-
-            if (table.tryGetMaster(card, out var attackMaster))
-            {
-                attackObj = attackMaster;
-                attackStartSimpleAnim = attackMaster.onAttackStart;
-            }
-            else if (table.tryGetServant(card, out var attackServant))
-            {
-                attackObj = attackServant;
-                attackStartSimpleAnim = attackServant.onAttackStart;
-            }
-
-            if (table.tryGetMaster(target, out var targetMaster))
-            {
-                attackedObj = targetMaster;
-            }
-            else if (table.tryGetServant(target, out var targetServant))
-            {
-                attackedObj = targetServant;
-            }
+            TableCharacter attackObj = getCharacterUI(table, card);
+            TableCharacter attackedObj = getCharacterUI(table, target);
+            SimpleAnim attackStartSimpleAnim = attackObj?.onAttackStart;
 
             if (attackObj && attackedObj)
             {
@@ -58,39 +35,17 @@ namespace Game.BattleTable
         {
             var card = arg.card;
             var target = arg.target;
-            SimpleAnim attackSimpleAnim = null;
-            SimpleAnim attackedSimpleAnim = null;
+            TableCharacter attackObj = getCharacterUI(table, card);
+            TableCharacter attackedObj = getCharacterUI(table, target);
+            SimpleAnim attackSimpleAnim = attackObj?.onAttack;
+            SimpleAnim attackedSimpleAnim = attackedObj?.onAttacked;
 
-            TableUnit attackObj = null;
-            TableUnit attackedObj = null;
-
-            if (table.tryGetMaster(card, out var attackMaster))
-            {
-                attackObj = attackMaster;
-                attackSimpleAnim = attackMaster.onAttack;
-            }
-            else if (table.tryGetServant(card, out var attackServant))
-            {
-                attackObj = attackServant;
-                attackSimpleAnim = attackServant.onAttack;
-            }
-            if (table.tryGetMaster(target, out var targetMaster))
-            {
-                attackedObj = targetMaster;
-                attackedSimpleAnim = targetMaster.onAttacked;
-            }
-            else if (table.tryGetServant(target, out var targetServant))
-            {
-                attackedObj = targetServant;
-                attackedSimpleAnim = targetServant.onAttacked;
-            }
-
+            // 攻击。
             if (attackObj && attackedObj)
             {
                 attackObj.positionLerp.setStartPositionToCurrent();
                 attackObj.positionLerp.setTargetTransform(attackedObj.transform, table.TableToWorldDistance(150));
             }
-
 
             if (attackObj && attackSimpleAnim != null)
             {
@@ -110,25 +65,26 @@ namespace Game.BattleTable
                 while (!SimpleAnimHelper.update(table, ref _attackedAnim, attackedSimpleAnim, attackedObj.animator, _deltaTime))
                     yield return null;
             }
+
+            // 返回。
+            yield return returnFromAttack(table, arg);
         }
-        public override IEnumerator endUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator canceledUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        {
+            yield return returnFromAttack(table, arg);
+        }
+        public override bool continueNextGroup(AnimationGroup nextGroup)
+        {
+            if (isAnimGroupDamageOfThis(nextGroup))
+                return _attacked;
+            return base.continueNextGroup(nextGroup);
+        }
+        private IEnumerator returnFromAttack(BattleTableManager table, Arg arg)
         {
             var card = arg.card;
             var target = arg.target;
-            SimpleAnim attackEndSimpleAnim = null;
-
-            TableUnit attackObj = null;
-
-            if (table.tryGetMaster(card, out var attackMaster))
-            {
-                attackObj = attackMaster;
-                attackEndSimpleAnim = attackMaster.onAttackEnd;
-            }
-            else if (table.tryGetServant(card, out var attackServant))
-            {
-                attackObj = attackServant;
-                attackEndSimpleAnim = attackServant.onAttackEnd;
-            }
+            TableCharacter attackObj = getCharacterUI(table, card);
+            SimpleAnim attackEndSimpleAnim = attackObj?.onAttackEnd;
 
             if (attackObj)
             {
@@ -141,6 +97,18 @@ namespace Game.BattleTable
                 while (!SimpleAnimHelper.update(table, ref _attackAnim, attackEndSimpleAnim, attackObj.animator, _deltaTime))
                     yield return null;
             }
+        }
+        private TableCharacter getCharacterUI(BattleTableManager table, ICardData card)
+        {
+            if (table.tryGetMaster(card, out var attackMaster))
+            {
+                return attackMaster;
+            }
+            else if (table.tryGetServant(card, out var attackServant))
+            {
+                return attackServant;
+            }
+            return null;
         }
         private bool isAnimGroupDamageOfThis(AnimationGroup nextGroup)
         {
@@ -164,11 +132,8 @@ namespace Game.BattleTable
                 return false;
             });
         }
-        public override bool continueNextGroup(AnimationGroup nextGroup)
-        {
-            if (isAnimGroupDamageOfThis(nextGroup))
-                return _attacked;
-            return base.continueNextGroup(nextGroup);
-        }
+        bool _attacked = false;
+        AnimAnim _attackAnim;
+        AnimAnim _attackedAnim;
     }
 }
