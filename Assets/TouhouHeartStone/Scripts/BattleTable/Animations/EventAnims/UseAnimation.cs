@@ -230,8 +230,8 @@ namespace Game.BattleTable
             if (hand)
             {
                 table.setCard(hand.card, _card, !_card.isTrap(table.game) || table.canSeeCardOfOwner(_card.owner));
-                hand.positionLerp.setStart();
-                hand.positionLerp.setTarget(table.table.SpellDisplayTransform);
+                hand.positionLerp.setStartPositionToCurrent();
+                hand.positionLerp.setTargetTransform(table.table.SpellDisplayTransform);
                 AnimAnim useAnim = null;
                 while (!SimpleAnimHelper.update(table, ref useAnim, hand.onEnemyUse, hand.animator, _deltaTime))
                     yield return null;

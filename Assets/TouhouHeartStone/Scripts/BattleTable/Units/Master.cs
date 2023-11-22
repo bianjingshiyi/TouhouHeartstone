@@ -127,7 +127,9 @@ namespace Game.BattleTable
         public PropertyNumber lifeNumber => _lifeText;
         public HeadSlots HeadSlots => _headSlots;
         public SimpleAnim onTargeted;
+        public SimpleAnim onAttackStart;
         public SimpleAnim onAttack;
+        public SimpleAnim onAttackEnd;
         public SimpleAnim onAttacked;
         public SimpleAnim onDamage;
         public ParticleSystem damageEffectPrefab;
@@ -174,7 +176,6 @@ namespace Game.BattleTable
             }
         }
         private MaterialPropertyBlock _propertyBlock;
-
         #endregion
     }
 }

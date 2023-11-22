@@ -364,14 +364,14 @@ namespace Game.BattleTable
                 {
                     var worldPos = table.TableToWorldPosition(startPos.Value);
                     hand.transform.position = worldPos;
-                    positionLerp.setStart(worldPos);
+                    positionLerp.setStartPosition(worldPos);
                     positionLerp.setPosition(worldPos);
                 }
                 else
                 {
-                    positionLerp.setStart();
+                    positionLerp.setStartPositionToCurrent();
                 }
-                positionLerp.setTarget(hand.transform);
+                positionLerp.setTargetTransform(hand.transform);
                 AnimAnim anim = null;
                 table.sounds.playSE(table.table.playCardSound);
                 while (!SimpleAnimHelper.update(table, ref anim, hand.onDraw, hand.animator, _deltaTime))

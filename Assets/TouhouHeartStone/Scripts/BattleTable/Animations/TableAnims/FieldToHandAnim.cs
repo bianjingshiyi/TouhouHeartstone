@@ -31,9 +31,9 @@ namespace Game.BattleTable
                 var hand = table.createHand(cardDesc, _position);
                 var positionLerp = hand.positionLerp;
                 var pos = sourcePosition;
-                positionLerp.setStart(pos);
+                positionLerp.setStartPosition(pos);
                 positionLerp.setPosition(pos);
-                positionLerp.setTarget(hand.transform);
+                positionLerp.setTargetTransform(hand.transform);
                 AnimAnim anim = null;
                 while (!SimpleAnimHelper.update(table, ref anim, hand.onDraw, hand.animator, _deltaTime))
                 {

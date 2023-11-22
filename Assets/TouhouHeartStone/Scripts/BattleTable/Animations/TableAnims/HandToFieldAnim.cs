@@ -31,8 +31,8 @@ namespace Game.BattleTable
             var servant = table.createServant(_servantDesc, _position);
             servant.gameObject.SetActive(false);
             AnimAnim anim = null;
-            _tableCard.positionLerp.setStart(table.TableToWorldPosition(_startPosition));
-            _tableCard.positionLerp.setTarget(servant.transform);
+            _tableCard.positionLerp.setStartPosition(table.TableToWorldPosition(_startPosition));
+            _tableCard.positionLerp.setTargetTransform(servant.transform);
 
             while (_tableCard && !SimpleAnimHelper.update(table, ref anim, _tableCard.onSummon, _tableCard.animator, _deltaTime))
             {

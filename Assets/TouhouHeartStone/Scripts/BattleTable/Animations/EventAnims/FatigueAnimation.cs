@@ -21,7 +21,7 @@ namespace Game.BattleTable
             var deck = player == table.player ? table.table.SelfDeck : table.table.EnemyDeck;
             fatigue.transform.position = deck.HoverTransform.position;
             fatigue.setActive(true);
-            fatigue.positionLerp.setStart();
+            fatigue.positionLerp.setStartPositionToCurrent();
             _anim = new AnimAnim(fatigue.animator, fatigue.onFatigue.animName);
             while (!_anim.update(table, _deltaTime))
                 yield return null;
