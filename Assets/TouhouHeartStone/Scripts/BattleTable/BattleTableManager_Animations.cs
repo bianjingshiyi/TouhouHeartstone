@@ -157,7 +157,9 @@ namespace Game.BattleTable
             var animationDef = gameManager.getAnimationDefine(skinAnimRef.animRef);
             if (animationDef != null)
             {
-                addAnim(new EventEffectAnim(animationDef, arg, effectTriggerArg, skinAnimRef));
+                var anim = new EventEffectAnim(animationDef, arg, effectTriggerArg, skinAnimRef);
+                addAnim(anim);
+                addToInsertedAnimsOfParent(arg, anim);
             }
         }
         private void checkCardSkinEffectEntryAnimation(EffectTriggerEventArg arg)
@@ -290,6 +292,23 @@ namespace Game.BattleTable
             return eventRef == argRef;
         }
         #endregion
+        private void addToInsertedAnimsOfParent(IEventArg arg, TableAnimation anim)
+        {
+            var parent = arg.parent;
+            while (parent != null)
+            {
+                if (parent.state == EventState.Before)
+                {
+                    var anims = _animationCache.Concat(_animationQueue).OfType<EventAnimation>().Where(e => e.eventArg == parent);
+                    foreach (var a in anims)
+                    {
+                        a.insertedAnims.Add(anim);
+                    }
+                }
+                parent = parent.parent;
+            }
+        }
+
         /// <summary>
         /// 等待被加入到待播放队列中的动画。
         /// </summary>
@@ -351,25 +370,6 @@ namespace Game.BattleTable
                 insertingAnims.Insert(0, anim);
                 _animationCache.RemoveAt(i);
             }
-            // 为内部的事件动画设置插入事件的动画。
-            foreach (var anim in insertingAnims)
-            {
-                if (anim is EventAnimation eventAnim)
-                {
-                    var parentArg = eventAnim.eventArg;
-                    var beforeChildren = parentArg.getChildEvents(EventState.Before);
-                    eventAnim.insertedAnims = insertingAnims.OfType<EventAnimation>().Where(e => {
-                        var evt = e.eventArg;
-                        while (evt != null)
-                        {
-                            if (beforeChildren.Contains(evt))
-                                return true;
-                            evt = evt.parent;
-                        }
-                        return false;
-                    }).ToArray();
-                }
-            }
             _animationQueue.AddRange(insertingAnims);
             insertingAnims.Clear();
         }
@@ -380,6 +380,10 @@ namespace Game.BattleTable
         public AnimationGroup getAnimGroupOfAnim(TableAnimation anim)
         {
             return _animationGroups.FirstOrDefault(g => g.Contains(anim));
+        }
+        public AnimationGroup[] getAllAnimGroups()
+        {
+            return _animationGroups.ToArray();
         }
         public AnimationGroup getNextGroupOfAnimGroup(AnimationGroup anim)
         {

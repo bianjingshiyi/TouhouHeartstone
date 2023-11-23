@@ -101,9 +101,10 @@ namespace Game.BattleTable
         {
             if (table.tryGetHand(_card, out var hand))
             {
+                var player = record.getVar<Player>(EVENTVAR.PLAYER);
                 var fieldIndex = record.getVar<int>(EVENTVAR.POSITION);
                 var pos = table.WorldToTablePosition(hand.transform.position);
-                var moveAnim = new HandToFieldAnim(pos, table.getCardDescriptor(_card.id), fieldIndex);
+                var moveAnim = new HandToFieldAnim(table.getCardDescriptor(_card.id), pos, player.getHand(), player.getField(), fieldIndex);
                 while (!moveAnim.update(table, _deltaTime))
                     yield return null;
             }
@@ -129,7 +130,7 @@ namespace Game.BattleTable
                 // 如果有这个随从，播放回手动画。
                 if (table.tryGetServant(_card, out _))
                 {
-                    var moveAnim = new FieldToHandAnim(_card.id, handPosition);
+                    var moveAnim = new FieldToHandAnim(_card.id, _card.owner.getField(), _card.owner.getHand(), handPosition);
                     while (!moveAnim.update(table, _deltaTime))
                         yield return null;
                 }

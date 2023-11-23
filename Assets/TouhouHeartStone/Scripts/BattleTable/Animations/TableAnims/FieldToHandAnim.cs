@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using TouhouCardEngine;
 using UnityEngine;
 
 namespace Game.BattleTable
@@ -8,39 +9,31 @@ namespace Game.BattleTable
     class FieldToHandAnim : TableAnimation
     {
         [SerializeField]
-        int _position;
-        [SerializeField]
         private Transform _target;
         int _cardId;
-        public FieldToHandAnim(int cardId, int index)
+        Pile _fromPile;
+        Pile _toPile;
+        int _position;
+        public FieldToHandAnim(int cardId, Pile fromPile, Pile toPile, int position)
         {
             _cardId = cardId;
-            _position = index;
+            _fromPile = fromPile;
+            _toPile = toPile;
+            _position = position;
         }
         public override IEnumerator update(BattleTableManager table)
         {
             Vector3 sourcePosition = Vector3.zero;
             if (table.tryGetServant(_cardId, out var servant))
             {
-                sourcePosition = servant.transform.position;
+                sourcePosition = table.WorldToTablePosition(servant.transform.position);
                 table.removeServant(_cardId);
             }
-            if (!table.tryGetHand(_cardId, out _))
+            var anim = new MoveToHandAnim(table.getCardDescriptor(_cardId), sourcePosition, _fromPile, _toPile, _position);
+            while (!anim.update(table, _deltaTime))
             {
-                var cardDesc = table.getCardDescriptor(_cardId);
-                var hand = table.createHand(cardDesc, _position);
-                var positionLerp = hand.positionLerp;
-                var pos = sourcePosition;
-                positionLerp.setStartPosition(pos);
-                positionLerp.setPosition(pos);
-                positionLerp.setTargetTransform(hand.transform);
-                AnimAnim anim = null;
-                while (!SimpleAnimHelper.update(table, ref anim, hand.onDraw, hand.animator, _deltaTime))
-                {
-                    yield return null;
-                }
+                yield return null;
             }
-            yield break;
         }
     }
 }

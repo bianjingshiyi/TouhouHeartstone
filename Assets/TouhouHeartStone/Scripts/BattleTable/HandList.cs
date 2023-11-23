@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -41,10 +42,13 @@ namespace Game.BattleTable
             hand.onEndDrag += onHandItemEndDragCallback;
             hand.onPointerEnter += onHandItemPointerEnterCallback;
             hand.onPointerExit += onHandItemPointerExitCallback;
-            _hands.Insert(position, hand);
+
+            int insertPos = getInsertPosition(position);
+            _hands.Insert(insertPos, hand);
+            addHandToEmpty(position);
             hand.transform.SetParent(_handRoot, false);
 
-            Vector3 targetPosition = getHandTargetPosition(position, _hands.Count);
+            Vector3 targetPosition = getHandTargetLocalPosition(position, _hands.Count);
             hand.transform.localPosition = targetPosition;
 
             return hand;
@@ -59,6 +63,7 @@ namespace Game.BattleTable
         }
         public bool removeHand(HandItem hand)
         {
+            int handPos = getHandRealPosition(hand);
             if (_hands.Remove(hand))
             {
                 hand.onClick -= onHandItemClickCallback;
@@ -68,6 +73,8 @@ namespace Game.BattleTable
                 hand.onPointerEnter -= onHandItemPointerEnterCallback;
                 hand.onPointerExit -= onHandItemPointerExitCallback;
                 hand.destroy();
+
+                removeHandFromEmpty(handPos);
                 return true;
             }
             return false;
@@ -85,6 +92,15 @@ namespace Game.BattleTable
                 hand.destroy();
             }
             _hands.Clear();
+        }
+        public Vector3 getHandTargetPosition(int index)
+        {
+            var localPos = getHandTargetLocalPosition(index, _hands.Count);
+            return _handRoot.TransformPoint(localPos);
+        }
+        public int indexOf(HandItem hand)
+        {
+            return _hands.IndexOf(hand);
         }
         #region 私有方法
         #region 生命周期
@@ -127,15 +143,63 @@ namespace Game.BattleTable
         }
         #endregion
 
+        #region 暂存手牌列表
+        private int getInsertPosition(int position)
+        {
+            var insertPos = position;
+            var emptySlots = _emptyPositions.Where(pos => pos < position).Count();
+            insertPos -= emptySlots;
+            if (insertPos > _hands.Count)
+            {
+                insertPos = _hands.Count;
+                for (int i = _hands.Count + emptySlots; i < position; i++)
+                {
+                    _emptyPositions.Add(i);
+                }
+            }
+            return insertPos;
+        }
+        private int getHandRealPosition(HandItem hand)
+        {
+            int index = _hands.IndexOf(hand);
+            index += _emptyPositions.Where(pos => pos < index).Count();
+            return index;
+        }
+        private void addHandToEmpty(int position)
+        {
+            _emptyPositions.Remove(position);
+            for (int i = 0; i < _emptyPositions.Count; i++)
+            {
+                var pos = _emptyPositions[i];
+                if (pos > position)
+                {
+                    _emptyPositions.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+        private void removeHandFromEmpty(int position)
+        {
+            _emptyPositions.Remove(position);
+            for (int i = 0; i < _emptyPositions.Count; i++)
+            {
+                var pos = _emptyPositions[i];
+                if (position < pos)
+                {
+                    _emptyPositions[i] = pos - 1;
+                }
+            }
+        }
+        #endregion
         private void alignHands(float deltaTime)
         {
             int count = _hands.Count;
             for (int i = 0; i < _hands.Count; i++)
             {
                 var hand = _hands[i];
-                if (hand != ignoreAlignHand)
+                if (!hand.ignoreAlign)
                 {
-                    var targetPosition = getHandTargetPosition(i, count);
+                    var targetPosition = getHandTargetLocalPosition(i, count);
                     var distance = (targetPosition - hand.transform.localPosition).magnitude;
                     hand.transform.SetSiblingIndex(i);
                     hand.transform.localPosition = Vector3.MoveTowards(hand.transform.localPosition, targetPosition, distance * deltaTime * _alignSpeed);
@@ -143,7 +207,7 @@ namespace Game.BattleTable
             }
         }
 
-        private Vector3 getHandTargetPosition(int position, int count)
+        private Vector3 getHandTargetLocalPosition(int position, int count)
         {
             float rectWidth = _rectTransform?.rect.width ?? 10;
             float pivotX = _rectTransform?.pivot.x ?? 0.5f;
@@ -170,7 +234,8 @@ namespace Game.BattleTable
         #endregion
 
         public bool isZoomIn => _isZoomIn;
-        public HandItem ignoreAlignHand { get; set; }
+        public int count => _hands.Count;
+        public HandItem this[int index] => _hands[index];
         [SerializeField]
         private RectTransform _rectTransform;
         [SerializeField]
@@ -191,5 +256,9 @@ namespace Game.BattleTable
         private float _cardThickness = 0.1f;
         [SerializeField]
         private float _alignSpeed = 20;
+        /// <summary>
+        /// 暂存手牌列表，用于暂时存储缺失的手牌位置。用于解决将手牌插入到大于当前手牌数量的位置的问题。
+        /// </summary>
+        private List<int> _emptyPositions = new List<int>();
     }
 }

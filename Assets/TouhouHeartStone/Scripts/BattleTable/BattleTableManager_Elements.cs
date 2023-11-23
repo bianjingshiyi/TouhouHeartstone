@@ -362,6 +362,10 @@ namespace Game.BattleTable
             }
             return false;
         }
+        public Item getItem(Pile pile)
+        {
+            return pile?.owner == player ? table.SelfItem : table.EnemyItem;
+        }
         #endregion 道具
 
         #region 手牌
@@ -385,6 +389,16 @@ namespace Game.BattleTable
         /// <returns></returns>
         public HandItem createHand(CardDescriptor desc, int position = -1)
         {
+            return createHand(desc, desc.getOwner(), position);
+        }
+        /// <summary>
+        /// 创建一张手牌
+        /// </summary>
+        /// <param name="desc"></param>
+        /// <param name="position">默认为-1也就是最右手</param>
+        /// <returns></returns>
+        public HandItem createHand(CardDescriptor desc, Player owner, int position = -1)
+        {
             if (tryGetHand(desc.id, out var hand))
             {
                 UberDebug.LogErrorChannel("UI", $"手牌中已经存在{desc}对应UI{hand}");
@@ -392,7 +406,6 @@ namespace Game.BattleTable
             }
             UberDebug.LogTraceChannel("UI", $"创建手牌UI：{desc}");
             HandItem item;
-            Player owner = desc.getOwner();
             bool selfHand = owner == player;
             HandList handList = selfHand ? table.SelfHandList : table.EnemyHandList;
             if (position < 0)
@@ -407,7 +420,7 @@ namespace Game.BattleTable
             setCardDesc(item.card, desc, canSeeCardOfOwner(owner));
 
             var skin = cardManager.getCardSkin(desc.define);
-            item.gameObject.name = skin?.name ?? $"Card<{desc.id}>";
+            item.gameObject.name = $"{skin?.name ?? "Hand"}<{desc.id}>";
             cardHandDic.Add(desc.id, item);
             return item;
         }
@@ -495,9 +508,7 @@ namespace Game.BattleTable
                 setCardDesc(usingHand.card, desc, true);
                 usingHand.card.transform.localScale = Vector3.one;
                 usingHand.card.transform.localPosition = Vector3.zero;
-
-                var handList = table.SelfHandList;
-                handList.ignoreAlignHand = null;
+                usingHand.ignoreAlign = false;
             }
         }
         /// <summary>
@@ -513,6 +524,10 @@ namespace Game.BattleTable
                     return game.getCard(pair.Key);
             }
             return null;
+        }
+        public HandList getHandList(Pile pile)
+        {
+            return pile?.owner == player ? table.SelfHandList : table.EnemyHandList;
         }
         #endregion 手牌
 
@@ -530,9 +545,16 @@ namespace Game.BattleTable
         /// <param name="desc"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        public Servant createServant(CardDescriptor desc, int position)
+        public Servant createServant(CardDescriptor desc, int position) => createServant(desc, desc.getOwner(), position);
+        /// <summary>
+        /// 创建一个随从
+        /// </summary>
+        /// <param name="desc"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public Servant createServant(CardDescriptor desc, Player owner, int position)
         {
-            bool isSelf = desc.getOwner() == player;
+            bool isSelf = owner == player;
             var field = isSelf ? table.SelfField : table.EnemyField;
             Servant servant;
             if (position < 0)
@@ -704,17 +726,29 @@ namespace Game.BattleTable
         #endregion
 
         #region 牌库
+        public void addCardToDeckOrGrave(Pile pile, int cardId)
+        {
+            List<int> deckList;
+            if (pile?.name == PILE.GRAVE)
+            {
+                deckList = pile?.owner == player ? _selfGraveList : _selfGraveList;
+            }
+            else
+            {
+                deckList = pile?.owner == player ? _selfDeckList : _enemyDeckList;
+            }
+            deckList.Add(cardId);
+        }
         public void addCardToDeck(ICardData card) => addCardToDeck(card.owner, card.id);
         public void addCardToDeck(Player owner, int cardId)
         {
             var deckList = owner == player ? _selfDeckList : _enemyDeckList;
             deckList.Add(cardId);
         }
-        public void removeCardFromDeck(ICardData card) => removeCardFromDeck(card.id);
-        public void removeCardFromDeck(int cardId)
+        public bool removeCardFromDeck(ICardData card) => removeCardFromDeck(card.id);
+        public bool removeCardFromDeck(int cardId)
         {
-            _selfDeckList.Remove(cardId);
-            _enemyDeckList.Remove(cardId);
+            return _selfDeckList.Remove(cardId) || _enemyDeckList.Remove(cardId);
         }
         /// <summary>
         /// 获取牌库引用
@@ -762,6 +796,14 @@ namespace Game.BattleTable
             deck = null;
             return false;
         }
+        public Deck getDeckUI(Pile pile)
+        {
+            if (pile?.name == PILE.GRAVE)
+            {
+                return pile.owner == player ? table.SelfGrave : table.EnemyGrave;
+            }
+            return pile.owner == player ? table.SelfDeck : table.EnemyDeck;
+        }
         #endregion
 
         #region 墓地
@@ -771,11 +813,10 @@ namespace Game.BattleTable
             var deckList = owner == player ? _selfGraveList : _enemyGraveList;
             deckList.Add(cardId);
         }
-        public void removeCardFromGrave(ICardData card) => removeCardFromGrave(card.id);
-        public void removeCardFromGrave(int cardId)
+        public bool removeCardFromGrave(ICardData card) => removeCardFromGrave(card.id);
+        public bool removeCardFromGrave(int cardId)
         {
-            _selfGraveList.Remove(cardId);
-            _enemyGraveList.Remove(cardId);
+            return _selfGraveList.Remove(cardId) || _enemyGraveList.Remove(cardId);
         }
         /// <summary>
         /// 获取墓地引用
@@ -973,11 +1014,12 @@ namespace Game.BattleTable
             }
             return false;
         }
-        public void setSecret(Secret secret, ICardData card)
+        public void setSecret(Secret secret, ICardData card) => setSecret(secret, updateCardDescriptor(card));
+        public void setSecret(Secret secret, CardDescriptor desc)
         {
-            var owner = card.getOwner();
+            var owner = desc.getOwner();
             secret.setSecretOpen(currentAnimPlayer != owner);
-            secret.setMission(card.define.hasKeyword(KEYWORD.MISSION));
+            secret.setMission(desc.define.hasKeyword(KEYWORD.MISSION));
         }
         public bool removeSecret(ICardData card) => removeSecret(card.id);
         public bool removeSecret(CardDescriptor desc)
@@ -1268,6 +1310,22 @@ namespace Game.BattleTable
             return projectile;
         }
 
+        public Vector3 getCardMoveMiddlePosition(Vector3 startTablePos, Vector3 targetTablePos)
+        {
+            var centerPos = WorldToTablePosition(table.CenterDisplayTransform.position);
+            var x = (startTablePos.x + targetTablePos.x) / 2;
+            var y = centerPos.y;
+            var middleZ = (startTablePos.z + targetTablePos.z) / 2;
+            var z = middleZ - (middleZ - centerPos.z) * 0.2f;
+            return new Vector3(x, y, z);
+        }
+        public Vector3 getCardMoveMiddleWorldPosition(Vector3 startWorldPosition, Vector3 targetWorldPosition)
+        {
+            var startTablePos = WorldToTablePosition(startWorldPosition);
+            var targetTablePos = WorldToTablePosition(targetWorldPosition);
+            var middlePosition = getCardMoveMiddlePosition(startTablePos, targetTablePos);
+            return TableToWorldPosition(middlePosition);
+        }
 
         #endregion
         #region 私有方法
@@ -1348,7 +1406,7 @@ namespace Game.BattleTable
             if (isSelectingTargetForOtherCards(card))//已经在用别的牌了
                 return;
             usingCard = card;
-            list.ignoreAlignHand = hand;
+            hand.ignoreAlign = true;
         }
         private void onHandItemDragCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
@@ -2080,7 +2138,7 @@ namespace Game.BattleTable
         {
             cancelServantPreviewAnim(card);
             _servantUsingPosition = index;
-            var fieldAnim = new HandToFieldAnim(pos, getCardDescriptor(card), index);
+            var fieldAnim = new HandToFieldAnim(getCardDescriptor(card), pos, player.getHand(), player.getField(), index);
             addAnim(fieldAnim);
             _servantPreviewAnimDict.Add(card.id, fieldAnim);
             return fieldAnim;
@@ -2097,7 +2155,7 @@ namespace Game.BattleTable
                     if (tryGetServant(card, out _))
                     {
                         updateCardDescriptor(card);
-                        addAnim(new FieldToHandAnim(card.id, handPosition));
+                        addAnim(new FieldToHandAnim(card.id, player.getField(), player.getHand(), handPosition));
                     }
                     else //没有这个随从，直接创建手牌。
                     {
@@ -2106,9 +2164,7 @@ namespace Game.BattleTable
                 }
                 else // 有这张手牌。
                 {
-                    HandList handList = table.SelfHandList.contains(hand) ? table.SelfHandList : table.EnemyHandList;
-                    if (handList.ignoreAlignHand == hand)
-                        handList.ignoreAlignHand = null;
+                    hand.ignoreAlign = false;
                 }
                 return true;
             }

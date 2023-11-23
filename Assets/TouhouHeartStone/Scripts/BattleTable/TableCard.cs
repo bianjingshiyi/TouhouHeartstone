@@ -21,8 +21,9 @@ namespace Game.BattleTable
             animator.SetBool("isFaceUp", faceup);
             if (immediate)
             {
-                animator.Play(faceup ? _faceFrontStateName : _faceBackStateName);
+                animator.Play(faceup ? _faceFrontStateName : _faceBackStateName, -1, 0);
             }
+            _isFaceup = faceup;
         }
         public void setType(string type)
         {
@@ -167,6 +168,7 @@ namespace Game.BattleTable
         public PositionLerp positionLerp => _positionLerp;
         public float width => _width;
         public float height => _height;
+        public bool isFaceup => _isFaceup;
         public SimpleAnim onSummon;
         public SimpleAnim onShowAnim;
         public SimpleAnim onFlipToFace;
@@ -201,6 +203,8 @@ namespace Game.BattleTable
         private SpellCardFace _spellCardFace;
         [SerializeField]
         private ItemCardFace _itemCardFace;
+
+        private bool _isFaceup = true;
         #endregion
     }
 }

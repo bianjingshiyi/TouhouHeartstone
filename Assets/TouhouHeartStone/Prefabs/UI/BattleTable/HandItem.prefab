@@ -27,13 +27,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9131677159056905311}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7260137285625517193}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 180, z: 0}
 --- !u!114 &4573064840326099427
 MonoBehaviour:
@@ -64,11 +65,12 @@ MonoBehaviour:
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
-  onDraw:
+  onLinearDrawStart:
     beforeAnim:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 4938810825096147403}
+          m_TargetAssemblyTypeName: Game.BattleTable.TableSEPlayer, Game
           m_MethodName: PlaySEClip
           m_Mode: 2
           m_Arguments:
@@ -84,7 +86,93 @@ MonoBehaviour:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: HandCard_DrawCard
+    animName: Hand_LinearMoveStart
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onLinearDraw:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: Hand_LinearMove
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onSelfDrawStart:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4938810825096147403}
+          m_TargetAssemblyTypeName: Game.BattleTable.TableSEPlayer, Game
+          m_MethodName: PlaySEClip
+          m_Mode: 2
+          m_Arguments:
+            m_ObjectArgument: {fileID: 8300000, guid: 050743a5f576d70409c269585fb863cb,
+              type: 3}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.AudioClip, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: Hand_EaseMoveStart
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onSelfDraw:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: Hand_EaseMove
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onCreatedStart:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4938810825096147403}
+          m_TargetAssemblyTypeName: Game.BattleTable.TableSEPlayer, Game
+          m_MethodName: PlaySEClip
+          m_Mode: 2
+          m_Arguments:
+            m_ObjectArgument: {fileID: 8300000, guid: 050743a5f576d70409c269585fb863cb,
+              type: 3}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.AudioClip, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: Hand_CreatedStart
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onCreated:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: Hand_Created
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -114,7 +202,7 @@ MonoBehaviour:
         m_Calls: []
 --- !u!95 &8514158404629387690
 Animator:
-  serializedVersion: 3
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -127,10 +215,12 @@ Animator:
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &8219681633789305804
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,6 +238,7 @@ MonoBehaviour:
   _targetTransform: {fileID: 0}
   _stopDistance: 0
   _startPosition: {x: 0, y: 0, z: 0}
+  _targetPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &4938810825096147403
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,6 +261,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 6553402267502667292}
     m_Modifications:
     - target: {fileID: 29921532218804711, guid: 61200305fab94464b82979faf2e99f54,
@@ -185,12 +277,12 @@ PrefabInstance:
     - target: {fileID: 1007521763703317052, guid: 61200305fab94464b82979faf2e99f54,
         type: 3}
       propertyPath: m_fontColor.r
-      value: 0.27450982
+      value: 0.15686275
       objectReference: {fileID: 0}
     - target: {fileID: 1007521763703317052, guid: 61200305fab94464b82979faf2e99f54,
         type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4279838790
+      value: 4279838760
       objectReference: {fileID: 0}
     - target: {fileID: 1348821094672071103, guid: 61200305fab94464b82979faf2e99f54,
         type: 3}
@@ -225,12 +317,12 @@ PrefabInstance:
     - target: {fileID: 5874181008418908739, guid: 61200305fab94464b82979faf2e99f54,
         type: 3}
       propertyPath: m_fontColor.r
-      value: 0.27450982
+      value: 0.15686275
       objectReference: {fileID: 0}
     - target: {fileID: 5874181008418908739, guid: 61200305fab94464b82979faf2e99f54,
         type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4279838790
+      value: 4279838760
       objectReference: {fileID: 0}
     - target: {fileID: 6291849249439595923, guid: 61200305fab94464b82979faf2e99f54,
         type: 3}
@@ -328,13 +420,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 61200305fab94464b82979faf2e99f54, type: 3}
---- !u!4 &7260137285625517193 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8895291951548913772, guid: 61200305fab94464b82979faf2e99f54,
-    type: 3}
-  m_PrefabInstance: {fileID: 2284271156589612261}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2681186464698304563 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4217093706355590358, guid: 61200305fab94464b82979faf2e99f54,
@@ -347,3 +436,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb39503610ad573409b34589c72ba359, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &7260137285625517193 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8895291951548913772, guid: 61200305fab94464b82979faf2e99f54,
+    type: 3}
+  m_PrefabInstance: {fileID: 2284271156589612261}
+  m_PrefabAsset: {fileID: 0}

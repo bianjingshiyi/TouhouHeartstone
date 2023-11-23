@@ -95,7 +95,7 @@ namespace Game.BattleTable
     public abstract class EventAnimation : TableAnimation
     {
         public IEventArg eventArg { get; set; }
-        public TableAnimation[] insertedAnims { get; set; }
+        public List<TableAnimation> insertedAnims { get; } = new List<TableAnimation>();
         public EventRecord record { get; set; }
         public virtual void postEvent(BattleTableManager table)
         {
@@ -157,7 +157,7 @@ namespace Game.BattleTable
             animState = EventAnimState.Started;
             yield return startUpdate(table, record, tEventArg);
             animState = EventAnimState.StartFinished;
-            while (!record.isCompleted || (insertedAnims != null && insertedAnims.Length > 0 && !insertedAnims.All(a => a.isFinished())))
+            while (!record.isCompleted || (insertedAnims != null && insertedAnims.Count > 0 && !insertedAnims.All(a => a.isFinished())))
             {
                 yield return null;
             }
@@ -187,7 +187,7 @@ namespace Game.BattleTable
         }
         private bool isAnimGroupInsertedAnimOfThis(AnimationGroup nextGroup)
         {
-            if (insertedAnims == null || insertedAnims.Length <= 0)
+            if (insertedAnims == null || insertedAnims.Count <= 0)
                 return false;
             return nextGroup.Any(a => insertedAnims.Contains(a));
         }

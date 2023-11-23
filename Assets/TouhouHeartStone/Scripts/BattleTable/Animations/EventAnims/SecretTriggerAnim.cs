@@ -26,6 +26,7 @@ namespace Game.BattleTable
                 }
                 secret.onSecretTrigger.invokeAfterAnim();
                 secret.onSecretExit.invokeAfterAnim();
+                table.removeSecret(card.id);
             }
         }
     }

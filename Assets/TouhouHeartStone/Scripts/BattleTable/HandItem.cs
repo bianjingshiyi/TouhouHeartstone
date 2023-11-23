@@ -85,9 +85,15 @@ namespace Game.BattleTable
             get { return _isDraggable; }
             set { _isDraggable = value; }
         }
+        public bool ignoreAlign { get; set; }
 
         public SimpleAnim onSetDefine;
-        public SimpleAnim onDraw;
+        public SimpleAnim onLinearDrawStart;
+        public SimpleAnim onLinearDraw;
+        public SimpleAnim onSelfDrawStart;
+        public SimpleAnim onSelfDraw;
+        public SimpleAnim onCreatedStart;
+        public SimpleAnim onCreated;
         public SimpleAnim onEnemyUse;
         public SimpleAnim onSelfUse;
         #endregion

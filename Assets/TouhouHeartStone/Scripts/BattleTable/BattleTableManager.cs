@@ -433,7 +433,10 @@ namespace Game.BattleTable
             checkCardSkinEffectAnimations(arg);
             TableAnimation anim = getEventAnim(arg);
             if (anim != null)
+            {
                 addAnim(anim);
+                addToInsertedAnimsOfParent(arg, anim);
+            }
 
             _allControlDirty = true;
         }
@@ -543,17 +546,14 @@ namespace Game.BattleTable
         [SerializeField]
         private float _skillDragThreshold = 75;
         public float skillDragThreshold => _skillDragThreshold;
-        [SerializeField]
-        AnimationCurve _moveToFieldCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
-        public AnimationCurve handToFieldCurve => _moveToFieldCurve;
-        [SerializeField]
-        AnimationCurve _fieldMoveCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
-        public AnimationCurve fieldMoveCurve => _fieldMoveCurve;
+        public AnimationCurve cardShowCurve => _cardShowCurve;
+        public AnimationCurve toDeckCurveStart => _toDeckCurveStart;
+        public AnimationCurve toDeckCurveEnd => _toDeckCurveEnd;
         [SerializeField]
         AnimationCurve _cardShowCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(0.2f, 1));
-        public AnimationCurve cardShowCurve => _cardShowCurve;
         [SerializeField]
-        AnimationCurve _fieldToDeckCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(0.6f, 1));
-        public AnimationCurve fieldToDeckCurve => _fieldToDeckCurve;
+        AnimationCurve _toDeckCurveStart = new AnimationCurve(new Keyframe(0, 0), new Keyframe(0.6f, 1));
+        [SerializeField]
+        AnimationCurve _toDeckCurveEnd = new AnimationCurve(new Keyframe(0, 0), new Keyframe(0.6f, 1));
     }
 }

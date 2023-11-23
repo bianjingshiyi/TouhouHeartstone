@@ -57,5 +57,9 @@ namespace Game.BattleTable
             }
             return true;
         }
+        public override string ToString()
+        {
+            return string.Join(",", this);
+        }
     }
 }

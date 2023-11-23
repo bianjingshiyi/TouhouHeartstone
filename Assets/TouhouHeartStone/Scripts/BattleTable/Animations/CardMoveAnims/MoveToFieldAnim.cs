@@ -1,0 +1,101 @@
+﻿using System.Collections;
+using TouhouCardEngine;
+using TouhouHeartstone;
+using UnityEngine;
+
+namespace Game.BattleTable
+{
+    class MoveToFieldAnim : CardMoveAnim
+    {
+        public MoveToFieldAnim(CardDescriptor cardDesc, Vector3 startPos, Pile fromPile, Pile toPile, int index, float cardHeight) : base(cardDesc, startPos, fromPile, toPile)
+        {
+            _position = index;
+            _cardHeight = cardHeight;
+        }
+        public override IEnumerator startUpdate(BattleTableManager table, float deltaTime)
+        {
+            // 1. 如果Servant已经存在，什么也不播放。
+            if (table.tryGetServant(_cardDesc.id, out _))
+                yield break;
+
+            // 2. 移除源牌堆的卡牌。
+            removeCard(table);
+
+            // 3. 创建隐藏的Servant。
+            var servant = table.createServant(_cardDesc, _to?.owner, _position);
+            servant.gameObject.SetActive(false);
+            servant.setHidden(true);
+
+            // 4. 如果源牌堆不是空牌堆或广义战场牌堆，创建MovingCard，将MovingCard移动到Servant位置。
+            if (_from == null || _from.isGeneralizedBattlefield())
+                yield break;
+            _tableCard = table.createMovingCard(_cardDesc, _startTablePos, _cardHeight);
+
+            updateStartFaceup(table, _tableCard);
+
+            var field = _cardDesc.getOwner() == table.player ? table.table.SelfField : table.table.EnemyField;
+            _tableCard.positionLerp.setStartPosition(table.TableToWorldPosition(_startTablePos));
+            _tableCard.positionLerp.setTargetTransform(servant.transform);
+
+            AnimAnim anim = null;
+            while (_tableCard && !SimpleAnimHelper.update(table, ref anim, _tableCard.onSummon, _tableCard.animator, deltaTime))
+            {
+                yield return null;
+            }
+        }
+        public override IEnumerator logicUpdate(BattleTableManager table, float deltaTime)
+        {
+            // 1. 移除MovingCard。
+            table.removeMovingCard(_cardDesc);
+
+            // 2. 如果Servant被隐藏，使Servant显示。
+            if (!table.tryGetServant(_cardDesc.id, out Servant servant))
+                servant = table.createServant(_cardDesc, _position);
+
+            if (!servant.gameObject.activeSelf)
+            {
+                servant.gameObject.SetActive(true);
+                servant.setHidden(false);
+                AnimAnim anim = null;
+                while (!SimpleAnimHelper.update(table, ref anim, servant.onSummon, servant.animator, deltaTime))
+                {
+                    servant.animator.Update(0);
+                    yield return null;
+                }
+            }
+            table.game.logger.logTrace("Animation", $"{table.getCard(servant)}移动动画结束");
+        }
+        public void forceFinish(BattleTableManager table)
+        {
+            if (_tableCard)
+            {
+                table.removeMovingCard(_cardDesc);
+                _tableCard = null;
+            }
+            if (table.tryGetServant(_cardDesc.id, out var servant))
+            {
+                servant.gameObject.SetActive(true);
+                servant.setHidden(false);
+            }
+            else
+            {
+                table.createServant(_cardDesc, _position);
+            }
+            finish();
+        }
+        public override Vector3 getCurrentPosition(BattleTableManager table)
+        {
+            if (_tableCard)
+                return table.WorldToTablePosition(_tableCard.transform.position);
+            if (table.tryGetServant(_cardDesc.id, out var servant))
+                return table.WorldToTablePosition(servant.transform.position);
+            if (table.tryGetMovingCard(_cardDesc.id, out var moving))
+                return table.WorldToTablePosition(moving.transform.position);
+            return Vector3.zero;
+        }
+
+        private int _position;
+        private float _cardHeight;
+        private TableCard _tableCard;
+    }
+}
