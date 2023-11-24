@@ -89,6 +89,9 @@ namespace TouhouHeartstone
         public static async Task<MoveCardEventArg> moveTo(IGame game, Card card, Pile from, Pile to, int position)
         {
             var eventArg = new MoveCardEventArg(from, to, card, position);
+            if (!Pile.canMove(card, from, to))
+                return eventArg;
+
             if (game != null)
             {
                 async Task func(MoveCardEventArg arg)

@@ -99,7 +99,7 @@ namespace Game.BattleTable
                 startPos = _moveAnim.getCurrentPosition(table);
             }
             // 播放移动动画。
-            CardMoveAnim anim = null;
+            CardMoveAnim anim;
             switch (toName)
             {
                 case PILE.DECK: // 任意牌堆-->牌库
@@ -117,6 +117,9 @@ namespace Game.BattleTable
                     break;
                 case PILE.ITEM: // 任意牌堆-->道具
                     anim = new MoveToItemAnim(card, startPos, from, to);
+                    break;
+                default: // 任意牌堆-->无牌堆
+                    anim = new MoveToNullAnim(card, startPos, from, to);
                     break;
             }
             if (anim != null)
@@ -176,6 +179,12 @@ namespace Game.BattleTable
                         anim = new MoveToItemAnim(card, startPos, from, to);
                     }
                     break;
+                default: // 任意牌堆-->无牌堆
+                    if (_moveAnim is not MoveToNullAnim)
+                    {
+                        anim = new MoveToNullAnim(card, startPos, from, to);
+                    }
+                    break;
             }
             if (anim != null)
             {
@@ -203,7 +212,7 @@ namespace Game.BattleTable
                 startPos = _moveAnim.getCurrentPosition(table);
             }
             // 播放移动动画。
-            CardMoveAnim anim = null;
+            CardMoveAnim anim;
             switch (toName)
             {
                 case PILE.DECK: // 牌库-->任意牌堆
@@ -221,6 +230,9 @@ namespace Game.BattleTable
                     break;
                 case PILE.ITEM: // 道具-->任意牌堆
                     anim = new MoveToItemAnim(card, startPos, from, to);
+                    break;
+                default: // 无牌堆-->任意牌堆
+                    anim = new MoveToNullAnim(card, startPos, from, to);
                     break;
             }
             if (anim != null)

@@ -56,6 +56,7 @@ namespace Game.BattleTable
             {
                 servant.gameObject.SetActive(true);
                 servant.setHidden(false);
+                table.setServant(servant, _cardDesc);
                 AnimAnim anim = null;
                 while (!SimpleAnimHelper.update(table, ref anim, servant.onSummon, servant.animator, deltaTime))
                 {
