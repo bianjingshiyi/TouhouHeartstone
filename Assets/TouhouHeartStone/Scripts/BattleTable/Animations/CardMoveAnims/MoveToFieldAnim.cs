@@ -48,10 +48,10 @@ namespace Game.BattleTable
             // 1. 移除MovingCard。
             table.removeMovingCard(_cardDesc);
 
-            // 2. 如果Servant被隐藏，使Servant显示。
             if (!table.tryGetServant(_cardDesc.id, out Servant servant))
                 servant = table.createServant(_cardDesc, _position);
 
+            // 2. 如果Servant被隐藏，使Servant显示。
             if (!servant.gameObject.activeSelf)
             {
                 servant.gameObject.SetActive(true);
@@ -61,6 +61,17 @@ namespace Game.BattleTable
                 {
                     servant.animator.Update(0);
                     yield return null;
+                }
+            }
+            var sourceField = servant.field;
+            var targetField = table.getField(_to);
+            if (sourceField != targetField && sourceField != null)
+            {
+                Vector3 transPos = servant.transform.position;
+                if (sourceField.removeServant(servant, false))
+                {
+                    targetField.insertServant(_position, servant);
+                    servant.transform.position = transPos;
                 }
             }
             table.game.logger.logTrace("Animation", $"{table.getCard(servant)}移动动画结束");
@@ -87,11 +98,10 @@ namespace Game.BattleTable
         {
             if (_tableCard)
                 return table.WorldToTablePosition(_tableCard.transform.position);
-            if (table.tryGetServant(_cardDesc.id, out var servant))
-                return table.WorldToTablePosition(servant.transform.position);
-            if (table.tryGetMovingCard(_cardDesc.id, out var moving))
-                return table.WorldToTablePosition(moving.transform.position);
-            return Vector3.zero;
+            var transform = table.getCardTransform(_cardDesc.id);
+            if (transform)
+                return table.WorldToTablePosition(transform.position);
+            return _startTablePos;
         }
 
         private int _position;

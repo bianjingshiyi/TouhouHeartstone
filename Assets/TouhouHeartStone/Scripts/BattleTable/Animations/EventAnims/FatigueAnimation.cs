@@ -9,12 +9,12 @@ namespace Game.BattleTable
     {
         AnimAnim _anim;
 
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
             yield return stopWhenCanceled();
 
-            var player = arg.player;
-            var damage = arg.damage;
+            var player = record.getVar<Player>(EVENTVAR.PLAYER);
+            var damage = record.getVar<int>(Arg.VAR_DAMAGE);
 
             var fatigue = table.table.Fatigue;
             fatigue.setDamage(damage, table.lang);

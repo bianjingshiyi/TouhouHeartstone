@@ -12,10 +12,10 @@ namespace Game.BattleTable
     class UseAnimation : EventAnimation<Arg>
     {
         #region 公有方法
-        public override IEnumerator startUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator startUpdate(BattleTableManager table)
         {
-            _card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
-            var player = arg.player;
+            _card = table.getEventCardSnapshot(startData, EVENTVAR.CARD);
+            var player = startData.getVar<Player>(EVENTVAR.PLAYER);
 
             bool isEnemy = player != table.player;
             bool isReplay = table.canSeeAllCards;
@@ -23,24 +23,24 @@ namespace Game.BattleTable
             bool showPlayedCard = isEnemy || isReplay;
             if (isServant)
             {
-                yield return playServantToFieldAnim(table, record);
+                yield return playServantToFieldAnim(table);
             }
             else if (showPlayedCard)
             {
                 yield return playUseCardAnim(table);
             }
         }
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var player = arg.player;
+            var player = record.getVar<Player>(EVENTVAR.PLAYER);
             if (player == table.player)
                 // 自己使用
-                yield return selfUseCard(table, record, arg);
+                yield return selfUseCard(table);
             else
                 // 对手使用
-                yield return enemyUseCard(table, record, arg);
+                yield return enemyUseCard(table);
         }
-        public override IEnumerator canceledUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator canceledUpdate(BattleTableManager table)
         {
             // 被取消
             yield return cancelUseCard(table);
@@ -50,7 +50,7 @@ namespace Game.BattleTable
         #region 私有方法
 
         #region 成功使用卡牌
-        IEnumerator successUseCard(BattleTableManager table, EventRecord record, Arg arg, Transform sourceTransform)
+        IEnumerator successUseCard(BattleTableManager table, Transform sourceTransform)
         {
             if (_card.isSkill())
             {
@@ -64,9 +64,9 @@ namespace Game.BattleTable
             CardSkinData skin = table.getSkin(_card);
             yield return loadAndPlaySound(table, skin?.soundPath_onUse);
             // 播放指向目标动画。
-            yield return tryTargetedAnim(table, sourceTransform, record, arg);
+            yield return tryTargetedAnim(table, sourceTransform);
         }
-        IEnumerator selfUseCard(BattleTableManager table, EventRecord record, Arg arg)
+        IEnumerator selfUseCard(BattleTableManager table)
         {
             var sourceTransform = table.table.SelfMaster.transform;
             if (_card.isServant())
@@ -88,21 +88,21 @@ namespace Game.BattleTable
                     table.removeHand(_card);
                 }
             }
-            yield return successUseCard(table, record, arg, sourceTransform);
+            yield return successUseCard(table, sourceTransform);
         }
-        IEnumerator enemyUseCard(BattleTableManager table, EventRecord record, Arg arg)
+        IEnumerator enemyUseCard(BattleTableManager table)
         {
-            yield return successUseCard(table, record, arg, table.table.EnemyMaster.transform);
+            yield return successUseCard(table, table.table.EnemyMaster.transform);
         }
         #endregion
 
         #region 取消使用卡牌
-        IEnumerator playServantToFieldAnim(BattleTableManager table, EventRecord record)
+        IEnumerator playServantToFieldAnim(BattleTableManager table)
         {
             if (table.tryGetHand(_card, out var hand))
             {
-                var player = record.getVar<Player>(EVENTVAR.PLAYER);
-                var fieldIndex = record.getVar<int>(EVENTVAR.POSITION);
+                var player = startData.getVar<Player>(EVENTVAR.PLAYER);
+                var fieldIndex = startData.getVar<int>(EVENTVAR.POSITION);
                 var pos = table.WorldToTablePosition(hand.transform.position);
                 var moveAnim = new HandToFieldAnim(table.getCardDescriptor(_card.id), pos, player.getHand(), player.getField(), fieldIndex);
                 while (!moveAnim.update(table, _deltaTime))
@@ -175,11 +175,12 @@ namespace Game.BattleTable
                 table.sounds.playSE(sound);
             }
         }
-        IEnumerator tryTargetedAnim(BattleTableManager table, Transform source, EventRecord record, Arg arg)
+        IEnumerator tryTargetedAnim(BattleTableManager table, Transform source)
         {
-            var targets = arg.targets;
+            var targets = record.getVar<CardState[]>(EVENTVAR.TARGETS);
             if (targets != null && targets.Length > 0 && targets[0] is var targetCard)
             {
+                var card = targetCard.card;
                 if (table.getSkin(_card) is var skin && !string.IsNullOrEmpty(skin.projectilePath))
                 {
                     var loadProjectileTask = table.resources.loadObject<Projectile>(skin.projectilePath);
@@ -191,12 +192,12 @@ namespace Game.BattleTable
                     if (projectile)
                     {
                         Transform target;
-                        if (table.tryGetMaster(targetCard, out var targetMaster))
+                        if (table.tryGetMaster(card, out var targetMaster))
                             target = targetMaster.transform;
-                        else if (table.tryGetServant(targetCard, out var targetServant))
+                        else if (table.tryGetServant(card, out var targetServant))
                             target = targetServant.transform;
                         else
-                            throw new ActorNotFoundException(targetCard);
+                            throw new ActorNotFoundException(card);
 
                         var targetedAnim = new ProjectileAnimation(
                             table.createProjectile(projectile, source, target),
@@ -210,22 +211,23 @@ namespace Game.BattleTable
                 {
                     SimpleAnim simpleAnim = null;
                     Animator animator = null;
-                    if (table.tryGetMaster(targetCard, out var targetMaster))
+                    if (table.tryGetMaster(card, out var targetMaster))
                     {
                         simpleAnim = targetMaster.onTargeted;
                         animator = targetMaster.animator;
                     }
-                    else if (table.tryGetServant(targetCard, out var targetServant))
+                    else if (table.tryGetServant(card, out var targetServant))
                     {
                         simpleAnim = targetServant.onTargeted;
                         animator = targetServant.animator;
                     }
-                    else
-                        throw new ActorNotFoundException(targetCard);
 
-                    AnimAnim targetedAnim = null;
-                    while (!SimpleAnimHelper.update(table, ref targetedAnim, simpleAnim, animator, _deltaTime, next => false))
-                        yield return null;
+                    if (animator != null)
+                    {
+                        AnimAnim targetedAnim = null;
+                        while (!SimpleAnimHelper.update(table, ref targetedAnim, simpleAnim, animator, _deltaTime, next => false))
+                            yield return null;
+                    }
                 }
             }
         }

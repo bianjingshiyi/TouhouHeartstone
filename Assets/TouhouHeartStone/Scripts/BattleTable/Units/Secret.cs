@@ -43,7 +43,7 @@ namespace Game.BattleTable
         #region 属性字段
         public Transform dummyTarget => _dummyTarget;
         public TableCard card => _card;
-
+        public HeadSlots headSlots { get; set; }
         public SimpleAnim onSecretEnter;
         public SimpleAnim onSecretTrigger;
         public SimpleAnim onSecretExit;

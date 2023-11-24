@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
-using TouhouHeartstone;
 using UnityEngine;
 
 namespace Game.BattleTable
@@ -90,123 +86,6 @@ namespace Game.BattleTable
         {
             return false;
         }
-        
-    }
-    public abstract class EventAnimation : TableAnimation
-    {
-        public IEventArg eventArg { get; set; }
-        public List<TableAnimation> insertedAnims { get; } = new List<TableAnimation>();
-        public EventRecord record { get; set; }
-        public virtual void postEvent(BattleTableManager table)
-        {
-        }
-        public virtual EventAnimation clone()
-        {
-            return MemberwiseClone() as EventAnimation;
-        }
-        public override bool continueNextGroup(AnimationGroup nextGroup)
-        {
-            if (!record.isCompleted)
-                return true;
-            return base.continueNextGroup(nextGroup);
-        }
-        protected IEnumerator pauseWhileNotCompleted()
-        {
-            while (!record.isCompleted)
-                yield return null;
-            yield break;
-        }
-        protected IEnumerator stopWhenCanceled()
-        {
-            if (record.isCanceled)
-                finish();
-            yield break;
-        }
-        protected CardSnapshot snapshotCard(BattleTableManager table, Card card)
-        {
-            return table.game.snapshotCard(card);
-        }
-        protected CardSnapshot[] snapshotCardArray(BattleTableManager table, IEnumerable<Card> cards)
-        {
-            return cards.Select(c => table.game.snapshotCard(c)).ToArray();
-        }
-    }
-    [Serializable]
-    public abstract class EventAnimation<T> : EventAnimation where T : IEventArg
-    {
-        public T tEventArg => eventArg is T t ? t : default;
-        public EventAnimState animState;
-        public sealed override void init(BattleTableManager table)
-        {
-            base.init(table);
-            init(table, tEventArg);
-        }
-        public sealed override void postEvent(BattleTableManager table)
-        {
-            base.postEvent(table);
-            postEvent(table, tEventArg);
-        }
-        public virtual void init(BattleTableManager table, T eventArg)
-        {
-        }
-        public virtual void postEvent(BattleTableManager table, T eventArg)
-        {
-        }
-        public sealed override IEnumerator update(BattleTableManager table)
-        {
-            animState = EventAnimState.Started;
-            yield return startUpdate(table, record, tEventArg);
-            animState = EventAnimState.StartFinished;
-            while (!record.isCompleted || (insertedAnims != null && insertedAnims.Count > 0 && !insertedAnims.All(a => a.isFinished())))
-            {
-                yield return null;
-            }
-            if (!record.isCanceled)
-            {
-                animState = EventAnimState.Logic;
-                yield return logicUpdate(table, record, tEventArg);
-            }
-            else
-            {
-                animState = EventAnimState.Canceled;
-                yield return canceledUpdate(table, record, tEventArg);
-            }
-            animState = EventAnimState.Finished;
-        }
-        public virtual IEnumerator startUpdate(BattleTableManager table, EventRecord record, T arg)
-        {
-            yield break;
-        }
-        public virtual IEnumerator logicUpdate(BattleTableManager table, EventRecord record, T arg)
-        {
-            yield break;
-        }
-        public virtual IEnumerator canceledUpdate(BattleTableManager table, EventRecord record, T arg)
-        {
-            yield break;
-        }
-        private bool isAnimGroupInsertedAnimOfThis(AnimationGroup nextGroup)
-        {
-            if (insertedAnims == null || insertedAnims.Count <= 0)
-                return false;
-            return nextGroup.Any(a => insertedAnims.Contains(a));
-        }
-        public override bool continueNextGroup(AnimationGroup nextGroup)
-        {
-            if (animState == EventAnimState.StartFinished && isAnimGroupInsertedAnimOfThis(nextGroup))
-            {
-                return true;
-            }
-            return base.continueNextGroup(nextGroup);
-        }
-    }
-    public enum EventAnimState
-    {
-        NotStarted,
-        Started,
-        StartFinished,
-        Logic,
-        Canceled,
-        Finished
+
     }
 }

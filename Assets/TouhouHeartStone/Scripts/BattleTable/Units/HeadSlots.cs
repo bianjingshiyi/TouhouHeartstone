@@ -20,13 +20,14 @@ namespace Game.BattleTable
         }
         public void addItem(Secret item)
         {
-            _itemList.Insert(_itemList.Count, item);
+            insertItem(_itemList.Count, item);
         }
         public void insertItem(int position, Secret item)
         {
             item.onPointerEnter += onItemPointerEnterCallback;
             item.onPointerExit += onItemPointerExitCallback;
             _itemList.Insert(position, item);
+            item.headSlots = this;
         }
         public bool removeItem(Secret item)
         {
@@ -34,6 +35,7 @@ namespace Game.BattleTable
             {
                 item.onPointerEnter -= onItemPointerEnterCallback;
                 item.onPointerExit -= onItemPointerExitCallback;
+                item.headSlots = null;
                 return true;
             }
             return false;
@@ -44,6 +46,7 @@ namespace Game.BattleTable
             {
                 item.onPointerEnter -= onItemPointerEnterCallback;
                 item.onPointerExit -= onItemPointerExitCallback;
+                item.headSlots = null;
             }
             _itemList.Clear();
         }

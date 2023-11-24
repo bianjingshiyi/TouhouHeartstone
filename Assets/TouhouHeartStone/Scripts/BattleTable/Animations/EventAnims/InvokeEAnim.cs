@@ -9,14 +9,12 @@ namespace Game.BattleTable
     using Arg = THHPlayer.RevealDuelEventArg;
     class InvokeEAnim : EventAnimation<Arg>
     {
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            if (record == null || record.isCanceled)
-                yield break;
-            var player = arg.player;
-            var youCard = table.getRecordCardSnapshot(record, Arg.VAR_SELF_CARD);
-            var oppoCard = table.getRecordCardSnapshot(record, Arg.VAR_OPPO_CARD);
-            var result = arg.result;
+            var youCard = table.getEventCardSnapshot(record, Arg.VAR_SELF_CARD);
+            var oppoCard = table.getEventCardSnapshot(record, Arg.VAR_OPPO_CARD);
+            var player = record.getVar<Player>(EVENTVAR.PLAYER);
+            var result = record.getVar<bool>(Arg.VAR_RESULT);
 
             if (youCard == null && oppoCard == null)
                 yield break;

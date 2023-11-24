@@ -226,7 +226,7 @@ namespace TouhouHeartstone.Builtin
                         tokens.Add(token);
                     }
 
-                    a.target = tokens.random(g);
+                    await a.changeEventVar(g, EVENTVAR.TARGET_CARD, tokens.random(g));
                 })
         };
 
@@ -281,7 +281,7 @@ namespace TouhouHeartstone.Builtin
                     Card[] range = a.card.getAvaliableTargets(g);
                     Card newTarget = range.Where(target => !target.Equals(a.targets)).random(g);
                     Card[] targets = new Card[] {newTarget};
-                    a.setVar(EVENTVAR.TARGETS, targets);
+                    a.changeEventVar(g, EVENTVAR.TARGETS, targets);
                     return Task.CompletedTask;
                 })
         };
@@ -435,14 +435,16 @@ namespace TouhouHeartstone.Builtin
                     return a.source.getOwner() == c.getOwner() && a.source.isSkill();
                 }, (g, c, a) =>
                 {
-                    a.damageValue *= 2;
+                    var value = a.damageValue * 2;
+                    a.changeEventVar(g, THHCard.DamageEventArg.VAR_DAMAGE_VALUE, value);
                     return Task.CompletedTask;
                 }),
             new THHEffectBefore<THHCard.HealEventArg>(PileFlag.field,
                 (g, c, a) => { return a.source.getOwner() == c.getOwner(); },
                 (g, c, a) =>
                 {
-                    a.value *= 2;
+                    var value = a.value * 2;
+                    a.changeEventVar(g, EVENTVAR.VALUE, value);
                     return Task.CompletedTask;
                 })
         };
@@ -680,7 +682,8 @@ namespace TouhouHeartstone.Builtin
                     }, 
                     (g, c, b, a) =>
                     {
-                        a.damageValue *= 2;
+                        var value = a.damageValue * 2;
+                        a.changeEventVar(g, THHCard.DamageEventArg.VAR_DAMAGE_VALUE, value);
                         return Task.CompletedTask;
                     }),
                 new RemoveBuffAfter<HearthStoneRule.UseEventArg>(

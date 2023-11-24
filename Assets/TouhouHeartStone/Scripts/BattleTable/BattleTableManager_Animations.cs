@@ -62,40 +62,33 @@ namespace Game.BattleTable
                 }
             }
         }
-        public void setEventAnim<TEvent, TAnim>() where TEvent : IEventArg where TAnim : UIAnimation
-        {
-            setAnim(typeof(TEvent), typeof(TAnim));
-        }
-        public void setRequestAnim<TRequest, TAnim>() where TRequest : IRequest where TAnim : UIAnimation
-        {
-            setAnim(typeof(TRequest), typeof(TAnim));
-        }
         /// <summary>
         /// 获取事件对应的动画
         /// </summary>
         /// <param name="eventArg"></param>
         /// <returns></returns>
-        public TableAnimation getEventAnim(IEventArg eventArg)
+        public EventAnimation createEventAnim(IEventArg eventArg)
         {
             Type type = eventArg.GetType();
             if (animConstructorDic.ContainsKey(type))
             {
-                TableAnimation anim = null;
+                EventAnimation anim = null;
                 if (animConstructorDic[type].GetParameters().Length == 0)
-                    anim = animConstructorDic[type].Invoke(new object[0]) as TableAnimation;
+                    anim = animConstructorDic[type].Invoke(new object[0]) as EventAnimation;
                 else if (animConstructorDic[type].GetParameters().Length == 1)
-                    anim = animConstructorDic[type].Invoke(new object[] { eventArg }) as TableAnimation;
-                if (anim is EventAnimation tAnim)
-                {
-                    tAnim.eventArg = eventArg;
-                }
+                    anim = animConstructorDic[type].Invoke(new object[] { eventArg }) as EventAnimation;
+                anim.eventArg = eventArg;
+
+                var eventData = new EventAnimStartData(eventArg);
+                anim.startData = eventData;
+
                 anim.init(this);
                 return anim;
             }
             else
                 return null;
         }
-        public RequestAnimation getRequestAnim(IRequest request)
+        public RequestAnimation createRequestAnim(IRequest request)
         {
             Type type = request.GetType();
             if (animConstructorDic.ContainsKey(type))
@@ -111,10 +104,26 @@ namespace Game.BattleTable
             else
                 return null;
         }
-        public void createDeadCardAnchor(Card card, Vector3 position)
+        public EventAnimation getAnimOfEvent(IEventArg eventArg)
         {
-            var name = cardManager.getCardSkin(card.define)?.name ?? card.ToString();
-            var cardId = card.id;
+            var anim = _animationCache.OfType<EventAnimation>().FirstOrDefault(e => e.eventArg == eventArg);
+            if (anim != null)
+                return anim;
+            anim = _animationQueue.OfType<EventAnimation>().FirstOrDefault(e => e.eventArg == eventArg);
+            if (anim != null)
+                return anim;
+            anim = _animationGroups.SelectMany(g => g).OfType<EventAnimation>().FirstOrDefault(e => e.eventArg == eventArg);
+            if (anim != null)
+                return anim;
+            return null;
+        }
+
+        #region 死亡仆从锚点
+        public Transform createDeadCardAnchor(int cardId, Vector3 position)
+        {
+            var card = game.getCard(cardId);
+            var cardDefine = card.define;
+            var name = cardManager.getCardSkin(cardDefine)?.name ?? card.ToString();
             Transform transform;
             if (deadCardAnchors.ContainsKey(cardId))
             {
@@ -126,8 +135,9 @@ namespace Game.BattleTable
                 transform.parent = table.DeadCardAnchorsTransform;
                 deadCardAnchors.Add(cardId, transform);
             }
-            transform.name = name;
             transform.position = position;
+            transform.name = name;
+            return transform;
         }
         public bool tryGetDeadCardAnchor(int cardId, out Transform transform)
         {
@@ -141,6 +151,9 @@ namespace Game.BattleTable
             }
             deadCardAnchors.Clear();
         }
+        #endregion
+
+        #region 特效动画
         private void checkCardSkinEffectAnimations(IEventArg arg)
         {
             if (arg is EffectTriggerEventArg effectTriggerEventArg)
@@ -291,6 +304,8 @@ namespace Game.BattleTable
             var argRef = CardManager.getEventReferenceOfEventArg(arg);
             return eventRef == argRef;
         }
+        #endregion
+
         #endregion
         private void addToInsertedAnimsOfParent(IEventArg arg, TableAnimation anim)
         {

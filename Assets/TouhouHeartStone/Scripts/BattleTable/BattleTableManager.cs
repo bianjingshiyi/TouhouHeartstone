@@ -412,7 +412,7 @@ namespace Game.BattleTable
             switch (obj)
             {
                 default:
-                    anim = getRequestAnim(obj);
+                    anim = createRequestAnim(obj);
                     break;
             }
             if (anim != null)
@@ -431,7 +431,7 @@ namespace Game.BattleTable
         private void onEventBefore(IEventArg arg)
         {
             checkCardSkinEffectAnimations(arg);
-            TableAnimation anim = getEventAnim(arg);
+            TableAnimation anim = createEventAnim(arg);
             if (anim != null)
             {
                 addAnim(anim);

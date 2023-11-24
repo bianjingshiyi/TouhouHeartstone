@@ -23,6 +23,7 @@ namespace Game.BattleTable
             // 3 .创建HandItem，从源位置将HandItem飞到中间位置。
             var hand = table.createHand(_cardDesc, _to.owner, _position);
             _handItem = hand;
+            hand.isMoving = true;
             hand.ignoreAlign = true;
             var positionLerp = hand.positionLerp;
             var worldPos = table.TableToWorldPosition(_startTablePos);
@@ -65,9 +66,27 @@ namespace Game.BattleTable
             {
                 // 创建移动手牌。
                 hand = table.createHand(_cardDesc, _to?.owner);
+                hand.isMoving = true;
                 _handItem = hand;
             }
+            else
+            {
+                var sourceHands = hand.handList;
+                var targetHands = table.getHandList(_to);
+                if (sourceHands != targetHands && sourceHands != null)
+                {
+                    Vector3 transPos = hand.transform.position;
+                    if (sourceHands.removeHand(hand, false))
+                    {
+                        targetHands.insertHand(_position, hand);
+                        hand.transform.position = transPos;
+                    }
+                }
+            }
 
+            if (!hand.isMoving)
+                yield break;
+            hand.ignoreAlign = true;
             // 1. 使用HandItem飞到目标。
             updateEndFaceup(table, hand.card);
 
@@ -103,10 +122,16 @@ namespace Game.BattleTable
                 positionLerp.setTargetPosition(targetPos);
             }
             hand.ignoreAlign = false;
+            hand.isMoving = false;
         }
         public override Vector3 getCurrentPosition(BattleTableManager table)
         {
-            return table.WorldToTablePosition(_handItem.transform.position);
+            if (_handItem)
+                return table.WorldToTablePosition(_handItem.transform.position);
+            var transform = table.getCardTransform(_cardDesc.id);
+            if (transform)
+                return table.WorldToTablePosition(transform.position);
+            return _startTablePos;
         }
         private static bool isDeckPile(Pile pile)
         {

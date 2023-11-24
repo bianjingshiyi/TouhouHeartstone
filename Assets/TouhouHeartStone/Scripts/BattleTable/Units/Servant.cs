@@ -135,6 +135,7 @@ namespace Game.BattleTable
         #region 属性字段
         public PropertyNumber attackNumber => _attackText;
         public PropertyNumber lifeNumber => _lifeText;
+        public Field field { get; set; }
         public SimpleAnim onSummon;
         public SimpleAnim onSilenceTrue;
         public SimpleAnim onSilenceFalse;

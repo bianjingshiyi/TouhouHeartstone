@@ -15,18 +15,18 @@ namespace Game.BattleTable
         CardSnapshot masterSnapshot;
         CardSnapshot itemSnapshot;
         List<CardSnapshot> secretSnapshots = new List<CardSnapshot>();
-        public override void init(BattleTableManager table, Arg eventArg)
+        public override void init(BattleTableManager table)
         {
-            base.init(table, eventArg);
+            base.init(table);
 
-            var player = eventArg.player;
+            var player = tEventArg.player;
             masterSnapshot = table.game.snapshotCard(player.getMaster());
             var item = player.getItem();
             if (item != null)
                 itemSnapshot = table.game.snapshotCard(item);
 
 
-            var lastPlayer = table.game.getOpponent(eventArg.player);
+            var lastPlayer = table.game.getOpponent(player);
             lastMasterSnapshot = table.game.snapshotCard(lastPlayer.getMaster());
             var lastItem = lastPlayer.getItem();
             if (lastItem != null)
@@ -41,9 +41,9 @@ namespace Game.BattleTable
                 }
             }
         }
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var player = arg.player;
+            var player = record.getVar<Player>(EVENTVAR.PLAYER);
 
             var timer = new Timer() { duration = 2 };
             if (!timer.isStarted)

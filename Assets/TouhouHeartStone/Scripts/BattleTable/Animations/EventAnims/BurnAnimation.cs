@@ -12,15 +12,12 @@ namespace Game.BattleTable
     {
         private Timer _timer = new Timer() { duration = .2f };
 
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
             yield break; // 以MoveCardAnim暂时代替
 
-            yield return pauseWhileNotCompleted();
-            yield return stopWhenCanceled();
-
-            var player = arg.player;
-            var card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
+            var player = record.getVar<Player>(EVENTVAR.PLAYER);
+            var card = table.getEventCardSnapshot(record, EVENTVAR.CARD);
 
             var deck = player == table.player ? table.table.SelfDeck : table.table.EnemyDeck;
             var grave = player == table.player ? table.table.SelfGrave : table.table.EnemyGrave;

@@ -1,16 +1,15 @@
-﻿using System.Collections;
-using TouhouCardEngine;
-using TouhouHeartstone;
+﻿using TouhouHeartstone;
 
 namespace Game.BattleTable
 {
     using Arg = HearthStoneRule.TurnEndEventArg;
     class TurnEndAnimation : EventAnimation<Arg>
     {
-        public override void postEvent(BattleTableManager table, Arg eventArg)
+        public override void postEvent(BattleTableManager table)
         {
-            base.postEvent(table, eventArg);
-            if (eventArg.player == table.player)
+            base.postEvent(table);
+            var player = tEventArg.player;
+            if (player == table.player)
             {
                 table.endLocalTurn();
             }

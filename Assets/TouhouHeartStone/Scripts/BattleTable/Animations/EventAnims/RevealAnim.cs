@@ -9,34 +9,33 @@ namespace Game.BattleTable
     using Arg = HearthStoneRule.RevealEventArg;
     class RevealAnim : EventAnimation<Arg>
     {
-        private CardSnapshot _card;
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            _card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
-            var player = arg.player;
-            var shouldAnimate = arg.shouldAnimate;
+            var card = table.getEventCardSnapshot(record, EVENTVAR.CARD);
+            var player = record.getVar<Player>(EVENTVAR.PLAYER);
+            var shouldAnimate = record.getVar<bool>(Arg.VAR_ANIMATE);
 
-            if (!shouldAnimate || _card == null)
+            if (!shouldAnimate || card == null)
             {
                 yield break;
             }
             //在对应的卡组上创建卡牌实例
 
             // 获取卡牌源位置。
-            var targetTransform = getCardTargetTransfrom(table, record, arg);
-            var startHeight = getCardStartHeight(table, record, arg);
+            var targetTransform = getCardTargetTransfrom(table, card, player);
+            var startHeight = getCardStartHeight(table, card, player);
 
             // 如果该牌在你的手牌里，起始正面朝上。
-            bool startFaceUp = player == table.player && _card.pile.name == PILE.HAND;
+            bool startFaceUp = player == table.player && card.pile.name == PILE.HAND;
             var worldPos = targetTransform?.position ?? Vector3.zero;
             var cardPos = table.WorldToTablePosition(targetTransform?.position ?? Vector3.zero);
-            TableCard cardUI = table.createInvokeCard(_card, cardPos, -1, startFaceUp);
+            TableCard cardUI = table.createInvokeCard(card, cardPos, -1, startFaceUp);
 
 
             var startScale = Vector3.one * startHeight / cardUI.height;
             cardUI.transform.localScale = startScale;
 
-            if (table.tryGetHand(_card, out var hand))
+            if (table.tryGetHand(card, out var hand))
             {
                 hand.card.setVisible(false);
             }
@@ -54,7 +53,7 @@ namespace Game.BattleTable
             if (!startFaceUp)
             {
                 AnimAnim anim = null;
-                table.setCard(cardUI, _card);
+                table.setCard(cardUI, card);
                 cardUI.animateFaceup(true);
                 while (!SimpleAnimHelper.update(table, ref anim, cardUI.onFlipToFace, cardUI.animator, _deltaTime))
                 {
@@ -82,7 +81,7 @@ namespace Game.BattleTable
 
             }
 
-            targetTransform = getCardTargetTransfrom(table, record, arg);
+            targetTransform = getCardTargetTransfrom(table, card, player);
             //放回去
             TableAnimation animMoveBack = new CardTransAnim(cardUI, targetTransform, startScale, table.cardShowCurve);
             while (!animMoveBack.update(table, _deltaTime))
@@ -103,12 +102,10 @@ namespace Game.BattleTable
             yield break;
         }
 
-        private Transform getCardTargetTransfrom(BattleTableManager table, EventRecord record, Arg arg)
+        private Transform getCardTargetTransfrom(BattleTableManager table, CardSnapshot card, Player player)
         {
-            var player = arg.player;
-
             Transform trans = null;
-            var pile = _card.pile;
+            var pile = card.pile;
             if (pile != null)
             {
                 if (pile.name == PILE.DECK)
@@ -117,7 +114,7 @@ namespace Game.BattleTable
                 }
                 else if (pile.name == PILE.HAND)
                 {
-                    if (table.tryGetHand(_card, out var handItem))
+                    if (table.tryGetHand(card, out var handItem))
                     {
                         trans = handItem.transform;
                     }
@@ -134,12 +131,10 @@ namespace Game.BattleTable
             return trans;
         }
 
-        private float getCardStartHeight(BattleTableManager table, EventRecord record, Arg arg)
+        private float getCardStartHeight(BattleTableManager table, CardSnapshot card, Player player)
         {
-            var player = arg.player;
-
             float height = table.TableToWorldDistance(table.cardHeight);
-            var pile = _card.pile;
+            var pile = card.pile;
             if (pile != null)
             {
                 if (pile.name == PILE.DECK)
@@ -149,7 +144,7 @@ namespace Game.BattleTable
                 }
                 else if (pile.name == PILE.HAND)
                 {
-                    if (table.tryGetHand(_card, out var handItem))
+                    if (table.tryGetHand(card, out var handItem))
                     {
                         height = handItem.card.height * handItem.card.transform.lossyScale.z;
                     }

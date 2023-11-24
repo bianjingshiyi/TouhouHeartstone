@@ -69,7 +69,12 @@ namespace Game.BattleTable
         }
         public override Vector3 getCurrentPosition(BattleTableManager table)
         {
-            return table.WorldToTablePosition(_cardUI.transform.position);
+            if (_cardUI)
+                return table.WorldToTablePosition(_cardUI.transform.position);
+            var transform = table.getCardTransform(_cardDesc.id);
+            if (transform)
+                return table.WorldToTablePosition(transform.position);
+            return _startTablePos;
         }
 
         private float _cardHeight;

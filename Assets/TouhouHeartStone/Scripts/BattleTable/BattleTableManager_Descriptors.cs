@@ -10,9 +10,18 @@ namespace Game.BattleTable
         {
             return game.snapshotCard(card);
         }
-        public CardSnapshot getRecordCardSnapshot(EventRecord record, string varName)
+        public CardSnapshot getEventCardSnapshot(EventAnimStartData animData, string varName)
         {
-            var state = record.getVar<CardState>(varName);
+            var state = animData.getVar<CardState>(varName);
+            if (state.card == null || state.stateIndex < 0)
+                return null;
+            var snapshot = newSnapshot(state.card);
+            state.card.revertToHistory(snapshot, state.stateIndex);
+            return snapshot;
+        }
+        public CardSnapshot getEventCardSnapshot(EventRecord animData, string varName)
+        {
+            var state = animData.getVar<CardState>(varName);
             if (state.card == null || state.stateIndex < 0)
                 return null;
             var snapshot = newSnapshot(state.card);

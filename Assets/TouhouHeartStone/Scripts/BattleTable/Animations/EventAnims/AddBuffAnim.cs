@@ -6,11 +6,10 @@ namespace Game.BattleTable
     using Arg = Card.AddBuffEventArg;
     class AddBuffAnim : EventAnimation<Arg>
     {
-        CardSnapshot _card;
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            _card = table.getRecordCardSnapshot(record, Arg.VAR_CARD);
-            table.updateCardBySnapshot(_card, record);
+            var card = table.getEventCardSnapshot(record, Arg.VAR_CARD);
+            table.updateCardBySnapshot(card);
             yield break;
         }
         public override bool continueNextGroup(AnimationGroup nextGroup)

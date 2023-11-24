@@ -86,6 +86,8 @@ namespace Game.BattleTable
             set { _isDraggable = value; }
         }
         public bool ignoreAlign { get; set; }
+        public bool isMoving { get; set; }
+        public HandList handList { get; set; }
 
         public SimpleAnim onSetDefine;
         public SimpleAnim onLinearDrawStart;

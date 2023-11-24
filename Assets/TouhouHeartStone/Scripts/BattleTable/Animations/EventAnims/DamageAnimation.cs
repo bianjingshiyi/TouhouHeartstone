@@ -10,15 +10,15 @@ namespace Game.BattleTable
     using Arg = THHCard.DamageEventArg;
     class DamageAnimation : EventAnimation<Arg>
     {
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
             yield return pauseWhileNotCompleted();
             yield return stopWhenCanceled();
 
-            var target = arg.target;
-            var damagedValue = arg.damagedValue;
+            var targetId = record.getVar<CardState>(EVENTVAR.CARD).card.id;
+            var damagedValue = record.getVar<int>(Arg.VAR_DAMAGED_VALUE);
 
-            if (table.tryGetServant(target, out var servant))
+            if (table.tryGetServant(targetId, out var servant))
             {
                 //显示伤害数字
                 servant.showDamageText(damagedValue);
@@ -27,7 +27,7 @@ namespace Game.BattleTable
                 //创建打击特效
                 _damageEffect = Object.Instantiate(servant.damageEffectPrefab, servant.transform.position, Quaternion.identity, table.table.EffectsParent);
             }
-            else if (table.tryGetMaster(target, out Master master))
+            else if (table.tryGetMaster(targetId, out Master master))
             {
                 master.showDamageText(damagedValue);
                 if (AnimHelper.hasAnim(master.animator, master.onDamage.animName, out int layer))
@@ -35,7 +35,7 @@ namespace Game.BattleTable
                 //创建打击特效
                 _damageEffect = Object.Instantiate(master.damageEffectPrefab, master.transform.position, Quaternion.identity, table.table.EffectsParent);
             }
-            else if (table.tryGetItem(target, out var item))
+            else if (table.tryGetItem(targetId, out var item))
             {
                 if (AnimHelper.hasAnim(item.animator, item.onLifeDown.animName, out int layer))
                     item.animator.Play(item.onLifeDown.animName, layer);
@@ -45,7 +45,7 @@ namespace Game.BattleTable
 
             yield return new WaitForSeconds(1.5f);
 
-            if (table.tryGetItem(target, out var animItem))
+            if (table.tryGetItem(targetId, out var animItem))
             {
                 animItem.onLifeDown.invokeAfterAnim();
             }

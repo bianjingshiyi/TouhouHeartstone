@@ -6,7 +6,7 @@ namespace Game.BattleTable
     using Arg = HearthStoneRule.InitReplaceEventArg;
     class InitReplaceAnimation : EventAnimation<Arg>
     {
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
             table.ui.InitReplaceDialog.setActive(false);
             yield break;

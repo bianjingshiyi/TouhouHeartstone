@@ -46,7 +46,7 @@ namespace Game.BattleTable
         /// </summary>
         /// <param name="card">卡牌快照。</param>
         /// <param name="record">事件记录。用于更新道具的同时更新英雄。</param>
-        public void updateCardBySnapshot(CardSnapshot card, EventRecord record)
+        public void updateCardBySnapshot(CardSnapshot card)
         {
             if (tryGetServant(card, out var servant))
             {
@@ -63,7 +63,6 @@ namespace Game.BattleTable
             else if (tryGetItem(card, out var item))
             {
                 setItem(item, card);
-                updateItemMaster(card, record);
             }
             else if (tryGetSkill(card, out var skill))
             {
@@ -324,29 +323,6 @@ namespace Game.BattleTable
             var cards = cardManager;
             var poolRef = cards.getCardPoolReferenceOfCard(desc.define);
             item.setImageSprite(await cards.loadCardImage(poolRef, desc.define.id));
-        }
-        /// <summary>
-        /// 更新道具的拥有者英雄。
-        /// </summary>
-        /// <param name="itemId">道具的卡牌ID。</param>
-        /// <param name="record">当前的事件记录。</param>
-        public void updateItemMaster(int itemId, EventRecord record)
-        {
-            updateItemMaster(game.getCard(itemId), record);
-        }
-        /// <summary>
-        /// 更新道具的拥有者英雄。
-        /// </summary>
-        /// <param name="item">道具。</param>
-        /// <param name="record">当前的事件记录。</param>
-        public void updateItemMaster(ICardData item, EventRecord record)
-        {
-            var master = item.getOwner().getMaster();
-            if (tryGetMaster(master, out var masterUI))
-            {
-                var snapshot = game.getCardSnapshotOfEvent(master, record);
-                setMaster(masterUI, snapshot);
-            }
         }
         public bool removeItem(ICardData card) => removeItem(card.id);
         public bool removeItem(int id)
@@ -723,6 +699,10 @@ namespace Game.BattleTable
             }
             return false;
         }
+        public Field getField(Pile pile)
+        {
+            return pile.owner == player ? table.SelfField : table.EnemyField;
+        }
         #endregion
 
         #region 牌库
@@ -1056,6 +1036,10 @@ namespace Game.BattleTable
             }
             return null;
         }
+        public HeadSlots getHeadSlots(Pile pile)
+        {
+            return pile?.owner == player ? table.SelfMaster.HeadSlots : table.EnemyMaster.HeadSlots;
+        }
         #endregion
 
         #region 特效
@@ -1128,43 +1112,47 @@ namespace Game.BattleTable
         #endregion
         public Transform getCardTransform(Card card)
         {
-            if (tryGetServant(card, out Servant servant))
+            return getCardTransform(card.id);
+        }
+        public Transform getCardTransform(int cardId)
+        {
+            if (tryGetServant(cardId, out Servant servant))
             {
                 return servant.transform;
             }
-            else if (tryGetMaster(card, out Master master))
+            else if (tryGetMaster(cardId, out Master master))
             {
                 return master.transform;
             }
-            else if (tryGetItem(card, out Item item))
+            else if (tryGetItem(cardId, out Item item))
             {
                 return item.transform;
             }
-            else if (tryGetHand(card, out HandItem hand))
+            else if (tryGetHand(cardId, out HandItem hand))
             {
                 return hand.transform;
             }
-            else if (tryGetSecret(card, out Secret secret))
+            else if (tryGetSecret(cardId, out Secret secret))
             {
                 return secret.transform;
             }
-            else if (tryGetSkill(card, out Skill skill))
+            else if (tryGetSkill(cardId, out Skill skill))
             {
                 return skill.transform;
             }
-            else if (tryGetMovingCard(card, out var movingCard))
+            else if (tryGetMovingCard(cardId, out var movingCard))
             {
                 return movingCard.transform;
             }
-            else if (tryGetDeadCardAnchor(card.id, out Transform trans))
+            else if (tryGetDeadCardAnchor(cardId, out Transform trans))
             {
                 return trans;
             }
-            else if (tryGetDeckOfCard(card, out Deck deck))
+            else if (tryGetDeckOfCard(cardId, out Deck deck))
             {
                 return deck.transform;
             }
-            else if (tryGetGraveOfCard(card, out Deck grave))
+            else if (tryGetGraveOfCard(cardId, out Deck grave))
             {
                 return grave.transform;
             }

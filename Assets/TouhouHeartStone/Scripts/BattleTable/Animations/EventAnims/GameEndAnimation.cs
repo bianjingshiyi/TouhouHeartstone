@@ -8,13 +8,12 @@ namespace Game.BattleTable
     using Arg = HearthStoneRule.GameEndEventArg;
     public class GameEndAnimation : EventAnimation<Arg>
     {
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            if (record == null)
-                yield break;
-            var winners = arg.winners;
+            var winners = record.getVar<Player[]>(Arg.VAR_WINNERS);
 
             table.showGameResult(winners.Contains(table.player));
+            yield break;
         }
     }
 }

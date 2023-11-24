@@ -1,54 +1,45 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
-using UI;
 using UnityEngine;
-using UDeck = Game.BattleTable.Deck;
 namespace Game.BattleTable
 {
     using Arg = THHPile.MoveCardEventArg;
     class MoveCardAnim : EventAnimation<Arg>
     {
         #region 公有方法
-        public override IEnumerator startUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator startUpdate(BattleTableManager table)
         {
             evaluateBreakDurations(table);
 
-            if (arg.card == null)
-                yield break;
-            var card = table.getCardDescriptor(arg.card);
-            if (card == null)
+            var cardSnapshot = table.getEventCardSnapshot(startData, EVENTVAR.CARD);
+            var from = startData.getVar<Pile>(Arg.VAR_FROM_PILE);
+            var to = startData.getVar<Pile>(Arg.VAR_TO_PILE);
+            var position = startData.getVar<int>(Arg.VAR_POSITION);
+
+            var cardDesc = table.updateCardDescriptor(cardSnapshot);
+            EventData data = new EventData
             {
-                var snapshot = table.game.getCardSnapshotBeforeEvent(arg.card, record);
-                card = table.updateCardDescriptor(snapshot);
-            }
-            var from = arg.from;
-            var to = arg.to;
-            var position = arg.position;
-            EventData eventData = new EventData
-            {
-                card = card,
+                card = cardDesc,
                 from = from,
                 to = to,
                 position = position
             };
 
-            var info = getCardMoveInfo(table, card.id, from);
-            yield return moveToAnimStart(table, eventData, info);
+            var info = getCardMoveInfo(table, cardDesc.id, from);
+            yield return moveToAnimStart(table, data, info);
         }
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
+            var card = table.getEventCardSnapshot(record, EVENTVAR.CARD);
             if (card == null)
                 yield break;
-            var from = arg.from;
-            var to = arg.to;
-            var position = arg.position;
-            EventData eventData = new EventData
+            var from = record.getVar<Pile>(Arg.VAR_FROM_PILE);
+            var to = record.getVar<Pile>(Arg.VAR_TO_PILE);
+            var position = record.getVar<int>(Arg.VAR_POSITION);
+            EventData data = new EventData
             {
                 card = table.updateCardDescriptor(card),
                 from = from,
@@ -58,16 +49,16 @@ namespace Game.BattleTable
 
 
             var info = getCardMoveInfo(table, card.id, from);
-            yield return moveToAnim(table, eventData, info);
+            yield return moveToAnim(table, data, info);
         }
-        public override IEnumerator canceledUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator canceledUpdate(BattleTableManager table)
         {
-            var card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
+            var card = table.getEventCardSnapshot(record, EVENTVAR.CARD);
             if (card == null)
                 yield break;
-            var from = arg.from;
-            var to = arg.to;
-            EventData eventData = new EventData
+            var from = record.getVar<Pile>(Arg.VAR_FROM_PILE);
+            var to = record.getVar<Pile>(Arg.VAR_TO_PILE);
+            EventData data = new EventData
             {
                 card = table.updateCardDescriptor(card),
                 from = to, // 反过来
@@ -76,7 +67,7 @@ namespace Game.BattleTable
             };
 
             var info = getCardMoveInfo(table, card.id, to);
-            yield return moveCanceledAnim(table, eventData, info);
+            yield return moveCanceledAnim(table, data, info);
         }
         public override bool continueNextGroup(AnimationGroup nextGroup)
         {
@@ -90,7 +81,7 @@ namespace Game.BattleTable
 
         #region 私有方法
 
-        #region 移动到目标牌堆（开始动画）
+        #region 移动到目标牌堆
         private IEnumerator moveToAnimStart(BattleTableManager table, EventData data, CardMoveInfo info)
         {
             var card = data.card;
@@ -102,25 +93,30 @@ namespace Game.BattleTable
             if (shouldNotPlayAnim(from, to))
                 yield break;
 
+            Vector3 startPos = info.startPos;
+            if (_moveAnim != null)
+            {
+                startPos = _moveAnim.getCurrentPosition(table);
+            }
             // 播放移动动画。
             CardMoveAnim anim = null;
             switch (toName)
             {
                 case PILE.DECK: // 任意牌堆-->牌库
                 case PILE.GRAVE: // 任意牌堆-->墓地
-                    anim = new MoveToDeckAnim(card, info.startPos, from, to, info.cardHeight);
+                    anim = new MoveToDeckAnim(card, startPos, from, to, info.cardHeight);
                     break;
                 case PILE.HAND: // 任意牌堆-->手牌
-                    anim = new MoveToHandAnim(card, info.startPos, from, to, data.position);
+                    anim = new MoveToHandAnim(card, startPos, from, to, data.position);
                     break;
                 case PILE.FIELD: // 任意牌堆-->战场
-                    anim = new MoveToFieldAnim(card, info.startPos, from, to, data.position, info.cardHeight);
+                    anim = new MoveToFieldAnim(card, startPos, from, to, data.position, info.cardHeight);
                     break;
                 case PILE.HEAD: // 任意牌堆-->延迟
-                    anim = new MoveToHeadAnim(card, info.startPos, from, to);
+                    anim = new MoveToHeadAnim(card, startPos, from, to, data.position);
                     break;
                 case PILE.ITEM: // 任意牌堆-->道具
-                    anim = new MoveToItemAnim(card, info.startPos, from, to);
+                    anim = new MoveToItemAnim(card, startPos, from, to);
                     break;
             }
             if (anim != null)
@@ -129,9 +125,6 @@ namespace Game.BattleTable
                 yield return _moveAnim.startUpdate(table, _deltaTime);
             }
         }
-        #endregion
-
-        #region 移动到目标牌堆
         private IEnumerator moveToAnim(BattleTableManager table, EventData data, CardMoveInfo info)
         {
             var card = data.card;
@@ -174,7 +167,7 @@ namespace Game.BattleTable
                 case PILE.HEAD: // 任意牌堆-->延迟
                     if (_moveAnim is not MoveToHeadAnim)
                     {
-                        anim = new MoveToHeadAnim(card, startPos, from, to);
+                        anim = new MoveToHeadAnim(card, startPos, from, to, data.position);
                     }
                     break;
                 case PILE.ITEM: // 任意牌堆-->道具
@@ -224,7 +217,7 @@ namespace Game.BattleTable
                     anim = new MoveToFieldAnim(card, startPos, from, to, data.position, info.cardHeight);
                     break;
                 case PILE.HEAD: // 延迟-->任意牌堆
-                    anim = new MoveToHeadAnim(card, startPos, from, to);
+                    anim = new MoveToHeadAnim(card, startPos, from, to, data.position);
                     break;
                 case PILE.ITEM: // 道具-->任意牌堆
                     anim = new MoveToItemAnim(card, startPos, from, to);

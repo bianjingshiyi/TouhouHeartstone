@@ -67,6 +67,7 @@ namespace Game.BattleTable
             servant.transform.SetParent(_servantRoot, false);
             position = Mathf.Clamp(position, 0, _servantList.Count);
             _servantList.Insert(position, servant);
+            servant.field = this;
         }
         public Servant insertServant(int position)
         {
@@ -89,6 +90,7 @@ namespace Game.BattleTable
                 servant.onEndDrag -= onServantEndDragCallback;
                 servant.onPointerEnter -= onServantPointerEnterCallback;
                 servant.onPointerExit -= onServantPointerExitCallback;
+                servant.field = null;
                 if (destroy)
                 {
                     servant.destroy();
@@ -108,6 +110,7 @@ namespace Game.BattleTable
                 servant.onEndDrag -= onServantEndDragCallback;
                 servant.onPointerEnter -= onServantPointerEnterCallback;
                 servant.onPointerExit -= onServantPointerExitCallback;
+                servant.field = null;
                 servant.destroy();
             }
             _ignoreAlignServants.Clear();

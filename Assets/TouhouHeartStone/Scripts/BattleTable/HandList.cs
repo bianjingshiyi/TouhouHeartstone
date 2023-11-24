@@ -36,6 +36,11 @@ namespace Game.BattleTable
         {
             var hand = Instantiate(_handTemplate, _handRoot).GetComponent<HandItem>();
             hand.gameObject.SetActive(true);
+
+            return insertHand(position, hand);
+        }
+        public HandItem insertHand(int position, HandItem hand)
+        {
             hand.onClick += onHandItemClickCallback;
             hand.onBeginDrag += onHandItemBeginDragCallback;
             hand.onDrag += onHandItemDragCallback;
@@ -46,10 +51,13 @@ namespace Game.BattleTable
             int insertPos = getInsertPosition(position);
             _hands.Insert(insertPos, hand);
             addHandToEmpty(position);
+
+            hand.handList = this;
             hand.transform.SetParent(_handRoot, false);
 
             Vector3 targetPosition = getHandTargetLocalPosition(position, _hands.Count);
             hand.transform.localPosition = targetPosition;
+
 
             return hand;
         }
@@ -61,7 +69,7 @@ namespace Game.BattleTable
         {
             return _hands.Contains(item);
         }
-        public bool removeHand(HandItem hand)
+        public bool removeHand(HandItem hand, bool destroy = true)
         {
             int handPos = getHandRealPosition(hand);
             if (_hands.Remove(hand))
@@ -72,7 +80,11 @@ namespace Game.BattleTable
                 hand.onEndDrag -= onHandItemEndDragCallback;
                 hand.onPointerEnter -= onHandItemPointerEnterCallback;
                 hand.onPointerExit -= onHandItemPointerExitCallback;
-                hand.destroy();
+                hand.handList = null;
+                if (destroy)
+                {
+                    hand.destroy();
+                }
 
                 removeHandFromEmpty(handPos);
                 return true;
@@ -89,6 +101,7 @@ namespace Game.BattleTable
                 hand.onEndDrag -= onHandItemEndDragCallback;
                 hand.onPointerEnter -= onHandItemPointerEnterCallback;
                 hand.onPointerExit -= onHandItemPointerExitCallback;
+                hand.handList = null;
                 hand.destroy();
             }
             _hands.Clear();

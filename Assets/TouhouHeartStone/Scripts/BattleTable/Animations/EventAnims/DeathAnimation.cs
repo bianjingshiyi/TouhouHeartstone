@@ -13,28 +13,27 @@ namespace Game.BattleTable
     /// </summary>
     class DeathAnimation : EventAnimation<Arg>
     {
-
         /// <summary>
         /// 每一帧调用
         /// </summary>
         /// <param name="table">游戏桌面UI管理器</param>
         /// <param name="record">死亡事件</param>
         /// <returns></returns>
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = arg.card;
+            var cardId = record.getVar<CardState>(EVENTVAR.CARD).card.id;
             AnimAnim anim = null;
-            if (table.tryGetServant(card, out var serv))//尝试获取死亡的随从的随从UI
+            if (table.tryGetServant(cardId, out var serv))//尝试获取死亡的随从的随从UI
             {
                 serv.onDeath.invokeBeforeAnim();
                 anim = new AnimAnim(serv.animator, serv.onDeath.animName);
             }
-            else if (table.tryGetMaster(card, out var master))
+            else if (table.tryGetMaster(cardId, out var master))
             {
                 master.onDeath.invokeBeforeAnim();
                 anim = new AnimAnim(master.animator, master.onDeath.animName);
             }
-            else if (table.tryGetItem(card, out var item))
+            else if (table.tryGetItem(cardId, out var item))
             {
                 item.onDestroy.invokeBeforeAnim();
                 anim = new AnimAnim(item.animator, item.onDestroy.animName);
@@ -42,27 +41,26 @@ namespace Game.BattleTable
             while (anim != null && !anim.update(table, _deltaTime))
                 yield return null;
             Vector3? position = null;
-            if (table.tryGetServant(card, out var servant))//尝试获取死亡的随从的随从UI
+            if (table.tryGetServant(cardId, out var servant))//尝试获取死亡的随从的随从UI
             {
                 servant.onDeath.invokeAfterAnim();
                 position = servant.transform.position;
                 table.table.SelfField.removeServant(servant);//从自己的场上移除随从UI
                 table.table.EnemyField.removeServant(servant);//从敌人的场上移除随从UI
             }
-            else if (table.tryGetMaster(card, out var master))
+            else if (table.tryGetMaster(cardId, out var master))
             {
                 master.onDeath.invokeAfterAnim();
             }
-            else if (card.isItem())
+            else if (table.tryGetItem(cardId, out var item))
             {
-                Item item = card.getOwner() == table.player ? table.table.SelfItem : table.table.EnemyItem;
                 item.onDestroy.invokeAfterAnim();
                 position = item.transform.position;
-                table.removeItem(card);
+                table.removeItem(cardId);
             }
             if (position.HasValue)
             {
-                table.createDeadCardAnchor(arg.card, position.Value);
+                table.createDeadCardAnchor(cardId, position.Value);
             }
         }
 

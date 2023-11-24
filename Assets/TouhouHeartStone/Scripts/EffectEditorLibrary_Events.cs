@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 
 namespace Game
@@ -90,14 +92,14 @@ namespace Game
         }
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetEventVariable, EDITOR_NODE_EVENT, StringTable.EDITOR_NODE_NAME_SET_VARIABLE, "SetVariable")]
-        public static void setVariable(
+        public static void setVariable(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, true)] EventVarName varName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
             if (eventArg == null || varName == null)
                 return;
-            eventArg.setVar(varName, value);
+            eventArg.changeEventVar(game, varName, value);
         }
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.StopEvent, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_STOP_EVENT)]
@@ -111,71 +113,71 @@ namespace Game
 
         [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.ChangeAttackTarget, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_CHANGE_ATTACK_TARGET)]
-        public static void changeAttackTarget(
+        public static void changeAttackTarget(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card target)
         {
             if (eventArg is THHCard.AttackEventArg attackArg)
             {
-                attackArg.target = target;
+                attackArg.changeEventVar(game, EVENTVAR.TARGET_CARD, target);
             }
         }
 
         [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.ChangeUseTarget, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_CHANGE_USE_TARGET)]
-        public static void changeUseTargets(
+        public static void changeUseTargets(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Card[] target)
         {
             if (eventArg.getVar<Card[]>(EVENTVAR.TARGETS).Length > 0)
-                eventArg.setVar(EVENTVAR.TARGETS, target);
+                eventArg.changeEventVar(game, EVENTVAR.TARGETS, target);
         }
 
         [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DamageEvent_ChangeTarget, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_TARGET)]
-        public static void damageEvent_changeTarget(
+        public static void damageEvent_changeTarget(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card target)
         {
             if (eventArg is THHCard.DamageEventArg damageArg)
             {
-                damageArg.target = target;
+                damageArg.changeEventVar(game, EVENTVAR.CARD, target);
             }
         }
 
         [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DamageEvent_ChangeSource, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_SOURCE)]
-        public static void damageEvent_changeSource(
+        public static void damageEvent_changeSource(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card source)
         {
             if (eventArg is THHCard.DamageEventArg damageArg)
             {
-                damageArg.source = source;
+                damageArg.changeEventVar(game, THHCard.DamageEventArg.VAR_DAMAGE_SOURCE, source);
             }
         }
 
         [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DamageEvent_ChangeValue, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_VALUE)]
-        public static void damageEvent_changeValue(
+        public static void damageEvent_changeValue(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
         {
             if (eventArg is THHCard.DamageEventArg damageArg)
             {
-                damageArg.damageValue = value;
+                damageArg.changeEventVar(game, THHCard.DamageEventArg.VAR_DAMAGE_VALUE, value);
             }
         }
 
         [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.HealEvent_ChangeValue, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_HEAL_CHANGE_VALUE)]
-        public static void healEvent_changeValue(
+        public static void healEvent_changeValue(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
         {
             if (eventArg is THHCard.HealEventArg healArg)
             {
-                healArg.value = value;
+                healArg.changeEventVar(game, EVENTVAR.VALUE, value);
             }
         }
         #endregion

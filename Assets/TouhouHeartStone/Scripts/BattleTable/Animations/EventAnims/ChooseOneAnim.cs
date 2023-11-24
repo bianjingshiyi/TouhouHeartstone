@@ -10,9 +10,9 @@ namespace Game.BattleTable
     {
         public override bool forceQueueAnimations => true;
 
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var player = arg.player;
+            var player = record.getVar<Player>(EVENTVAR.PLAYER);
             //自己打出的效果不展示
             if (player == table.player)
             {
@@ -29,7 +29,7 @@ namespace Game.BattleTable
 
             var choose = record.getVar<CardDefine>(EVENTVAR.CHOSEN_CARD);
 
-            var isShow = arg.isShow;
+            var isShow = record.getVar<bool>(Arg.VAR_SEEN_CARD);
             TableCard chooseCard = null;
             if (isShow)
             {

@@ -723,7 +723,7 @@ namespace TouhouHeartstone
                     var damageArg = await target.damage(game, argSource, 1);
                     hit.Add(damageArg.target);
                 }
-                arg.targets = hit.ToArray();
+                arg.damagedCards = hit.ToArray();
             });
         }
         public static Task<MassDamageEventArg> damageByRandomCount(this IEnumerable<Card> cards, CardEngine game, Card source, int value, int count)

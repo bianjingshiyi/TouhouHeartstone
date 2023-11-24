@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using TouhouCardEngine;
 using UI;
 using UnityEngine;
 using Card = TouhouCardEngine.Card;
@@ -9,9 +8,9 @@ namespace Game.BattleTable
     using Arg = Card.SetDefineEventArg;
     class SetDefineAnim : EventAnimation<Arg>
     {
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = table.getRecordCardSnapshot(record, Arg.VAR_CARD);
+            var card = table.getEventCardSnapshot(record, Arg.VAR_CARD);
             SimpleAnim simpleAnim = null;
             Animator animator = null;
             if (table.tryGetServant(card, out var servant))
@@ -44,7 +43,7 @@ namespace Game.BattleTable
                 simpleAnim = hand.onSetDefine;
                 animator = hand.animator;
             }
-            table.updateCardBySnapshot(card, record);
+            table.updateCardBySnapshot(card);
             if (simpleAnim != null && animator)
             {
                 AnimAnim anim = null;

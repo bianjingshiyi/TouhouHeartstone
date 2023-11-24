@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Linq;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -11,32 +10,33 @@ namespace Game.BattleTable
     using Arg = THHCard.AttackEventArg;
     class AttackAnimation : EventAnimation<Arg>
     {
-        public override IEnumerator startUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator startUpdate(BattleTableManager table)
         {
-            var card = arg.card;
-            var target = arg.target;
-            TableCharacter attackObj = getCharacterUI(table, card);
-            TableCharacter attackedObj = getCharacterUI(table, target);
+            var card = table.getEventCardSnapshot(startData, EVENTVAR.CARD);
+            var target = table.getEventCardSnapshot(startData, EVENTVAR.TARGET_CARD);
+            TableCharacter attackObj = getCharacterUI(table, card.id);
+            TableCharacter attackedObj = getCharacterUI(table, target.id);
             SimpleAnim attackStartSimpleAnim = attackObj?.onAttackStart;
 
             if (attackObj && attackedObj)
             {
-                attackObj.positionLerp.setStartLocalPosition(Vector3.zero);
+                attackObj.positionLerp.setStartPositionToCurrent();
                 attackObj.positionLerp.setTargetTransform(attackedObj.transform, table.TableToWorldDistance(150));
             }
 
             if (attackObj && attackStartSimpleAnim != null)
             {
-                while (!SimpleAnimHelper.update(table, ref _attackAnim, attackStartSimpleAnim, attackObj.animator, _deltaTime))
+                AnimAnim attackAnim = null;
+                while (!SimpleAnimHelper.update(table, ref attackAnim, attackStartSimpleAnim, attackObj.animator, _deltaTime))
                     yield return null;
             }
         }
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = arg.card;
-            var target = arg.target;
-            TableCharacter attackObj = getCharacterUI(table, card);
-            TableCharacter attackedObj = getCharacterUI(table, target);
+            var card = record.getVar<CardState>(EVENTVAR.CARD).card;
+            var target = record.getVar<CardState>(EVENTVAR.TARGET_CARD).card;
+            TableCharacter attackObj = getCharacterUI(table, card.id);
+            TableCharacter attackedObj = getCharacterUI(table, target.id);
             SimpleAnim attackSimpleAnim = attackObj?.onAttack;
             SimpleAnim attackedSimpleAnim = attackedObj?.onAttacked;
 
@@ -49,7 +49,8 @@ namespace Game.BattleTable
 
             if (attackObj && attackSimpleAnim != null)
             {
-                while (!SimpleAnimHelper.update(table, ref _attackAnim, attackSimpleAnim, attackObj.animator, _deltaTime)) 
+                AnimAnim attackAnim = null;
+                while (!SimpleAnimHelper.update(table, ref attackAnim, attackSimpleAnim, attackObj.animator, _deltaTime))
                 {
                     if (attackObj.isAttackHit())
                     {
@@ -62,16 +63,18 @@ namespace Game.BattleTable
             _attacked = true;
             if (attackedObj && attackedSimpleAnim != null)
             {
-                while (!SimpleAnimHelper.update(table, ref _attackedAnim, attackedSimpleAnim, attackedObj.animator, _deltaTime))
+                AnimAnim attackAnim = null;
+                while (!SimpleAnimHelper.update(table, ref attackAnim, attackedSimpleAnim, attackedObj.animator, _deltaTime))
                     yield return null;
             }
 
             // 返回。
-            yield return returnFromAttack(table, arg);
+            yield return returnFromAttack(table, card.id);
         }
-        public override IEnumerator canceledUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator canceledUpdate(BattleTableManager table)
         {
-            yield return returnFromAttack(table, arg);
+            var card = record.getVar<CardState>(EVENTVAR.CARD).card;
+            yield return returnFromAttack(table, card.id);
         }
         public override bool continueNextGroup(AnimationGroup nextGroup)
         {
@@ -79,11 +82,9 @@ namespace Game.BattleTable
                 return _attacked;
             return base.continueNextGroup(nextGroup);
         }
-        private IEnumerator returnFromAttack(BattleTableManager table, Arg arg)
+        private IEnumerator returnFromAttack(BattleTableManager table, int cardId)
         {
-            var card = arg.card;
-            var target = arg.target;
-            TableCharacter attackObj = getCharacterUI(table, card);
+            TableCharacter attackObj = getCharacterUI(table, cardId);
             SimpleAnim attackEndSimpleAnim = attackObj?.onAttackEnd;
 
             if (attackObj)
@@ -94,17 +95,18 @@ namespace Game.BattleTable
 
             if (attackObj && attackEndSimpleAnim != null)
             {
-                while (!SimpleAnimHelper.update(table, ref _attackAnim, attackEndSimpleAnim, attackObj.animator, _deltaTime))
+                AnimAnim attackAnim = null;
+                while (!SimpleAnimHelper.update(table, ref attackAnim, attackEndSimpleAnim, attackObj.animator, _deltaTime))
                     yield return null;
             }
         }
-        private TableCharacter getCharacterUI(BattleTableManager table, ICardData card)
+        private TableCharacter getCharacterUI(BattleTableManager table, int id)
         {
-            if (table.tryGetMaster(card, out var attackMaster))
+            if (table.tryGetMaster(id, out var attackMaster))
             {
                 return attackMaster;
             }
-            else if (table.tryGetServant(card, out var attackServant))
+            else if (table.tryGetServant(id, out var attackServant))
             {
                 return attackServant;
             }
@@ -112,11 +114,12 @@ namespace Game.BattleTable
         }
         private bool isAnimGroupDamageOfThis(AnimationGroup nextGroup)
         {
-            return nextGroup.Any(a => {
+            return nextGroup.Any(a =>
+            {
                 if (a is DamageAnimation damageAnim)
                 {
                     // 伤害动画的事件的父事件是该攻击动画的攻击事件。
-                    return damageAnim.tEventArg.parent == tEventArg;
+                    return damageAnim.tEventArg.parent == tEventArg && damageAnim.tEventArg.target == tEventArg.target;
                 }
                 else if (a is PropChangeAnim propAnim)
                 {
@@ -124,7 +127,7 @@ namespace Game.BattleTable
                     var evt = propAnim.eventArg;
                     while (evt != null)
                     {
-                        if (evt.parent is THHCard.DamageEventArg damageEvent && damageEvent.parent == tEventArg)
+                        if (evt.parent is THHCard.DamageEventArg damageEvent && damageEvent.parent == tEventArg && damageEvent.target == tEventArg.target)
                             return true;
                         evt = evt.parent;
                     }
@@ -133,7 +136,5 @@ namespace Game.BattleTable
             });
         }
         bool _attacked = false;
-        AnimAnim _attackAnim;
-        AnimAnim _attackedAnim;
     }
 }

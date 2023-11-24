@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
@@ -10,33 +9,35 @@ namespace Game.BattleTable
     using Arg = THHCard.HealEventArg;
     class HealAnimation : EventAnimation<Arg>
     {
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            if (record == null || record.isCanceled)
-                yield break;
-            var card = arg.card;
-            var healedValue = arg.healedValue;
+            var cardId = record.getVar<CardState>(EVENTVAR.CARD).card.id;
+            var healedValue = record.getVar<int>(Arg.VAR_HEALED_VALUE);
 
-            if (table.tryGetServant(card, out Servant servant))
+            ParticleSystem healEffect = null;
+            if (table.tryGetServant(cardId, out Servant servant))
             {
                 //显示治疗数字
                 servant.showHealText(healedValue);
                 if (AnimHelper.hasAnim(servant.animator, servant.onHeal.animName, out int layer))
                     servant.animator.Play(servant.onHeal.animName, layer);
                 //播放粒子特效
-                _healEffect = Object.Instantiate(servant.healEffectPrefab, servant.transform.position, Quaternion.identity, table.table.EffectsParent);
+                healEffect = Object.Instantiate(servant.healEffectPrefab, servant.transform.position, Quaternion.identity, table.table.EffectsParent);
             }
-            else if (table.tryGetMaster(card, out Master master))
+            else if (table.tryGetMaster(cardId, out Master master))
             {
                 //显示治疗数字
                 master.showHealText(healedValue);
                 if (AnimHelper.hasAnim(master.animator, master.onHeal.animName, out int layer))
                     master.animator.Play(master.onHeal.animName, layer);
                 //播放粒子特效
-                _healEffect = Object.Instantiate(master.healEffectPrefab, master.transform.position, Quaternion.identity, table.table.EffectsParent);
+                healEffect = Object.Instantiate(master.healEffectPrefab, master.transform.position, Quaternion.identity, table.table.EffectsParent);
             }
             yield return new WaitForSeconds(1.5f);
-            Object.Destroy(_healEffect.gameObject);
+            if (healEffect)
+            {
+                Object.Destroy(healEffect.gameObject);
+            }
         }
 
         public override bool continueNextGroup(AnimationGroup nextGroup)
@@ -47,6 +48,5 @@ namespace Game.BattleTable
                 return false;
             return true;
         }
-        private ParticleSystem _healEffect;
     }
 }

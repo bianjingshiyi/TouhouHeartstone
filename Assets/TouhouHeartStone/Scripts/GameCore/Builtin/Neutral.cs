@@ -1234,8 +1234,7 @@ namespace TouhouHeartstone.Builtin
                     var oppo = g.getOpponent(c.getOwner());
                     Card[] targets = (new Card[] {oppo.getMaster()}).Concat(oppo.getField()).ToArray();
                     int dice = g.dice(targets.Length);
-                    a.target = targets[dice - 1];
-                    return Task.CompletedTask;
+                    return a.changeEventVar(g, EVENTVAR.TARGET_CARD, targets[dice - 1]);
                 })
         };
 
@@ -2737,7 +2736,7 @@ namespace TouhouHeartstone.Builtin
                     var count = arg.targets.Count();
                     var availableTargets = arg.card.getAvaliableTargets(game).Where(c => c != card);
                     var newTargets = availableTargets.randomTake(game, count).ToArray();
-                    arg.setVar(EVENTVAR.TARGETS,newTargets);
+                    arg.changeEventVar(game, EVENTVAR.TARGETS,newTargets);
                     return Task.CompletedTask;
                 }),
             new THHEffectBefore<THHCard.AttackEventArg>(PileFlag.field,
@@ -2752,7 +2751,7 @@ namespace TouhouHeartstone.Builtin
                         availableTargets.Remove(card);
                     }
 
-                    arg.target = availableTargets.random(game);
+                    arg.changeEventVar(game, EVENTVAR.TARGET_CARD, availableTargets.random(game));
                     return Task.CompletedTask;
                 })
         };

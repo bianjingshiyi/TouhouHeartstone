@@ -30,6 +30,11 @@ namespace Game.BattleTable
         }
         public override Vector3 getCurrentPosition(BattleTableManager table)
         {
+            if (table.tryGetItem(_cardDesc.id, out var item))
+                return table.WorldToTablePosition(item.transform.position);
+            var transform = table.getCardTransform(_cardDesc.id);
+            if (transform)
+                return table.WorldToTablePosition(transform.position);
             return _startTablePos;
         }
     }

@@ -173,6 +173,8 @@ namespace Game
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_LASTWORD = "遗言";
         [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_SET_EVENT_VAR = "设置事件变量";
+        [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_MASS_ADD_BUFF = "群体添加增益";
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_MASS_DAMAGE = "群体伤害";
@@ -220,6 +222,7 @@ namespace Game
             "LastwordEvent",
             "UpdateDeathEvent",
             "GeneratedEvent",
+            "SetEventVarEvent",
             "MassAddBuffEvent",
             "MassDamageEvent",
             "MassDiscardEvent",
@@ -281,6 +284,7 @@ namespace Game
             { "BeChargedEvent", EDITOR_EVENT_NAME_BE_CHARGED },
             { "ElementMixEvent", StringTable.EDITOR_EVENT_NAME_ELEMENT },
             { "LastwordEvent", EDITOR_EVENT_NAME_LASTWORD },
+            { "SetEventVarEvent", EDITOR_EVENT_NAME_SET_EVENT_VAR },
             { "MassAddBuffEvent", EDITOR_EVENT_NAME_MASS_ADD_BUFF },
             { "MassDamageEvent", EDITOR_EVENT_NAME_MASS_DAMAGE },
             { "MassDiscardEvent", EDITOR_EVENT_NAME_MASS_DISCARD },

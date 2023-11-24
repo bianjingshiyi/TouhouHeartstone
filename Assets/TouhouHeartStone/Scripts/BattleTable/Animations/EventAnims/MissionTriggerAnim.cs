@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using TouhouCardEngine;
 using TouhouHeartstone;
 
 namespace Game.BattleTable
@@ -7,9 +6,9 @@ namespace Game.BattleTable
     using Arg = THHCard.MissionCompleteEventArg;
     public class MissionTriggerAnim : EventAnimation<Arg>
     {
-        public override IEnumerator logicUpdate(BattleTableManager table, EventRecord record, Arg arg)
+        public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
+            var card = table.getEventCardSnapshot(record, EVENTVAR.CARD);
             if (table.tryGetSecret(card, out var secret))
             {
                 secret.dummyTarget.position = table.table.CenterDisplayTransform.position;
