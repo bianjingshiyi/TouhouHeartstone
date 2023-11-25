@@ -1441,6 +1441,7 @@ namespace TouhouHeartstone
                 get { return getVar<int>(EVENTVAR.POSITION); }
                 set { setVar(EVENTVAR.POSITION, value); }
             }
+            public THHPile.MoveCardEventArg moveEvent;
             public int attack;
             public int life;
         }
@@ -1518,6 +1519,7 @@ namespace TouhouHeartstone
                 get { return getVar<Card>(EVENTVAR.CARD); }
                 set { setVar(EVENTVAR.CARD, value); }
             }
+            public THHPile.MoveCardEventArg moveEvent;
         }
         public class RebornEventArg : EventArg, IDescribableEventArg
         {

@@ -17,20 +17,26 @@ namespace Game.BattleTable
         }
         public override IEnumerator logicUpdate(BattleTableManager table, float deltaTime)
         {
-            // 创建延迟区物件。
-            if (!table.tryGetSecret(_cardDesc.id, out var secret))
-                secret = table.createSecret(_cardDesc);
-            table.setSecret(secret, _cardDesc);
-
-            if (_from == _to)
+            Secret secret;
+            // 夺取陷阱，将原先的卡牌移除。
+            if (_from != _to)
             {
-                var sourceHead = secret.headSlots;
-                var targetHead = table.getHeadSlots(_to);
-                if (sourceHead == targetHead)
+                removeCard(table);
+                secret = table.createSecret(_cardDesc);
+            }
+            else // 同牌堆间移动，调整位置。
+            {
+                // 创建延迟区物件。
+                if (!table.tryGetSecret(_cardDesc.id, out secret))
                 {
-                    if (sourceHead.removeItem(secret))
+                    secret = table.createSecret(_cardDesc);
+                }
+                else
+                {
+                    var head = secret.headSlots;
+                    if (head.removeItem(secret))
                     {
-                        targetHead.insertItem(_position, secret);
+                        head.insertItem(_position, secret);
                     }
                 }
             }

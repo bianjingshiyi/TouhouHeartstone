@@ -23,7 +23,7 @@ namespace TouhouHeartstone
                 foreach (var card in argCards)
                 {
                     var eventArg = await pile.add(game, card);
-                    if (!eventArg.success)
+                    if (eventArg == null || !eventArg.success)
                         continue;
                     movedCards.Add(eventArg.card);
                 }
@@ -62,7 +62,7 @@ namespace TouhouHeartstone
                 foreach (var card in argCards.Reverse())
                 {
                     var eventArg = await pile.moveTo(game, card, argTarget);
-                    if (!eventArg.success)
+                    if (eventArg == null || !eventArg.success)
                         continue;
                     movedCards.Add(eventArg.card);
                 }
@@ -79,7 +79,7 @@ namespace TouhouHeartstone
                 foreach (var card in argCards.Reverse())
                 {
                     var eventArg = await moveTo(game, card, pile, argTarget, position);
-                    if (!eventArg.success)
+                    if (eventArg == null || !eventArg.success)
                         continue;
                     movedCards.Add(eventArg.card);
                 }
@@ -90,7 +90,7 @@ namespace TouhouHeartstone
         {
             var eventArg = new MoveCardEventArg(from, to, card, position);
             if (!Pile.canMove(card, from, to))
-                return eventArg;
+                return null;
 
             if (game != null)
             {
@@ -106,6 +106,10 @@ namespace TouhouHeartstone
                     if (success)
                     {
                         await tryResetCardPropsAfterMove(game, arg.resetProps, card, from, to);
+                    }
+                    else
+                    {
+                        arg.isCanceled = true;
                     }
                 }
                 await game.triggers.doEvent(eventArg, func);

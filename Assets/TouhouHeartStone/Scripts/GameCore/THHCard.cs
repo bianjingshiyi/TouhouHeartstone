@@ -1358,6 +1358,8 @@ namespace TouhouHeartstone
             });
         }
         #endregion
+
+        #region 群体移动
         public static Task<MassEnterFieldEventArg> moveToField(this IEnumerable<Card> cards, CardEngine game, Player player)
         {
             return game.triggers.doEvent(new MassEnterFieldEventArg() { cards = cards.ToArray(), player = player }, async arg =>
@@ -1367,25 +1369,9 @@ namespace TouhouHeartstone
                 List<Card> movedCards = new List<Card>();
                 foreach (var card in argCards)
                 {
-                    if (card == null)
-                        continue;
-                    if (card.isServant())
-                    {
-                        if (argPlayer.getField().isFull)
-                        {
-                            game.logger.logTrace($"{argPlayer}的战场已满，无法将{string.Join(",", card)}置入战场");
-                        }
-                        else
-                        {
-                            game.logger.logTrace($"将{string.Join("，", card)}置入{argPlayer}的战场");
-                            await argPlayer.tryEnterField(game, card.pile, card, argPlayer.getField().count);
-                            movedCards.Add(card);
-                        }
-                    }
-                    else
-                    {
-                        game.logger.logTrace($"卡牌类型非法，无法将{string.Join(",", card)}置入战场");
-                    }
+                    var moveArg = await card.moveToField(game, argPlayer);
+                    if (moveArg != null && moveArg.success)
+                        movedCards.Add(moveArg.card);
                 }
                 arg.movedCards = movedCards.ToArray();
             });
@@ -1439,23 +1425,9 @@ namespace TouhouHeartstone
                 List<Card> movedCards = new List<Card>();
                 foreach (var card in argCards)
                 {
-                    if (card == null)
-                        continue;
-                    if (card.isTrap(game) || card.hasKeyword(game, KEYWORD.MISSION))
-                    {
-                        if (player.getHead().isFull)
-                            game.logger.logTrace($"{player}的延迟区已满，无法将{string.Join(",", card)}置入延迟区");
-                        else
-                        {
-                            game.logger.logTrace($"将{string.Join("，", card)}置入{player}的延迟区");
-                            await card.pile.moveTo(game, card, player.getHead());
-                            movedCards.Add(card);
-                        }
-                    }
-                    else
-                    {
-                        game.logger.logTrace($"卡牌类型非法，无法将{string.Join(",", card)}置入延迟区");
-                    }
+                    var moveArg = await card.moveToHead(game, argPlayer);
+                    if (moveArg != null && moveArg.success)
+                        movedCards.Add(moveArg.card);
                 }
                 arg.movedCards = movedCards.ToArray();
             });
@@ -1506,6 +1478,13 @@ namespace TouhouHeartstone
                 arg.movedCards = movedCards.ToArray();
             });
         }
+        #endregion
+
+        #region 单体移动
+        public static Task<THHPile.MoveCardEventArg> moveToHead(this Card card, CardEngine game, Player player)
+        {
+            return moveToHead(card, game, card.pile, player?.getHead());
+        }
         /// <summary>
         /// 将一张卡牌返回到指定玩家的手牌。
         /// </summary>
@@ -1513,18 +1492,55 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         /// <param name="player">移动至手牌的玩家。</param>
         /// <returns></returns>
-        public static async Task<THHPile.MoveCardEventArg> returnToHand(this Card card, CardEngine game, Player player)
+        public static Task<THHPile.MoveCardEventArg> returnToHand(this Card card, CardEngine game, Player player)
         {
-            if (card == null || player == null)
+            return moveToHand(card, game, card.pile, player?.getHand());
+        }
+        public static Task<THHPile.MoveCardEventArg> moveToField(this Card card, CardEngine game, Player player)
+        {
+            return moveToField(card, game, card.pile, player?.getField());
+        }
+        public static Task<THHPile.MoveCardEventArg> moveToItem(this Card card, CardEngine game, Player player)
+        {
+            return moveToItem(card, game, card.pile, player[PILE.ITEM]);
+        }
+        public static async Task<THHPile.MoveCardEventArg> moveToHead(this Card card, CardEngine game, Pile from, Pile to)
+        {
+            if (isInvalidMove(card, from, to))
                 return null;
-            var from = card.pile;
-            var to = player.getHand();
-            if (!to.isFull) // 手牌未满
+            if (!card.isTrap(game) && !card.hasKeyword(game, KEYWORD.MISSION))
             {
-                game.logger.logTrace($"将{card}置入{player}的手牌");
-                return await from.moveTo(game, card, to, to.count);
+                game.logger.logTrace($"卡牌类型非法，无法将{string.Join(",", card)}置入延迟区");
+                return null;
             }
-            else // 手牌已满
+            var player = to.owner;
+            if (to.isFull)
+            {
+                game.logger.logTrace($"{player}的延迟区已满，无法将{string.Join(",", card)}置入延迟区");
+                return null;
+            }
+            if (to.Any(s => s.define == card.define))
+            {
+                game.logger.logTrace($"{player}的延迟区已包含{card.define}，无法将{string.Join(",", card)}置入延迟区");
+                return null;
+            }
+
+            game.logger.logTrace($"将{string.Join("，", card)}置入{player}的延迟区");
+            return await from.moveTo(game, card, to);
+        }
+        /// <summary>
+        /// 将一张卡牌返回到指定玩家的手牌。
+        /// </summary>
+        /// <param name="card">卡牌。</param>
+        /// <param name="game"></param>
+        /// <param name="player">移动至手牌的玩家。</param>
+        /// <returns></returns>
+        public static async Task<THHPile.MoveCardEventArg> moveToHand(this Card card, CardEngine game, Pile from, Pile to)
+        {
+            if (isInvalidMove(card, from, to))
+                return null;
+            var player = to?.owner;
+            if (to.isFull) // 手牌已满
             {
                 game.logger.logTrace($"{player}的手牌已满，无法将{card}置入手牌");
                 if (from?.name == PILE.FIELD) // 仆从直接将其消灭
@@ -1539,9 +1555,43 @@ namespace TouhouHeartstone
                         return await from.moveTo(game, card, grave, grave.count);
                     }
                 }
+                return null;
             }
-            return null;
+            // 手牌未满
+            game.logger.logTrace($"将{card}置入{player}的手牌");
+            return await from.moveTo(game, card, to, to.count);
         }
+        public static async Task<THHPile.MoveCardEventArg> moveToField(this Card card, CardEngine game, Pile from, Pile to)
+        {
+            if (isInvalidMove(card, from, to))
+                return null;
+            var enterFieldArg = await to.owner.tryEnterField(game, from, card, to.count);
+            return enterFieldArg?.moveEvent;
+        }
+        public static async Task<THHPile.MoveCardEventArg> moveToItem(this Card card, CardEngine game, Pile from, Pile to)
+        {
+            if (isInvalidMove(card, from, to))
+                return null;
+            var equipArg = await to.owner.equip(game, card.pile, card);
+            return equipArg?.moveEvent;
+        }
+        public static async Task<THHPile.MoveCardEventArg> moveCardFromPileToPile(this Card card, CardEngine game, Pile fromPile, Pile toPile)
+        {
+            var toName = toPile?.name;
+            switch (toName)
+            {
+                case PILE.HAND:
+                    return await card.moveToHand(game, fromPile, toPile);
+                case PILE.HEAD:
+                    return await card.moveToHead(game, fromPile, toPile);
+                case PILE.ITEM:
+                    return await card.moveToItem(game, fromPile, toPile);
+                case PILE.FIELD:
+                    return await card.moveToField(game, fromPile, toPile);
+            }
+            return await fromPile.moveTo(game, card, toPile);
+        }
+        #endregion
         public static Task fieldToHand(this Card card, CardEngine game)
         {
             return fieldToHand(new Card[] { card }, game);
@@ -1807,6 +1857,14 @@ namespace TouhouHeartstone
                     await rattle.execute(game, argCard, buff, arg);
                 }
             }
+        }
+        private static bool isInvalidMove(Card card, Pile from, Pile to)
+        {
+            if (card == null || to == null)
+                return true;
+            if (from != null && !from.Contains(card)) // 源牌堆不包含该卡牌。
+                return true;
+            return false;
         }
         #endregion
 

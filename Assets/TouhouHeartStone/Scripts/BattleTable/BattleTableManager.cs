@@ -164,12 +164,16 @@ namespace Game.BattleTable
             table.SelfMaster.onDrag += onMasterDragCallback;
             table.SelfMaster.onEndDrag += onMasterEndDragCallback;
             table.SelfMaster.onPointerUp += onMasterPointerUpCallback;
+            table.SelfMaster.HeadSlots.onItemPointerEnter += onHeadItemPointerEnterCallback;
+            table.SelfMaster.HeadSlots.onItemPointerExit += onHeadItemPointerExitCallback;
 
             table.EnemyMaster.onClick += onMasterClickCallback;
             table.EnemyMaster.onBeginDrag += onMasterBeginDragCallback;
             table.EnemyMaster.onDrag += onMasterDragCallback;
             table.EnemyMaster.onEndDrag += onMasterEndDragCallback;
             table.EnemyMaster.onPointerUp += onMasterPointerUpCallback;
+            table.EnemyMaster.HeadSlots.onItemPointerEnter += onHeadItemPointerEnterCallback;
+            table.EnemyMaster.HeadSlots.onItemPointerExit += onHeadItemPointerExitCallback;
 
 
             table.SelfSkill.onClick += onSkillClickCallback;

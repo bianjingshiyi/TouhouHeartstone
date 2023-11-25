@@ -297,9 +297,9 @@ namespace Game
         {
             if (card == null)
                 return false;
-            var arg = await fromPile.moveTo(game, card, toPile);
+            var arg = await card.moveCardFromPileToPile(game, fromPile, toPile);
             setOutParam(flow, node, nameof(outEvent), arg);
-            return arg.success;
+            return arg != null && arg.success;
         }
         #endregion
 
@@ -578,9 +578,9 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)] Card.PropChangeEventArg outEvent)
         {
-            if (player == null)
+            if (player == null || player.getItem() == null)
                 return;
-            outEvent = await player.destroyItem(game);
+            outEvent = await player.getItem().kill(game);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
         /// <summary>
@@ -996,7 +996,7 @@ namespace Game
         {
             if (pile == null)
                 return null;
-            return game.players.FirstOrDefault(p => p.getPiles().Contains(pile));
+            return pile.owner;
         }
         #endregion
         //  与增益相关

@@ -320,60 +320,62 @@ namespace TouhouHeartstone
         #region 道具
         public static Task<HearthStoneRule.EquipItemEventArg> equip(this Player player, CardEngine game, Pile from, Card item)
         {
+            if (from != null && !from.Contains(item)) // 源牌堆不包含该卡牌。
+                return null;
             return game.triggers.doEvent(new HearthStoneRule.EquipItemEventArg() { player = player, from = from, card = item }, onEquipItem);
             async Task onEquipItem(HearthStoneRule.EquipItemEventArg arg)
             {
-                if (player[PILE.ITEM].isFull)
+                var argPlayer = arg.player;
+                var argFrom = arg.from;
+                var argCard = arg.card;
+                if (argPlayer[PILE.ITEM].isFull)
                 {
-                    game.logger.logTrace("由于{player}的道具栏已满，摧毁当前道具");
-                    await player.destroyItem(game);
+                    game.logger.logTrace($"由于{argPlayer}的道具栏已满，摧毁当前道具");
+                    await argPlayer.getItem().destroy(game);
                 }
-
-                player = arg.player;
-                from = arg.from;
-                var card = arg.card;
-
-                if (from != null)
-                    await from.moveTo(game, card, player[PILE.ITEM]);
-                else
-                    await player[PILE.ITEM].insert(game, card, 0);
-                if (from != null)
-                    game.logger.logTrace($"{player}从{arg.from}装备了{arg.card}");
-                else
-                    game.logger.logTrace($"{player}装备了{arg.card}");
+                arg.moveEvent = await argFrom.moveTo(game, argCard, argPlayer[PILE.ITEM]);
+                if (arg.moveEvent == null || !arg.moveEvent.success)
+                {
+                    arg.isCanceled = true;
+                    return;
+                }
+                game.logger.logTrace($"{argPlayer}从{arg.from}装备了{arg.card}");
             }
-        }
-        public static Task<Card.PropChangeEventArg> destroyItem(this Player player, CardEngine game)
-        {
-            if (player[PILE.ITEM].count > 0 && player[PILE.ITEM][0] is Card item)
-                return item.kill(game);
-            return Task.FromResult<Card.PropChangeEventArg>(null);
         }
         #endregion
 
         #region 移动卡牌
         public static Task<HearthStoneRule.EnterFieldEventArg> tryEnterField(this Player player, CardEngine game, Pile from, Card card, int position)
         {
-            if (player.getField().isFull)//没位置了
+            if (card == null)
+                return Task.FromResult(default(HearthStoneRule.EnterFieldEventArg));
+            if (!card.isServant())
+                return Task.FromResult(default(HearthStoneRule.EnterFieldEventArg));
+            if (!Pile.canMove(card, from, player.getField()))//没位置了
                 return Task.FromResult(default(HearthStoneRule.EnterFieldEventArg));
             return game.triggers.doEvent(new HearthStoneRule.EnterFieldEventArg() { player = player, from = from, card = card, position = position }, onEnterField);
             async Task onEnterField(HearthStoneRule.EnterFieldEventArg arg)
             {
-                player = arg.player;
-                from = arg.from;
-                card = arg.card;
-                position = arg.position;
-                if (from != null)
-                    game.logger.logTrace($"{player}将{arg.card}从{arg.from}置入战场，位于{arg.position}");
+                var argPlayer = arg.player;
+                var argFrom = arg.from;
+                var argCard = arg.card;
+                var argPosition = arg.position;
+                if (argFrom != null)
+                    game.logger.logTrace($"{argPlayer}将{argCard}从{argFrom}置入战场，位于{argPosition}");//从某pile召唤随从
                 else
-                    game.logger.logTrace($"{player}将{arg.card}置入战场，位于{arg.position}");
-                //设置随从状态
-                if (from != null)
-                    await from.moveTo(game, arg.card, player.getField(), arg.position);//从某pile召唤随从
-                else
-                    await player.getField().insert(game, card, position);//虚空生成随从
-                arg.attack = card.getAttack(game);
-                arg.life = card.getLife(game);
+                    game.logger.logTrace($"{argPlayer}将{argCard}置入战场，位于{argPosition}");//虚空生成随从
+
+                var field = argPlayer.getField();
+                if (position < 0)
+                    position = field.count;
+                arg.moveEvent = await card.pile.moveTo(game, card, field, position);
+                if (arg.moveEvent == null || !arg.moveEvent.success)
+                {
+                    arg.isCanceled = true;
+                    return;
+                }
+                arg.attack = argCard.getAttack(game);
+                arg.life = argCard.getLife(game);
             }
         }
         public static async Task<bool> tryEnterHead(this Player player, CardEngine game, Pile from, Card card)

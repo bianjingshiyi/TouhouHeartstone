@@ -15,6 +15,8 @@ namespace Game.BattleTable
         }
         public override IEnumerator logicUpdate(BattleTableManager table, float deltaTime)
         {
+            removeCard(table);
+
             // 创建道具。
             var item = table.getItem(_to);
             item.setExist(true);

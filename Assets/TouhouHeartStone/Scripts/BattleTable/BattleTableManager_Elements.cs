@@ -969,13 +969,12 @@ namespace Game.BattleTable
 
         #region 陷阱
         public Secret createSecret(ICardData card) => createSecret(updateCardDescriptor(card));
-        public Secret createSecret(CardDescriptor desc)
+        public Secret createSecret(CardDescriptor desc) => createSecret(desc, desc.getOwner());
+        public Secret createSecret(CardDescriptor desc, Player owner)
         {
-            var master = desc.getOwner() == player ? table.SelfMaster : table.EnemyMaster;
+            var master = owner == player ? table.SelfMaster : table.EnemyMaster;
             var headSlots = master.HeadSlots;
             Secret secret = headSlots.createItem();
-            secret.onPointerEnter += onHeadItemPointerEnterCallback;
-            secret.onPointerExit += onHeadItemPointerExitCallback;
             headSlots.addItem(secret);
             cardSecretDic.Add(desc.id, secret);
             return secret;
@@ -1002,21 +1001,14 @@ namespace Game.BattleTable
             secret.setMission(desc.define.hasKeyword(KEYWORD.MISSION));
         }
         public bool removeSecret(ICardData card) => removeSecret(card.id);
-        public bool removeSecret(CardDescriptor desc)
-        {
-            return removeSecret(desc.id);
-        }
+        public bool removeSecret(CardDescriptor desc) => removeSecret(desc.id);
         public bool removeSecret(int cardId)
         {
             if (tryGetSecret(cardId, out var secret))
             {
                 cardSecretDic.Remove(cardId);
-                var desc = getCardDescriptor(cardId);
-                var master = desc.getOwner() == player ? table.SelfMaster : table.EnemyMaster;
-                var headSlots = master.HeadSlots;
-                headSlots.removeItem(secret);
-                secret.onPointerEnter -= onHeadItemPointerEnterCallback;
-                secret.onPointerExit -= onHeadItemPointerExitCallback;
+                table.SelfMaster.HeadSlots.removeItem(secret);
+                table.EnemyMaster.HeadSlots.removeItem(secret);
                 secret.destroy();
                 return true;
             }
@@ -1916,13 +1908,13 @@ namespace Game.BattleTable
         #endregion
 
         #region 陷阱
-        private void onHeadItemPointerEnterCallback(Secret headItem)
+        private void onHeadItemPointerEnterCallback(Secret headItem, HeadSlots headSlots)
         {
             _showCardTimer.start();
             _hoveredHeadItem = headItem;
         }
 
-        private void onHeadItemPointerExitCallback(Secret headItem)
+        private void onHeadItemPointerExitCallback(Secret headItem, HeadSlots headSlots)
         {
             _showCardTimer.reset();
             _hoveredHeadItem = null;
