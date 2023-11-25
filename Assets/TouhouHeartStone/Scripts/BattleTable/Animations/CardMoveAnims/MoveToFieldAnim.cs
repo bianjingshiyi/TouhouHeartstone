@@ -46,6 +46,11 @@ namespace Game.BattleTable
         public override IEnumerator logicUpdate(BattleTableManager table, float deltaTime)
         {
             // 1. 移除MovingCard。
+            AnimAnim movingAnim = null;
+            while (_tableCard && !SimpleAnimHelper.update(table, ref movingAnim, _tableCard.onDisappear, _tableCard.animator, deltaTime))
+            {
+                yield return null;
+            }
             table.removeMovingCard(_cardDesc);
 
             if (!table.tryGetServant(_cardDesc.id, out Servant servant))

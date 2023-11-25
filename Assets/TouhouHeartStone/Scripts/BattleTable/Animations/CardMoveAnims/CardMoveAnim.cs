@@ -59,34 +59,39 @@ namespace Game.BattleTable
                 card.animateFaceup(endFaceup);
             }
         }
-        protected bool removeCard(BattleTableManager table)
+        protected int removeCard(BattleTableManager table)
         {
             var cardId = _cardDesc.id;
+            int removed = 0;
             if (table.tryGetHand(cardId, out _))
             {
-                return table.removeHand(cardId);
+                removed += table.removeHand(cardId) ? 1 : 0;
             }
-            else if (table.tryGetServant(cardId, out _))
+            if (table.tryGetMovingCard(cardId, out _))
             {
-                return table.removeServant(cardId);
+                removed += table.removeMovingCard(cardId) ? 1 : 0;
             }
-            else if (table.tryGetDeckOfCard(cardId, out _))
+            if (table.tryGetServant(cardId, out _))
             {
-                return table.removeCardFromDeck(cardId);
+                removed += table.removeServant(cardId) ? 1 : 0;
             }
-            else if (table.tryGetGraveOfCard(cardId, out _))
+            if (table.tryGetDeckOfCard(cardId, out _))
             {
-                return table.removeCardFromGrave(cardId);
+                removed += table.removeCardFromDeck(cardId) ? 1 : 0;
             }
-            else if (table.tryGetItem(cardId, out _))
+            if (table.tryGetGraveOfCard(cardId, out _))
             {
-                return table.removeItem(cardId);
+                removed += table.removeCardFromGrave(cardId) ? 1 : 0;
             }
-            else if (table.tryGetSecret(cardId, out _))
+            if (table.tryGetItem(cardId, out _))
             {
-                return table.removeSecret(cardId);
+                removed += table.removeItem(cardId) ? 1 : 0;
             }
-            return false;
+            if (table.tryGetSecret(cardId, out _))
+            {
+                removed += table.removeSecret(cardId) ? 1 : 0;
+            }
+            return removed;
         }
         private static bool getPileFaceup(BattleTableManager table, Pile pile)
         {

@@ -170,6 +170,7 @@ namespace Game.BattleTable
         public float height => _height;
         public bool isFaceup => _isFaceup;
         public SimpleAnim onSummon;
+        public SimpleAnim onDisappear;
         public SimpleAnim onShowAnim;
         public SimpleAnim onFlipToFace;
         public SimpleAnim onFlipToBack;

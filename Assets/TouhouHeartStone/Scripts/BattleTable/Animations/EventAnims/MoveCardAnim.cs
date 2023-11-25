@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UnityEngine;
 namespace Game.BattleTable
@@ -10,6 +12,11 @@ namespace Game.BattleTable
     class MoveCardAnim : EventAnimation<Arg>
     {
         #region 公有方法
+        public override void init(BattleTableManager table)
+        {
+            base.init(table);
+            _movingCardId = startData.getVar<CardState>(EVENTVAR.CARD).card.id;
+        }
         public override IEnumerator startUpdate(BattleTableManager table)
         {
             evaluateBreakDurations(table);
@@ -29,6 +36,7 @@ namespace Game.BattleTable
             };
 
             var info = getCardMoveInfo(table, cardDesc.id, from);
+            _movingCardId = cardDesc.id;
             yield return moveToAnimStart(table, data, info);
         }
         public override IEnumerator logicUpdate(BattleTableManager table)
@@ -49,6 +57,7 @@ namespace Game.BattleTable
 
 
             var info = getCardMoveInfo(table, card.id, from);
+            _movingCardId = card.id;
             yield return moveToAnim(table, data, info);
         }
         public override IEnumerator canceledUpdate(BattleTableManager table)
@@ -67,11 +76,13 @@ namespace Game.BattleTable
             };
 
             var info = getCardMoveInfo(table, card.id, to);
+            _movingCardId = card.id;
             yield return moveCanceledAnim(table, data, info);
         }
         public override bool continueNextGroup(AnimationGroup nextGroup)
         {
-            if (_duration >= _breakDuration && nextGroup.Any(a => a is MoveCardAnim move && move.tEventArg.parent == tEventArg.parent || a is PropChangeAnim))
+            var parents = getAllParents(tEventArg);
+            if (_duration >= _breakDuration && nextGroup.All(a => canAnimContinue(a, parents)))
             {
                 return true;
             }
@@ -344,12 +355,46 @@ namespace Game.BattleTable
             }
             return false;
         }
+        private bool canAnimContinue(TableAnimation anim, IEnumerable<IEventArg> parents)
+        {
+            if (anim is MoveCardAnim move)
+            {
+                if (move._movingCardId == _movingCardId) // 不能加速当前卡牌的移动。
+                {
+                    return false;
+                }
+                IEventArg parent = move.eventArg;
+                while (parent != null)
+                {
+                    if (parents.Contains(parent))
+                        return true;
+                    parent = parent.parent;
+                }
+            }
+            else if (anim is PropChangeAnim)
+            {
+                return true;
+            }
+            return false;
+        }
+        private IEventArg[] getAllParents(IEventArg arg)
+        {
+            List<IEventArg> parents = new List<IEventArg>();
+            var parent = arg;
+            while (parent != null)
+            {
+                parents.Add(parent);
+                parent = parent.parent;
+            }
+            return parents.ToArray();
+        }
         #endregion
 
         #region 属性字段
         private const float _minBreakDuration = 0.05f;
         private float _breakDuration = 2f;
         private bool _breakDurationEvaluated;
+        private int _movingCardId;
         private CardMoveAnim _moveAnim;
         #endregion
 
