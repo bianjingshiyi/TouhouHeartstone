@@ -908,6 +908,7 @@ namespace TouhouHeartstone
                 return new EventVariableInfo[]
                 {
                     new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
+                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
