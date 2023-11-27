@@ -65,12 +65,6 @@ namespace TouhouHeartstone
         #endregion
 
         #region Card
-
-        public static THHCardDefine[] getTHHDefines(this CardEngine game)
-        {
-            return (THHCardDefine[])game.getDefines();
-        }
-
         public static Card createCard<T>(this CardEngine game) where T : CardDefine
         {
             return game.createCard(game.getDefine<T>());

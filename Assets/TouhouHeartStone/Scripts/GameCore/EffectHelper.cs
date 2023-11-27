@@ -12,7 +12,7 @@ namespace TouhouHeartstone
         }
         public static bool isDeathRattle(this IEffect effect)
         {
-            return effect is DeathRattle || (effect is GeneratedPassiveEffect passive && passive.hasTag(EFFECTTAG.PASSIVE_LASTWORD));
+            return effect is GeneratedPassiveEffect passive && passive.hasTag(EFFECTTAG.PASSIVE_LASTWORD);
         }
         public static bool isTrap(this IEffect effect)
         {

@@ -33,20 +33,6 @@ namespace Tests
             }
         }
         [Test]
-        public void pettyLookJsonTest()
-        {
-            GeneratedCardDefine card = new GeneratedCardDefine(1, DEFINE.SERVANT, new Dictionary<string, object>()
-            {
-                { DEFINE.COST,1 },
-                { DEFINE.ATTACK, 1 },
-                { DEFINE.LIFE,1 }
-            }, new GeneratedEffect[0]);
-            string json = card.toJson(true);
-            Debug.Log(json);
-            card = JsonHelper.fromJson<GeneratedCardDefine>(json);
-            Assert.AreEqual(1, card.id);
-        }
-        [Test]
         public void regexWildcardTest()
         {
             Assert.True(Regex.IsMatch("ABC.txt", GetWildcardRegexString("*.txt")));

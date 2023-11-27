@@ -89,7 +89,7 @@ namespace TouhouHeartstone
         #region 卡牌标签
         public static bool hasTag(this ICardData card, IGame game, string tag)
         {
-            string[] tags = card.getProp<string[]>(game, nameof(ServantCardDefine.tags));
+            string[] tags = card.getTags(game);
             if (tags == null)
                 return false;
             return tags.Contains(tag);
@@ -100,12 +100,12 @@ namespace TouhouHeartstone
         }
         public static string[] getTags(this ICardData card, IGame game)
         {
-            string[] tags = card.getProp<string[]>(game, nameof(DEFINE.TAGS));
+            string[] tags = card.getProp<string[]>(game, DEFINE.TAGS);
             return tags ?? card.define.getTags();
         }
         public static Task<PropChangeEventArg> setTags(this Card card, IGame game, string[] tags)
         {
-            return card.setProp(game, nameof(ServantCardDefine.tags), tags);
+            return card.setProp(game, DEFINE.TAGS, tags);
         }
         #endregion
 
@@ -130,20 +130,11 @@ namespace TouhouHeartstone
         }
         public static void setSkillRef(this CardDefine cardDefine, DefineReference defRef)
         {
-            if (cardDefine is MasterCardDefine masterCardDefine)
-            {
-                masterCardDefine.skillID = defRef.defineId;
-            }
-            else
-                cardDefine.setProp(DEFINE.CARD_PROP_SKILL_REF, defRef);
+            cardDefine.setProp(DEFINE.CARD_PROP_SKILL_REF, defRef);
         }
         public static DefineReference getSkillRef(this CardDefine cardDefine)
         {
-            if (cardDefine is MasterCardDefine masterCardDefine)
-            {
-                return new DefineReference(0, masterCardDefine.skillID);
-            }
-            else if (cardDefine.hasProp(DEFINE.CARD_PROP_SKILL_REF))
+            if (cardDefine.hasProp(DEFINE.CARD_PROP_SKILL_REF))
             {
                 return cardDefine.getProp<DefineReference>(DEFINE.CARD_PROP_SKILL_REF);
             }
@@ -1285,10 +1276,6 @@ namespace TouhouHeartstone
                         if (genPassive.checkCondition(game, argCard, null, arg))
                             await genPassive.execute(game, argCard, null, arg);
                     }
-                    else if (deathRattle is DeathRattle rattle)
-                    {
-                        await rattle.execute(game, argCard, null, arg);
-                    }
                 }
             });
         }
@@ -1756,7 +1743,7 @@ namespace TouhouHeartstone
         #region 延迟区
         public static bool isTrap(this ICardData card, IGame game)
         {
-            return card.define.getGeneratedEffects().Any(e => e.isTrap()) || card.hasKeyword(game, KEYWORD.SECRET);
+            return card.define.getGeneratedEffects().Any(e => e.isTrap());
         }
         /// <summary>
         /// 触发奥秘
@@ -1851,10 +1838,6 @@ namespace TouhouHeartstone
                 {
                     if (genPassive.checkCondition(game, argCard, buff, arg))
                         await genPassive.execute(game, argCard, buff, arg);
-                }
-                else if (effect is DeathRattle rattle)
-                {
-                    await rattle.execute(game, argCard, buff, arg);
                 }
             }
         }

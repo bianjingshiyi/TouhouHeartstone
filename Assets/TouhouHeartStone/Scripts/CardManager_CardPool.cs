@@ -1201,6 +1201,7 @@ namespace Game
                 fixMassObsoleteNode(actionNode);
                 fixOldReferences(actionNode);
                 fixConditionalNode(actionNode);
+                fixBuiltinCardRefs(actionNode);
             }
             // 修复未知或过时的节点。
             async Task fixUnknownOrObsoleteNode(ActionNode actionNode)
@@ -1343,6 +1344,18 @@ namespace Game
                         }
                     }
                 }
+
+                // 将内置卡池的卡牌引用改为经典卡池的引用。
+                var characterRef = define.getCharacterRef();
+                if (isBuiltinCardPool(characterRef.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(characterRef.defineId, out var classicId))
+                {
+                    define.setCharacterRef(new DefineReference(STANDARD_POOL_ID, classicId));
+                }
+                var skillRef = define.getSkillRef();
+                if (isBuiltinCardPool(skillRef.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(skillRef.defineId, out var skillClassicId))
+                {
+                    define.setSkillRef(new DefineReference(STANDARD_POOL_ID, skillClassicId));
+                }
             }
             // 将旧版的“筛选”、“排序”、“重复动作直到”和“信仰对决”换为新的节点。
             void fixConditionalNode(ActionNode actionNode)
@@ -1413,6 +1426,45 @@ namespace Game
                         {
                             actionNode.graph.connect(connectedConditionFirstOutput, newConditionPort);
                         }
+                    }
+                }
+            }
+            // 将内置卡池的卡牌引用改为经典卡池的引用。
+            void fixBuiltinCardRefs(ActionNode actionNode)
+            {
+                var defRef = actionNode.defineRef;
+                if (defRef == null)
+                    return;
+                if (!defRef.isBuiltinReference(BuiltinActionDefineID.GetCardDefine) && !defRef.isBuiltinReference(BuiltinActionDefineID.GetCardDefineArray))
+                    return;
+
+                var consts = actionNode.consts.ToArray();
+                foreach (var pair in consts)
+                {
+                    if (pair.Value is DefineReference cardRef)
+                    {
+                        if (isBuiltinCardPool(cardRef.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(cardRef.defineId, out var classicId))
+                        {
+                            actionNode.setConst(pair.Key, new DefineReference(STANDARD_POOL_ID, classicId));
+                        }
+                    }
+                    else if (pair.Value is IEnumerable<DefineReference> cardRefs)
+                    {
+                        var array = cardRefs.ToArray();
+                        bool changed = false;
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            var arrayElement = array[i];
+                            if (arrayElement == null)
+                                continue;
+                            if (isBuiltinCardPool(arrayElement.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(arrayElement.defineId, out var classicId))
+                            {
+                                array[i] = new DefineReference(STANDARD_POOL_ID, classicId);
+                                changed = true;
+                            }
+                        }
+                        if (changed)
+                            actionNode.setConst(pair.Key, array);
                     }
                 }
             }

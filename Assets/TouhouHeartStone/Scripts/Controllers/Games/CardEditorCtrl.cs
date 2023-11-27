@@ -22,15 +22,14 @@ namespace Controllers
         /// </summary>
         public async Task display(long cardPoolId, CardDefine cardDefine, CardSkinData[] skins)
         {
-            gameObject.SetActive(true);
-            _ui.reset();
-            var selectableCharacters = getSelectableCharacters();
-            _selectableCharacters = selectableCharacters;
+            _selectableCharacters = await getSelectableCharacters(cardDefine);
             _cardPoolId = cardPoolId;
             _cardDefine = cardDefine;
             _cardSkins.Clear();
             _cardSkins.AddRange(skins);
+            gameObject.SetActive(true);
             updateSkinNames();
+            _ui.reset();
             _ui.setId(cardDefine.id);
             _ui.setType(Array.IndexOf(_types, cardDefine.type), cardDefine.type);
             _ui.setIsToken(cardDefine.isToken());
@@ -40,11 +39,11 @@ namespace Controllers
                 tagsValue[i] = cardDefine.getTags().Contains(_tags[i]);
             }
             _ui.setTags(cardDefine.getTags());
-            string[] charactersName = new string[selectableCharacters.Length + 1];
+            string[] charactersName = new string[_selectableCharacters.Length + 1];
             charactersName[0] = StringTable.CARDVIEW_CHARACTER_NEUTRAL;
             for (int i = 1; i < charactersName.Length; i++)
             {
-                charactersName[i] = game.card.getCardSkin(selectableCharacters[i - 1]).name;
+                charactersName[i] = game.card.getCardSkin(_selectableCharacters[i - 1]).name;
             }
             _ui.setSelectableCharacters(charactersName);
             //中立为0，有角色则为index+1
@@ -833,9 +832,16 @@ namespace Controllers
         #endregion
 
         #endregion
-        private CardDefine[] getSelectableCharacters()
+        private async Task<CardDefine[]> getSelectableCharacters(CardDefine define)
         {
             List<CardDefine> cardList = new List<CardDefine>();
+            // 必须加载打开的卡牌的指定英雄卡牌定义。
+            var characterRef = define.getCharacterRef();
+            if (characterRef != null)
+            {
+                var poolRef = game.card.getCardPoolReference(characterRef.cardPoolId);
+                await game.card.getOrLoadCardPool(poolRef);
+            }
             cardList.AddRange(game.card.GetCardDefines(c => c.isMaster(), true));
             return cardList.ToArray();
         }

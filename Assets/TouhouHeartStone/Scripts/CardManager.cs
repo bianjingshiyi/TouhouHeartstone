@@ -216,13 +216,12 @@ namespace Game
                     }
 
                     var card = new CardDefine(datarow.ReadCol<int>("ID"), datarow.ReadCol<string>("Type"));
-                    card.setProp(nameof(ServantCardDefine.cost), datarow.ReadCol("Cost", 0));
+                    card.setProp(DEFINE.COST, datarow.ReadCol("Cost", 0));
                     card.setProp(DEFINE.ATTACK, datarow.ReadCol("Attack", 0));
-                    card.setProp(nameof(ServantCardDefine.life), datarow.ReadCol("Life", 0));
+                    card.setProp(DEFINE.LIFE, datarow.ReadCol("Life", 0));
                     card.setProp(DEFINE.TAGS, datarow.ReadCol("Tags", "").Split(','));
                     card.setProp(DEFINE.KEYWORDS, datarow.ReadCol("Keywords", "").Split(','));
                     card.setProp(DEFINE.ISTOKEN, datarow.ReadCol("IsToken", false));
-                    card.setProp(nameof(ServantCardDefine.isActive), datarow.ReadCol("IsUnavailable", false));
 
                     cards.Add(card);
                 }

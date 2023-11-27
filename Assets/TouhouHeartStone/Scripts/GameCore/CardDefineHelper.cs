@@ -14,7 +14,7 @@ namespace TouhouHeartstone
         }
         public static bool isMaster(this CardDefine card)
         {
-            return card.type == DEFINE.MASTER || card is MasterCardDefine;
+            return card.type == DEFINE.MASTER;
         }
         public static bool isSkill(this CardDefine card)
         {
@@ -47,41 +47,19 @@ namespace TouhouHeartstone
         }
         public static int getSpellDamage(this CardDefine card)
         {
-            if (card is ServantCardDefine servant)
-            {
-                return servant.spellDamage;
-            }
             return card.getProp<int>(DEFINE.SPELL_DAMAGE);
         }
         public static void setSpellDamage(this CardDefine card, int value)
         {
-            if (card is ServantCardDefine servant)
-            {
-                servant.spellDamage = value;
-            }
-            else
-            {
-                card.setProp(DEFINE.SPELL_DAMAGE, value);
-            }
+            card.setProp(DEFINE.SPELL_DAMAGE, value);
         }
         public static int getDamageReduce(this CardDefine card)
         {
-            if (card is ServantCardDefine servant)
-            {
-                return servant.damageReduce;
-            }
             return card.getProp<int>(DEFINE.DAMAGE_REDUCE);
         }
         public static void setDamageReduce(this CardDefine card, int value)
         {
-            if (card is ServantCardDefine servant)
-            {
-                servant.damageReduce = value;
-            }
-            else
-            {
-                card.setProp(DEFINE.DAMAGE_REDUCE, value);
-            }
+            card.setProp(DEFINE.DAMAGE_REDUCE, value);
         }
         public static bool hasKeyword(this CardDefine define, string keyword)
         {
@@ -229,7 +207,7 @@ namespace TouhouHeartstone
         }
         public static bool isTrap(this CardDefine cardDefine)
         {
-            return cardDefine.getGeneratedEffects().Any(e => e.isTrap()) || cardDefine.hasKeyword(KEYWORD.SECRET);
+            return cardDefine.getGeneratedEffects().Any(e => e.isTrap());
         }
 
 

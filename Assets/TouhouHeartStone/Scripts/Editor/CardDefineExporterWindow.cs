@@ -207,15 +207,15 @@ namespace TouhouHeartstone
 
             sheet.Cells[cardRow, idIndex] = new Cell(card.id);
             int typeIndex = ExcelHelper.findColIndex(sheet, "Type");
-            if (card is ServantCardDefine)
+            if (card.isServant())
                 sheet.Cells[cardRow, typeIndex] = new Cell("Servant");
-            else if (card is MasterCardDefine)
+            else if (card.isMaster())
                 sheet.Cells[cardRow, typeIndex] = new Cell("Master");
-            else if (card is SkillCardDefine)
+            else if (card.isSkill())
                 sheet.Cells[cardRow, typeIndex] = new Cell("Skill");
-            else if (card is SpellCardDefine)
+            else if (card.isSpell())
                 sheet.Cells[cardRow, typeIndex] = new Cell("Spell");
-            else if (card is ItemCardDefine)
+            else if (card.isItem())
                 sheet.Cells[cardRow, typeIndex] = new Cell("Item");
             int costIndex = ExcelHelper.findColIndex(sheet, "Cost");
             sheet.Cells[cardRow, costIndex] = new Cell(card.getProp<int>("cost"));
@@ -305,11 +305,11 @@ namespace TouhouHeartstone
         void saveCardToXml(CardDefine card, XmlDocument xml)
         {
             xml["Card"]["ID"].InnerText = card.id.ToString();
-            if (card is ServantCardDefine)
+            if (card.isServant())
                 xml["Card"]["Type"].InnerText = "Servant";
-            else if (card is MasterCardDefine)
+            else if (card.isMaster())
                 xml["Card"]["Type"].InnerText = "Master";
-            else if (card is SkillCardDefine)
+            else if (card.isSkill())
                 xml["Card"]["Type"].InnerText = "Skill";
             xml["Card"]["Cost"].InnerText = card.getProp<int>("cost").ToString();
             xml["Card"]["Attack"].InnerText = card.getProp<int>("attack").ToString();
