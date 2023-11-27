@@ -36,9 +36,14 @@ namespace Game
             int targetPosition = 0;
             if (animRef != null)
             {
-                if (eventRefs != null && animRef.eventReference != null)
+                var animEventRef = animRef.eventReference;
+                if (animEventRef == null)
                 {
-                    eventIndex = Array.IndexOf(eventRefs, animRef.eventReference);
+                    animEventRef = main.eventManager.getDefaultNodeEvent(node);
+                }
+                if (eventRefs != null && animEventRef != null)
+                {
+                    eventIndex = Array.IndexOf(eventRefs, animEventRef);
                     if (eventIndex < 0)
                         eventIndex = 0;
                 }

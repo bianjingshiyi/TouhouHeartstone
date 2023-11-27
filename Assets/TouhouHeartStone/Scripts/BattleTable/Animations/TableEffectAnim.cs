@@ -22,12 +22,12 @@ namespace Game.Animations
                 if (source != null)
                 {
                     srcTransform = table.getCardTransform(source);
-                    _sourceConfirmed = true;
+                    _sourceConfirmed = srcTransform;
                 }
                 if (target != null)
                 {
                     targetTransform = table.getCardTransform(target);
-                    _destConfirmed = true;
+                    _destConfirmed = targetTransform;
                 }
                 var info = new VisualEffectInfo()
                 {
@@ -41,13 +41,13 @@ namespace Game.Animations
                 // 防止类似飞刀的弹射物特效在击杀目标后又突然插在其他卡牌上之类的
                 if (!_sourceConfirmed && !effect.sourceTransform && source != null)
                 {
-                    _sourceConfirmed = true;
                     effect.sourceTransform = table.getCardTransform(source);
+                    _sourceConfirmed = effect.sourceTransform;
                 }
                 if (!_destConfirmed && !effect.destTransform && target != null)
                 {
-                    _destConfirmed = true;
                     effect.destTransform = table.getCardTransform(target);
+                    _destConfirmed = effect.destTransform;
                 }
                 effect.update(_deltaTime);
                 yield return null;

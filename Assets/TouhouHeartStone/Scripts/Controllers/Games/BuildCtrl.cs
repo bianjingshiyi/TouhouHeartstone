@@ -66,7 +66,10 @@ namespace Controllers
             _ui.gameObject.SetActive(true);
             _ui.showErrorTip(false);
             _ui.updateCurCardPoolInfo(deck.name, await loadDeckImage(deck));
-            _ui.setCharacterName(masterSkin.name);
+            var masterName = masterSkin.name;
+            if (masterName.Length > masterNameMaxLength)
+                masterName = game.lang._(MASTER_NAME_OVERFLOW_TEMPLATE, masterName.Substring(0, masterNameMaxLength));
+            _ui.setCharacterName(masterName);
             _ui.setDeckListActive(false);
             _ui.setEditCardListActive(true);
             _ui.setEnableDrag(true);
@@ -781,6 +784,7 @@ namespace Controllers
         }
         #endregion
         #region 属性字段
+        public const int masterNameMaxLength = 8;
         List<Deck> deckList => game.deck.getOrLoadDeckList();
         [SerializeField]
         BuildCardPanel _ui;
@@ -815,6 +819,8 @@ namespace Controllers
         const string NO_PILE_AVALIABLE = "剪贴板中没有可导入的卡组";
         [TranslateMsg]
         const string PILE_NOT_COMPLETE_EXPORT = "当前卡组不完整，无法在游戏中使用。\n是否要导出？";
+        [TranslateMsg("卡组中英雄名称超过上限之后，省略后续内容的文字模板，参数0为裁切的文本")]
+        const string MASTER_NAME_OVERFLOW_TEMPLATE = "{0}..."; 
         #endregion
         #region 内部类
         class CardPoolRuntimeData

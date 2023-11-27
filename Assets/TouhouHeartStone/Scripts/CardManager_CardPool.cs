@@ -1088,6 +1088,10 @@ namespace Game
             {
                 fixCardDefine(cardDefine);
             }
+            foreach (var buffDefine in cardPool.buffDefineList)
+            {
+                fixBuffDefine(buffDefine);
+            }
 
             await fixImages();
             if (hasUnsavedFix)
@@ -1167,7 +1171,8 @@ namespace Game
             {
                 collectedGraphs.Add(graph);
             }
-            // 修复节点图信息。
+
+            #region 修复节点信息
             void fixGraph(ActionGraph graph)
             {
                 foreach (var node in graph.nodes)
@@ -1179,7 +1184,6 @@ namespace Game
                     graph.disconnect(connection);
                 }
             }
-            // 修复节点信息。
             void fixNode(Node node)
             {
                 if (node is ActionNode action)
@@ -1319,37 +1323,6 @@ namespace Game
                     }
                 }
             }
-            // 修复卡牌定义。
-            void fixCardDefine(CardDefine define)
-            {
-                // 移除陷阱关键词，并给第一个事件效果加入陷阱标签。
-                if (define.hasKeyword(KEYWORD.SECRET))
-                {
-                    var keywords = define.getKeywords();
-                    define.setKeywords(keywords.Where(k => k != KEYWORD.SECRET).ToArray());
-                    var firstEvent = define.getGeneratedEffects().OfType<GeneratedEventEffect>().FirstOrDefault();
-                    if (firstEvent != null)
-                    {
-                        var tags = firstEvent.getTags();
-                        if (!tags.Contains(EFFECTTAG.EVENT_TRAP))
-                        {
-                            firstEvent.setTags(tags.Append(EFFECTTAG.EVENT_TRAP).ToArray());
-                        }
-                    }
-                }
-
-                // 将内置卡池的卡牌引用改为经典卡池的引用。
-                var characterRef = define.getCharacterRef();
-                if (isBuiltinCardPool(characterRef.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(characterRef.defineId, out var classicId))
-                {
-                    define.setCharacterRef(new DefineReference(STANDARD_POOL_ID, classicId));
-                }
-                var skillRef = define.getSkillRef();
-                if (isBuiltinCardPool(skillRef.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(skillRef.defineId, out var skillClassicId))
-                {
-                    define.setSkillRef(new DefineReference(STANDARD_POOL_ID, skillClassicId));
-                }
-            }
             // 将旧版的“筛选”、“排序”、“重复动作直到”和“信仰对决”换为新的节点。
             void fixConditionalNode(ActionNode actionNode)
             {
@@ -1434,32 +1407,121 @@ namespace Game
                 var consts = actionNode.consts.ToArray();
                 foreach (var pair in consts)
                 {
-                    if (pair.Value is DefineReference cardRef)
+                    var newValue = convertBuiltinRefToClassic(pair.Value);
+                    if (newValue != null)
+                        actionNode.setConst(pair.Key, newValue);
+                }
+            }
+            #endregion
+
+            #region 修复卡牌定义
+            void fixCardDefine(CardDefine define)
+            {
+                fixSecretKeyword(define);
+                fixCardDefineBuiltinCardRefs(define);
+                foreach (var effect in define.getGeneratedEffects())
+                {
+                    fixEffect(effect);
+                }
+            }
+            void fixSecretKeyword(CardDefine define)
+            {
+                // 移除陷阱关键词，并给第一个事件效果加入陷阱标签。
+                if (define.hasKeyword(KEYWORD.SECRET))
+                {
+                    var keywords = define.getKeywords();
+                    define.setKeywords(keywords.Where(k => k != KEYWORD.SECRET).ToArray());
+                    var firstEvent = define.getGeneratedEffects().OfType<GeneratedEventEffect>().FirstOrDefault();
+                    if (firstEvent != null)
                     {
-                        if (isBuiltinCardPool(cardRef.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(cardRef.defineId, out var classicId))
+                        var tags = firstEvent.getTags();
+                        if (!tags.Contains(EFFECTTAG.EVENT_TRAP))
                         {
-                            actionNode.setConst(pair.Key, new DefineReference(STANDARD_POOL_ID, classicId));
+                            firstEvent.setTags(tags.Append(EFFECTTAG.EVENT_TRAP).ToArray());
                         }
-                    }
-                    else if (pair.Value is IEnumerable<DefineReference> cardRefs)
-                    {
-                        var array = cardRefs.ToArray();
-                        bool changed = false;
-                        for (int i = 0; i < array.Length; i++)
-                        {
-                            var arrayElement = array[i];
-                            if (arrayElement == null)
-                                continue;
-                            if (isBuiltinCardPool(arrayElement.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(arrayElement.defineId, out var classicId))
-                            {
-                                array[i] = new DefineReference(STANDARD_POOL_ID, classicId);
-                                changed = true;
-                            }
-                        }
-                        if (changed)
-                            actionNode.setConst(pair.Key, array);
                     }
                 }
+            }
+            void fixCardDefineBuiltinCardRefs(CardDefine define)
+            {
+                // 将内置卡池的卡牌引用改为经典卡池的引用。
+                var characterRef = define.getCharacterRef();
+                if (isBuiltinCardPool(characterRef.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(characterRef.defineId, out var charClassicId))
+                {
+                    define.setCharacterRef(new DefineReference(STANDARD_POOL_ID, charClassicId));
+                }
+                var skillRef = define.getSkillRef();
+                if (isBuiltinCardPool(skillRef.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(skillRef.defineId, out var skillClassicId))
+                {
+                    define.setSkillRef(new DefineReference(STANDARD_POOL_ID, skillClassicId));
+                }
+                foreach (var propName in define.getPropNames())
+                {
+                    var prop = define.getProp<object>(propName);
+                    var newValue = convertBuiltinRefToClassic(prop);
+                    if (newValue != null)
+                        define.setProp(propName, newValue);
+                }
+            }
+            #endregion
+
+            #region 修复增益定义
+            void fixBuffDefine(GeneratedBuffDefine define)
+            {
+                foreach (var effect in define.effectList)
+                {
+                    fixEffect(effect);
+                }
+            }
+            #endregion
+
+            #region 修复效果
+            void fixEffect(GeneratedEffect effect)
+            {
+                fixEffectBuiltinCardRefs(effect);
+            }
+            void fixEffectBuiltinCardRefs(GeneratedEffect effect)
+            {
+                // 将内置卡池的卡牌引用改为经典卡池的引用。
+                foreach (var propName in effect.getPropNames())
+                {
+                    var prop = effect.getProp<object>(propName);
+                    var newValue = convertBuiltinRefToClassic(prop);
+                    if (newValue != null)
+                        effect.setProp(propName, newValue);
+                }
+            }
+            #endregion
+
+            object convertBuiltinRefToClassic(object value)
+            {
+                if (value is DefineReference cardRef)
+                {
+                    if (isBuiltinCardPool(cardRef.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(cardRef.defineId, out var classicId))
+                    {
+                        return new DefineReference(STANDARD_POOL_ID, classicId);
+                    }
+                }
+                else if (value is IEnumerable<DefineReference> cardRefs)
+                {
+                    var array = cardRefs.ToArray();
+                    bool changed = false;
+                    var newArray = new DefineReference[array.Length];
+                    for (int i = 0; i < newArray.Length; i++)
+                    {
+                        var arrayElement = array[i];
+                        if (arrayElement == null)
+                            continue;
+                        if (isBuiltinCardPool(arrayElement.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(arrayElement.defineId, out var classicId))
+                        {
+                            newArray[i] = new DefineReference(STANDARD_POOL_ID, classicId);
+                            changed = true;
+                        }
+                    }
+                    if (changed)
+                        return newArray;
+                }
+                return null;
             }
             #endregion
         }

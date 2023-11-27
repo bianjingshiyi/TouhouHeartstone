@@ -203,16 +203,11 @@ namespace Game
         {
             var cardManager = cards;
             animDict.Clear();
+            animDict.Add(0, main.anims.getBuiltinAnimationDefines().ToDictionary(a => a.id)); // 内置特效
             // 尝试从本地获取卡组，否则读取缓存卡组。
             foreach (var poolRef in option.cardPools)
             {
                 long poolId = poolRef.cardPoolId;
-
-                if (cards.isBuiltinCardPool(poolId))
-                {
-                    animDict.Add(poolId, main.anims.getBuiltinAnimationDefines().ToDictionary(a => a.id));
-                    continue;
-                }
                 CardPool cardPool = null;
                 var poolInfo = cards.getCardPoolInfo(poolRef);
                 // 尝试获取本地卡池的卡牌定义（要求版本正确）。
