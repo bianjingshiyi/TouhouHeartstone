@@ -1,4 +1,4 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 350, "dependencyRefs" : [] }
+{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 351, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -31592,153 +31592,6 @@
         }],
       "effectList" : []
     }, {
-      "_id" : -2147418102,
-      "type" : "Spell",
-      "propDict" : {
-        "isToken" : true,
-        "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 139
-        },
-        "tags" : {
-          "_t" : "System.String[]",
-          "_v" : [null, "Wood"]
-        }
-      },
-      "effects" : [{
-          "_t" : "SerializableActiveEffect",
-          "name" : "主动效果1",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableActiveEntryNode",
-                "tags" : null,
-                "_id" : 1,
-                "posX" : 0.0,
-                "posY" : 0.0,
-                "consts" : {
-                  "tags" : {
-                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                    "_v" : []
-                  }
-                },
-                "targetCheckerList" : [{
-                    "targetType" : "Character",
-                    "errorTip" : "必须以随从为目标"
-                  }]
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102002
-                },
-                "posX" : -816.2557373046875,
-                "posY" : 176.14443969726563,
-                "constDict" : {
-                  "select" : 1
-                },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 206001
-                },
-                "posX" : 653.04425048828125,
-                "posY" : 37.983467102050781,
-                "constDict" : {
-                  "EDITOR_ANIMATION_REF" : "AnimRef0_3"
-                },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 106002
-                },
-                "posX" : 21.21795654296875,
-                "posY" : -614.32305908203125,
-                "constDict" : {
-                  "buffDefine" : {
-                    "_t" : "DefineReference",
-                    "cardPoolId" : NumberLong(1),
-                    "defineId" : 5
-                  }
-                },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(1),
-                  "defineId" : 8
-                },
-                "posX" : 1080.552490234375,
-                "posY" : 40.044509887695313,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "card",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 2,
-                "destName" : "targetCondition",
-                "destParamIndex" : 1,
-                "destNodeId" : 1
-              }, {
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "cards",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "value",
-                "sourceNodeId" : 4,
-                "destName" : "buffDefine",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "exit",
-                "sourceNodeId" : 3,
-                "destName" : "enter",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "卡牌",
-                "destNodeId" : 5
-              }]
-          }
-        }],
-      "effectList" : []
-    }, {
       "_id" : -2147418098,
       "type" : "Spell",
       "propDict" : {
@@ -42679,6 +42532,153 @@
           }
         }],
       "effectList" : []
+    }, {
+      "_id" : -2147418102,
+      "type" : "Spell",
+      "propDict" : {
+        "isToken" : true,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(1),
+          "defineId" : 139
+        },
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : [null, "Wood"]
+        }
+      },
+      "effects" : [{
+          "_t" : "SerializableActiveEffect",
+          "name" : "主动效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableActiveEntryNode",
+                "tags" : null,
+                "_id" : 1,
+                "posX" : 0.0,
+                "posY" : 0.0,
+                "consts" : {
+                  "tags" : {
+                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
+                    "_v" : []
+                  }
+                },
+                "targetCheckerList" : [{
+                    "targetType" : "Character",
+                    "errorTip" : "必须以随从为目标"
+                  }]
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102002
+                },
+                "posX" : -816.2557373046875,
+                "posY" : 176.14443969726563,
+                "constDict" : {
+                  "select" : 1
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 206001
+                },
+                "posX" : 653.04425048828125,
+                "posY" : 37.983467102050781,
+                "constDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_3"
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 106002
+                },
+                "posX" : 21.21795654296875,
+                "posY" : -614.32305908203125,
+                "constDict" : {
+                  "buffDefine" : {
+                    "_t" : "DefineReference",
+                    "cardPoolId" : NumberLong(1),
+                    "defineId" : 5
+                  }
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(1),
+                  "defineId" : 8
+                },
+                "posX" : 1080.552490234375,
+                "posY" : 40.044509887695313,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "目标卡牌",
+                "sourceNodeId" : 1,
+                "destName" : "card",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 2,
+                "destName" : "targetCondition",
+                "destParamIndex" : 1,
+                "destNodeId" : 1
+              }, {
+                "sourceName" : "目标卡牌",
+                "sourceNodeId" : 1,
+                "destName" : "cards",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "value",
+                "sourceNodeId" : 4,
+                "destName" : "buffDefine",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 3,
+                "destName" : "enter",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "卡牌",
+                "sourceNodeId" : 1,
+                "destName" : "卡牌",
+                "destNodeId" : 5
+              }]
+          }
+        }],
+      "effectList" : []
     }],
   "cardSkinList" : [{
       "_id" : -2147418066,
@@ -43945,37 +43945,6 @@
           }
         }]
     }, {
-      "_id" : -2147418102,
-      "_name" : "木符【春之风】*",
-      "_imagePath" : "bfe92cb1ab55baafcb4e9029ea2c661b6ce86068d16bb93da47109e0fe815339.jpg",
-      "_desc" : "<b>元素法术：木</b>\r\n使一个仆从获得+2生命值。",
-      "_language" : "zh-Hans",
-      "_animationRefs" : [{
-          "sourcePosition" : 3,
-          "targetPosition" : 3,
-          "key" : "AnimRef0_3",
-          "animRef" : {
-            "cardPoolId" : NumberLong(0),
-            "defineId" : 5
-          }
-        }]
-    }, {
-      "_id" : -2147418102,
-      "_skinId" : 1,
-      "_skinName" : "只是另一个皮肤",
-      "_name" : "木符【春之风】",
-      "_imagePath" : "f210db78d5434f3f03bd52c929b7951158a7195fb3851e0a15ee9cbbae803467.jpg",
-      "_desc" : "使目标仆从获得生命值+2",
-      "_language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
-      "_id" : -2147418102,
-      "_name" : "Wood Spell[Spring Wind]",
-      "_imagePath" : "088c0b68e709119b3d593113a63875eda2065b065849a8552a138da14dd05503.jpg",
-      "_desc" : "Target servant gain life +2",
-      "_language" : "en-US",
-      "_animationRefs" : []
-    }, {
       "_id" : -2147418098,
       "_name" : "土符【土用之枪】*",
       "_imagePath" : "62c3b5c8c4d420e4cb99edc2753bdbe8fa19390379311a0efd9035bb88aa8217.jpg",
@@ -44616,6 +44585,7 @@
       "_id" : 150,
       "_name" : "残像*",
       "_imagePath" : "32bb47c209c97b435b707ec762e4ed23d988b33e92266cf539abb531cc41eb2b.jpg",
+      "_language" : "zh-Hans",
       "_animationRefs" : []
     }, {
       "_id" : 88,
@@ -44666,22 +44636,32 @@
       "_name" : "哮喘*",
       "_imagePath" : "5809b72a0658c4b262551707c045a431cbbc9801a48378ec0a6b011b822d5d85.jpg",
       "_desc" : "<b>自动施放</b><br>对你的英雄造成{card:damage}点伤害。",
+      "_language" : "zh-Hans",
+      "_animationRefs" : []
+    }, {
+      "_id" : -2147418102,
+      "_name" : "木符【春之风】*",
+      "_imagePath" : "bfe92cb1ab55baafcb4e9029ea2c661b6ce86068d16bb93da47109e0fe815339.jpg",
+      "_desc" : "<b>元素法术：木</b>\r\n使一个仆从获得+2生命值。",
+      "_language" : "zh-Hans",
+      "_animationRefs" : [{
+          "sourcePosition" : 3,
+          "targetPosition" : 3,
+          "key" : "AnimRef0_3",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 5
+          }
+        }]
+    }, {
+      "_id" : -2147418102,
+      "_name" : "Wood Spell[Spring Wind]",
+      "_imagePath" : "088c0b68e709119b3d593113a63875eda2065b065849a8552a138da14dd05503.jpg",
+      "_desc" : "Target servant gain life +2",
+      "_language" : "en-US",
       "_animationRefs" : []
     }],
   "buffDefineList" : [{
-      "_id" : 2,
-      "propModifierList" : [{
-          "_t" : "CostModifier",
-          "propertyName" : "cost",
-          "value" : -5,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647,
-          "onCheckCondition" : null
-        }],
-      "existLimitList" : [],
-      "effects" : []
-    }, {
       "_id" : 4,
       "propModifierList" : [{
           "_t" : "AttackModifier",
@@ -50632,15 +50612,21 @@
               }]
           }
         }]
+    }, {
+      "_id" : 2,
+      "propModifierList" : [{
+          "_t" : "CostModifier",
+          "propertyName" : "cost",
+          "value" : -5,
+          "isSet" : false,
+          "minValue" : 0,
+          "maxValue" : 2147483647,
+          "onCheckCondition" : null
+        }],
+      "existLimitList" : [],
+      "effects" : []
     }],
   "buffSkinList" : [{
-      "buffId" : 2,
-      "language" : "zh-Hans",
-      "name" : "秘藏魔法-效果",
-      "desc" : "这张法术牌的花费-5",
-      "imagePath" : "f6dba121227e2265ae3a2a78373b27a87833f0eeb99be1d7cd9a859e955f784a.jpg",
-      "_animationRefs" : []
-    }, {
       "buffId" : 5,
       "language" : "zh-Hans",
       "name" : "春之风",
@@ -51174,6 +51160,13 @@
       "name" : "红外线场",
       "desc" : "使你的技能下一次造成的伤害翻倍。",
       "imagePath" : "64c826dd7b0f492530c0f4f6808feffcefdf03816b7dac9b63f9fcf1ef021e2e.jpg",
+      "_animationRefs" : []
+    }, {
+      "buffId" : 2,
+      "language" : "zh-Hans",
+      "name" : "秘藏魔法-效果",
+      "desc" : "这张法术牌的花费-5",
+      "imagePath" : "3979b40b2ad1c123f65d1a805ee335495ec820ec835b7429474e0dc4ae967cc4.jpg",
       "_animationRefs" : []
     }],
   "actionDefineList" : [{
