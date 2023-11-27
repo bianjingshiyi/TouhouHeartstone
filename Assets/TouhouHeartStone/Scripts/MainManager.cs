@@ -41,14 +41,6 @@ namespace Game
         }
         protected async void Start()
         {
-            StageLogger logger = new StageLogger(new int[] { 1, 2, 50 });
-            logger.OnStageChange += (progress, text) =>
-            {
-                if (mainUI == null)
-                    return;
-                mainUI.Loading.LoggerText.text = text;
-                mainUI.Loading.ProgressBarSlider.value = progress;
-            };
             //_mainCtrl.onStart();
             if (_mainSceneCtrl == null)
             {
@@ -58,31 +50,18 @@ namespace Game
             {
                 _mainSceneCtrl.menu.hide();
             }
-            //加载内置卡片数据
-            _loadCardTask = card.loadBuiltinCards(
-                new System.Reflection.Assembly[] { typeof(THHGame).Assembly },
-                new string[] { "TouhouHeartstone", "TouhouHeartstone.Builtin" },
-                false,
-                null,
-                logger,
-                false
-            );
             anims.loadBuiltinAnimations();
             //加载外部卡片数据
             await card.loadCardPoolInfosAsync();
-            //foreach (var pair in cardPoolInfos)
-            //{
-            //    try
-            //    {
-            //        await card.loadCardPool(pair.Key);
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        Debug.LogError("加载外部卡池" + pair.Key + "失败：" + e);
-            //    }
-            //}
-            if (_loadCardTask != null)
-                await _loadCardTask;
+
+            //加载卡片资源成功
+            UIManager ui = getManager<UIManager>();
+            Main main = ui.getObject<Main>();
+            main.display(main.MainMenu);
+            onLoadingFinish?.Invoke();
+            //开始检查新版本
+            _getNewVersionTask = network.getLatestVersion();
+
             if (_mainSceneCtrl != null)
             {
                 _mainSceneCtrl.menu.display();
@@ -90,28 +69,6 @@ namespace Game
         }
         protected void Update()
         {
-            if (_loadCardTask != null)
-            {
-                if (_loadCardTask.IsCompleted)
-                {
-                    //加载卡片资源成功
-                    _loadCardTask.Dispose();
-                    _loadCardTask = null;
-                    UIManager ui = getManager<UIManager>();
-                    Main main = ui.getObject<Main>();
-                    main.display(main.MainMenu);
-                    onLoadingFinish?.Invoke();
-                    //开始检查新版本
-                    _getNewVersionTask = network.getLatestVersion();
-                }
-                else if (_loadCardTask.IsFaulted || _loadCardTask.IsCanceled)
-                {
-                    _loadCardTask.Dispose();
-                    _loadCardTask = null;
-                    UIManager ui = getManager<UIManager>();
-                    ui.getObject<UIDialog>().ShowConfirm(lang._(StringTable.ERROR), lang._(MMANAGE_GAME_FAIL_LOAD), () => Application.Quit());
-                }
-            }
             if (_getNewVersionTask != null)
             {
                 if (_getNewVersionTask.IsCompleted)
@@ -337,7 +294,6 @@ namespace Game
         [SerializeField]
         UnityEvent onLoadingFinish;
         Main mainUI => ui.getObject<Main>();
-        Task _loadCardTask = null;
         Task<ClientUpdateInfo> _getNewVersionTask = null;
         int _playerKey;
         SnowflakeGenerator _snowflakeGen;

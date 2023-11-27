@@ -138,7 +138,7 @@ namespace Game.BattleTable
                 {
                     id = define.id,
                     desc = $"{define}（这张卡随时可能爆炸！）",
-                    image = cardManager.getDefaultSprite(),
+                    imagePath = cardManager.getDefaultImagePath(),
                     name = define.GetType().Name
                 };
             }

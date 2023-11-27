@@ -1047,7 +1047,7 @@ namespace TouhouHeartstone
                 foreach (var buff in card.getBuffs())
                 {
                     var effects = buff.getEffects(game as CardEngine);
-                    results.AddRange(effects.Where(e => e.isSpellActiveEffect() || e is ActiveEffect).Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
+                    results.AddRange(effects.Where(e => e.isSpellActiveEffect()).Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
                 }
             }
             return results.ToArray();
@@ -1066,8 +1066,6 @@ namespace TouhouHeartstone
                 results.AddRange(effects.Where(e =>
                 {
                     if (e.isBattlecry())
-                        return true;
-                    if (e is ActiveEffect && (card.isServant() || card.isItem()))
                         return true;
                     return false;
                 })

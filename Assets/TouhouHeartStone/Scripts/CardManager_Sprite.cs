@@ -202,10 +202,6 @@ namespace Game
             if (skin == null)
                 return Task.FromResult(defaultImage);
 
-            // 内置贴图存在
-            if (skin.image != null)
-                return Task.FromResult(skin.image);
-
             string imagePath = skin.imagePath;
             return loadImage(cardPoolRef, imagePath, fallbackDefault);
         }
@@ -368,6 +364,10 @@ namespace Game
         public void setDefaultImagePath(string path)
         {
             _defaultImagePath = path;
+        }
+        public string getDefaultImagePath()
+        {
+            return _defaultImagePath;
         }
         public static string calcHashString(byte[] bytes)
         {

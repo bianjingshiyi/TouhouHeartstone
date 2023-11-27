@@ -117,16 +117,6 @@ namespace UI
             get { return _subname; }
             set { _subname = value; }
         }
-        [BsonIgnore]
-        [SerializeField]
-        Sprite _image;
-        [Obsolete("请使用imagePath并通过资源加载获取。")]
-        [BsonIgnore]
-        public Sprite image
-        {
-            get { return _image; }
-            set { _image = value; }
-        }
         [BsonElement]
         [SerializeField]
         string _imagePath;

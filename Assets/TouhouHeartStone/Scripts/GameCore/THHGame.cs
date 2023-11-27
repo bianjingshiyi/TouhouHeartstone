@@ -434,7 +434,7 @@ namespace TouhouHeartstone
         public HearthstoneOption getOption(CardEngine game) => game.option as HearthstoneOption;
         public Player createPlayer(CardEngine game, int id, string name, CardDefine master, CardDefine[] deck)
         {
-            CardDefine luckyCoinDefine = game.getDefine(0, LuckyCoin.ID);
+            CardDefine luckyCoinDefine = game.getDefine(1, ClassicCardID.LuckyCoin);
             for (int i = 1; i < deck.Length; i++)
             {
                 var define = deck[i];
@@ -671,7 +671,7 @@ namespace TouhouHeartstone
                     await initPile.moveTo(game, initPile, player.getHand(), 0);
                     if (player != getSortedPlayers(game)[0])
                     {
-                        await player.getHand().add(game, game.createCard(game.getDefine<LuckyCoin>()));
+                        await player.getHand().add(game, game.createCard(game.getDefine(1, ClassicCardID.LuckyCoin)));
                         game.logger.logTrace($"由于后手行动{player}获得一张幸运币");
                     }
 

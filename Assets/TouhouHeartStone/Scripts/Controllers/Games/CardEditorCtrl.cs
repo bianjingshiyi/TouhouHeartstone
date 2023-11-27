@@ -839,7 +839,7 @@ namespace Controllers
             var characterRef = define.getCharacterRef();
             if (characterRef != null)
             {
-                var poolRef = game.card.getCardPoolReference(characterRef.cardPoolId);
+                var poolRef = game.card.getLocalCardPoolReference(characterRef.cardPoolId);
                 await game.card.getOrLoadCardPool(poolRef);
             }
             cardList.AddRange(game.card.GetCardDefines(c => c.isMaster(), true));

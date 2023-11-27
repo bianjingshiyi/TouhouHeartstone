@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BJSYGameCore;
 using Controllers;
 using IGensoukyo;
-using IGensoukyo.Utilities;
-using MongoDB.Bson;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
@@ -18,222 +13,12 @@ using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
 using UI;
 using UnityEngine;
-using ILogger = TouhouCardEngine.Shared.ILogger;
 
 namespace Game
 {
     public partial class CardManager : Manager
     {
         #region 公有方法
-
-        #region 加载内置卡
-        /// <summary>
-        /// 加载配置路径中的所有卡片和皮肤。
-        /// </summary>
-        /// <returns></returns>
-        public Task loadBuiltinCards(Assembly[] assemblies = default, string[] namespaces = null, bool builtinOnly = false, ILogger logger = null, StageLogger screenLogger = null, bool loadResources = true)
-        {
-            return loadBuiltinCards(builtinOnly ? new string[0] : _externalCardPaths, assemblies, namespaces, logger, screenLogger, loadResources);
-        }
-        /// <summary>
-        /// 从给出的路径中加载卡片和皮肤，支持通配符，比如“Cards/*.xls”
-        /// </summary>
-        /// <param name="excelPaths"></param>
-        /// <returns></returns>
-        public async Task loadBuiltinCards(string[] excelPaths, Assembly[] assemblies = default, string[] namespaces = null, ILogger logger = null, StageLogger screenLogger = null, bool loadResources = true)
-        {
-            //加载内置卡片
-            screenLogger?.NextStage("加载内置卡片");
-            if (assemblies == default)
-                assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
-            // 将通过反射获取到的卡牌加入卡牌定义字典。
-            var gotCardDefines = CardHelper.getCardDefines(assemblies, namespaces, logger);
-            foreach (CardDefine card in gotCardDefines)
-            {
-                if (builtinDefineDic.ContainsKey(card.id))
-                {
-                    Debug.LogWarning($"存在重复ID的卡片{builtinDefineDic[card.id]}和{card}");
-                    continue;
-                }
-                builtinDefineDic.Add(card.id, card);
-            }
-
-            // 获取外置卡牌xls的路径
-            List<string> pathList = new List<string>();
-            if (excelPaths != null)
-            {
-                foreach (var excelPath in excelPaths)
-                {
-                    // 判断文件夹
-                    if (excelPath.Contains("*") || excelPath.Contains("?"))
-                    {
-                        if (!PlatformCompability.Current.RequireWebRequest)
-                        {
-                            var pathes = THHResourceManager.GetDirectoryFiles(excelPath);
-                            // 去重
-                            foreach (var item in pathes)
-                            {
-                                if (!pathList.Contains(item))
-                                    pathList.Add(item);
-                            }
-                        }
-                        else
-                        {
-                            // 移动端无法直接读取文件，只能读取文件列表了
-                            var regexp = excelPath.Replace("*", ".+").Replace("?", ".+");
-                            foreach (var item in excelList?.FileList)
-                            {
-                                if (Regex.Match(item, regexp).Success)
-                                {
-                                    if (!pathList.Contains(item))
-                                        pathList.Add(item);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (!pathList.Contains(excelPath))
-                            pathList.Add(excelPath);
-                    }
-                }
-            }
-
-            // 加载xls外置卡牌
-            screenLogger?.NextStage("加载卡片集", pathList.Count);
-            int cardCount = 0;
-            List<CardDefine> cardList = new List<CardDefine>();
-            foreach (string path in pathList)
-            {
-                try
-                {
-                    screenLogger?.NextSub($"加载卡片集：{Path.GetFileNameWithoutExtension(path)}");
-
-                    CardDefine[] cards = await loadXLSCards(path);
-                    foreach (var card in cards)
-                    {
-                        CardDefine older = builtinDefineDic.FirstOrDefault(p => p.Value.id == card.id).Value;
-                        if (older != null)
-                        {
-                            older.merge(card);
-                            UberDebug.LogDebugChannel("Load", $"数据覆盖：{card.ToJson()}");
-                        }
-                        else
-                            cardList.Add(card);
-                    }
-                    cardCount += cards.Length;
-                }
-                catch (Exception e)
-                {
-                    UberDebug.LogError($"读取外部卡牌文件{path}失败，发生异常：{e}");
-                }
-            }
-
-            // 外置卡牌去重
-            foreach (CardDefine card in cardList)
-            {
-                if (builtinDefineDic.ContainsKey(card.id))
-                {
-                    Debug.LogWarning($"存在重复ID的卡片{builtinDefineDic[card.id]}和{card}");
-                    continue;
-                }
-                builtinDefineDic.Add(card.id, card);
-            }
-            cardList.Clear();
-
-
-            //加载内置皮肤
-            builtinSkinDic.Clear();
-            foreach (CardSkinData skin in _skins)
-            {
-                if (skin.image == null)
-                    skin.image = getDefaultSprite();
-                builtinSkinDic[skin.id] = skin;
-            }
-
-            //加载外置皮肤
-            screenLogger?.NextStage("加载外置皮肤", cardCount);
-            foreach (string path in pathList)
-            {
-                try
-                {
-                    CardSkinData[] skins = await loadXLSSkins(path, logger: screenLogger, loadResources: loadResources);
-                    foreach (var skin in skins)
-                    {
-                        if (builtinSkinDic.ContainsKey(skin.id))
-                            Debug.LogWarning($"存在重复ID的皮肤{builtinSkinDic[skin.id]}和{skin}");
-                        builtinSkinDic[skin.id] = skin;
-                    }
-                }
-                catch (Exception e)
-                {
-                    UberDebug.LogError($"读取外部皮肤文件{path}失败，发生异常：{e}");
-                }
-            }
-        }
-        /// <summary>
-        /// 加载xls文件中的卡片
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public async Task<CardDefine[]> loadXLSCards(string path, PlatformCompability platform = null)
-        {
-            platform = platform ?? PlatformCompability.Current;
-
-            DataSet dataset;
-            try
-            {
-                dataset = platform.SupportExcelReading ?
-                await getManager<THHResourceManager>().loadExcelAsDataSet(path, platform) :
-                await getManager<THHResourceManager>().loadDataSet(path, platform);
-            }
-            catch (Exception e)
-            {
-                UberDebug.LogErrorChannel("Card", $"读取{path}发生异常：{e}");
-                return new CardDefine[0];
-            }
-
-            if (dataset.Tables.Count < 1) throw new Exception("空数据集");
-            var table = dataset.Tables[0];
-            List<CardDefine> cards = new List<CardDefine>();
-
-            for (int i = 1; i < table.Rows.Count; i++)
-            {
-                try
-                {
-                    var datarow = table.Rows[i];
-
-                    if (datarow.ReadCol("Ignore", false))
-                    {
-                        int id = datarow.ReadCol<int>("ID");
-                        if (builtinDefineDic.ContainsKey(id))
-                        {
-                            Debug.Log($"忽略卡牌{builtinDefineDic[id]}");
-                            builtinDefineDic.Remove(id);
-                        }
-                        continue;
-                    }
-
-                    var card = new CardDefine(datarow.ReadCol<int>("ID"), datarow.ReadCol<string>("Type"));
-                    card.setProp(DEFINE.COST, datarow.ReadCol("Cost", 0));
-                    card.setProp(DEFINE.ATTACK, datarow.ReadCol("Attack", 0));
-                    card.setProp(DEFINE.LIFE, datarow.ReadCol("Life", 0));
-                    card.setProp(DEFINE.TAGS, datarow.ReadCol("Tags", "").Split(','));
-                    card.setProp(DEFINE.KEYWORDS, datarow.ReadCol("Keywords", "").Split(','));
-                    card.setProp(DEFINE.ISTOKEN, datarow.ReadCol("IsToken", false));
-
-                    cards.Add(card);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarning($"Error when loading {path} (row {i}): {e}");
-                }
-            }
-
-            return cards.ToArray();
-        }
-        #endregion
 
         #region 创建卡牌定义
         public void createCard(ICardPoolReference poolRef, out CardDefine cardDefine, out CardSkinData cardSkin)
@@ -499,54 +284,5 @@ namespace Game
         [SerializeField]
         private string[] _externalCardPaths = new string[0];
         #endregion
-    }
-
-    public class StageLogger
-    {
-        int stage = -1;
-        int subCount = 0;
-        int subStage = 0;
-        int[] factors;
-        int factorCount = 0;
-        int currentFactor = 0;
-
-        public event Action<float, string> OnStageChange;
-
-        public StageLogger(int stages)
-        {
-            factors = new int[stages];
-            factorCount = stages;
-            for (int i = 0; i < stages; i++)
-            {
-                factors[i] = 1;
-            }
-        }
-
-        public StageLogger(int[] factors)
-        {
-            this.factors = factors;
-            factorCount = 0;
-            foreach (var item in factors)
-            {
-                factorCount += item;
-            }
-        }
-
-        float progress => (currentFactor + (float)subStage / subCount * factors[stage]) / factorCount;
-
-        public void NextStage(string name, int count = 1)
-        {
-            if (stage >= 0) currentFactor += factors[stage];
-            subCount = count;
-            subStage = 0;
-            stage++;
-            OnStageChange?.Invoke(progress, name);
-        }
-
-        public void NextSub(string name, int count = 1)
-        {
-            subStage++;
-            OnStageChange?.Invoke(progress, name);
-        }
     }
 }

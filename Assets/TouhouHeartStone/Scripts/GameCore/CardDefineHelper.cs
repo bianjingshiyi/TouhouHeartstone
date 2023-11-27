@@ -82,10 +82,6 @@ namespace TouhouHeartstone
         }
         public static string[] getTags(this CardDefine define)
         {
-            if (define is THHCardDefine thhCardDefine)
-            {
-                return thhCardDefine.tags;
-            }
             string[] tags = define.getProp<string[]>(DEFINE.TAGS);
             if (tags == null)
                 return new string[0];
@@ -101,40 +97,11 @@ namespace TouhouHeartstone
         }
         public static bool isToken(this CardDefine define)
         {
-            if (define is THHCardDefine thhCardDefine)
-            {
-                return thhCardDefine.isToken;
-            }
-            else
-            {
-                return define.getProp<bool>(DEFINE.ISTOKEN);
-            }
+            return define.getProp<bool>(DEFINE.ISTOKEN);
         }
         public static void setIsToken(this CardDefine cardDefine, bool value)
         {
-            if (cardDefine is THHCardDefine thhCardDefine)
-            {
-                thhCardDefine.isToken = value;
-            }
-            else
-            {
-                cardDefine.setProp(DEFINE.ISTOKEN, value);
-            }
-        }
-        /// <summary>
-        /// 卡牌卡池ID不为0表示它是外部卡牌
-        /// </summary>
-        /// <param name="cardId"></param>
-        /// <returns></returns>
-        [Obsolete("Use CardManager.isExternalCard instead")]
-        public static bool isExternalCard(DefineReference cardRef)
-        {
-            return cardRef.cardPoolId != 0;
-        }
-        [Obsolete("Use CardManager.isExternalCard instead")]
-        public static bool isExternalCard(this CardDefine card)
-        {
-            return card.cardPoolId != 0;
+            cardDefine.setProp(DEFINE.ISTOKEN, value);
         }
         /// <summary>
         /// 通过位运算获取卡牌Id中的卡池Id。卡池Id的掩码为0x7FFF0000
@@ -173,8 +140,6 @@ namespace TouhouHeartstone
             {
                 if (e.isBattlecry())
                     return true;
-                if (e is ActiveEffect && (card.isServant() || card.isItem()))
-                    return true;
                 return false;
             }).ToArray();
         }
@@ -182,7 +147,7 @@ namespace TouhouHeartstone
         {
             if (card.isSpell() || card.isSkill())
             {
-                return card.getEffects().Where(e => e.isSpellActiveEffect() || e is ActiveEffect).ToArray();
+                return card.getEffects().Where(e => e.isSpellActiveEffect()).ToArray();
             }
             return Array.Empty<IEffect>();
         }
@@ -191,8 +156,6 @@ namespace TouhouHeartstone
             return card.getEffects().Any(e =>
             {
                 if (e.isBattlecry())
-                    return true;
-                if (e is ActiveEffect && (card.isServant() || card.isItem()))
                     return true;
                 return false;
             });
