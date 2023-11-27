@@ -48,7 +48,7 @@ namespace Game
             await Task.Delay(1000);
             switch (request)
             {
-                case InitReplaceRequest _:
+                case InitReplaceRequest:
                     IResponse resp = new InitReplaceResponse()
                     {
                         cardsId = new int[0]
@@ -56,7 +56,7 @@ namespace Game
                     game.logPlayerAction(player.id, resp);
                     _ = game.answers.answer(player.id, resp);
                     break;
-                case FreeActRequest _:
+                case FreeActRequest:
                     resp = new TurnEndResponse();
                     _ = game.answers.answer(player.id, resp);
                     break;
@@ -64,7 +64,7 @@ namespace Game
                     resp = discover.getDefaultResponse(game, player.id);
 
                     //////////////////////////////////////////////////////////////////////////////////////////////////
-                    DefineReference eirin = discover.cardRefArray.FirstOrDefault(defRef => game.getDefine(defRef) is GameOfLife_Rise_N);
+                    DefineReference eirin = discover.cardRefArray.FirstOrDefault(defRef => defRef.cardPoolId == CardManager.STANDARD_POOL_ID && defRef.defineId == ClassicCardID.GameOfLife_Rise_N);
                     if (eirin.defineId != 0)
                     {
                         resp = new DiscoverResponse() { cardDefRef = eirin };
@@ -92,7 +92,7 @@ namespace Game
             await Task.Delay(1000);
             switch (request)
             {
-                case InitReplaceRequest _:
+                case InitReplaceRequest:
                     IResponse resp = new InitReplaceResponse()
                     {
                         cardsId = new int[0]
@@ -100,7 +100,7 @@ namespace Game
                     game.logPlayerAction(player.id, resp);
                     _ = game.answers.answer(player.id, resp);
                     break;
-                case FreeActRequest _:
+                case FreeActRequest:
                     resp = dummy ? new TurnEndResponse() : calcNextAction(game, player);
                     game.logPlayerAction(player.id, resp);
                     _ = game.answers.answer(player.id, resp);
@@ -268,6 +268,9 @@ namespace Game
             if (response is UseResponse use)
             {
                 Card card = game.getCard(use.cardId);
+                if (card.define.cardPoolId != CardManager.STANDARD_POOL_ID) // 不是经典卡池的
+                    return value;
+
                 Card target = use.targetsId.Length > 0 ? game.getCard(use.targetsId[0]) : null;
                 if (calcNeutralValue(game, player, card, opponent, target, out value))
                     return value;
@@ -281,8 +284,6 @@ namespace Game
                     return value;
                 if (calcSanaeValue(game, player, card, opponent, target, out value))
                     return value;
-                if (calcNazrinValue(game, player, card, opponent, target, out value))
-                    return value;
                 else
                     value = card.getCost(game);
             }
@@ -292,15 +293,15 @@ namespace Game
 
         bool calcNeutralValue(CardEngine game, Player player, Card card, Player oppo, Card target, out float value)
         {
-            switch (card.define)
+            switch (card.define.id)
             {
-                case LuckyCoin _:
+                case ClassicCardID.LuckyCoin:
                     value = 1;
                     return true;
-                case Neutral_73 _:
+                case ClassicCardID.Neutral_73:
                     value = 1;
                     return true;
-                case Neutral_74 _:
+                case ClassicCardID.Neutral_74:
                     value = calcHealingValue(game, player, oppo, target, 2);
                     return true;
                 default:
@@ -311,45 +312,45 @@ namespace Game
 
         bool calcYoumuValue(CardEngine game, Player player, Card card, Player oppo, Card target, out float value)
         {
-            switch (card.define)
+            switch (card.define.id)
             {
-                case StrangeHalfbody _:
+                case ClassicCardID.StrangeHalfbody:
                     value = 2;
                     return true;
-                case SlashOfPresentWorld _:
+                case ClassicCardID.SlashOfPresentWorld:
                     value = card.isCharged(game)
                         ? calcBuffValue(game, player, oppo, player.getMaster(), 3, 0)
                         : calcBuffValue(game, player, oppo, player.getMaster(), 2, 0);
                     return true;
-                case Meditation _:
+                case ClassicCardID.Meditation:
                     value = card.isCharged(game) ? 3 : 2;
                     return true;
-                case FantasyOfEnteringEnlightenment _:
+                case ClassicCardID.FantasyOfEnteringEnlightenment:
                     value = card.isCharged(game)
                         ? calcBuffValue(game, player, oppo, player.getMaster(), 0, 6)
                         : 0;
                     return true;
-                case HalfPhantonSlam _:
+                case ClassicCardID.HalfPhantonSlam:
                     value = calcDamageValue(game, player, oppo, target, player.getMaster().getArmor(game));
                     return true;
-                case Roukanken _:
+                case ClassicCardID.Roukanken:
                     value = player.getItem() == null
                         ? calcWeaponValue(game, card)
                         : calcWeaponValue(game, card) - calcWeaponValue(player.getItem().getAttack(game),
                             player.getItem().getCurrentLife(game));
                     return true;
-                case TwoHundredYojanaOneSlash _:
+                case ClassicCardID.TwoHundredYojanaOneSlash:
                     value = card.isCharged(game) ? 4 : 2;
                     return true;
-                case CherryBlossomFlashing _:
+                case ClassicCardID.CherryBlossomFlashing:
                     value = calcAOEDamageValue(game, player, oppo, oppo.getField(), player.getMaster().getAttack(game));
                     return true;
-                case FiveSignsOfTheDyingDeva _:
+                case ClassicCardID.FiveSignsOfTheDyingDeva:
                     value = card.isCharged(game)
                         ? calcBuffValue(game, player, oppo, player.getMaster(), 7, 0)
                         : calcBuffValue(game, player, oppo, player.getMaster(), 5, 0);
                     return true;
-                case Hakurouken _:
+                case ClassicCardID.Hakurouken:
                     value = player.getItem() == null
                         ? calcWeaponValue(game, card)
                         : calcBuffValue(game, player, oppo, player.getItem(), 0, card.getLife(game));
@@ -363,100 +364,100 @@ namespace Game
         bool calcPatchouliValue(CardEngine game, Player player, Card card, Player opponent, Card target,
             out float value)
         {
-            switch (card.define)
+            switch (card.define.id)
             {
-                case SummerFire _:
+                case ClassicCardID.SummerFire:
                     value = calcDamageValue(game, player, opponent, target, 1);
                     return true;
-                case AutumnEdge _:
+                case ClassicCardID.AutumnEdge:
                     value = calcRandomDamageValue(game, player, opponent, opponent.getField(), 2);
                     return true;
-                case SpringWind _:
+                case ClassicCardID.SpringWind:
                     value = calcBuffValue(game, player, opponent, target, 0, 2);
                     return true;
-                case WinterElement _:
+                case ClassicCardID.WinterElement:
                     value = calcFreezeValue(game, player, opponent, target);
                     return true;
-                case SummerRed _:
+                case ClassicCardID.SummerRed:
                     value = calcBuffValue(game, player, opponent, target, 2, 0);
                     return true;
-                case DoyouSpear _:
+                case ClassicCardID.DoyouSpear:
                     value = calcServantValue(1, 1);
                     return true;
-                case MultiCast _:
+                case ClassicCardID.MultiCast:
                     value = player.getHand().Where(c => c.isSpell() && c.getCost(game) > 1).Count() > 0 ? 2 : 0;
                     return true;
-                case TheGreatLibrary _:
+                case ClassicCardID.TheGreatLibrary:
                     value = 1;
                     return true;
-                case BestMagic _:
+                case ClassicCardID.BestMagic:
                     value = 5;
                     return true;
-                case ArcaneKnowledge _:
+                case ClassicCardID.ArcaneKnowledge:
                     value = 4;
                     return true;
-                case PhilosopherStone _:
+                case ClassicCardID.PhilosopherStone:
                     value = 2;
                     return true;
-                case MetalFatigue _:
+                case ClassicCardID.MetalFatigue:
                     value = calcAOEDamageValue(game, player, opponent, opponent.getField(), 3);
                     return true;
-                case SylphyHorn _:
+                case ClassicCardID.SylphyHorn:
                     value = calcBuffValue(game, player, opponent, target, 3, 6);
                     return true;
-                case PrincessUndine _:
+                case ClassicCardID.PrincessUndine:
                     value = calcAOEDamageValue(game, player, opponent, player.getField(), 3);
                     return true;
-                case AgniShine _:
+                case ClassicCardID.AgniShine:
                     value = calcDamageValue(game, player, opponent, target, 7);
                     return true;
-                case TrilithonShake _:
+                case ClassicCardID.TrilithonShake:
                     value = calcServantValue(3, 9);
                     return true;
-                case RoyalFlare _:
+                case ClassicCardID.RoyalFlare:
                     value = calcDamageValue(game, player, opponent, opponent.getMaster(), 15);
                     return true;
-                case SilentSelene _:
+                case ClassicCardID.SilentSelene:
                     value = -calcServantsValue(game, player, opponent, opponent.getField());
                     return true;
-                case ElementalHarvester _:
+                case ClassicCardID.ElementalHarvester:
                     value = calcAOEDamageValue(game, player, opponent, opponent.getField(), 2);
                     return true;
-                case BurgeoningRise _:
+                case ClassicCardID.BurgeoningRise:
                     value = calcBuffValue(game, player, opponent, target, 3, 3) +
                         calcServantValue(game, player, opponent, target) - 1;
                     return true;
-                case PhlogisticRain _:
+                case ClassicCardID.PhlogisticRain:
                     value = calcRandomDamageValue(game, player, opponent,
                                 opponent.getField().Append(opponent.getMaster()), 1) *
                             6;
                     return true;
-                case StElmoPillar _:
+                case ClassicCardID.StElmoPillar:
                     value = calcDamageValue(game, player, opponent, target, 4) +
                             calcDamageValue(game, player, opponent, opponent.getMaster(), 4);
                     return true;
-                case NoachianDeluge _:
+                case ClassicCardID.NoachianDeluge:
                     value = calcServantValue(2, 2) + 1;
                     return true;
-                case MercuryPoison _:
+                case ClassicCardID.MercuryPoison:
                     value = calcAOEDamageValue(game, player, opponent, opponent.getField(), 3);
                     return true;
-                case ForestBlaze _:
+                case ClassicCardID.ForestBlaze:
                     value = calcBuffAllValue(game, player, opponent, player.getField(), 2, 2) +
                             calcRandomDamageValue(game, player, opponent, opponent.getField(), 1) *
                             player.getField().count;
                     return true;
-                case WaterElf _:
+                case ClassicCardID.WaterElf:
                     value = calcHealingValue(game, player, opponent, target,
                                 target.getLife(game) - target.getCurrentLife(game)) +
                             calcBuffValue(target.getOwner() == player, target.isMaster(), target.getAttack(game),
                                 target.getLife(game), 3, 6);
                     return true;
-                case LavaCromlech _:
+                case ClassicCardID.LavaCromlech:
                     value = (calcServantValue(2, 2) +
                              calcRandomDamageValue(game, player, opponent, opponent.getField(), 2)) * 3;
                     return true;
-                case GingerGust _:
+                case ClassicCardID.GingerGust:
                     value = (calcServantValue(3, 1) + 1) * opponent.getField().count;
                     return true;
                 default:
@@ -468,46 +469,46 @@ namespace Game
         bool calcReisenValue(CardEngine game, Player player, Card card, Player opponent, Card target,
             out float value)
         {
-            switch (card.define)
+            switch (card.define.id)
             {
-                case LunaticShoot _:
+                case ClassicCardID.LunaticShoot:
                     value = calcDamageValue(game, player, opponent, opponent.getMaster(), 2);
                     return true;
-                case LunaticShoot_MindDropping _:
+                case ClassicCardID.LunaticShoot_MindDropping:
                     value = calcDamageValue(game, player, opponent, target, 2);
                     return true;
-                case XWave _:
+                case ClassicCardID.XWave:
                     value = 2 + opponent.getField().count;
                     return true;
-                case MindStopper _:
+                case ClassicCardID.MindStopper:
                     value = 2 + opponent.getField().count == 0 ? 1 : 0;
                     return true;
-                case MindShaker _:
+                case ClassicCardID.MindShaker:
                     value = 2 + opponent.getField().count;
                     return true;
-                case DisorderEye _:
+                case ClassicCardID.DisorderEye:
                     value = 2 + opponent.getField().count == 0 ? 0 : 1;
                     return true;
-                case VisionaryTuning _:
+                case ClassicCardID.VisionaryTuning:
                     value = 2 + player.getField().count + player.getMaster().getCurrentLife(game) < 15 ? 2 : 0;
                     return true;
-                case FieldUltraViolet _:
+                case ClassicCardID.FieldUltraViolet:
                     value = 1;
                     return true;
-                case PeerlessPatriotsElixir _:
+                case ClassicCardID.PeerlessPatriotsElixir:
                     value = calcBuffValue(game, player, opponent, target, 3, 3) - calcServantValue(game, player,
                         opponent, target);
                     return true;
-                case MindExplosion _:
+                case ClassicCardID.MindExplosion:
                     value = calcDamageValue(game, player, opponent, opponent.getMaster(), 5);
                     return true;
-                case MindDropping _:
+                case ClassicCardID.MindDropping:
                     value = 1;
                     return true;
-                case LunaticGun _:
+                case ClassicCardID.LunaticGun:
                     value = player.getItem() == null ? calcWeaponValue(game, card) : 0;
                     return true;
-                case DisbeliefAspect _:
+                case ClassicCardID.DisbeliefAspect:
                     value = 1;
                     return true;
                 default:
@@ -519,63 +520,63 @@ namespace Game
         bool calcSanaeValue(CardEngine game, Player player, Card card, Player opponent, Card target,
             out float value)
         {
-            switch (card.define)
+            switch (card.define.id)
             {
-                case WindStopMiracle _:
+                case ClassicCardID.WindStopMiracle:
                     value = calcHealingValue(game, player, opponent, target, 2);
                     return true;
-                case StarRitual _:
+                case ClassicCardID.StarRitual:
                     value = 0.5f;
                     return true;
-                case GrayThaumaturgy _:
+                case ClassicCardID.GrayThaumaturgy:
                     value = calcHealingValue(game, player, opponent, target, 10);
                     return true;
-                case BumperCrop _:
+                case ClassicCardID.BumperCrop:
                     value = 5 * calcRandomHealingValue(game, player, opponent, game.getAllAllys(player), 1);
                     return true;
-                case GuestStarsMiracle _:
+                case ClassicCardID.GuestStarsMiracle:
                     value = calcAOEDamageValue(game, player, opponent, opponent.getField(), 2);
                     return true;
-                case OpenSeaMiracle _:
+                case ClassicCardID.OpenSeaMiracle:
                     value = calcDamageValue(game, player, opponent, target, 2);
                     return true;
-                case GodWind _:
+                case ClassicCardID.GodWind:
                     value = -calcServantsValue(game, player, opponent, opponent.getField()) -
                             calcServantsValue(game, player, opponent, player.getField());
                     return true;
-                case ForgottenRecrption _:
+                case ClassicCardID.ForgottenRecrption:
                     value = 1;
                     return true;
-                case OmikujiBomb _:
+                case ClassicCardID.OmikujiBomb:
                     value = 1;
                     return true;
-                case Bomb1 _:
+                case ClassicCardID.Bomb1:
                     value = calcDamageValue(game, player, opponent, target, 6);
                     return true;
-                case Bomb2 _:
+                case ClassicCardID.Bomb2:
                     value = calcDamageValue(game, player, opponent, target, 4);
                     return true;
-                case Bomb3 _:
+                case ClassicCardID.Bomb3:
                     value = calcRandomDamageValue(game, player, opponent, opponent.getField(), 4);
                     return true;
-                case Bomb4 _:
+                case ClassicCardID.Bomb4:
                     value = 6 * calcRandomDamageValue(game, player, opponent,
                         opponent.getField().Concat(player.getField()), 1);
                     return true;
-                case GodSummon _:
+                case ClassicCardID.GodSummon:
                     value = 1;
                     return true;
-                case PlagueOfMishaguchi _:
+                case ClassicCardID.PlagueOfMishaguchi:
                     value = calcDamageValue(game, player, opponent, player.getMaster(), target.getLife(game)) +
                             calcServantValue(target.getAttack(game), target.getCurrentLife(game));
                     return true;
-                case PlagueOfFrogs _:
+                case ClassicCardID.PlagueOfFrogs:
                     value = opponent.getField().count * calcServantValue(2, 2);
                     return true;
-                case PlagueOfHibernation _:
+                case ClassicCardID.PlagueOfHibernation:
                     value = 1;
                     return true;
-                case PlagueOfCrops _:
+                case ClassicCardID.PlagueOfCrops:
                     value = 1;
                     return true;
                 default:
@@ -588,125 +589,93 @@ namespace Game
             out float value)
         {
             value = calcServantValue(game, player, opponent, card);
-            switch (card.define)
+            switch (card.define.id)
             {
-                case YagokoroEirin_N _:
+                case ClassicCardID.YagokoroEirin_N:
                     value += calcHealingValue(game, player, opponent, target,
                         Math.Min(target.getCurrentLife(game), 15));
                     return true;
-                case RifleHunter _:
-                    value += calcDamageValue(game, player, opponent, target, 2);
-                    return true;
-                case FlameFairy _:
+                case ClassicCardID.FlameFairy:
                     value += calcRandomDamageValue(game, player, opponent, opponent.getField(), 1);
                     return true;
-                case LunaChild _:
-                    value += calcStealthValue(game, player, opponent, target);
-                    return true;
-                case BeerFairy _:
-                    value -= calcServantValue(game, player, opponent, target);
-                    value += target.define.getActiveEffect() != null ? 5 : 0;
-                    return true;
-                case Cirno _:
-                    value += calcRandomFreezeValue(game, player, opponent, game.getAllCharacters().Append(card));
-                    return true;
-                case Cirno_IceFall _:
-                    foreach (var neighbor in target.getNearbyCards())
-                    {
-                        value += calcFreezeValue(game, player, opponent, neighbor);
-                    }
-
-                    return true;
-                case Clownpiece _:
-                    value += calcBuffAllValue(game, player, opponent, game.getAllServants(), 2, 0);
-                    return true;
-                case EternityLarva _:
-                    //这？
-                    return true;
-                case LilyWhite _:
-                    value += calcHealingValue(game, player, opponent, player.getMaster(), 4) +
-                             calcHealingValue(game, player, opponent, opponent.getMaster(), 4) +
-                             calcDrawCardsValue(game, player, opponent, 2);
-                    return true;
-                case Cirno_N_YYM _:
+                case ClassicCardID.Cirno_N_YYM:
                     value += calcFreezeValue(game, player, opponent, target);
                     return true;
-                case Cirno_N_HMX _:
+                case ClassicCardID.Cirno_N_HMX:
                     foreach (var neighbor in target.getNearbyCards())
                     {
                         value += calcFreezeValue(game, player, opponent, neighbor);
                     }
-
                     return true;
-                case Chen_N _:
+                case ClassicCardID.Chen_N:
                     value += calcBuffValue(game, player, opponent, card, 2, 0);
                     // + calcRushValue
                     return true;
-                case Koakuma_N _:
+                case ClassicCardID.Koakuma_N:
                     value += calcDrawCardsValue(game, player, opponent, 1);
                     return true;
-                case PatchouliKnowledge_N _:
+                case ClassicCardID.PatchouliKnowledge_N:
                     value += calcDrawCardsValue(game, player, opponent, 2);
                     return true;
-                case RemiliaScarlet_N _:
+                case ClassicCardID.RemiliaScarlet_N:
                     return true;
-                case FlandreScarlet_N _:
+                case ClassicCardID.FlandreScarlet_N:
                     value = calcRandomServantsValue(game, player, opponent, opponent.getField(), 1);
                     return true;
-                case IzayoiSakuya_N _:
+                case ClassicCardID.IzayoiSakuya_N:
                     value += calcDrawCardsValue(game, player, opponent, 1) + 4;
                     return true;
-                case YakumoRan_N _:
+                case ClassicCardID.YakumoRan_N:
                     value += calcServantValue(4, 3);
                     return true;
-                case SaigyoujiYuyuko_N _:
+                case ClassicCardID.SaigyoujiYuyuko_N:
                     value -= calcServantValue(game, player, opponent, target);
                     return true;
-                case YakumoYukari_N _:
+                case ClassicCardID.YakumoYukari_N:
                     value -= calcServantsValue(game, player, opponent, opponent.getField()) +
                              calcServantsValue(game, player, opponent, player.getField());
                     // 加个回手value
                     return true;
-                case LunasaPrismriver_N _:
+                case ClassicCardID.LunasaPrismriver_N:
                     value += calcServantValue(1, 2) +
                              calcServantValue(2, 1);
                     return true;
-                case MerlinPrismriver_N _:
+                case ClassicCardID.MerlinPrismriver_N:
                     value += calcServantValue(2, 2) +
                              calcServantValue(2, 1);
                     return true;
-                case LyricaPrismriver_N _:
+                case ClassicCardID.LyricaPrismriver_N:
                     value += calcServantValue(2, 2) +
                              calcServantValue(1, 2);
                     return true;
-                case MystiaLorelei_N _:
+                case ClassicCardID.MystiaLorelei_N:
                     value += calcBuffValue(game, player, opponent, target, 1 - target.getAttack(game), 0);
                     return true;
-                case ReisenUdongeinInaba_N _:
+                case ClassicCardID.ReisenUdongeinInaba_N:
                     value += calcDamageValue(game, player, opponent, opponent.getMaster(), 4);
                     return true;
-                case TewiInaba_N _:
+                case ClassicCardID.TewiInaba_N:
                     return true;
-                case KamishirasawaKeine_Human_N _:
+                case ClassicCardID.KamishirasawaKeine_Human_N:
                     return true;
-                case KamishirasawaKeine_Beast_N _:
+                case ClassicCardID.KamishirasawaKeine_Beast_N:
                     return true;
-                case MedicineSellman _:
+                case ClassicCardID.MedicineSellman:
                     value += calcHealingValue(game, player, opponent, target, 4);
                     return true;
-                case TewiInaba _:
+                case ClassicCardID.TewiInaba:
                     value += calcDrawCardsValue(game, player, opponent, 1);
                     return true;
-                case YoukaiSmith _:
+                case ClassicCardID.YoukaiSmith:
                     value += player.getItem()?.getAttack(game) ?? 0;
                     return true;
-                case Koakuma _:
+                case ClassicCardID.Koakuma:
                     value += calcDrawCardsValue(game, player, opponent, 1);
                     return true;
-                case OrochiOfAncientTimes _:
+                case ClassicCardID.OrochiOfAncientTimes:
                     value += calcServantValue(target.getAttack(game), target.getCurrentLife(game));
                     return true;
-                case YasakaKanako _:
+                case ClassicCardID.YasakaKanako:
                     value += 10;
                     return true;
                 default:
@@ -714,42 +683,6 @@ namespace Game
                     return false;
             }
         }
-
-        bool calcNazrinValue(CardEngine game, Player player, Card card, Player opponent, Card target,
-            out float value)
-        {
-            switch (card.define)
-            {
-                case Nazrin_01 _:
-                    value = calcShieldValue(game, player, opponent, target);
-                    return true;
-                case Nazrin_04 _:
-                    value = 100;
-                    return true;
-                case Nazrin_05 _:
-                    value = 3 * player.getHand().count;
-                    return true;
-                case Nazrin_10 _:
-                    value = calcHealingValue(game, player, opponent, target, 4) +
-                        ((target.getLife(game) - target.getCurrentLife(game)) > 4
-                            ? 0
-                            : calcSummonValue(player, 1, 1));
-                    return true;
-                case Nazrin_13 _:
-                    value = player.getField().count - 3;
-                    return true;
-                case Nazrin_17 _:
-                    value = calcBuffAllValue(game, player, opponent, player.getField(), 2, 0);
-                    return true;
-                case Nazrin_18 _:
-                    value = -calcServantValue(game, player, opponent, target) + calcServantValue(1, 1);
-                    return true;
-                default:
-                    value = 0;
-                    return false;
-            }
-        }
-
         float calcShieldValue(CardEngine game, Player you, Player oppo, Card target)
         {
             return calcServantValue(game, you, oppo, target) - target.getCurrentLife(game);

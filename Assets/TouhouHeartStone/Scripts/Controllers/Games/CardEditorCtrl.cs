@@ -142,11 +142,11 @@ namespace Controllers
             };
             _tags = new string[]
             {
-                Patchouli.METAL,
-                Patchouli.WOOD,
-                Patchouli.WATER,
-                Patchouli.FIRE,
-                Patchouli.EARTH
+                TAG.METAL,
+                TAG.WOOD,
+                TAG.WATER,
+                TAG.FIRE,
+                TAG.EARTH
             };
             _ui.onChangeCharacter += onChangeCharacter;
             _ui.onChangeCost += onChangeCost;

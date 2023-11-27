@@ -143,18 +143,18 @@ namespace Game.PVE
         {
             List<PVECharacter> characterList = new List<PVECharacter>();
             var deck = new Deck();
-            deck.masterCardRef = new DefineReference(0, Patchouli.ID);
+            deck.masterCardRef = CardManager.getClassicCardRef(ClassicCardID.Patchouli);
 
-            deck.addCard(new DefineReference(0, ElementSprite.ID));
-            deck.addCard(new DefineReference(0, MultiCast.ID));
-            deck.addCard(new DefineReference(0, TheGreatLibrary.ID));
-            deck.addCard(new DefineReference(0, LibraryProtector.ID));
-            deck.addCard(new DefineReference(0, BestMagic.ID));
-            deck.addCard(new DefineReference(0, AgniShine.ID));
-            deck.addCard(new DefineReference(0, MetalFatigue.ID));
-            deck.addCard(new DefineReference(0, SylphyHorn.ID));
-            deck.addCard(new DefineReference(0, PhilosopherStone.ID));
-            deck.addCard(new DefineReference(0, MegaReaver.ID));
+            deck.addCard(CardManager.getClassicCardRef(ClassicCardID.ElementSprite));
+            deck.addCard(CardManager.getClassicCardRef(ClassicCardID.MultiCast));
+            deck.addCard(CardManager.getClassicCardRef(ClassicCardID.TheGreatLibrary));
+            deck.addCard(CardManager.getClassicCardRef(ClassicCardID.LibraryProtector));
+            deck.addCard(CardManager.getClassicCardRef(ClassicCardID.BestMagic));
+            deck.addCard(CardManager.getClassicCardRef(ClassicCardID.AgniShine));
+            deck.addCard(CardManager.getClassicCardRef(ClassicCardID.MetalFatigue));
+            deck.addCard(CardManager.getClassicCardRef(ClassicCardID.SylphyHorn));
+            deck.addCard(CardManager.getClassicCardRef(ClassicCardID.PhilosopherStone));
+            deck.addCard(CardManager.getClassicCardRef(ClassicCardID.MegaReaver));
 
             // 将PVE卡池中，第一个拥有插槽的卡牌加入到套牌中。
             var (_, pvePool) = await getOrLoadPVECardPool();
@@ -356,7 +356,7 @@ namespace Game.PVE
                 return new PVECharacter()
                 {
                     description = "占位符",
-                    deck = new Deck(new DefineReference(0, Sanae.ID), new DefineReference[0])
+                    deck = new Deck(CardManager.getClassicCardRef(ClassicCardID.Sanae), new DefineReference[0])
                 };
             }
             var deck = new Deck(master.getDefineRef(), master.getProp<DefineReference[]>(CARD_PROP_BOSS_DECK));
@@ -380,23 +380,23 @@ namespace Game.PVE
         {
             List<DefineReference> list = new List<DefineReference>()
             {
-                new DefineReference(0, ElementSprite.ID),
-                new DefineReference(0, MultiCast.ID),
-                new DefineReference(0, TheGreatLibrary.ID),
-                new DefineReference(0, LibraryProtector.ID),
-                new DefineReference(0, BestMagic.ID),
-                new DefineReference(0, PhilosopherStone.ID),
-                new DefineReference(0, BiteTentacle.ID),
-                new DefineReference(0, ArcaneKnowledge.ID),
-                new DefineReference(0, AgniShine.ID),
-                new DefineReference(0, PrincessUndine.ID),
-                new DefineReference(0, SylphyHorn.ID),
-                new DefineReference(0, MetalFatigue.ID),
-                new DefineReference(0, TrilithonShake.ID),
-                new DefineReference(0, Koakuma.ID),
-                new DefineReference(0, MegaReaver.ID),
-                new DefineReference(0, RoyalFlare.ID),
-                new DefineReference(0, SilentSelene.ID),
+                CardManager.getClassicCardRef(ClassicCardID.ElementSprite),
+                CardManager.getClassicCardRef(ClassicCardID.MultiCast),
+                CardManager.getClassicCardRef(ClassicCardID.TheGreatLibrary),
+                CardManager.getClassicCardRef(ClassicCardID.LibraryProtector),
+                CardManager.getClassicCardRef(ClassicCardID.BestMagic),
+                CardManager.getClassicCardRef(ClassicCardID.PhilosopherStone),
+                CardManager.getClassicCardRef(ClassicCardID.BiteTentacle),
+                CardManager.getClassicCardRef(ClassicCardID.ArcaneKnowledge),
+                CardManager.getClassicCardRef(ClassicCardID.AgniShine),
+                CardManager.getClassicCardRef(ClassicCardID.PrincessUndine),
+                CardManager.getClassicCardRef(ClassicCardID.SylphyHorn),
+                CardManager.getClassicCardRef(ClassicCardID.MetalFatigue),
+                CardManager.getClassicCardRef(ClassicCardID.TrilithonShake),
+                CardManager.getClassicCardRef(ClassicCardID.Koakuma),
+                CardManager.getClassicCardRef(ClassicCardID.MegaReaver),
+                CardManager.getClassicCardRef(ClassicCardID.RoyalFlare),
+                CardManager.getClassicCardRef(ClassicCardID.SilentSelene),
             };
             var rng = new RNG(seed);
             return new DefineReference[][]

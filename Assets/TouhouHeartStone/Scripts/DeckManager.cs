@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using TouhouCardEngine;
+using TouhouHeartstone;
 
 namespace Game
 {
@@ -115,7 +117,7 @@ namespace Game
                 if (r.HasRows)
                 {
                     r.Read();
-                    return new DefineReference(r.Get<long>("masterCardPoolID", 0), (int)r.Get<long>("masterID"));
+                    return getCardReference(r.Get<long>("masterCardPoolID", 0), (int)r.Get<long>("masterID"));
                 }
                 return null;
             }, id);
@@ -209,7 +211,7 @@ namespace Game
                         list.Add(new DeckDefine()
                         {
                             ID = r.Get<long>("deckID"),
-                            MasterCardRef = new DefineReference(r.Get<long>("masterCardPoolID", 0), (int)r.Get<long>("masterID")),
+                            MasterCardRef = getCardReference(r.Get<long>("masterCardPoolID", 0), (int)r.Get<long>("masterID")),
                             Name = r.Get<string>("name")
                         });
                     }
@@ -229,10 +231,11 @@ namespace Game
             {
                 if (!r.HasRows) return null;
                 r.Read();
+                var masterRef = getCardReference(r.Get<long>("masterCardPoolID", 0), (int)r.Get<long>("masterID"));
                 return new DeckDefine()
                 {
                     ID = r.Get<long>("deckID"),
-                    MasterCardRef = new DefineReference(r.Get<long>("masterCardPoolID", 0), (int)r.Get<long>("masterID")),
+                    MasterCardRef = masterRef,
                     Name = r.Get<string>("name")
                 };
             }, id);
@@ -275,7 +278,7 @@ namespace Game
                 if (r.HasRows)
                 {
                     r.Read();
-                    return new DefineReference(r.Get<long>("cardPoolID", 0), (int)r.Get<long>("cardID"));
+                    return getCardReference(r.Get<long>("cardPoolID", 0), (int)r.Get<long>("cardID"));
                 }
                 return null;
             }, id);
@@ -294,7 +297,7 @@ namespace Game
                 if (r.HasRows)
                 {
                     while (r.Read())
-                        dict.Add(r.Get<long>("ID"), new DefineReference(r.Get<long>("cardPoolID", 0), (int)r.Get<long>("cardID")));
+                        dict.Add(r.Get<long>("ID"), getCardReference(r.Get<long>("cardPoolID", 0), (int)r.Get<long>("cardID")));
                 }
                 return dict;
             }, deckID);
@@ -462,7 +465,7 @@ namespace Game
             DefineReference[] result = new DefineReference[deck.Length];
             for (int i = 0; i < deck.Length; i++)
             {
-                result[i] = new DefineReference(0, deck[i]);
+                result[i] = getCardReference(0, deck[i]);
             }
             return result;
         }
@@ -596,7 +599,7 @@ namespace Game
                 var id = BitConverter.ToInt32(bytes, offset);
                 offset += sizeof(int);
 
-                cards.Add(new DefineReference(cardPool, id));
+                cards.Add(getCardReference(cardPool, id));
             }
             return cards.ToArray();
         }
@@ -719,6 +722,18 @@ namespace Game
         }
         #endregion
         #endregion
+        #region 私有方法
+        private DefineReference getCardReference(long cardPoolId, int id)
+        {
+            if (cardPoolId == 0 && ClassicCardID.tryGetClassicAlternateOfBuiltin(id, out var classicId))
+            {
+                cardPoolId = CardManager.STANDARD_POOL_ID;
+                id = classicId;
+            }
+            return new DefineReference(cardPoolId, id);
+        }
+        #endregion
+
     }
 
     public struct DeckDefine

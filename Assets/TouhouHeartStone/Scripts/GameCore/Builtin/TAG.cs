@@ -12,5 +12,11 @@ namespace TouhouHeartstone.Builtin
         public const string BUG = "Bug";
         public const string GOD = "God";
         public const string GHOST = "Ghost";
+
+        public const string METAL = "Metal";
+        public const string WOOD = "Wood";
+        public const string WATER = "Water";
+        public const string FIRE = "Fire";
+        public const string EARTH = "Earth";
     }
 }

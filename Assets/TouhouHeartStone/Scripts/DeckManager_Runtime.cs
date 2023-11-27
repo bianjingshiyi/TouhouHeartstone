@@ -37,7 +37,7 @@ namespace Game
                 {
                     id = (int)deckData.ID,
                     name = deckData.Name,
-                    masterCardRef = deckData.MasterCardRef != null ? deckData.MasterCardRef : new DefineReference(0, deckData.MasterID),
+                    masterCardRef = deckData.MasterCardRef != null ? deckData.MasterCardRef : getCardReference(0, deckData.MasterID),
                 };
                 deck.addCards(GetDeckCards(deckData.ID).Values);
                 _deckList.Add(deck);

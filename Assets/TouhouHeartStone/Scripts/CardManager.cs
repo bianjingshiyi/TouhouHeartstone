@@ -436,6 +436,10 @@ namespace Game
                 (a, n) => getLocalActionDefine(a),
                 (poolId, name) => getEventTriggerTime(getLocalCardPoolReference(poolId), name, true));
         }
+        public static DefineReference getClassicCardRef(int id)
+        {
+            return new DefineReference(STANDARD_POOL_ID, id);
+        }
         #endregion
 
         #region 私有方法
