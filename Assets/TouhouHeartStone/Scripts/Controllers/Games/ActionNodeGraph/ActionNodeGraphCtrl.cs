@@ -1900,11 +1900,22 @@ namespace Controllers
             {
                 // 转换事件类型节点。
                 var connectedNode = connectedOutput.node;
-                if (connectedNode is ActionNode conAction && 
-                    (conAction.defineRef.isBuiltinReference(BuiltinActionDefineID.CastEventType) ||
-                    conAction.defineRef.isBuiltinReference(BuiltinActionDefineID.CastEventRecordType)))
+                if (connectedNode is ActionNode conAction)
                 {
-                    return conAction.getConst<EventReference>(EffectEditorLibrary.EVENT_CAST_EVENT_TYPE_NODE_TYPE_REF_PARAM_KEY);
+                    if (conAction.defineRef.isBuiltinReference(BuiltinActionDefineID.CastEventType) || 
+                        conAction.defineRef.isBuiltinReference(BuiltinActionDefineID.CastEventRecordType))
+                    {
+                        return conAction.getConst<EventReference>(EffectEditorLibrary.EVENT_CAST_EVENT_TYPE_NODE_TYPE_REF_PARAM_KEY);
+                    }
+                    else if (conAction.defineRef.isBuiltinReference(BuiltinActionDefineID.ThisEvent))
+                    {
+                        if (_effect is GeneratedEventEffect eventEffect && eventEffect.eventEntry is EventEntryNode entry)
+                        {
+                            var poolRef = game.card.getLocalCardPoolReference(entry.eventCardPoolId);
+                            var triggerTime = game.card.getEventTriggerTime(poolRef, entry.eventName);
+                            return new EventReference(entry.eventCardPoolId, triggerTime.define.eventName);
+                        }
+                    }
                 }
                 // 其他事件输出。
                 var eventType = connectedOutput.define?.type;

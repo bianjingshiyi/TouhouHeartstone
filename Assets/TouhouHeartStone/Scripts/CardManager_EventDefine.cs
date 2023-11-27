@@ -26,6 +26,8 @@ namespace Game
         }
         public EventDefine getEventDefine(ICardPoolReference cardPoolRef, string name, bool includeHidden = true)
         {
+            if (cardPoolRef == null)
+                return null;
             if (isBuiltinCardPool(cardPoolRef.CardPoolID))
             {
                 return game.eventManager.getOrLoadBuiltinEventDefines(includeHidden).FindEventDefine(name);
@@ -43,10 +45,14 @@ namespace Game
         }
         public EventDefine getLocalEventDefine(EventReference eventRef, bool includeHidden = true)
         {
+            if (eventRef == null)
+                return null;
             return getLocalEventDefine(eventRef.cardPoolId, eventRef.eventName, includeHidden);
         }
         public EventDefine[] getEventDefines(ICardPoolReference cardPoolRef)
         {
+            if (cardPoolRef == null)
+                return Array.Empty<EventDefine>();
             if (tryGetCardPool(cardPoolRef, out var cardPool))
             {
                 return getEventDefines(cardPool);
@@ -74,6 +80,8 @@ namespace Game
 
         public EventTriggerTime getEventTriggerTime(ICardPoolReference cardPoolRef, string name, bool includeHidden = true)
         {
+            if (cardPoolRef == null)
+                return null;
             if (tryGetCardPool(cardPoolRef, out var cardPool))
             {
                 var define = cardPool.eventDefineList.getEventTriggerTimeByName(name);
@@ -101,6 +109,8 @@ namespace Game
         }
         public EventReference[] getActionBindedEventsRecursive(ActionReference actionRef, IEnumerable<ICardPoolReference> poolSet)
         {
+            if (actionRef == null)
+                return null;
             return getActionBindedEventsRecursive(actionRef.cardPoolId, actionRef.defineId, poolSet);
         }
         public EventReference[] getActionBindedEventsRecursive(long poolId, int actionId, IEnumerable<ICardPoolReference> poolSet)
