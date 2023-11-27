@@ -699,10 +699,6 @@ namespace Game
         }
         private string getFullImagePath(ICardPoolReference cardPoolRef, string relativePath)
         {
-            // 是内置卡池。
-            if (isBuiltinCardPool(cardPoolRef.CardPoolID))
-                return relativePath;
-
             // 卡池信息不存在。
             if (getCardPoolInfo(cardPoolRef) is not CardPoolInfo cardPool || game.card.getCardPoolPath(cardPool) is not string cardPoolPath)
                 return null;

@@ -1,4 +1,4 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 351, "dependencyRefs" : [] }
+{ "_t" : "SerializableCardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 352, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -5218,8 +5218,8 @@
         "cost" : 3,
         "skillRef" : {
           "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(0),
-          "defineId" : 12295
+          "cardPoolId" : NumberLong(1),
+          "defineId" : 148
         }
       },
       "effects" : [{
@@ -5329,8 +5329,8 @@
                 "constDict" : {
                   "cardRef" : {
                     "_t" : "DefineReference",
-                    "cardPoolId" : NumberLong(0),
-                    "defineId" : 12295
+                    "cardPoolId" : NumberLong(1),
+                    "defineId" : 148
                   }
                 },
                 "defineName" : null,
@@ -29388,8 +29388,8 @@
         },
         "skillRef" : {
           "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(0),
-          "defineId" : 12295
+          "cardPoolId" : NumberLong(1),
+          "defineId" : 148
         }
       },
       "effects" : [{
@@ -29730,8 +29730,8 @@
         },
         "skillRef" : {
           "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(0),
-          "defineId" : 12295
+          "cardPoolId" : NumberLong(1),
+          "defineId" : 148
         }
       },
       "effects" : [{
@@ -40192,24 +40192,6 @@
         }],
       "effectList" : []
     }, {
-      "_id" : 150,
-      "type" : "Servant",
-      "propDict" : {
-        "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 137
-        },
-        "isToken" : true,
-        "life" : 2,
-        "keywords" : {
-          "_t" : "System.String[]",
-          "_v" : ["taunt"]
-        }
-      },
-      "effects" : [],
-      "effectList" : []
-    }, {
       "_id" : 88,
       "type" : "Item",
       "propDict" : {
@@ -42679,6 +42661,24 @@
           }
         }],
       "effectList" : []
+    }, {
+      "_id" : 150,
+      "type" : "Servant",
+      "propDict" : {
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(1),
+          "defineId" : 137
+        },
+        "isToken" : true,
+        "life" : 2,
+        "keywords" : {
+          "_t" : "System.String[]",
+          "_v" : ["taunt"]
+        }
+      },
+      "effects" : [],
+      "effectList" : []
     }],
   "cardSkinList" : [{
       "_id" : -2147418066,
@@ -44582,12 +44582,6 @@
           }
         }]
     }, {
-      "_id" : 150,
-      "_name" : "残像*",
-      "_imagePath" : "32bb47c209c97b435b707ec762e4ed23d988b33e92266cf539abb531cc41eb2b.jpg",
-      "_language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
       "_id" : 88,
       "_name" : "白楼剑*",
       "_imagePath" : "3424280270903a44bc5d2ec0d6105ca371cfbc9b8fdafd63c3b0f44e5d00d6df.jpg",
@@ -44659,6 +44653,13 @@
       "_imagePath" : "088c0b68e709119b3d593113a63875eda2065b065849a8552a138da14dd05503.jpg",
       "_desc" : "Target servant gain life +2",
       "_language" : "en-US",
+      "_animationRefs" : []
+    }, {
+      "_id" : 150,
+      "_name" : "残像*",
+      "_imagePath" : "32bb47c209c97b435b707ec762e4ed23d988b33e92266cf539abb531cc41eb2b.jpg",
+      "_desc" : "<b>守卫</b>",
+      "_language" : "zh-Hans",
       "_animationRefs" : []
     }],
   "buffDefineList" : [{

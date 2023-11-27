@@ -1,16 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Game;
+using MukioI18n;
 using TouhouCardEngine;
 using TouhouHeartstone;
-using TouhouHeartstone.Builtin;
 using UI;
-using BJSYGameCore;
-using System;
-using System.Linq;
-using Game;
 using UnityEngine;
-using System.Threading.Tasks;
 using UnityEngine.UI;
-using MukioI18n;
 
 namespace Controllers
 {
@@ -48,7 +46,7 @@ namespace Controllers
             _ui.setSelectableCharacters(charactersName);
             //中立为0，有角色则为index+1
             _ui.setCharacter(Array.FindIndex(_selectableCharacters, c =>
-                c.cardPoolId == cardDefine.getCharacterRef().cardPoolId && 
+                c.cardPoolId == cardDefine.getCharacterRef().cardPoolId &&
                 c.id == cardDefine.getCharacterRef().defineId) + 1);
             _ui.setCost(cardDefine.getProp<int>(DEFINE.COST).ToString());
             _ui.setAttack(cardDefine.getProp<int>(DEFINE.ATTACK).ToString());
@@ -414,7 +412,7 @@ namespace Controllers
             value = value.Where(s => !string.IsNullOrEmpty(s)).ToArray();
             _cardDefine.setTags(value);
             _ui.setTags(value);
-            _ui.setRace(index, value.Length > 0 ? value[0]: string.Empty);
+            _ui.setRace(index, value.Length > 0 ? value[0] : string.Empty);
         }
 
         private void onChangeTag(string text)
@@ -448,7 +446,7 @@ namespace Controllers
             await _effectEditorCtrl.display(_cardPoolId, effect);
             _graphEditor.updateUndoRedoButton();
             updateEffectList(effectArray);
-            
+
             _ui.setEffectScrollValue(1);
         }
         /// <summary>
@@ -544,7 +542,7 @@ namespace Controllers
                         saveCard();
                         await exit();
                     }
-                    else if(index == 1)
+                    else if (index == 1)
                     {
                         scene.editor.removeDisplayPageOfObject(_cardDefine);
                         await exit();
@@ -842,13 +840,13 @@ namespace Controllers
                 var poolRef = game.card.getLocalCardPoolReference(characterRef.cardPoolId);
                 await game.card.getOrLoadCardPool(poolRef);
             }
-            cardList.AddRange(game.card.GetCardDefines(c => c.isMaster(), true));
+            cardList.AddRange(game.card.GetCardDefines(c => c.isMaster()));
             return cardList.ToArray();
         }
         private async Task updateCardType()
         {
             var cardDefine = _cardDefine;
-            _ui.setSkillRefVisible(cardDefine.isMaster()); 
+            _ui.setSkillRefVisible(cardDefine.isMaster());
             if (cardDefine.isMaster())
                 await setSkillRef(cardDefine.getSkillRef());
 
@@ -1145,7 +1143,7 @@ namespace Controllers
             };
             return item;
         }
-        
+
         private object getDefaultValue(ActionNodeValueType valueType, bool isArray)
         {
             if (!customPropDefaultValues.TryGetValue(valueType, out var func))
@@ -1257,7 +1255,7 @@ namespace Controllers
             { DEFINE.SPELL_DAMAGE, (StringTable.GAME_CARD_PROP_NAME_SPELL_DAMAGE, typeof(int)) },
             { DEFINE.DAMAGE_REDUCE, (StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE, typeof(int)) }
         };
-        private static readonly Dictionary<string, (Action<CardDefine, object> setter, Func<CardDefine, object> getter)> keywordActions = 
+        private static readonly Dictionary<string, (Action<CardDefine, object> setter, Func<CardDefine, object> getter)> keywordActions =
             new Dictionary<string, (Action<CardDefine, object> setter, Func<CardDefine, object> getter)>()
         {
             { DEFINE.SPELL_DAMAGE,(
@@ -1284,7 +1282,7 @@ namespace Controllers
             { PILE.ITEM, StringTable.GAME_ITEM },
             { PILE.HEAD, StringTable.GAME_DELAY }
         };
-        public static readonly (ActionNodeValueType type, string name)[] customPropTypes = 
+        public static readonly (ActionNodeValueType type, string name)[] customPropTypes =
             new (ActionNodeValueType type, string name)[]
         {
             (ActionNodeValueType.integer, StringTable.EDITOR_TYPE_NAME_INT),

@@ -184,7 +184,5 @@ namespace Game
         {
             return new CardPoolInfoPack(info.cardPoolId, info.cardPoolName, info.editTime, info.dependencyRefs ?? new CardPoolReference[0]);
         }
-        public readonly static CardPoolInfoPack BuiltinCardPoolInfoPack = new CardPoolInfoPack(0, StringTable.CARDPOOL_NAME_BUILTIN, 0);
-        
     }
 }

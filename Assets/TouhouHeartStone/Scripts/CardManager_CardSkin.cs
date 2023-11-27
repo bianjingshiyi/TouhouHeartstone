@@ -112,11 +112,6 @@ namespace Game
                 skin = null;
                 return false;
             }
-            if (isBuiltinCardPool(cardPoolRef.CardPoolID) && builtinSkinDic.ContainsKey(cardId))
-            {
-                skin = builtinSkinDic[cardId];
-                return true;
-            }
             var skins = getAllCardSkins(cardPoolRef, cardId);
             skin = skins.getDefaultSkin(game.langManager.getLanguage());
             return skin != null;
@@ -132,8 +127,6 @@ namespace Game
         public CardSkinData[] getAllCardSkins(ICardPoolReference cardPoolRef, int cardId)
         {
             List<CardSkinData> skinList = new List<CardSkinData>();
-            skinList.AddRange(_skins.Where(s => s.id == cardId));
-            skinList.AddRange(builtinSkinDic.Where(p => p.Key == cardId).Select(p => p.Value));
             if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
                 skinList.AddRange(cardPool.cardSkinList.Where(s => s.id == cardId));
@@ -142,12 +135,6 @@ namespace Game
         }
         #endregion
 
-        #endregion
-
-        #region 属性字段
-        Dictionary<int, CardSkinData> builtinSkinDic { get; } = new Dictionary<int, CardSkinData>();
-        [SerializeField]
-        CardSkinData[] _skins = new CardSkinData[0];
         #endregion
     }
 

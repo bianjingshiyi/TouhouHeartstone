@@ -553,16 +553,12 @@ namespace Game
         {
             if (buff == null)
                 return null;
-            if (isBuiltinCardPool(buff.cardPoolId))
-                return builtinCardPoolReference;
             return _cardPoolDict.FirstOrDefault(p => p.Key.CardPoolID == buff.cardPoolId && p.Value.buffDefineList.Contains(buff)).Key;
         }
         public ICardPoolReference getCardPoolReferenceOfCard(CardDefine card)
         {
             if (card == null)
                 return null;
-            if (isBuiltinCardPool(card.cardPoolId))
-                return builtinCardPoolReference;
             return _cardPoolDict.FirstOrDefault(p => p.Key.CardPoolID == card.cardPoolId && p.Value.cardDefineList.Contains(card)).Key;
         }
 
@@ -616,10 +612,7 @@ namespace Game
         /// <returns></returns>
         public ICardPoolReference[] getLocalCardPoolReferences()
         {
-            List<ICardPoolReference> set = new List<ICardPoolReference>
-            {
-                builtinCardPoolReference
-            };
+            List<ICardPoolReference> set = new List<ICardPoolReference>();
             if (_creatingCardPoolInfo != null)
                 set.Add(new CardPoolReference(_creatingCardPoolInfo.cardPoolId, 0));
             set.AddRange(_cardPoolInfoDict.Values.Where(p => isLocalCardPool(p)).Select(p => p.ToReference()));

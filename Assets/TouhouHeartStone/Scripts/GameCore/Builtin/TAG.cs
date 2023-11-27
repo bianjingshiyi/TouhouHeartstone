@@ -1,6 +1,6 @@
 ﻿using MukioI18n;
 
-namespace TouhouHeartstone.Builtin
+namespace TouhouHeartstone
 {
     public class TAG
     {

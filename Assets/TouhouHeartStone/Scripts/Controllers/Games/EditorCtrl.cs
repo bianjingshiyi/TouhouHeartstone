@@ -82,11 +82,6 @@ namespace Controllers
                 await updateDeckCardListUI();
                 await _cardPoolViewPanelCtrl.display(cardPoolsRange: new long[] { poolId }, cardFilter: c =>
                 {
-                    if (game.card.isBuiltinCard(c))
-                    {
-                        //不显示内置的卡牌
-                        return false;
-                    }
                     //显示所有卡牌，包括角色，技能和衍生物
                     return true;
                 });
@@ -153,26 +148,16 @@ namespace Controllers
                 else
                 {
                     // 卡牌定义存在
-                    if (!game.card.isBuiltinCardPool(defRef.cardPoolId))
+                    var curDisplayPage = getCurrentDisplayPage();
+                    var curDisplayCardId = curDisplayPage?.displayObj?.cardDefine?.id ?? -1;
+                    if (defRef.cardPoolId == cardPoolId && defRef.defineId == curDisplayCardId)
                     {
-                        // 不是内置卡池
-                        var curDisplayPage = getCurrentDisplayPage();
-                        var curDisplayCardId = curDisplayPage?.displayObj?.cardDefine?.id ?? -1;
-                        if (defRef.cardPoolId == cardPoolId && defRef.defineId == curDisplayCardId)
-                        {
-                            // 是同一张卡，什么也不做
-                        }
-                        else
-                        {
-                            // 打开
-                            await openCardEditor(cardDefine);
-                        }
+                        // 是同一张卡，什么也不做
                     }
                     else
                     {
-                        // 是内置卡池，提醒
-                        var desc = game.lang._(EDITOR_TRY_TO_OPEN_CARD_FROM_BUILTIN);
-                        game.ui.dialog.ShowConfirm(StringTable.ERROR, desc);
+                        // 打开
+                        await openCardEditor(cardDefine);
                     }
                 }
             }
@@ -936,8 +921,6 @@ namespace Controllers
         public const string EDITOR_UNSAVED_MARK = "*";
         [TranslateMsg("卡池编辑器/标题")]
         public const string EDITOR_TITLE = "卡牌编辑器";
-        [TranslateMsg("卡池编辑器/尝试编辑内置卡牌的提醒")]
-        public const string EDITOR_TRY_TO_OPEN_CARD_FROM_BUILTIN = "该卡牌是内置卡牌，无法编辑。";
         [TranslateMsg]
         const string EXPORT_BEFORE_SAVE = "当前卡池含有未保存的修改，请在导出前保存修改";
         [TranslateMsg]

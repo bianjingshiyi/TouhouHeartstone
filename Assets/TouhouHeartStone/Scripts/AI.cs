@@ -4,7 +4,6 @@ using TouhouHeartstone;
 using TouhouCardEngine.Interfaces;
 using System.Linq;
 using Card = TouhouCardEngine.Card;
-using TouhouHeartstone.Builtin;
 using System;
 using TouhouCardEngine;
 

@@ -244,15 +244,6 @@ namespace Controllers
             var cardPools = _cardPoolIdList;
             foreach (var cardPoolId in cardPools)
             {
-                if (game.card.isBuiltinCardPool(cardPoolId))
-                {
-                    // 内置卡池。
-                    //反射硬编码卡牌
-                    defines.AddRange(game.card.GetCardDefines(d =>
-                        d.GetType().Assembly == typeof(THHGame).Assembly &&
-                        d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null, includeExternalCard: false));
-                    continue;
-                }
                 //卡池卡牌
                 var localRef = game.card.getLocalCardPoolReference(cardPoolId);
                 CardDefine[] cardDefines = await game.card.getOrLoadCardDefines(localRef);
@@ -287,7 +278,6 @@ namespace Controllers
             else
             {
                 var result = await game.card.loadCardPoolInfosAsync();
-                cardPoolIdList.Add(0); //内置卡池
                 cardPoolIdList.AddRange(result.Values.Where(p => !game.card.isCardPoolHidden(p.cardPoolId)).Select(a => a.cardPoolId));
             }
             cardPoolIdList.Sort();
@@ -474,11 +464,6 @@ namespace Controllers
             for (int i = 0; i < cardPools.Length; i++)
             {
                 var cardPoolId = cardPools[i];
-                if (game.card.isBuiltinCardPool(cardPoolId))
-                {
-                    cardPoolNames[i] = game.langManager.getString(StringTable.CARDPOOL_NAME_BUILTIN);
-                    continue;
-                }
                 var localPoolRef = game.card.getLocalCardPoolReference(cardPoolId);
                 var poolInfo = game.card.getCardPoolInfo(localPoolRef);
                 cardPoolNames[i] = poolInfo.cardPoolName;

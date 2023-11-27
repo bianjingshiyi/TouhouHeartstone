@@ -116,7 +116,8 @@ namespace Controllers
                 bool needCheckCardPools = true;
                 if (isRoomOwner)
                 {
-                    CardPoolInfoPack[] roomPools = new CardPoolInfoPack[] { CardPoolHelper.BuiltinCardPoolInfoPack };
+                    var classicPool = game.card.getLocalCardPoolInfo(CardManager.STANDARD_POOL_ID);
+                    CardPoolInfoPack[] roomPools = new CardPoolInfoPack[] { classicPool.ToCardPoolInfoPack() };
                     _currentRoomData.setOption(Option.CardPools, roomPools);
                     setNotifyRoomSetting(Option.CardPools, roomPools);
                     needCheckCardPools = false; // 设置远端卡池会有回调，在里面检测卡池，所以这里不检测
@@ -473,32 +474,28 @@ namespace Controllers
         private async void onAddCardPoolSelectPanelItemToggle(int index, bool value)
         {
             var pool = _editingCardPools[index];
-            // 不能操作内置卡池。
-            if (!game.card.isBuiltinCardPool(pool.cardPoolId))
+            if (value)
             {
-                if (value)
+                // 未选中，选择
+                _selectedEditCardPools.Add(pool);
+                // 选中一个卡池后，要把它的所有依赖也选中。
+                foreach (var dep in pool.GetDependenciesInSet(_editingCardPools))
                 {
-                    // 未选中，选择
-                    _selectedEditCardPools.Add(pool);
-                    // 选中一个卡池后，要把它的所有依赖也选中。
-                    foreach (var dep in pool.GetDependenciesInSet(_editingCardPools))
-                    {
-                        if (dep == null)
-                            continue;
-                        _selectedEditCardPools.Add(dep);
-                    }
+                    if (dep == null)
+                        continue;
+                    _selectedEditCardPools.Add(dep);
                 }
-                else if (_selectedEditCardPools.Contains(pool))
+            }
+            else if (_selectedEditCardPools.Contains(pool))
+            {
+                // 已选中，取消选择。
+                _selectedEditCardPools.Remove(pool);
+                // 取消选中一个卡池后，要把所有依赖它的卡池也取消选中。
+                foreach (var dep in pool.GetDependedCardPools(_editingCardPools))
                 {
-                    // 已选中，取消选择。
-                    _selectedEditCardPools.Remove(pool);
-                    // 取消选中一个卡池后，要把所有依赖它的卡池也取消选中。
-                    foreach (var dep in pool.GetDependedCardPools(_editingCardPools))
-                    {
-                        if (dep == null)
-                            continue;
-                        _selectedEditCardPools.Remove(dep);
-                    }
+                    if (dep == null)
+                        continue;
+                    _selectedEditCardPools.Remove(dep);
                 }
             }
             await openEditCardPoolsPanel();
@@ -814,11 +811,6 @@ namespace Controllers
             for (int i = 0; i < poolsId.Length; i++)
             {
                 long id = poolsId[i];
-                if (game.card.isBuiltinCardPool(id))
-                {
-                    packs.Add(CardPoolHelper.BuiltinCardPoolInfoPack);
-                    continue;
-                }
                 var poolRef = game.card.getLocalCardPoolReference(id);
                 var poolInfo = game.card.getCardPoolInfo(poolRef);
                 if (poolInfo != null)
@@ -989,7 +981,7 @@ namespace Controllers
 
         private async Task<CardPoolInfoPack[]> GetLocalCardPools()
         {
-            List<CardPoolInfoPack> cardPools = new List<CardPoolInfoPack>() { CardPoolHelper.BuiltinCardPoolInfoPack };
+            List<CardPoolInfoPack> cardPools = new List<CardPoolInfoPack>();
             // 本地游戏，将玩家的本地的所有卡池加进去.
             var result = await game.card.loadCardPoolInfosAsync();
             CardPoolInfoPack[] localPools = result.Values.Select(p => p.ToCardPoolInfoPack()).ToArray();
@@ -1012,8 +1004,6 @@ namespace Controllers
             List<CardPoolInfoPack> ignoredCardPools = new List<CardPoolInfoPack>();
             foreach (var pool in newCardPools)
             {
-                if (game.card.isBuiltinCardPool(pool.cardPoolId))
-                    continue;
                 var poolRef = game.card.getLocalCardPoolReference(pool.cardPoolId);
                 var (_, cardPool) = await game.card.getOrLoadCardPool(poolRef, true);
                 if (cardPool == null)

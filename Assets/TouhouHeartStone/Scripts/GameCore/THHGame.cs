@@ -6,7 +6,6 @@ using MongoDB.Bson;
 using NitoriNetwork.Common;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
-using TouhouHeartstone.Builtin;
 
 namespace TouhouHeartstone
 {

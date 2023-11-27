@@ -5,12 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore;
 using Controllers;
-using IGensoukyo;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using TouhouHeartstone;
-using TouhouHeartstone.Builtin;
 using UI;
 using UnityEngine;
 
@@ -107,10 +105,6 @@ namespace Game
             {
                 return cardPool.cardDefineList.Find(d => d.id == cardId);
             }
-            else if (builtinDefineDic.ContainsKey(cardId)) // 内置卡池。
-            {
-                return builtinDefineDic[cardId];
-            }
             return null;
         }
         public CardDefine getLocalCardDefine(long cardPoolId, int id)
@@ -129,21 +123,15 @@ namespace Game
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public CardDefine[] GetCardDefines(Func<CardDefine, bool> filter = null, bool includeExternalCard = false)
+        public CardDefine[] GetCardDefines(Func<CardDefine, bool> filter = null)
         {
             List<CardDefine> cardList = new List<CardDefine>();
-            if (includeExternalCard)
+            foreach (var cardPool in _cardPoolDict.Values)
             {
-                foreach (var cardPool in _cardPoolDict.Values)
-                {
-                    cardList.AddRange(filter != null ?
-                        cardPool.cardDefineList.Where(c => filter.Invoke(c)) :
-                        cardPool.cardDefineList);
-                }
+                cardList.AddRange(filter != null ?
+                    cardPool.cardDefineList.Where(c => filter.Invoke(c)) :
+                    cardPool.cardDefineList);
             }
-            cardList.AddRange(filter != null ?
-                builtinDefineDic.Values.Where(d => filter.Invoke(d)) :
-                builtinDefineDic.Values);
             return cardList.ToArray();
         }
         public Dictionary<int, CardDefine> getCardDefines(ICardPoolReference cardPoolRef)
@@ -155,8 +143,6 @@ namespace Game
         public CardDefine[] findCardDefines(Predicate<CardDefine> filter = null)
         {
             List<CardDefine> cardDefineList = new List<CardDefine>();
-            //反射卡牌
-            cardDefineList.AddRange(filter == null ? builtinDefineDic.Values : builtinDefineDic.Values.Where(c => filter(c)));
             //卡池卡牌
             foreach (var cardPool in _cardPoolDict.Values)
             {
@@ -192,12 +178,6 @@ namespace Game
         }
         #endregion
 
-        public bool isBuiltinCard(CardDefine card)
-        {
-            if (card == null)
-                return false;
-            return isBuiltinCardPool(card.cardPoolId);
-        }
         /// <summary>
         /// 尝试获取翻译过后的卡牌标签名称。
         /// </summary>
@@ -277,12 +257,8 @@ namespace Game
             { TAG.GOD, CARD_TAG_GOD },
             { TAG.GHOST, CARD_TAG_GHOST },
         };
-        private ExcelDataSetList excelList => ExcelDataSetList.Instance;
-        private Dictionary<int, CardDefine> builtinDefineDic { get; set; } = new Dictionary<int, CardDefine>();
         [SerializeField]
         private MainManager _game;
-        [SerializeField]
-        private string[] _externalCardPaths = new string[0];
         #endregion
     }
 }

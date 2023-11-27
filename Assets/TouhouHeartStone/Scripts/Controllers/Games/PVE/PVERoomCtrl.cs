@@ -254,7 +254,6 @@ namespace Controllers
             var genPoolInfo = await game.pve.getGeneratedCardPool(dataName);
             var cardPools = new CardPoolInfoPack[]
             {
-                CardPoolHelper.BuiltinCardPoolInfoPack,
                 standardPoolInfo.ToCardPoolInfoPack(),
                 pvePoolInfo.ToCardPoolInfoPack(),
                 genPoolInfo.info.ToCardPoolInfoPack()
