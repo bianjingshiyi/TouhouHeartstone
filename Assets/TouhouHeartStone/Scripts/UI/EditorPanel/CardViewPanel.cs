@@ -153,6 +153,7 @@ namespace UI
             {
                 _cardPoolCardListItemTemplate.gameObject.SetActive(false);
             }
+            _editDeckImageButton.onClick.AddListener(onClickEditDeckImageButtonCallback);
             _editDeckNameButton.onClick.AddListener(onClickEditDeckNameButtonCallback);
             _deckNameInputField.onEndEdit.AddListener(onEndEditDeckNameInputFieldCallback);
             _cardPoolViewPanel.onEnableCardListItem += onEnableCardListItem;
@@ -214,15 +215,22 @@ namespace UI
         {
             onClickDeleteCurCardPoolButton?.Invoke();
         }
+        private void onClickEditDeckImageButtonCallback()
+        {
+            onClickEditCardPoolImageButton?.Invoke();
+        }
         private void onClickEditDeckNameButtonCallback()
         {
             //编辑名称模式
             _deckNameInputField.gameObject.SetActive(true);
+            _deckNameInputField.ActivateInputField();
+            _editDeckNameButton.gameObject.SetActive(false);
             _curCardPoolNameText.gameObject.SetActive(false);
         }
         private void onEndEditDeckNameInputFieldCallback(string value)
         {
             _deckNameInputField.gameObject.SetActive(false);
+            _editDeckNameButton.gameObject.SetActive(true);
             _curCardPoolNameText.gameObject.SetActive(true);
             _curCardPoolNameText.text = value;
             onDeckNameInputFieldValueChanged?.Invoke(value);
@@ -294,6 +302,10 @@ namespace UI
         /// 当牌库名称被更改，参数为更改的名称。
         /// </summary>
         public event Action<string> onDeckNameInputFieldValueChanged;
+        /// <summary>
+        /// 当点击修改卡池图片按钮。
+        /// </summary>
+        public event Action onClickEditCardPoolImageButton;
         #endregion
         #region 属性字段
         public CardPoolViewPanel cardPoolViewPanel => _cardPoolViewPanel;
@@ -330,6 +342,8 @@ namespace UI
         Text _curCardPoolNameText;
         [SerializeField]
         Image _curCardPoolImage;
+        [SerializeField]
+        Button _editDeckImageButton;
         [SerializeField]
         Button _editDeckNameButton;
         [SerializeField]

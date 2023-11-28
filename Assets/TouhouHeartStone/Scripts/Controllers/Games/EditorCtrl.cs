@@ -227,6 +227,7 @@ namespace Controllers
             _ui.onClickSaveDeckButton += onClickSaveCardPoolButton;
             _ui.onClickReturnToCardPoolViewButton += onClickReturnToCardPoolViewButton;
             _ui.onClickDeleteCurCardPoolButton += onClickDeleteCurCardPoolButton;
+            _ui.onClickEditCardPoolImageButton += onClickEditCardPoolImageButtonCallback;
             _ui.onDeckNameInputFieldValueChanged += onDeckNameInputFieldValueChanged;
             _ui.onClickNewCardButton += onClickNewCardButton;
             _ui.onClickExportCardPoolButton += onClickExportCardPoolButton;
@@ -410,6 +411,17 @@ namespace Controllers
                     await updateDeckListUI();
                     await returnToView();
                 });
+            }
+        }
+        private async void onClickEditCardPoolImageButtonCallback()
+        {
+            Sprite sprite = await game.card.selectExternalImage();
+            if (sprite != null)
+            {
+                markCardPoolUnsaved(_curCardPoolId);
+                var poolInfo = getCurrentCardPoolInfo();
+                poolInfo.imageResPath = game.card.getSpritePath(sprite);
+                _ui.updateCurCardPoolInfo(poolInfo.cardPoolName, sprite);
             }
         }
         private void onDeckNameInputFieldValueChanged(string value)
