@@ -550,6 +550,28 @@
     <example><![CDATA[使用<b>简单抽牌</b>节点，判断抽到的牌是否存在，以确定是否真正抽到了牌。]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>212006</defineId>
+    <obsoleteNames />
+    <editorName>停止重复动作</editorName>
+    <category>其他</category>
+    <inputs />
+    <outputs />
+    <consts />
+    <summary><![CDATA[停止整个重复动作，整个重复动作内的剩余节点都不再执行。<br>仅适用于<b>重复动作</b>、<b>重复动作直到</b>和<b>遍历</b>的内部。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>212007</defineId>
+    <obsoleteNames />
+    <editorName>跳过重复动作</editorName>
+    <category>其他</category>
+    <inputs />
+    <outputs />
+    <consts />
+    <summary><![CDATA[跳过本次重复动作，该次重复动作内的剩余节点都不再执行。<br>仅适用于<b>重复动作</b>、<b>重复动作直到</b>和<b>遍历</b>的内部。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>200001</defineId>
     <obsoleteNames />
     <editorName>使玩家获胜</editorName>
@@ -2275,11 +2297,11 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>AddBuffEventArg</type>
+        <type>MassAddBuffEventArg</type>
         <name>outEvent</name>
-        <displayName>添加增益事件</displayName>
+        <displayName>群体添加增益事件</displayName>
         <isParams>false</isParams>
-        <isArray>true</isArray>
+        <isArray>false</isArray>
         <summary><![CDATA[添加增益所产生的事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
@@ -2600,11 +2622,11 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>EnterFieldEventArg</type>
+        <type>MassEnterFieldEventArg</type>
         <name>outEvent</name>
-        <displayName>入场事件</displayName>
+        <displayName>群体入场事件</displayName>
         <isParams>false</isParams>
-        <isArray>true</isArray>
+        <isArray>false</isArray>
         <summary><![CDATA[置入战场所产生的事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
@@ -2647,11 +2669,11 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MoveCardEventArg</type>
+        <type>MassReturnHandEventArg</type>
         <name>outEvent</name>
-        <displayName>卡牌移动事件</displayName>
+        <displayName>群体进入手牌事件</displayName>
         <isParams>false</isParams>
-        <isArray>true</isArray>
+        <isArray>false</isArray>
         <summary><![CDATA[卡牌移动所产生的事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
@@ -2695,11 +2717,11 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MoveCardEventArg</type>
+        <type>MassShuffleToDeckEventArg</type>
         <name>outEvent</name>
-        <displayName>卡牌移动事件</displayName>
+        <displayName>群体洗入牌库事件</displayName>
         <isParams>false</isParams>
-        <isArray>true</isArray>
+        <isArray>false</isArray>
         <summary><![CDATA[卡牌移动所产生的事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
@@ -2751,11 +2773,11 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MoveCardEventArg</type>
+        <type>MassMoveCardEventArg</type>
         <name>outEvent</name>
-        <displayName>卡牌移动事件</displayName>
+        <displayName>群体移动卡牌事件</displayName>
         <isParams>false</isParams>
-        <isArray>true</isArray>
+        <isArray>false</isArray>
         <summary><![CDATA[卡牌移动所产生的事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
@@ -2798,11 +2820,11 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MoveCardEventArg</type>
+        <type>MassMoveToHeadEventArg</type>
         <name>outEvent</name>
-        <displayName>卡牌移动事件</displayName>
+        <displayName>群体置入延迟区事件</displayName>
         <isParams>false</isParams>
-        <isArray>true</isArray>
+        <isArray>false</isArray>
         <summary><![CDATA[卡牌移动所产生的事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
@@ -2882,11 +2904,11 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MoveCardEventArg</type>
+        <type>MassMoveCardEventArg</type>
         <name>outEvent</name>
-        <displayName>卡牌移动事件</displayName>
+        <displayName>群体移动卡牌事件</displayName>
         <isParams>false</isParams>
-        <isArray>true</isArray>
+        <isArray>false</isArray>
         <summary><![CDATA[卡牌移动所产生的事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
@@ -3052,9 +3074,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>CreateTokenEventArg</type>
+        <type>EnterFieldEventArg</type>
         <name>outEvent</name>
-        <displayName>创建衍生卡事件</displayName>
+        <displayName>入场事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[创建衍生卡所产生的事件。]]></summary>
@@ -3548,7 +3570,7 @@
       <ActionParameterComment>
         <type>DiscardEventArg</type>
         <name>return</name>
-        <displayName>弃牌事件</displayName>
+        <displayName>抽牌事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[执行的弃牌事件。]]></summary>

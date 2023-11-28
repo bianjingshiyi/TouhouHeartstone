@@ -12,6 +12,30 @@ namespace Game
 
     public static partial class EffectEditorLibrary
     {
+        public const string SCOPE_VARIABLE_LOOP_STATE = "BUILTIN_VARIABLE_LOOP_STATE";
+        public const int SCOPE_LOOP_STATE_LOOPING = 1;
+        public const int SCOPE_LOOP_STATE_BROKEN = 2;
+        public const int SCOPE_STATE_CONTINUED = 3;
+        private static void setScopeLoopState(FlowScope scope, int state)
+        {
+            scope.setScopeVariable(SCOPE_VARIABLE_LOOP_STATE, state);
+        }
+        private static int getScopeLoopState(FlowScope scope)
+        {
+            if (scope.tryGetScopeVariable(SCOPE_VARIABLE_LOOP_STATE, out object state) && state is int intValue)
+            {
+                return intValue;
+            }
+            return 0;
+        }
+        private static void setScopeLooping(FlowScope scope)
+        {
+            setScopeLoopState(scope, SCOPE_LOOP_STATE_LOOPING);
+        }
+        private static bool isScopeLooping(FlowScope scope)
+        {
+            return getScopeLoopState(scope) == SCOPE_LOOP_STATE_LOOPING;
+        }
         private static void setOutParam(Flow flow, ActionNode node, string name, object value)
         {
             flow.setValue(node.getOutputPort<ValueOutput>(name), value);
@@ -43,6 +67,10 @@ namespace Game
         private const string EDIOTR_NODE_NAME_SET_TEMP_VARIABLE = "设置临时变量";
         [TranslateMsg("编辑器-节点名称")]
         private const string EDIOTR_NODE_NAME_GET_TEMP_VARIABLE = "获取临时变量";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_BREAK = "停止重复动作";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_CONTINUE = "跳过重复动作";
         /// <summary>
         /// 设置临时变量
         /// </summary>
@@ -97,10 +125,17 @@ namespace Game
             var repeatTimePort = node.getOutputPort<ValueOutput>(nameof(repeatTime));
             for (int i = 1; i <= count; i++)
             {
-                flow.EnterScope();
+                var scope = flow.EnterScope();
+
+                setScopeLooping(scope);
                 flow.setValue(repeatTimePort, i);
                 await game.runActions(flow, action);
+                int loopState = getScopeLoopState(scope);
+
                 flow.ExitScope();
+
+                if (loopState == SCOPE_LOOP_STATE_BROKEN)
+                    break;
             }
         }
 
@@ -158,14 +193,22 @@ namespace Game
                 times++;
                 finished = false;
 
-                flow.EnterScope();
+                var scope = flow.EnterScope();
+                setScopeLooping(scope);
+
                 flow.setValue(repeatTimePort, times);
                 await game.runActions(flow, action);
+
+                int flowState = getScopeLoopState(scope);
+                flow.ExitScope();
+
                 if (condition.outputPort != null && await condition.getValue(flow))
                 {
                     finished = true;
                 }
-                flow.ExitScope();
+
+                if (flowState == SCOPE_LOOP_STATE_BROKEN)
+                    break;
             }
             while (times < maxRepeatTime && !finished);
         }
@@ -191,6 +234,46 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
             return value == null;
+        }
+        /// <summary>
+        /// 跳出循环
+        /// </summary>
+        /// <param name="pile"></param>
+        /// <returns></returns>
+        [THHActionMethod(BuiltinActionDefineID.Break, EDITOR_CATEGORY_NAME_OTHER, EDITOR_NODE_NAME_BREAK)]
+        public static void breakLoop(Flow flow)
+        {
+            var scope = flow.currentScope;
+            while (scope != null)
+            {
+                if (getScopeLoopState(scope) > 0) // 是循环作用域
+                    break;
+                scope = scope.parentScope;
+            }
+            if (scope == null || !isScopeLooping(scope)) // 作用域不存在，或者循环已经被中断
+                return;
+            setScopeLoopState(scope, SCOPE_LOOP_STATE_BROKEN);
+            scope.terminate();
+        }
+        /// <summary>
+        /// 跳过本次循环
+        /// </summary>
+        /// <param name="pile"></param>
+        /// <returns></returns>
+        [THHActionMethod(BuiltinActionDefineID.Continue, EDITOR_CATEGORY_NAME_OTHER, EDITOR_NODE_NAME_CONTINUE)]
+        public static void continueLoop(Flow flow)
+        {
+            var scope = flow.currentScope;
+            while (scope != null)
+            {
+                if (getScopeLoopState(scope) > 0) // 是循环作用域
+                    break;
+                scope = scope.parentScope;
+            }
+            if (scope == null || !isScopeLooping(scope)) // 作用域不存在，或者循环已经被中断
+                return;
+            setScopeLoopState(scope, SCOPE_STATE_CONTINUED);
+            scope.terminate();
         }
         #endregion
 

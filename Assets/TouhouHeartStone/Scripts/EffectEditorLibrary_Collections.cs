@@ -293,10 +293,17 @@ namespace Game
             var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
             foreach (object ele in array)
             {
-                flow.EnterScope();
+                var scope = flow.EnterScope();
+                setScopeLooping(scope);
+
                 flow.setValue(elementPort, ele);
                 await game.runActions(flow, action);
+
+                int flowState = getScopeLoopState(scope);
                 flow.ExitScope();
+
+                if (flowState == SCOPE_LOOP_STATE_BROKEN)
+                    break;
             }
         }
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetRandomElement, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_GET_RANDOM_ELEMENT)]

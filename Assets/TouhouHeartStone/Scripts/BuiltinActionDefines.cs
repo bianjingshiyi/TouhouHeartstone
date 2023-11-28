@@ -328,6 +328,8 @@ namespace Game
         public const int DoUntilAction_Obsolete = Type_Action + Category_Other + 3;    // 重复动作直到（过时）
         public const int SetTempVar = Type_Action + Category_Other + 4;    // 设置临时变量
         public const int DoUntilAction = Type_Action + Category_Other + 5;    // 重复动作直到
+        public const int Break = Type_Action + Category_Other + 6;    // 跳出循环
+        public const int Continue = Type_Action + Category_Other + 7;    // 跳过本次循环
 
         #endregion
 
