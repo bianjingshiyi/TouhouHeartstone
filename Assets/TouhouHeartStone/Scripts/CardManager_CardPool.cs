@@ -505,9 +505,12 @@ namespace Game
             var poolRef = getLocalCardPoolReference(cardPoolId);
             return getCardPoolInfo(poolRef);
         }
-        public static string[] getCardPoolImages(CardPool cardPool)
+        public static string[] getCardPoolImages(CardPoolInfo info, CardPool cardPool)
         {
-            HashSet<string> imageFiles = new HashSet<string>();
+            HashSet<string> imageFiles = new HashSet<string>
+            {
+                info.imageResPath
+            };
             foreach (var item in cardPool.cardSkinList)
             {
                 // 不导出内置资源

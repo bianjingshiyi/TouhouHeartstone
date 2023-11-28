@@ -9,6 +9,7 @@ using ExcelDataReader.Log;
 using Game;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -343,16 +344,16 @@ namespace Controllers
             }
             _ui.updateViewCardPanel(list.ToArray());
         }
-        private void onViewCardPoolsClick()
+        private async void onViewCardPoolsClick()
         {
-            viewRoomCardPools();
+            await viewRoomCardPools();
         }
         private async void onAddCardPoolsClick()
         {
             await UpdateEditingCardPools();
             _selectedEditCardPools?.Clear();
             AddSelectedEditingCardPools(_currentRoomData.getCardPools());
-            openEditCardPoolsPanel();
+            await openEditCardPoolsPanel();
         }
         private void onClickPlayerListItemViewDeckButton(int index)
         {
@@ -469,41 +470,38 @@ namespace Controllers
                 onAddCardPoolSelectPanelItemToggle(index, !_selectedEditCardPools.Contains(pool));
             }
         }
-        private void onAddCardPoolSelectPanelItemToggle(int index, bool value)
+        private async void onAddCardPoolSelectPanelItemToggle(int index, bool value)
         {
             var pool = _editingCardPools[index];
             // 不能操作内置卡池。
-            if (game.card.isBuiltinCardPool(pool.cardPoolId))
+            if (!game.card.isBuiltinCardPool(pool.cardPoolId))
             {
-                _ui.openAddCardPoolsPanel(_editingCardPools, _selectedEditCardPools.Select(p => p.GetReference()));
-                return;
-            }
-
-            if (value)
-            {
-                // 未选中，选择
-                _selectedEditCardPools.Add(pool);
-                // 选中一个卡池后，要把它的所有依赖也选中。
-                foreach (var dep in pool.GetDependenciesInSet(_editingCardPools))
+                if (value)
                 {
-                    if (dep == null)
-                        continue;
-                    _selectedEditCardPools.Add(dep);
+                    // 未选中，选择
+                    _selectedEditCardPools.Add(pool);
+                    // 选中一个卡池后，要把它的所有依赖也选中。
+                    foreach (var dep in pool.GetDependenciesInSet(_editingCardPools))
+                    {
+                        if (dep == null)
+                            continue;
+                        _selectedEditCardPools.Add(dep);
+                    }
+                }
+                else if (_selectedEditCardPools.Contains(pool))
+                {
+                    // 已选中，取消选择。
+                    _selectedEditCardPools.Remove(pool);
+                    // 取消选中一个卡池后，要把所有依赖它的卡池也取消选中。
+                    foreach (var dep in pool.GetDependedCardPools(_editingCardPools))
+                    {
+                        if (dep == null)
+                            continue;
+                        _selectedEditCardPools.Remove(dep);
+                    }
                 }
             }
-            else if (_selectedEditCardPools.Contains(pool))
-            {
-                // 已选中，取消选择。
-                _selectedEditCardPools.Remove(pool);
-                // 取消选中一个卡池后，要把所有依赖它的卡池也取消选中。
-                foreach (var dep in pool.GetDependedCardPools(_editingCardPools))
-                {
-                    if (dep == null)
-                        continue;
-                    _selectedEditCardPools.Remove(dep);
-                }
-            }
-            _ui.openAddCardPoolsPanel(_editingCardPools, _selectedEditCardPools.Select(p => p.GetReference()));
+            await openEditCardPoolsPanel();
         }
         private void onConfirmAddCardPools()
         {
@@ -1082,28 +1080,47 @@ namespace Controllers
                     var modifies = await UpdateEditingCardPools();
                     AddSelectedEditingCardPools(modifies.addedPools);
                     RemoveSelectedEditingCardPools(modifies.removedPools);
-                    openEditCardPoolsPanel();
+                    await openEditCardPoolsPanel();
                 }
                 else
                 {
-                    viewRoomCardPools();
+                    await viewRoomCardPools();
                 }
             }
         }
-        private void viewRoomCardPools()
+        private async Task viewRoomCardPools()
         {
             _viewingCardPools = _currentRoomData.getCardPools();
-            _ui.viewCardPools(_viewingCardPools, isRoomOwner);
+            var viewDatas = new (string name, Sprite image)[_viewingCardPools.Length];
+            for (int i = 0; i < viewDatas.Length; i++)
+            {
+                var pool = _viewingCardPools[i];
+                viewDatas[i] = (pool.cardPoolName, await game.card.loadCardPoolImage(pool));
+            }
+            _ui.viewCardPools(viewDatas, isRoomOwner);
         }
-        private void openEditCardPoolsPanel()
+        private async Task openEditCardPoolsPanel()
         {
-            _ui.openAddCardPoolsPanel(_editingCardPools, _selectedEditCardPools.Select(p => p.GetReference()));
+            var viewDatas = new (string name, Sprite image, bool selected)[_editingCardPools.Length];
+            for (int i = 0; i < viewDatas.Length; i++)
+            {
+                var pool = _editingCardPools[i];
+                bool selected = _selectedEditCardPools.Any(pack => pack.CompareCardPool(pool));
+                Color color = selected ? Color.grey : Color.white;
+                string name = pool.cardPoolName;
+                if (_editingCardPools.Count(p => p.cardPoolId == pool.cardPoolId) >= 2)
+                {
+                    name = game.lang._(ROOM_CARD_POOL_VERSION_TEMPLATE, name, pool.version);
+                }
+                viewDatas[i] = (name, await game.card.loadCardPoolImage(pool), selected);
+            }
+            _ui.openAddCardPoolsPanel(viewDatas);
         }
         private void closeEditCardPoolsPanel()
         {
             _editingCardPools = null;
             _selectedEditCardPools?.Clear();
-            viewRoomCardPools();
+            _ = viewRoomCardPools();
         }
         #endregion
         /// <summary>
@@ -1429,6 +1446,8 @@ namespace Controllers
         /// 卡池显示面板是否需要更新。
         /// </summary>
         bool _cardPoolPanelDirty;
+        [TranslateMsg("房间显示-卡池显示界面-名称版本模板（{0}为卡池名称，{1}为版本号）")]
+        private const string ROOM_CARD_POOL_VERSION_TEMPLATE = "{0}({1})";
         #endregion
         #region 内部类
         public class DisplayInfo : UIDisplayInfo

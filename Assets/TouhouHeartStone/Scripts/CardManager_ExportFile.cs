@@ -118,7 +118,7 @@ namespace Game
         private async Task exportCardPool(CardPoolInfo cardPoolInfo, string cardPoolDefineFile, CardPool cardPool, string exportPath)
         {
             // 关联卡片资源列表
-            var imageFiles = getCardPoolImages(cardPool);
+            var imageFiles = getCardPoolImages(cardPoolInfo, cardPool);
             byte[] defineHash;
             using (var file = File.OpenRead(cardPoolDefineFile))
             {
@@ -221,7 +221,7 @@ namespace Game
                         }
 
                         // 检查卡图是否完全正常
-                        var images = getCardPoolImages(cardPool);
+                        var images = getCardPoolImages(cardPoolInfo, cardPool);
                         HashSet<ZipArchiveEntry> imageEntries = new HashSet<ZipArchiveEntry>();
                         foreach (var image in images)
                         {

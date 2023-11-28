@@ -396,12 +396,12 @@ namespace Game
         /// <returns>图片路径数组。</returns>
         private string[] GetCardPoolPictures(CardPoolReference cardPoolRef)
         {
-            List<string> paths = new List<string>();
             if (game.card.tryGetCardPool(cardPoolRef, out var cardPool))
             {
-                paths.AddRange(CardManager.getCardPoolImages(cardPool));
+                var info = game.card.getCardPoolInfo(cardPoolRef);
+                return CardManager.getCardPoolImages(info, cardPool);
             }
-            return paths.ToArray();
+            return Array.Empty<string>();
         }
         /// <summary>
         /// 上传所有卡池计划。

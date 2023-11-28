@@ -17,8 +17,6 @@ namespace UI
         #region 常量
         [TranslateMsg]
         private const string Cards_Name = "选择你的卡组";
-        [TranslateMsg("房间显示-卡池显示界面-名称版本模板（{0}为卡池名称，{1}为版本号）")]
-        private const string ROOM_CARD_POOL_VERSION_TEMPLATE = "{0}({1})";
         [TranslateMsg("在房间页面中，当玩家角色获取失败时显示的角色名称")]
         private const string ROOM_UNKNOWN_CHARACTER_NAME = "未知角色";
         [TranslateMsg("房间-查看卡池面板的标题")]
@@ -312,20 +310,9 @@ namespace UI
         /// 查看房间卡池
         /// </summary>
         /// <param name="cards"></param>
-        public void viewCardPools(CardPoolInfoPack[] pools, bool showEditButton)
+        public void viewCardPools((string name, Sprite image)[] viewDatas, bool showEditButton)
         {
-            (string name, Sprite image) getPoolData(CardPoolInfoPack pool)
-            {
-                return (pool.cardPoolName, null);
-            }
-            List<(string name, Sprite image)> list = new List<(string name, Sprite image)>();
-
-            foreach (var pool in pools)
-            {
-                list.Add(getPoolData(pool));
-            }
-            var viewData = list.ToArray();
-            _cardPoolsViewPanel.updateCardPools(viewData, showEditButton);
+            _cardPoolsViewPanel.updateCardPools(viewDatas, showEditButton);
             _cardPoolsPanel.SetActive(true);
             _confirmEditCardPoolButtonObj.SetActive(false);
             _cardPoolsPanelTitle.text = lang._(ROOM_TITLE_VIEW_CARD_POOLS);
@@ -342,27 +329,9 @@ namespace UI
         /// 打开添加房间卡池界面
         /// </summary>
         /// <param name="cards"></param>
-        public void openAddCardPoolsPanel(IEnumerable<CardPoolInfoPack> pools, IEnumerable<CardPoolReference> selectedCardPools)
+        public void openAddCardPoolsPanel((string name, Sprite image, bool selected)[] viewDatas)
         {
-            (string name, Sprite image, bool selected) getPoolData(CardPoolInfoPack pool)
-            {
-                bool selected = selectedCardPools.Contains(pool.GetReference());
-                Color color = selected ? Color.grey : Color.white;
-                string name = pool.cardPoolName;
-                if (pools.Count(p => p.cardPoolId == pool.cardPoolId) >= 2)
-                {
-                    name = lang._(ROOM_CARD_POOL_VERSION_TEMPLATE, name, pool.version);
-                }
-                return (name, null, selected);
-            }
-            List<(string name, Sprite image, bool selected)> list = new List<(string name, Sprite image, bool selected)>();
-
-            foreach (var pool in pools)
-            {
-                list.Add(getPoolData(pool));
-            }
-            var viewData = list.ToArray();
-            _cardPoolsViewPanel.updateAddCardPools(viewData);
+            _cardPoolsViewPanel.updateAddCardPools(viewDatas);
             _cardPoolsPanel.SetActive(true);
             _confirmEditCardPoolButtonObj.SetActive(true);
             _cardPoolsPanelTitle.text = lang._(ROOM_TITLE_EDIT_CARD_POOLS);

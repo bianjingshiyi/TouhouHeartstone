@@ -223,6 +223,8 @@ namespace Game
         public Task<Sprite> loadCardPoolImage(ICardPoolReference cardPoolRef)
         {
             var cardPoolInfo = getCardPoolInfo(cardPoolRef);
+            if (cardPoolInfo == null)
+                return Task.FromResult<Sprite>(null);
             return loadCardPoolImage(cardPoolInfo);
         }
         public Task<Sprite> loadCardPoolImage(CardPoolInfo cardPoolInfo)

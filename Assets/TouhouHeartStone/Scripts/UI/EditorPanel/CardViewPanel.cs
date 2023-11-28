@@ -153,7 +153,8 @@ namespace UI
             {
                 _cardPoolCardListItemTemplate.gameObject.SetActive(false);
             }
-            _editDeckImageButton.onClick.AddListener(onClickEditDeckImageButtonCallback);
+            if (_editDeckImageButton)
+                _editDeckImageButton.onClick.AddListener(onClickEditDeckImageButtonCallback);
             _editDeckNameButton.onClick.AddListener(onClickEditDeckNameButtonCallback);
             _deckNameInputField.onEndEdit.AddListener(onEndEditDeckNameInputFieldCallback);
             _cardPoolViewPanel.onEnableCardListItem += onEnableCardListItem;
