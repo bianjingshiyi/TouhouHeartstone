@@ -159,9 +159,9 @@ namespace Game
             _cardPoolDict.Add(cardPoolInfo.ToReference(), cardPool);
 
             // 检查并修复老旧大卡图
-            await fixLargeImage(cardPoolInfo.cardPoolId, cardPool);
+            await fixLargeImage(cardPoolInfo, cardPool);
             // 对缓存的图片进行保存
-            await saveExternalImages(cardPoolInfo.cardPoolId, cardPool);
+            await saveExternalImages(cardPoolInfo, cardPool);
 
             //初始化JSON
             if (!JsonHelper.isInited)
@@ -1096,47 +1096,65 @@ namespace Game
                 fixCardDefine(cardDefine);
             }
 
-            foreach (var skin in cardPool.cardSkinList)
-            {
-                if (string.IsNullOrEmpty(skin.language))
-                {
-                    //皮肤不能没有对应语言信息，如果没有那么至少设置为默认语言
-                    skin.language = game.langManager.getDefaultLanguage();
-                }
-                if (!string.IsNullOrEmpty(skin.imagePath) && !isHashNamedImage(skin.imagePath))
-                {
-                    //图片地址必须是32位哈希.jpg
-                    Sprite sprite = await loadImage(cardPoolInfo, skin.imagePath, false);
-                    // 不保存丢失的贴图。
-                    if (sprite != null)
-                    {
-                        skin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
-                        hasUnsavedFix = true;
-                    }
-                }
-            }
-            foreach (var buffSkin in cardPool.buffSkinList)
-            {
-                if (string.IsNullOrEmpty(buffSkin.imagePath))
-                    continue;
-                if (!isHashNamedImage(buffSkin.imagePath))
-                {
-                    //图片地址必须是32位哈希.jpg
-                    Sprite sprite = await loadBuffImage(cardPoolInfo, buffSkin, false);
-                    // 不保存丢失的贴图。
-                    if (sprite != null)
-                    {
-                        buffSkin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
-                        hasUnsavedFix = true;
-                    }
-                }
-            }
+            await fixImages();
             if (hasUnsavedFix)
                 await saveCardPool(cardPoolInfo);
 
 
 
             #region 内嵌方法
+            async Task fixImages()
+            {
+                if (!string.IsNullOrEmpty(cardPoolInfo.imageResPath))
+                {
+                    if (!isHashNamedImage(cardPoolInfo.imageResPath))
+                    {
+                        //图片地址必须是32位哈希.jpg
+                        Sprite sprite = await loadCardPoolImage(cardPoolInfo);
+                        // 不保存丢失的贴图。
+                        if (sprite != null)
+                        {
+                            cardPoolInfo.imageResPath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
+                            hasUnsavedFix = true;
+                        }
+                    }
+                }
+                foreach (var skin in cardPool.cardSkinList)
+                {
+                    if (string.IsNullOrEmpty(skin.language))
+                    {
+                        //皮肤不能没有对应语言信息，如果没有那么至少设置为默认语言
+                        skin.language = game.langManager.getDefaultLanguage();
+                    }
+                    if (!string.IsNullOrEmpty(skin.imagePath) && !isHashNamedImage(skin.imagePath))
+                    {
+                        //图片地址必须是32位哈希.jpg
+                        Sprite sprite = await loadImage(cardPoolInfo, skin.imagePath, false);
+                        // 不保存丢失的贴图。
+                        if (sprite != null)
+                        {
+                            skin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
+                            hasUnsavedFix = true;
+                        }
+                    }
+                }
+                foreach (var buffSkin in cardPool.buffSkinList)
+                {
+                    if (string.IsNullOrEmpty(buffSkin.imagePath))
+                        continue;
+                    if (!isHashNamedImage(buffSkin.imagePath))
+                    {
+                        //图片地址必须是32位哈希.jpg
+                        Sprite sprite = await loadBuffImage(cardPoolInfo, buffSkin, false);
+                        // 不保存丢失的贴图。
+                        if (sprite != null)
+                        {
+                            buffSkin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
+                            hasUnsavedFix = true;
+                        }
+                    }
+                }
+            }
             // 用于遍历卡牌/增益效果的方法。
             void effectAction(GeneratedEffect effect)
             {

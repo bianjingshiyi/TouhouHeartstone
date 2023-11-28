@@ -40,8 +40,9 @@ namespace Game
         /// 保存外部图片，并将指定卡池中所有对外部图片的引用都替换为保存后的路径。
         /// </summary>
         /// <returns></returns>
-        public async Task saveExternalImages(long cardPoolId, CardPool cardPool)
+        public async Task saveExternalImages(CardPoolInfo cardPoolInfo, CardPool cardPool)
         {
+            long cardPoolId = cardPoolInfo.cardPoolId;
             //对缓存的图片进行保存
             List<string> removeSpritePathList = new List<string>();
             List<KeyValuePair<string, Sprite>> savedPathSpritePairList = new List<KeyValuePair<string, Sprite>>();
@@ -73,6 +74,10 @@ namespace Game
                 savedPathSpritePairList.Add(new KeyValuePair<string, Sprite>(path, sprite));
 
                 //替换所有引用这个图片的皮肤的图片地址
+                if (cardPoolInfo.imageResPath == cachePath)
+                {
+                    cardPoolInfo.imageResPath = cachePath;
+                }
                 foreach (var otherCardSkin in cardSkins)
                 {
                     otherCardSkin.imagePath = path;
@@ -103,11 +108,19 @@ namespace Game
         /// <param name="cardPoolId"></param>
         /// <param name="cardPool"></param>
         /// <returns></returns>
-        public async Task fixLargeImage(long cardPoolId, CardPool cardPool)
+        public async Task fixLargeImage(CardPoolInfo cardPoolInfo, CardPool cardPool)
         {
+            long cardPoolId = cardPoolInfo.cardPoolId;
             var cardPoolRef = getLocalCardPoolReference(cardPoolId);
             // 已处理的图片列表，若为null则不需要替换
             Dictionary<string, string> replacedImages = new Dictionary<string, string>();
+
+            // 卡池封面图
+            {
+                var newPath = await replaceImage(cardPoolInfo.imageResPath);
+                if (!string.IsNullOrEmpty(newPath))
+                    cardPoolInfo.imageResPath = newPath;
+            }
             foreach (var skin in cardPool.cardSkinList)
             {
                 var newPath = await replaceImage(skin.imagePath);
