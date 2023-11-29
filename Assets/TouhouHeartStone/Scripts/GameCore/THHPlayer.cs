@@ -140,12 +140,7 @@ namespace TouhouHeartstone
                     card = arg.card;
                     if (card.isSpell() && card.define.hasKeyword(KEYWORD.AUTOCAST))
                     {
-                        await p.getDeck().moveTo(game, card, p.getWarp());
-                        game.logger.logTrace("debug");
-                        await card.activeEffect(game, p, new Card[0]);
-                        await p.getWarp().moveTo(game, card, p.getGrave());
-                        await game.updateGameState();
-                        await player.draw(game);
+                        await autocast(game, p, card);
                     }
                     else
                     {
@@ -182,6 +177,26 @@ namespace TouhouHeartstone
                 drawEvent = null;
                 return Task.CompletedTask;
             }
+        }
+        #endregion
+
+        #region 自动施放
+        public static Task<AutocastEventArg> autocast(CardEngine game, Player player, Card card)
+        {
+            var targets = new Card[] { card.getAvaliableTargets(game).random(game) };
+            return game.triggers.doEvent(new AutocastEventArg() { player = player, card = card, targets = targets }, async arg =>
+            {
+                var argPlayer = arg.player;
+                var argCard = arg.card;
+                var argTargets = arg.targets;
+
+                await argCard.pile.moveTo(game, card, argPlayer.getWarp());
+                game.logger.logTrace("debug");
+                await argCard.activeEffect(game, argPlayer, argTargets);
+                await argCard.pile.moveTo(game, card, argPlayer.getGrave());
+                await game.updateGameState();
+                await argPlayer.draw(game);
+            });
         }
         #endregion
 

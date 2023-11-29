@@ -14,7 +14,14 @@ namespace Game.BattleTable
                 var value = arg.getVar(name);
                 if (value is Card card)
                 {
-                    value = new CardState(card, card.getCurrentHistory());
+                    if (card == null)
+                    {
+                        value = new CardState(null, 0);
+                    }
+                    else
+                    {
+                        value = new CardState(card, card.getCurrentHistory());
+                    }
                 }
                 else if (value is IEnumerable<Card> cards && value is not Pile)
                 {
@@ -22,6 +29,11 @@ namespace Game.BattleTable
                     for (int i = 0; i < stateArray.Length; i++)
                     {
                         var element = cards.ElementAt(i);
+                        if (element == null)
+                        {
+                            stateArray[i] = new CardState(null, 0);
+                            continue;
+                        }
                         stateArray[i] = new CardState(element, element.getCurrentHistory());
                     }
                     value = stateArray;

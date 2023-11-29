@@ -22,8 +22,8 @@ namespace Game.BattleTable
             //在对应的卡组上创建卡牌实例
 
             // 获取卡牌源位置。
-            var targetTransform = getCardTargetTransfrom(table, card, player);
-            var startHeight = getCardStartHeight(table, card, player);
+            var targetTransform = getCardTargetTransfrom(table, card);
+            var startHeight = getCardStartHeight(table, card);
 
             // 如果该牌在你的手牌里，起始正面朝上。
             bool startFaceUp = player == table.player && card.pile.name == PILE.HAND;
@@ -81,7 +81,7 @@ namespace Game.BattleTable
 
             }
 
-            targetTransform = getCardTargetTransfrom(table, card, player);
+            targetTransform = getCardTargetTransfrom(table, card);
             //放回去
             TableAnimation animMoveBack = new CardTransAnim(cardUI, targetTransform, startScale, table.cardShowCurve);
             while (!animMoveBack.update(table, _deltaTime))
@@ -102,15 +102,15 @@ namespace Game.BattleTable
             yield break;
         }
 
-        private Transform getCardTargetTransfrom(BattleTableManager table, CardSnapshot card, Player player)
+        public static Transform getCardTargetTransfrom(BattleTableManager table, CardSnapshot card)
         {
-            Transform trans = null;
+            Transform trans = table.table.CenterDisplayTransform;
             var pile = card.pile;
             if (pile != null)
             {
-                if (pile.name == PILE.DECK)
+                if (pile.name == PILE.DECK || pile.name == PILE.GRAVE)
                 {
-                    trans = (player == table.player ? table.table.SelfDeck : table.table.EnemyDeck).HoverTransform;
+                    trans = table.getDeckUI(pile).transform;
                 }
                 else if (pile.name == PILE.HAND)
                 {
@@ -120,26 +120,22 @@ namespace Game.BattleTable
                     }
                     else
                     {
-                        trans = (player == table.player ? table.table.SelfHandList : table.table.EnemyHandList).transform;
+                        trans = table.getHandList(pile).transform;
                     }
-                }
-                else if (pile.name == PILE.GRAVE)
-                {
-                    trans = (player == table.player ? table.table.SelfGrave : table.table.EnemyGrave).HoverTransform;
                 }
             }
             return trans;
         }
 
-        private float getCardStartHeight(BattleTableManager table, CardSnapshot card, Player player)
+        public static float getCardStartHeight(BattleTableManager table, CardSnapshot card)
         {
-            float height = table.TableToWorldDistance(table.cardHeight);
+            float height = 0;
             var pile = card.pile;
             if (pile != null)
             {
-                if (pile.name == PILE.DECK)
+                if (pile.name == PILE.DECK || pile.name == PILE.GRAVE)
                 {
-                    var deck = player == table.player ? table.table.SelfDeck : table.table.EnemyDeck;
+                    var deck = table.getDeckUI(pile);
                     height = deck.getCardHeight();
                 }
                 else if (pile.name == PILE.HAND)
@@ -148,11 +144,6 @@ namespace Game.BattleTable
                     {
                         height = handItem.card.height * handItem.card.transform.lossyScale.z;
                     }
-                }
-                else if (pile.name == PILE.GRAVE)
-                {
-                    var grave = player == table.player ? table.table.SelfGrave : table.table.EnemyGrave;
-                    height = grave.getCardHeight();
                 }
             }
             return height;
