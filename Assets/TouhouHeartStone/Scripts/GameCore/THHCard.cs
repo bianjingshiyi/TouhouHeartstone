@@ -82,7 +82,8 @@ namespace TouhouHeartstone
         }
         public static Task<PropChangeEventArg> setCurrentLife(this Card card, IGame game, int value)
         {
-            return card.setProp(game, CARD.CURRENT_LIFE, value);
+            var maxLife = card.getLife(game);
+            return card.setProp(game, CARD.CURRENT_LIFE, Math.Min(maxLife, value));
         }
         #endregion
 

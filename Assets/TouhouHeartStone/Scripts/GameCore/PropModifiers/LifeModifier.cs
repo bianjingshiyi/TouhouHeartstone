@@ -62,36 +62,20 @@ namespace TouhouHeartstone
             else
                 return card.setCurrentLife(game, card.getCurrentLife(game) + value);
         }
-        public override Task beforeRemove(IGame game, Card card)
-        {
-            resetCurrentLife = card.getCurrentLife(game) >= card.getLife(game);
-            return base.beforeRemove(game, card);
-        }
         public override Task afterRemove(IGame game, Card card)
         {
             int life = card.getLife(game);
-            if (resetCurrentLife)
-            {
-                game?.logger?.logTrace($"由于{card}没有受伤，在移除{this}之后重置生命值为{life}");
-                return card.setCurrentLife(game, life);
-            }
-            else if (card.getCurrentLife(game) > life)
+            int lifeBefore = isSet ? value : life + value;
+            if (card.getCurrentLife(game) > life || card.getCurrentLife(game) >= lifeBefore)
             {
                 return card.setCurrentLife(game, life);
             }
-            else
-            {
-                game?.logger?.logTrace($"由于{card}受伤了，在移除{this}之后生命值仍为{card.getCurrentLife(game)}");
-                return Task.CompletedTask;
-            }
+            return Task.CompletedTask;
         }
         public override PropModifier clone()
         {
             return new LifeModifier(this);
         }
-        #endregion
-        #region 属性字段
-        bool resetCurrentLife { get; set; } = false;
         #endregion
     }
 }
