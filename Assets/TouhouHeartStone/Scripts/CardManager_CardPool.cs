@@ -507,10 +507,12 @@ namespace Game
         }
         public static string[] getCardPoolImages(CardPoolInfo info, CardPool cardPool)
         {
-            HashSet<string> imageFiles = new HashSet<string>
+            HashSet<string> imageFiles = new HashSet<string>();
+            var resPath = info.imageResPath;
+            if (!string.IsNullOrEmpty(resPath) && !resPath.isStreamingAssetsPath(out _) && !resPath.isResourcesPath(out _))
             {
-                info.imageResPath
-            };
+                imageFiles.Add(info.imageResPath);
+            }
             foreach (var item in cardPool.cardSkinList)
             {
                 // 不导出内置资源
