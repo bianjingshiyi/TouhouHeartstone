@@ -548,7 +548,7 @@ namespace Game
                 }
 
                 Sprite sprite = getSpriteFromCache(path);
-                if (sprite != null)
+                if (sprite == null)
                 {
                     // 创建贴图。
                     Texture2D orig = NativeGallery.LoadImageAtPath(path, markTextureNonReadable: false);
