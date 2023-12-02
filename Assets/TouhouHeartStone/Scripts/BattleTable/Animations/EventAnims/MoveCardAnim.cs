@@ -59,6 +59,11 @@ namespace Game.BattleTable
             var info = getCardMoveInfo(table, card.id, from);
             _movingCardId = card.id;
             yield return moveToAnim(table, data, info);
+
+            if (to?.name == PILE.DECK || to?.name == PILE.GRAVE)
+            {
+                table.addCardToDeckOrGrave(to, card.id);
+            }
         }
         public override IEnumerator canceledUpdate(BattleTableManager table)
         {

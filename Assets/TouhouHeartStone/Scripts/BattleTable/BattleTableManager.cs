@@ -51,6 +51,7 @@ namespace Game.BattleTable
                 setMaster(table.EnemyMaster, newSnapshot(oppo.getMaster()));
                 setSkill(table.EnemySkill, newSnapshot(oppo.getSkill()));
             }
+            initDecksAndGraves();
         }
         public void showTurnTipImage(bool friendly)
         {
@@ -62,11 +63,15 @@ namespace Game.BattleTable
         {
             ui.TurnTipImage.setActive(false);
         }
-        public void showTipBox(string tip, Vector3 position, GameObject source)
+        public void showTipBox(string tip, GameObject source)
         {
-            var worldPos = table.TableToWorldPosition(position + _tipBoxOffset);
-            ui.TipBox.display(tip, worldPos);
+            ui.TipBox.display(tip);
             _tipboxSource = source;
+        }
+        public void setTipboxPosition(Vector3 tablePos)
+        {
+            var worldPos = table.TableToWorldPosition(tablePos + _tipBoxOffset);
+            ui.TipBox.setPosition(worldPos);
         }
         public void hideTipBoxFromObject(GameObject source)
         {
@@ -315,7 +320,7 @@ namespace Game.BattleTable
             Vector3 pointerWorldPosition = table.Camera.ScreenToWorldPoint(Input.mousePosition);
             Vector3 pointerPosition = WorldToTablePosition(pointerWorldPosition);
             Vector3 tipboxPos = pointerPosition + _tipBoxOffset;
-            ui.TipBox.updatePos(TableToWorldPosition(tipboxPos));
+            ui.TipBox.setPosition(TableToWorldPosition(tipboxPos));
             if (!_tipboxSource)
             {
                 ui.TipBox.hide();
@@ -417,6 +422,8 @@ namespace Game.BattleTable
         private void onClosePilePanelClickCallback()
         {
             ui.PilePanel.setActive(false);
+            _viewingDeckName = null;
+            _viewingDeckPlayer = null;
         }
         #endregion
         void onRequestHandler(IRequest request)
@@ -529,6 +536,8 @@ namespace Game.BattleTable
 
             // UI
             ui.PilePanel.setActive(false);
+            _viewingDeckName = null;
+            _viewingDeckPlayer = null;
             ui.CardDisplayer.setVisible(false);
             ui.ErrorTipText.gameObject.SetActive(false);
             ui.TipBox.hide();

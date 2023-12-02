@@ -1,20 +1,17 @@
 ﻿using BJSYGameCore.UI;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 namespace UI
 {
     public class TipBox : UIObject
     {
-        public void display(string msg, Vector3 position)
+        public void display(string msg)
         {
             Text.text = msg;
-            rectTransform.position = position;
             display();
-            LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
         }
 
-        public void updatePos(Vector3 pos)
+        public void setPosition(Vector3 pos)
         {
             rectTransform.position = pos;
         }

@@ -63,7 +63,6 @@ namespace Game.BattleTable
             var anim = new CardTransAnim(_cardUI, targetTransform, targetLocalScale, table.toDeckCurveEnd);
             while (!anim.update(table, deltaTime))//没放完动画就让它接着放
                 yield return null;
-            table.addCardToDeckOrGrave(_to, _cardDesc.id);
             //摧毁卡牌
             table.removeMovingCard(_cardDesc.id);
         }

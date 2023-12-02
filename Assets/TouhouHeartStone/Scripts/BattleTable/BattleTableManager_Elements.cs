@@ -9,6 +9,7 @@ using TouhouHeartstone;
 using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 using Card = TouhouCardEngine.Card;
 using UICard = Game.BattleTable.TableCard;
 
@@ -698,27 +699,39 @@ namespace Game.BattleTable
         #region 牌库
         public void addCardToDeckOrGrave(Pile pile, int cardId)
         {
-            List<int> deckList;
             if (pile?.name == PILE.GRAVE)
             {
-                deckList = pile?.owner == player ? _selfGraveList : _selfGraveList;
+                addCardToGrave(pile?.owner, cardId);
             }
             else
             {
-                deckList = pile?.owner == player ? _selfDeckList : _enemyDeckList;
+                addCardToDeck(pile?.owner, cardId);
             }
-            deckList.Add(cardId);
         }
         public void addCardToDeck(ICardData card) => addCardToDeck(card.owner, card.id);
         public void addCardToDeck(Player owner, int cardId)
         {
             var deckList = owner == player ? _selfDeckList : _enemyDeckList;
             deckList.Add(cardId);
+            updateDeckPanel(owner, PILE.DECK);
+            updateDeckTipbox();
         }
         public bool removeCardFromDeck(ICardData card) => removeCardFromDeck(card.id);
         public bool removeCardFromDeck(int cardId)
         {
-            return _selfDeckList.Remove(cardId) || _enemyDeckList.Remove(cardId);
+            if (_selfDeckList.Remove(cardId))
+            {
+                updateDeckPanel(player, PILE.DECK);
+                updateDeckTipbox();
+                return true;
+            }
+            if (_enemyDeckList.Remove(cardId))
+            {
+                updateDeckPanel(game.getOpponent(player), PILE.DECK);
+                updateDeckTipbox();
+                return true;
+            }
+            return false;
         }
         /// <summary>
         /// 获取牌库引用
@@ -782,11 +795,25 @@ namespace Game.BattleTable
         {
             var deckList = owner == player ? _selfGraveList : _enemyGraveList;
             deckList.Add(cardId);
+            updateDeckPanel(owner, PILE.GRAVE);
+            updateDeckTipbox();
         }
         public bool removeCardFromGrave(ICardData card) => removeCardFromGrave(card.id);
         public bool removeCardFromGrave(int cardId)
         {
-            return _selfGraveList.Remove(cardId) || _enemyGraveList.Remove(cardId);
+            if (_selfGraveList.Remove(cardId))
+            {
+                updateDeckPanel(player, PILE.GRAVE);
+                updateDeckTipbox();
+                return true;
+            }
+            if (_enemyGraveList.Remove(cardId))
+            {
+                updateDeckPanel(game.getOpponent(player), PILE.GRAVE);
+                updateDeckTipbox();
+                return true;
+            }
+            return false;
         }
         /// <summary>
         /// 获取墓地引用
@@ -1528,12 +1555,13 @@ namespace Game.BattleTable
         {
             if (list == table.SelfHandList)
                 hand.setHovered(true);
-            Player targetPlayer = list == table.SelfHandList ? player : game.getOpponent(player);
-            if (!table.SelfHandList.isZoomIn && targetPlayer.getHand().count > 0)
+            if (!table.SelfHandList.isZoomIn && list.count > 0)
             {
+                int count = list.count;
+                showTipBox(lang._(TAB_CARD_NUMBER, count), hand.gameObject);
                 var tablePos = ScreenToTablePosition(pointer.position);
                 tablePos.y = 0;
-                showTipBox(lang._(TAB_CARD_NUMBER, getCard(hand).getOwner().getHand().count), tablePos, hand.gameObject);
+                setTipboxPosition(tablePos);
             }
         }
         private void onHandItemPointerExitCallback(HandItem hand, HandList list, PointerEventData pointer)
@@ -1723,9 +1751,10 @@ namespace Game.BattleTable
         private void onSkillPointerEnterCallback(Skill skill, PointerEventData pointer)
         {
             string desc = getCardSkin(skill == table.SelfSkill ? player.getSkill() : game.getOpponent(player).getSkill()).desc;
+            showTipBox(desc, skill.gameObject);
             var tablePos = ScreenToTablePosition(pointer.position);
             tablePos.y = 0;
-            showTipBox(desc, tablePos, skill.gameObject);
+            setTipboxPosition(tablePos);
         }
         #endregion
 
@@ -1828,31 +1857,15 @@ namespace Game.BattleTable
             var owner = deck == table.SelfDeck ? player : game.getOpponent(player);
             if (owner != player && !canSeeCardOfOwner(owner))
                 return;
-            ui.PilePanel.setActive(true);
-            ui.PilePanel.setTitleText(lang._(owner == player ? TAB_YOUR_BOX : TAB_OPPO_DECK));
-            ui.PilePanel.clearCards();
-            foreach (var card in owner.getDeck().OrderBy(c => c.define.getCost()))
-            {
-                var item = ui.PilePanel.addCard();
-                setCard(item.card, newSnapshot(card), true);
-            }
+            var isSelf = owner == player;
+            var title = lang._(isSelf ? TAB_YOUR_BOX : TAB_OPPO_DECK);
+            var deckList = isSelf ? _selfDeckList : _enemyDeckList;
+            bool orderByCost = !canSeeAllCards; // 可以看到所有卡牌
+            viewDeckPanel(title, owner, PILE.DECK, deckList, orderByCost);
         }
         private void onDeckPointerEnterCallback(Deck deck, PointerEventData pointer)
         {
-            bool self = deck == table.SelfDeck;
-            var curDeck = (self ? player : game.getOpponent(player)).getDeck();
-            string tip;
-            if (curDeck.count > 0)
-            {
-                tip = lang._(TAB_BOX_HAS, curDeck.count);
-            }
-            else
-            {
-                tip = lang._(self ? TAB_YOUR_NO_HAVE_CARD : TAB_OPPONENT_OUT_OF_CARDS);
-            }
-            var tablePos = ScreenToTablePosition(pointer.position);
-            tablePos.y = 0;
-            showTipBox(tip, tablePos, deck.gameObject);
+            showDeckTipbox(deck, pointer);
         }
         private void onDeckPointerExitCallback(Deck deck, PointerEventData pointer)
         {
@@ -1870,24 +1883,14 @@ namespace Game.BattleTable
             var owner = grave == table.SelfGrave ? player : game.getOpponent(player);
             if (owner != player && !canSeeCardOfOwner(owner))
                 return;
-            ui.PilePanel.setActive(true);
-            ui.PilePanel.setTitleText(lang._(owner == player ? TAB_YOUR_GRAVEYARD : TAB_OPPO_GRAVEYARD));
-            ui.PilePanel.clearCards();
-            foreach (var card in owner.getGrave())
-            {
-                var item = ui.PilePanel.addCard();
-                setCard(item.card, newSnapshot(card), true);
-            }
+            var isSelf = owner == player;
+            var title = lang._(isSelf ? TAB_YOUR_GRAVEYARD : TAB_OPPO_GRAVEYARD);
+            var deckList = isSelf ? _selfGraveList : _enemyGraveList;
+            viewDeckPanel(title, owner, PILE.GRAVE, deckList);
         }
         private void onGravePointerEnterCallback(Deck deck, PointerEventData pointer)
         {
-            var curGrave = (deck == table.SelfGrave ? player : game.getOpponent(player)).getGrave();
-            string tip = curGrave.count > 0 ?
-                lang._(TAB_GRAVEYARD_HAS, curGrave.count) :
-                lang._(TAB_GRAVEYARD_NULL);
-            var tablePos = ScreenToTablePosition(pointer.position);
-            tablePos.y = 0;
-            showTipBox(tip, tablePos, deck.gameObject);
+            showDeckTipbox(deck, pointer);
         }
         private void onGravePointerExitCallback(Deck deck, PointerEventData pointer)
         {
@@ -2244,6 +2247,106 @@ namespace Game.BattleTable
             return hoveringCard;
         }
 
+        private void initDecksAndGraves()
+        {
+            _selfDeckList.Clear();
+            _enemyDeckList.Clear();
+            _selfGraveList.Clear();
+            _enemyGraveList.Clear();
+            foreach (var player in game.players)
+            {
+                var deck = player.getDeck();
+                foreach (var card in deck)
+                {
+                    addCardToDeck(player, card.id);
+                }
+                var grave = player.getGrave();
+                foreach (var card in grave)
+                {
+                    addCardToGrave(player, card.id);
+                }
+            }
+        }
+        private void showDeckTipbox(Deck deck, PointerEventData pointer)
+        {
+            showDeckTipbox(deck);
+            var tablePos = ScreenToTablePosition(pointer.position);
+            tablePos.y = 0;
+            setTipboxPosition(tablePos);
+        }
+        private void showDeckTipbox(Deck deck)
+        {
+            bool self = deck == table.SelfDeck || deck == table.SelfGrave;
+            bool isGrave = deck == table.SelfGrave || deck == table.EnemyGrave;
+            string tip;
+            if (isGrave)
+            {
+                var curDeck = self ? _selfGraveList : _enemyGraveList;
+                tip = curDeck.Count > 0
+                ? lang._(TAB_GRAVEYARD_HAS, curDeck.Count)
+                : lang._(TAB_GRAVEYARD_NULL);
+            }
+            else
+            {
+                var curDeck = self ? _selfDeckList : _enemyDeckList;
+                tip = curDeck.Count > 0
+                ? lang._(TAB_BOX_HAS, curDeck.Count)
+                : lang._(self ? TAB_YOUR_NO_HAVE_CARD : TAB_OPPONENT_OUT_OF_CARDS);
+            }
+            showTipBox(tip, deck.gameObject);
+        }
+        private void updateDeckTipbox()
+        {
+            if (_tipboxSource == table.SelfDeck.gameObject)
+                showDeckTipbox(table.SelfDeck);
+            else if (_tipboxSource == table.EnemyDeck.gameObject)
+                showDeckTipbox(table.EnemyDeck);
+            else if (_tipboxSource == table.SelfGrave.gameObject)
+                showDeckTipbox(table.SelfGrave);
+            else if (_tipboxSource == table.EnemyGrave.gameObject)
+                showDeckTipbox(table.EnemyGrave);
+        }
+        private void viewDeckPanel(string title, Player player, string pileName, IEnumerable<int> idList, bool orderByCost = false)
+        {
+            ui.PilePanel.setActive(true);
+            ui.PilePanel.setTitleText(title);
+            _viewingDeckPlayer = player;
+            _viewingDeckName = pileName;
+            viewDeckPanelCards(idList, orderByCost);
+        }
+        private void viewDeckPanelCards(IEnumerable<int> idList, bool orderByCost = false)
+        {
+            ui.PilePanel.clearCards();
+            var cardList = idList.Select(id => game.getCard(id));
+            if (orderByCost)
+            {
+                cardList = cardList.OrderBy(c => c.define.getCost());
+            }
+            foreach (var card in cardList)
+            {
+                var item = ui.PilePanel.addCard();
+                var desc = getCardDescriptor(card);
+                if (desc == null)
+                {
+                    var cardSnapshot = game.snapshotCard(card);
+                    card.revertToHistory(cardSnapshot, 0);
+                    desc = updateCardDescriptor(cardSnapshot);
+                }
+                setCardDesc(item.card, desc, true);
+            }
+        }
+        private void updateDeckPanel(Player player, string pileName)
+        {
+            if (_viewingDeckPlayer == player && _viewingDeckName == pileName)
+            {
+                IEnumerable<int> idList;
+                bool orderByCost = pileName != PILE.GRAVE && !canSeeAllCards; // 是牌库，或者可以看到所有卡牌
+                idList = player == this.player
+                    ? (pileName == PILE.GRAVE ? _selfGraveList : _selfDeckList)
+                    : (pileName != PILE.GRAVE ? _enemyDeckList : _enemyGraveList);
+                viewDeckPanelCards(idList, orderByCost);
+            }
+        }
         #region 更新可控制高光
         private void updateAllControlable()
         {
@@ -2390,6 +2493,8 @@ namespace Game.BattleTable
         private Dictionary<int, UICard> _movingCardDic = new Dictionary<int, UICard>();
         private CardDescriptor _selfItemDesc;
         private CardDescriptor _enemyItemDesc;
+        private Player _viewingDeckPlayer;
+        private string _viewingDeckName;
         [SerializeField]
         int _servantUsingPosition = -1;
         [SerializeField]
