@@ -202,10 +202,12 @@ namespace Game
                 int flowState = getScopeLoopState(scope);
                 flow.ExitScope();
 
+                flow.EnterScope();
                 if (condition.outputPort != null && await condition.getValue(flow))
                 {
                     finished = true;
                 }
+                flow.ExitScope();
 
                 if (flowState == SCOPE_LOOP_STATE_BROKEN)
                     break;
