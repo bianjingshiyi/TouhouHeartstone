@@ -841,6 +841,8 @@ namespace Game
 
             void addCardPoolOfDefRef(DefineReference defRef)
             {
+                if (defRef == null)
+                    return;
                 if (defRef.cardPoolId != cardPoolId)
                 {
                     var poolRef = getLocalCardPoolReference(defRef.cardPoolId);
