@@ -13,20 +13,22 @@ namespace Game.BattleTable
         }
         public CardSnapshot getEventCardSnapshot(EventAnimStartData animData, string varName)
         {
-            var state = animData.getVar<CardState>(varName);
-            if (state.card == null || state.stateIndex < 0)
+            var card = animData.getVar<Card>(varName);
+            if (card == null)
                 return null;
-            var snapshot = newSnapshot(state.card);
-            state.card.revertToHistory(snapshot, state.stateIndex);
+            var snapshot = newSnapshot(card);
+            var eventIndex = game.triggers.getEventIndexBefore(animData.eventArg);
+            game.triggers.revertChanges(snapshot, eventIndex);
             return snapshot;
         }
-        public CardSnapshot getEventCardSnapshot(EventRecord animData, string varName)
+        public CardSnapshot getEventCardSnapshot(EventRecord record, string varName)
         {
-            var state = animData.getVar<CardState>(varName);
-            if (state.card == null || state.stateIndex < 0)
+            var state = record.getVar<CardState>(varName);
+            if (state.card == null)
                 return null;
             var snapshot = newSnapshot(state.card);
-            state.card.revertToHistory(snapshot, state.stateIndex);
+            var eventIndex = game.triggers.getEventIndexBefore(record.eventArg) + 1;
+            game.triggers.revertChanges(snapshot, eventIndex);
             return snapshot;
         }
         public CardDescriptor getCardDescriptor(Card card)

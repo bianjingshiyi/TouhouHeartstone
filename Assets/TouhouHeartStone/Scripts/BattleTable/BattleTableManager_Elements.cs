@@ -2330,7 +2330,7 @@ namespace Game.BattleTable
                 if (desc == null)
                 {
                     var cardSnapshot = game.snapshotCard(card);
-                    card.revertToHistory(cardSnapshot, 0);
+                    game.triggers.revertChanges(cardSnapshot, 0);
                     desc = updateCardDescriptor(cardSnapshot);
                 }
                 setCardDesc(item.card, desc, true);

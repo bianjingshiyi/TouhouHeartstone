@@ -71,7 +71,7 @@ namespace Game
             if (value is CardState state)
             {
                 var snapshot = game.snapshotCard(state.card);
-                state.card.revertToHistory(snapshot, state.stateIndex);
+                game.triggers.revertChanges(snapshot, state.stateIndex);
                 return snapshot;
             }
             return value;

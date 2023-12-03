@@ -16,7 +16,7 @@ namespace Game.BattleTable
         public override void init(BattleTableManager table)
         {
             base.init(table);
-            _movingCardId = startData.getVar<CardState>(EVENTVAR.CARD).card.id;
+            _movingCardId = startData.getVar<Card>(EVENTVAR.CARD).id;
         }
         public override IEnumerator startUpdate(BattleTableManager table)
         {

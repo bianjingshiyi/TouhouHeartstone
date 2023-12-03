@@ -1,7 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using TouhouCardEngine;
-using TouhouCardEngine.Histories;
 using TouhouCardEngine.Interfaces;
 
 namespace Game.BattleTable
@@ -10,35 +7,10 @@ namespace Game.BattleTable
     {
         public EventAnimStartData(IEventArg arg)
         {
+            eventArg = arg;
             foreach (var name in arg.getVarNames())
             {
                 var value = arg.getVar(name);
-                if (value is Card card)
-                {
-                    if (card == null)
-                    {
-                        value = new CardState(null, 0);
-                    }
-                    else
-                    {
-                        value = new CardState(card, card.getCurrentHistory());
-                    }
-                }
-                else if (value is IEnumerable<Card> cards && value is not Pile)
-                {
-                    var stateArray = new CardState[cards.Count()];
-                    for (int i = 0; i < stateArray.Length; i++)
-                    {
-                        var element = cards.ElementAt(i);
-                        if (element == null)
-                        {
-                            stateArray[i] = new CardState(null, 0);
-                            continue;
-                        }
-                        stateArray[i] = new CardState(element, element.getCurrentHistory());
-                    }
-                    value = stateArray;
-                }
                 _varDict.Add(name, value);
             }
         }
@@ -57,6 +29,7 @@ namespace Game.BattleTable
         {
             _varDict[name] = value;
         }
+        public IEventArg eventArg;
         private Dictionary<string, object> _varDict = new Dictionary<string, object>();
     }
 }
