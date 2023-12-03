@@ -33,9 +33,9 @@ namespace Game
         public EventReference[] getBuiltinActionBindedEventsRecursive(int defineId)
         {
             var eventRefs = getBuiltinActionBindedEvents(defineId);
-            if (eventRefs == null)
-                return null;
             List<EventReference> names = new List<EventReference>();
+            if (eventRefs == null)
+                return names.ToArray();
             foreach (var eventRef in eventRefs)
             {
                 if (names.Contains(eventRef))
