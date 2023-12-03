@@ -21,13 +21,13 @@ namespace Game.BattleTable
             game.triggers.revertChanges(snapshot, eventIndex);
             return snapshot;
         }
-        public CardSnapshot getEventCardSnapshot(EventRecord record, string varName)
+        public CardSnapshot getEventCardSnapshot(EventArg eventArg, string varName)
         {
-            var state = record.getVar<CardState>(varName);
-            if (state.card == null)
+            var card = eventArg.getVar<Card>(varName);
+            if (card == null)
                 return null;
-            var snapshot = newSnapshot(state.card);
-            var eventIndex = game.triggers.getEventIndexBefore(record.eventArg) + 1;
+            var snapshot = newSnapshot(card);
+            var eventIndex = game.triggers.getEventIndexBefore(eventArg) + 1;
             game.triggers.revertChanges(snapshot, eventIndex);
             return snapshot;
         }

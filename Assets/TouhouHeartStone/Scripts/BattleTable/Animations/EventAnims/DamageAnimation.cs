@@ -4,6 +4,7 @@ using System.Linq;
 using TouhouCardEngine.Histories;
 using TouhouHeartstone;
 using UnityEngine;
+using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
@@ -15,8 +16,8 @@ namespace Game.BattleTable
             yield return pauseWhileNotCompleted();
             yield return stopWhenCanceled();
 
-            var targetId = record.getVar<CardState>(EVENTVAR.CARD).card.id;
-            var damagedValue = record.getVar<int>(Arg.VAR_DAMAGED_VALUE);
+            var targetId = tEventArg.getVar<Card>(EVENTVAR.CARD);
+            var damagedValue = tEventArg.getVar<int>(Arg.VAR_DAMAGED_VALUE);
 
             if (table.tryGetServant(targetId, out var servant))
             {

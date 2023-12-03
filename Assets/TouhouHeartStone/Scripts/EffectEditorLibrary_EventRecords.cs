@@ -19,17 +19,8 @@ namespace Game
         public const string EDITOR_TYPE_NAME_EVENT_RECORD = "事件记录";
         [TranslateMsg("编辑器/事件记录_参数名称")]
         public const string EDITOR_TYPE_NAME_EVENT_TYPE = "事件类型";
-        [TranslateMsg("编辑器/事件记录_前X回合开始_参数名称")]
-        public const string EDITOR_PARAM_NAME_TURN_COUNT_START_BEFORE = "前X回合开始";
-        [TranslateMsg("编辑器/事件记录_前Y回合结束_参数名称")]
-        public const string EDITOR_PARAM_NAME_TURN_COUNT_END_BEFORE = "前Y回合结束";
 
         #region 事件记录
-
-        [TranslateMsg("编辑器/事件记录_获取当前回合数_节点名称")]
-        public const string EDITOR_NODE_EVENT_GET_TURN_COUNT_OBSOLETE = "获取当前回合数（过时）";
-        [TranslateMsg("编辑器/事件记录_获取当前回合数_节点名称")]
-        public const string EDITOR_NODE_EVENT_GET_TURN_COUNT = "获取当前回合数";
         [TranslateMsg("编辑器/事件记录_获取变量_节点名称")]
         public const string EDITOR_NODE_EVENT_RECORD_GET_VARIABLE = "获取事件记录变量";
         [TranslateMsg("编辑器/事件记录-节点名称")]
@@ -44,21 +35,11 @@ namespace Game
         public const string EDITOR_NODE_EVENT_GET_EVENT_RECORDS_IN_TURNS_BEFORE = "获取前X-Y回合内的事件记录";
         [TranslateMsg("编辑器/事件记录_获取卡牌在某事件时的快照_节点名称")]
         public const string EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_ON_EVENT = "获取卡牌在某事件时的快照";
+        [TranslateMsg("编辑器/事件记录_参数名称")]
+        public const string EDITOR_PARAM_NAME_EVENT_RECORDS = "事件记录集合";
+
 
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetTurnCount_Obsolete, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_TURN_COUNT_OBSOLETE)]
-        [return: ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT)]
-        public static int getTurnCountObsolete(CardEngine game)
-        {
-            return game.getTurnCount() - 1;
-        }
-        [THHActionMethod(BuiltinActionDefineID.GetTurnCount, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_TURN_COUNT)]
-        [return: ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT)]
-        public static int getTurnCount(CardEngine game)
-        {
-            return game.getTurnCount();
-        }
-
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetEventRecordVariable, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_RECORD_GET_VARIABLE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getRecordVariable(CardEngine game,
@@ -76,6 +57,7 @@ namespace Game
             }
             return value;
         }
+        [Obsolete]
         [THHActionMethod(BuiltinActionDefineID.CastEventRecordType, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_NAME_CAST_EVENT_RECORD_TYPE)]
         [return: ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)]
         public static EventRecord castEventRecordType(
@@ -87,6 +69,7 @@ namespace Game
             EventReference refer = CardManager.getEventReferenceOfEventArg(eventRecord.eventArg);
             return refer == eventReference.value ? eventRecord : null;
         }
+        [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.CheckEventRecordType, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_CHECK_EVENT_RECORD_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool checkEventRecordType(CardEngine game,
@@ -99,6 +82,7 @@ namespace Game
                 return true;
             return false;
         }
+        [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetEventRecordsThisGame, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_EVENT_RECORDS_THIS_GAME)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT_RECORDS)]
         public static EventRecord[] getEventRecordsThisGame(CardEngine game)
@@ -106,6 +90,7 @@ namespace Game
             return game.triggers.getEventRecords().ToArray();
         }
 
+        [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetEventRecordsThisTurn, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_EVENT_RECORDS_THIS_TURN)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT_RECORDS)]
         public static EventRecord[] getEventRecordsThisTurn(CardEngine game)
@@ -114,6 +99,7 @@ namespace Game
         }
 
 
+        [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetEventRecordsInTurnsBefore, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_EVENT_RECORDS_IN_TURNS_BEFORE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT_RECORDS)]
         public static EventRecord[] getEventRecordsInTurnsBefore(CardEngine game,
@@ -138,7 +124,7 @@ namespace Game
             return results.ToArray();
         }
 
-
+        [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardSnapshotOfEvent, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_ON_EVENT)]
         [return: ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)]
         public static CardSnapshot getSnapshotOfCardAfterEvent(CardEngine game,
@@ -147,7 +133,7 @@ namespace Game
         {
             if (card == null || record == null)
                 return null;
-            return game.getCardSnapshotOfEvent(card, record);
+            return game.getCardSnapshotAfterEvent(card, record.eventArg);
         }
         #endregion
     }

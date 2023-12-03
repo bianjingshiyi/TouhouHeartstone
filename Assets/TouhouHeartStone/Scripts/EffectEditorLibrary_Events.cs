@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MukioI18n;
 using TouhouCardEngine;
@@ -31,7 +33,7 @@ namespace Game
         [TranslateMsg("编辑器/事件_事件类型_参数名称")]
         public const string EDITOR_PARAM_NAME_EVENT_TYPE = "事件类型";
         [TranslateMsg("编辑器/事件_事件集合_参数名称")]
-        public const string EDITOR_PARAM_NAME_EVENT_RECORDS = "事件集合";
+        public const string EDITOR_PARAM_NAME_EVENTS = "事件集合";
         [TranslateMsg("编辑器/事件_回合数_参数名称")]
         public const string EDITOR_PARAM_NAME_TURN_COUNT = "回合数";
         [TranslateMsg("编辑器/参数名称")]
@@ -57,6 +59,28 @@ namespace Game
         public const string EDITOR_NODE_EVENT_DAMAGE_CHANGE_VALUE = "伤害/更改伤害值";
         [TranslateMsg("编辑器/事件-节点名称")]
         public const string EDITOR_NODE_EVENT_HEAL_CHANGE_VALUE = "治疗/更改治疗值";
+        [TranslateMsg("编辑器/事件_参数名称")]
+        public const string EDITOR_NODE_EVENT_TYPE = "事件类型";
+        [TranslateMsg("编辑器/事件_前X回合开始_参数名称")]
+        public const string EDITOR_PARAM_NAME_TURN_COUNT_START_BEFORE = "前X回合开始";
+        [TranslateMsg("编辑器/事件_前Y回合结束_参数名称")]
+        public const string EDITOR_PARAM_NAME_TURN_COUNT_END_BEFORE = "前Y回合结束";
+        [TranslateMsg("编辑器/事件_获取当前回合数_节点名称")]
+        public const string EDITOR_NODE_EVENT_GET_TURN_COUNT_OBSOLETE = "获取当前回合数（过时）";
+        [TranslateMsg("编辑器/事件_获取当前回合数_节点名称")]
+        public const string EDITOR_NODE_EVENT_GET_TURN_COUNT = "获取当前回合数";
+        [TranslateMsg("编辑器/事件_事件类型判断_节点名称")]
+        public const string EDITOR_NODE_EVENT_CHECK_EVENT_TYPE = "事件类型判断";
+        [TranslateMsg("编辑器/事件_获取本局游戏事件_节点名称")]
+        public const string EDITOR_NODE_EVENT_GET_EVENTS_THIS_GAME = "获取本局游戏事件";
+        [TranslateMsg("编辑器/事件_获取本回合事件_节点名称")]
+        public const string EDITOR_NODE_EVENT_GET_EVENTS_THIS_TURN = "获取本回合事件";
+        [TranslateMsg("编辑器/事件_获取前X-Y回合内的事件_节点名称")]
+        public const string EDITOR_NODE_EVENT_GET_EVENTS_IN_TURNS_BEFORE = "获取前X-Y回合内的事件";
+        [TranslateMsg("编辑器/事件_获取卡牌在某事件前的快照_节点名称")]
+        public const string EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_BEFORE_EVENT = "获取卡牌在某事件前的快照";
+        [TranslateMsg("编辑器/事件_获取卡牌在某事件后的快照_节点名称")]
+        public const string EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_AFTER_EVENT = "获取卡牌在某事件后的快照";
 
 
         #region 事件
@@ -83,7 +107,7 @@ namespace Game
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT)]
         public static EventArg castEventType(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
-            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_TYPE, isConst: true)] EventReferenceProxy eventReference)
+            [ActionNodeParam(EDITOR_NODE_EVENT_TYPE, isConst: true)] EventReferenceProxy eventReference)
         {
             if (eventArg == null || eventReference == null)
                 return null;
@@ -180,6 +204,108 @@ namespace Game
                 healArg.changeEventVar(game, EVENTVAR.VALUE, value);
             }
         }
+
+        [THHActionMethod(BuiltinActionDefineID.CheckEventType, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_CHECK_EVENT_TYPE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
+        public static bool checkEventType(
+            [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg,
+            [ActionNodeParam(EDITOR_NODE_EVENT_TYPE, isConst: true)] EventReferenceProxy argRef)
+        {
+            if (eventArg == null || argRef == null)
+                return false;
+            if (CardManager.getEventReferenceOfEventArg(eventArg) == argRef.value)
+                return true;
+            return false;
+        }
+        [THHActionMethod(BuiltinActionDefineID.GetEventsThisGame, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_GET_EVENTS_THIS_GAME)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENTS)]
+        public static EventArg[] getEventsThisGame(CardEngine game)
+        {
+            return game.triggers.getRecordedEvents().OfType<EventArg>().ToArray();
+        }
+
+        [THHActionMethod(BuiltinActionDefineID.GetEventsThisTurn, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_GET_EVENTS_THIS_TURN)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENTS)]
+        public static EventArg[] getEventsThisTurn(CardEngine game)
+        {
+            return getEventsInTurnsBefore(game, 0, 0);
+        }
+
+
+        [THHActionMethod(BuiltinActionDefineID.GetEventsInTurnsBefore, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_GET_EVENTS_IN_TURNS_BEFORE)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENTS)]
+        public static EventArg[] getEventsInTurnsBefore(CardEngine game,
+            [ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT_START_BEFORE)] int farther,
+            [ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT_END_BEFORE)] int nearer)
+        {
+            var events = game.triggers.getRecordedEvents();
+            var results = new List<EventArg>();
+            int turnBeforeCount = 0;
+            for (int i = events.Length - 1; i >= 0; i--)
+            {
+                var arg = events[i];
+                if (arg is not EventArg eventArg)
+                    continue;
+                if (turnBeforeCount >= nearer)
+                    results.Insert(0, eventArg);
+                if (turnBeforeCount > farther)
+                    break;
+                if (eventArg is HearthStoneRule.TurnStartEventArg)
+                {
+                    turnBeforeCount++;
+                }
+            }
+            return results.ToArray();
+        }
+
+        [THHActionMethod(BuiltinActionDefineID.GetCardSnapshotBeforeEvent, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_BEFORE_EVENT)]
+        [return: ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)]
+        public static CardSnapshot getSnapshotOfCardBeforeEvent(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg)
+        {
+            if (card == null || eventArg == null)
+                return null;
+            return game.getCardSnapshotBeforeEvent(card, eventArg);
+        }
+
+        [THHActionMethod(BuiltinActionDefineID.GetCardSnapshotAfterEvent, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_AFTER_EVENT)]
+        [return: ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)]
+        public static CardSnapshot getSnapshotOfCardAfterEvent(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg)
+        {
+            if (card == null || eventArg == null)
+                return null;
+            return game.getCardSnapshotAfterEvent(card, eventArg);
+        }
         #endregion
+
+        #region 回合数
+
+        [Obsolete]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetTurnCount_Obsolete, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_GET_TURN_COUNT_OBSOLETE)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT)]
+        public static int getTurnCountObsolete(CardEngine game)
+        {
+            return game.getTurnCount() - 1;
+        }
+        [THHActionMethod(BuiltinActionDefineID.GetTurnCount, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_GET_TURN_COUNT)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT)]
+        public static int getTurnCount(CardEngine game)
+        {
+            return game.getTurnCount();
+        }
+
+        #endregion
+    }
+    public class EventRecordNodeConversion
+    {
+        public int source;
+        public int target;
+        public string sourceInput;
+        public string targetInput;
+        public string sourceOutput;
+        public string targetOutput;
     }
 }

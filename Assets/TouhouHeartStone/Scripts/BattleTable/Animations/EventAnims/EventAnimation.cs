@@ -57,10 +57,13 @@ namespace Game.BattleTable
         }
         public override bool continueNextGroup(AnimationGroup nextGroup)
         {
-            if (!eventArg.isCompleted)
-                return true;
-            if (animState == EventAnimState.StartFinished && shouldPause() && isAnimGroupInsertedAnimOfThis(nextGroup))
-                return true;
+            if (animState == EventAnimState.StartFinished)
+            {
+                if (!eventArg.isCompleted)
+                    return true;
+                if (shouldPause() && isAnimGroupInsertedAnimOfThis(nextGroup))
+                    return true;
+            }
             return base.continueNextGroup(nextGroup);
         }
         public void setVar(string name, object value)
@@ -113,7 +116,6 @@ namespace Game.BattleTable
         public IEventArg eventArg { get; set; }
         public List<TableAnimation> insertedAnims { get; } = new List<TableAnimation>();
         public EventAnimStartData startData { get; set; }
-        public EventRecord record { get; set; }
         public EventAnimState animState;
         private bool _varChanged;
         #endregion

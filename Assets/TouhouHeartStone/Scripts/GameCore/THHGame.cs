@@ -832,35 +832,6 @@ namespace TouhouHeartstone
             game.close();
             return game.triggers.doEvent(new GameEndEventArg() { winners = winners });
         }
-        public override async Task onPlayerCommand(CardEngine game, Player player, CardEngine.CommandEventArg command)
-        {
-            throw new NotImplementedException();
-
-            IResponse response =
-                await game.answers.ask(player.id, new FreeActRequest(), getOption(game).timeoutForTurn * 2);
-            switch (response)
-            {
-                //自由输入
-                case UseResponse use:
-                    Card card = game.getCard(use.cardId);
-                    Card[] targets = game.getCards(use.targetsId);
-                    if (!await player.tryUse(game, card, use.position, targets))
-                        game.logger.log("Warning", $"使用{card}失败");
-                    break;
-                case AttackResponse attack:
-                    card = game.getCard(attack.cardId);
-                    Card target = game.getCard(attack.targetId);
-                    Task<THHCard.AttackEventArg> task = card.tryAttack(game, player, target);
-                    await task;
-                    break;
-                case TurnEndResponse _:
-                    return;
-                case SurrenderResponse _:
-                    await game.surrender(player);
-                    return;
-            }
-        }
-
         #endregion
         private void initRuleTriggers(CardEngine game)
         {
@@ -980,7 +951,11 @@ namespace TouhouHeartstone
 
         public class GameEndEventArg : EventArg
         {
-            public Player[] winners;
+            public Player[] winners
+            {
+                get => getVar<Player[]>(VAR_WINNERS);
+                set => setVar(VAR_WINNERS, value);
+            }
             public override void Record(IGame game, EventRecord record)
             {
                 record.setVar(VAR_WINNERS, winners);
@@ -1254,12 +1229,12 @@ namespace TouhouHeartstone
         {
             public UseEventArg(Player player, Card card, int position, Card[] targets, int cost)
             {
-                setVar(EVENTVAR.PLAYER, player);
-                setVar(EVENTVAR.CARD, card);
-                setVar(EVENTVAR.POSITION, position);
-                setVar(EVENTVAR.TARGETS, targets);
-                setVar(EVENTVAR.COST, cost);
-                setVar(EVENTVAR.TARGET_CARD, targets != null && targets.Length > 0 ? targets[0] : null);
+                this.player = player;
+                this.card = card;
+                this.position = position;
+                this.targets = targets;
+                this.cost = cost;
+                targetCard = targets != null && targets.Length > 0 ? targets[0] : null;
             }
             public UseEventArg() : this(null, null, 0, null, 0)
             {
@@ -1295,11 +1270,36 @@ namespace TouhouHeartstone
                 record.setVar(EVENTVAR.COST, cost);
                 record.setCardState(EVENTVAR.TARGET_CARD, targets != null && targets.Length > 0 ? targets[0] : null);
             }
-            public Player player => getVar<Player>(EVENTVAR.PLAYER);
-            public Card card => getVar<Card>(EVENTVAR.CARD);
-            public int position => getVar<int>(EVENTVAR.POSITION);
-            public int cost => getVar<int>(EVENTVAR.COST);
-            public Card[] targets => getVar<Card[]>(EVENTVAR.TARGETS);
+            public Player player
+            {
+                get => getVar<Player>(EVENTVAR.PLAYER);
+                set => setVar(EVENTVAR.PLAYER, value);
+            }
+            public Card card 
+            {
+                get => getVar<Card>(EVENTVAR.CARD);
+                set => setVar(EVENTVAR.CARD, value);
+            }
+            public int position 
+            {
+                get => getVar<int>(EVENTVAR.POSITION);
+                set => setVar(EVENTVAR.POSITION, value);
+            }
+            public int cost 
+            {
+                get => getVar<int>(EVENTVAR.COST);
+                set => setVar(EVENTVAR.COST, value);
+            }
+            public Card[] targets 
+            {
+                get => getVar<Card[]>(EVENTVAR.TARGETS);
+                set => setVar(EVENTVAR.TARGETS, value);
+            }
+            public Card targetCard
+            {
+                get => getVar<Card>(EVENTVAR.TARGET_CARD);
+                set => setVar(EVENTVAR.TARGET_CARD, value);
+            }
 
             DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
@@ -1420,7 +1420,11 @@ namespace TouhouHeartstone
                 get { return getVar<Player>(EVENTVAR.PLAYER); }
                 set { setVar(EVENTVAR.PLAYER, value); }
             }
-            public Pile from;
+            public Pile from
+            {
+                get => getVar<Pile>(EVENTVAR.FROM_PILE);
+                set => setVar(EVENTVAR.FROM_PILE, value);
+            }
             public Card card
             {
                 get { return getVar<Card>(EVENTVAR.CARD); }
@@ -1431,9 +1435,6 @@ namespace TouhouHeartstone
                 get { return getVar<int>(EVENTVAR.POSITION); }
                 set { setVar(EVENTVAR.POSITION, value); }
             }
-            public THHPile.MoveCardEventArg moveEvent;
-            public int attack;
-            public int life;
         }
 
         [EventChildren(typeof(THHPile.MoveCardEventArg))]
@@ -1503,13 +1504,16 @@ namespace TouhouHeartstone
                 get { return getVar<Player>(EVENTVAR.PLAYER); }
                 set { setVar(EVENTVAR.PLAYER, value); }
             }
-            public Pile from;
+            public Pile from
+            {
+                get => getVar<Pile>(EVENTVAR.FROM_PILE);
+                set => setVar(EVENTVAR.FROM_PILE, value);
+            }
             public Card card
             {
                 get { return getVar<Card>(EVENTVAR.CARD); }
                 set { setVar(EVENTVAR.CARD, value); }
             }
-            public THHPile.MoveCardEventArg moveEvent;
         }
         public class RebornEventArg : EventArg, IDescribableEventArg
         {
@@ -1661,7 +1665,11 @@ namespace TouhouHeartstone
                 set { setVar(EVENTVAR.CARD, value); }
             }
             // 是否应该播放动画。
-            public bool shouldAnimate;
+            public bool shouldAnimate
+            {
+                get => getVar<bool>(VAR_ANIMATE);
+                set => setVar(VAR_ANIMATE, value);
+            }
             public const string VAR_ANIMATE = "播放动画";
         }
         public class UpdateDeathEventArg : EventArg

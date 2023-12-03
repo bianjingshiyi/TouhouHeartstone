@@ -42,12 +42,12 @@ namespace Game.BattleTable
         }
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = table.getEventCardSnapshot(record, EVENTVAR.CARD);
+            var card = table.getEventCardSnapshot(tEventArg, EVENTVAR.CARD);
             if (card == null)
                 yield break;
-            var from = record.getVar<Pile>(Arg.VAR_FROM_PILE);
-            var to = record.getVar<Pile>(Arg.VAR_TO_PILE);
-            var position = record.getVar<int>(Arg.VAR_POSITION);
+            var from = tEventArg.getVar<Pile>(Arg.VAR_FROM_PILE);
+            var to = tEventArg.getVar<Pile>(Arg.VAR_TO_PILE);
+            var position = tEventArg.getVar<int>(Arg.VAR_POSITION);
             EventData data = new EventData
             {
                 card = table.updateCardDescriptor(card),
@@ -68,11 +68,11 @@ namespace Game.BattleTable
         }
         public override IEnumerator canceledUpdate(BattleTableManager table)
         {
-            var card = table.getEventCardSnapshot(record, EVENTVAR.CARD);
+            var card = table.getEventCardSnapshot(tEventArg, EVENTVAR.CARD);
             if (card == null)
                 yield break;
-            var from = record.getVar<Pile>(Arg.VAR_FROM_PILE);
-            var to = record.getVar<Pile>(Arg.VAR_TO_PILE);
+            var from = tEventArg.getVar<Pile>(Arg.VAR_FROM_PILE);
+            var to = tEventArg.getVar<Pile>(Arg.VAR_TO_PILE);
             EventData data = new EventData
             {
                 card = table.updateCardDescriptor(card),

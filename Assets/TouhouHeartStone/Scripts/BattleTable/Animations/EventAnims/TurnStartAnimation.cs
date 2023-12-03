@@ -43,7 +43,7 @@ namespace Game.BattleTable
         }
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var player = record.getVar<Player>(EVENTVAR.PLAYER);
+            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
 
             var timer = new Timer() { duration = 2 };
             if (!timer.isStarted)

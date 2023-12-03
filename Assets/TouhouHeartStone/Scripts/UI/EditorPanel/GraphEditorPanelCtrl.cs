@@ -860,7 +860,6 @@ namespace UI
             StringTable.EDITOR_NODE_CATEGORY_BUFF, //增益
             EffectEditorLibrary.EDITOR_CATEGORY_NAME_EFFECTS, // 效果
             StringTable.EDITOR_NODE_CATEGORY_EVENT, // 事件
-            EffectEditorLibrary.EDITOR_TYPE_NAME_EVENT_RECORD, // 事件记录
             ActionNodeGraphCtrl.EDITOR_CATEGORY_EVENT_ENTRY_NODE, // 事件入口
             StringTable.EDITOR_CATEGORY__ACTION__NAME, // 行动
             StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, // 集合运算

@@ -3,6 +3,7 @@ using System.Linq;
 using TouhouCardEngine.Histories;
 using TouhouHeartstone;
 using UnityEngine;
+using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
@@ -11,8 +12,8 @@ namespace Game.BattleTable
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var cardId = record.getVar<CardState>(EVENTVAR.CARD).card.id;
-            var healedValue = record.getVar<int>(Arg.VAR_HEALED_VALUE);
+            var cardId = tEventArg.getVar<Card>(EVENTVAR.CARD).id;
+            var healedValue = tEventArg.getVar<int>(Arg.VAR_HEALED_VALUE);
 
             ParticleSystem healEffect = null;
             if (table.tryGetServant(cardId, out Servant servant))

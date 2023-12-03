@@ -11,7 +11,7 @@ namespace Game.BattleTable
         public override bool forceQueueAnimations => true;
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var player = record.getVar<Player>(EVENTVAR.PLAYER);
+            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
             //自己打出的效果不展示
             if (player == table.player)
                 yield break;
@@ -24,10 +24,10 @@ namespace Game.BattleTable
 
             yield return stopWhenCanceled();
 
-            var searched = table.getEventCardSnapshot(record, EVENTVAR.CHOSEN_CARD);
+            var searched = table.getEventCardSnapshot(tEventArg, EVENTVAR.CHOSEN_CARD);
 
             TableCard searchedUI = null;
-            var isShow = record.getVar<bool>(Arg.VAR_CARD_SEEN);
+            var isShow = tEventArg.getVar<bool>(Arg.VAR_CARD_SEEN);
             if (isShow)
             {
                 var tablePos = table.WorldToTablePosition(table.table.LeftDisplayTransform.position);

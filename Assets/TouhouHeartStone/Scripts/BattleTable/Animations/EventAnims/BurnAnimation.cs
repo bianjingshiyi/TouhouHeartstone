@@ -16,8 +16,8 @@ namespace Game.BattleTable
         {
             yield break; // 以MoveCardAnim暂时代替
 
-            var player = record.getVar<Player>(EVENTVAR.PLAYER);
-            var card = table.getEventCardSnapshot(record, EVENTVAR.CARD);
+            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
+            var card = table.getEventCardSnapshot(tEventArg, EVENTVAR.CARD);
 
             var deck = player == table.player ? table.table.SelfDeck : table.table.EnemyDeck;
             var grave = player == table.player ? table.table.SelfGrave : table.table.EnemyGrave;

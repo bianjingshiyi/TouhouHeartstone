@@ -6,6 +6,7 @@ using UnityEngine;
 using ActorNotFoundException = UI.ActorNotFoundException;
 using CardSkinData = UI.CardSkinData;
 using SimpleAnim = UI.SimpleAnim;
+using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
@@ -33,7 +34,7 @@ namespace Game.BattleTable
         }
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var player = record.getVar<Player>(EVENTVAR.PLAYER);
+            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
             if (player == table.player)
                 // 自己使用
                 yield return selfUseCard(table);
@@ -178,10 +179,10 @@ namespace Game.BattleTable
         }
         IEnumerator tryTargetedAnim(BattleTableManager table, Transform source)
         {
-            var targets = record.getVar<CardState[]>(EVENTVAR.TARGETS);
+            var targets = tEventArg.getVar<Card[]>(EVENTVAR.TARGETS);
             if (targets != null && targets.Length > 0 && targets[0] is var targetCard)
             {
-                var card = targetCard.card;
+                var card = targetCard;
                 if (table.getCardSkin(_card) is var skin && !string.IsNullOrEmpty(skin.projectilePath))
                 {
                     var loadProjectileTask = table.resources.loadObject<Projectile>(skin.projectilePath);

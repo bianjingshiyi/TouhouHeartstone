@@ -10,7 +10,7 @@ namespace Game.BattleTable
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var winners = record.getVar<Player[]>(Arg.VAR_WINNERS);
+            var winners = tEventArg.getVar<Player[]>(Arg.VAR_WINNERS);
 
             table.showGameResult(winners.Contains(table.player));
             yield break;

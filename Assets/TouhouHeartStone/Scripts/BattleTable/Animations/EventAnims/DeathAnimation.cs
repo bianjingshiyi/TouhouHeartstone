@@ -4,6 +4,7 @@ using System.Linq;
 using TouhouCardEngine.Histories;
 using TouhouHeartstone;
 using UnityEngine;
+using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
@@ -21,7 +22,7 @@ namespace Game.BattleTable
         /// <returns></returns>
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var cardId = record.getVar<CardState>(EVENTVAR.CARD).card.id;
+            var cardId = tEventArg.getVar<Card>(EVENTVAR.CARD).id;
             AnimAnim anim = null;
             if (table.tryGetServant(cardId, out var serv))//尝试获取死亡的随从的随从UI
             {

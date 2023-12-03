@@ -10,7 +10,7 @@ namespace Game.BattleTable
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = table.getEventCardSnapshot(record, Arg.VAR_CARD);
+            var card = table.getEventCardSnapshot(tEventArg, Arg.VAR_CARD);
             SimpleAnim simpleAnim = null;
             Animator animator = null;
             if (table.tryGetServant(card, out var servant))

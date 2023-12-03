@@ -11,10 +11,10 @@ namespace Game.BattleTable
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var youCard = table.getEventCardSnapshot(record, Arg.VAR_SELF_CARD);
-            var oppoCard = table.getEventCardSnapshot(record, Arg.VAR_OPPO_CARD);
-            var player = record.getVar<Player>(EVENTVAR.PLAYER);
-            var result = record.getVar<bool>(Arg.VAR_RESULT);
+            var youCard = table.getEventCardSnapshot(tEventArg, Arg.VAR_SELF_CARD);
+            var oppoCard = table.getEventCardSnapshot(tEventArg, Arg.VAR_OPPO_CARD);
+            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
+            var result = tEventArg.getVar<bool>(Arg.VAR_RESULT);
 
             if (youCard == null && oppoCard == null)
                 yield break;

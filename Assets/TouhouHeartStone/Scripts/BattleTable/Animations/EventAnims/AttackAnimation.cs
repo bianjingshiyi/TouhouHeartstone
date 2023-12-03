@@ -4,6 +4,7 @@ using TouhouCardEngine.Histories;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
+using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
@@ -33,8 +34,8 @@ namespace Game.BattleTable
         }
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = record.getVar<CardState>(EVENTVAR.CARD).card;
-            var target = record.getVar<CardState>(EVENTVAR.TARGET_CARD).card;
+            var card = tEventArg.getVar<Card>(EVENTVAR.CARD);
+            var target = tEventArg.getVar<Card>(EVENTVAR.TARGET_CARD);
             TableCharacter attackObj = getCharacterUI(table, card.id);
             TableCharacter attackedObj = getCharacterUI(table, target.id);
             SimpleAnim attackSimpleAnim = attackObj?.onAttack;
@@ -73,7 +74,7 @@ namespace Game.BattleTable
         }
         public override IEnumerator canceledUpdate(BattleTableManager table)
         {
-            var card = record.getVar<CardState>(EVENTVAR.CARD).card;
+            var card = tEventArg.getVar<Card>(EVENTVAR.CARD);
             yield return returnFromAttack(table, card.id);
         }
         public override bool continueNextGroup(AnimationGroup nextGroup)

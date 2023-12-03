@@ -1552,14 +1552,18 @@ namespace TouhouHeartstone
             if (isInvalidMove(card, from, to))
                 return null;
             var enterFieldArg = await to.owner.tryEnterField(game, from, card, to.count);
-            return enterFieldArg?.moveEvent;
+            if (enterFieldArg == null)
+                return null;
+            return enterFieldArg.getChildEvents(EventState.Logic).OfType<THHPile.MoveCardEventArg>().FirstOrDefault();
         }
         public static async Task<THHPile.MoveCardEventArg> moveToItem(this Card card, CardEngine game, Pile from, Pile to)
         {
             if (isInvalidMove(card, from, to))
                 return null;
             var equipArg = await to.owner.equip(game, card.pile, card);
-            return equipArg?.moveEvent;
+            if (equipArg == null)
+                return null;
+            return equipArg.getChildEvents(EventState.Logic).OfType<THHPile.MoveCardEventArg>().FirstOrDefault();
         }
         public static async Task<THHPile.MoveCardEventArg> moveCardFromPileToPile(this Card card, CardEngine game, Pile fromPile, Pile toPile)
         {
@@ -2080,9 +2084,21 @@ namespace TouhouHeartstone
         [EventChildren(typeof(PropChangeEventArg))]
         public class BeChargedEventArg : EventArg
         {
-            public Card card;
-            public int beforeValue;
-            public int value;
+            public Card card
+            {
+                get => getVar<Card>(EVENTVAR.CARD);
+                set => setVar(EVENTVAR.CARD, value);
+            }
+            public int beforeValue
+            {
+                get => getVar<int>(VAR_BEFORE_VALUE);
+                set => setVar(VAR_BEFORE_VALUE, value);
+            }
+            public int value
+            {
+                get => getVar<int>(EVENTVAR.VALUE);
+                set => setVar(EVENTVAR.VALUE, value);
+            }
             public override void Record(IGame game, EventRecord record)
             {
                 record.setCardState(EVENTVAR.CARD, card);
@@ -2500,7 +2516,11 @@ namespace TouhouHeartstone
         [EventChildren(typeof(THHPile.MoveCardEventArg))]
         public class MissionCompleteEventArg : EventArg, IDescribableEventArg
         {
-            public Card card;
+            public Card card
+            {
+                get => getVar<Card>(EVENTVAR.CARD);
+                set => setVar(EVENTVAR.CARD, value);
+            }
             DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;

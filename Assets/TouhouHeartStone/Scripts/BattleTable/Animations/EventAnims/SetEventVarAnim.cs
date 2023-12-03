@@ -9,9 +9,9 @@ namespace Game.BattleTable
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var eventArg = record.getVar<IEventArg>(Arg.VAR_EVENT);
-            var varName = record.getVar<string>(Arg.VAR_VAR_NAME);
-            var after = record.getVar<object>(Arg.VAR_AFTER_VALUE);
+            var eventArg = tEventArg.getVar<IEventArg>(Arg.VAR_EVENT);
+            var varName = tEventArg.getVar<string>(Arg.VAR_VAR_NAME);
+            var after = tEventArg.getVar<object>(Arg.VAR_AFTER_VALUE);
 
             var anim = table.getAnimOfEvent(eventArg);
             if (anim != null)

@@ -8,7 +8,7 @@ namespace Game.BattleTable
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = table.getEventCardSnapshot(record, EVENTVAR.CARD);
+            var card = table.getEventCardSnapshot(tEventArg, EVENTVAR.CARD);
             if (table.tryGetSecret(card, out var secret))
             {
                 secret.dummyTarget.position = table.table.CenterDisplayTransform.position;

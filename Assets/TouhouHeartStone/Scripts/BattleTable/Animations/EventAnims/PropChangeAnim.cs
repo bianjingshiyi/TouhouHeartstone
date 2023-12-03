@@ -11,9 +11,9 @@ namespace Game.BattleTable
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = table.getEventCardSnapshot(record, Arg.VAR_CARD);
-            var propName = record.getVar<string>(Arg.VAR_PROP_NAME);
-            var value = record.getVar(Arg.VAR_VALUE_AFTER);
+            var card = table.getEventCardSnapshot(tEventArg, Arg.VAR_CARD);
+            var propName = tEventArg.getVar<string>(Arg.VAR_PROP_NAME);
+            var value = tEventArg.getVar(Arg.VAR_VALUE_AFTER);
 
             getSimpleAnimAndAnimator(table, card, out var animator, out var simpleAnim);
             table.updateCardBySnapshot(card);

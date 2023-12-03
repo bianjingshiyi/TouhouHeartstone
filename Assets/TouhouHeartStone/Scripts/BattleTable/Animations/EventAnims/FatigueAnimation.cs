@@ -13,8 +13,8 @@ namespace Game.BattleTable
         {
             yield return stopWhenCanceled();
 
-            var player = record.getVar<Player>(EVENTVAR.PLAYER);
-            var damage = record.getVar<int>(Arg.VAR_DAMAGE);
+            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
+            var damage = tEventArg.getVar<int>(Arg.VAR_DAMAGE);
 
             var fatigue = table.table.Fatigue;
             fatigue.setDamage(damage, table.lang);

@@ -10,8 +10,8 @@ namespace Game.BattleTable
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = table.getEventCardSnapshot(record, EVENTVAR.CARD);
-            var player = record.getVar<Player>(EVENTVAR.PLAYER);
+            var card = table.getEventCardSnapshot(tEventArg, EVENTVAR.CARD);
+            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
 
             if (card == null)
                 yield break;

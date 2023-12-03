@@ -348,8 +348,8 @@ namespace TouhouHeartstone
                     game.logger.logTrace($"由于{argPlayer}的道具栏已满，摧毁当前道具");
                     await argPlayer.getItem().destroy(game);
                 }
-                arg.moveEvent = await argFrom.moveTo(game, argCard, argPlayer[PILE.ITEM]);
-                if (arg.moveEvent == null || !arg.moveEvent.success)
+                var moveEvent = await argFrom.moveTo(game, argCard, argPlayer[PILE.ITEM]);
+                if (moveEvent == null || !moveEvent.success)
                 {
                     arg.isCanceled = true;
                     return;
@@ -383,14 +383,12 @@ namespace TouhouHeartstone
                 var field = argPlayer.getField();
                 if (position < 0)
                     position = field.count;
-                arg.moveEvent = await card.pile.moveTo(game, card, field, position);
-                if (arg.moveEvent == null || !arg.moveEvent.success)
+                var moveEvent = await card.pile.moveTo(game, card, field, position);
+                if (moveEvent == null || !moveEvent.success)
                 {
                     arg.isCanceled = true;
                     return;
                 }
-                arg.attack = argCard.getAttack(game);
-                arg.life = argCard.getLife(game);
             }
         }
         public static async Task<bool> tryEnterHead(this Player player, CardEngine game, Pile from, Card card)
@@ -1220,8 +1218,6 @@ namespace TouhouHeartstone
             {
                 this.player = player;
                 this.card = card;
-                setVar("玩家", player);
-                setVar("卡牌", card);
             }
             public LastwordEventArg() : this(null, null)
             {
@@ -1259,8 +1255,16 @@ namespace TouhouHeartstone
                     card.getFormatString()
                 };
             }
-            public Player player;
-            public Card card;
+            public Player player
+            {
+                get => getVar<Player>(EVENTVAR.PLAYER);
+                set => setVar(EVENTVAR.PLAYER, value);
+            }
+            public Card card
+            {
+                get => getVar<Card>(EVENTVAR.CARD);
+                set => setVar(EVENTVAR.CARD, value);
+            }
         }
         #endregion
     }

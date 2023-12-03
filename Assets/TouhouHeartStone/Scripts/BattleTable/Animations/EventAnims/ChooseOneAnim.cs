@@ -12,7 +12,7 @@ namespace Game.BattleTable
 
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var player = record.getVar<Player>(EVENTVAR.PLAYER);
+            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
             //自己打出的效果不展示
             if (player == table.player)
             {
@@ -27,9 +27,9 @@ namespace Game.BattleTable
 
             yield return stopWhenCanceled();
 
-            var choose = record.getVar<CardDefine>(EVENTVAR.CHOSEN_CARD);
+            var choose = tEventArg.getVar<CardDefine>(EVENTVAR.CHOSEN_CARD);
 
-            var isShow = record.getVar<bool>(Arg.VAR_SEEN_CARD);
+            var isShow = tEventArg.getVar<bool>(Arg.VAR_SEEN_CARD);
             TableCard chooseCard = null;
             if (isShow)
             {

@@ -336,10 +336,9 @@ namespace Controllers
                 return;
             if (card.card is Card cardObj)
             {
-                EventRecord record = _game.triggers.getEventRecord(arg);
-                if (record != null)
+                if (arg != null)
                 {
-                    CardSnapshot cardSnapshot = _game.getCardSnapshotOfEvent(cardObj, record);
+                    CardSnapshot cardSnapshot = _game.getCardSnapshotAfterEvent(cardObj, arg);
                     if (cardSnapshot != null)
                     {
                         var descriptor = new CardDescriptor(_game, cardSnapshot);

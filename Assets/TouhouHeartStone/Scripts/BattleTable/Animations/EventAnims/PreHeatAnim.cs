@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using TouhouCardEngine.Histories;
 using TouhouHeartstone;
+using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
@@ -9,9 +10,9 @@ namespace Game.BattleTable
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = record.getVar<CardState>(EVENTVAR.CARD).card.id;
-            var valueBefore = record.getVar<int>(Arg.VAR_BEFORE_VALUE);
-            var value = record.getVar<int>(EVENTVAR.VALUE);
+            var card = tEventArg.getVar<Card>(EVENTVAR.CARD).id;
+            var valueBefore = tEventArg.getVar<int>(Arg.VAR_BEFORE_VALUE);
+            var value = tEventArg.getVar<int>(EVENTVAR.VALUE);
 
 
             if (table.tryGetHand(card, out var hand))
