@@ -21,7 +21,7 @@ namespace Game
             {
                 var actDefList = cardPool.actionDefineList;
                 //分配Id
-                int id = Math.Max(0, actDefList.Max(def => def.defineId)) + 1;
+                int id = Math.Max(0, actDefList.Count > 0 ? actDefList.Max(def => def.defineId) : 0) + 1;
                 var graph = new ActionGraph();
                 GeneratedActionDefine actionDefine = new GeneratedActionDefine(graph, id, type, null, name, null, null, null);
                 actionDefine.cardPoolId = cardPoolId;
