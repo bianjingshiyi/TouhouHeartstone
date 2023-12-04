@@ -1887,6 +1887,12 @@ namespace Controllers
             item.setEventVarNames(eventVarNamesEditor, eventVarNames);
             var consts = getNodeConstValueInfos(node);
             item.setConsts(consts);
+
+            // 如果该节点的该常量的值是null，则设置为名称列表的第一个值。
+            if (node.getConst(EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY) == null && eventVarNames != null && eventVarNames.Count() > 0)
+            {
+                setNodeConst(node, EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY, eventVarNames.FirstOrDefault());
+            }
         }
         /// <summary>
         /// 获取连接一个值输入端口的事件类型引用。
