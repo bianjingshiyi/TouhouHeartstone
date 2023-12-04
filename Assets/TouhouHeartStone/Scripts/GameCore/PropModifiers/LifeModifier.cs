@@ -1,6 +1,9 @@
 ﻿using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using System.Threading.Tasks;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
+
 namespace TouhouHeartstone
 {
     public class LifeModifier : IntPropModifier
@@ -11,12 +14,6 @@ namespace TouhouHeartstone
         {
         }
         public LifeModifier(int value, bool isSet) : base(DEFINE.LIFE, value, isSet)
-        {
-        }
-        public LifeModifier(string relatedPropName, bool isSet) : base(DEFINE.LIFE, relatedPropName, isSet)
-        {
-        }
-        protected LifeModifier(LifeModifier origin) : base(origin)
         {
         }
         #endregion
@@ -74,6 +71,25 @@ namespace TouhouHeartstone
             }
             return Task.CompletedTask;
         }
+        public override SerializablePropModifier serialize()
+        {
+            return new SerializableLifeModifier(this);
+        }
         #endregion
+    }
+    [Serializable]
+    [BsonDiscriminator("LifeModifier")]
+    public class SerializableLifeModifier : SerializableIntPropModifier
+    {
+        public SerializableLifeModifier(LifeModifier modifier) : base(modifier)
+        {
+        }
+        public override PropModifier deserialize()
+        {
+            return new LifeModifier(getDefaultValue(), isSet)
+            {
+                relatedPropName = relatedPropName
+            };
+        }
     }
 }

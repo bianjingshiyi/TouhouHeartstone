@@ -123,7 +123,7 @@ namespace Game
                 var effect = seriEffects[i];
                 ConvertEffect(effects, effect, null, seri, i);
             }
-            GeneratedBuffDefine buff = new GeneratedBuffDefine(poolId, seri.id, seri.propModifierList.ToArray(), effects);
+            GeneratedBuffDefine buff = new GeneratedBuffDefine(poolId, seri.id, seri.propModifierList.ConvertAll(p => p.deserialize()).ToArray(), effects);
             return buff;
         }
 

@@ -42,6 +42,15 @@ namespace Controllers
             registerClass<IntegerOperator>();
             registerClass<LogicOperator>();
 
+            // Prop Modifiers.
+            registerClass<SerializableAttackModifier>();
+            registerClass<SerializableLifeModifier>();
+            registerClass<SerializableCostModifier>();
+            registerClass<SerializableKeywordsModifier>();
+            registerClass<SerializableSpellDamageModifier>();
+            registerClass<SerializableDamageReduceModifier>();
+            registerClass<SerializableCustomPropertyModifier>();
+
             // Nodes.
             registerClass<SerializableActionNode>();
 

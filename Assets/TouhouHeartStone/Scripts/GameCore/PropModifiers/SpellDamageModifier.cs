@@ -1,4 +1,6 @@
-﻿using TouhouCardEngine;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
+using TouhouCardEngine;
 
 namespace TouhouHeartstone
 {
@@ -10,8 +12,24 @@ namespace TouhouHeartstone
         public SpellDamageModifier(int value, bool isSet) : base(DEFINE.SPELL_DAMAGE, value, isSet)
         {
         }
-        protected SpellDamageModifier(IntPropModifier origin) : base(origin)
+        public override SerializablePropModifier serialize()
         {
+            return new SerializableSpellDamageModifier(this);
+        }
+    }
+    [Serializable]
+    [BsonDiscriminator("SpellDamageModifier")]
+    public class SerializableSpellDamageModifier : SerializableIntPropModifier
+    {
+        public SerializableSpellDamageModifier(SpellDamageModifier modifier) : base(modifier)
+        {
+        }
+        public override PropModifier deserialize()
+        {
+            return new SpellDamageModifier(getDefaultValue(), isSet)
+            {
+                relatedPropName = relatedPropName
+            };
         }
     }
 }

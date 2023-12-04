@@ -1,4 +1,6 @@
-﻿using TouhouCardEngine;
+﻿using System;
+using MongoDB.Bson.Serialization.Attributes;
+using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
@@ -7,29 +9,16 @@ namespace TouhouHeartstone
     {
         #region 公有方法
         #region 构造方法
-        public CustomPropertyModifier(string propName, int value)
+        public CustomPropertyModifier(string propName, object value)
         {
             propertyName = propName;
             defaultValue = value;
         }
-        public CustomPropertyModifier(string propName, int value, bool isSet)
+        public CustomPropertyModifier(string propName, object value, bool isSet)
         {
             propertyName = propName;
             defaultValue = value;
             this.isSet = isSet;
-        }
-        public CustomPropertyModifier(string propName, string relatedPropName, bool isSet)
-        {
-            propertyName = propName;
-            this.relatedPropName = relatedPropName;
-            this.isSet = isSet;
-        }
-        protected CustomPropertyModifier(CustomPropertyModifier origin)
-        {
-            propertyName = origin.getPropName();
-            defaultValue = origin.defaultValue;
-            isSet = origin.isSet;
-            relatedPropName = origin.relatedPropName;
         }
         #endregion
         public override object calcGeneric(IGame game, ICardData card, object prop, object value)
@@ -52,6 +41,10 @@ namespace TouhouHeartstone
             }
             return prop;
         }
+        public override SerializablePropModifier serialize()
+        {
+            return new SerializableCustomPropertyModifier(this);
+        }
         public override string ToString()
         {
             if (!string.IsNullOrEmpty(relatedPropName))
@@ -71,5 +64,22 @@ namespace TouhouHeartstone
         #region 属性字段
         public bool isSet;
         #endregion
+    }
+    [Serializable]
+    [BsonDiscriminator("CustomPropertyModifier")]
+    public class SerializableCustomPropertyModifier : SerializablePropModifier<object>
+    {
+        public SerializableCustomPropertyModifier(CustomPropertyModifier modifier) : base(modifier)
+        {
+            isSet = modifier.isSet;
+        }
+        public override PropModifier deserialize()
+        {
+            return new CustomPropertyModifier(propertyName, getDefaultValue(), isSet)
+            {
+                relatedPropName = relatedPropName
+            };
+        }
+        public bool isSet;
     }
 }

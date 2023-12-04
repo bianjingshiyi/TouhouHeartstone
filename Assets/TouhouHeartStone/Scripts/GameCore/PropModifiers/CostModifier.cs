@@ -5,17 +5,30 @@ namespace TouhouHeartstone
 {
     public class CostModifier : IntPropModifier
     {
-        public CostModifier() : base(DEFINE.COST, 0)
-        {
-        }
         public CostModifier(int value) : base(DEFINE.COST, value)
         {
         }
         public CostModifier(int value, bool isSet) : base(DEFINE.COST, value, isSet)
         {
         }
-        protected CostModifier(IntPropModifier origin) : base(origin)
+        public override SerializablePropModifier serialize()
         {
+            return new SerializableCostModifier(this);
+        }
+    }
+    [Serializable]
+    [BsonDiscriminator("CostModifier")]
+    public class SerializableCostModifier : SerializableIntPropModifier
+    {
+        public SerializableCostModifier(CostModifier modifier) : base(modifier)
+        {
+        }
+        public override PropModifier deserialize()
+        {
+            return new CostModifier(getDefaultValue(), isSet)
+            {
+                relatedPropName = relatedPropName
+            };
         }
         [Obsolete]
         [BsonIgnoreIfNull]

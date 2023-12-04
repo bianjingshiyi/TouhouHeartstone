@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson.Serialization.Attributes;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 
@@ -13,12 +14,6 @@ namespace TouhouHeartstone
             propertyName = DEFINE.KEYWORDS;
             this.modifyType = modifyType;
             defaultValue = keywords;
-        }
-        protected KeywordsModifier(KeywordsModifier origin)
-        {
-            defaultValue = origin.defaultValue;
-            modifyType = origin.modifyType;
-            propertyName = origin.propertyName;
         }
         public override async Task afterAdd(IGame game, Card card, string[] value)
         {
@@ -61,6 +56,10 @@ namespace TouhouHeartstone
                     return prop != null ? prop.Union(value).ToArray() : value;
             }
         }
+        public override SerializablePropModifier serialize()
+        {
+            return new SerializableKeywordsModifier(this);
+        }
         public override string ToString()
         {
             var value = defaultValue;
@@ -79,5 +78,22 @@ namespace TouhouHeartstone
         {
             add, remove, set
         }
+    }
+    [Serializable]
+    [BsonDiscriminator("KeywordsModifier")]
+    public class SerializableKeywordsModifier : SerializablePropModifier<string[]>
+    {
+        public SerializableKeywordsModifier(KeywordsModifier modifier) : base(modifier)
+        {
+            modifyType = (int)modifier.modifyType;
+        }
+        public override PropModifier deserialize()
+        {
+            return new KeywordsModifier((KeywordsModifier.ModifyType)modifyType, getDefaultValue())
+            {
+                relatedPropName = relatedPropName
+            };
+        }
+        public int modifyType;
     }
 }
