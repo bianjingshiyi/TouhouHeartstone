@@ -5695,98 +5695,6 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>-1</defineId>
-    <obsoleteNames />
-    <editorName>添加整数修改器</editorName>
-    <obsoleteMsg />
-    <category>卡牌</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>Card</type>
-        <name>card</name>
-        <displayName>卡牌</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>String</type>
-        <name>propName</name>
-        <displayName>属性名称</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>value</name>
-        <displayName>值</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>Boolean</type>
-        <name>isSet</name>
-        <displayName>设置</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>IntPropModifier</type>
-        <name>return</name>
-        <displayName>修改器</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts />
-    <summary><![CDATA[]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineId>-15</defineId>
-    <obsoleteNames />
-    <editorName>移除修改器</editorName>
-    <obsoleteMsg />
-    <category>卡牌</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>Card</type>
-        <name>card</name>
-        <displayName>卡牌</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>PropModifier</type>
-        <name>modifier</name>
-        <displayName>修改器</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>IRemoveModiEventArg</type>
-        <name>return</name>
-        <displayName>移除修改器事件</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts />
-    <summary><![CDATA[]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
     <defineId>103001</defineId>
     <obsoleteNames />
     <editorName>获取所有卡牌定义</editorName>
@@ -8694,7 +8602,7 @@
     <obsoleteNames />
     <editorName>获取当前回合数（过时）</editorName>
     <obsoleteMsg />
-    <category>事件记录</category>
+    <category>事件</category>
     <inputs />
     <outputs>
       <ActionParameterComment>
@@ -8714,7 +8622,7 @@
     <defineId>109008</defineId>
     <obsoleteNames />
     <editorName>获取当前回合数</editorName>
-    <category>事件记录</category>
+    <category>事件</category>
     <inputs />
     <outputs>
       <ActionParameterComment>
@@ -8734,6 +8642,7 @@
     <defineId>109002</defineId>
     <obsoleteNames />
     <editorName>获取事件记录变量</editorName>
+    <obsoleteMsg />
     <category>事件记录</category>
     <inputs>
       <ActionParameterComment>
@@ -8774,6 +8683,7 @@
     <defineId>109009</defineId>
     <obsoleteNames />
     <editorName>转换事件记录类型</editorName>
+    <obsoleteMsg />
     <category>事件记录</category>
     <inputs>
       <ActionParameterComment>
@@ -8812,6 +8722,7 @@
     <defineId>109003</defineId>
     <obsoleteNames />
     <editorName>事件记录类型判断</editorName>
+    <obsoleteMsg />
     <category>事件记录</category>
     <inputs>
       <ActionParameterComment>
@@ -8850,13 +8761,14 @@
     <defineId>109004</defineId>
     <obsoleteNames />
     <editorName>获取本局游戏事件记录</editorName>
+    <obsoleteMsg />
     <category>事件记录</category>
     <inputs />
     <outputs>
       <ActionParameterComment>
         <type>EventRecord</type>
         <name>return</name>
-        <displayName>事件集合</displayName>
+        <displayName>事件记录集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[获取到的事件列表。]]></summary>
@@ -8870,13 +8782,14 @@
     <defineId>109005</defineId>
     <obsoleteNames />
     <editorName>获取本回合事件记录</editorName>
+    <obsoleteMsg />
     <category>事件记录</category>
     <inputs />
     <outputs>
       <ActionParameterComment>
         <type>EventRecord</type>
         <name>return</name>
-        <displayName>事件集合</displayName>
+        <displayName>事件记录集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[获取到的事件列表。]]></summary>
@@ -8890,6 +8803,7 @@
     <defineId>109006</defineId>
     <obsoleteNames />
     <editorName>获取前X-Y回合内的事件记录</editorName>
+    <obsoleteMsg />
     <category>事件记录</category>
     <inputs>
       <ActionParameterComment>
@@ -8925,7 +8839,7 @@
       <ActionParameterComment>
         <type>EventRecord</type>
         <name>return</name>
-        <displayName>事件集合</displayName>
+        <displayName>事件记录集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[获取到的事件列表。]]></summary>
@@ -8939,6 +8853,7 @@
     <defineId>109007</defineId>
     <obsoleteNames />
     <editorName>获取卡牌在某事件时的快照</editorName>
+    <obsoleteMsg />
     <category>事件记录</category>
     <inputs>
       <ActionParameterComment>
@@ -9304,6 +9219,207 @@
     <outputs />
     <consts />
     <summary><![CDATA[更改“治疗时”事件的伤害数值。<br><b>注意：</b>仅能对“治疗时”事件生效。<br>请使用<b>转换事件类型</b>和<b>设置变量</b>。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>108004</defineId>
+    <obsoleteNames />
+    <editorName>事件类型判断</editorName>
+    <category>事件</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>eventArg</name>
+        <displayName>事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断类型的事件。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[事件是否属于该类型？]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>EventReferenceProxy</type>
+        <name>argRef</name>
+        <displayName>事件类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要进行判断的事件类型。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[判断一个事件是否是某种类型。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>108005</defineId>
+    <obsoleteNames />
+    <editorName>获取本局游戏事件</editorName>
+    <category>事件</category>
+    <inputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>return</name>
+        <displayName>事件集合</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[获取到的事件列表。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取本局游戏中所有发生过的事件。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>108006</defineId>
+    <obsoleteNames />
+    <editorName>获取本回合事件</editorName>
+    <category>事件</category>
+    <inputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>return</name>
+        <displayName>事件集合</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[获取到的事件列表。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取本回合中所有发生过的事件。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>108007</defineId>
+    <obsoleteNames />
+    <editorName>获取前X-Y回合内的事件</editorName>
+    <category>事件</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>farther</name>
+        <displayName>前X回合开始</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[距离本回合的最大距离。
+          <ul>
+            <li>X=0：从本回合开始时开始。</li>
+            <li>X=1：从你对手的上个回合开始时开始。</li>
+            <li>X=2：从你的上个回合开始时开始。</li>
+            <li>...</li>
+          </ul>]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>nearer</name>
+        <displayName>前Y回合结束</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[距离本回合的最小距离。
+          <ul>
+            <li>Y=0：到现在结束。</li>
+            <li>Y=1：到你对手的上个回合结束时结束。</li>
+            <li>Y=2：到你的上个回合结束时结束。</li>
+            <li>...</li>
+          </ul>]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>return</name>
+        <displayName>事件集合</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[获取到的事件列表。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取<b>前</b>X-Y回合内所有发生过的事件。<br>X必须大于或等于Y。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>108008</defineId>
+    <obsoleteNames />
+    <editorName>获取卡牌在某事件前的快照</editorName>
+    <category>事件</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取快照的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>eventArg</name>
+        <displayName>事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[事件记录，用于获取快照的时间点。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>CardSnapshot</type>
+        <name>return</name>
+        <displayName>卡牌快照</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一张卡牌在某个事件发生前的卡牌快照。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>108009</defineId>
+    <obsoleteNames />
+    <editorName>获取卡牌在某事件后的快照</editorName>
+    <category>事件</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取快照的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>eventArg</name>
+        <displayName>事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[事件记录，用于获取快照的时间点。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>CardSnapshot</type>
+        <name>return</name>
+        <displayName>卡牌快照</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一张卡牌在某个事件发生后的卡牌快照。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
 </ArrayOfActionComment>
