@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 353, "dependencyRefs" : [] }
+{ "_t" : "SerializableCardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 354, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -44692,17 +44692,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 3
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 6,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 6
         }],
       "existLimitList" : [],
       "effects" : []
@@ -44711,10 +44705,7 @@
       "propModifierList" : [{
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 2
         }],
       "existLimitList" : [],
       "effects" : []
@@ -44723,11 +44714,7 @@
       "propModifierList" : [{
           "_t" : "CostModifier",
           "propertyName" : "cost",
-          "value" : -2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647,
-          "onCheckCondition" : null
+          "defaultValue" : -2
         }],
       "existLimitList" : [],
       "effects" : []
@@ -44736,10 +44723,7 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 2
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -44834,10 +44818,7 @@
       "propModifierList" : [{
           "_t" : "DamageReduceModifier",
           "propertyName" : "damageReduce",
-          "value" : 3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 3
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -44999,294 +44980,16 @@
       "propModifierList" : [{
           "_t" : "CostModifier",
           "propertyName" : "cost",
-          "value" : -2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647,
-          "onCheckCondition" : null
+          "defaultValue" : -2
         }],
       "existLimitList" : [],
-      "effects" : [{
-          "_t" : "SerializableEventEffect",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableEventEntryNode",
-                "_id" : 1,
-                "posX" : 0.0,
-                "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
-                "consts" : {
-                  "tags" : {
-                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                    "_v" : []
-                  },
-                  "pileList" : {
-                    "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                    "_v" : ["Hand"]
-                  }
-                },
-                "tags" : null,
-                "piles" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112002
-                },
-                "posX" : 342.72662353515625,
-                "posY" : 366.73257446289063,
-                "constDict" : {
-                  "operator" : null
-                },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102010
-                },
-                "posX" : -93.394134521484375,
-                "posY" : 390.770751953125,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102001
-                },
-                "posX" : -340.64382934570313,
-                "posY" : 394.20477294921875,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 206002
-                },
-                "posX" : 656.5184326171875,
-                "posY" : 74.22125244140625,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 6,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102001
-                },
-                "posX" : 296.9881591796875,
-                "posY" : -254.91241455078125,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 7,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 106001
-                },
-                "posX" : 306.13934326171875,
-                "posY" : -498.81109619140625,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "return",
-                "sourceNodeId" : 4,
-                "destName" : "card",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "A",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "玩家",
-                "sourceNodeId" : 1,
-                "destName" : "B",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 2,
-                "destName" : "condition",
-                "destNodeId" : 1
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 6,
-                "destName" : "card",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 7,
-                "destName" : "buff",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 5
-              }]
-          }
-        }, {
-          "_t" : "SerializableEventEffect",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableEventEntryNode",
-                "_id" : 1,
-                "posX" : 0.0,
-                "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterEnterFieldEvent",
-                "consts" : {
-                  "tags" : {
-                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                    "_v" : []
-                  },
-                  "pileList" : {
-                    "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                    "_v" : ["Field"]
-                  }
-                },
-                "tags" : null,
-                "piles" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112002
-                },
-                "posX" : 3.06494140625,
-                "posY" : 357.87826538085938,
-                "constDict" : {
-                  "operator" : null
-                },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102001
-                },
-                "posX" : -422.37216186523438,
-                "posY" : 378.86404418945313,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 206002
-                },
-                "posX" : 752.8265380859375,
-                "posY" : 35.461807250976563,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 106001
-                },
-                "posX" : 376.9918212890625,
-                "posY" : -334.649658203125,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "A",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "B",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 2,
-                "destName" : "condition",
-                "destNodeId" : 1
-              }, {
-                "sourceName" : "卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "card",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 5,
-                "destName" : "buff",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 4
-              }]
-          }
-        }]
+      "effects" : []
     }, {
       "_id" : 10,
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : -3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : -3
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -45449,10 +45152,7 @@
           "_t" : "LifeModifier",
           "relatedPropName" : "x",
           "propertyName" : "life",
-          "value" : 5,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 5
         }],
       "existLimitList" : [],
       "effects" : []
@@ -45461,17 +45161,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 2
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 2
         }],
       "existLimitList" : [],
       "effects" : []
@@ -45480,17 +45174,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }],
       "existLimitList" : [],
       "effects" : []
@@ -45499,21 +45187,15 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 3
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 6,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 6
         }, {
           "_t" : "KeywordsModifier",
           "propertyName" : "keywords",
-          "value" : ["taunt"],
+          "defaultValue" : ["taunt"],
           "modifyType" : 0
         }],
       "existLimitList" : [],
@@ -45523,11 +45205,7 @@
       "propModifierList" : [{
           "_t" : "CostModifier",
           "propertyName" : "cost",
-          "value" : -3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647,
-          "onCheckCondition" : null
+          "defaultValue" : -3
         }],
       "existLimitList" : [],
       "effects" : []
@@ -45536,14 +45214,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 2
         }, {
           "_t" : "KeywordsModifier",
           "propertyName" : "keywords",
-          "value" : ["rush"],
+          "defaultValue" : ["rush"],
           "modifyType" : 0
         }],
       "existLimitList" : [],
@@ -45553,17 +45228,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }],
       "existLimitList" : [],
       "effects" : []
@@ -45572,10 +45241,7 @@
       "propModifierList" : [{
           "_t" : "CostModifier",
           "propertyName" : "cost",
-          "isSet" : true,
-          "minValue" : 0,
-          "maxValue" : 2147483647,
-          "onCheckCondition" : null
+          "isSet" : true
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -45670,21 +45336,15 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 3
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }, {
           "_t" : "KeywordsModifier",
           "propertyName" : "keywords",
-          "value" : ["rush"],
+          "defaultValue" : ["rush"],
           "modifyType" : 0
         }],
       "existLimitList" : [],
@@ -45694,10 +45354,7 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 2
         }],
       "existLimitList" : [],
       "effects" : []
@@ -45706,10 +45363,8 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 3,
-          "isSet" : true,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 3,
+          "isSet" : true
         }],
       "existLimitList" : [],
       "effects" : []
@@ -45848,17 +45503,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 3
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 3
         }],
       "existLimitList" : [],
       "effects" : []
@@ -45867,10 +45516,7 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 3
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -45965,7 +45611,7 @@
       "propModifierList" : [{
           "_t" : "KeywordsModifier",
           "propertyName" : "keywords",
-          "value" : ["charge"],
+          "defaultValue" : ["charge"],
           "modifyType" : 0
         }],
       "existLimitList" : [],
@@ -45975,17 +45621,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }],
       "existLimitList" : [],
       "effects" : []
@@ -45994,10 +45634,7 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }],
       "existLimitList" : [],
       "effects" : []
@@ -46006,7 +45643,7 @@
       "propModifierList" : [{
           "_t" : "KeywordsModifier",
           "propertyName" : "keywords",
-          "value" : ["immunity"],
+          "defaultValue" : ["immunity"],
           "modifyType" : 0
         }],
       "existLimitList" : [],
@@ -46102,10 +45739,7 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 2
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -46200,10 +45834,7 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "relatedPropName" : "苦轮",
-          "propertyName" : "attack",
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "propertyName" : "attack"
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -46298,17 +45929,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "relatedPropName" : "半灵",
-          "propertyName" : "attack",
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "propertyName" : "attack"
         }, {
           "_t" : "LifeModifier",
           "relatedPropName" : "半灵",
-          "propertyName" : "life",
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "propertyName" : "life"
         }],
       "existLimitList" : [],
       "effects" : []
@@ -46317,10 +45942,7 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 5,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 5
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -46415,11 +46037,7 @@
       "propModifierList" : [{
           "_t" : "CostModifier",
           "relatedPropName" : "鬼",
-          "propertyName" : "cost",
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647,
-          "onCheckCondition" : null
+          "propertyName" : "cost"
         }],
       "existLimitList" : [],
       "effects" : []
@@ -46428,10 +46046,7 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 3
         }],
       "existLimitList" : [],
       "effects" : []
@@ -46440,7 +46055,7 @@
       "propModifierList" : [{
           "_t" : "KeywordsModifier",
           "propertyName" : "keywords",
-          "value" : ["rush"],
+          "defaultValue" : ["rush"],
           "modifyType" : 0
         }],
       "existLimitList" : [],
@@ -46542,10 +46157,7 @@
       "propModifierList" : [{
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }],
       "existLimitList" : [],
       "effects" : []
@@ -46554,10 +46166,7 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 2
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -46653,10 +46262,7 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 3
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -46941,17 +46547,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }],
       "existLimitList" : [],
       "effects" : []
@@ -46960,17 +46560,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }],
       "existLimitList" : [],
       "effects" : []
@@ -46979,17 +46573,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 2
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }],
       "existLimitList" : [],
       "effects" : []
@@ -46998,12 +46586,12 @@
       "propModifierList" : [{
           "_t" : "KeywordsModifier",
           "propertyName" : "keywords",
-          "value" : ["shield"],
+          "defaultValue" : ["shield"],
           "modifyType" : 0
         }, {
           "_t" : "KeywordsModifier",
           "propertyName" : "keywords",
-          "value" : ["taunt"],
+          "defaultValue" : ["taunt"],
           "modifyType" : 0
         }],
       "existLimitList" : [],
@@ -47013,17 +46601,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 3
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 3
         }],
       "existLimitList" : [],
       "effects" : []
@@ -47032,25 +46614,18 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 4,
-          "isSet" : true,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 4,
+          "isSet" : true
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 4,
-          "isSet" : true,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 4,
+          "isSet" : true
         }, {
           "_t" : "CostModifier",
           "propertyName" : "cost",
-          "value" : 4,
-          "isSet" : true,
-          "minValue" : 0,
-          "maxValue" : 2147483647,
-          "onCheckCondition" : null
+          "defaultValue" : 4,
+          "isSet" : true
         }],
       "existLimitList" : [],
       "effects" : []
@@ -47059,10 +46634,7 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }],
       "existLimitList" : [],
       "effects" : []
@@ -47071,17 +46643,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 2
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 3
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -47166,14 +46732,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 2
         }, {
           "_t" : "KeywordsModifier",
           "propertyName" : "keywords",
-          "value" : ["rush"],
+          "defaultValue" : ["rush"],
           "modifyType" : 0
         }],
       "existLimitList" : [],
@@ -47259,11 +46822,7 @@
       "propModifierList" : [{
           "_t" : "CostModifier",
           "propertyName" : "cost",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647,
-          "onCheckCondition" : null
+          "defaultValue" : 1
         }],
       "existLimitList" : [],
       "effects" : []
@@ -47272,10 +46831,7 @@
       "propModifierList" : [{
           "_t" : "LifeModifier",
           "relatedPropName" : "α",
-          "propertyName" : "life",
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "propertyName" : "life"
         }],
       "existLimitList" : [],
       "effects" : []
@@ -47284,10 +46840,7 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }],
       "existLimitList" : [],
       "effects" : []
@@ -47296,10 +46849,7 @@
       "propModifierList" : [{
           "_t" : "CostModifier",
           "propertyName" : "cost",
-          "isSet" : true,
-          "minValue" : 0,
-          "maxValue" : 2147483647,
-          "onCheckCondition" : null
+          "isSet" : true
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -47425,17 +46975,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 3
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 3
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -47561,10 +47105,7 @@
       "propModifierList" : [{
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }],
       "existLimitList" : [],
       "effects" : []
@@ -48276,11 +47817,7 @@
       "propModifierList" : [{
           "_t" : "CostModifier",
           "relatedPropName" : "time",
-          "propertyName" : "cost",
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647,
-          "onCheckCondition" : null
+          "propertyName" : "cost"
         }],
       "existLimitList" : [],
       "effects" : []
@@ -48289,11 +47826,7 @@
       "propModifierList" : [{
           "_t" : "CostModifier",
           "propertyName" : "cost",
-          "value" : 5,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647,
-          "onCheckCondition" : null
+          "defaultValue" : 5
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -48441,17 +47974,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 2
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : 2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 2
         }],
       "existLimitList" : [],
       "effects" : []
@@ -48460,10 +47987,8 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 1,
-          "isSet" : true,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1,
+          "isSet" : true
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -48611,10 +48136,7 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "relatedPropName" : "dead",
-          "propertyName" : "attack",
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "propertyName" : "attack"
         }],
       "existLimitList" : [],
       "effects" : []
@@ -48623,17 +48145,11 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : -2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : -2
         }, {
           "_t" : "LifeModifier",
           "propertyName" : "life",
-          "value" : -2,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : -2
         }],
       "existLimitList" : [],
       "effects" : []
@@ -48642,10 +48158,7 @@
       "propModifierList" : [{
           "_t" : "AttackModifier",
           "propertyName" : "attack",
-          "value" : 1,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
+          "defaultValue" : 1
         }],
       "existLimitList" : [],
       "effects" : [{
@@ -48737,7 +48250,7 @@
       "propModifierList" : [{
           "_t" : "KeywordsModifier",
           "propertyName" : "keywords",
-          "value" : ["cantattack"],
+          "defaultValue" : ["cantattack"],
           "modifyType" : 1
         }],
       "existLimitList" : [],
@@ -50643,11 +50156,7 @@
       "propModifierList" : [{
           "_t" : "CostModifier",
           "propertyName" : "cost",
-          "value" : -5,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647,
-          "onCheckCondition" : null
+          "defaultValue" : -5
         }],
       "existLimitList" : [],
       "effects" : []

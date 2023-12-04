@@ -17,8 +17,9 @@ namespace TouhouHeartstone
         {
         }
         #endregion
-        public override async Task updateModifierValue(IGame game, Card card, int beforeValue, int value)
+        public override async Task updateModifierValue(IGame game, Card card, Buff buff, int beforeValue)
         {
+            int value = getValueGeneric(buff);
             bool resetCurrentLife = card.getCurrentLife(game) >= card.getLife(game);
             int changedValue = value - beforeValue;
             if (changedValue == 0)
