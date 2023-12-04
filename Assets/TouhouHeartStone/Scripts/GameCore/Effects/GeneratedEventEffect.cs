@@ -6,7 +6,7 @@ using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
-    public class GeneratedEventEffect : GeneratedPassiveEffect, IPileRangedEffect
+    public class GeneratedEventEffect : GeneratedPassiveEffect, IPileRangedEffect, IEventEffect
     {
         #region 公有方法
         #region 构造方法
@@ -26,18 +26,8 @@ namespace TouhouHeartstone
 
             if (eventEntry != null)
             {
-                string triggerName = getEffectName(card, buff, eventEntry.eventName);
-                game.logger.logTrace("Effect", $"{card}注册触发器{triggerName}");
-                Trigger trigger = new Trigger(
-                    args =>
-                    {
-                        return checkCondition(game, card, buff, args.OfType<IEventArg>().FirstOrDefault());
-                    },
-                    args =>
-                    {
-                        return execute(game, card, buff, args.OfType<IEventArg>().FirstOrDefault());
-                    }, name: triggerName);
-                await card.setProp(game, triggerName, trigger);
+                game.logger.logTrace("Effect", $"{card}注册触发器{this}");
+                Trigger trigger = new EffectTrigger(game, card, buff, this);
                 game.triggers.registerDelayed(eventEntry.eventName, trigger);
             }
         }
@@ -49,11 +39,11 @@ namespace TouhouHeartstone
             var eventEntry = this.eventEntry;
             if (eventEntry != null)
             {
-                string triggerName = getEffectName(card, buff, eventEntry.eventName);
-                game.logger.logTrace("Effect", $"{card}注销触发器{triggerName}");
-                Trigger trigger = card.getProp<Trigger>(game, triggerName);
-                await card.setProp(game, triggerName, null);
-                game.triggers.remove(eventEntry.eventName, trigger);
+                game.logger.logTrace("Effect", $"{card}注销触发器{this}");
+                var eventName = eventEntry.eventName;
+                var triggers = game.triggers.getTriggers(eventName);
+                var trigger = triggers.FirstOrDefault(t => t is EffectTrigger eventTrigger && eventTrigger.effect == this);
+                game.triggers.remove(eventName, trigger);
             }
             await base.onDisable(game, card, buff);
         }

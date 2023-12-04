@@ -132,7 +132,10 @@ namespace TouhouHeartstone
         {
             return player.getField().Concat(new Card[] { player.getMaster() }).ToArray();
         }
-
+        public static Task updateMasterItemAttack(this CardEngine game, Player player)
+        {
+            return game.getRule().updateMasterItemAttack(game, player);
+        }
         #endregion
 
         #region Gameflow
@@ -539,6 +542,24 @@ namespace TouhouHeartstone
                 anyCleared = true;
             }
         }
+        public async Task updateMasterItemAttack(CardEngine game, Player player)
+        {
+            const string buffPlayerPropName = "MASTER_ITEM_ATK_MODI";
+            var master = player.getMaster();
+            var buff = player.getProp<MasterItemAttackBuff>(buffPlayerPropName);
+            if (buff == null)
+            {
+                buff = new MasterItemAttackBuff();
+                await master.addBuff(game, buff);
+                player.setProp(game, buffPlayerPropName, buff);
+            }
+            var attack = 0;
+            if (game.getCurrentPlayer() == player)
+            {
+                attack = player.getItem()?.getAttack(game) ?? 0;
+            }
+            await buff.setProp(game, MasterItemAttackBuff.buffPropName, attack);
+        }
         #endregion
 
         private async Task updateAura(CardEngine game)
@@ -646,9 +667,9 @@ namespace TouhouHeartstone
                     // var cards = deck.Skip(deck.count - count).Reverse()
                     //     .ToArray();
                     await deck.moveTo(game, initCards, player.getInit());
+                    await updateMasterItemAttack(game, player);
                 }
 
-                initRuleTriggers(game);
 
                 var orderLog = string.Join("、", sortPlayers.Select(p => p.ToString()));
                 var masterLog = string.Join("，", sortPlayers.Select(p => $"{p.getMaster()}({p.getSkill()})"));
@@ -833,44 +854,6 @@ namespace TouhouHeartstone
             return game.triggers.doEvent(new GameEndEventArg() { winners = winners });
         }
         #endregion
-        private void initRuleTriggers(CardEngine game)
-        {
-            foreach (var player in game.getSortedPlayers())
-            {
-                var propChangeTrigger = new Trigger<Card.PropChangeEventArg>(
-                    condition: a => a.card == player.getItem() && a.propName == DEFINE.ATTACK,
-                    action: async a => await updateMasterItemAttack(game, player));
-                game.triggers.registerAfter(propChangeTrigger);
-
-                var setDefineTrigger = new Trigger<Card.SetDefineEventArg>(
-                    condition: a => a.card == player.getItem(),
-                    action: async a => await updateMasterItemAttack(game, player));
-                game.triggers.registerAfter(setDefineTrigger);
-
-                var moveTrigger = new Trigger<THHPile.MoveCardEventArg>(
-                    condition: a => a.from == player.getPile(PILE.ITEM) || a.to == player.getPile(PILE.ITEM),
-                    action: async a => await updateMasterItemAttack(game, player));
-                game.triggers.registerAfter(moveTrigger);
-            }
-        }
-        private async Task updateMasterItemAttack(CardEngine game, Player player)
-        {
-            const string buffPlayerPropName = "MASTER_ITEM_ATK_MODI";
-            var master = player.getMaster();
-            var buff = player.getProp<MasterItemAttackBuff>(buffPlayerPropName);
-            if (buff == null)
-            {
-                buff = new MasterItemAttackBuff();
-                await master.addBuff(game, buff);
-                player.setProp(game, buffPlayerPropName, buff);
-            }
-            var attack = 0;
-            if (game.getCurrentPlayer() == player)
-            {
-                attack = player.getItem()?.getAttack(game) ?? 0;
-            }
-            await buff.setProp(game, MasterItemAttackBuff.buffPropName, attack);
-        }
 
         public class InitEventArg : EventArg
         {

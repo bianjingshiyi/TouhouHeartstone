@@ -183,11 +183,7 @@ namespace TouhouHeartstone
         public static Card[] getAvaliableTargets(this CardDefine cardDefine, CardEngine game, Card source)
         {
             List<Card> targetList = new List<Card>();
-            if (cardDefine.getActiveEffect() is ITargetEffect targetEffect)
-            {
-                targetList.AddRange(targetEffect.getAvaliableTargets(game, source));
-            }
-            else if (cardDefine.getEffects().OfType<GeneratedActiveEffect>().FirstOrDefault() is GeneratedActiveEffect generatedEffect)
+            if (cardDefine.getEffects().OfType<GeneratedActiveEffect>().FirstOrDefault() is GeneratedActiveEffect generatedEffect)
             {
                 targetList.AddRange(generatedEffect.getAvaliableTargets(game, source));
             }

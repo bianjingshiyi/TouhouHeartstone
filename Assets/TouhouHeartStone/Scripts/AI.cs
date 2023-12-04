@@ -163,7 +163,7 @@ namespace Game
             {
                 if (!card.isUsable(game, player, out _))
                     continue;
-                if (card.isServant() && card.define.getActiveEffect() == null)
+                if (card.isServant() && !card.hasBattlecry(game))
                 {
                     for (int i = 0; i < player.getField().count + 1; i++)
                     {

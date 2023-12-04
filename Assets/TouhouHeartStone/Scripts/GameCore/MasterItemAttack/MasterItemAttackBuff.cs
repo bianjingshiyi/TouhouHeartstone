@@ -8,6 +8,9 @@ namespace TouhouHeartstone
         {
             _modifiers.Add(new AttackModifier(0) { relatedPropName = buffPropName });
             canClone = false;
+            _effects.Add(new MasterItemAttackEffectPropChanged());
+            _effects.Add(new MasterItemAttackEffectSetDefine());
+            _effects.Add(new MasterItemAttackEffectMoveCard());
         }
 
         public override Buff clone()
