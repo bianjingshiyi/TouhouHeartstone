@@ -29,7 +29,8 @@ namespace Game.BattleTable
             bool startFaceUp = player == table.player && card.pile.name == PILE.HAND;
             var worldPos = targetTransform?.position ?? Vector3.zero;
             var cardPos = table.WorldToTablePosition(targetTransform?.position ?? Vector3.zero);
-            TableCard cardUI = table.createInvokeCard(card, cardPos, -1, startFaceUp);
+            TableCard cardUI = table.createInvokeCard(card, cardPos, -1);
+            cardUI.setFaceup(startFaceUp);
 
 
             var startScale = Vector3.one * startHeight / cardUI.height;

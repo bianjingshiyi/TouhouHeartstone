@@ -59,6 +59,10 @@ namespace Game.BattleTable
         {
             transform.position = pos;
         }
+        public Vector3 getPosition()
+        {
+            return transform.position;
+        }
         #endregion
 
         #endregion

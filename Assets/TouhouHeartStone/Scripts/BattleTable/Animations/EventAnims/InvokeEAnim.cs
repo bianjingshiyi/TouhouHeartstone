@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using TouhouCardEngine;
 using TouhouHeartstone;
+using UI;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
@@ -27,14 +28,16 @@ namespace Game.BattleTable
                 targetDeck = player == table.player ? table.table.SelfDeck : table.table.EnemyDeck;
                 var deckPos = table.WorldToTablePosition(targetDeck.HoverTransform.position);
                 var lossyScale = table.WorldToTableScale(targetDeck.transform.lossyScale);
-                cardUISelf = table.createInvokeCard(youCard, deckPos, targetDeck.getCardHeight() * lossyScale.z, false);
+                cardUISelf = table.createInvokeCard(youCard, deckPos, targetDeck.getCardHeight() * lossyScale.z);
+                cardUISelf.setFaceup(false);
             }
             if (oppoCard != null)
             {
                 targetDeck = player == table.player ? table.table.EnemyDeck : table.table.SelfDeck;
                 var deckPos = table.WorldToTablePosition(targetDeck.HoverTransform.position);
                 var lossyScale = table.WorldToTableScale(targetDeck.transform.lossyScale);
-                cardUIOppo = table.createInvokeCard(oppoCard, deckPos, targetDeck.getCardHeight() * lossyScale.z, false);
+                cardUIOppo = table.createInvokeCard(oppoCard, deckPos, targetDeck.getCardHeight() * lossyScale.z);
+                cardUISelf.setFaceup(false);
             }
 
             //播放位移曲线动画到对应的位置

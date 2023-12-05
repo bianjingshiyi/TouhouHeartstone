@@ -16,7 +16,8 @@ namespace Game.BattleTable
                 AnimAnim anim = null;
                 while (!SimpleAnimHelper.update(table, ref anim, secret.onMissionCompleted, secret.animator, _deltaTime))
                 {
-                    table.setCard(secret.card, card, true);
+                    table.setCard(secret.card, card);
+                    secret.card.setFaceup(true);
                     yield return null;
                 }
             }

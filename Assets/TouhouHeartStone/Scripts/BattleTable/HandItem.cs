@@ -98,6 +98,7 @@ namespace Game.BattleTable
         public SimpleAnim onCreated;
         public SimpleAnim onEnemyUse;
         public SimpleAnim onSelfUse;
+        public SimpleAnim onDiscard;
         #endregion
     }
 }

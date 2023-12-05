@@ -155,7 +155,8 @@ namespace Game.BattleTable
             // 播放使用动画。
             if (table.tryGetHand(_card, out var hand))
             {
-                table.setCard(hand.card, _card, !_card.isTrap(table.game) || table.canSeeCardOfOwner(_card.owner));
+                table.setCard(hand.card, _card);
+                hand.card.setFaceup(!_card.isTrap(table.game) || table.canSeeCardOfOwner(_card.owner));
                 hand.positionLerp.setStartPositionToCurrent();
                 hand.positionLerp.setTargetTransform(table.table.SpellDisplayTransform);
                 AnimAnim useAnim = null;

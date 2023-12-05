@@ -12,7 +12,8 @@ namespace Game.BattleTable
             if (table.tryGetSecret(card, out var secret))
             {
                 secret.dummyTarget.position = table.table.CenterDisplayTransform.position;
-                table.setCard(secret.card, card, true);
+                table.setCard(secret.card, card);
+                secret.card.setFaceup(true);
 
                 AnimAnim triggerAnim = new AnimAnim(secret.animator, secret.onSecretTrigger.animName);
                 AnimAnim exitAnim = new AnimAnim(secret.animator, secret.onSecretExit.animName);

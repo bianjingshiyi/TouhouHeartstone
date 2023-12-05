@@ -71,7 +71,7 @@ namespace Game.BattleTable
             }
             else if (tryGetHand(card, out var hand))
             {
-                setCard(hand.card, card, isHandVisible(hand));
+                setCard(hand.card, card);
             }
         }
         /// <summary>
@@ -388,7 +388,8 @@ namespace Game.BattleTable
                 item = handList.insertHand(position);
             }
             item.isDraggable = selfHand;
-            setCardDesc(item.card, desc, canSeeCardOfOwner(owner));
+            setCardDesc(item.card, desc);
+            item.card.setFaceup(canSeeCardOfOwner(owner));
 
             var skin = getCardSkin(desc.define);
             item.gameObject.name = $"{skin?.name ?? "Hand"}<{desc.id}>";
@@ -476,7 +477,8 @@ namespace Game.BattleTable
                 usingHand.card.setVisible(true);
                 usingHand.setSpellReady(false);
                 var desc = updateCardDescriptor(handCard);
-                setCardDesc(usingHand.card, desc, true);
+                setCardDesc(usingHand.card, desc);
+                usingHand.card.setFaceup(true);
                 usingHand.card.transform.localScale = Vector3.one;
                 usingHand.card.transform.localPosition = Vector3.zero;
                 usingHand.ignoreAlign = false;
@@ -692,7 +694,27 @@ namespace Game.BattleTable
         }
         public Field getField(Pile pile)
         {
-            return pile.owner == player ? table.SelfField : table.EnemyField;
+            if (pile == player.getField())
+                return table.SelfField;
+            else if (pile == game.getOpponent(player).getField())
+                return table.EnemyField;
+            return null;
+        }
+        public Field getFieldOfServant(Servant servant)
+        {
+            if (table.SelfField.Contains(servant))
+                return table.SelfField;
+            else if (table.EnemyField.Contains(servant))
+                return table.EnemyField;
+            return null;
+        }
+        public Pile getFieldPile(Field field)
+        {
+            if (field == table.SelfField)
+                return player.getField();
+            else if (field == table.EnemyField)
+                return game.getOpponent(player).getField();
+            return null;
         }
         #endregion
 
@@ -864,24 +886,24 @@ namespace Game.BattleTable
         #endregion
 
         #region 揭示
-        public UICard createInvokeCard(ICardData card, Vector3 position, float height = -1, bool isFaceUp = true) => createInvokeCard(updateCardDescriptor(card), position, height, isFaceUp);
-        public UICard createInvokeCard(CardDescriptor desc, Vector3 position, float height = -1, bool isFaceUp = true)
+        public UICard createInvokeCard(ICardData card, Vector3 position, float height = -1) => createInvokeCard(updateCardDescriptor(card), position, height);
+        public UICard createInvokeCard(CardDescriptor desc, Vector3 position, float height = -1)
         {
             var worldPos = TableToWorldPosition(position);
             var card = Instantiate(table.CardTemplate, worldPos, Quaternion.identity, table.InvokeDisplayParent).GetComponent<UICard>();
             card.transform.localRotation = Quaternion.identity;
-            setCardDesc(card, desc, isFaceUp);
+            setCardDesc(card, desc);
             if (height < 0)
                 return card;
             card.transform.localScale = Vector3.one * height / _cardHeight;
             return card;
         }
-        public UICard createInvokeCard(CardDefine define, Vector3 position, float height = -1, bool isFaceUp = true)
+        public UICard createInvokeCard(CardDefine define, Vector3 position, float height = -1)
         {
             var worldPos = TableToWorldPosition(position);
             var card = Instantiate(table.CardTemplate, worldPos, Quaternion.identity, table.InvokeDisplayParent).GetComponent<UICard>();
             card.transform.localRotation = Quaternion.identity;
-            setCardDefine(card, define, isFaceUp);
+            setCardDefine(card, define);
             if (height < 0)
                 return card;
             card.transform.localScale = Vector3.one * height / _cardHeight;
@@ -902,10 +924,10 @@ namespace Game.BattleTable
         #endregion
 
         #region 移动中的卡牌
-        public UICard createMovingCard(ICardData card, Vector3 position, float height = -1, bool isFaceUp = true) => createMovingCard(updateCardDescriptor(card), position, height, isFaceUp);
-        public UICard createMovingCard(CardDescriptor desc, Vector3 position, float height = -1, bool isFaceUp = true)
+        public UICard createMovingCard(ICardData card, Vector3 position, float height = -1) => createMovingCard(updateCardDescriptor(card), position, height);
+        public UICard createMovingCard(CardDescriptor desc, Vector3 position, float height = -1)
         {
-            var card = createCard(desc, position, height, isFaceUp);
+            var card = createCard(desc, position, height);
             _movingCardDic.Add(desc.id, card);
             return card;
         }
@@ -1113,7 +1135,8 @@ namespace Game.BattleTable
                 var snapshot = newSnapshot(card);
                 var item = dialog.addChoice();
                 item.setMarkVisible(false);
-                setCard(item.card, snapshot, true);
+                setCard(item.card, snapshot);
+                item.card.setFaceup(true);
                 setInitCard(item, card.id);
             }
             dialog.setWaiting(false);
@@ -1167,42 +1190,42 @@ namespace Game.BattleTable
             }
             return null;
         }
-        public UICard createCard(ICardData card, Vector3 position, float height = -1, bool isFaceUp = true) => createCard(updateCardDescriptor(card), position, height, isFaceUp);
-        public UICard createCard(CardDescriptor desc, Vector3 position, float height = -1, bool isFaceUp = true)
+        public UICard createCard(ICardData card, Vector3 position, float height = -1) => createCard(updateCardDescriptor(card), position, height);
+        public UICard createCard(CardDescriptor desc, Vector3 position, float height = -1)
         {
             var worldPos = TableToWorldPosition(position);
             var card = Instantiate(table.CardTemplate, worldPos, Quaternion.identity, table.DisplayerCardsParent).GetComponent<UICard>();
             card.transform.localEulerAngles = Vector3.zero;
-            setCardDesc(card, desc, isFaceUp);
+            setCardDesc(card, desc);
             if (height >= 0)
                 card.transform.localScale = Vector3.one * height / _cardHeight;
             return card;
         }
-        public UICard createCard(CardDefine define, Vector3 position, float height = -1, bool isFaceUp = true)
+        public UICard createCard(CardDefine define, Vector3 position, float height = -1)
         {
             var worldPos = TableToWorldPosition(position);
             var card = Instantiate(table.CardTemplate, worldPos, Quaternion.identity, table.DisplayerCardsParent).GetComponent<UICard>();
             card.transform.localEulerAngles = Vector3.zero;
-            setCardDefine(card, define, isFaceUp);
+            setCardDefine(card, define);
             if (height >= 0)
                 card.transform.localScale = Vector3.one * height / _cardHeight;
             return card;
         }
-        public void setCard(UICard table, CardSnapshot card, bool isFaceUp = true) => setCardDesc(table, updateCardDescriptor(card), isFaceUp);
+        public void setCard(UICard table, CardSnapshot card) => setCardDesc(table, updateCardDescriptor(card));
         /// <summary>
         /// 设置卡片UI
         /// </summary>
         /// <param name="card"></param>
         /// <param name="desc"></param>
         /// <param name="isFaceup"></param>
-        public async void setCardDesc(UICard card, CardDescriptor desc, bool isFaceup = true)
+        public async void setCardDesc(UICard card, CardDescriptor desc)
         {
-            await card.setCard(desc, this, isFaceup);
+            await card.setCard(desc, this);
             setCardDescriptor(desc);
         }
-        public async void setCardDefine(UICard card, CardDefine define, bool isFaceUp = true)
+        public async void setCardDefine(UICard card, CardDefine define)
         {
-            await card.setCardDefine(define, this, isFaceUp);
+            await card.setCardDefine(define, this);
         }
         /// <summary>
         /// 显示文本提示
@@ -1222,7 +1245,8 @@ namespace Game.BattleTable
             ui.CardDisplayerObj.transform.localPosition = pos;
 
             ui.CardDisplayer.setVisible(true);
-            setCardDesc(ui.CardDisplayer.card, desc, true);
+            setCardDesc(ui.CardDisplayer.card, desc);
+            ui.CardDisplayer.card.setFaceup(true);
 
             var buffs = desc.getBuffs().Where(b => b is not IInnateBuff);
             var buffViewDatas = await getCardBuffViewDatas(buffs);
@@ -2333,7 +2357,8 @@ namespace Game.BattleTable
                     game.triggers.revertChanges(cardSnapshot, 0);
                     desc = updateCardDescriptor(cardSnapshot);
                 }
-                setCardDesc(item.card, desc, true);
+                setCardDesc(item.card, desc);
+                item.card.setFaceup(true);
             }
         }
         private void updateDeckPanel(Player player, string pileName)

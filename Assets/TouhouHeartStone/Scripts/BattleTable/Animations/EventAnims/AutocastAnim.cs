@@ -26,7 +26,8 @@ namespace Game.BattleTable
             // 如果该牌在你的手牌里，起始正面朝上。
             var worldPos = targetTransform?.position ?? table.table.CenterDisplayTransform.position;
             var cardPos = table.WorldToTablePosition(targetTransform?.position ?? Vector3.zero);
-            TableCard cardUI = table.createInvokeCard(card, cardPos, -1, false);
+            TableCard cardUI = table.createInvokeCard(card, cardPos, -1);
+            cardUI.setFaceup(false);
 
             var startScale = Vector3.one * startHeight / cardUI.height;
             cardUI.transform.localScale = startScale;

@@ -23,7 +23,8 @@ namespace Game.BattleTable
             var grave = player == table.player ? table.table.SelfGrave : table.table.EnemyGrave;
 
             var cardPos = table.WorldToTablePosition(deck.HoverTransform.position);
-            var cardItem = table.createCard(card, cardPos, -1, true);
+            var cardItem = table.createCard(card, cardPos, -1);
+            cardItem.setFaceup(true);
             _timer.start();
             while (!_timer.isExpired())
             {

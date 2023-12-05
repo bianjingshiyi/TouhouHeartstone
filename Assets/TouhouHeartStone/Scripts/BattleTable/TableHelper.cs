@@ -10,13 +10,12 @@ namespace Game.BattleTable
 {
     static class TableHelper
     {
-        public static void setUnknownCard(this UICard ui, CardManager cardManager, bool isFaceUp = true)
+        public static void setUnknownCard(this UICard ui, CardManager cardManager)
         {
             ui.setImageSprite(cardManager.getDefaultSprite());
             ui.setName(StringTable.BUILD_UNKNOW_CARD_NAME);
             ui.setSubname(string.Empty);
             ui.setDesc(string.Empty);
-            ui.setFaceup(isFaceUp);
             ui.setCost(0);
             ui.setType(DEFINE.SERVANT);
             ui.setAttack(0);
@@ -24,7 +23,7 @@ namespace Game.BattleTable
         }
 
 
-        public static void setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, BattleTableManager table, bool isFaceUp = true)
+        public static void setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, BattleTableManager table)
         {
             string name = StringTable.BUILD_UNKNOW_CARD_NAME;
             string subName = string.Empty;
@@ -35,7 +34,6 @@ namespace Game.BattleTable
                 subName = skin.subname;
                 desc = skin.desc;
             }
-            ui.setFaceup(isFaceUp);
             ui.setName(name);
             ui.setSubname(subName);
             ui.setDesc(desc);
@@ -46,7 +44,7 @@ namespace Game.BattleTable
             ui.setType(card.type);
             ui.setTranslatedTag(table.cardManager, card.getTags().FirstOrDefault());
         }
-        public static void setCard(this UICard ui, CardEngine game, Card card, CardSkinData skin, BattleTableManager table, bool isFaceUp = true)
+        public static void setCard(this UICard ui, CardEngine game, Card card, CardSkinData skin, BattleTableManager table)
         {
             string name = StringTable.BUILD_UNKNOW_CARD_NAME;
             string subName = string.Empty;
@@ -57,7 +55,6 @@ namespace Game.BattleTable
                 subName = skin.subname;
                 desc = skin.desc;
             }
-            ui.setFaceup(isFaceUp);
             ui.setName(name);
             ui.setSubname(subName);
             ui.setDesc(desc);
@@ -68,7 +65,7 @@ namespace Game.BattleTable
             ui.setType(card.define.type);
             ui.setTranslatedTag(table.cardManager, card.getTags(game).FirstOrDefault());
         }
-        public static void setCard(this UICard ui, CardDescriptor desc, CardSkinData skin, BattleTableManager table, bool isFaceUp = true)
+        public static void setCard(this UICard ui, CardDescriptor desc, CardSkinData skin, BattleTableManager table)
         {
             string name = StringTable.BUILD_UNKNOW_CARD_NAME;
             string subName = string.Empty;
@@ -79,7 +76,6 @@ namespace Game.BattleTable
                 subName = skin.subname;
                 description = skin.desc;
             }
-            ui.setFaceup(isFaceUp);
             ui.setName(name);
             ui.setSubname(subName);
             ui.setDesc(description);
@@ -91,28 +87,28 @@ namespace Game.BattleTable
             ui.setTranslatedTag(table.cardManager, desc.getTags().FirstOrDefault());
         }
 
-        public static async Task setCardDefine(this UICard ui, CardDefine card, BattleTableManager table, bool isFaceUp = true)
+        public static async Task setCardDefine(this UICard ui, CardDefine card, BattleTableManager table)
         {
             var skin = table.getCardSkin(card);
-            ui.setCardDefine(card, skin, table, isFaceUp);
+            ui.setCardDefine(card, skin, table);
 
             ui.setImageSprite(null);
             ui.setImageSprite(await table.loadCardImage(card));
         }
-        public static async Task setCard(this UICard ui, CardEngine game, Card card, BattleTableManager table, bool isFaceUp = true)
+        public static async Task setCard(this UICard ui, CardEngine game, Card card, BattleTableManager table)
         {
             var define = card.define;
             var skin = table.getCardSkin(define);
-            ui.setCard(game, card, skin, table, isFaceUp);
+            ui.setCard(game, card, skin, table);
 
             ui.setImageSprite(null);
             ui.setImageSprite(await table.loadCardImage(define));
         }
-        public static async Task setCard(this UICard ui, CardDescriptor desc, BattleTableManager table, bool isFaceUp = true)
+        public static async Task setCard(this UICard ui, CardDescriptor desc, BattleTableManager table)
         {
             var define = desc.define;
             var skin = table.getCardSkin(define);
-            ui.setCard(desc, skin, table, isFaceUp);
+            ui.setCard(desc, skin, table);
 
             ui.setImageSprite(null);
             ui.setImageSprite(await table.loadCardImage(define));

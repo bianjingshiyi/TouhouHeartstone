@@ -31,7 +31,7 @@ namespace Game.BattleTable
             if (isShow)
             {
                 var tablePos = table.WorldToTablePosition(table.table.LeftDisplayTransform.position);
-                searchedUI = table.createInvokeCard(searched, tablePos, -1, true);
+                searchedUI = table.createInvokeCard(searched, tablePos, -1);
                 searchedUI.setFaceup(true);
             }
             if (searchedUI != null)
