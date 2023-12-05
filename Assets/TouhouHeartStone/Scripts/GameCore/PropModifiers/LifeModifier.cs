@@ -55,15 +55,17 @@ namespace TouhouHeartstone
                 }
             }
         }
-        public override Task afterAdd(IGame game, Card card, int value)
+        public override Task afterAdd(IGame game, Card card, Buff buff)
         {
+            var value = getValueGeneric(buff);
             if (isSet)
                 return card.setCurrentLife(game, value);
             else
                 return card.setCurrentLife(game, card.getCurrentLife(game) + value);
         }
-        public override Task afterRemove(IGame game, Card card, int value)
+        public override Task afterRemove(IGame game, Card card, Buff buff)
         {
+            var value = getValueGeneric(buff);
             int life = card.getLife(game);
             int lifeBefore = isSet ? value : life + value;
             if (card.getCurrentLife(game) > life || card.getCurrentLife(game) >= lifeBefore)

@@ -112,6 +112,22 @@ namespace Game.BattleTable
             _servantCardFace.lifePropNumber.text = value.ToString();
             _itemCardFace.lifePropNumber.text = value.ToString();
         }
+        public void setCostColor(PropertyNumberColor color)
+        {
+            _servantCardFace.costPropNumber.setTextColor(color);
+            _spellCardFace.costPropNumber.setTextColor(color);
+            _itemCardFace.costPropNumber.setTextColor(color);
+        }
+        public void setAttackColor(PropertyNumberColor color)
+        {
+            _servantCardFace.attackPropNumber.setTextColor(color);
+            _itemCardFace.attackPropNumber.setTextColor(color);
+        }
+        public void setLifeColor(PropertyNumberColor color)
+        {
+            _servantCardFace.lifePropNumber.setTextColor(color);
+            _itemCardFace.lifePropNumber.setTextColor(color);
+        }
         public void setImageSprite(Sprite sprite)
         {
             _servantCardFace.setImage(sprite);

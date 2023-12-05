@@ -15,9 +15,10 @@ namespace TouhouHeartstone
             this.modifyType = modifyType;
             defaultValue = keywords;
         }
-        public override async Task afterAdd(IGame game, Card card, string[] value)
+        public override async Task afterAdd(IGame game, Card card, Buff buff)
         {
-            await base.afterAdd(game, card, value);
+            await base.afterAdd(game, card, buff);
+            var value = getValueGeneric(buff);
             if (modifyType != ModifyType.remove)
             {
                 if (value.Contains(KEYWORD.SHIELD))
@@ -35,9 +36,9 @@ namespace TouhouHeartstone
             }
             await card.updateConsumableKeywords(game);
         }
-        public override async Task afterRemove(IGame game, Card card, string[] value)
+        public override async Task afterRemove(IGame game, Card card, Buff buff)
         {
-            await base.afterRemove(game, card, value);
+            await base.afterRemove(game, card, buff);
             await card.updateConsumableKeywords(game);
         }
         public override async Task updateModifierValue(IGame game, Card card, Buff buff, string[] beforeValue)
