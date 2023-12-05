@@ -42,7 +42,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1611564898521198222}
   - component: {fileID: 7488325048986563159}
-  - component: {fileID: 8560584323822826015}
   - component: {fileID: 1302055937998032549}
   - component: {fileID: 2515207805356348700}
   m_Layer: 0
@@ -113,14 +112,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!222 &8560584323822826015
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 585040013020163705}
-  m_CullTransparentMesh: 0
 --- !u!114 &1302055937998032549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -236,7 +227,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7526432509319396994}
   - component: {fileID: 8574021174838073066}
-  - component: {fileID: 2626802418378700739}
   - component: {fileID: 5488881816098038343}
   - component: {fileID: 1048943708271434374}
   m_Layer: 0
@@ -307,14 +297,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!222 &2626802418378700739
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1899506279461779800}
-  m_CullTransparentMesh: 0
 --- !u!114 &5488881816098038343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1446,27 +1428,15 @@ MonoBehaviour:
   _positionLerp: {fileID: 7329718665738090604}
   _animator: {fileID: 1267963013017074943}
   _height: 2
-  onSummon:
+  onSetDefine:
     beforeAnim:
       m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 2663651097169108865}
-          m_TargetAssemblyTypeName: 
-          m_MethodName: PlaySE
-          m_Mode: 5
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: SummonServant
-            m_BoolArgument: 0
-          m_CallState: 2
+        m_Calls: []
     setColor:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: Summon
+    animName: 
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -1558,15 +1528,51 @@ MonoBehaviour:
         m_Calls: []
   healEffectPrefab: {fileID: 198025859805546612, guid: 721cfe8018b2cd04abd0748143d2a312,
     type: 3}
-  onSetDefine:
+  onDeath:
     beforeAnim:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 6575253070495977050}
+          m_TargetAssemblyTypeName: 
+          m_MethodName: setDead
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
     setColor:
       enable: 0
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
-    animName: 
+    animName: Death
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onSummon:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2663651097169108865}
+          m_TargetAssemblyTypeName: 
+          m_MethodName: PlaySE
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: SummonServant
+            m_BoolArgument: 0
+          m_CallState: 2
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: Summon
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
@@ -1615,30 +1621,6 @@ MonoBehaviour:
       target: {fileID: 0}
       color: {r: 1, g: 1, b: 1, a: 1}
     animName: 
-    afterAnim:
-      m_PersistentCalls:
-        m_Calls: []
-  onDeath:
-    beforeAnim:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 6575253070495977050}
-          m_TargetAssemblyTypeName: 
-          m_MethodName: setDead
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 1
-          m_CallState: 2
-    setColor:
-      enable: 0
-      target: {fileID: 0}
-      color: {r: 1, g: 1, b: 1, a: 1}
-    animName: Death
     afterAnim:
       m_PersistentCalls:
         m_Calls: []

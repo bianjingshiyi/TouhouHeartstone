@@ -508,7 +508,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2594897108887132650}
   - component: {fileID: 3940550341812302844}
-  - component: {fileID: 6637418224635441749}
   - component: {fileID: 4201888396660245598}
   - component: {fileID: 8309189065231056395}
   m_Layer: 0
@@ -579,14 +578,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!222 &6637418224635441749
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2463745719847299635}
-  m_CullTransparentMesh: 0
 --- !u!114 &4201888396660245598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -853,7 +844,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5600400935421889996}
   - component: {fileID: 8240880349345571100}
-  - component: {fileID: 791332604848809073}
   - component: {fileID: 2494531635421379456}
   - component: {fileID: 7717626411151536727}
   m_Layer: 0
@@ -924,14 +914,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!222 &791332604848809073
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3272879018811036608}
-  m_CullTransparentMesh: 0
 --- !u!114 &2494531635421379456
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1145,6 +1127,18 @@ MonoBehaviour:
   _positionLerp: {fileID: 2378162530576898090}
   _animator: {fileID: 7801645953333531585}
   _height: 0
+  onSetDefine:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
   onTargeted:
     beforeAnim:
       m_PersistentCalls:
@@ -1219,18 +1213,6 @@ MonoBehaviour:
         m_Calls: []
   damageEffectPrefab: {fileID: 198406564588387756, guid: 89f21bbcc5cb3ea418e1be51775f9548,
     type: 3}
-  onSetDefine:
-    beforeAnim:
-      m_PersistentCalls:
-        m_Calls: []
-    setColor:
-      enable: 0
-      target: {fileID: 0}
-      color: {r: 1, g: 1, b: 1, a: 1}
-    animName: 
-    afterAnim:
-      m_PersistentCalls:
-        m_Calls: []
   onHeal:
     beforeAnim:
       m_PersistentCalls:
