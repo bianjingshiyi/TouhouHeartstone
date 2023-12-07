@@ -21,7 +21,7 @@ namespace Game.BattleTable
             game.triggers.revertChanges(snapshot, eventIndex);
             return snapshot;
         }
-        public CardSnapshot getEventCardSnapshot(EventArg eventArg, string varName)
+        public CardSnapshot getEventCardSnapshot(IEventArg eventArg, string varName)
         {
             var card = eventArg.getVar<Card>(varName);
             if (card == null)

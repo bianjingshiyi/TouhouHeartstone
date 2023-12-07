@@ -5,12 +5,12 @@ using TouhouHeartstone;
 
 namespace Game.BattleTable
 {
-    using Arg = HearthStoneRule.GameEndEventArg;
+    using Arg = GameEndEventDefine;
     public class GameEndAnimation : EventAnimation<Arg>
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var winners = tEventArg.getVar<Player[]>(Arg.VAR_WINNERS);
+            var winners = eventArg.getVar<Player[]>(Arg.VAR_WINNERS);
 
             table.showGameResult(winners.Contains(table.player));
             yield break;

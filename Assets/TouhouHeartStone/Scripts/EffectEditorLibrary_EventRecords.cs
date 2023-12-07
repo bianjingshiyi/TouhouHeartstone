@@ -116,7 +116,7 @@ namespace Game
                     results.Insert(0, record);
                 if (turnBeforeCount > farther)
                     break;
-                if (record.eventArg is HearthStoneRule.TurnStartEventArg)
+                if (record.eventArg.define is TurnStartEventDefine)
                 {
                     turnBeforeCount++;
                 }

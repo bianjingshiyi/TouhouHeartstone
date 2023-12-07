@@ -31,6 +31,10 @@ namespace Game
         {
             return list.FirstOrDefault(e => e.eventName == eventTypeName || (e.obsoleteNames != null && e.obsoleteNames.Contains(eventTypeName)));
         }
+        public static EventDefine FindEventDefine(this IEnumerable<EventDefine> list, EventReference eventRef)
+        {
+            return list.FirstOrDefault(e => (e.cardPoolId == eventRef.cardPoolId && e.eventName == eventRef.eventName) || (e.obsoleteNames != null && e.obsoleteNames.Contains(eventRef.eventName)));
+        }
         public static EventTriggerTime getEventTriggerTimeByName(this IEnumerable<EventDefine> list, string triggerTimeName)
         {
             var beforeEventDefine = list.FirstOrDefault(e =>
@@ -66,12 +70,12 @@ namespace Game
             var eventManager = main.eventManager;
             return list.Select(e => eventManager.translateEventDefineNameForEditor(e)).ToArray();
         }
-        public static int getEventTriggerTimeIndex(this IEnumerable<EventTriggerTime> list, string triggerTimeName)
+        public static int getEventTriggerTimeIndex(this IEnumerable<EventTriggerTime> list, EventTriggerTime triggerTime)
         {
             int index = 0;
-            foreach (var eventDefine in list)
+            foreach (var time in list)
             {
-                if (eventDefine.getTimeName() == triggerTimeName)
+                if (time == triggerTime)
                 {
                     return index;
                 }

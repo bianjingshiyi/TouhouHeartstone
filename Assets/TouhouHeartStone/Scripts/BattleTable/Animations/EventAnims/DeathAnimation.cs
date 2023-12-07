@@ -8,7 +8,7 @@ using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
-    using Arg = THHCard.DeathEventArg;
+    using Arg = DeathEventDefine;
     /// <summary>
     /// 死亡动画，这是一个事件动画
     /// </summary>
@@ -22,7 +22,7 @@ namespace Game.BattleTable
         /// <returns></returns>
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var cardId = tEventArg.getVar<Card>(EVENTVAR.CARD).id;
+            var cardId = eventArg.getVar<Card>(EVENTVAR.CARD).id;
             AnimAnim anim = null;
             if (table.tryGetServant(cardId, out var serv))//尝试获取死亡的随从的随从UI
             {
@@ -67,7 +67,7 @@ namespace Game.BattleTable
 
         public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
         {
-            return following.OfType<DeathAnimation>().Where(a => a.tEventArg.parent == tEventArg.parent);
+            return following.OfType<DeathAnimation>().Where(a => a.eventArg.parent == eventArg.parent);
         }
     }
 }

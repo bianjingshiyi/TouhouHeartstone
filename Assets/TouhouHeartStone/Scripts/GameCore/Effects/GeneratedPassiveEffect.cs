@@ -32,7 +32,7 @@ namespace TouhouHeartstone
                 if (condition == null || condition.getConnectedOutputPort() == null)
                     return true;
 
-                var flow = new Flow(game, card, buff, eventArg, this);
+                var flow = new Flow(game as CardEngine, card, buff, eventArg, this);
                 var task = game.getValue<bool>(flow, condition);
                 if (task.IsCompleted)
                 {
@@ -43,22 +43,6 @@ namespace TouhouHeartstone
             }
             else
                 return false;
-        }
-        public override Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
-        {
-            var triggerArg = new EffectTriggerEventArg(card as Card, buff as Buff, this);
-            return game.triggers.doEvent(triggerArg, func);
-
-            Task func(EffectTriggerEventArg arg)
-            {
-                var entry = passiveEntry;
-                if (entry != null)
-                {
-                    var flow = new Flow(game, card, buff, eventArg, this);
-                    return game.runActions(flow, entry.getActionOutputPort());
-                }
-                return Task.CompletedTask;
-            }
         }
         public override void setTags(params string[] tags)
         {
@@ -91,12 +75,23 @@ namespace TouhouHeartstone
         {
             graph.createPassiveEntryNode();
         }
+        protected override Task runEffect(CardEngine game, Card card, Buff buff, EventArg arg, string portName)
+        {
+            var entry = passiveEntry;
+            if (entry != null)
+            {
+                var flow = new Flow(game, card, buff, arg, this);
+                return game.runActions(flow, entry.getOutputPort<ControlOutput>(portName));
+            }
+            return Task.CompletedTask;
+        }
         #endregion
         #region 属性字段
         public PassiveEntryNode passiveEntry => graph?.findPassiveEntryNode();
         public virtual Node entryNode => passiveEntry;
         public override ControlOutput onEnableAction => entryNode?.getOutputPort<ControlOutput>(enableActionName);
         public override ControlOutput onDisableAction => entryNode?.getOutputPort<ControlOutput>(disableActionName);
+        public override ControlOutput executePort => entryNode?.getOutputPort<ControlOutput>(PassiveEntryNode.actionPortName);
         public virtual string[] piles => passiveEntry?.piles?.ToArray() ?? Array.Empty<string>();
         public const string enableActionName = "enableAction";
         public const string disableActionName = "disableAction";

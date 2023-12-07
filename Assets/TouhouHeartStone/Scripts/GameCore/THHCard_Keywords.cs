@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using System;
-using MukioI18n;
-using PropChangeEventArg = TouhouCardEngine.Card.PropChangeEventArg;
 
 namespace TouhouHeartstone
 {
@@ -133,24 +131,18 @@ namespace TouhouHeartstone
             else
                 card.removeKeywords(game, KEYWORD.UNIQUE);
         }
-        public static Task<BeChargedEventArg> setChargeLevel(this Card card, CardEngine game, int value)
+        public static Task<EventArg> setChargeLevel(this Card card, CardEngine game, int value)
         {
             var beforeValue = card.getChargedLevel(game);
             if (value == beforeValue)
-                return Task.FromResult<BeChargedEventArg>(null);
-            return game.triggers.doEvent(new BeChargedEventArg() { card = card, beforeValue = beforeValue, value = value }, arg =>
-            {
-                card = arg.card;
-                value = arg.value;
-                game.logger.logTrace($"{card}改变蓄力层数 => {value}");
-                return card.setProp(game, CARD.CHARGED_LEVEL, value);
-            });
+                return Task.FromResult<EventArg>(null);
+            return BeChargedEventDefine.doEvent(game, card, value);
         }
-        public static Task<PropChangeEventArg> setSpellDamage(this Card card, IGame game, int value)
+        public static Task<EventArg> setSpellDamage(this Card card, IGame game, int value)
         {
             return card.setProp(game, DEFINE.SPELL_DAMAGE, value);
         }
-        public static Task<PropChangeEventArg> setDamageReduce(this Card card, IGame game, int value)
+        public static Task<EventArg> setDamageReduce(this Card card, IGame game, int value)
         {
             return card.setProp(game, DEFINE.DAMAGE_REDUCE, value);
         }
@@ -160,46 +152,22 @@ namespace TouhouHeartstone
 
         #region 动作关键词
         [Obsolete]
-        public static async Task<SilenceEventArg[]> silenceObsoleteMass(this IEnumerable<Card> cards, CardEngine game)
+        public static async Task<EventArg[]> silenceObsoleteMass(this IEnumerable<Card> cards, CardEngine game)
         {
-            List<SilenceEventArg> eventArgs = new List<SilenceEventArg>();
+            List<EventArg> eventArgs = new List<EventArg>();
             foreach (var card in cards)
             {
                 eventArgs.Add(await silence(card, game));
             }
             return eventArgs.ToArray();
         }
-        public static Task<MassSealEventArg> silence(this IEnumerable<Card> cards, CardEngine game)
+        public static Task<EventArg> silence(this IEnumerable<Card> cards, CardEngine game)
         {
-            return game.triggers.doEvent(new MassSealEventArg() { cards = cards.ToArray() }, async arg =>
-            {
-                var argCards = arg.cards;
-                foreach (var card in argCards)
-                {
-                    await silence(card, game);
-                }
-            });
+            return MassSealEventDefine.doEvent(game, cards.ToArray());
         }
-        public static Task<SilenceEventArg> silence(this Card card, CardEngine game)
+        public static Task<EventArg> silence(this Card card, CardEngine game)
         {
-            SilenceEventArg eventArg = new SilenceEventArg() { card = card };
-            return game.triggers.doEvent(eventArg, func);
-
-            async Task func(SilenceEventArg arg)
-            {
-                var argCard = arg.card;
-                if (argCard == null)
-                    return;
-                await argCard.setProp(game, CARD.SILENCE, true);
-                await argCard.removeAllBuffs(game);
-                foreach (var effect in argCard.define.getEffects().OfType<IPassiveEffect>())
-                {
-                    await effect.onDisable(game, argCard, null);
-                }
-                await argCard.setKeywords(game, new string[0]);
-                await card.setSpellDamage(game, 0);
-                await card.setDamageReduce(game, 0);
-            }
+            return SilenceEventDefine.doEvent(game, card);
         }
         public static bool isSilenced(this ICardData card, IGame game)
         {
@@ -303,7 +271,7 @@ namespace TouhouHeartstone
                 await card.removeKeywords(game, KEYWORD.HAS_STEALTH);
             }
         }
-        public static async Task setFreeze(this Card card, IGame game, bool value)
+        public static async Task setFreeze(this Card card, CardEngine game, bool value)
         {
             if (value)
             {
@@ -315,18 +283,9 @@ namespace TouhouHeartstone
                 await card.removeKeywords(game, KEYWORD.IS_FROZEN);
             }
         }
-        public static async Task<ShackleEventArg> shackle(this Card card, IGame game)
+        public static Task<EventArg> shackle(this Card card, CardEngine game)
         {
-            ShackleEventArg eventArg = new ShackleEventArg()
-            {
-                card = card
-            };
-            return await game.triggers.doEvent(eventArg, async (arg) =>
-            {
-                var argCard = arg.card;
-                await argCard.addKeywords(game, KEYWORD.FROZEN);
-                await argCard.addKeywords(game, KEYWORD.IS_FROZEN);
-            });
+            return ShackleEventDefine.doEvent(game, card);
         }
         #endregion
 
@@ -349,7 +308,7 @@ namespace TouhouHeartstone
             }
             return keywords.Contains(keyword);
         }
-        public static async Task<PropChangeEventArg> setKeywords(this Card card, IGame game, string[] keywords)
+        public static async Task<EventArg> setKeywords(this Card card, IGame game, string[] keywords)
         {
             if (keywords == null)
                 keywords = new string[0];
@@ -394,7 +353,7 @@ namespace TouhouHeartstone
         {
             return card.getProp<string[]>(game, DEFINE.KEYWORDS) ?? Array.Empty<string>();
         }
-        public static Task<PropChangeEventArg> addKeywords(this Card card, IGame game, params string[] keywords)
+        public static Task<EventArg> addKeywords(this Card card, IGame game, params string[] keywords)
         {
             string[] oldKeywords = card.getKeywords(game, true);
             if (oldKeywords == null)
@@ -410,7 +369,7 @@ namespace TouhouHeartstone
 
             return card.setKeywords(game, oldKeywords);
         }
-        public static Task<PropChangeEventArg> removeKeywords(this Card card, IGame game, params string[] keywords)
+        public static Task<EventArg> removeKeywords(this Card card, IGame game, params string[] keywords)
         {
             List<string> keywordList = new List<string>(card.getKeywords(game, true));
             foreach (var keyword in keywords)

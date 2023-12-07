@@ -153,31 +153,31 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="cardDefine"></param>
         /// <returns></returns>
-        [EventNode(typeof(HearthStoneRule.EnterFieldEventArg))]
+        [EventNode(typeof(EnterFieldEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.CreateTokenToField, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_FIELD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> createTokenCardToField(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
-            [ActionNodeParam(EDITOR_PARAM_NAME_ENTER_FIELD_EVENT, isOut: true)] HearthStoneRule.EnterFieldEventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_ENTER_FIELD_EVENT, isOut: true, eventType: typeof(EnterFieldEventDefine))] EventArg outEvent)
         {
             if (player == null || cardDefine == null)
                 return null;
             outEvent = await player.createToken(game, cardDefine);
             setOutParam(flow, node, nameof(outEvent), outEvent);
-            return outEvent?.card;
+            return outEvent?.getVar<Card>(EnterFieldEventDefine.VAR_CARD);
         }
         /// <summary>
         /// 创建衍生卡并置入手牌
         /// </summary>
         /// <returns></returns>
-        [EventNode(typeof(THHPile.MoveCardEventArg))]
+        [EventNode(typeof(MoveCardEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.CreateTokenToHand, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_HAND)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> createTokenCardToHand(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
-            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] THHPile.MoveCardEventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true, eventType: typeof(MoveCardEventDefine))] EventArg outEvent)
         {
             if (player == null || cardDefine == null)
                 return null;
@@ -195,13 +195,13 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="cardDefine"></param>
         /// <returns></returns>
-        [EventNode(typeof(THHPile.MoveCardEventArg))]
+        [EventNode(typeof(MoveCardEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.CreateTokenToDeck, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_SHUFFLE_TO_DECK)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> createTokenCardShuffleToDeck(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
-            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] THHPile.MoveCardEventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true, eventType: typeof(MoveCardEventDefine))] EventArg outEvent)
         {
             if (player == null || cardDefine == null)
                 return null;
@@ -220,13 +220,13 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="cardDefine"></param>
         /// <returns></returns>
-        [EventNode(typeof(HearthStoneRule.EquipItemEventArg))]
+        [EventNode(typeof(EquipItemEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.CreateTokenToItem, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CREATE_TOKEN_CARD_EQUIP_TO_ITEM)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> createTokenCardEquipToItem(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
-            [ActionNodeParam(EDITOR_PARAM_NAME_EQUIP_EVENT, isOut: true)] HearthStoneRule.EquipItemEventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_EQUIP_EVENT, isOut: true, eventType: typeof(EquipItemEventDefine))] EventArg outEvent)
         {
             if (player == null || cardDefine == null)
                 return null;
@@ -279,14 +279,14 @@ namespace Game
         /// <summary>
         /// 设置卡牌属性
         /// </summary>
-        [EventNode(typeof(Card.PropChangeEventArg))]
+        [EventNode(typeof(CardPropChangeEventDefine))]
         [THHActionMethod(BuiltinActionDefineID.SetCardProp, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_SET_CARD_PROPERTY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
         public static async Task setCardProp(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] CardPropertySetterName propName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value,
-            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)] Card.PropChangeEventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true, eventType: typeof(CardPropChangeEventDefine))] EventArg outEvent)
         {
             if (card == null)
                 return;
@@ -310,15 +310,15 @@ namespace Game
         /// </summary>
         [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetCardProp_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_SET_PROPERTY, "SetProperty")]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
-        public static Task<Card.PropChangeEventArg> setPropObsolete(CardEngine game,
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT, eventType: typeof(CardPropChangeEventDefine))]
+        public static Task<EventArg> setPropObsolete(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
             if (card != null)
                 return card.setProp(game, propName, value);
-            return Task.FromResult<Card.PropChangeEventArg>(null);
+            return Task.FromResult<EventArg>(null);
         }
         /// <summary>
         /// 获取花费
@@ -373,10 +373,10 @@ namespace Game
         /// 丢弃卡牌（群体事件过时）
         /// </summary>
         [Obsolete]
-        [EventNode(typeof(THHCard.DiscardEventArg))]
+        [EventNode(typeof(DiscardEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.Discard_Obs_Mass, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DISCARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)]
-        public static Task<THHCard.DiscardEventArg[]> discardObsoleteMass(CardEngine game,
+        public static Task<EventArg[]> discardObsoleteMass(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HANDS)] Card[] hands)
         {
             if (hands == null)
@@ -386,10 +386,10 @@ namespace Game
         /// <summary>
         /// 丢弃卡牌
         /// </summary>
-        [EventNode(typeof(MassDiscardEventArg))]
+        [EventNode(typeof(MassDiscardEventDefine))]
         [THHActionMethod(BuiltinActionDefineID.Discard, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DISCARD)]
-        [return: ActionNodeParam(EDITOR_PARAM_NAME_MASS_DISCARD_EVENT)]
-        public static Task<MassDiscardEventArg> discard(CardEngine game,
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_MASS_DISCARD_EVENT, eventType: typeof(MassDiscardEventDefine))]
+        public static Task<EventArg> discard(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HANDS)] Card[] hands)
         {
             if (hands == null)
@@ -401,12 +401,12 @@ namespace Game
         /// <summary>
         /// 增加固定数量的护甲
         /// </summary>
-        [EventNode(typeof(THHCard.SetArmorEventArg))]
+        [EventNode(typeof(SetArmorEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddArmor, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_ADD_AMOUNT_OF_ARMOR)]
         public static async Task addArmorToTarget(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(EDITOR_PARAM_NAME_SET_ARMOR_EVENT, isOut: true)] THHCard.SetArmorEventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_SET_ARMOR_EVENT, isOut: true, eventType: typeof(SetArmorEventDefine))] EventArg outEvent)
         {
             if (player == null)
                 return;
@@ -416,12 +416,12 @@ namespace Game
         /// <summary>
         /// 增加护甲
         /// </summary>
-        [EventNode(typeof(THHCard.SetArmorEventArg))]
+        [EventNode(typeof(SetArmorEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddAmountOfArmor, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_ADD_ARMOR)]
         public static async Task addAmountOfArmorToTarget(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
              [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
-            [ActionNodeParam(EDITOR_PARAM_NAME_SET_ARMOR_EVENT, isOut: true)] THHCard.SetArmorEventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_SET_ARMOR_EVENT, isOut: true, eventType: typeof(SetArmorEventDefine))] EventArg outEvent)
         {
             if (player == null)
                 return;
@@ -431,12 +431,12 @@ namespace Game
         /// <summary>
         /// 失去护甲
         /// </summary>
-        [EventNode(typeof(THHCard.SetArmorEventArg))]
+        [EventNode(typeof(SetArmorEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.LoseArmor, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_LOSE_ARMOR)]
         public static async Task loseArmor(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
-            [ActionNodeParam(EDITOR_PARAM_NAME_SET_ARMOR_EVENT, isOut: true)] THHCard.SetArmorEventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_SET_ARMOR_EVENT, isOut: true, eventType: typeof(SetArmorEventDefine))] EventArg outEvent)
         {
             if (player == null)
                 return;
@@ -537,9 +537,9 @@ namespace Game
         /// 造成伤害或法术伤害
         /// </summary>
         [THHActionMethod(BuiltinActionDefineID.DealDamageOrSpellDamage_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, "造成伤害或法伤（过时）", EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT, eventType: typeof(DamageEventDefine))]
         [Obsolete]
-        public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageObsolete(CardEngine game, Card card,
+        public static Task<EventArg[]> dealDamageOrSpellDamageObsolete(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
@@ -561,9 +561,9 @@ namespace Game
         /// 造成伤害或法术伤害并分配给目标
         /// </summary>
         [THHActionMethod(BuiltinActionDefineID.DealDamageSplitAmong_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, "造成伤害或法伤并分配给目标（过时）", EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT, eventType: typeof(DamageEventDefine))]
         [Obsolete]
-        public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageSplitToTargetsObsolete(CardEngine game, Card card,
+        public static Task<EventArg[]> dealDamageOrSpellDamageSplitToTargetsObsolete(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
@@ -571,7 +571,7 @@ namespace Game
             [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION, isConst: true)] int damage2)
         {
             if (targets == null)
-                return Task.FromResult(Array.Empty<THHCard.DamageEventArg>());
+                return Task.FromResult(Array.Empty<EventArg>());
 
             var source = damageSource ?? card;
             var dmg = damage + damage2;
@@ -585,9 +585,9 @@ namespace Game
         /// 对固定数量的随机目标造成伤害或法术伤害
         /// </summary>
         [THHActionMethod(BuiltinActionDefineID.DealDamageToRandomTargets_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, "对固定数量的随机目标造成伤害或法伤（过时）", EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT, eventType: typeof(DamageEventDefine))]
         [Obsolete]
-        public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageToSpecificNumberOfTargetsObsolete(CardEngine game, Card card,
+        public static Task<EventArg[]> dealDamageOrSpellDamageToSpecificNumberOfTargetsObsolete(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
@@ -611,10 +611,10 @@ namespace Game
         /// 造成伤害或法术伤害（群体事件过时）
         /// </summary>
         [Obsolete]
-        [EventNode(typeof(THHCard.DamageEventArg))]
+        [EventNode(typeof(DamageEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DealDamageOrSpellDamage_Obs_Mass, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
-        public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageObsoleteMass(CardEngine game, Card card,
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT, eventType: typeof(DamageEventDefine))]
+        public static Task<EventArg[]> dealDamageOrSpellDamageObsoleteMass(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
@@ -634,10 +634,10 @@ namespace Game
         /// <summary>
         /// 造成伤害或法术伤害
         /// </summary>
-        [EventNode(typeof(MassDamageEventArg))]
+        [EventNode(typeof(MassDamageEventDefine))]
         [THHActionMethod(BuiltinActionDefineID.DealDamageOrSpellDamage, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE)]
-        [return: ActionNodeParam(EDITOR_PARAM_NAME_MASS_DAMAGE_EVENT)]
-        public static Task<MassDamageEventArg> dealDamageOrSpellDamage(CardEngine game, Card card,
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_MASS_DAMAGE_EVENT, eventType: typeof(MassDamageEventDefine))]
+        public static Task<EventArg> dealDamageOrSpellDamage(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
@@ -658,10 +658,10 @@ namespace Game
         /// 造成伤害或法术伤害并分配给目标（群体事件过时）
         /// </summary>
         [Obsolete]
-        [EventNode(typeof(THHCard.DamageEventArg))]
+        [EventNode(typeof(DamageEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DealDamageSplitAmong_Obs_Mass, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
-        public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageSplitToTargetsObsoleteMass(CardEngine game, Card card,
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT, eventType: typeof(DamageEventDefine))]
+        public static Task<EventArg[]> dealDamageOrSpellDamageSplitToTargetsObsoleteMass(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
@@ -669,7 +669,7 @@ namespace Game
             [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION, isConst: true)] int damage2)
         {
             if (targets == null)
-                return Task.FromResult(Array.Empty<THHCard.DamageEventArg>());
+                return Task.FromResult(Array.Empty<EventArg>());
 
             var dmg = damage + damage2;
             if (damagetype && damageSource != null)
@@ -681,10 +681,10 @@ namespace Game
         /// <summary>
         /// 造成伤害或法术伤害并分配给目标
         /// </summary>
-        [EventNode(typeof(SplitDamageEventArg))]
+        [EventNode(typeof(SplitDamageEventDefine))]
         [THHActionMethod(BuiltinActionDefineID.DealDamageSplitAmong, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS)]
-        [return: ActionNodeParam(EDITOR_PARAM_NAME_SPLIT_DAMAGE_EVENT)]
-        public static Task<SplitDamageEventArg> dealDamageOrSpellDamageSplitToTargets(CardEngine game, Card card,
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_SPLIT_DAMAGE_EVENT, eventType: typeof(SplitDamageEventDefine))]
+        public static Task<EventArg> dealDamageOrSpellDamageSplitToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
@@ -692,7 +692,7 @@ namespace Game
             [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION, isConst: true)] int damage2)
         {
             if (targets == null)
-                return Task.FromResult<SplitDamageEventArg>(null);
+                return Task.FromResult<EventArg>(null);
 
             var dmg = damage + damage2;
             if (damagetype && damageSource != null)
@@ -705,10 +705,10 @@ namespace Game
         /// 对固定数量的随机目标造成伤害或法术伤害（群体事件过时）
         /// </summary>
         [Obsolete]
-        [EventNode(typeof(THHCard.DamageEventArg))]
+        [EventNode(typeof(DamageEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DealDamageToRandomTargets_Obs_Mass, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
-        public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageToSpecificNumberOfTargetsObsoleteMass(CardEngine game, Card card,
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT, eventType: typeof(DamageEventDefine))]
+        public static Task<EventArg[]> dealDamageOrSpellDamageToSpecificNumberOfTargetsObsoleteMass(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
@@ -730,10 +730,10 @@ namespace Game
         /// <summary>
         /// 对固定数量的随机目标造成伤害或法术伤害
         /// </summary>
-        [EventNode(typeof(MassDamageEventArg))]
+        [EventNode(typeof(MassDamageEventDefine))]
         [THHActionMethod(BuiltinActionDefineID.DealDamageToRandomTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS)]
-        [return: ActionNodeParam(EDITOR_PARAM_NAME_MASS_DAMAGE_EVENT)]
-        public static Task<MassDamageEventArg> dealDamageOrSpellDamageToSpecificNumberOfTargets(CardEngine game, Card card,
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_MASS_DAMAGE_EVENT, eventType: typeof(MassDamageEventDefine))]
+        public static Task<EventArg> dealDamageOrSpellDamageToSpecificNumberOfTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
@@ -762,8 +762,8 @@ namespace Game
         /// <returns></returns>
         [Obsolete]
         [ObsoletedKeyMethod(ObsoletedActionDefineID.DealSpecificSpellDamageToTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_TARGETS)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
-        public static Task<THHCard.DamageEventArg[]> dealSpecificSpellDamageToTargets(CardEngine game, Card card,
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT, eventType: typeof(DamageEventDefine))]
+        public static Task<EventArg[]> dealSpecificSpellDamageToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
@@ -782,8 +782,8 @@ namespace Game
         /// <returns></returns>
         [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DealSpellDamageToTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_SPELL_DAMAGE)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
-        public static Task<THHCard.DamageEventArg[]> dealSpellDamageToTargets(CardEngine game, Card card,
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT, eventType: typeof(DamageEventDefine))]
+        public static Task<EventArg[]> dealSpellDamageToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
@@ -801,8 +801,8 @@ namespace Game
         /// <returns></returns>
         [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DealSpecificSpellDamageToRandomTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_RANDOM_TARGETS)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
-        public static Task<THHCard.DamageEventArg[]> dealSpecificSpellDamageToRandomTargets(CardEngine game, Card card,
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT, eventType: typeof(DamageEventDefine))]
+        public static Task<EventArg[]> dealSpecificSpellDamageToRandomTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
@@ -820,8 +820,8 @@ namespace Game
         /// <returns></returns>
         [Obsolete]
         [ObsoletedKeyMethod(ObsoletedActionDefineID.DealSpecificDamageToSpecificNumberOfRandomTarget, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
-        public static Task<THHCard.DamageEventArg[]> dealSpecificDamageToSpecificNumberOfRandomTarget(CardEngine game, Card card,
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT, eventType: typeof(DamageEventDefine))]
+        public static Task<EventArg[]> dealSpecificDamageToSpecificNumberOfRandomTarget(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
@@ -840,8 +840,8 @@ namespace Game
         /// <returns></returns>
         [Obsolete]
         [ObsoletedKeyMethod(ObsoletedActionDefineID.DealSpecificSpellDamageToSpecificNumberOfRandomTarget, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
-        public static Task<THHCard.DamageEventArg[]> dealSpecificSpellDamageToSpecificNumberOfRandomTarget(CardEngine game, Card card,
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT, eventType: typeof(DamageEventDefine))]
+        public static Task<EventArg[]> dealSpecificSpellDamageToSpecificNumberOfRandomTarget(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
@@ -855,40 +855,40 @@ namespace Game
         /// 治疗（群体事件过时）
         /// </summary>
         [Obsolete]
-        [EventNode(typeof(THHCard.HealEventArg))]
+        [EventNode(typeof(HealEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.HealTargets_Obs_Mass, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_HEAL_TARGETS)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HEAL_EVENT)]
-        public static Task<THHCard.HealEventArg[]> healTargetsObsoleteMass(CardEngine game, Card card,
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HEAL_EVENT, eventType: typeof(HealEventDefine))]
+        public static Task<EventArg[]> healTargetsObsoleteMass(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
         {
             if (targets == null)
-                return Task.FromResult(Array.Empty<THHCard.HealEventArg>());
+                return Task.FromResult(Array.Empty<EventArg>());
             return targets.healObsolete(game, card, value);
         }
         /// <summary>
         /// 治疗
         /// </summary>
-        [EventNode(typeof(MassHealEventArg))]
+        [EventNode(typeof(MassHealEventDefine))]
         [THHActionMethod(BuiltinActionDefineID.HealTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_HEAL_TARGETS)]
-        [return: ActionNodeParam(EDITOR_PARAM_NAME_MASS_HEAL_EVENT)]
-        public static Task<MassHealEventArg> healTargets(CardEngine game, Card card,
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_MASS_HEAL_EVENT, eventType: typeof(MassHealEventDefine))]
+        public static Task<EventArg> healTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
         {
             if (targets == null)
-                return Task.FromResult<MassHealEventArg>(null);
+                return Task.FromResult<EventArg>(null);
             return targets.heal(game, card, value);
         }
         [ObsoletedKeyMethod(ObsoletedActionDefineID.HealSpecificAmountToTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_HEAL_SPECIFIC_AMOUNT_TO_TARGETS)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HEAL_EVENT)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HEAL_EVENT, eventType: typeof(HealEventDefine))]
         [Obsolete]
-        public static Task<THHCard.HealEventArg[]> healSpecificAmountToTargets(CardEngine game, Card card,
+        public static Task<EventArg[]> healSpecificAmountToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE, isConst: true)] int value)
         {
             if (targets == null)
-                return Task.FromResult(Array.Empty<THHCard.HealEventArg>());
+                return Task.FromResult(Array.Empty<EventArg>());
             return targets.healObsolete(game, card, value);
         }
 
@@ -967,11 +967,11 @@ namespace Game
             return characters;
         }
         #endregion
-        [EventNode(typeof(THHCard.ShackleEventArg))]
+        [EventNode(typeof(ShackleEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.Shackle, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_FREEZE)]
         public static async Task freeze(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
-            [ActionNodeParam(EDITOR_PARAM_NAME_SHACKLE_EVENT, isOut:true)] THHCard.ShackleEventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_SHACKLE_EVENT, isOut:true, eventType: typeof(ShackleEventDefine))] EventArg outEvent)
         {
             if (card == null)
                 return;
@@ -985,13 +985,13 @@ namespace Game
         /// <param name="cards"></param>
         /// <returns></returns>
         [Obsolete]
-        [EventNode(typeof(THHCard.SilenceEventArg))]
+        [EventNode(typeof(SilenceEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.Seal_Obs_Mass, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_SILENCE)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_SILENCE_EVENT)]
-        public static Task<THHCard.SilenceEventArg[]> silenceObsoleteMass(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_SILENCE_EVENT, eventType: typeof(SilenceEventDefine))]
+        public static Task<EventArg[]> silenceObsoleteMass(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
             if (cards == null)
-                return Task.FromResult(Array.Empty<THHCard.SilenceEventArg>());
+                return Task.FromResult(Array.Empty<EventArg>());
             return cards.silenceObsoleteMass(game);
         }
         /// <summary>
@@ -1000,21 +1000,21 @@ namespace Game
         /// <param name="game"></param>
         /// <param name="cards"></param>
         /// <returns></returns>
-        [EventNode(typeof(MassSealEventArg))]
+        [EventNode(typeof(MassSealEventDefine))]
         [THHActionMethod(BuiltinActionDefineID.Seal, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_SEAL)]
-        [return: ActionNodeParam(EDITOR_PARAM_NAME_MASS_SEAL_EVENT)]
-        public static Task<MassSealEventArg> seal(CardEngine game,
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_MASS_SEAL_EVENT, eventType: typeof(MassSealEventDefine))]
+        public static Task<EventArg> seal(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
             if (cards == null)
-                return Task.FromResult<MassSealEventArg>(null);
+                return Task.FromResult<EventArg>(null);
             return cards.silence(game);
         }
-        [EventNode(typeof(Card.PropChangeEventArg))]
+        [EventNode(typeof(CardPropChangeEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.Kill, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DESTROY)]
         public static async Task destroy(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
-            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)] Card.PropChangeEventArg[] outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true, eventType: typeof(CardPropChangeEventDefine))] EventArg[] outEvent)
         {
             if (cards == null)
                 return;
@@ -1106,7 +1106,7 @@ namespace Game
             {
                 if (card == null || (!card.hasBattlecry(game)))
                     continue;
-                await card.triggerBattlecries(game, card.getOwner(), targets);
+                await card.triggerBattlecries(game, targets);
             }
         }
 
@@ -1153,7 +1153,7 @@ namespace Game
                 if (card == null)
                     continue;
                 else if (card.isSpell() || card.isSkill())
-                    await card.triggerSpellActiveEffect(game, card.getOwner(), targets);
+                    await card.triggerSpellActiveEffect(game, targets);
             }
         }
         /// <summary>
@@ -1202,16 +1202,16 @@ namespace Game
         /// <summary>
         /// 强制攻击目标
         /// </summary>
-        [EventNode(typeof(THHCard.AttackEventArg))]
+        [EventNode(typeof(AttackEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.ForceAttack, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_FORCE_ATTACK)]
         public static async Task forceAttackTargets(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(EDITOR_PARAM_NAME_FORCE_ATTACKER)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
-            [ActionNodeParam(EDITOR_PARAM_NAME_ATTACK_EVENT, isOut: true)] THHCard.AttackEventArg[] outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_ATTACK_EVENT, isOut: true, eventType: typeof(AttackEventDefine))] EventArg[] outEvent)
         {
             if (cards == null || targets == null)
                 return;
-            var eventList = new List<THHCard.AttackEventArg>(); 
+            var eventList = new List<EventArg>(); 
             foreach (var card in cards)
             {
                 if (card == null)
@@ -1229,15 +1229,15 @@ namespace Game
         /// <summary>
         /// 本回合增加一次攻击次数
         /// </summary>
-        [EventNode(typeof(Card.PropChangeEventArg))]
+        [EventNode(typeof(CardPropChangeEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddAttackChance, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_EXTRA_ATTACK)]
         public static async Task extraAttack(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(EDITOR_PARAM_NAME_FORCE_ATTACKER)] Card[] cards,
-            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)] Card.PropChangeEventArg[] outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true, eventType: typeof(CardPropChangeEventDefine))] EventArg[] outEvent)
         {
             if (cards == null)
                 return;
-            var eventList = new List<Card.PropChangeEventArg>();
+            var eventList = new List<EventArg>();
             foreach (var card in cards)
             {
                 if (card == null)
@@ -1282,11 +1282,11 @@ namespace Game
         /// <summary>
         /// 揭示卡牌
         /// </summary>
-        [EventNode(typeof(HearthStoneRule.RevealEventArg))]
+        [EventNode(typeof(RevealEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.RevealCard, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_REVEAL)]
         public static async Task revealCard(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
-            [ActionNodeParam(EDITOR_PARAM_NAME_REVEAL_EVENT, isOut: true)] HearthStoneRule.RevealEventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_REVEAL_EVENT, isOut: true, eventType: typeof(RevealEventDefine))] EventArg outEvent)
         {
             if (card == null)
                 return;
@@ -1300,13 +1300,13 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="card"></param>
         /// <returns></returns>
-        [EventNode(typeof(THHPile.MoveCardEventArg), typeof(Card.PropChangeEventArg))]
+        [EventNode(typeof(MoveCardEventDefine), typeof(CardPropChangeEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.TakeControl, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CARD_TAKE_CONTRL)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task takeControl(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card card,
-            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] THHPile.MoveCardEventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true, eventType: typeof(MoveCardEventDefine))] EventArg outEvent)
         {
             if (card == null)
                 return;
@@ -1345,12 +1345,12 @@ namespace Game
         /// <summary>
         /// 设置蓄力层数
         /// </summary>
-        [EventNode(typeof(Card.PropChangeEventArg))]
+        [EventNode(typeof(CardPropChangeEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetChargedLevel, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_SET_CHARGED_LEVEL)]
         public static async Task setChargedLevel(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(EDITOR_PARAM_NAME_CHARGED_LEVEL)] int level,
-            [ActionNodeParam(EDITOR_PARAM_NAME_BE_CHARGED_EVENT, isOut: true)] THHCard.BeChargedEventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_BE_CHARGED_EVENT, isOut: true, eventType: typeof(BeChargedEventDefine))] EventArg outEvent)
         {
             if (card == null)
                 return;

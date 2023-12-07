@@ -7,15 +7,15 @@ using UObject = UnityEngine.Object;
 
 namespace Game.BattleTable
 {
-    using Arg = THHPlayer.RevealDuelEventArg;
+    using Arg = RevealDuelEventDefine;
     class InvokeEAnim : EventAnimation<Arg>
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var youCard = table.getEventCardSnapshot(tEventArg, Arg.VAR_SELF_CARD);
-            var oppoCard = table.getEventCardSnapshot(tEventArg, Arg.VAR_OPPO_CARD);
-            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
-            var result = tEventArg.getVar<bool>(Arg.VAR_RESULT);
+            var youCard = table.getEventCardSnapshot(eventArg, Arg.VAR_SELF_CARD);
+            var oppoCard = table.getEventCardSnapshot(eventArg, Arg.VAR_OPPO_CARD);
+            var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
+            var result = eventArg.getVar<bool>(Arg.VAR_RESULT);
 
             if (youCard == null && oppoCard == null)
                 yield break;

@@ -7,13 +7,13 @@ using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
-    using Arg = THHCard.HealEventArg;
+    using Arg = HealEventDefine;
     class HealAnimation : EventAnimation<Arg>
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var cardId = tEventArg.getVar<Card>(EVENTVAR.CARD).id;
-            var healedValue = tEventArg.getVar<int>(Arg.VAR_HEALED_VALUE);
+            var cardId = eventArg.getVar<Card>(EVENTVAR.CARD).id;
+            var healedValue = eventArg.getVar<int>(Arg.VAR_HEALED_VALUE);
 
             ParticleSystem healEffect = null;
             if (table.tryGetServant(cardId, out Servant servant))

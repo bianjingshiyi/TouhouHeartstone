@@ -45,7 +45,7 @@ namespace Game
             _loadedEventDefines = new List<EventDefine>();
             _nodeDefiner = new THHNodeDefiner(
                 (actRef, name) => getLoadingActionDefine(cardPoolId, mainManager, actRef, name),
-                (poolId, eventName) => getLoadingEventTriggerTime(cardPoolId, mainManager, poolId, eventName));
+                (eventRef) => getLoadingEventDefine(cardPoolId, mainManager, eventRef));
             getGeneratedActionDefines(cardPoolId, mainManager, typeFinder);
 
             var cardDefines = cardDefineList.ConvertAll(c => c.toCardDefine(_nodeDefiner));
@@ -87,7 +87,7 @@ namespace Game
             foreach (var define in _genActionDefines)
             {
                 var graph = define.graph;
-                var nodes = defines.FirstOrDefault(d => d.id == define.id).graph.GetConnections(graph);
+                var nodes = defines.FirstOrDefault(d => d.id == define.defineId).graph.GetConnections(graph);
                 graph.AddConnections(nodes);
             }
         }
@@ -120,17 +120,16 @@ namespace Game
             }
             return def;
         }
-        private EventTriggerTime getLoadingEventTriggerTime(long curCardPoolId, MainManager mainManager, long cardPoolId, string name)
+        private EventDefine getLoadingEventDefine(long curCardPoolId, MainManager mainManager, EventReference eventRef)
         {
             var cardManager = mainManager.card;
-            if (cardPoolId == curCardPoolId)
+            if (eventRef.cardPoolId == curCardPoolId)
             {
-                return _loadedEventDefines.getEventTriggerTimeByName(name);
+                return _loadedEventDefines.FindEventDefine(eventRef);
             }
             else
             {
-                var poolRef = cardManager.getLocalCardPoolReference(cardPoolId);
-                return cardManager.getEventTriggerTime(poolRef, name);
+                return cardManager.getLocalEventDefine(eventRef);
             }
         }
 

@@ -9,7 +9,7 @@ using TouhouHeartstone;
 using UnityEngine;
 namespace Game.BattleTable
 {
-    using Arg = THHPile.MoveCardEventArg;
+    using Arg = MoveCardEventDefine;
     class MoveCardAnim : EventAnimation<Arg>
     {
         #region 公有方法
@@ -42,12 +42,12 @@ namespace Game.BattleTable
         }
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = table.getEventCardSnapshot(tEventArg, EVENTVAR.CARD);
+            var card = table.getEventCardSnapshot(eventArg, EVENTVAR.CARD);
             if (card == null)
                 yield break;
-            var from = tEventArg.getVar<Pile>(Arg.VAR_FROM_PILE);
-            var to = tEventArg.getVar<Pile>(Arg.VAR_TO_PILE);
-            var position = tEventArg.getVar<int>(Arg.VAR_POSITION);
+            var from = eventArg.getVar<Pile>(Arg.VAR_FROM_PILE);
+            var to = eventArg.getVar<Pile>(Arg.VAR_TO_PILE);
+            var position = eventArg.getVar<int>(Arg.VAR_POSITION);
             EventData data = new EventData
             {
                 card = table.updateCardDescriptor(card),
@@ -68,11 +68,11 @@ namespace Game.BattleTable
         }
         public override IEnumerator canceledUpdate(BattleTableManager table)
         {
-            var card = table.getEventCardSnapshot(tEventArg, EVENTVAR.CARD);
+            var card = table.getEventCardSnapshot(eventArg, EVENTVAR.CARD);
             if (card == null)
                 yield break;
-            var from = tEventArg.getVar<Pile>(Arg.VAR_FROM_PILE);
-            var to = tEventArg.getVar<Pile>(Arg.VAR_TO_PILE);
+            var from = eventArg.getVar<Pile>(Arg.VAR_FROM_PILE);
+            var to = eventArg.getVar<Pile>(Arg.VAR_TO_PILE);
             EventData data = new EventData
             {
                 card = table.updateCardDescriptor(card),
@@ -87,7 +87,7 @@ namespace Game.BattleTable
         }
         public override bool continueNextGroup(AnimationGroup nextGroup)
         {
-            var parents = getAllParents(tEventArg);
+            var parents = getAllParents(eventArg);
             if (_duration >= _breakDuration && nextGroup.All(a => canAnimContinue(a, parents)))
             {
                 return true;
@@ -350,11 +350,12 @@ namespace Game.BattleTable
             string toName = to?.name;
             if (toName == PILE.GRAVE)
             {
-                if ((fromName == PILE.FIELD || fromName == PILE.ITEM) && tEventArg.parent is THHCard.DeathEventArg) // 阻止死亡/摧毁后播放置入墓地的动画
+                var parentDefine = eventArg.parent?.define;
+                if ((fromName == PILE.FIELD || fromName == PILE.ITEM) && parentDefine is DeathEventDefine) // 阻止死亡/摧毁后播放置入墓地的动画
                     return true;
-                if (fromName == PILE.HEAD && tEventArg.parent is THHCard.SecretTriggerEventArg) // 阻止陷阱触发后播放动画
+                if (fromName == PILE.HEAD && parentDefine is SecretTriggerEventDefine) // 阻止陷阱触发后播放动画
                     return true;
-                if (fromName == PILE.HAND && tEventArg.parent is THHCard.DiscardEventArg) // 阻止弃牌后播放移动动画。
+                if (fromName == PILE.HAND && parentDefine is DiscardEventDefine) // 阻止弃牌后播放移动动画。
                     return true;
                 if (fromName == PILE.WARP) // 不播放法术从暂存区置入墓地的动画
                     return true;

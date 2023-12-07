@@ -31,12 +31,12 @@ namespace TouhouHeartstone
         public override async Task onEnable(IGame game, ICard card, IBuff buff)
         {
             await base.onEnable(game, card, buff);
-            await updateAura(game, card, buff, null);
+            await updateAura(game as CardEngine, card, buff, null);
         }
         public override async Task onDisable(IGame game, ICard card, IBuff buff)
         {
             await base.onDisable(game, card, buff);
-            await updateAura(game, card, buff, null);
+            await updateAura(game as CardEngine, card, buff, null);
         }
         public override bool isDisabled(IGame game, ICard card, IBuff buff)
         {
@@ -51,23 +51,12 @@ namespace TouhouHeartstone
         {
             return true;
         }
-        public override Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
+        public async Task updateAura(CardEngine game, ICard card, IBuff buff, IEventArg eventArg)
         {
-            var triggerArg = new EffectTriggerEventArg(card as Card, buff as Buff, this);
-            return game.triggers.doEvent(triggerArg, func);
-
-            Task func(EffectTriggerEventArg arg)
-            {
-                return updateAura(game, card, buff, eventArg);
-            }
-        }
-        public async Task updateAura(IGame game, ICard card, IBuff buff, IEventArg eventArg)
-        {
-            CardEngine cardEngine = game as CardEngine;
             Card selfCard = card as Card;
             Buff selfBuff = buff as Buff;
             EventArg selfEventArg = eventArg as EventArg;
-            Dictionary<Card, Buff> buffDict = await getBuffDic(cardEngine, selfCard, selfBuff);
+            Dictionary<Card, Buff> buffDict = await getBuffDic(game, selfCard, selfBuff);
             // 如果该光环已被禁用。
             if (isDisabled(game, card, buff) || 
                 (selfCard != null && (pileList == null || !pileList.Contains(selfCard.pile.name))))
@@ -86,16 +75,13 @@ namespace TouhouHeartstone
 
             //获取光环的作用范围
             IEnumerable<Pile> ranges = null;
-            if (rangeList != null && rangeList.Count > 0 && cardEngine != null)
+            if (rangeList != null && rangeList.Count > 0 && game != null)
             {
-                ranges = cardEngine.players.SelectMany(p => p.getPiles(rangeList));
+                ranges = game.players.SelectMany(p => p.getPiles(rangeList));
             }
 
-            // 检测已经记录的卡牌和增益列表。
-            await updateBuffedCards(game, card, buff, buffDict, ranges);
-
-            // 检测范围内的所有卡牌。
-            await checkAndAddBuffedCards(game, card, buff, buffDict, ranges, buffDict.Keys);
+            // 更新所有增益。
+            await updateBuffCards(game, card, buff, buffDict, ranges);
         }
         public override SerializableEffect Serialize()
         {
@@ -107,50 +93,42 @@ namespace TouhouHeartstone
         {
             graph.createAuraEntryNode(0, 0);
         }
-
-        private async Task updateBuffedCards(IGame game, ICard card, IBuff buff, Dictionary<Card, Buff> buffDict, IEnumerable<Pile> ranges)
+        private async Task updateBuffCards(CardEngine game, ICard card, IBuff buff, Dictionary<Card, Buff> buffDict, IEnumerable<Pile> ranges)
         {
-            foreach (var pair in buffDict.ToArray())
+            var allCards = buffDict.Keys.Union(ranges.SelectMany(r => r)).ToArray();
+            foreach (var targetCard in allCards)
             {
-                Card buffedCard = pair.Key;
-                Buff cardBuff = pair.Value;
-                // 如果增益被通过某种方式除掉了（如沉默），将其删除已记录的卡牌增益列表。
-                if (!buffedCard.containBuff(cardBuff))
+                // 检测增益条件。
+                bool shouldContinueBuff = ranges != null && ranges.Contains(targetCard.pile) && await checkAuraCondition(game, card, buff, targetCard);
+                // 卡牌不再符合增益条件。
+                if (!shouldContinueBuff)
                 {
-                    buffDict.Remove(buffedCard);
-                    continue;
+                    if (buffDict.TryGetValue(targetCard, out var cardBuff))
+                    {
+                        // 移除该卡牌的增益，并删除记录。
+                        await targetCard.removeBuff(game, cardBuff);
+                        buffDict.Remove(targetCard);
+                    }
                 }
-                // 卡牌不再具有增益条件。
-                if (ranges == null || !ranges.Contains(buffedCard.pile) || !await checkAuraCondition(game, card, buff, buffedCard))
+                else
                 {
-                    // 移除该卡牌的增益，并删除记录。
-                    await buffedCard.removeBuff(game, cardBuff);
-                    buffDict.Remove(buffedCard);
-                    continue;
-                }
-                // 卡牌仍然具有增益条件。
-                // 更新增益。
-                await updateAuraBuff(game, card, buff, buffedCard, cardBuff);
-            }
-        }
-        private async Task checkAndAddBuffedCards(IGame game, ICard card, IBuff buff, Dictionary<Card, Buff> buffDict, IEnumerable<Pile> ranges, IEnumerable<Card> excludedCards)
-        {
-            if (ranges == null)
-                return;
+                    if (!buffDict.TryGetValue(targetCard, out var cardBuff))
+                    {
+                        // 记录中找不到目标增益，新建一个。
+                        var flow = new Flow(game, card, buff, null, this);
+                        BuffDefine buffDefine = await game.getValue<BuffDefine>(flow, getAuraBuffDefine);
+                        cardBuff = new GeneratedBuff(buffDefine);
+                        cardBuff.canClone = false;
+                        buffDict.Add(targetCard, cardBuff);
+                    }
 
-            foreach (var target in ranges.SelectMany(r => r).Except(excludedCards))
-            {
-                // 卡牌进入作用范围
-                if (!buffDict.ContainsKey(target) && ranges.Contains(target.pile) && await checkAuraCondition(game, card, buff, target))
-                {
-                    // 添加增益，并记录增益。
-                    var flow = new Flow(game, card, buff, null, this);
-                    BuffDefine buffDefine = await game.getValue<BuffDefine>(flow, getAuraBuffDefine);
-                    Buff auraBuff = new GeneratedBuff(buffDefine);
-                    auraBuff.canClone = false;
-                    await target.addBuff(game, auraBuff);
-                    buffDict.Add(target, auraBuff);
-                    await updateAuraBuff(game, card, buff, target, auraBuff);
+                    // 如果增益被通过某种方式除掉了（如沉默），重新添加。
+                    if (!targetCard.containsBuff(cardBuff))
+                        await targetCard.addBuff(game, cardBuff);
+
+                    // 卡牌仍然具有增益条件。
+                    // 更新增益。
+                    await updateAuraBuff(game, card, buff, targetCard, cardBuff);
                 }
             }
         }
@@ -160,7 +138,11 @@ namespace TouhouHeartstone
             yield return affectCondition;
             yield return updateAction;
         }
-        private async Task<bool> checkAuraCondition(IGame game, ICard card, IBuff buff, Card targetCard)
+        protected override Task runEffect(CardEngine game, Card card, Buff buff, EventArg arg, string portName)
+        {
+            return updateAura(game, card, buff, arg);
+        }
+        private async Task<bool> checkAuraCondition(CardEngine game, ICard card, IBuff buff, Card targetCard)
         {
             if (affectCondition == null || affectCondition.getConnectedOutputPort() == null)
                 return false;
@@ -179,7 +161,7 @@ namespace TouhouHeartstone
                 throw new TaskNotCompleteException($"{msg}：{e}");
             }
         }
-        private async Task updateAuraBuff(IGame game, ICard card, IBuff buff, Card targetCard, Buff targetBuff)
+        private async Task updateAuraBuff(CardEngine game, ICard card, IBuff buff, Card targetCard, Buff targetBuff)
         {
             if (updateAction != null)
             {

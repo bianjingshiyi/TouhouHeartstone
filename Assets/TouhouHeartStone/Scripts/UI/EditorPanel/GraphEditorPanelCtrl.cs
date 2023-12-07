@@ -40,7 +40,8 @@ namespace UI
         {
             var actionDefines = game.card.getAllLocalActionDefines(_cardPoolId);
             var nodeDefines = actionDefines.Select(a => new NodeDefine(a));
-            nodeDefines = nodeDefines.Union(_eventTriggerTimes.Select(e => new NodeDefine(e)));
+            var eventNodeDefines = _eventTriggerTimes.Select(e => new NodeDefine(game.card.getLocalEventDefine(e.defineRef), e.type));
+            nodeDefines = nodeDefines.Union(eventNodeDefines);
 
             _nodeDefines = nodeDefines.ToArray();
         }
@@ -68,7 +69,7 @@ namespace UI
                     }
                     return new NodeViewData(name, spr, editable);
                 }
-                if (d.eventTriggerTime != null)
+                if (d.isEventEntry())
                 {
                     Sprite spr = null;
                     return new NodeViewData(name, spr, false);
@@ -598,15 +599,7 @@ namespace UI
         }
         private string getNodeDefineName(NodeDefine define)
         {
-            if (define.actionDefine != null)
-            {
-                return _actionGraphCtrl.tryTranslateWithDict(define.actionDefine.editorName);
-            }
-            if (define.eventTriggerTime != null)
-            {
-                return game.eventManager.translateEventTriggerTimeNameForEditor(define.eventTriggerTime);
-            }
-            return game.lang._(StringTable.EDITOR_NODE_NAME_UNKNOW);
+            return _actionGraphCtrl.getNodeDefineName(define);
         }
         private bool filterNodeDefine(NodeDefine define)
         {

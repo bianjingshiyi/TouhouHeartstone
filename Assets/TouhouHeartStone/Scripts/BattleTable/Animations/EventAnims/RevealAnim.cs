@@ -6,14 +6,14 @@ using UObject = UnityEngine.Object;
 
 namespace Game.BattleTable
 {
-    using Arg = HearthStoneRule.RevealEventArg;
+    using Arg = RevealEventDefine;
     class RevealAnim : EventAnimation<Arg>
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = table.getEventCardSnapshot(tEventArg, EVENTVAR.CARD);
-            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
-            var shouldAnimate = tEventArg.getVar<bool>(Arg.VAR_ANIMATE);
+            var card = table.getEventCardSnapshot(eventArg, EVENTVAR.CARD);
+            var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
+            var shouldAnimate = eventArg.getVar<bool>(Arg.VAR_ANIMATE);
 
             if (!shouldAnimate || card == null)
             {

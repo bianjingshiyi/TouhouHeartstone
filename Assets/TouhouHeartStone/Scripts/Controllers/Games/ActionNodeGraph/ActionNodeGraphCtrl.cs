@@ -35,7 +35,7 @@ namespace Controllers
                 var mainEventDefines = game.card.getAllEventDefines(includeHidden: false, poolRef);
                 _eventTriggerTimes = mainEventDefines.getEventTriggerTimes();
                 _eventReferences = mainEventDefines.Select(d => d.getReference()).ToArray();
-                var eventEditorNames = mainEventDefines.Select(d => game.lang._(d.editorName)).ToArray();
+                var eventEditorNames = mainEventDefines.Select(d => game.eventManager.translateEventDefineNameForEditor(d)).ToArray();
                 //更新UI
                 _ui.gameObject.SetActive(true);
                 _ui.initEventReferences(eventEditorNames, _eventReferences);
@@ -270,7 +270,7 @@ namespace Controllers
         {
             return createActionNode(actionDefine, pos.x, pos.y);
         }
-        public ActionNodeItem createEventEntryNode(EventTriggerTime eventTriggerTime, float x, float y, bool showErrorTip = true)
+        public ActionNodeItem createEventEntryNode(EventDefine eventDefine, EventTriggerTimeType triggerType, float x, float y, bool showErrorTip = true)
         {
             // 尝试为非事件效果创建事件入口节点。
             if (!(_effect is GeneratedEventEffect eventEffect))
@@ -286,15 +286,16 @@ namespace Controllers
                     showEventEntryAlreadyExistsError();
                 return null;
             }
-            var actionNode = graph.createEventEntryNode(eventTriggerTime, x, y);
+            var actionNode = graph.createEventEntryNode(eventDefine, triggerType, x, y);
+
             addOperationRecord(new CreateNodeOperation(this, actionNode));
             ActionNodeItem actionNodeItem = createNodeUI4PassiveEntryNode(actionNode);
             updateEffectProperties();
             return actionNodeItem;
         }
-        public ActionNodeItem createEventEntryNode(EventTriggerTime eventTriggerTime, Vector2 pos)
+        public ActionNodeItem createEventEntryNode(EventDefine eventDefine, EventTriggerTimeType triggerType, Vector2 pos)
         {
-            return createEventEntryNode(eventTriggerTime, pos.x, pos.y);
+            return createEventEntryNode(eventDefine, triggerType, pos.x, pos.y);
         }
         public async Task<Node> createNode(NodeDefine define, Vector2 pos)
         {
@@ -303,9 +304,9 @@ namespace Controllers
             {
                 item = await createActionNode(define.actionDefine, pos);
             }
-            else if (define.eventTriggerTime != null)
+            else if (define.eventDefine != null)
             {
-                item = createEventEntryNode(define.eventTriggerTime, pos);
+                item = createEventEntryNode(define.eventDefine, define.eventTriggerType, pos);
             }
             if (item == null)
                 return null;
@@ -373,6 +374,18 @@ namespace Controllers
             }
             node.setConst(name, value);
             addOperationRecord(new ChangeNodeConstOperation(this, node, name, beforeValue, value));
+        }
+        public string getNodeDefineName(NodeDefine define)
+        {
+            if (define.actionDefine != null)
+            {
+                return tryTranslateWithDict(define.actionDefine.editorName);
+            }
+            if (define.isEventEntry())
+            {
+                return tryTranslateWithDict(game.eventManager.translateEventTriggerTimeNameForEditor(define.getEventTriggerTime()));
+            }
+            return game.lang._(StringTable.EDITOR_NODE_NAME_UNKNOW);
         }
         #endregion
         #region 私有方法
@@ -818,9 +831,10 @@ namespace Controllers
                 }
                 else if (node is EventEntryNode eventEntryNode)
                 {
-                    var poolRef = game.card.getLocalCardPoolReference(eventEntryNode.eventCardPoolId);
-                    var triggerTime = game.card.getEventTriggerTime(poolRef, eventEntryNode.eventName, true);
-                    eventEntryNode.define = triggerTime;
+                    var triggerTime = eventEntryNode.triggerTime;
+                    var eventDefineRef = triggerTime.defineRef;
+                    var eventDefine = game.card.getLocalEventDefine(eventDefineRef);
+                    eventEntryNode.setEventDefine(eventDefine, triggerTime.type);
                     eventEntryNode.Define();
                 }
                 await createNodeUI4Node(node);
@@ -1031,7 +1045,8 @@ namespace Controllers
             var outputViewData = getNodeOutputViewData(passiveEntry);
             if (passiveEntry is EventEntryNode eventEntry)
             {
-                var typeIndex = _eventTriggerTimes.getEventTriggerTimeIndex(eventEntry.eventName);
+                var triggerTime = eventEntry.triggerTime;
+                var typeIndex = _eventTriggerTimes.getEventTriggerTimeIndex(triggerTime);
                 var editorNames = _eventTriggerTimes.getEventTriggerTimeNamesForEditor(game);
                 if (typeIndex >= 0)
                 {
@@ -1911,9 +1926,8 @@ namespace Controllers
                     {
                         if (_effect is GeneratedEventEffect eventEffect && eventEffect.eventEntry is EventEntryNode entry)
                         {
-                            var poolRef = game.card.getLocalCardPoolReference(entry.eventCardPoolId);
-                            var triggerTime = game.card.getEventTriggerTime(poolRef, entry.eventName);
-                            return new EventReference(entry.eventCardPoolId, triggerTime.define.eventName);
+                            var triggerTime = entry.triggerTime;
+                            return triggerTime.defineRef;
                         }
                     }
                 }

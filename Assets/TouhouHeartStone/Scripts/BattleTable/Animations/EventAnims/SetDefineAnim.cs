@@ -1,16 +1,15 @@
 ﻿using System.Collections;
 using UI;
 using UnityEngine;
-using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
-    using Arg = Card.SetDefineEventArg;
+    using Arg = TouhouCardEngine.SetCardDefineEventDefine;
     class SetDefineAnim : EventAnimation<Arg>
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = table.getEventCardSnapshot(tEventArg, Arg.VAR_CARD);
+            var card = table.getEventCardSnapshot(eventArg, Arg.VAR_CARD);
             SimpleAnim simpleAnim = null;
             Animator animator = null;
             if (table.tryGetServant(card, out var servant))

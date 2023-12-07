@@ -120,13 +120,8 @@ namespace Game.BattleTable
         private bool _varChanged;
         #endregion
     }
-    public abstract class EventAnimation<T> : EventAnimation where T : IEventArg
+    public abstract class EventAnimation<T> : EventAnimation where T : EventDefine
     {
-
-
-        #region 属性字段
-        public T tEventArg => eventArg is T t ? t : default;
-        #endregion
     }
     public enum EventAnimState
     {

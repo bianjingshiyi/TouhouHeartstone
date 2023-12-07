@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouCardEngine.Shared;
@@ -12,17 +11,23 @@ namespace Game
         #region 公有方法
 
         #region 获取事件定义
+        public static EventReference getEventReferenceOfGeneratedAction(ActionReference gen)
+        {
+            return new EventReference(gen.cardPoolId, GeneratedActionDefine.getEventName(gen));
+        }
         public static EventReference getEventReferenceOfAction(GeneratedActionDefine gen)
         {
             return new EventReference(gen.cardPoolId, gen.getEventName());
         }
         public static EventReference getEventReferenceOfEventArg(IEventArg arg)
         {
-            if (arg is GeneratedEventArg gen)
+            if (arg == null || arg.define == null)
+                return null;
+            if (arg.define is GeneratedEventDefine gen)
             {
-                return getEventReferenceOfAction(gen.actionDefine);
+                return getEventReferenceOfGeneratedAction(gen.actionReference);
             }
-            return new EventReference(0, EventHelper.getName(arg));
+            return new EventReference(0, EventHelper.getName(arg.define));
         }
         public EventDefine getEventDefine(ICardPoolReference cardPoolRef, string name, bool includeHidden = true)
         {
@@ -84,10 +89,10 @@ namespace Game
                 return null;
             if (tryGetCardPool(cardPoolRef, out var cardPool))
             {
-                var define = cardPool.eventDefineList.getEventTriggerTimeByName(name);
-                if (define != null)
+                var triggerTime = cardPool.eventDefineList.getEventTriggerTimeByName(name);
+                if (triggerTime != null)
                 {
-                    return define;
+                    return triggerTime;
                 }
             }
             var eventDefine = game.eventManager.getOrLoadBuiltinEventDefines(includeHidden).getEventTriggerTimeByName(name);

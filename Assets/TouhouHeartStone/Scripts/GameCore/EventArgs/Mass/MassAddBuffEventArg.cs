@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 
@@ -7,52 +9,66 @@ namespace TouhouHeartstone
     /// <summary>
     /// 群体添加增益事件
     /// </summary>
-    [EventChildren(typeof(Card.AddBuffEventArg))]
-    public class MassAddBuffEventArg : EventArg, IMassCardEventArg
+    [EventChildren(typeof(AddBuffEventDefine))]
+    public class MassAddBuffEventDefine : EventDefine, IMassCardEventDefine
     {
-        ICard[] IMassCardEventArg.getCards()
+        public MassAddBuffEventDefine()
         {
-            return cards;
-        }
-        public override void Record(IGame game, EventRecord record)
-        {
-            record.setCardStates(EVENTVAR.CARD, cards);
-            record.setVar(VAR_BUFF_DEFINE, buffDefine);
-            record.setVar(VAR_BUFF, buffs);
-        }
-        public override EventVariableInfo[] getBeforeEventVarInfos()
-        {
-            return new EventVariableInfo[]
+            beforeVariableInfos = new EventVariableInfo[]
             {
                 new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card[]) },
                 new EventVariableInfo() { name = VAR_BUFF_DEFINE, type = typeof(BuffDefine) },
             };
-        }
-        public override EventVariableInfo[] getAfterEventVarInfos()
-        {
-            return new EventVariableInfo[]
+            afterVariableInfos = new EventVariableInfo[]
             {
                 new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card[]) },
                 new EventVariableInfo() { name = VAR_BUFF_DEFINE, type = typeof(BuffDefine) },
                 new EventVariableInfo() { name = VAR_BUFF, type = typeof(Buff[]) },
             };
         }
+        ICard[] IMassCardEventDefine.getCards(IEventArg arg)
+        {
+            return arg.getVar<Card[]>(EVENTVAR.CARD);
+        }
+        [Obsolete]
+        public override void Record(CardEngine game, EventArg arg, EventRecord record)
+        {
+            record.setCardStates(EVENTVAR.CARD, arg);
+            record.setVar(VAR_BUFF_DEFINE, arg);
+            record.setVar(VAR_BUFF, arg);
+        }
+        public override async Task execute(IEventArg arg)
+        {
+            var game = arg.game;
+            var cards = arg.getVar<Card[]>(EVENTVAR.CARD);
+            var buffDefine = arg.getVar<BuffDefine>(VAR_BUFF_DEFINE);
+            List<Buff> buffList = new List<Buff>();
+            foreach (var card in cards)
+            {
+                if (card == null)
+                    continue;
+                Buff buff = new GeneratedBuff(buffDefine);
+                buffList.Add(buff);
+                await card.addBuff(game, buff);
+            }
+            arg.setVar(VAR_BUFF, buffList.ToArray());
+        }
+        public override string toString(EventArg arg)
+        {
+            var cards = arg.getVar<Card[]>(EVENTVAR.CARD);
+            var buffDefine = arg.getVar<BuffDefine>(VAR_BUFF_DEFINE);
+            var cardString = string.Join<Card>(",", cards);
+            return $"为{cardString}添加增益{buffDefine}";
+        }
+        public static Task<EventArg> doEvent(CardEngine game, Card[] cards, BuffDefine buffDefine)
+        {
+            var define = game.getEventDefine<MassAddBuffEventDefine>();
+            var arg = new EventArg(game, define);
+            arg.setVar(EVENTVAR.CARD, cards);
+            arg.setVar(VAR_BUFF_DEFINE, buffDefine);
+            return game.triggers.doEvent(arg);
+        }
         public const string VAR_BUFF = "增益";
         public const string VAR_BUFF_DEFINE = "增益定义";
-        public Card[] cards
-        {
-            get => getVar<Card[]>(EVENTVAR.CARD);
-            set => setVar(EVENTVAR.CARD, value);
-        }
-        public BuffDefine buffDefine
-        {
-            get => getVar<BuffDefine>(VAR_BUFF);
-            set => setVar(VAR_BUFF, value);
-        }
-        public Buff[] buffs
-        {
-            get => getVar<Buff[]>(VAR_BUFF);
-            set => setVar(VAR_BUFF, value);
-        }
     }
 }

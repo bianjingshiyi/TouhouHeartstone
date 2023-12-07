@@ -9,7 +9,7 @@ using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
-    using Arg = THHCard.DiscardEventArg;
+    using Arg = DiscardEventDefine;
     /// <summary>
     /// 弃牌动画，这是一个事件动画
     /// </summary>
@@ -23,8 +23,8 @@ namespace Game.BattleTable
         }
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var cardId = tEventArg.getVar<Card>(EVENTVAR.CARD).id;
-            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
+            var cardId = eventArg.getVar<Card>(EVENTVAR.CARD).id;
+            var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
             AnimAnim anim = null;
 
             if (table.tryGetServant(cardId, out var servant)) // 有些卡可能会让你在使用一张卡时取消使用并弃掉，此时如果使用的是仆从牌则可能会有随从在战场上。
@@ -62,7 +62,7 @@ namespace Game.BattleTable
 
         public override bool continueNextGroup(AnimationGroup nextGroup)
         {
-            var parents = getAllParents(tEventArg);
+            var parents = getAllParents(eventArg);
             if (nextGroup.All(a => canAnimContinue(a, parents)))
             {
                 return true;

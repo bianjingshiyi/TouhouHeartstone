@@ -50,34 +50,33 @@ namespace Controllers
         #region 事件回调
         void onEventBefore(IEventArg obj)
         {
-            switch (obj)
+            var define = obj.define;
+            switch (define)
             {
-                case HearthStoneRule.UseEventArg _:
-                //case THHPlayer.SetGemEventArg _:
-                //case THHPlayer.SetMaxGemEventArg _:
-                case HearthStoneRule.BurnEventArg _:
-                case HearthStoneRule.FatigueEventArg _:
-                case THHCard.DiscardEventArg _:
-                case HearthStoneRule.EnterFieldEventArg _:
-                case HearthStoneRule.RebornEventArg _:
-                case THHCard.AttackEventArg _:
-                case THHCard.DamageEventArg _:
-                case THHCard.SetArmorEventArg _:
-                case THHCard.HealEventArg _:
-                case THHCard.SilenceEventArg _:
-                case THHCard.ShackleEventArg _:
-                case THHCard.DeathEventArg _:
-                case THHPlayer.RevealDuelEventArg _:
-                case THHCard.SecretTriggerEventArg _:
+                case UseEventDefine _:
+                case BurnEventDefine _:
+                case FatigueEventDefine _:
+                case DiscardEventDefine _:
+                case EnterFieldEventDefine _:
+                case RebornEventDefine _:
+                case AttackEventDefine _:
+                case DamageEventDefine _:
+                case SetArmorEventDefine _:
+                case HealEventDefine _:
+                case SilenceEventDefine _:
+                case ShackleEventDefine _:
+                case DeathEventDefine _:
+                case RevealDuelEventDefine _:
+                case SecretTriggerEventDefine _:
                     addLogItem(obj);
                     break;
-                case HearthStoneRule.DrawEventArg _:
-                    if (obj is IDescribableEventArg describable)
+                case DrawEventDefine _:
+                    if (define is IDescribableEventDefine describable)
                     {
                         // string info = describable.toString(_game, localPlayer);
                         string info = lang._(
-                            describable.localizeTemplateString(_game, _localPlayer),
-                            describable.localizeStringArgs(_game, _localPlayer)
+                            describable.localizeTemplateString(_game, obj as EventArg, _localPlayer),
+                            describable.localizeStringArgs(_game, obj as EventArg, _localPlayer)
                         );
                         if (info != null)
                         {
@@ -147,104 +146,68 @@ namespace Controllers
 
             Sprite icon = item.defaultIcon;
             string text = string.Empty;
+            Player player = null;
+            var eventDefine = obj.define;
+
             Card imageCard = null;
             CardDefine imageCardDefine = null;
-            Player player = null;
-            switch (obj)
+            if (obj is IDescribableEventDefine descriable)
             {
-                case HearthStoneRule.DrawEventArg draw:
+                var descCard = descriable.getCard(tableManager.game, obj as EventArg, _localPlayer);
+                if (descCard.card != null)
+                    imageCard = descCard.card;
+                else if (descCard.define != null)
+                    imageCardDefine = descCard.define;
+
+                player = descriable.getPlayer(tableManager.game, obj as EventArg);
+
+                var nameTemplate = descriable.localizeLogItemNameTemplate(tableManager.game, obj as EventArg);
+                var nameArgs = descriable.localizeLogItemNameArgs(tableManager.game, obj as EventArg);
+                text = lang._(nameTemplate, nameArgs);
+            }
+            switch (eventDefine)
+            {
+                case DrawEventDefine:
                     icon = item.drawIcon;
-                    text = lang._(GAME_MANAGER_DRAW);
-                    imageCard = draw.player == _localPlayer ? draw.card : draw.player.getMaster();
-                    player = draw.player;
                     break;
-                case HearthStoneRule.BurnEventArg burn:
+                case BurnEventDefine:
                     icon = item.burnIcon;
-                    text = lang._(GAME_MANAGER_BURN);
-                    imageCard = burn.card;
-                    player = burn.player;
                     break;
-                case HearthStoneRule.FatigueEventArg fatigue:
+                case FatigueEventDefine:
                     icon = item.fatigueIcon;
-                    text = lang._(GAME_MANAGER_FATIGUE);
-                    imageCard = fatigue.player.getMaster();
-                    player = fatigue.player;
                     break;
-                case THHCard.DiscardEventArg discard:
+                case DiscardEventDefine:
                     icon = item.discardIcon;
-                    text = lang._(GAME_MANAGER_DISCARD);
-                    imageCard = discard.card;
-                    player = discard.player;
                     break;
-                case HearthStoneRule.UseEventArg use:
+                case UseEventDefine:
                     icon = item.useIcon;
-                    text = lang._(GAME_MANAGER_USE);
-                    imageCard = use.card.isTrap(_game) && use.player != _localPlayer ? use.player.getMaster() : use.card;
-                    player = use.player;
                     break;
-                case HearthStoneRule.EnterFieldEventArg token:
+                case EnterFieldEventDefine:
                     icon = item.tokenIcon;
-                    text = lang._(GAME_MANAGER_TOKEN);
-                    imageCard = token.card;
-                    player = token.player;
                     break;
-                case HearthStoneRule.RebornEventArg reborn:
+                case RebornEventDefine:
                     icon = item.rebornIcon;
-                    text = lang._(GAME_MANAGER_REBORN);
-                    imageCard = reborn.card;
-                    player = reborn.player;
                     break;
-                case THHCard.AttackEventArg attack:
+                case AttackEventDefine:
                     icon = item.attackIcon;
-                    text = lang._(GAME_MANAGER_ATTACK);
-                    imageCard = attack.card;
-                    player = attack.card.getOwner();
                     break;
-                case THHCard.DamageEventArg damage:
+                case DamageEventDefine:
                     icon = item.damageIcon;
-                    text = lang._(GAME_MANAGER_DAMAGE, damage.damagedValue);
-                    imageCard = damage.target;
-                    player = damage.target.getOwner();
                     break;
-                case THHCard.SetArmorEventArg armor:
+                case SetArmorEventDefine:
                     icon = item.armorIcon;
-                    text = lang._(GAME_MANAGER_SET_ARMOR, armor.value);
-                    imageCard = armor.card;
-                    player = armor.card.getOwner();
                     break;
-                case THHCard.HealEventArg heal:
+                case HealEventDefine:
                     icon = item.healIcon;
-                    text = lang._(GAME_MANAGER_HEAL, heal.healedValue);
-                    imageCard = heal.card;
-                    player = heal.card.getOwner();
                     break;
-                case THHCard.SilenceEventArg silence:
+                case SilenceEventDefine:
                     icon = item.silenceIcon;
-                    text = lang._(GAME_MANAGER_SILENCE);
-                    imageCard = silence.card;
-                    player = silence.card.getOwner();
                     break;
-                case THHCard.SecretTriggerEventArg secret:
+                case SecretTriggerEventDefine:
                     icon = item.secretIcon;
-                    text = lang._(GAME_MANAGER_SECRET);
-                    imageCard = secret.card;
-                    player = secret.card.getOwner();
                     break;
-                case THHCard.DeathEventArg death:
+                case DeathEventDefine:
                     icon = item.deathIcon;
-                    text = lang._(GAME_MANAGER_DEATH);
-                    imageCard = death.card;
-                    player = death.player;
-                    break;
-                case THHPlayer.RevealDuelEventArg revealDuel:
-                    text = lang._(GAME_MANAGER_REVEAL_DUEL);
-                    imageCard = revealDuel.player.getMaster();
-                    player = revealDuel.player;
-                    break;
-                case THHCard.ShackleEventArg shackle:
-                    text = lang._(GAME_MANAGER_SHACKLE);
-                    imageCard = shackle.card;
-                    player = shackle.card.getOwner();
                     break;
             }
 
@@ -266,12 +229,13 @@ namespace Controllers
         {
             int itemIndex = _logScrollView.LogList.getLogItemIndex(item.rectTransform);
             var logItem = logItems[itemIndex];
-            var arg = logItem.arg;
-            if (arg is IDescribableEventArg describable)
+            var arg = logItem.arg as EventArg;
+            var eventDefine = arg.define;
+            if (eventDefine is IDescribableEventDefine describable)
             {
                 var logInfoHori = _logScrollView.LogInfoHorizantal;
                 logInfoHori.display();
-                string info = lang._(describable.localizeTemplateString(_game, _localPlayer), describable.localizeStringArgs(_game, _localPlayer));
+                string info = lang._(describable.localizeTemplateString(_game, arg, _localPlayer), describable.localizeStringArgs(_game, arg, _localPlayer));
                 info = Regex.Replace(info, @"{card:(?<poolId>-?\d+),(?<id>-?\d+)}",
                     m =>
                     {
@@ -283,7 +247,7 @@ namespace Controllers
                     });
                 logInfoHori.Text.text = info;
 
-                var eventCard = describable.getCard(_game, _localPlayer);
+                var eventCard = describable.getCard(_game, arg, _localPlayer);
                 if (eventCard != null)
                 {
                     logInfoHori.InfoCard.display();
@@ -293,7 +257,7 @@ namespace Controllers
                     logInfoHori.InfoCard.hide();
 
                 logInfoHori.TargetGridList.clearItems();
-                var targets = describable.getTargets(_game, _localPlayer);
+                var targets = describable.getTargets(_game, arg, _localPlayer);
                 if (targets != null && targets.Length > 0)
                 {
                     logInfoHori.TargetGridList.gameObject.SetActive(true);
@@ -365,40 +329,6 @@ namespace Controllers
         public LangManager lang => _main.lang;
         public BattleTableManager tableManager => _battleTableManager;
 
-        [TranslateMsg]
-        private const string GAME_MANAGER_DEATH = "死亡";
-        [TranslateMsg]
-        private const string GAME_MANAGER_SECRET = "陷阱";
-        [TranslateMsg]
-        private const string GAME_MANAGER_SILENCE = "封印";
-        [TranslateMsg]
-        private const string GAME_MANAGER_SHACKLE = "禁锢";
-        [TranslateMsg]
-        private const string GAME_MANAGER_ATTACK = "攻击";
-        [TranslateMsg("对局记录-伤害事件（{0}为失去的生命值）")]
-        private const string GAME_MANAGER_DAMAGE = "-{0}";
-        [TranslateMsg("对局记录-护甲值更改事件（{0}为当前护甲值）")]
-        private const string GAME_MANAGER_SET_ARMOR = "=>{0}";
-        [TranslateMsg("对局记录-治疗事件（{0}为获得的生命值）")]
-        private const string GAME_MANAGER_HEAL = "+{0}";
-        [TranslateMsg]
-        private const string GAME_MANAGER_REBORN = "复活";
-        [TranslateMsg]
-        private const string GAME_MANAGER_TOKEN = "召唤";
-        [TranslateMsg]
-        private const string GAME_MANAGER_USE = "使用";
-        [TranslateMsg]
-        private const string GAME_MANAGER_DISCARD = "弃牌";
-        [TranslateMsg]
-        private const string GAME_MANAGER_FATIGUE = "疲劳";
-        [TranslateMsg]
-        private const string GAME_MANAGER_BURN = "爆牌";
-        [TranslateMsg]
-        private const string GAME_MANAGER_DRAW = "抽牌";
-        [TranslateMsg]
-        private const string GAME_MANAGER_DISCOVER = "发现";
-        [TranslateMsg]
-        private const string GAME_MANAGER_REVEAL_DUEL = "信仰对决";
         [SerializeField]
         private LogPanel _logPanel;
         [SerializeField]

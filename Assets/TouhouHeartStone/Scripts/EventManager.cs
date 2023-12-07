@@ -26,12 +26,18 @@ namespace Game
         }
         public string translateEventDefineNameForEditor(EventDefine define)
         {
-            return game.lang._(define.editorName);
+            if (_eventNameTranslations.TryGetValue(define.eventName, out string editorName))
+            {
+                return game.lang._(editorName);
+            }
+            return game.lang._(define.eventName);
         }
         public string translateEventTriggerTimeNameForEditor(EventTriggerTime time)
         {
             var lang = game.lang;
-            var name = lang._(time.define.editorName);
+            var poolRef = game.card.getLocalCardPoolReference(time.defineRef.cardPoolId);
+            var define = game.card.getEventDefine(poolRef, time.defineRef.eventName);
+            var name = translateEventDefineNameForEditor(define);
             if (time.type == EventTriggerTimeType.Before)
             {
                 return lang._(StringTable.EDITOR_EVENT_NAME_BEFORE_TEMPLATE, name);
@@ -56,13 +62,13 @@ namespace Game
         public EventDefine generateEventDefineForActionDefine(GeneratedActionDefine actionDefine)
         {
             string eventName = actionDefine.getEventName();
+            var actionRef = actionDefine.getReference();
             List<EventReference> childrenList = new List<EventReference>();
             generateActionChildrenEventsNonAlloc(actionDefine, childrenList);
-            var define = new EventDefine()
+            var define = new GeneratedEventDefine(actionRef)
             {
                 cardPoolId = actionDefine.cardPoolId,
                 eventName = eventName,
-                editorName = actionDefine.editorName,
                 beforeVariableInfos = actionDefine.getBeforeEventArgVarInfos(),
                 afterVariableInfos = actionDefine.getAfterEventArgVarInfos(),
                 childrenEvents = childrenList.ToArray(),
@@ -111,48 +117,34 @@ namespace Game
             {
                 foreach (var type in assembly.GetTypes())
                 {
-                    if (type.IsSubclassOf(typeof(EventArg))//是EventArg
-                        && !type.IsAbstract//不是抽象类
-                        )
+                    // 是EventDefine并且不是抽象类
+                    if (type.IsSubclassOf(typeof(EventDefine)) && !type.IsAbstract)
                     {
-                        EventArg eventArg;
+                        EventDefine eventDefine;
                         try
                         {
-                            eventArg = Activator.CreateInstance(type) as EventArg;
+                            eventDefine = Activator.CreateInstance(type) as EventDefine;
                         }
                         catch (Exception e)
                         {
                             Debug.LogWarning($"无法加载事件类型{type.FullName}：{e}");
                             continue;
                         }
-                        var eventName = EventHelper.getName(eventArg);
+                        var eventName = EventHelper.getName(eventDefine);
 
                         // 获取子事件。
-                        EventReference[] childrenNames;
+                        EventReference[] childrenRefs;
                         if (type.getAttribute<EventChildrenAttribute>() is EventChildrenAttribute eventChildren)
                         {
-                            childrenNames = eventChildren.childrenTypes.Select(t => new EventReference(0, EventHelper.getName(t))).ToArray();
+                            childrenRefs = eventChildren.childrenTypes.Select(t => new EventReference(0, EventHelper.getName(t))).ToArray();
                         }
                         else
                         {
-                            childrenNames = Array.Empty<EventReference>();
+                            childrenRefs = Array.Empty<EventReference>();
                         }
+                        eventDefine.eventName = eventName;
+                        eventDefine.childrenEvents = childrenRefs;
 
-                        // 获取编辑器名。
-                        string editorName;
-                        if (!_eventNameTranslations.TryGetValue(eventName, out editorName))
-                        {
-                            editorName = eventName;
-                        }
-                        var eventDefine = new EventDefine()
-                        {
-                            cardPoolId = 0,
-                            eventName = eventName,
-                            editorName = editorName,
-                            beforeVariableInfos = eventArg.getBeforeEventVarInfos(),
-                            afterVariableInfos = eventArg.getAfterEventVarInfos(),
-                            childrenEvents = childrenNames,
-                        };
                         _builtinEventDefineList.Add(eventDefine);
                     }
                 }
@@ -210,7 +202,6 @@ namespace Game
         {
             "SecretTriggerEvent",
             "MissionCompleteEvent",
-            "ComeOnStageEvent",
             "RebornEvent",
             "RevealEvent",
             "SelectCardEvent",
@@ -218,10 +209,10 @@ namespace Game
             "ActiveEvent",
             "BeChargedEvent",
             "TestEvent",
-            "AddModiEvent",
-            "RemoveModiEvent",
-            "PropChangeEvent",
-            "CommandEvent",
+            "CardPropChangeEvent",
+            "SetCardPropEvent",
+            "BuffPropertyChangeEvent",
+            "EffectTriggerEvent",
             "ElementMixEvent",
             "LastwordEvent",
             "UpdateDeathEvent",
@@ -255,7 +246,7 @@ namespace Game
             { "DamageEvent", StringTable.EDITOR_EVENT_NAME_DAMAGE },
             { "HealEvent", StringTable.EDITOR_EVENT_NAME_HEAL },
             { "DeathEvent", StringTable.EDITOR_EVENT_NAME_DEATH },
-            { "SecreTriggerEvent", StringTable.EDITOR_EVENT_NAME_SECRETTRIGGER },
+            { "SecretTriggerEvent", StringTable.EDITOR_EVENT_NAME_SECRETTRIGGER },
             { "MissionCompleteEvent", StringTable.EDITOR_EVENT_NAME_MISSIONCOMPLETE },
             { "ComeOnStageEvent", StringTable.EDITOR_EVENT_NAME_COMEONSTAGE },
             { "InitEvent", StringTable.EDITOR_EVENT_NAME_INIT },
@@ -276,7 +267,7 @@ namespace Game
             { "ActiveEvent", StringTable.EDITOR_EVENT_NAME_ACTIVE },
             { "DiscardEvent", StringTable.EDITOR_EVENT_NAME_DISCARD },
             { "CreateTokenEvent", StringTable.EDITOR_EVENT_NAME_CREATETOKEN },
-            { "SetDefineEvent", StringTable.EDITOR_EVENT_NAME_SETDEFINE },
+            { "SetCardDefineEvent", StringTable.EDITOR_EVENT_NAME_SETDEFINE },
             { "ShackleEvent", EDITOR_EVENT_NAME_SHACKLE },
             { "AddModiEvent", StringTable.EDITOR_EVENT_NAME_ADDMODI },
             { "RemoveModiEvent", StringTable.EDITOR_EVENT_NAME_REMOVEMODI },

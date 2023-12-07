@@ -3,7 +3,7 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 namespace Game.BattleTable
 {
-    using Arg = HearthStoneRule.InitReplaceEventArg;
+    using Arg = InitReplaceEventDefine;
     class InitReplaceAnimation : EventAnimation<Arg>
     {
         public override IEnumerator logicUpdate(BattleTableManager table)

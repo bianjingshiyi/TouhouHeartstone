@@ -27,10 +27,10 @@ namespace TouhouHeartstone
             graph.addNode(node);
             return node;
         }
-        public static EventEntryNode createEventEntryNode(this ActionGraph graph, long cardPoolId, string eventName, float posX = 0, float posY = 0)
+        public static EventEntryNode createEventEntryNode(this ActionGraph graph, EventTriggerTime triggerTime, float posX = 0, float posY = 0)
         {
             int id = graph.getUniqueNodeId();
-            var node = new EventEntryNode(cardPoolId, eventName);
+            var node = new EventEntryNode(triggerTime);
             node.id = id;
             node.posX = posX;
             node.posY = posY;
@@ -38,15 +38,14 @@ namespace TouhouHeartstone
             graph.addNode(node);
             return node;
         }
-        public static EventEntryNode createEventEntryNode(this ActionGraph graph, EventTriggerTime triggerTime, float posX = 0, float posY = 0)
+        public static EventEntryNode createEventEntryNode(this ActionGraph graph, EventDefine eventDefine, EventTriggerTimeType type, float posX = 0, float posY = 0)
         {
-            var define = triggerTime?.define;
-            var node = graph.createEventEntryNode(define?.cardPoolId ?? 0, triggerTime.getTimeName(), posX, posY);
-            if (triggerTime != null)
-            {
-                node.define = triggerTime;
-                node.Define();
-            }
+            if (eventDefine == null)
+                return createEventEntryNode(graph, new EventTriggerTime(new EventReference(0, null), EventTriggerTimeType.Before), posX, posY);
+            var triggerTime = new EventTriggerTime(eventDefine, type);
+            var node = createEventEntryNode(graph, triggerTime, posX, posY);
+            node.setEventDefine(eventDefine, type);
+            node.Define();
             return node;
         }
         public static AuraEntryNode createAuraEntryNode(this ActionGraph graph, float posX = 0, float posY = 0)
@@ -72,9 +71,9 @@ namespace TouhouHeartstone
         {
             return graph.nodes.OfType<PassiveEntryNode>().FirstOrDefault();
         }
-        public static EventEntryNode findEventEntryNode(this ActionGraph graph, string eventName)
+        public static EventEntryNode findEventEntryNode(this ActionGraph graph, string triggerTimeName)
         {
-            return graph.nodes.OfType<EventEntryNode>().FirstOrDefault(n => n.eventName == eventName);
+            return graph.nodes.OfType<EventEntryNode>().FirstOrDefault(n => n.triggerTime.getTimeName() == triggerTimeName);
         }
         public static EventEntryNode findEventEntryNode(this ActionGraph graph)
         {

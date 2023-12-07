@@ -3,14 +3,16 @@ using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
-    public interface IDescribableEventArg : IEventArg
+    public interface IDescribableEventDefine
     {
-        DescribableCard getCard(IGame game, IPlayer viewer);
-        DescribableCard[] getTargets(IGame game, IPlayer viewer);
-        string toString(IGame game, IPlayer viewer);
-
-        object[] localizeStringArgs(IGame game, IPlayer viewer);
-        string localizeTemplateString(IGame game, IPlayer viewer);
+        DescribableCard getCard(IGame game, EventArg eventArg, IPlayer viewer);
+        DescribableCard[] getTargets(IGame game, EventArg eventArg, IPlayer viewer);
+        Player getPlayer(IGame game, EventArg eventArg);
+        string toString(IGame game, EventArg eventArg, IPlayer viewer);
+        object[] localizeStringArgs(IGame game, EventArg eventArg, IPlayer viewer);
+        string localizeTemplateString(IGame game, EventArg eventArg, IPlayer viewer);
+        object[] localizeLogItemNameArgs(IGame game, EventArg eventArg);
+        string localizeLogItemNameTemplate(IGame game, EventArg eventArg);
     }
     public class DescribableCard
     {

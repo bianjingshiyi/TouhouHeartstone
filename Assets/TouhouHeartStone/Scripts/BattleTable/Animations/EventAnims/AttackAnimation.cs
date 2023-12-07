@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Linq;
-using TouhouCardEngine.Histories;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -8,7 +7,7 @@ using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
-    using Arg = THHCard.AttackEventArg;
+    using Arg = AttackEventDefine;
     class AttackAnimation : EventAnimation<Arg>
     {
         public override IEnumerator startUpdate(BattleTableManager table)
@@ -34,8 +33,8 @@ namespace Game.BattleTable
         }
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = tEventArg.getVar<Card>(EVENTVAR.CARD);
-            var target = tEventArg.getVar<Card>(EVENTVAR.TARGET_CARD);
+            var card = eventArg.getVar<Card>(EVENTVAR.CARD);
+            var target = eventArg.getVar<Card>(EVENTVAR.TARGET_CARD);
             TableCharacter attackObj = getCharacterUI(table, card.id);
             TableCharacter attackedObj = getCharacterUI(table, target.id);
             SimpleAnim attackSimpleAnim = attackObj?.onAttack;
@@ -74,7 +73,7 @@ namespace Game.BattleTable
         }
         public override IEnumerator canceledUpdate(BattleTableManager table)
         {
-            var card = tEventArg.getVar<Card>(EVENTVAR.CARD);
+            var card = eventArg.getVar<Card>(EVENTVAR.CARD);
             yield return returnFromAttack(table, card.id);
         }
         public override bool continueNextGroup(AnimationGroup nextGroup)
@@ -115,21 +114,27 @@ namespace Game.BattleTable
         }
         private bool isAnimGroupDamageOfThis(AnimationGroup nextGroup)
         {
+            var target = eventArg.getVar<Card>(EVENTVAR.TARGET_CARD);
             return nextGroup.Any(a =>
             {
                 if (a is DamageAnimation damageAnim)
                 {
                     // 伤害动画的事件的父事件是该攻击动画的攻击事件。
-                    return damageAnim.tEventArg.parent == tEventArg && damageAnim.tEventArg.target == tEventArg.target;
+                    var otherTarget = damageAnim.eventArg.getVar<Card>(DamageEventDefine.VAR_TARGET);
+                    return damageAnim.eventArg.parent == eventArg && otherTarget == target;
                 }
                 else if (a is PropChangeAnim propAnim)
                 {
                     // 属性变化动画的事件，是该攻击事件的伤害事件的子事件。
-                    var evt = propAnim.eventArg;
+                    var evt = propAnim.eventArg?.parent;
                     while (evt != null)
                     {
-                        if (evt.parent is THHCard.DamageEventArg damageEvent && damageEvent.parent == tEventArg && damageEvent.target == tEventArg.target)
-                            return true;
+                        if (evt.define is DamageEventDefine)
+                        {
+                            var otherTarget = evt.getVar<Card>(DamageEventDefine.VAR_TARGET);
+                            if (evt.parent == eventArg && otherTarget == target)
+                                return true;
+                        } 
                         evt = evt.parent;
                     }
                 }

@@ -69,7 +69,10 @@ namespace Controllers
         private void onConfirmCreateEventEffectCallback(int index)
         {
             var effect = game.card.createEffectByIndex(_cardPoolId, CardManager.EVENT_EFFECT_IDX);
-            effect.graph.createEventEntryNode(_eventTriggerTimes[index]);
+            var triggerTime = _eventTriggerTimes[index];
+            var eventDefine = game.card.getLocalEventDefine(triggerTime.defineRef);
+            effect.graph.createEventEntryNode(eventDefine, triggerTime.type);
+
             onCreateEffect?.Invoke(effect);
             _ui.displayEventEffectDialog(false);
         }

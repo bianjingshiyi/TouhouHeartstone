@@ -4,14 +4,14 @@ using TouhouHeartstone;
 
 namespace Game.BattleTable
 {
-    using Arg = SetEventVarEventArg;
+    using Arg = SetEventVarEventDefine;
     class SetEventVarAnim : EventAnimation<Arg>
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var eventArg = tEventArg.getVar<IEventArg>(Arg.VAR_EVENT);
-            var varName = tEventArg.getVar<string>(Arg.VAR_VAR_NAME);
-            var after = tEventArg.getVar<object>(Arg.VAR_AFTER_VALUE);
+            var eventArg = base.eventArg.getVar<IEventArg>(Arg.VAR_EVENT);
+            var varName = base.eventArg.getVar<string>(Arg.VAR_VAR_NAME);
+            var after = base.eventArg.getVar<object>(Arg.VAR_AFTER_VALUE);
 
             var anim = table.getAnimOfEvent(eventArg);
             if (anim != null)

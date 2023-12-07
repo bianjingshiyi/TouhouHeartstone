@@ -141,9 +141,9 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card target)
         {
-            if (eventArg is THHCard.AttackEventArg attackArg)
+            if (eventArg.define is AttackEventDefine attackArg)
             {
-                attackArg.changeEventVar(game, EVENTVAR.TARGET_CARD, target);
+                eventArg.changeEventVar(game, EVENTVAR.TARGET_CARD, target);
             }
         }
 
@@ -163,9 +163,9 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card target)
         {
-            if (eventArg is THHCard.DamageEventArg damageArg)
+            if (eventArg.define is DamageEventDefine)
             {
-                damageArg.changeEventVar(game, EVENTVAR.CARD, target);
+                eventArg.changeEventVar(game, EVENTVAR.CARD, target);
             }
         }
 
@@ -175,9 +175,9 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card source)
         {
-            if (eventArg is THHCard.DamageEventArg damageArg)
+            if (eventArg.define is DamageEventDefine)
             {
-                damageArg.changeEventVar(game, THHCard.DamageEventArg.VAR_DAMAGE_SOURCE, source);
+                eventArg.changeEventVar(game, DamageEventDefine.VAR_DAMAGE_SOURCE, source);
             }
         }
 
@@ -187,9 +187,9 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
         {
-            if (eventArg is THHCard.DamageEventArg damageArg)
+            if (eventArg.define is DamageEventDefine)
             {
-                damageArg.changeEventVar(game, THHCard.DamageEventArg.VAR_DAMAGE_VALUE, value);
+                eventArg.changeEventVar(game, DamageEventDefine.VAR_DAMAGE_VALUE, value);
             }
         }
 
@@ -199,9 +199,9 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
         {
-            if (eventArg is THHCard.HealEventArg healArg)
+            if (eventArg.define is HealEventDefine)
             {
-                healArg.changeEventVar(game, EVENTVAR.VALUE, value);
+                eventArg.changeEventVar(game, EVENTVAR.VALUE, value);
             }
         }
 
@@ -250,7 +250,7 @@ namespace Game
                     results.Insert(0, eventArg);
                 if (turnBeforeCount > farther)
                     break;
-                if (eventArg is HearthStoneRule.TurnStartEventArg)
+                if (eventArg.define is TurnStartEventDefine)
                 {
                     turnBeforeCount++;
                 }

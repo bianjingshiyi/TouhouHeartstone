@@ -10,7 +10,7 @@ namespace Game.Animations
 {
     public class EventEffectAnim : TableEffectAnim
     {
-        public EventEffectAnim(AnimationDefine define, IEventArg eventArg, EffectTriggerEventArg effectArg, SkinAnimationRef animRef) : base(define, null, null)
+        public EventEffectAnim(AnimationDefine define, IEventArg eventArg, EventArg effectArg, SkinAnimationRef animRef) : base(define, null, null)
         {
             this.define = define;
             this.eventArg = eventArg;
@@ -28,7 +28,7 @@ namespace Game.Animations
             return following.OfType<EventEffectAnim>().Where(a => a.define == define && a.eventArg.parent == eventArg.parent && a.eventArg.GetType() == eventArg.GetType());
         }
         private IEventArg eventArg;
-        private EffectTriggerEventArg effectArg;
+        private EventArg effectArg;
         private SkinAnimationRef animRef;
     }
 }

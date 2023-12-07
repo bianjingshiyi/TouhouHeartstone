@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
-    public class EventEntryNode : PassiveEntryNode, IDefineNode<EventTriggerTime>, IEntryNode
+    public class EventEntryNode : PassiveEntryNode, IEntryNode
     {
         #region 公有方法
-        public EventEntryNode(long eventCardPoolId, string eventName) : base()
+        public EventEntryNode(EventTriggerTime triggerTime) : base()
         {
-            this.eventCardPoolId = eventCardPoolId;
-            this.eventName = eventName;
+            this.triggerTime = triggerTime;
+        }
+        public void setEventDefine(EventDefine define, EventTriggerTimeType type)
+        {
+            this.define = define;
+            this.type = type;
         }
         public override Task<ControlOutput> run(Flow flow)
         {
@@ -31,7 +34,7 @@ namespace TouhouHeartstone
         {
             if (define == null)
                 yield break;
-            var variableInfos = define.getVariableInfos();
+            var variableInfos = define.getVariableInfos(triggerTime.type);
             if (variableInfos != null)
             {
                 foreach (var info in variableInfos)
@@ -48,9 +51,9 @@ namespace TouhouHeartstone
         }
 
         #endregion
-        public EventTriggerTime define { get; set; }
-        public long eventCardPoolId;
-        public string eventName;
+        public EventDefine define { get; private set; }
+        public EventTriggerTimeType type { get; private set; }
+        public EventTriggerTime triggerTime { get; private set; }
     }
     [Serializable]
     public class SerializableEventEntryNode : ISerializableNode
@@ -58,15 +61,23 @@ namespace TouhouHeartstone
         public SerializableEventEntryNode(EventEntryNode eventEntryNode)
         {
             id = eventEntryNode.id;
-            eventCardPoolId = eventEntryNode.eventCardPoolId;
-            eventName = eventEntryNode.eventName;
+            triggerTime = new SerializableEventTriggerTime(eventEntryNode.triggerTime);
             posX = eventEntryNode.posX;
             posY = eventEntryNode.posY;
             consts = eventEntryNode.consts != null ? new Dictionary<string, object>(eventEntryNode.consts) : null;
         }
         public PassiveEntryNode ToActionNode(ActionGraph graph)
         {
-            var entry = new EventEntryNode(eventCardPoolId, eventName)
+            EventTriggerTime eventTriggerTime;
+            if (triggerTime != null)
+            {
+                eventTriggerTime = triggerTime.toTriggerTime();
+            }
+            else
+            {
+                eventTriggerTime = EventTriggerTime.fromName(eventCardPoolId, eventName);
+            }
+            var entry = new EventEntryNode(eventTriggerTime)
             {
                 id = id,
                 posX = posX,
@@ -91,9 +102,12 @@ namespace TouhouHeartstone
         public int id;
         public float posX;
         public float posY;
-        public long eventCardPoolId;
-        public string eventName;
         public Dictionary<string, object> consts;
+        public SerializableEventTriggerTime triggerTime;
+        [Obsolete]
+        public long eventCardPoolId;
+        [Obsolete]
+        public string eventName;
         [Obsolete]
         public string[] tags;
         [Obsolete]

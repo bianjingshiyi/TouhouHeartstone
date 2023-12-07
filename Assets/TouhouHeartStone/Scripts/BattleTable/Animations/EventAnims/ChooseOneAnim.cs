@@ -4,7 +4,7 @@ using TouhouHeartstone;
 
 namespace Game.BattleTable
 {
-    using Arg = HearthStoneRule.SelectCardDefineEventArg;
+    using Arg = SelectCardDefineEventDefine;
 
     public class ChooseOneAnim : EventAnimation<Arg>
     {
@@ -12,7 +12,7 @@ namespace Game.BattleTable
 
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
+            var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
             //自己打出的效果不展示
             if (player == table.player)
             {
@@ -27,9 +27,9 @@ namespace Game.BattleTable
 
             yield return stopWhenCanceled();
 
-            var choose = tEventArg.getVar<CardDefine>(EVENTVAR.CHOSEN_CARD);
+            var choose = eventArg.getVar<CardDefine>(EVENTVAR.CHOSEN_CARD);
 
-            var isShow = tEventArg.getVar<bool>(Arg.VAR_SEEN_CARD);
+            var isShow = eventArg.getVar<bool>(Arg.VAR_CARD_SEEN);
             TableCard chooseCard = null;
             if (isShow)
             {

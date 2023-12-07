@@ -33,7 +33,7 @@ namespace TouhouHeartstone
                 if (condition == null || condition.getConnectedOutputPort() == null)
                     return true;
 
-                var flow = new Flow(game, card, buff, eventArg, this);
+                var flow = new Flow(game as CardEngine, card, buff, eventArg, this);
                 var task = game.getValue<bool>(flow, condition);
                 if (task.IsCompleted)
                 {
@@ -71,7 +71,7 @@ namespace TouhouHeartstone
                         // 目标类型是仆从，但是卡牌是英雄。
                         return false;
                     }
-                    FlowEnv env = new FlowEnv(game, card, buff, eventArg, this);
+                    FlowEnv env = new FlowEnv(game as CardEngine, card, buff, eventArg, this);
                     if (!targetChecker.isValidTarget(env, out invalidMsg))
                     {
                         //有条件没有通过，不是合法目标
@@ -85,22 +85,6 @@ namespace TouhouHeartstone
             {
                 invalidMsg = null;
                 return false;
-            }
-        }
-        public override Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
-        {
-            var triggerArg = new EffectTriggerEventArg(card as Card, buff as Buff, this);
-            return game.triggers.doEvent(triggerArg, func);
-
-            Task func(EffectTriggerEventArg arg)
-            {
-                var entryNode = this.entryNode;
-                if (entryNode != null)
-                {
-                    var flow = new Flow(game, card, buff, eventArg, this);
-                    return game.runActions(flow, entryNode.getActionOutputPort());
-                }
-                return Task.CompletedTask;
             }
         }
         public override void setTags(params string[] tags)
@@ -126,9 +110,20 @@ namespace TouhouHeartstone
             if (entryNode != null)
                 yield return entryNode;
         }
+        protected override Task runEffect(CardEngine game, Card card, Buff buff, EventArg arg, string portName)
+        {
+            var entry = entryNode;
+            if (entry != null)
+            {
+                var flow = new Flow(game, card, buff, arg, this);
+                return game.runActions(flow, entry.getOutputPort<ControlOutput>(portName));
+            }
+            return Task.CompletedTask;
+        }
         #endregion
         #region 属性字段
         public virtual ActiveEntryNode entryNode => graph?.nodes?.OfType<ActiveEntryNode>().FirstOrDefault();
+        public override ControlOutput executePort => entryNode?.getOutputPort<ControlOutput>(ActiveEntryNode.actionPortName);
         public IEnumerable<TargetChecker> targetCheckers => entryNode?.targetCheckerList;
         Node IEntryNodeEffect.entryNode => entryNode;
         #endregion

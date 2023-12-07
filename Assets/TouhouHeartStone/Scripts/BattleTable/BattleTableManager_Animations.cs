@@ -34,7 +34,7 @@ namespace Game.BattleTable
                     baseType.GetGenericTypeDefinition() != typeof(RequestAnimation<>))
                     continue;
                 Type paraType = baseType.GetGenericArguments()[0];
-                if (!paraType.IsSubclassOf(typeof(EventArg)) &&
+                if (!paraType.IsSubclassOf(typeof(EventDefine)) &&
                     !paraType.IsSubclassOf(typeof(Request)))
                     continue;
                 setAnim(paraType, type);
@@ -69,7 +69,7 @@ namespace Game.BattleTable
         /// <returns></returns>
         public EventAnimation createEventAnim(IEventArg eventArg)
         {
-            Type type = eventArg.GetType();
+            Type type = eventArg.define.GetType();
             if (animConstructorDic.ContainsKey(type))
             {
                 EventAnimation anim = null;
@@ -156,9 +156,9 @@ namespace Game.BattleTable
         #region 特效动画
         private void checkCardSkinEffectAnimations(IEventArg arg)
         {
-            if (arg is EffectTriggerEventArg effectTriggerEventArg)
+            if (arg is EventArg eventArg && eventArg.define is EffectTriggerEventDefine)
             {
-                checkCardSkinEffectEntryAnimation(effectTriggerEventArg);
+                checkCardSkinEffectEntryAnimation(eventArg);
                 return;
             }
             var effectTriggerArg = getEffectEventTriggerArg(arg);
@@ -175,7 +175,7 @@ namespace Game.BattleTable
                 addToInsertedAnimsOfParent(arg, anim);
             }
         }
-        private void checkCardSkinEffectEntryAnimation(EffectTriggerEventArg arg)
+        private void checkCardSkinEffectEntryAnimation(EventArg arg)
         {
             if (arg == null)
                 return;
@@ -188,12 +188,12 @@ namespace Game.BattleTable
                 addAnim(new EventEffectAnim(animationDef, arg, arg, skinAnimRef));
             }
         }
-        public EffectTriggerEventArg getEffectEventTriggerArg(IEventArg arg)
+        public EventArg getEffectEventTriggerArg(IEventArg arg)
         {
             var seekArg = arg;
             while (seekArg != null)
             {
-                if (seekArg is EffectTriggerEventArg effectArg)
+                if (seekArg is EventArg effectArg && seekArg.define is EffectTriggerEventDefine)
                 {
                     return effectArg;
                 }
@@ -201,15 +201,16 @@ namespace Game.BattleTable
             }
             return null;
         }
-        public SkinAnimationRef getEventSkinAnimRef(IEventArg arg, EffectTriggerEventArg effectArg)
+        public SkinAnimationRef getEventSkinAnimRef(IEventArg arg, EventArg effectArg)
         {
-            var card = effectArg.card;
-            var buff = effectArg.buff;
+            var card = effectArg.getVar<Card>(EffectTriggerEventDefine.VAR_CARD);
+            var buff = effectArg.getVar<Buff>(EffectTriggerEventDefine.VAR_BUFF);
+            var effect = EffectTriggerEventDefine.getEffect(effectArg);
             if (buff is GeneratedBuff genBuff)
             {
                 var define = game.getBuffDefine(genBuff.defineRef);
                 var skin = getBuffSkin(define);
-                if (effectArg.effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
+                if (effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
 
                 var node = genEffect.graph.findNodeById(arg.flowNodeId);
                 return getAnimRefOfEventNode(skin, arg, node);
@@ -219,22 +220,23 @@ namespace Game.BattleTable
             {
                 var define = card.define;
                 var skin = getCardSkin(define);
-                if (effectArg.effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
+                if (effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
 
                 var node = genEffect.graph.findNodeById(arg.flowNodeId);
                 return getAnimRefOfEventNode(skin, arg, node);
             }
             return null;
         }
-        public SkinAnimationRef getEffectEntrySkinAnimRef(EffectTriggerEventArg effectArg)
+        public SkinAnimationRef getEffectEntrySkinAnimRef(EventArg effectArg)
         {
-            var card = effectArg.card;
-            var buff = effectArg.buff;
+            var card = effectArg.getVar<Card>(EffectTriggerEventDefine.VAR_CARD);
+            var buff = effectArg.getVar<Buff>(EffectTriggerEventDefine.VAR_BUFF);
+            var effect = EffectTriggerEventDefine.getEffect(effectArg); 
             if (buff is GeneratedBuff genBuff)
             {
                 var define = game.getBuffDefine(genBuff.defineRef);
                 var skin = getBuffSkin(define);
-                if (effectArg.effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
+                if (effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
 
                 var node = entryNodeEffect.entryNode;
                 return getAnimRefOfEntryNode(skin, node);
@@ -243,27 +245,28 @@ namespace Game.BattleTable
             {
                 var define = card.define;
                 var skin = getCardSkin(define);
-                if (effectArg.effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
+                if (effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
 
                 var node = entryNodeEffect.entryNode;
                 return getAnimRefOfEntryNode(skin, node);
             }
             return null;
         }
-        public Card getEventSkinAnimCard(EffectTriggerEventArg effectArg, IEventArg arg, int position)
+        public Card getEventSkinAnimCard(EventArg effectArg, IEventArg arg, int position)
         {
+            var card = effectArg.getVar<Card>(EffectTriggerEventDefine.VAR_CARD);
             switch (position)
             {
                 case VisualEffectPosition.SELF_MASTER:
-                    return effectArg.card.getOwner().getMaster();
+                    return card.getOwner().getMaster();
                 case VisualEffectPosition.ENEMY_MASTER:
-                    return game.getOpponent(effectArg.card.getOwner()).getMaster();
+                    return game.getOpponent(card.getOwner()).getMaster();
                 case VisualEffectPosition.THIS_CARD:
-                    return effectArg.card;
+                    return card;
                 case VisualEffectPosition.TARGET_CARD:
-                    if (arg is ICardEventArg targetEventArg)
+                    if (arg.define is ICardEventDefine targetEventArg)
                     {
-                        return targetEventArg.getCard() as Card;
+                        return targetEventArg.getCard(effectArg) as Card;
                     }
                     break;
             }

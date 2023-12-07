@@ -3,12 +3,12 @@ using TouhouHeartstone;
 
 namespace Game.BattleTable
 {
-    using Arg = THHCard.SecretTriggerEventArg;
+    using Arg = SecretTriggerEventDefine;
     public class SecretTriggerAnim : EventAnimation<Arg>
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = table.getEventCardSnapshot(tEventArg, EVENTVAR.CARD);
+            var card = table.getEventCardSnapshot(eventArg, EVENTVAR.CARD);
             if (table.tryGetSecret(card, out var secret))
             {
                 secret.dummyTarget.position = table.table.CenterDisplayTransform.position;

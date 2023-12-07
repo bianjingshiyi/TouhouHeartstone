@@ -5,14 +5,14 @@ using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
-    using Arg = THHCard.BeChargedEventArg;
+    using Arg = BeChargedEventDefine;
     class PreHeatAnim : EventAnimation<Arg>
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = tEventArg.getVar<Card>(EVENTVAR.CARD).id;
-            var valueBefore = tEventArg.getVar<int>(Arg.VAR_BEFORE_VALUE);
-            var value = tEventArg.getVar<int>(EVENTVAR.VALUE);
+            var card = eventArg.getVar<Card>(EVENTVAR.CARD).id;
+            var valueBefore = eventArg.getVar<int>(Arg.VAR_BEFORE_VALUE);
+            var value = eventArg.getVar<int>(EVENTVAR.VALUE);
 
 
             if (table.tryGetHand(card, out var hand))

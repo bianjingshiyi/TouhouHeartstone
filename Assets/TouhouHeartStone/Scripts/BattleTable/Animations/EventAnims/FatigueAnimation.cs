@@ -4,7 +4,7 @@ using TouhouHeartstone;
 
 namespace Game.BattleTable
 {
-    using Arg = HearthStoneRule.FatigueEventArg;
+    using Arg = FatigueEventDefine;
     class FatigueAnimation : EventAnimation<Arg>
     {
         AnimAnim _anim;
@@ -13,8 +13,8 @@ namespace Game.BattleTable
         {
             yield return stopWhenCanceled();
 
-            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
-            var damage = tEventArg.getVar<int>(Arg.VAR_DAMAGE);
+            var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
+            var damage = eventArg.getVar<int>(Arg.VAR_DAMAGE);
 
             var fatigue = table.table.Fatigue;
             fatigue.setDamage(damage, table.lang);

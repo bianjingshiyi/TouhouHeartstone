@@ -5,13 +5,13 @@ using UnityEngine;
 
 namespace Game.BattleTable
 {
-    using Arg = AutocastEventArg;
+    using Arg = AutocastEventDefine;
     class AutocastAnim : EventAnimation<Arg>
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = table.getEventCardSnapshot(tEventArg, EVENTVAR.CARD);
-            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
+            var card = table.getEventCardSnapshot(eventArg, EVENTVAR.CARD);
+            var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
 
             if (card == null)
                 yield break;

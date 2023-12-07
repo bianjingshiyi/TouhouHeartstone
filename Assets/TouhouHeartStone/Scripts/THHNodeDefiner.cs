@@ -4,7 +4,7 @@ using TouhouHeartstone;
 namespace Game
 {
     public delegate ActionDefine ActionDefineFinder(ActionReference actRef, string name);
-    public delegate EventTriggerTime EventTriggerTimeFinder(long cardPoolId, string name);
+    public delegate EventDefine EventTriggerTimeFinder(EventReference eventRef);
     public class THHNodeDefiner : INodeDefiner
     {
         public THHNodeDefiner(ActionDefineFinder defineFinder, EventTriggerTimeFinder eventFinder)
@@ -33,7 +33,8 @@ namespace Game
                     active.Define();
                     break;
                 case EventEntryNode evt:
-                    evt.define = eventFinder?.Invoke(evt.eventCardPoolId, evt.eventName);
+                    var eventDefine = eventFinder.Invoke(evt.triggerTime.defineRef);
+                    evt.setEventDefine(eventDefine, evt.triggerTime.type);
                     evt.Define();
                     break;
                 case PassiveEntryNode passive:

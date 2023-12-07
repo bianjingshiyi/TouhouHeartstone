@@ -200,7 +200,7 @@ namespace Game
         {
             return new THHNodeDefiner(
                 (a, n) => getLocalActionDefine(a),
-                (poolId, name) => getEventTriggerTime(getLocalCardPoolReference(poolId), name, true));
+                (eventRef) => getLocalEventDefine(eventRef, true));
         }
         public static DefineReference getClassicCardRef(int id)
         {

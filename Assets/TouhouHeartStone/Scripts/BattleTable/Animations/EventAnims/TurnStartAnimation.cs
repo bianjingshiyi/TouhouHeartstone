@@ -7,7 +7,7 @@ using Timer = BJSYGameCore.Timer;
 
 namespace Game.BattleTable
 {
-    using Arg = HearthStoneRule.TurnStartEventArg;
+    using Arg = TurnStartEventDefine;
     class TurnStartAnimation : EventAnimation<Arg>
     {
         CardSnapshot lastMasterSnapshot;
@@ -19,7 +19,7 @@ namespace Game.BattleTable
         {
             base.init(table);
 
-            var player = tEventArg.player;
+            var player = eventArg.getVar<Player>(Arg.VAR_PLAYER);
             masterSnapshot = table.game.snapshotCard(player.getMaster());
             var item = player.getItem();
             if (item != null)
@@ -43,7 +43,7 @@ namespace Game.BattleTable
         }
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
+            var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
 
             var timer = new Timer() { duration = 2 };
             if (!timer.isStarted)

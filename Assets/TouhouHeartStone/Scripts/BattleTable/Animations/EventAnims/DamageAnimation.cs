@@ -8,7 +8,7 @@ using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
-    using Arg = THHCard.DamageEventArg;
+    using Arg = DamageEventDefine;
     class DamageAnimation : EventAnimation<Arg>
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
@@ -16,8 +16,8 @@ namespace Game.BattleTable
             yield return pauseWhileNotCompleted();
             yield return stopWhenCanceled();
 
-            var targetId = tEventArg.getVar<Card>(EVENTVAR.CARD);
-            var damagedValue = tEventArg.getVar<int>(Arg.VAR_DAMAGED_VALUE);
+            var targetId = eventArg.getVar<Card>(EVENTVAR.CARD);
+            var damagedValue = eventArg.getVar<int>(Arg.VAR_DAMAGED_VALUE);
 
             if (table.tryGetServant(targetId, out var servant))
             {
@@ -55,7 +55,7 @@ namespace Game.BattleTable
         }
         public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
         {
-            return following.OfType<DamageAnimation>().Where(a => a.tEventArg.parent == tEventArg.parent);
+            return following.OfType<DamageAnimation>().Where(a => a.eventArg.parent == eventArg.parent);
         }
         public override bool continueNextGroup(AnimationGroup nextGroup)
         {

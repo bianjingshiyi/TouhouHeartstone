@@ -1,25 +1,29 @@
-﻿using TouhouCardEngine;
+﻿using System;
+using System.Threading.Tasks;
+using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
-    public class SetEventVarEventArg : EventArg
+    public class SetEventVarEventDefine : EventDefine
     {
-        public SetEventVarEventArg()
+        public static Task<EventArg> doEvent(CardEngine game, IEventArg eventArg, string varName, object afterValue)
         {
-
+            var beforeValue = eventArg.getVar(varName);
+            var define = game.getEventDefine<SetEventVarEventDefine>();
+            var arg = new EventArg(game, define);
+            arg.setVar(VAR_EVENT, eventArg);
+            arg.setVar(VAR_VAR_NAME, varName);
+            arg.setVar(VAR_BEFORE_VALUE, beforeValue);
+            arg.setVar(VAR_AFTER_VALUE, afterValue);
+            return game.triggers.doEvent(arg);
         }
-        public SetEventVarEventArg(IEventArg eventArg, string varName, object afterValue)
+        [Obsolete]
+        public override void Record(CardEngine game, EventArg arg, EventRecord record)
         {
-            this.eventArg = eventArg;
-            this.varName = varName;
-            this.afterValue = afterValue;
-        }
-        public override void Record(IGame game, EventRecord record)
-        {
-            record.setVar(VAR_EVENT, eventArg);
-            record.setVar(VAR_VAR_NAME, varName);
-            var value = afterValue;
+            record.setVar(VAR_EVENT, arg);
+            record.setVar(VAR_VAR_NAME, arg);
+            var value = arg.getVar<object>(VAR_AFTER_VALUE);
             if (value is Card card)
             {
                 record.setCardState(VAR_AFTER_VALUE, card);
@@ -33,20 +37,23 @@ namespace TouhouHeartstone
                 record.setVar(VAR_AFTER_VALUE, value);
             }
         }
-        public IEventArg eventArg
+
+        public override Task execute(IEventArg arg)
         {
-            get => getVar<IEventArg>(VAR_EVENT);
-            set => setVar(VAR_EVENT, value);
+            var eventArg = arg.getVar<IEventArg>(VAR_EVENT);
+            var varName = arg.getVar<string>(VAR_VAR_NAME);
+            var afterValue = arg.getVar<object>(VAR_AFTER_VALUE);
+            eventArg.setVar(varName, afterValue);
+            return Task.CompletedTask;
         }
-        public string varName
+
+        public override string toString(EventArg arg)
         {
-            get => getVar<string>(VAR_VAR_NAME);
-            set => setVar(VAR_VAR_NAME, value);
-        }
-        public object afterValue
-        {
-            get => getVar<object>(VAR_AFTER_VALUE);
-            set => setVar(VAR_AFTER_VALUE, value);
+            var eventArg = arg.getVar<IEventArg>(VAR_EVENT);
+            var varName = arg.getVar<string>(VAR_VAR_NAME);
+            var beforeValue = arg.getVar<object>(VAR_BEFORE_VALUE);
+            var afterValue = arg.getVar<object>(VAR_AFTER_VALUE);
+            return $"将事件({eventArg})的变量{varName}从{beforeValue}变为{afterValue}";
         }
         public const string VAR_EVENT = "事件";
         public const string VAR_VAR_NAME = "变量名";

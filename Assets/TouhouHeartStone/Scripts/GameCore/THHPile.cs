@@ -12,32 +12,19 @@ namespace TouhouHeartstone
         #region 公有方法
 
         #region 卡牌移动
-        public static Task<MoveCardEventArg> add(this Pile pile, IGame game, Card card)
+        public static Task<EventArg> add(this Pile pile, CardEngine game, Card card)
         {
             return pile.insert(game, card, pile.count);
         }
-        public static Task<MassMoveCardEventArg> add(this Pile pile, IGame game, IEnumerable<Card> cards)
+        public static Task<EventArg> add(this Pile pile, CardEngine game, IEnumerable<Card> cards)
         {
-            return game.triggers.doEvent(new MassMoveCardEventArg() { cards = cards.ToArray(), to = pile }, async arg =>
-            {
-                var argCards = arg.cards;
-                var argTarget = arg.to;
-                var movedCards = new List<Card>();
-                foreach (var card in argCards)
-                {
-                    var eventArg = await pile.add(game, card);
-                    if (eventArg == null || !eventArg.success)
-                        continue;
-                    movedCards.Add(eventArg.card);
-                }
-                arg.movedCards = movedCards.ToArray();
-            });
+            return MassMoveCardEventDefine.doEvent(game, cards.ToArray(), pile);
         }
-        public static Task<MoveCardEventArg> remove(this Pile pile, IGame game, Card card)
+        public static Task<EventArg> remove(this Pile pile, CardEngine game, Card card)
         {
             return moveTo(game, card, pile, null, 0);
         }
-        public static Task<MoveCardEventArg> insert(this Pile pile, IGame game, Card card, int position)
+        public static Task<EventArg> insert(this Pile pile, CardEngine game, Card card, int position)
         {
             return moveTo(game, card, null, pile, position);
         }
@@ -47,79 +34,29 @@ namespace TouhouHeartstone
         /// <param name="card"></param>
         /// <param name="to"></param>
         /// <param name="position"></param>
-        public static Task<MoveCardEventArg> moveTo(this Pile pile, IGame game, Card card, Pile to, int position)
+        public static Task<EventArg> moveTo(this Pile pile, CardEngine game, Card card, Pile to, int position)
         {
             return moveTo(game, card, pile, to, position);
         }
-        public static Task<MoveCardEventArg> moveTo(this Pile pile, IGame game, Card card, Pile targetPile)
+        public static Task<EventArg> moveTo(this Pile pile, CardEngine game, Card card, Pile targetPile)
         {
             return moveTo(game, card, pile, targetPile, targetPile.count);
         }
-        public static Task<MassMoveCardEventArg> moveTo(this Pile pile, IGame game, IEnumerable<Card> cards, Pile targetPile)
+        public static Task<EventArg> moveTo(this Pile pile, CardEngine game, IEnumerable<Card> cards, Pile targetPile)
         {
-            return game.triggers.doEvent(new MassMoveCardEventArg() { cards = cards.ToArray(), to = targetPile }, async arg =>
-            {
-                var argCards = arg.cards;
-                var argTarget = arg.to;
-                var movedCards = new List<Card>();
-                foreach (var card in argCards.Reverse())
-                {
-                    var eventArg = await pile.moveTo(game, card, argTarget);
-                    if (eventArg == null || !eventArg.success)
-                        continue;
-                    movedCards.Add(eventArg.card);
-                }
-                arg.movedCards = movedCards.ToArray();
-            });
+            return MassMoveCardEventDefine.doEvent(game, cards.Reverse().ToArray(), pile, targetPile);
         }
-        public static Task<MassMoveCardEventArg> moveTo(this Pile pile, IGame game, IEnumerable<Card> cards, Pile targetPile, int position)
+        public static Task<EventArg> moveTo(this Pile pile, CardEngine game, IEnumerable<Card> cards, Pile targetPile, int position)
         {
-            return game.triggers.doEvent(new MassMoveCardEventArg() { cards = cards.ToArray(), to = targetPile }, async arg =>
-            {
-                var argCards = arg.cards;
-                var argTarget = arg.to;
-                var movedCards = new List<Card>();
-                foreach (var card in argCards.Reverse())
-                {
-                    var eventArg = await moveTo(game, card, pile, argTarget, position);
-                    if (eventArg == null || !eventArg.success)
-                        continue;
-                    movedCards.Add(eventArg.card);
-                }
-                arg.movedCards = movedCards.ToArray();
-            });
+            return MassMoveCardEventDefine.doEvent(game, cards.Reverse().ToArray(), pile, targetPile, position);
         }
-        public static async Task<MoveCardEventArg> moveTo(IGame game, Card card, Pile from, Pile to, int position)
+        public static Task<EventArg> moveTo(CardEngine game, Card card, Pile from, Pile to, int position)
         {
-            var eventArg = new MoveCardEventArg(from, to, card, position);
             if (!Pile.canMove(card, from, to))
-                return null;
-
-            if (game != null)
-            {
-                async Task func(MoveCardEventArg arg)
-                {
-                    var argFrom = arg.from;
-                    var argTo = arg.to;
-                    var argCard = arg.card;
-                    var argPosition = arg.position;
-
-                    var success = Pile.moveCard(game, argCard, argFrom, argTo, argPosition);
-                    arg.success = success;
-                    if (success)
-                    {
-                        await tryResetCardPropsAfterMove(game, arg.resetProps, argCard, argFrom, argTo);
-                    }
-                    else
-                    {
-                        arg.isCanceled = true;
-                    }
-                }
-                await game.triggers.doEvent(eventArg, func);
-            }
-            return eventArg;
+                return Task.FromResult<EventArg>(null);
+            return MoveCardEventDefine.doEvent(game, from, to, card, position, true);
         }
-        public static async Task replace(this Pile pile, IGame game, Card origin, Card target)
+        public static async Task replace(this Pile pile, CardEngine game, Card origin, Card target)
         {
             int originIndex = pile.indexOf(origin);
             int targetIndex = target.pile.indexOf(target);
@@ -272,89 +209,6 @@ namespace TouhouHeartstone
             PILE.ITEM,
             PILE.HEAD
         };
-        #endregion
-
-        #region 内嵌类
-        [EventChildren(typeof(Card.PropChangeEventArg))]
-        public class MoveCardEventArg : EventArg, ICardEventArg
-        {
-            public MoveCardEventArg()
-            {
-            }
-            public MoveCardEventArg(Pile from, Pile to, Card card, int position, bool resetProps = true)
-            {
-                this.from = from;
-                this.to = to;
-                this.card = card;
-                this.position = position;
-                this.resetProps = resetProps;
-            }
-            public override string ToString()
-            {
-                return $"将{card}从{from}移动到{to}的{position}";
-            }
-            public override void Record(IGame game, EventRecord record)
-            {
-                record.setVar(VAR_FROM_PILE, from);
-                record.setVar(VAR_TO_PILE, to);
-                record.setCardState(EVENTVAR.CARD, card);
-                record.setVar(VAR_POSITION, position);
-                record.setVar(VAR_SUCCESS, success);
-            }
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo() { name = VAR_FROM_PILE, type = typeof(Pile) },
-                    new EventVariableInfo() { name = VAR_TO_PILE, type = typeof(Pile) },
-                    new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card) },
-                    new EventVariableInfo() { name = VAR_POSITION, type = typeof(int) },
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo() { name = VAR_FROM_PILE, type = typeof(Pile) },
-                    new EventVariableInfo() { name = VAR_TO_PILE, type = typeof(Pile) },
-                    new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card) },
-                    new EventVariableInfo() { name = VAR_POSITION, type = typeof(int) },
-                    new EventVariableInfo() { name = VAR_SUCCESS, type = typeof(bool) },
-                };
-            }
-            ICard ICardEventArg.getCard() => card;
-            public Pile from
-            {
-                get => getVar<Pile>(VAR_FROM_PILE);
-                set => setVar(VAR_FROM_PILE, value);
-            }
-            public Pile to
-            {
-                get => getVar<Pile>(VAR_TO_PILE);
-                set => setVar(VAR_TO_PILE, value);
-            }
-            public Card card
-            {
-                get => getVar<Card>(EVENTVAR.CARD);
-                set => setVar(EVENTVAR.CARD, value);
-            }
-            public int position
-            {
-                get => getVar<int>(VAR_POSITION);
-                set => setVar(VAR_POSITION, value);
-            }
-            public bool success
-            {
-                get => getVar<bool>(VAR_SUCCESS);
-                set => setVar(VAR_SUCCESS, value);
-            }
-            public bool resetProps;
-
-            public const string VAR_FROM_PILE = "源牌堆";
-            public const string VAR_TO_PILE = "目标牌堆";
-            public const string VAR_POSITION = "目标位置";
-            public const string VAR_SUCCESS = "是否成功";
-        }
         #endregion
     }
 }

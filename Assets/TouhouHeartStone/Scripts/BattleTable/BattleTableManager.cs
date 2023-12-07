@@ -500,7 +500,7 @@ namespace Game.BattleTable
             {
                 anim.postEvent(this);
             }
-            if (arg is HearthStoneRule.UpdateDeathEventArg)
+            if (arg.define is UpdateDeathEventDefine)
             {
                 // 死亡结算事件结束后，清理死亡仆从。
                 addAnim(new ClearDeadAnchorAnimation());

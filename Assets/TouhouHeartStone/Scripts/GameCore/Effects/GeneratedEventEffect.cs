@@ -28,7 +28,7 @@ namespace TouhouHeartstone
             {
                 game.logger.logTrace("Effect", $"{card}注册触发器{this}");
                 Trigger trigger = new EffectTrigger(game, card, buff, this);
-                game.triggers.registerDelayed(eventEntry.eventName, trigger);
+                game.triggers.registerDelayed(eventEntry.triggerTime.getTimeName(), trigger);
             }
         }
         public override async Task onDisable(IGame game, ICard card, IBuff buff)
@@ -40,7 +40,7 @@ namespace TouhouHeartstone
             if (eventEntry != null)
             {
                 game.logger.logTrace("Effect", $"{card}注销触发器{this}");
-                var eventName = eventEntry.eventName;
+                var eventName = eventEntry.triggerTime.getTimeName();
                 var triggers = game.triggers.getTriggers(eventName);
                 var trigger = triggers.FirstOrDefault(t => t is EffectTrigger eventTrigger && eventTrigger.effect == this);
                 game.triggers.remove(eventName, trigger);
@@ -51,35 +51,22 @@ namespace TouhouHeartstone
         {
             eventEntry?.setPiles(tags);
         }
-        public override async Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
-        {
-            if (card.isSpell() && this.isTrap())
-            {
-                // 陷阱触发
-                var gameCard = card as Card;
-                await game.triggers.doEvent(new THHCard.SecretTriggerEventArg() { card = gameCard }, async arg =>
-                {
-                    var argCard = arg.card;
-                    game.logger.logTrace($"触发陷阱{argCard}");
-                    var entry = passiveEntry;
-                    if (entry != null)
-                    {
-                        var flow = new Flow(game, argCard, buff, eventArg, this);
-                        await game.runActions(flow, entry.getActionOutputPort());
-                    }
-                    Player player = argCard.getOwner();
-                    await player.getHead().moveTo(game, argCard, player.getGrave());
-                });
-                return;
-            }
-            await base.execute(game, card, buff, eventArg);
-        }
         public override SerializableEffect Serialize()
         {
             return new SerializableEventEffect(this);
         }
         #endregion
         #region 私有方法
+        Task IEventEffect.onTrigger(IGame game, ICard card, IBuff buff, IEventArg arg)
+        {
+            if (card.isSpell() && this.isTrap())
+            {
+                // 陷阱触发
+                var gameCard = card as Card;
+                return SecretTriggerEventDefine.doEvent(game as CardEngine, gameCard, buff as Buff, arg as EventArg, this);
+            }
+            return execute(game, card, buff, arg);
+        }
         protected override void createEntryNode()
         {
             // 留空

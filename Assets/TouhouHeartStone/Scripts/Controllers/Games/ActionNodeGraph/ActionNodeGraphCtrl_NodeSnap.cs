@@ -48,7 +48,9 @@ namespace Controllers
 
                     int docKey = CanNodeDefineOpenDocument(define) ? define.actionDefine.defineId : -1;
                     bool visualEffect = game.anims.canActionAddEffect(new ActionReference(define.actionDefine.cardPoolId, define.actionDefine.defineId));
-                    _ui.setPreviewNode(tryTranslateWithDict(define.actionDefine.editorName),
+
+                    var nodeName = getNodeDefineName(define);
+                    _ui.setPreviewNode(nodeName,
                         inputInfos,
                         constsInfo,
                         outputInfos,
@@ -56,17 +58,17 @@ namespace Controllers
                         docKey,
                         visualEffect);
                 }
-                else if (define.eventTriggerTime != null)
+                else if (define.isEventEntry())
                 {
                     // 事件输入
-                    var eventDefine = define.eventTriggerTime;
+                    var eventDefine = define.eventDefine;
                     var boolColor = game.editor.getColorByType(typeof(bool));
                     var inputInfos = new PortItemInfo[1]
                     {
                         new PortItemInfo(game.lang._(PassiveEntryNode.triggerConditionPortName), boolColor, false)
                     };
                     // 事件输出
-                    var variableInfos = eventDefine.getVariableInfos();
+                    var variableInfos = eventDefine.getVariableInfos(define.eventTriggerType);
                     var outputCount = variableInfos.Length;
                     var outputInfos = new PortItemInfo[1 + outputCount];
                     var controlColor = game.editor.getColorByType(typeof(ActionNode));
@@ -80,7 +82,8 @@ namespace Controllers
                     }
 
 
-                    _ui.setPreviewEventNode(tryTranslateWithDict(game.eventManager.translateEventTriggerTimeNameForEditor(eventDefine)),
+                    var nodeName = getNodeDefineName(define);
+                    _ui.setPreviewEventNode(nodeName,
                         inputInfos,
                         outputInfos);
                 }
@@ -108,8 +111,8 @@ namespace Controllers
                 }
                 else if (node is EventEntryNode eventEntry)
                 {
-                    var define = eventEntry.define;
-                    _ui.setPreviewEventNode(tryTranslateWithDict(game.eventManager.translateEventTriggerTimeNameForEditor(define)),
+                    var triggerTime = eventEntry.triggerTime;
+                    _ui.setPreviewEventNode(tryTranslateWithDict(game.eventManager.translateEventTriggerTimeNameForEditor(triggerTime)),
                         getNodeInputViewData(node),
                         getNodeOutputViewData(node));
                 }
@@ -271,18 +274,8 @@ namespace Controllers
         private List<NodeSnapTarget> findNodeSnapTargets(Rect previewRect, NodeDefine nodeDefine)
         {
             // 获取此节点的输入和输出。
-            PortDefine[] inputDefines = null;
-            PortDefine[] outputDefines = null;
-            if (nodeDefine.actionDefine != null)
-            {
-                inputDefines = nodeDefine.actionDefine.inputDefines.ToArray();
-                outputDefines = nodeDefine.actionDefine.outputDefines.ToArray();
-            }
-            else if (nodeDefine.eventTriggerTime != null)
-            {
-                inputDefines = new PortDefine[] { PassiveEntryNode.triggerConditionPortDefine };
-                outputDefines = nodeDefine.eventTriggerTime.getVariableInfos().Select(v => PortDefine.Value(v.type, v.name)).Prepend(PassiveEntryNode.actionPortDefine).ToArray();
-            }
+            PortDefine[] inputDefines = nodeDefine.getInputDefines();
+            PortDefine[] outputDefines = nodeDefine.getOutputDefines();
             return findNodeSnapTargets(previewRect, inputDefines, outputDefines);
         }
         private List<NodeSnapTarget> findNodeSnapTargets(Node node)

@@ -10,7 +10,7 @@ using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
-    using Arg = HearthStoneRule.UseEventArg;
+    using Arg = UseEventDefine;
     class UseAnimation : EventAnimation<Arg>
     {
         #region 公有方法
@@ -34,7 +34,7 @@ namespace Game.BattleTable
         }
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
+            var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
             if (player == table.player)
                 // 自己使用
                 yield return selfUseCard(table);
@@ -180,7 +180,7 @@ namespace Game.BattleTable
         }
         IEnumerator tryTargetedAnim(BattleTableManager table, Transform source)
         {
-            var targets = tEventArg.getVar<Card[]>(EVENTVAR.TARGETS);
+            var targets = eventArg.getVar<Card[]>(EVENTVAR.TARGETS);
             if (targets != null && targets.Length > 0 && targets[0] is var targetCard)
             {
                 var card = targetCard;

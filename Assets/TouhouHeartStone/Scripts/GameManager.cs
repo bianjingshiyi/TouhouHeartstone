@@ -122,9 +122,9 @@ namespace Game
         }
         private void onEventAfter(IEventArg eventArg)
         {
-            if (eventArg is HearthStoneRule.GameEndEventArg gameEnd)
+            if (eventArg.define is GameEndEventDefine)
             {
-                onGameFinished?.Invoke(gameEnd.winners);
+                onGameFinished?.Invoke(eventArg.getVar<Player[]>(GameEndEventDefine.VAR_WINNERS));
             }
         }
         #endregion
@@ -138,6 +138,7 @@ namespace Game
             Dictionary<long, Dictionary<int, CardDefine>> cardDict = new Dictionary<long, Dictionary<int, CardDefine>>();
             Dictionary<long, Dictionary<int, BuffDefine>> buffDict = new Dictionary<long, Dictionary<int, BuffDefine>>();
             Dictionary<long, Dictionary<int, ActionDefine>> actionDefines = new Dictionary<long, Dictionary<int, ActionDefine>>();
+            var eventDefines = main.card.getAllEventDefines(true, option.cardPools);
             try
             {
                 await LoadExternalCardsAndBuffs(option, cardDict, buffDict, actionDefines);
@@ -180,6 +181,11 @@ namespace Game
                 {
                     game.addActionDefine(new ActionReference(cardPoolId, actionPair.Key), actionPair.Value);
                 }
+            }
+
+            foreach (var eventDefine in eventDefines)
+            {
+                game.addEventDefine(eventDefine);
             }
 
             Rule rule = new HearthStoneRule(cardDict, buffDict);

@@ -6,14 +6,14 @@ using UnityEngine;
 
 namespace Game.BattleTable
 {
-    using Arg = TouhouCardEngine.Card.PropChangeEventArg;
+    using Arg = TouhouCardEngine.CardPropChangeEventDefine;
     class PropChangeAnim : EventAnimation<Arg>
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var card = table.getEventCardSnapshot(tEventArg, Arg.VAR_CARD);
-            var propName = tEventArg.getVar<string>(Arg.VAR_PROP_NAME);
-            var value = tEventArg.getVar(Arg.VAR_VALUE_AFTER);
+            var card = table.getEventCardSnapshot(eventArg, Arg.VAR_CARD);
+            var propName = eventArg.getVar<string>(Arg.VAR_PROP_NAME);
+            var value = eventArg.getVar(Arg.VAR_VALUE_AFTER);
 
             getSimpleAnimAndAnimator(table, card, out var animator, out var simpleAnim);
             table.updateCardBySnapshot(card);
@@ -55,9 +55,9 @@ namespace Game.BattleTable
         }
         private void updateServant(BattleTableManager table, ICardData card, Servant servant, out Animator animator, out SimpleAnim simpleAnim)
         {
-            var arg = tEventArg;
-            var propName = arg.propName;
-            var value = arg.value;
+            var arg = eventArg;
+            var propName = arg.getVar<string>(Arg.VAR_PROP_NAME);
+            var value = arg.getVar<object>(Arg.VAR_VALUE_AFTER);
             animator = null;
             simpleAnim = null;
             if (propName == DEFINE.ATTACK)
@@ -76,8 +76,8 @@ namespace Game.BattleTable
         }
         private void updateMaster(BattleTableManager table, ICardData card, Master master, out Animator animator, out SimpleAnim simpleAnim)
         {
-            var arg = tEventArg;
-            var propName = arg.propName;
+            var arg = eventArg;
+            var propName = arg.getVar<string>(Arg.VAR_PROP_NAME);
             animator = null;
             simpleAnim = null;
             switch (propName)
@@ -93,8 +93,8 @@ namespace Game.BattleTable
         }
         private void updateItem(BattleTableManager table, ICardData card, Item item, out Animator animator, out SimpleAnim simpleAnim)
         {
-            var arg = tEventArg;
-            var propName = arg.propName;
+            var arg = eventArg;
+            var propName = arg.getVar<string>(Arg.VAR_PROP_NAME);
             animator = null;
             simpleAnim = null;
             //判断是否是红字
@@ -109,8 +109,8 @@ namespace Game.BattleTable
         }
         private void updateSkill(BattleTableManager table, ICardData card, Skill skill, out Animator animator, out SimpleAnim simpleAnim)
         {
-            var arg = tEventArg;
-            var propName = arg.propName;
+            var arg = eventArg;
+            var propName = arg.getVar<string>(Arg.VAR_PROP_NAME);
             animator = null;
             simpleAnim = null;
             if (propName == DEFINE.COST)
@@ -120,8 +120,8 @@ namespace Game.BattleTable
         }
         private void updateHand(BattleTableManager table, ICardData card, HandItem hand, out Animator animator, out SimpleAnim simpleAnim)
         {
-            var arg = tEventArg;
-            var propName = arg.propName;
+            var arg = eventArg;
+            var propName = arg.getVar<string>(Arg.VAR_PROP_NAME);
             var cardType = card.define.type;
             animator = null;
             simpleAnim = null;
@@ -152,23 +152,23 @@ namespace Game.BattleTable
         }
         private PropertyNumberColor getAttackColor(BattleTableManager table, ICardData card)
         {
-            var arg = tEventArg;
-            var value = arg.value;
+            var arg = eventArg;
+            var value = arg.getVar<object>(Arg.VAR_VALUE_AFTER);
             int attack = value is int intValue ? intValue : card.getAttack(table.game);
             return attack > card.define.getAttack() ? PropertyNumberColor.Green : PropertyNumberColor.White;
         }
         private PropertyNumberColor getMasterAttackColor(BattleTableManager table, ICardData card)
         {
-            var arg = tEventArg;
-            var value = arg.value;
+            var arg = eventArg;
+            var value = arg.getVar<object>(Arg.VAR_VALUE_AFTER);
             int attack = value is int intValue ? intValue : card.getAttack(table.game);
             return attack > table.getMasterItemAttack(card) + card.define.getAttack() ? PropertyNumberColor.Green : PropertyNumberColor.White;
         }
         private PropertyNumberColor getLifeColor(BattleTableManager table, ICardData card)
         {
-            var arg = tEventArg;
-            var propName = arg.propName;
-            var value = arg.value;
+            var arg = eventArg;
+            var propName = arg.getVar<string>(Arg.VAR_PROP_NAME);
+            var value = arg.getVar<object>(Arg.VAR_VALUE_AFTER);
             int life = value is int lifeValue && propName == DEFINE.LIFE ? lifeValue : card.getLife(table.game);
             int curLife = value is int curLifeValue && propName == CARD.CURRENT_LIFE ? curLifeValue : card.getCurrentLife(table.game);
             PropertyNumberColor color = PropertyNumberColor.White;
@@ -181,8 +181,8 @@ namespace Game.BattleTable
         }
         private PropertyNumberColor getCostColor(BattleTableManager table, ICardData card)
         {
-            var arg = tEventArg;
-            var value = arg.value;
+            var arg = eventArg;
+            var value = arg.getVar<object>(Arg.VAR_VALUE_AFTER);
             int cost = value is int intValue ? intValue : card.getCost(table.game);
             int defineCost = card.define.getCost();
             var color = PropertyNumberColor.White;

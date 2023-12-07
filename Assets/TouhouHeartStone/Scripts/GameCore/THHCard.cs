@@ -5,13 +5,39 @@ using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using System;
 using MukioI18n;
-using PropChangeEventArg = TouhouCardEngine.Card.PropChangeEventArg;
+using System.IO;
 
 namespace TouhouHeartstone
 {
     public static partial class THHCard
     {
         #region 公有方法
+
+        #region 基础扩展
+        public static Task<EventArg> setProp(this Card card, IGame game, string name, object value)
+        {
+            return SetCardPropEventDefine.doEvent(game as CardEngine, card, name, value);
+        }
+        public static Task<EventArg> addBuff(this Card card, IGame game, Buff buff)
+        {
+            return AddBuffEventDefine.doEvent(game as CardEngine, card, buff);
+        }
+        public static Task<EventArg> removeBuff(this Card card, IGame game, Buff buff)
+        {
+            return RemoveBuffEventDefine.doEvent(game as CardEngine, card, buff);
+        }
+        public static async Task<int> removeBuff(this Card card, IGame game, IEnumerable<Buff> buffs)
+        {
+            int count = 0;
+            foreach (var buff in buffs)
+            {
+                var eventArg = await card.removeBuff(game, buff);
+                if (eventArg != null && eventArg.getVar<bool>(RemoveBuffEventDefine.VAR_REMOVED))
+                    count++;
+            }
+            return count;
+        }
+        #endregion
 
         #region 获取类型
         public static bool isItem(this ICardData card)
@@ -70,17 +96,17 @@ namespace TouhouHeartstone
             return card.getLife(game);
         }
         [Obsolete("Use buff or modifier instead")]
-        public static Task<PropChangeEventArg> setAttack(this Card card, IGame game, int value)
+        public static Task<EventArg> setAttack(this Card card, IGame game, int value)
         {
             return card.setProp(game, DEFINE.ATTACK, value);
         }
 
         [Obsolete("Use buff or modifier instead")]
-        public static Task<PropChangeEventArg> setLife(this Card card, IGame game, int value)
+        public static Task<EventArg> setLife(this Card card, IGame game, int value)
         {
             return card.setProp(game, DEFINE.LIFE, value);
         }
-        public static Task<PropChangeEventArg> setCurrentLife(this Card card, IGame game, int value)
+        public static Task<EventArg> setCurrentLife(this Card card, IGame game, int value)
         {
             var maxLife = card.getLife(game);
             return card.setProp(game, CARD.CURRENT_LIFE, Math.Min(maxLife, value));
@@ -104,7 +130,7 @@ namespace TouhouHeartstone
             string[] tags = card.getProp<string[]>(game, DEFINE.TAGS);
             return tags ?? card.define.getTags();
         }
-        public static Task<PropChangeEventArg> setTags(this Card card, IGame game, string[] tags)
+        public static Task<EventArg> setTags(this Card card, IGame game, string[] tags)
         {
             return card.setProp(game, DEFINE.TAGS, tags);
         }
@@ -125,7 +151,7 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <param name="value"></param>
-        public static Task<PropChangeEventArg> setUsed(this Card card, IGame game, bool value)
+        public static Task<EventArg> setUsed(this Card card, IGame game, bool value)
         {
             return card.setProp(game, CARD.IS_USED, value);
         }
@@ -239,32 +265,6 @@ namespace TouhouHeartstone
                     info = NOT_ENOUGH_SPIRIT;
                     return false;
                 }
-                // TODO 这个检测是坏的，无法正确判断GeneratedEffect，因此自定义技能永远无法使用
-                //if (card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers) is ITriggerEffect effect)
-                //{
-                //    if (!effect.checkCondition(game, card, null, new object[]
-                //    {
-                //        new HearthStoneRule.ActiveEventArg(player,card,new object[0])
-                //    }))
-                //    {
-                //        info = SKILL_UNUSABLE;
-                //        return false;
-                //    }
-                //    info = null;
-                //    return true;
-                //}
-                //if (card.define.getActiveEffect() is IActiveEffect activeEffect)
-                //{
-                //    if (!activeEffect.checkCondition(game, card, null))
-                //    {
-                //        info = SKILL_UNUSABLE;
-                //        return false;
-                //    }
-                //    info = null;
-                //    return true;
-                //}
-                //info = SKILL_INVALID;
-                //return false;
                 info = null;
                 return true;
             }
@@ -334,7 +334,7 @@ namespace TouhouHeartstone
                 invalidMsg = INFO_TARGET_IS_ELUSIVE;
                 return false;
             }
-            var eventArg = new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new Card[] { target });
+            var eventArg = ActiveEventDefine.newEvent(game, card, new Card[] { target });
             if (generatedEffect != null && !generatedEffect.checkTarget(game, target, card, null, eventArg, out invalidMsg))
                 return false;
             return true;
@@ -346,7 +346,7 @@ namespace TouhouHeartstone
         {
             return card.getProp<bool>(game, CARD.ISREADY);
         }
-        public static Task<PropChangeEventArg> setReady(this Card card, IGame game, bool value)
+        public static Task<EventArg> setReady(this Card card, IGame game, bool value)
         {
             return card.setProp(game, CARD.ISREADY, value);
         }
@@ -354,7 +354,7 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(game, CARD.ATTACK_TIMES);
         }
-        public static Task<PropChangeEventArg> setAttackTimes(this Card card, IGame game, int value)
+        public static Task<EventArg> setAttackTimes(this Card card, IGame game, int value)
         {
             return card.setProp(game, CARD.ATTACK_TIMES, value);
         }
@@ -454,7 +454,7 @@ namespace TouhouHeartstone
             return true;
         }
 
-        public static async Task<AttackEventArg> tryAttack(this Card card, CardEngine game, Player player, Card target)
+        public static async Task<EventArg> tryAttack(this Card card, CardEngine game, Player player, Card target)
         {
             if (!card.canAttack(game))
             {
@@ -469,17 +469,17 @@ namespace TouhouHeartstone
             await card.setAttackTimes(game, card.getAttackTimes(game) + 1);
             return await card.attack(game, target);
         }
-        public static Task<AttackEventArg> forceAttack(this Card card, CardEngine game, Player player, Card target)
+        public static Task<EventArg> forceAttack(this Card card, CardEngine game, Player player, Card target)
         {
             if (!card.canForceAttack(game))
             {
                 game.logger.logTrace($"{card}无法进行强制攻击");
-                return Task.FromResult<AttackEventArg>(null);
+                return Task.FromResult<EventArg>(null);
             }
             if (!card.isForceAttackable(game, player, target))
             {
                 game.logger.logTrace($"{card}无法对{target}进行强制攻击");
-                return Task.FromResult<AttackEventArg>(null);
+                return Task.FromResult<EventArg>(null);
             }
             return card.attack(game, target);
         }
@@ -491,60 +491,21 @@ namespace TouhouHeartstone
                 return false;
             return true;
         }
-        static async Task<AttackEventArg> attack(this Card card, CardEngine game, Card target)
+        static Task<EventArg> attack(this Card card, CardEngine game, Card target)
         {
-            var eventArg = await game.triggers.doEvent(new AttackEventArg() { card = card, target = target }, async arg =>
-            {
-                card = arg.card;
-                target = arg.target;
-                if (!card.canAttackTest(game))
-                {
-                    game.logger.logTrace($"{card}无法进行攻击");
-                    arg.isCanceled = true;
-                }
-                else if (card == target)
-                {
-                    game.logger.log(card + "尝试攻击自己");
-                    arg.isCanceled = true;
-                }
-                else
-                {
-                    game.logger.logTrace($"{card}攻击{target}");
-                    int targetAttack = target.getAttack(game);
-                    int cardAttack = card.getAttack(game);
-                    await card.damage(game, target, targetAttack);
-                    await target.damage(game, card, cardAttack);
-
-                    // 取消隐匿
-                    if (card.isStealth(game))
-                    {
-                        await card.setStealth(game, false);
-                    }
-                    // 消耗耐久
-                    var owner = card.getOwner();
-                    if (owner != null && owner.getMaster() == card)
-                    {
-                        var item = owner.getItem();
-                        if (item != null)
-                        {
-                            await item.damageItem(game, 1);
-                        }
-                    }
-                }
-            });
-            return eventArg;
+            return AttackEventDefine.doEvent(game, card, target);
         }
         #endregion
 
         #region 伤害
         [Obsolete]
-        public static async Task<DamageEventArg[]> damageObsolete(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
+        public static async Task<EventArg[]> damageObsolete(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
         {
             if (cards.Count() <= 0)
             {
                 return default;
             }
-            List<DamageEventArg> args = new List<DamageEventArg>();
+            List<EventArg> args = new List<EventArg>();
             foreach (var target in cards.Where(p => p != null))
             {
                 args.Add(await target.damage(game, source, value));
@@ -552,9 +513,9 @@ namespace TouhouHeartstone
             return args.ToArray();
         }
         [Obsolete]
-        public static async Task<DamageEventArg[]> damageByRandomObsolete(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
+        public static async Task<EventArg[]> damageByRandomObsolete(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
         {
-            List<DamageEventArg> list = new List<DamageEventArg>();
+            List<EventArg> list = new List<EventArg>();
             for (int i = 0; i < value; i++)
             {
                 Card target = cards.Where(c => !c.isDead(game)).random(game);
@@ -566,147 +527,35 @@ namespace TouhouHeartstone
             return list.ToArray();
         }
         [Obsolete]
-        public static Task<DamageEventArg[]> damageByRandomCountObsolete(this IEnumerable<Card> cards, CardEngine game, Card source, int value, int count)
+        public static Task<EventArg[]> damageByRandomCountObsolete(this IEnumerable<Card> cards, CardEngine game, Card source, int value, int count)
         {
             if (cards.Count() > count)
                 cards = cards.randomTake(game, count);
             return cards.damageObsolete(game, source, value);
         }
-        public static Task<DamageEventArg> damage(this Card card, CardEngine game, Card source, int value)
+        public static Task<EventArg> damage(this Card card, CardEngine game, Card source, int value)
         {
             if (card == null || value <= 0)
-                return Task.FromResult<DamageEventArg>(null);
-            var eventArg = new DamageEventArg(card, value, source);
-            return game.triggers.doEvent(eventArg, async arg =>
-            {
-                Card target = arg.target;
-                Card src = arg.source;
-                int dmgValue = arg.damageValue;
-                if (dmgValue < 1)
-                {
-                    arg.isCanceled = true;
-                }
-                else if (target.isImmunity(game))
-                {
-                    arg.isCanceled = true;
-                    game.logger.logTrace($"{target}免疫，不受伤害");
-                }
-                else if (target.isShield(game))
-                {
-                    arg.isCanceled = true;
-                    game.logger.logTrace($"{target}受到伤害，失去圣盾");
-                    await target.setShield(game, false);
-                }
-                else
-                {
-                    int damageReduce = target.getDamageReduce(game);
-                    int damage;
-                    if (damageReduce > 0)
-                    {
-                        damage = dmgValue - damageReduce;
-                        game.logger.logTrace($"{target}的伤害抵消{damageReduce}使伤害{dmgValue}=>{damage}");
-                    }
-                    else
-                        damage = dmgValue;
-                    if (damage > 0)
-                    {
-                        int armor = target.getArmor(game);
-                        if (armor > 0)
-                        {
-                            if (armor >= damage)
-                            {
-                                await target.loseArmor(game, damage);
-                                game.logger.logTrace($"{target}受到{damage}点伤害，护甲=>{target.getArmor(game)}");
-                                await onDealKeywords(game, src, target, damage);
-                                arg.damagedValue = damage;
-                            }
-                            else
-                            {
-                                int leakDamage = damage - armor;
-                                await target.loseArmor(game, armor);
-                                await target.setCurrentLife(game, target.getCurrentLife(game) - leakDamage);
-                                game.logger.logTrace($"{target}受到{damage}点伤害，护甲=>{target.getArmor(game)}，生命值=>{target.getCurrentLife(game)}");
-                                await onDealKeywords(game, src, target, damage);
-                                arg.damagedValue = damage;
-                            }
-                        }
-                        else
-                        {
-                            await target.setCurrentLife(game, target.getCurrentLife(game) - damage);
-                            game.logger.logTrace($"{target}受到{damage}点伤害，生命值=>{target.getCurrentLife(game)}");
-                            await onDealKeywords(game, src, target, damage);
-                            arg.damagedValue = damage;
-                        }
-                    }
-                    else
-                    {
-                        arg.isCanceled = true;
-                        game.logger.logTrace($"{target}的伤害{dmgValue}被减伤{damageReduce}抵消");
-                    }
-                }
-            });
-            async Task onDealKeywords(CardEngine g, Card s, Card c, int d)
-            {
-                if (s != null)
-                {
-                    bool poisonous = s.isPoisonous(g);
-                    bool lifesteal = s.isDrain(g);
-                    if (s.isMaster() && g.getCurrentPlayer() == s.getOwner())
-                    {
-                        var item = s.getOwner().getItem();
-                        if (item != null)
-                        {
-                            poisonous |= item.isPoisonous(g);
-                            lifesteal |= item.isDrain(g);
-                        }
-                    }
-                    if (poisonous && c.isServant())
-                        await c.kill(game);
-                    if (lifesteal && (c.isServant() || c.isMaster()))
-                        await s.getOwner().getMaster().heal(g, c, d);
-                }
-            }
+                return Task.FromResult<EventArg>(null);
+            return DamageEventDefine.doEvent(game, card, source, value);
         }
-        public static Task<MassDamageEventArg> damage(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
+        public static Task<EventArg> damage(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
         {
             if (cards.Count() <= 0)
                 return default;
-            return game.triggers.doEvent(new MassDamageEventArg() { cards = cards.ToArray(), source = source, value = value }, async arg =>
-            {
-                foreach (var target in arg.cards)
-                {
-                    if (target == null)
-                        continue;
-                    await target.damage(game, arg.source, arg.value);
-                }
-            });
+            return MassDamageEventDefine.doEvent(game, source, cards.ToArray(), value);
         }
-        public static Task<DamageEventArg> damageItem(this Card item, CardEngine game, int value)
+        public static Task<EventArg> damageItem(this Card item, CardEngine game, int value)
         {
             return item.damage(game, null, value);
         }
-        public static Task<SplitDamageEventArg> damageByRandom(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
+        public static Task<EventArg> damageByRandom(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
         {
             if (cards.Count() <= 0)
                 return default;
-            return game.triggers.doEvent(new SplitDamageEventArg() { targets = cards.ToArray(), source = source, value = value }, async arg =>
-            {
-                var argCards = arg.targets;
-                var argSource = arg.source;
-                var argValue = arg.value;
-                List<Card> hit = new List<Card>();
-                for (int i = 0; i < argValue; i++)
-                {
-                    Card target = argCards.Where(c => !c.isDead(game)).random(game);
-                    if (target == null)
-                        continue;
-                    var damageArg = await target.damage(game, argSource, 1);
-                    hit.Add(damageArg.target);
-                }
-                arg.damagedCards = hit.ToArray();
-            });
+            return SplitDamageEventDefine.doEvent(game, source, cards.ToArray(), value);
         }
-        public static Task<MassDamageEventArg> damageByRandomCount(this IEnumerable<Card> cards, CardEngine game, Card source, int value, int count)
+        public static Task<EventArg> damageByRandomCount(this IEnumerable<Card> cards, CardEngine game, Card source, int value, int count)
         {
             if (cards.Count() > count)
                 cards = cards.randomTake(game, count);
@@ -728,9 +577,9 @@ namespace TouhouHeartstone
 
         #region 治疗
         [Obsolete]
-        public static async Task<HealEventArg[]> healObsolete(this IEnumerable<Card> cards, CardEngine game, Card sourse, int value)
+        public static async Task<EventArg[]> healObsolete(this IEnumerable<Card> cards, CardEngine game, Card sourse, int value)
         {
-            List<HealEventArg> eventArgs = new List<HealEventArg>();
+            List<EventArg> eventArgs = new List<EventArg>();
             foreach (var card in cards)
             {
                 var arg = await heal(card, game, sourse, value);
@@ -742,45 +591,15 @@ namespace TouhouHeartstone
             }
             return eventArgs.ToArray();
         }
-        public static Task<MassHealEventArg> heal(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
+        public static Task<EventArg> heal(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
         {
-            return game.triggers.doEvent(new MassHealEventArg() { cards = cards.ToArray(), source = source, value = value }, async arg =>
-            {
-                var argCards = arg.cards;
-                var argSource = arg.source;
-                var argValue = arg.value;
-                foreach (var card in argCards)
-                {
-                    await heal(card, game, argSource, argValue);
-                }
-            });
+            return MassHealEventDefine.doEvent(game, source, cards.ToArray(), value);
         }
-        public static Task<HealEventArg> heal(this Card card, CardEngine game, Card sourse, int value)
+        public static Task<EventArg> heal(this Card card, CardEngine game, Card source, int value)
         {
-            if (card == null)
+            if (card == null || value <= 0)
                 return null;
-            if (value <= 0)
-                return null;
-            return game.triggers.doEvent(new HealEventArg() { card = card, source = sourse, value = value }, async arg =>
-            {
-                card = arg.card;
-                sourse = arg.source;
-                value = arg.value;
-                if (card == null)
-                    return;
-                int healedValue = Math.Min(value, card.getLife(game) - card.getCurrentLife(game));
-                if (healedValue > 0)
-                {
-                    await card.setCurrentLife(game, card.getCurrentLife(game) + healedValue);
-                    arg.healedValue = healedValue;
-                    game.logger.logTrace($"{card}恢复{healedValue}点生命值，生命值=>{card.getCurrentLife(game)}");
-                }
-                else
-                {
-                    arg.healedValue = 0;
-                    game.logger.logTrace($"{card}没有恢复生命值，生命值=>{card.getCurrentLife(game)}");
-                }
-            });
+            return HealEventDefine.doEvent(game, card, source, value);
 
         }
         #endregion
@@ -813,7 +632,7 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card">卡牌。</param>
         /// <param name="game">游戏对象。</param>
-        public static Task<PropChangeEventArg> kill(this Card card, IGame game)
+        public static Task<EventArg> kill(this Card card, IGame game)
         {
             return setDead(card, game, true);
         }
@@ -823,9 +642,9 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="cards">卡牌列表。</param>
         /// <param name="game">游戏对象。</param>
-        public static async Task<PropChangeEventArg[]> kill(this IEnumerable<Card> cards, IGame game)
+        public static async Task<EventArg[]> kill(this IEnumerable<Card> cards, IGame game)
         {
-            List<Card.PropChangeEventArg> eventArgs = new List<Card.PropChangeEventArg>();
+            List<EventArg> eventArgs = new List<EventArg>();
             foreach (var card in cards)
             {
                 if (card == null)
@@ -839,13 +658,13 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <param name="value"></param>
-        public static Task<PropChangeEventArg> setDead(this Card card, IGame game, bool value)
+        public static Task<EventArg> setDead(this Card card, IGame game, bool value)
         {
             return card.setProp(game, CARD.ISDEAD, value);
         }
-        public static async Task<PropChangeEventArg[]> setDead(this IEnumerable<Card> cards, CardEngine game, bool value)
+        public static async Task<EventArg[]> setDead(this IEnumerable<Card> cards, CardEngine game, bool value)
         {
-            List<PropChangeEventArg> argList = new List<PropChangeEventArg>();
+            List<EventArg> argList = new List<EventArg>();
             foreach (var card in cards)
             {
                 argList.Add(await card.setProp(game, CARD.ISDEAD, value));
@@ -858,7 +677,7 @@ namespace TouhouHeartstone
         /// <param name="card">卡牌。</param>
         /// <param name="game">游戏对象。</param>
         /// <returns>死亡事件。</returns>
-        public static async Task<DeathEventArg> destroy(this Card card, CardEngine game)
+        public static async Task<EventArg> destroy(this Card card, CardEngine game)
         {
             var args = await new Card[] { card }.destroy(game);
             return args[0];
@@ -870,7 +689,7 @@ namespace TouhouHeartstone
         /// <param name="cards">卡牌列表。</param>
         /// <param name="game">游戏对象。</param>
         /// <returns>死亡事件。</returns>
-        public static async Task<DeathEventArg[]> destroy(this IEnumerable<Card> cards, CardEngine game)
+        public static async Task<EventArg[]> destroy(this IEnumerable<Card> cards, CardEngine game)
         {
             List<Player> remainPlayerList = new List<Player>(game.players);
 
@@ -893,30 +712,22 @@ namespace TouhouHeartstone
                 }
             }
             // 触发死亡事件。
-            List<DeathEventArg> eventArgs = new List<DeathEventArg>();
+            List<EventArg> eventArgs = new List<EventArg>();
             Dictionary<Card, (IEffect deathRattle, Buff buff)[]> deathrattles = new Dictionary<Card, (IEffect deathRattle, Buff buff)[]>();
             foreach (Card card in cards)
             {
-                var eventArg = await game.triggers.doEvent(new DeathEventArg(card), onDie);
-                async Task onDie(DeathEventArg arg)
+                var eventArg = await DeathEventDefine.doEvent(game, card);
+                var deadCard = eventArg.getVar<Card>(EVENTVAR.CARD);
+                var deathrattleBuffs = eventArg.getVar<Buff[]>(DeathEventDefine.VAR_DEATHRATTLE_BUFFS);
+                var deathrattleEffects = eventArg.getVar<IEffect[]>(DeathEventDefine.VAR_DEATHRATTLE_EFFECTS);
+
+                var rattles = deathrattleBuffs.Select((b, i) => (deathrattleEffects[i], b)).ToArray();
+                deathrattles.Add(deadCard, rattles);
+
+                if (deadCard.pile.name == PILE.MASTER)//英雄阵亡
                 {
-                    Card death = arg.card;
-                    deathrattles.Add(death, death.getDeathRattles(game));
-                    if (death.pile.name == PILE.MASTER)//英雄阵亡
-                    {
-                        remainPlayerList.Remove(death.getOwner());
-                        game.logger.logTrace($"{death.getOwner()}失败");
-                    }
-                    else if (death.pile.name == PILE.FIELD)//随从阵亡
-                    {
-                        await death.pile.moveTo(game, death, death.getOwner().getGrave());
-                        game.logger.logTrace($"{death}阵亡");
-                    }
-                    else if (death.pile.name == PILE.ITEM)//装备摧毁
-                    {
-                        await death.pile.moveTo(game, death, death.getOwner().getGrave());
-                        game.logger.logTrace($"{death}摧毁");
-                    }
+                    remainPlayerList.Remove(deadCard.getOwner());
+                    game.logger.logTrace($"{deadCard.getOwner()}失败");
                 }
                 eventArgs.Add(eventArg);
             }
@@ -1019,27 +830,22 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(game, CARD.ARMOR);
         }
-        public static Task<SetArmorEventArg> gainArmor(this Card card, CardEngine game, int value)
+        public static Task<EventArg> gainArmor(this Card card, CardEngine game, int value)
         {
             return setArmor(card, game, card.getArmor(game) + value);
         }
-        public static Task<SetArmorEventArg> loseArmor(this Card card, CardEngine game, int value)
+        public static Task<EventArg> loseArmor(this Card card, CardEngine game, int value)
         {
             return card.setArmor(game, card.getArmor(game) - value);
         }
-        public static Task<SetArmorEventArg> setArmor(this Card card, CardEngine game, int value)
+        public static Task<EventArg> setArmor(this Card card, CardEngine game, int value)
         {
             int beforeValue = card.getArmor(game);
             if (value < 0)
                 value = 0;
             if (beforeValue == value)
-                return Task.FromResult<SetArmorEventArg>(null);
-            return game.triggers.doEvent(new SetArmorEventArg() { card = card, beforeValue = beforeValue, value = value }, async arg =>
-            {
-                card = arg.card;
-                value = arg.value;
-                await card.setProp(game, CARD.ARMOR, value);
-            });
+                return Task.FromResult<EventArg>(null);
+            return SetArmorEventDefine.doEvent(game, card, value, beforeValue);
         }
         #endregion
 
@@ -1166,56 +972,42 @@ namespace TouhouHeartstone
         /// <param name="player"></param>
         /// <param name="targets"></param>
         /// <returns></returns>
-        public static Task<HearthStoneRule.ActiveEventArg> activeEffect(this Card card, CardEngine game, Player player, Card[] targets)
+        public static Task<EventArg[]> activeEffect(this Card card, CardEngine game, Card[] targets)
         {
             if (card.isServant() || card.isItem() || card.isMaster())
             {
-                return triggerBattlecries(card, game, player, targets);
+                return triggerBattlecries(card, game, targets);
             }
             else if (card.isSpell() || card.isSkill())
             {
-                return triggerSpellActiveEffect(card, game, player, targets);
+                return triggerSpellActiveEffect(card, game, targets);
             }
-            return Task.FromResult<HearthStoneRule.ActiveEventArg>(null);
+            return Task.FromResult(Array.Empty<EventArg>());
         }
         /// <summary>
         /// 发动特定法术或技能卡牌定义的主动效果
         /// </summary>
-        public static Task<HearthStoneRule.ActiveEventArg> triggerSpellCardDefineActiveEffect(this Card card, CardEngine game, Player player, CardDefine define, Card[] targets)
+        public static async Task<EventArg[]> triggerSpellCardDefineActiveEffect(this Card card, CardEngine game, CardDefine define, Card[] targets)
         {
-            var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-            return game.triggers.doEvent(eventArg, async arg =>
+            List<EventArg> eventArgs = new List<EventArg>();
+            var effects = define.getSpellActiveEffects();
+            foreach (var effect in effects)
             {
-                var argCard = arg.card;
-                var argTargets = arg.targets;
-                var activeEffects = define.getSpellActiveEffects();
-                foreach (var effect in activeEffects)
-                {
-                    if (effect is IActiveEffect active)
-                    {
-                        if (active.checkCondition(game, card, null, arg))
-                            await active.execute(game, card, null, arg);
-                    }
-                }
-            });
+                var eventArg = await ActiveEventDefine.doEvent(game, card, targets, define, effect);
+                eventArgs.Add(eventArg);
+            }
+            return eventArgs.ToArray();
         }
-        public static Task<HearthStoneRule.ActiveEventArg> triggerSpellActiveEffect(this Card card, CardEngine game, Player player, Card[] targets)
+        public static async Task<EventArg[]> triggerSpellActiveEffect(this Card card, CardEngine game, Card[] targets)
         {
-            var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-            return game.triggers.doEvent(eventArg, async arg =>
+            List<EventArg> eventArgs = new List<EventArg>();
+            var effects = card.getSpellActiveEffects(game);
+            foreach (var (effect, buff) in effects)
             {
-                var argCard = arg.card;
-                var argTargets = arg.targets;
-                var activeEffects = argCard.getSpellActiveEffects(game);
-                foreach (var (effect, buff) in activeEffects)
-                {
-                    if (effect is IActiveEffect active)
-                    {
-                        if (active.checkCondition(game, argCard, null, arg))
-                            await active.execute(game, argCard, buff, arg);
-                    }
-                }
-            });
+                var eventArg = await ActiveEventDefine.doEvent(game, card, targets, buff, effect);
+                eventArgs.Add(eventArg);
+            }
+            return eventArgs.ToArray();
         }
         /// <summary> 
         /// 触发一个特定卡牌定义自带的宣言。
@@ -1226,41 +1018,27 @@ namespace TouhouHeartstone
         /// <param name="define">要施放宣言的卡牌定义。</param>
         /// <param name="targets">宣言的目标。</param>
         /// <returns></returns>
-        public static Task<HearthStoneRule.ActiveEventArg> triggerCardDefineBattlecries(this Card card, CardEngine game, Player player, CardDefine define, Card[] targets)
+        public static async Task<EventArg[]> triggerCardDefineBattlecries(this Card card, CardEngine game, CardDefine define, Card[] targets)
         {
-            var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-            return game.triggers.doEvent(eventArg, async arg =>
+            List<EventArg> eventArgs = new List<EventArg>();
+            var effects = define.getBattlecries();
+            foreach (var effect in effects)
             {
-                var argCard = arg.card;
-                var argTargets = arg.targets;
-                var battlecries = define.getBattlecries();
-                foreach (var battlecry in battlecries)
-                {
-                    if (battlecry is IActiveEffect active)
-                    {
-                        if (active.checkCondition(game, argCard, null, arg))
-                            await active.execute(game, argCard, null, arg);
-                    }
-                }
-            });
+                var eventArg = await ActiveEventDefine.doEvent(game, card, targets, define, effect);
+                eventArgs.Add(eventArg);
+            }
+            return eventArgs.ToArray();
         }
-        public static Task<HearthStoneRule.ActiveEventArg> triggerBattlecries(this Card card, CardEngine game, Player player, Card[] targets)
+        public static async Task<EventArg[]> triggerBattlecries(this Card card, CardEngine game, Card[] targets)
         {
-            var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-            return game.triggers.doEvent(eventArg, async arg =>
+            List<EventArg> eventArgs = new List<EventArg>();
+            var effects = card.getBattlecries(game);
+            foreach (var (effect, buff) in effects)
             {
-                var argCard = arg.card;
-                var argTargets = arg.targets;
-                var battlecries = getBattlecries(argCard, game);
-                foreach (var (effect, buff) in battlecries)
-                {
-                    if (effect is IActiveEffect active)
-                    {
-                        if (active.checkCondition(game, argCard, buff, arg))
-                            await active.execute(game, argCard, buff, arg);
-                    }
-                }
-            });
+                var eventArg = await ActiveEventDefine.doEvent(game, card, targets, buff, effect);
+                eventArgs.Add(eventArg);
+            }
+            return eventArgs.ToArray();
         }
         /// <summary>
         /// 触发一个特定卡牌定义自带的遗言。
@@ -1269,41 +1047,31 @@ namespace TouhouHeartstone
         /// <param name="game">游戏对象。</param>
         /// <param name="define">要触发遗言的卡牌定义。</param>
         /// <returns></returns>
-        public static Task<HearthStoneRule.LastwordEventArg> triggerCardDefineDeathRattles(this Card card, CardEngine game, CardDefine define)
+        public static async Task<EventArg[]> triggerCardDefineDeathRattles(this Card card, CardEngine game, CardDefine define)
         {
-            var eventArg = new HearthStoneRule.LastwordEventArg(card.getOwner(), card);
-            return game.triggers.doEvent(eventArg, async arg =>
+            List<EventArg> eventArgs = new List<EventArg>();
+            var deathrattles = define.getDeathRattles();
+            foreach (var effect in deathrattles)
             {
-                var argCard = arg.card;
-                var deathRattles = define.getDeathRattles();
-                foreach (var deathRattle in deathRattles)
-                {
-                    if (deathRattle is GeneratedPassiveEffect genPassive)
-                    {
-                        if (genPassive.checkCondition(game, argCard, null, arg))
-                            await genPassive.execute(game, argCard, null, arg);
-                    }
-                }
-            });
+                var eventArg = await LastwordEventDefine.doEvent(game, card, define, effect);
+                eventArgs.Add(eventArg);
+            }
+            return eventArgs.ToArray();
         }
-        public static Task<HearthStoneRule.LastwordEventArg> triggerDeathRattles(this Card card, CardEngine game)
+        public static Task<EventArg[]> triggerDeathRattles(this Card card, CardEngine game)
         {
-            var eventArg = new HearthStoneRule.LastwordEventArg(card.getOwner(), card);
-            return game.triggers.doEvent(eventArg, arg =>
-            {
-                var argCard = arg.card;
-                var deathrattles = getDeathRattles(argCard, game);
-                return argCard.executeDeathRattles(game, arg, deathrattles);
-            });
+            var deathrattles = card.getDeathRattles(game);
+            return card.triggerDeathRattles(game, deathrattles);
         }
-        public static Task<HearthStoneRule.LastwordEventArg> triggerDeathRattles(this Card card, CardEngine game, (IEffect effect, Buff buff)[] deathrattles)
+        public static async Task<EventArg[]> triggerDeathRattles(this Card card, CardEngine game, (IEffect effect, Buff buff)[] deathrattles)
         {
-            var eventArg = new HearthStoneRule.LastwordEventArg(card.getOwner(), card);
-            return game.triggers.doEvent(eventArg, arg =>
+            List<EventArg> eventArgs = new List<EventArg>();
+            foreach (var (effect, buff) in deathrattles)
             {
-                var argCard = arg.card;
-                return argCard.executeDeathRattles(game, arg, deathrattles);
-            });
+                var eventArg = await LastwordEventDefine.doEvent(game, card, buff, effect);
+                eventArgs.Add(eventArg);
+            }
+            return eventArgs.ToArray();
         }
         #endregion
 
@@ -1312,25 +1080,16 @@ namespace TouhouHeartstone
         #region 移动卡牌
 
         #region 弃牌
-        public static Task<DiscardEventArg> discard(this Card card, CardEngine game)
+        public static Task<EventArg> discard(this Card card, CardEngine game)
         {
             if (card == null)
-                return default;
-            return game.triggers.doEvent(new DiscardEventArg() { player = card.getOwner(), card = card }, arg =>
-            {
-                Player actualPlayer = arg.player;
-                Card actualCard = arg.card;
-                if (actualPlayer == null)
-                    return Task.CompletedTask;
-                if (actualCard == null)
-                    return Task.CompletedTask;
-                return actualPlayer.getHand().moveTo(game, actualCard, actualPlayer.getGrave());
-            });
+                return Task.FromResult<EventArg>(null);
+            return DiscardEventDefine.doEvent(game, card);
         }
         [Obsolete]
-        public async static Task<DiscardEventArg[]> discardObsoleteMass(this IEnumerable<Card> cards, CardEngine game)
+        public async static Task<EventArg[]> discardObsoleteMass(this IEnumerable<Card> cards, CardEngine game)
         {
-            List<DiscardEventArg> eventArgs = new List<DiscardEventArg>();
+            List<EventArg> eventArgs = new List<EventArg>();
             foreach (Card card in cards)
             {
                 if (card == null)
@@ -1339,111 +1098,34 @@ namespace TouhouHeartstone
             }
             return eventArgs.ToArray();
         }
-        public static Task<MassDiscardEventArg> discard(this IEnumerable<Card> cards, CardEngine game)
+        public static Task<EventArg> discard(this IEnumerable<Card> cards, CardEngine game)
         {
-            return game.triggers.doEvent(new MassDiscardEventArg() { cards = cards.ToArray() }, async arg =>
-            {
-                foreach (Card card in arg.cards)
-                {
-                    if (card == null)
-                        continue;
-                    await card.discard(game);
-                }
-            });
+            return MassDiscardEventDefine.doEvent(game, cards.ToArray());
         }
         #endregion
 
         #region 群体移动
-        public static Task<MassEnterFieldEventArg> moveToField(this IEnumerable<Card> cards, CardEngine game, Player player)
+        public static Task<EventArg> moveToField(this IEnumerable<Card> cards, CardEngine game, Player player)
         {
-            return game.triggers.doEvent(new MassEnterFieldEventArg() { cards = cards.ToArray(), player = player }, async arg =>
-            {
-                var argCards = arg.cards;
-                var argPlayer = arg.player;
-                List<Card> movedCards = new List<Card>();
-                foreach (var card in argCards)
-                {
-                    var moveArg = await card.moveToField(game, argPlayer);
-                    if (moveArg != null && moveArg.success)
-                        movedCards.Add(moveArg.card);
-                }
-                arg.movedCards = movedCards.ToArray();
-            });
+            return MassEnterFieldEventDefine.doEvent(game, cards.ToArray(), player);
         }
-        public static Task<MassShuffleToDeckEventArg> moveToDeck(this IEnumerable<Card> cards, CardEngine game, Player player, bool top = false)
+        public static Task<EventArg> moveToDeck(this IEnumerable<Card> cards, CardEngine game, Player player, bool top = false)
         {
-            return game.triggers.doEvent(new MassShuffleToDeckEventArg() { cards = cards.ToArray(), player = player, top = top }, async arg =>
-            {
-                var argCards = arg.cards;
-                var argPlayer = arg.player;
-                var argTop = arg.top;
-                List<Card> movedCards = new List<Card>();
-                foreach (var card in argCards)
-                {
-                    if (card == null)
-                        continue;
-                    int position = argTop ? argPlayer.getDeck().count : game.randomInt(0, argPlayer.getDeck().count);
-                    game.logger.logTrace($"将{string.Join("，", card)}洗入{argPlayer}的牌库");
-                    var moveArg = await card.pile.moveTo(game, card, player.getDeck(), position);
-                    if (moveArg != null && moveArg.success)
-                        movedCards.Add(card);
-                }
-                arg.movedCards = movedCards.ToArray();
-            });
+            return MassShuffleToDeckEventDefine.doEvent(game, cards.ToArray(), player, top);
         }
-        public static Task<MassMoveCardEventArg> moveToGrave(this IEnumerable<Card> cards, CardEngine game, Player player)
+        public static Task<EventArg> moveToGrave(this IEnumerable<Card> cards, CardEngine game, Player player)
         {
             var to = player.getGrave();
-            return game.triggers.doEvent(new MassMoveCardEventArg() { cards = cards.ToArray(), to = to }, async arg =>
-            {
-                var argCards = arg.cards;
-                var argTo = arg.to;
-                List<Card> movedCards = new List<Card>();
-                foreach (var card in argCards)
-                {
-                    if (card == null)
-                        continue;
-                    game.logger.logTrace($"将{string.Join("，", card)}置入墓地{argTo}");
-                    await card.pile.moveTo(game, card, argTo);
-                    movedCards.Add(card);
-                }
-                arg.movedCards = movedCards.ToArray();
-            });
+            return MassMoveCardEventDefine.doEvent(game, cards.ToArray(), to);
         }
-        public static Task<MassMoveToHeadEventArg> moveToHead(this IEnumerable<Card> cards, CardEngine game, Player player)
+        public static Task<EventArg> moveToHead(this IEnumerable<Card> cards, CardEngine game, Player player)
         {
-            return game.triggers.doEvent(new MassMoveToHeadEventArg() { cards = cards.ToArray(), player = player }, async arg =>
-            {
-                var argCards = arg.cards;
-                var argPlayer = arg.player;
-                List<Card> movedCards = new List<Card>();
-                foreach (var card in argCards)
-                {
-                    var moveArg = await card.moveToHead(game, argPlayer);
-                    if (moveArg != null && moveArg.success)
-                        movedCards.Add(moveArg.card);
-                }
-                arg.movedCards = movedCards.ToArray();
-            });
+            return MassMoveToHeadEventDefine.doEvent(game, cards.ToArray(), player);
         }
-        public static Task<MassMoveCardEventArg> moveToWarp(this IEnumerable<Card> cards, CardEngine game, Player player)
+        public static Task<EventArg> moveToWarp(this IEnumerable<Card> cards, CardEngine game, Player player)
         {
             var to = player.getWarp();
-            return game.triggers.doEvent(new MassMoveCardEventArg() { cards = cards.ToArray(), to = to }, async arg =>
-            {
-                var argCards = arg.cards;
-                var argTo = arg.to;
-                List<Card> movedCards = new List<Card>();
-                foreach (var card in argCards)
-                {
-                    if (card == null)
-                        continue;
-                    game.logger.logTrace($"将{string.Join("，", card)}置入暂存区{argTo}");
-                    await card.pile.moveTo(game, card, argTo);
-                    movedCards.Add(card);
-                }
-                arg.movedCards = movedCards.ToArray();
-            });
+            return MassMoveCardEventDefine.doEvent(game, cards.ToArray(), to);
         }
         /// <summary>
         /// 将多张卡牌返回到指定玩家的手牌。
@@ -1452,30 +1134,16 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         /// <param name="player">移动至手牌的玩家。</param>
         /// <returns></returns>
-        public static Task<MassReturnHandEventArg> returnToHand(this IEnumerable<Card> cards, CardEngine game, Player player)
+        public static Task<EventArg> returnToHand(this IEnumerable<Card> cards, CardEngine game, Player player)
         {
             if (cards == null || cards.Count() <= 0 || player == null)
                 return null;
-
-            return game.triggers.doEvent(new MassReturnHandEventArg() { cards = cards.ToArray(), player = player }, async arg =>
-            {
-                var argCards = arg.cards;
-                var argPlayer = arg.player;
-                var target = argPlayer.getHand();
-                var movedCards = new List<Card>();
-                foreach (var card in argCards)
-                {
-                    var moveArg = await card.returnToHand(game, argPlayer);
-                    if (moveArg != null && moveArg.success && moveArg.to == target)
-                        movedCards.Add(moveArg.card);
-                }
-                arg.movedCards = movedCards.ToArray();
-            });
+            return MassReturnHandEventDefine.doEvent(game, cards.ToArray(), player);
         }
         #endregion
 
         #region 单体移动
-        public static Task<THHPile.MoveCardEventArg> moveToHead(this Card card, CardEngine game, Player player)
+        public static Task<EventArg> moveToHead(this Card card, CardEngine game, Player player)
         {
             return moveToHead(card, game, card.pile, player?.getHead());
         }
@@ -1486,19 +1154,19 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         /// <param name="player">移动至手牌的玩家。</param>
         /// <returns></returns>
-        public static Task<THHPile.MoveCardEventArg> returnToHand(this Card card, CardEngine game, Player player)
+        public static Task<EventArg> returnToHand(this Card card, CardEngine game, Player player)
         {
             return moveToHand(card, game, card.pile, player?.getHand());
         }
-        public static Task<THHPile.MoveCardEventArg> moveToField(this Card card, CardEngine game, Player player)
+        public static Task<EventArg> moveToField(this Card card, CardEngine game, Player player)
         {
             return moveToField(card, game, card.pile, player?.getField());
         }
-        public static Task<THHPile.MoveCardEventArg> moveToItem(this Card card, CardEngine game, Player player)
+        public static Task<EventArg> moveToItem(this Card card, CardEngine game, Player player)
         {
             return moveToItem(card, game, card.pile, player[PILE.ITEM]);
         }
-        public static async Task<THHPile.MoveCardEventArg> moveToHead(this Card card, CardEngine game, Pile from, Pile to)
+        public static async Task<EventArg> moveToHead(this Card card, CardEngine game, Pile from, Pile to)
         {
             if (isInvalidMove(card, from, to))
                 return null;
@@ -1529,7 +1197,7 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         /// <param name="player">移动至手牌的玩家。</param>
         /// <returns></returns>
-        public static async Task<THHPile.MoveCardEventArg> moveToHand(this Card card, CardEngine game, Pile from, Pile to)
+        public static async Task<EventArg> moveToHand(this Card card, CardEngine game, Pile from, Pile to)
         {
             if (isInvalidMove(card, from, to))
                 return null;
@@ -1555,25 +1223,25 @@ namespace TouhouHeartstone
             game.logger.logTrace($"将{card}置入{player}的手牌");
             return await from.moveTo(game, card, to, to.count);
         }
-        public static async Task<THHPile.MoveCardEventArg> moveToField(this Card card, CardEngine game, Pile from, Pile to)
+        public static async Task<EventArg> moveToField(this Card card, CardEngine game, Pile from, Pile to)
         {
             if (isInvalidMove(card, from, to))
                 return null;
             var enterFieldArg = await to.owner.tryEnterField(game, from, card, to.count);
             if (enterFieldArg == null)
                 return null;
-            return enterFieldArg.getChildEvents(EventState.Logic).OfType<THHPile.MoveCardEventArg>().FirstOrDefault();
+            return enterFieldArg.getChildEvents(EventState.Logic).OfType<EventArg>().FirstOrDefault();
         }
-        public static async Task<THHPile.MoveCardEventArg> moveToItem(this Card card, CardEngine game, Pile from, Pile to)
+        public static async Task<EventArg> moveToItem(this Card card, CardEngine game, Pile from, Pile to)
         {
             if (isInvalidMove(card, from, to))
                 return null;
             var equipArg = await to.owner.equip(game, card.pile, card);
             if (equipArg == null)
                 return null;
-            return equipArg.getChildEvents(EventState.Logic).OfType<THHPile.MoveCardEventArg>().FirstOrDefault();
+            return equipArg.getChildEvents(EventState.Logic).OfType<EventArg>().FirstOrDefault();
         }
-        public static async Task<THHPile.MoveCardEventArg> moveCardFromPileToPile(this Card card, CardEngine game, Pile fromPile, Pile toPile)
+        public static async Task<EventArg> moveCardFromPileToPile(this Card card, CardEngine game, Pile fromPile, Pile toPile)
         {
             var toName = toPile?.name;
             switch (toName)
@@ -1612,7 +1280,7 @@ namespace TouhouHeartstone
         /// <param name="player"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        public static async Task<THHPile.MoveCardEventArg> takeControl(this Card card, CardEngine game, Player player, int position = -1)
+        public static async Task<EventArg> takeControl(this Card card, CardEngine game, Player player, int position = -1)
         {
             if (card.pile?.name != PILE.FIELD) // 不在场上
                 return null;
@@ -1724,23 +1392,9 @@ namespace TouhouHeartstone
         #endregion
 
         #region 增益
-        public static Task<MassAddBuffEventArg> addBuffs(this Card[] cards, CardEngine game, BuffDefine buffDefine)
+        public static Task<EventArg> addBuffs(this Card[] cards, CardEngine game, BuffDefine buffDefine)
         {
-            return game.triggers.doEvent(new MassAddBuffEventArg() { cards = cards, buffDefine = buffDefine }, async arg =>
-            {
-                var argCards = arg.cards;
-                var argBuffDefine = arg.buffDefine;
-                List<Buff> buffList = new List<Buff>();
-                foreach (var card in argCards)
-                {
-                    if (card == null)
-                        continue;
-                    Buff buff = new GeneratedBuff(argBuffDefine);
-                    buffList.Add(buff);
-                    await card.addBuff(game, buff);
-                }
-                arg.buffs = buffList.ToArray();
-            });
+            return MassAddBuffEventDefine.doEvent(game, cards, buffDefine);
         }
         /// <summary>
         /// 移除所有增益（不包括固有增益）
@@ -1759,22 +1413,6 @@ namespace TouhouHeartstone
         {
             return card.define.getGeneratedEffects().Any(e => e.isTrap());
         }
-        /// <summary>
-        /// 触发奥秘
-        /// </summary>
-        /// <param name="card"></param>
-        /// <param name="game"></param>
-        /// <param name="effects"></param>
-        /// <returns></returns>
-        public static Task<SecretTriggerEventArg> TriggerSecret(this Card card, IGame game)
-        {
-            return game.triggers.doEvent(new SecretTriggerEventArg() { card = card }, async arg =>
-            {
-                game.logger.logTrace($"触发陷阱{card}");
-                Player player = arg.card.getOwner();
-                await player.getHead().moveTo(game, arg.card, player.getGrave());
-            });
-        }
         public static async Task updateSecret(this Card secret, CardEngine game)
         {
             if (secret.isSpell() && secret.isTrap(game)) // 是陷阱。
@@ -1792,21 +1430,6 @@ namespace TouhouHeartstone
                     }
                 }
             }
-        }
-        /// <summary>
-        /// 任务完成
-        /// </summary>
-        /// <param name="card"></param>
-        /// <param name="game"></param>
-        /// <returns></returns>
-        public static Task<MissionCompleteEventArg> MissionComplete(this Card card, IGame game)
-        {
-            return game.triggers.doEvent(new MissionCompleteEventArg() { card = card }, async arg =>
-            {
-                game.logger.logTrace($"任务完成 : {card}");
-                Player player = arg.card.getOwner();
-                await player.getHead().moveTo(game, arg.card, player.getGrave());
-            });
         }
         #endregion
 
@@ -1833,10 +1456,11 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         /// <param name="define"></param>
         /// <param name="isreset"></param>
-        public static async Task<Card.SetDefineEventArg> setDefine(this Card card, CardEngine game, CardDefine define, bool isreset = true)
+        public static async Task<EventArg> setDefine(this Card card, CardEngine game, CardDefine define, bool isreset = true)
         {
-            var eventArg = await card.setDefine(game, define);
-            if (isreset) { await card.resetCard(game); }//卡牌重置
+            var eventArg = await SetCardDefineEventDefine.doEvent(game, card, define);
+            if (isreset) //卡牌重置
+                await card.resetCard(game); 
             return eventArg;
         }
         /// <summary>
@@ -1877,12 +1501,12 @@ namespace TouhouHeartstone
             var moveArg = await moveCardFromPileToPile(clone, game, null, targetPile);
 
             // 移动不成功，复制失败。
-            if (moveArg == null || !moveArg.success)
+            if (moveArg == null || !moveArg.getVar<bool>(MoveCardEventDefine.VAR_SUCCESS))
                 return null;
 
             // 移动成功。
             // 该卡牌移动需要重置卡牌属性。
-            if (moveArg.resetProps && THHPile.shouldCardMoveResetCardProp(from, targetPile))
+            if (moveArg.getVar<bool>(MoveCardEventDefine.VAR_RESET_PROPS) && THHPile.shouldCardMoveResetCardProp(from, targetPile))
             {
                 await clone.resetCard(game);
             }
@@ -1925,17 +1549,6 @@ namespace TouhouHeartstone
         #endregion
 
         #region 私有方法
-        private static async Task executeDeathRattles(this Card argCard, CardEngine game, EventArg arg, (IEffect effect, Buff buff)[] deathrattles)
-        {
-            foreach (var (effect, buff) in deathrattles)
-            {
-                if (effect is GeneratedPassiveEffect genPassive)
-                {
-                    if (genPassive.checkCondition(game, argCard, buff, arg))
-                        await genPassive.execute(game, argCard, buff, arg);
-                }
-            }
-        }
         private static bool isInvalidMove(Card card, Pile from, Pile to)
         {
             if (card == null || to == null)
@@ -2008,733 +1621,6 @@ namespace TouhouHeartstone
             CARD.ATTACK_TIMES,
             CARD.ISDEAD,
         };
-        #endregion
-
-        #region 内嵌类
-        [EventChildren(typeof(PropChangeEventArg))]
-        public class DamageEventArg : EventArg, IDescribableEventArg, ICardEventArg
-        {
-            public Card target
-            {
-                get { return getVar<Card>(EVENTVAR.CARD); }
-                set { setVar(EVENTVAR.CARD, value); }
-            }
-            public Card source
-            {
-                get { return getVar<Card>(VAR_DAMAGE_SOURCE); }
-                set { setVar(VAR_DAMAGE_SOURCE, value); }
-            }
-            public int damageValue
-            {
-                get { return getVar<int>(VAR_DAMAGE_VALUE); }
-                set { setVar(VAR_DAMAGE_VALUE, value); }
-            }
-            public int damagedValue
-            {
-                get { return getVar<int>(VAR_DAMAGED_VALUE); }
-                set { setVar(VAR_DAMAGED_VALUE, value); }
-            }
-            public DamageEventArg()
-            {
-
-            }
-            public DamageEventArg(Card target, int value, Card source)
-            {
-                this.target = target;
-                this.source = source;
-                damageValue = value;
-                damagedValue = 0;
-            }
-            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                return source;
-            }
-            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                return new DescribableCard[] { target };
-            }
-            ICard ICardEventArg.getCard()
-            {
-                return target;
-            }
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                return source != null ?
-                    $"{source.getFormatString()}对{target.getFormatString()}造成{damagedValue}点伤害" :
-                    $"{target.getFormatString()}受到{damagedValue}点伤害";
-            }
-
-            [MukioI18n.TranslateMsg("{0}是卡，{1}是伤害值")]
-            const string TEMPLATE_RECV = "{0} 受到 {1} 点伤害";
-            [MukioI18n.TranslateMsg("{0}{1}是卡，{2}是伤害值")]
-            const string TEMPLATE_ATK = "{0} 对 {1} 造成 {2} 点伤害";
-            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
-            {
-                return source != null ? TEMPLATE_ATK : TEMPLATE_RECV;
-            }
-            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
-            {
-                if (source != null)
-                {
-                    return new object[] {
-                        source.getFormatString(),
-                        target.getFormatString(),
-                        damagedValue
-                    };
-                }
-                else
-                {
-                    return new object[] {
-                        target.getFormatString(),
-                        damagedValue
-                    };
-                }
-            }
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)},
-                    new EventVariableInfo(){name = VAR_DAMAGE_SOURCE,type=typeof(Card)},
-                    new EventVariableInfo(){name = VAR_DAMAGE_VALUE,type=typeof(int)}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)},
-                    new EventVariableInfo(){name = VAR_DAMAGE_SOURCE,type=typeof(Card)},
-                    new EventVariableInfo(){name = VAR_DAMAGE_VALUE,type=typeof(int)},
-                    new EventVariableInfo(){name = VAR_DAMAGED_VALUE,type=typeof(int)}
-                };
-            }
-            public override void Record(IGame game, EventRecord record)
-            {
-                record.setCardState(EVENTVAR.CARD, target);
-                record.setCardState(VAR_DAMAGE_SOURCE, source);
-                record.setVar(VAR_DAMAGE_VALUE, damageValue);
-                record.setVar(VAR_DAMAGED_VALUE, damagedValue);
-            }
-            public const string VAR_DAMAGE_SOURCE = "伤害来源";
-            public const string VAR_DAMAGE_VALUE = "伤害值";
-            public const string VAR_DAMAGED_VALUE = "实际伤害值";
-        }
-        [EventChildren(typeof(PropChangeEventArg))]
-        public class SetArmorEventArg : EventArg, IDescribableEventArg, ICardEventArg
-        {
-            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                return card;
-            }
-            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                return null;
-            }
-            ICard ICardEventArg.getCard() => card;
-
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                IDescribableEventArg arg = this;
-                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
-            }
-
-            public override void Record(IGame game, EventRecord record)
-            {
-                record.setCardState(EVENTVAR.CARD, card);
-                record.setVar(EVENTVAR.VALUE, value);
-                record.setVar(VAR_BEFORE_VALUE, beforeValue);
-            }
-            [TranslateMsg("{0}是卡，{1}是护甲值")]
-            const string TEMPLATE = "{0} 的护甲变为 {1}";
-            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
-            {
-                return TEMPLATE;
-            }
-            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
-            {
-                return new object[] {
-                    card.getFormatString(),
-                    value
-                };
-            }
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card) },
-                    new EventVariableInfo() { name = VAR_BEFORE_VALUE, type = typeof(int) },
-                    new EventVariableInfo() { name = EVENTVAR.VALUE, type = typeof(int) }
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card) },
-                    new EventVariableInfo() { name = VAR_BEFORE_VALUE, type = typeof(int) },
-                    new EventVariableInfo() { name = EVENTVAR.VALUE, type = typeof(int) }
-                };
-            }
-            public Card card
-            {
-                get { return getVar<Card>(EVENTVAR.CARD); }
-                set { setVar(EVENTVAR.CARD, value); }
-            }
-            public int beforeValue
-            {
-                get { return getVar<int>(VAR_BEFORE_VALUE); }
-                set { setVar(VAR_BEFORE_VALUE, value); }
-            }
-            public int value
-            {
-                get { return getVar<int>(EVENTVAR.VALUE); }
-                set { setVar(EVENTVAR.VALUE, value); }
-            }
-            public const string VAR_BEFORE_VALUE = "原数值";
-        }
-        [EventChildren(typeof(PropChangeEventArg))]
-        public class BeChargedEventArg : EventArg
-        {
-            public Card card
-            {
-                get => getVar<Card>(EVENTVAR.CARD);
-                set => setVar(EVENTVAR.CARD, value);
-            }
-            public int beforeValue
-            {
-                get => getVar<int>(VAR_BEFORE_VALUE);
-                set => setVar(VAR_BEFORE_VALUE, value);
-            }
-            public int value
-            {
-                get => getVar<int>(EVENTVAR.VALUE);
-                set => setVar(EVENTVAR.VALUE, value);
-            }
-            public override void Record(IGame game, EventRecord record)
-            {
-                record.setCardState(EVENTVAR.CARD, card);
-                record.setVar(VAR_BEFORE_VALUE, beforeValue);
-                record.setVar(EVENTVAR.VALUE, value);
-            }
-            public const string VAR_BEFORE_VALUE = "原数值";
-        }
-        [EventChildren(typeof(PropChangeEventArg))]
-        public class SilenceEventArg : EventArg, IDescribableEventArg, ICardEventArg
-        {
-            public override void Record(IGame game, EventRecord record)
-            {
-                record.setCardState(EVENTVAR.CARD, card);
-            }
-            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                return card;
-            }
-
-            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                return null;
-            }
-            ICard ICardEventArg.getCard()
-            {
-                return card;
-            }
-
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                IDescribableEventArg arg = this;
-                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
-            }
-
-            [MukioI18n.TranslateMsg("{0}是卡牌列表")]
-            const string TEMPLATE = "{0} 被封印";
-            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
-            {
-                return TEMPLATE;
-            }
-            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
-            {
-                return new object[] { string.Join("，", card.getFormatString()) };
-            }
-
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
-                };
-            }
-            public Card card
-            {
-                get { return getVar<Card>(EVENTVAR.CARD); }
-                set { setVar(EVENTVAR.CARD, value); }
-            }
-        }
-        [EventChildren(typeof(DamageEventArg))]
-        public class AttackEventArg : EventArg, IDescribableEventArg, ICardEventArg
-        {
-            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                return card;
-            }
-            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                return new DescribableCard[] { target };
-            }
-            ICard ICardEventArg.getCard()
-            {
-                return card;
-            }
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                IDescribableEventArg arg = this;
-                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
-            }
-
-            public override void Record(IGame game, EventRecord record)
-            {
-                record.setCardState(EVENTVAR.CARD, card);
-                record.setCardState(EVENTVAR.TARGET_CARD, target);
-            }
-            [MukioI18n.TranslateMsg("{0} {1}是卡")]
-            const string TEMPLATE = "{0} 攻击 {1}";
-            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
-            {
-                return TEMPLATE;
-            }
-            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
-            {
-                return new object[] {
-                    card.getFormatString(),
-                    target.getFormatString()
-                };
-            }
-
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)},
-                    new EventVariableInfo(){name = EVENTVAR.TARGET_CARD,type=typeof(Card)}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)},
-                    new EventVariableInfo(){name = EVENTVAR.TARGET_CARD,type=typeof(Card)}
-                };
-            }
-            public Card card
-            {
-                get { return getVar<Card>(EVENTVAR.CARD); }
-                set { setVar(EVENTVAR.CARD, value); }
-            }
-            public Card target
-            {
-                get { return getVar<Card>(EVENTVAR.TARGET_CARD); }
-                set { setVar(EVENTVAR.TARGET_CARD, value); }
-            }
-        }
-        [EventChildren(typeof(THHPile.MoveCardEventArg))]
-        public class DiscardEventArg : EventArg, IDescribableEventArg, ICardEventArg
-        {
-            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                return null;
-            }
-
-            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                return new DescribableCard[] { card };
-            }
-            ICard ICardEventArg.getCard() => card;
-
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                IDescribableEventArg arg = this;
-                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
-            }
-
-            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡牌列表")]
-            const string TEMPLATE = "{0} 丢弃 {1}";
-            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
-            {
-                return TEMPLATE;
-            }
-            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
-            {
-                return new object[] {
-                    player.name, card.getFormatString()
-                };
-            }
-
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
-                };
-            }
-            public override void Record(IGame game, EventRecord record)
-            {
-                record.setCardState(EVENTVAR.CARD, card);
-                record.setVar(EVENTVAR.PLAYER, player);
-            }
-            public Player player
-            {
-                get { return getVar<Player>(EVENTVAR.PLAYER); }
-                set { setVar(EVENTVAR.PLAYER, value); }
-            }
-            public Card card
-            {
-                get { return getVar<Card>(EVENTVAR.CARD); }
-                set { setVar(EVENTVAR.CARD, value); }
-            }
-        }
-        [EventChildren(typeof(PropChangeEventArg))]
-        public class HealEventArg : EventArg, IDescribableEventArg, ICardEventArg
-        {
-
-            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                return card;
-            }
-
-            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                return null;
-            }
-            ICard ICardEventArg.getCard()
-            {
-                return card;
-            }
-
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                return string.Format(TEMPLATE, card.getFormatString(), healedValue);
-            }
-            public override void Record(IGame game, EventRecord record)
-            {
-                record.setCardState(EVENTVAR.CARD, card);
-                record.setCardState(VAR_HEAL_SOURCE, source);
-                record.setVar(EVENTVAR.VALUE, value);
-                record.setVar(VAR_HEALED_VALUE, healedValue);
-            }
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)},
-                    new EventVariableInfo(){name = VAR_HEAL_SOURCE,type=typeof(Card)},
-                    new EventVariableInfo(){name = EVENTVAR.VALUE,type=typeof(int)},
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)},
-                    new EventVariableInfo(){name = VAR_HEAL_SOURCE,type=typeof(Card)},
-                    new EventVariableInfo(){name = EVENTVAR.VALUE,type=typeof(int)},
-                    new EventVariableInfo(){name = VAR_HEALED_VALUE,type=typeof(int)},
-                };
-            }
-            [MukioI18n.TranslateMsg("{0}是卡，{1}是治疗量")]
-            const string TEMPLATE = "治疗 {0} {1} 点生命值";
-            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
-            {
-                return TEMPLATE;
-            }
-            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
-            {
-                return new object[] { card.getFormatString(), healedValue };
-            }
-            public Card source
-            {
-                get => getVar<Card>(VAR_HEAL_SOURCE);
-                set => setVar(VAR_HEAL_SOURCE, value);
-            }
-            public Card card
-            {
-                get => getVar<Card>(EVENTVAR.CARD);
-                set => setVar(EVENTVAR.CARD, value);
-            }
-            public int value
-            {
-                get => getVar<int>(EVENTVAR.VALUE);
-                set => setVar(EVENTVAR.VALUE, value);
-            }
-            public int healedValue
-            {
-                get => getVar<int>(VAR_HEALED_VALUE);
-                set => setVar(VAR_HEALED_VALUE, value);
-            }
-
-            public const string VAR_HEAL_SOURCE = "治疗来源";
-            public const string VAR_HEALED_VALUE = "实际治疗值";
-        }
-        [EventChildren(typeof(THHPile.MoveCardEventArg))]
-        public class DeathEventArg : EventArg, IDescribableEventArg
-        {
-
-            public DeathEventArg()
-            {
-            }
-            public DeathEventArg(Card card)
-            {
-                this.card = card;
-                player = card.getOwner();
-                position = card.pile.indexOf(card);
-            }
-            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                return card;
-            }
-
-            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                return new DescribableCard[] { card };
-            }
-
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                IDescribableEventArg arg = this;
-                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
-            }
-
-            [TranslateMsg("{0}是卡牌列表")]
-            const string TEMPLATE = "{0} 死亡";
-            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
-            {
-                return TEMPLATE;
-            }
-            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
-            {
-                return new object[] {
-                    card.getFormatString()
-                };
-            }
-
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)},
-                    new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
-                    new EventVariableInfo(){name = EVENTVAR.POSITION,type=typeof(int)}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)},
-                    new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
-                    new EventVariableInfo(){name = EVENTVAR.POSITION,type=typeof(int)}
-                };
-            }
-            public override void Record(IGame game, EventRecord record)
-            {
-                record.setCardState(EVENTVAR.CARD, card);
-                record.setVar(EVENTVAR.PLAYER, player);
-                record.setVar(EVENTVAR.POSITION, position);
-            }
-            public Card card
-            {
-                get => getVar<Card>(EVENTVAR.CARD);
-                set => setVar(EVENTVAR.CARD, value);
-            }
-            public Player player
-            {
-                get => getVar<Player>(EVENTVAR.PLAYER);
-                set => setVar(EVENTVAR.PLAYER, value);
-            }
-            public int position
-            {
-                get => getVar<int>(EVENTVAR.POSITION);
-                set => setVar(EVENTVAR.POSITION, value);
-            }
-        }
-        [EventChildren(typeof(THHPile.MoveCardEventArg))]
-        public class SecretTriggerEventArg : EventArg, IDescribableEventArg
-        {
-            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                return card;
-            }
-            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                return null;
-            }
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                IDescribableEventArg arg = this;
-                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
-            }
-
-            [MukioI18n.TranslateMsg("{0}是卡")]
-            const string TEMPLATE = "奥秘 {0} 被触发";
-            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
-            {
-                return TEMPLATE;
-            }
-            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
-            {
-                return new object[] { card.getFormatString() };
-            }
-
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
-                };
-            }
-            public override void Record(IGame game, EventRecord record)
-            {
-                record.setCardState(EVENTVAR.CARD, card);
-            }
-            public Card card
-            {
-                get { return getVar<Card>(EVENTVAR.CARD); }
-                set { setVar(EVENTVAR.CARD, value); }
-            }
-        }
-        [EventChildren(typeof(THHPile.MoveCardEventArg))]
-        public class MissionCompleteEventArg : EventArg, IDescribableEventArg
-        {
-            public Card card
-            {
-                get => getVar<Card>(EVENTVAR.CARD);
-                set => setVar(EVENTVAR.CARD, value);
-            }
-            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                return card;
-            }
-            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                return null;
-            }
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                IDescribableEventArg arg = this;
-                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
-            }
-            public override void Record(IGame game, EventRecord record)
-            {
-                record.setCardState(EVENTVAR.CARD, card);
-            }
-
-            [MukioI18n.TranslateMsg("{0}是卡")]
-            const string TEMPLATE = "任务 {0} 完成";
-            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
-            {
-                return TEMPLATE;
-            }
-            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
-            {
-                return new object[] { card.getFormatString() };
-            }
-
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
-                };
-            }
-        }
-        [EventChildren(typeof(PropChangeEventArg))]
-        public class ShackleEventArg : EventArg, IDescribableEventArg, ICardEventArg
-        {
-            public override void Record(IGame game, EventRecord record)
-            {
-                record.setCardState(EVENTVAR.CARD, card);
-            }
-            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                return card;
-            }
-
-            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                return null;
-            }
-            ICard ICardEventArg.getCard()
-            {
-                return card;
-            }
-
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                IDescribableEventArg arg = this;
-                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
-            }
-
-            [MukioI18n.TranslateMsg("{0}是卡牌列表")]
-            const string TEMPLATE = "{0} 被禁锢";
-            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
-            {
-                return TEMPLATE;
-            }
-            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
-            {
-                return new object[] { string.Join("，", card.getFormatString()) };
-            }
-
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
-                };
-            }
-            public Card card
-            {
-                get { return getVar<Card>(EVENTVAR.CARD); }
-                set { setVar(EVENTVAR.CARD, value); }
-            }
-        }
         #endregion
     }
 }
