@@ -1932,13 +1932,16 @@ namespace Controllers
                     }
                 }
                 // 其他事件输出。
-                var eventType = connectedOutput.define?.type;
-                if (eventType != null)
+                var portType = connectedOutput.define?.type;
+                if (portType != null)
                 {
-                    if (eventType.IsArray)
-                        eventType = eventType.GetElementType();
-                    if (typeof(IEventArg).IsAssignableFrom(eventType))
-                        return new EventReference(0, EventHelper.getName(eventType));
+                    if (portType.IsArray)
+                        portType = portType.GetElementType();
+                    if (typeof(IEventArg).IsAssignableFrom(portType))
+                    {
+                        var meta = connectedOutput.define.metas?.OfType<EventTypePortMeta>()?.FirstOrDefault();
+                        return new EventReference(0, EventHelper.getName(meta.eventType));
+                    }
                 }
             }
             return null;

@@ -231,7 +231,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine define,
             [ActionNodeParam(EDITOR_NODE_CARD_IS_RESET, isConst: true)] bool isreset,
-            [ActionNodeParam(EDITOR_PARAM_NAME_SET_CARD_DEFINE_EVENT, isOut: true, eventType: typeof(SetCardDefineEventDefine))] EventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_SET_CARD_DEFINE_EVENT, isOut: true)][NodeParamEventType(typeof(SetCardDefineEventDefine))] EventArg outEvent)
         {
             if (define == null)
                 return card;
