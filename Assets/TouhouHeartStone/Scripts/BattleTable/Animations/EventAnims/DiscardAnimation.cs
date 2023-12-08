@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
-using TouhouCardEngine.Histories;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
-using UI;
 using UnityEngine;
+using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
@@ -24,8 +23,8 @@ namespace Game.BattleTable
         }
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            var cardId = record.getVar<CardState>(EVENTVAR.CARD).card.id;
-            var player = record.getVar<Player>(EVENTVAR.PLAYER);
+            var cardId = tEventArg.getVar<Card>(EVENTVAR.CARD).id;
+            var player = tEventArg.getVar<Player>(EVENTVAR.PLAYER);
             AnimAnim anim = null;
 
             if (table.tryGetServant(cardId, out var servant)) // 有些卡可能会让你在使用一张卡时取消使用并弃掉，此时如果使用的是仆从牌则可能会有随从在战场上。
