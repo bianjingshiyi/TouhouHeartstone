@@ -55,6 +55,8 @@ namespace Game
         private const string EDITOR_NODE_NAME_SET_CARD_PROPERTY = "设置卡牌属性";
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_SEAL = "封印";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_CLONE_CARD = "复制卡牌";
 
         [TranslateMsg("是否濒死节点-常量")]
         private const string EDITOR_PARAM_NAME_CHECK_HEALTH_ZERO = "检查生命值<=0";
@@ -233,6 +235,24 @@ namespace Game
             outEvent = await player.equip(game, null, createdCard);
             setOutParam(flow, node, nameof(outEvent), outEvent);
             return createdCard;
+        }
+        /// <summary>
+        /// 复制卡牌
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
+        /// <param name="cardDefine"></param>
+        /// <returns></returns>
+        [EventNode]
+        [THHActionMethod(BuiltinActionDefineID.CloneCard, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CLONE_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Task<Card> cloneCard(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(EDITOR_PARAM_NAME_TO_PILE)] Pile targetPile)
+        {
+            if (card == null)
+                return null;
+            return card.cloneCardTo(game, targetPile);
         }
         #endregion
 

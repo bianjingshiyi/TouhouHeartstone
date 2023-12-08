@@ -967,12 +967,32 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static async Task resetBattlefieldProps(this Card card, CardEngine game)
         {
+            await resetTemporaryFieldProps(card, game);
+            await resetPersistentFieldProps(card, game);
+        }
+        /// <summary>
+        /// 重置临时的“战场专用属性”。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static async Task resetTemporaryFieldProps(this Card card, CardEngine game)
+        {
             await card.setDead(game, false);
             await card.setAttackTimes(game, 0);
             await card.setReady(game, false);
+            await card.setUsed(game, false);
+        }
+        /// <summary>
+        /// 重置持续存在的的“战场专用属性”。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static async Task resetPersistentFieldProps(this Card card, CardEngine game)
+        {
             await card.setCurrentLife(game, card.getLife(game));
             await card.setProp(game, CARD.ARMOR, 0);
-            await card.setUsed(game, false);
             await card.setProp(game, CARD.SILENCE, false);
             await card.clearConsumableKeywords(game);
         }
@@ -1831,6 +1851,83 @@ namespace TouhouHeartstone
             if (isreset) { await card.resetCard(game); }//卡牌重置
             return eventArg;
         }
+        /// <summary>
+        /// 将一张卡牌复制到指定牌堆。
+        /// </summary>
+        /// <param name="card">要复制的卡牌。</param>
+        /// <param name="game">游戏对象。</param>
+        /// <param name="targetPile">目标牌堆。</param>
+        /// <returns></returns>
+        public static async Task<Card> cloneCardTo(this Card card, CardEngine game, Pile targetPile)
+        {
+            // 根据卡牌的定义创建一张新的卡牌。
+            var clone = game.createCard(card.define);
+
+            // 复制所有可复制的增益。
+            foreach (var buff in card.getBuffs())
+            {
+                if (!buff.canClone)
+                    continue;
+                var buffClone = buff.clone();
+                await clone.addBuff(game, buffClone);
+            }
+            // 复制所有卡牌的属性
+            foreach (var pair in card.getAllProps(game, true))
+            {
+                await clone.setProp(game, pair.Key, pair.Value);
+            }
+
+            // 源牌堆假定为要复制的卡牌的牌堆，用于处理战场→手牌，战场→牌库这样的逆向移动。
+            Pile from = card.pile;
+
+            // 将卡牌移动到目标牌堆。
+            // 从null移动到目标牌堆，不会清除卡牌的增益或者属性，但是会清除所有战场属性。
+            var moveArg = await moveCardFromPileToPile(clone, game, null, targetPile);
+
+            // 移动不成功，复制失败。
+            if (moveArg == null || !moveArg.success)
+                return null;
+
+            // 移动成功。
+            // 该卡牌移动需要重置卡牌属性。
+            if (moveArg.resetProps && THHPile.shouldCardMoveResetCardProp(from, targetPile))
+            {
+                await clone.resetCard(game);
+            }
+            else // 该移动不会重置卡牌，比如同牌堆移动，或者向更低优先级的牌堆移动。
+            {
+                // 复制卡牌的永久战场属性，因为移动会清除它们。包括封印、护甲、当前生命值等状态。
+                foreach (var propName in persistentBattlefieldPropNames)
+                {
+                    var propValue = card.getProp(game, propName, true);
+                    await clone.setProp(game, propName, propValue);
+                }
+                // 复制卡牌所有效果的启用状态，用于复制被封印的仆从。
+                foreach (var (buff, effect) in clone.getEnabledEffects())
+                {
+                    await effect.onDisable(game, clone, buff);
+                }
+                var enabledEffects = card.getEnabledEffects();
+                foreach (var (buff, effect) in enabledEffects)
+                {
+                    if (buff != null) // 该效果依附于增益上
+                    {
+                        // 寻找卡牌复制中拥有同样实例ID的增益。
+                        var cloneBuff = clone.getBuffs().FirstOrDefault(b => b.instanceID == buff.instanceID);
+                        if (cloneBuff != null) // 如果没有找到，说明该增益没有被复制，不启用。
+                            await effect.onEnable(game, clone, buff);
+                    }
+                    else
+                    {
+                        // 效果是卡牌定义上的，复制。
+                        await effect.onEnable(game, clone, null);
+                    }
+                }
+                // 清除卡牌的临时战场属性，包括已就绪，攻击次数，濒死，以及技能已使用的状态。
+                await clone.resetTemporaryFieldProps(game);
+            }
+            return clone;
+        }
         #endregion
 
         #endregion
@@ -1896,6 +1993,13 @@ namespace TouhouHeartstone
         const string SKILL_INVALID = "技能无效";
         [TranslateMsg]
         const string UNKNOWN_CARD = "这是一张未知的卡牌";
+        public static string[] persistentBattlefieldPropNames = new string[]
+        {
+            CARD.CURRENT_LIFE,
+            CARD.ARMOR,
+            CARD.SILENCE,
+            DEFINE.KEYWORDS,
+        };
         #endregion
 
         #region 内嵌类

@@ -147,6 +147,7 @@ namespace TouhouHeartstone
                     var flow = new Flow(game, card, buff, null, this);
                     BuffDefine buffDefine = await game.getValue<BuffDefine>(flow, getAuraBuffDefine);
                     Buff auraBuff = new GeneratedBuff(buffDefine);
+                    auraBuff.canClone = false;
                     await target.addBuff(game, auraBuff);
                     buffDict.Add(target, auraBuff);
                     await updateAuraBuff(game, card, buff, target, auraBuff);

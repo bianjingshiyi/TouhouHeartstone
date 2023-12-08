@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
+﻿using TouhouCardEngine;
 
 namespace TouhouHeartstone
 {
@@ -10,6 +7,7 @@ namespace TouhouHeartstone
         public MasterItemAttackBuff() : base()
         {
             _modifiers.Add(new AttackModifier(0) { relatedPropName = buffPropName });
+            canClone = false;
         }
 
         public override Buff clone()

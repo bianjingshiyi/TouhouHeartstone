@@ -296,6 +296,7 @@ namespace Game
         public const int DealDamageOrSpellDamage = Type_Action + Category_Card + 41;    // 造成伤害或法伤
         public const int DealDamageSplitAmong = Type_Action + Category_Card + 42;    // 造成伤害或法伤兵分配给目标
         public const int DealDamageToRandomTargets = Type_Action + Category_Card + 43;    // 对固定数量的随机目标造成伤害或法伤
+        public const int CloneCard = Type_Action + Category_Card + 44;    // 复制卡牌
 
         // 增益
         public const int AddBuff = Type_Action + Category_Buff + 1;    // 添加增益
