@@ -23,7 +23,7 @@ namespace TouhouHeartstone
             game.logger.logTrace("Effect", $"{card}注册触发器{this}");
             Trigger trigger = new EffectTrigger(game, card, buff, this);
             var triggerTime = EventTriggerTime.fromName(0, EventHelper.getName(eventType));
-            game.triggers.registerDelayed(triggerTime.getTimeName(), trigger);
+            game.triggers.registerDelayed(triggerTime, trigger);
 
             return Task.CompletedTask;
         }
@@ -34,10 +34,9 @@ namespace TouhouHeartstone
 
             game.logger.logTrace("Effect", $"{card}注销触发器{this}");
             var triggerTime = EventTriggerTime.fromName(0, EventHelper.getName(eventType));
-            var eventName = triggerTime.getTimeName();
-            var triggers = game.triggers.getTriggers(eventName);
+            var triggers = game.triggers.getTriggers(triggerTime);
             var trigger = triggers.FirstOrDefault(t => t is EffectTrigger eventTrigger && eventTrigger.effect == this);
-            game.triggers.remove(eventName, trigger);
+            game.triggers.remove(triggerTime, trigger);
 
             card.disableEffect(buff, this);
             return Task.CompletedTask;

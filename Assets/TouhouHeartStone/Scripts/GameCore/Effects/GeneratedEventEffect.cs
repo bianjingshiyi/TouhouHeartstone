@@ -28,7 +28,7 @@ namespace TouhouHeartstone
             {
                 game.logger.logTrace("Effect", $"{card}注册触发器{this}");
                 Trigger trigger = new EffectTrigger(game, card, buff, this);
-                game.triggers.registerDelayed(eventEntry.triggerTime.getTimeName(), trigger);
+                game.triggers.registerDelayed(eventEntry.triggerTime, trigger);
             }
         }
         public override async Task onDisable(IGame game, ICard card, IBuff buff)
@@ -40,10 +40,10 @@ namespace TouhouHeartstone
             if (eventEntry != null)
             {
                 game.logger.logTrace("Effect", $"{card}注销触发器{this}");
-                var eventName = eventEntry.triggerTime.getTimeName();
-                var triggers = game.triggers.getTriggers(eventName);
+                var triggerTime = eventEntry.triggerTime;
+                var triggers = game.triggers.getTriggers(triggerTime);
                 var trigger = triggers.FirstOrDefault(t => t is EffectTrigger eventTrigger && eventTrigger.effect == this);
-                game.triggers.remove(eventName, trigger);
+                game.triggers.remove(triggerTime, trigger);
             }
             await base.onDisable(game, card, buff);
         }

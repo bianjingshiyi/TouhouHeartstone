@@ -387,7 +387,7 @@ namespace Controllers
         private void onAddExistLimitCallback()
         {
             BuffExistLimitDefine limit = new BuffExistLimitDefine();
-            limit.eventName = _eventTriggerTimes.FirstOrDefault()?.getTimeName();
+            limit.triggerTime = _eventTriggerTimes.FirstOrDefault();
             _buffDefine.existLimitList.Add(limit);
             updateExistLimits();
             markUnsaved();
@@ -401,7 +401,7 @@ namespace Controllers
         private void onChangeExistLimitEventCallback(int existLimitIndex, int eventIndex)
         {
             var limit = _buffDefine.existLimitList[existLimitIndex];
-            limit.eventName = _eventTriggerTimes[eventIndex].getTimeName();
+            limit.triggerTime = _eventTriggerTimes[eventIndex];
             updateExistLimits();
             markUnsaved();
         }
@@ -778,9 +778,9 @@ namespace Controllers
         {
             foreach (var limit in _buffDefine.existLimitList)
             {
-                if (!_eventTriggerTimes.Any(e => limit.eventName == e.getTimeName()))
+                if (!_eventTriggerTimes.Any(t => limit.triggerTime == t))
                 {
-                    limit.eventName = _eventTriggerTimes.FirstOrDefault()?.getTimeName();
+                    limit.triggerTime = _eventTriggerTimes.FirstOrDefault();
                 }
             }
         }
@@ -788,8 +788,8 @@ namespace Controllers
         {
             if (existLimit == null)
                 return -1;
-            var eventNames = _eventTriggerTimes.getEventTriggerTimeNames();
-            return Array.IndexOf(eventNames, existLimit.eventName);
+            var triggerTimes = _eventTriggerTimes;
+            return Array.IndexOf(triggerTimes, existLimit.triggerTime);
         }
 
         private int getExistLimitCount(BuffExistLimitDefine existLimit)
