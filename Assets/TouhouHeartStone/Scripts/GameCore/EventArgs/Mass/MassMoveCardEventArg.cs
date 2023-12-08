@@ -46,8 +46,6 @@ namespace TouhouHeartstone
             var fromPile = arg.getVar<Pile>(EVENTVAR.FROM_PILE);
             var toPosition = arg.getVar<int>(EVENTVAR.POSITION);
             var toPile = arg.getVar<Pile>(VAR_TO_PILE);
-            if (toPosition < 0 && toPile != null)
-                toPosition = toPile.count;
             List<Card> movedCards = new List<Card>();
             foreach (var card in cards)
             {
@@ -55,7 +53,10 @@ namespace TouhouHeartstone
                     continue;
                 game.logger.logTrace(toString(arg as EventArg));
                 var from = fromPile ?? card.pile;
-                var moveArg = await from.moveTo(game, card, toPile, toPosition);
+                var pos = toPosition;
+                if (pos < 0 && toPile != null)
+                    pos = toPile.count;
+                var moveArg = await from.moveTo(game, card, toPile, pos);
                 if (moveArg != null && moveArg.getVar<bool>(MoveCardEventDefine.VAR_SUCCESS))
                     movedCards.Add(moveArg.getVar<Card>(EVENTVAR.CARD));
             }

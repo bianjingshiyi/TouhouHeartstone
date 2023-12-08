@@ -151,7 +151,7 @@ namespace Controllers
 
             Card imageCard = null;
             CardDefine imageCardDefine = null;
-            if (obj is IDescribableEventDefine descriable)
+            if (eventDefine is IDescribableEventDefine descriable)
             {
                 var descCard = descriable.getCard(tableManager.game, obj as EventArg, _localPlayer);
                 if (descCard.card != null)
@@ -163,7 +163,13 @@ namespace Controllers
 
                 var nameTemplate = descriable.localizeLogItemNameTemplate(tableManager.game, obj as EventArg);
                 var nameArgs = descriable.localizeLogItemNameArgs(tableManager.game, obj as EventArg);
-                text = lang._(nameTemplate, nameArgs);
+                if (nameTemplate != null)
+                {
+                    if (nameArgs != null)
+                        text = lang._(nameTemplate, nameArgs);
+                    else
+                        text = lang._(nameTemplate);
+                }
             }
             switch (eventDefine)
             {

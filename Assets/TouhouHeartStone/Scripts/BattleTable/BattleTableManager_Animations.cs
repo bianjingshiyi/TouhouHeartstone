@@ -265,7 +265,7 @@ namespace Game.BattleTable
                 case VisualEffectPosition.TARGET_CARD:
                     if (arg.define is ICardEventDefine targetEventArg)
                     {
-                        return targetEventArg.getCard(effectArg) as Card;
+                        return targetEventArg.getCard(arg) as Card;
                     }
                     break;
             }

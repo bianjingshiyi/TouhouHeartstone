@@ -1145,6 +1145,8 @@ namespace TouhouHeartstone
         #region 单体移动
         public static Task<EventArg> moveToHead(this Card card, CardEngine game, Player player)
         {
+            if (card == null || player == null)
+                return Task.FromResult<EventArg>(null);
             return moveToHead(card, game, card.pile, player?.getHead());
         }
         /// <summary>
@@ -1156,14 +1158,20 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static Task<EventArg> returnToHand(this Card card, CardEngine game, Player player)
         {
+            if (card == null || player == null)
+                return Task.FromResult<EventArg>(null);
             return moveToHand(card, game, card.pile, player?.getHand());
         }
         public static Task<EventArg> moveToField(this Card card, CardEngine game, Player player)
         {
+            if (card == null || player == null)
+                return Task.FromResult<EventArg>(null);
             return moveToField(card, game, card.pile, player?.getField());
         }
         public static Task<EventArg> moveToItem(this Card card, CardEngine game, Player player)
         {
+            if (card == null || player == null)
+                return Task.FromResult<EventArg>(null);
             return moveToItem(card, game, card.pile, player[PILE.ITEM]);
         }
         public static async Task<EventArg> moveToHead(this Card card, CardEngine game, Pile from, Pile to)
@@ -1258,20 +1266,6 @@ namespace TouhouHeartstone
             return await fromPile.moveTo(game, card, toPile);
         }
         #endregion
-        public static Task fieldToHand(this Card card, CardEngine game)
-        {
-            return fieldToHand(new Card[] { card }, game);
-        }
-        public static async Task fieldToHand(this IEnumerable<Card> cards, CardEngine game)
-        {
-            foreach (IGrouping<Player, Card> g in cards.GroupBy(c => c.getOwner()))
-            {
-                foreach (var card in g)
-                {
-                    await card.returnToHand(game, g.Key);
-                }
-            }
-        }
         /// <summary>
         /// 获得一个仆从的控制权。
         /// </summary>
@@ -1297,97 +1291,6 @@ namespace TouhouHeartstone
             var eventArg = await card.pile.moveTo(game, card, player.getField(), position);
             await card.setReady(game, false);
             return eventArg;
-        }
-        /// <summary>
-        /// 场上回牌库
-        /// </summary>
-        /// <param name="card"></param>
-        /// <param name="game"></param>
-        /// <param name="isYourDeck"></param>
-        /// <param name="random">若为 false, 将移动到牌堆顶</param>
-        /// <returns></returns>
-        public static Task fieldToDeck(this Card card, CardEngine game, bool random)
-        {
-            return fieldToDeck(new Card[] { card }, game, random);
-        }
-        /// <summary>
-        /// 场上回牌库
-        /// </summary>
-        /// <param name="cards"></param>
-        /// <param name="game"></param>
-        /// <param name="isYourDeck"></param>
-        /// <param name="random">若为 false, 将移动到牌堆顶</param>
-        /// <returns></returns>
-        public static async Task fieldToDeck(this IEnumerable<Card> cards, CardEngine game, bool random)
-        {
-            foreach (var g in cards.GroupBy(c => c.getOwner()))
-            {
-                // 场上随从没死 = 没重置，所以这里手动重置
-                await g.resetCard(game);
-                foreach (var card in g)
-                {
-                    int position = random ? game.randomInt(0, g.Key.getDeck().count) : g.Key.getDeck().count;
-                    await g.Key.getField().moveTo(game, card, g.Key.getDeck(), position);
-                }
-            }
-
-        }
-        /// <summary>
-        /// 墓地回手
-        /// </summary>
-        /// <param name="card"></param>
-        /// <param name="game"></param>
-        /// <param name="random">若为 false, 将移动到牌堆顶</param>
-        /// <returns></returns>
-        public static Task graveToHand(this Card card, CardEngine game)
-        {
-            return graveToHand(new Card[] { card }, game);
-        }
-        /// <summary>
-        /// 墓地回手
-        /// </summary>
-        /// <param name="cards"></param>
-        /// <param name="game"></param>
-        /// <param name="random">若为 false, 将移动到牌堆顶</param>
-        /// <returns></returns>
-        public static async Task graveToHand(this IEnumerable<Card> cards, CardEngine game)
-        {
-            foreach (IGrouping<Player, Card> g in cards.GroupBy(c => c.getOwner()))
-            {
-                foreach (var card in g)
-                {
-                    await card.returnToHand(game, g.Key);
-                }
-            }
-        }
-        /// <summary>
-        /// 墓地回牌库
-        /// </summary>
-        /// <param name="card"></param>
-        /// <param name="game"></param>
-        /// <param name="random">若为 false, 将移动到牌堆顶</param>
-        /// <returns></returns>
-        public static Task graveToDeck(this Card card, CardEngine game, bool random)
-        {
-            return graveToDeck(new Card[] { card }, game, random);
-        }
-        /// <summary>
-        /// 墓地回牌库
-        /// </summary>
-        /// <param name="cards"></param>
-        /// <param name="game"></param>
-        /// <param name="random">若为 false, 将移动到牌堆顶</param>
-        /// <returns></returns>
-        public static async Task graveToDeck(this IEnumerable<Card> cards, CardEngine game, bool random)
-        {
-            foreach (IGrouping<Player, Card> g in cards.GroupBy(c => c.getOwner()))
-            {
-                foreach (var card in g)
-                {
-                    int position = random ? game.randomInt(0, g.Key.getDeck().count) : g.Key.getDeck().count;
-                    await g.Key.getGrave().moveTo(game, g.Take(g.Count()), g.Key.getDeck(), position);
-                }
-            }
         }
         #endregion
 
