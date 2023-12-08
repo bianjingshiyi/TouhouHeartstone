@@ -89,7 +89,7 @@ namespace TouhouHeartstone
             return null;
         }
         string IDescribableEventDefine.toString(IGame game, EventArg eventArg, IPlayer viewer) => toString(eventArg);
-        string IDescribableEventDefine.localizeTemplateString(IGame game, EventArg eventArg, IPlayer viewer) => localizeTemplateString();
+        string IDescribableEventDefine.localizeTemplateString(IGame game, EventArg eventArg, IPlayer viewer) => TEMPLATE_NO_POSITION;
         object[] IDescribableEventDefine.localizeStringArgs(IGame game, EventArg eventArg, IPlayer viewer) => localizeStringArgs(eventArg);
         Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Player>(EVENTVAR.PLAYER);
         string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => LOG_ITEM_NAME;
@@ -118,6 +118,8 @@ namespace TouhouHeartstone
 
         [TranslateMsg("{0}是玩家，{1}是卡，{2}是位置")]
         const string TEMPLATE = "{0} 将{1} 置入战场，位于 {2}";
+        [TranslateMsg("{0}是玩家，{1}是卡")]
+        const string TEMPLATE_NO_POSITION = "{0} 将{1} 置入战场";
         [TranslateMsg("游戏事件日志项名称")]
         private const string LOG_ITEM_NAME = "召唤";
         public static string VAR_CARD => EVENTVAR.CARD;

@@ -202,9 +202,10 @@ namespace Game.BattleTable
         }
         public SkinAnimationRef getEventSkinAnimRef(IEventArg arg, EventArg effectArg)
         {
-            var card = effectArg.getVar<Card>(EffectTriggerEventDefine.VAR_CARD);
-            var buff = effectArg.getVar<Buff>(EffectTriggerEventDefine.VAR_BUFF);
-            var effect = EffectTriggerEventDefine.getEffect(effectArg);
+            var effectRef = effectArg.getVar<EffectReference>(EffectTriggerEventDefine.VAR_EFFECT_REF);
+            var effect = effectRef.getEffect();
+            var buff = effectRef.buff;
+            var cardDefine = effectRef.cardDefine;
             if (buff is GeneratedBuff genBuff)
             {
                 var define = game.getBuffDefine(genBuff.defineRef);
@@ -215,10 +216,9 @@ namespace Game.BattleTable
                 return getAnimRefOfEventNode(skin, arg, node);
 
             }
-            else if (card != null)
+            else if (cardDefine != null)
             {
-                var define = card.define;
-                var skin = getCardSkin(define);
+                var skin = getCardSkin(cardDefine);
                 if (effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
 
                 var node = genEffect.graph.findNodeById(arg.flowNodeId);
@@ -228,9 +228,10 @@ namespace Game.BattleTable
         }
         public SkinAnimationRef getEffectEntrySkinAnimRef(EventArg effectArg)
         {
-            var card = effectArg.getVar<Card>(EffectTriggerEventDefine.VAR_CARD);
-            var buff = effectArg.getVar<Buff>(EffectTriggerEventDefine.VAR_BUFF);
-            var effect = EffectTriggerEventDefine.getEffect(effectArg); 
+            var effectRef = effectArg.getVar<EffectReference>(EffectTriggerEventDefine.VAR_EFFECT_REF);
+            var effect = effectRef.getEffect();
+            var buff = effectRef.buff;
+            var cardDefine = effectRef.cardDefine;
             if (buff is GeneratedBuff genBuff)
             {
                 var define = game.getBuffDefine(genBuff.defineRef);
@@ -240,10 +241,9 @@ namespace Game.BattleTable
                 var node = entryNodeEffect.entryNode;
                 return getAnimRefOfEntryNode(skin, node);
             }
-            else if (card != null)
+            else if (cardDefine != null)
             {
-                var define = card.define;
-                var skin = getCardSkin(define);
+                var skin = getCardSkin(cardDefine);
                 if (effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
 
                 var node = entryNodeEffect.entryNode;

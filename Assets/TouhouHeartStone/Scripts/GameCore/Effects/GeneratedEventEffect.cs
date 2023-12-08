@@ -17,7 +17,7 @@ namespace TouhouHeartstone
         {
         }
         #endregion
-        public override async Task onEnable(IGame game, ICard card, IBuff buff)
+        public override async Task onEnable(CardEngine game, Card card, Buff buff)
         {
             if (!isDisabled(game, card, buff))
                 return;
@@ -31,7 +31,7 @@ namespace TouhouHeartstone
                 game.triggers.registerDelayed(eventEntry.triggerTime, trigger);
             }
         }
-        public override async Task onDisable(IGame game, ICard card, IBuff buff)
+        public override async Task onDisable(CardEngine game, Card card, Buff buff)
         {
             if (isDisabled(game, card, buff))
                 return;
@@ -57,15 +57,15 @@ namespace TouhouHeartstone
         }
         #endregion
         #region 私有方法
-        Task IEventEffect.onTrigger(IGame game, ICard card, IBuff buff, IEventArg arg)
+        Task IEventEffect.onTrigger(EffectEnv env)
         {
+            var card = env.card;
             if (card.isSpell() && this.isTrap())
             {
                 // 陷阱触发
-                var gameCard = card as Card;
-                return SecretTriggerEventDefine.doEvent(game as CardEngine, gameCard, buff as Buff, arg as EventArg, this);
+                return SecretTriggerEventDefine.doEvent(env);
             }
-            return execute(game, card, buff, arg);
+            return execute(env);
         }
         protected override void createEntryNode()
         {

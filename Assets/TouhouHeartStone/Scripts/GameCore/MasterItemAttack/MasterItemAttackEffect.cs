@@ -14,7 +14,7 @@ namespace TouhouHeartstone
         {
         }
         #endregion
-        public Task onEnable(IGame game, ICard card, IBuff buff)
+        public Task onEnable(CardEngine game, Card card, Buff buff)
         {
             if (!isDisabled(card, buff))
                 return Task.CompletedTask;
@@ -27,7 +27,7 @@ namespace TouhouHeartstone
 
             return Task.CompletedTask;
         }
-        public Task onDisable(IGame game, ICard card, IBuff buff)
+        public Task onDisable(CardEngine game, Card card, Buff buff)
         {
             if (isDisabled(card, buff))
                 return Task.CompletedTask;
@@ -41,11 +41,11 @@ namespace TouhouHeartstone
             card.disableEffect(buff, this);
             return Task.CompletedTask;
         }
-        public abstract bool checkCondition(IGame game, ICard card, IBuff buff, IEventArg eventArg);
-        public async Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
+        public abstract bool checkCondition(EffectEnv env);
+        public async Task execute(EffectEnv env)
         {
-            var engine = game as CardEngine;
-            await engine.updateMasterItemAttack(card.getOwner());
+            var game = env.game;
+            await game.updateMasterItemAttack(env.card.getOwner());
         }
         public bool isDisabled(ICard card, IBuff buff)
         {
@@ -53,7 +53,7 @@ namespace TouhouHeartstone
         }
         #endregion
 
-        Task IEventEffect.onTrigger(IGame game, ICard card, IBuff buff, IEventArg arg) => execute(game, card, buff, arg);
+        Task IEventEffect.onTrigger(EffectEnv env) => execute(env);
 
         #region 属性字段
         public string[] piles => _piles;
@@ -65,8 +65,10 @@ namespace TouhouHeartstone
 
     public sealed class MasterItemAttackEffectPropChanged : MasterItemAttackEffect
     {
-        public override bool checkCondition(IGame game, ICard card, IBuff buff, IEventArg eventArg)
+        public override bool checkCondition(EffectEnv env)
         {
+            var eventArg = env.eventArg;
+            var card = env.card;
             var argCard = eventArg.getVar<Card>(CardPropChangeEventDefine.VAR_CARD);
             var propName = eventArg.getVar<string>(CardPropChangeEventDefine.VAR_PROP_NAME);
             return argCard == card.getOwner().getItem() && propName == DEFINE.ATTACK;
@@ -78,8 +80,10 @@ namespace TouhouHeartstone
 
     public sealed class MasterItemAttackEffectSetDefine : MasterItemAttackEffect
     {
-        public override bool checkCondition(IGame game, ICard card, IBuff buff, IEventArg eventArg)
+        public override bool checkCondition(EffectEnv env)
         {
+            var eventArg = env.eventArg;
+            var card = env.card;
             var argCard = eventArg.getVar<Card>(SetCardDefineEventDefine.VAR_CARD);
             return argCard == card.getOwner().getItem();
         }
@@ -88,8 +92,10 @@ namespace TouhouHeartstone
     }
     public sealed class MasterItemAttackEffectMoveCard: MasterItemAttackEffect
     {
-        public override bool checkCondition(IGame game, ICard card, IBuff buff, IEventArg eventArg)
+        public override bool checkCondition(EffectEnv env)
         {
+            var eventArg = env.eventArg;
+            var card = env.card;
             var player = card.getOwner();
             var argFrom = eventArg.getVar<Pile>(EVENTVAR.FROM_PILE);
             var argTo = eventArg.getVar<Pile>(MoveCardEventDefine.VAR_TO_PILE);

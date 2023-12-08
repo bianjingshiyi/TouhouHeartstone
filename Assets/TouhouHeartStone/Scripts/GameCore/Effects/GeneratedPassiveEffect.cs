@@ -23,7 +23,7 @@ namespace TouhouHeartstone
             base.Init();
             createEntryNode();
         }
-        public override bool checkCondition(IGame game, ICard card, IBuff buff, IEventArg eventArg)
+        public override bool checkCondition(EffectEnv env)
         {
             var entry = passiveEntry;
             if (entry != null)
@@ -32,8 +32,8 @@ namespace TouhouHeartstone
                 if (condition == null || condition.getConnectedOutputPort() == null)
                     return true;
 
-                var flow = new Flow(game as CardEngine, card, buff, eventArg, this);
-                var task = game.getValue<bool>(flow, condition);
+                var flow = new Flow(env.toFlowEnv());
+                var task = env.game.getValue<bool>(flow, condition);
                 if (task.IsCompleted)
                 {
                     return task.Result;
@@ -75,13 +75,14 @@ namespace TouhouHeartstone
         {
             graph.createPassiveEntryNode();
         }
-        protected override Task runEffect(CardEngine game, Card card, Buff buff, EventArg arg, string portName)
+        protected override Task runEffect(EffectEnv env, string portName)
         {
             var entry = passiveEntry;
             if (entry != null)
             {
-                var flow = new Flow(game, card, buff, arg, this);
-                return game.runActions(flow, entry.getOutputPort<ControlOutput>(portName));
+                var flowEnv = env.toFlowEnv();
+                var flow = new Flow(flowEnv);
+                return env.game.runActions(flow, entry.getOutputPort<ControlOutput>(portName));
             }
             return Task.CompletedTask;
         }

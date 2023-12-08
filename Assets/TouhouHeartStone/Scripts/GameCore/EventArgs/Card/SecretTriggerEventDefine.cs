@@ -24,27 +24,21 @@ namespace TouhouHeartstone
         public override void Record(CardEngine game, EventArg arg, EventRecord record)
         {
             record.setCardState(VAR_CARD, arg);
-            record.setVar(VAR_CARD_DEFINE, arg);
-            record.setVar(VAR_BUFF, arg);
-            record.setVar(VAR_EFFECT_INDEX, arg);
+            record.setVar(VAR_EFFECT_REF, arg);
             record.setVar(VAR_EVENT_ARG, arg);
         }
         public override async Task execute(IEventArg arg)
         {
             var game = arg.game;
             var card = arg.getVar<Card>(VAR_CARD);
-            var cardDefine = arg.getVar<CardDefine>(VAR_CARD_DEFINE);
-            var buff = arg.getVar<Buff>(VAR_BUFF);
             var eventArg = arg.getVar<EventArg>(VAR_EVENT_ARG);
-            var effectIndex = arg.getVar<int>(VAR_EFFECT_INDEX);
-            var effects = getEffectArray(cardDefine, buff);
-            if (effects == null || effectIndex < 0 || effectIndex >= effects.Length)
-                return;
-            var effect = effects[effectIndex];
+            var effectRef = arg.getVar<EffectReference>(VAR_EFFECT_REF);
+            var effect = effectRef.getEffect();
             if (effect is ITriggerEventEffect triggerEvent)
             {
                 game.logger.logTrace($"触发陷阱{card}");
-                await triggerEvent.execute(game, card, buff, eventArg);
+                var env = new EffectEnv(game, card, effectRef.cardDefine, effectRef.buff, eventArg, effect);
+                await triggerEvent.execute(env);
             }
 
             Player player = card.getOwner();
@@ -54,32 +48,15 @@ namespace TouhouHeartstone
         {
             return string.Format(localizeTemplateString(), localizeStringArgs(arg));
         }
-        public static Task<EventArg> doEvent(CardEngine game, Card source, CardDefine cardDefine, EventArg eventArg, ITriggerEventEffect effect)
+        public static Task<EventArg> doEvent(EffectEnv env)
         {
-            var arg = newEvent(game, source, eventArg);
-
-            arg.setVar(VAR_CARD_DEFINE, cardDefine);
-            arg.setVar(VAR_EFFECT_INDEX, Array.IndexOf(cardDefine.getEffects(), effect));
-            return game.triggers.doEvent(arg);
-        }
-        public static Task<EventArg> doEvent(CardEngine game, Card source, Buff buff, EventArg eventArg, ITriggerEventEffect effect)
-        {
-            if (buff == null) // 没有设置增益，直接使用卡牌的定义中的效果。
-                return doEvent(game, source, source.define, eventArg, effect);
-
-            var arg = newEvent(game, source, eventArg);
-
-            arg.setVar(VAR_BUFF, buff);
-            arg.setVar(VAR_EFFECT_INDEX, Array.IndexOf(buff.getEffects(), effect));
-            return game.triggers.doEvent(arg);
-        }
-        public static EventArg newEvent(CardEngine game, Card card, EventArg eventArg)
-        {
+            var game = env.game;
             var define = game.getEventDefine<SecretTriggerEventDefine>();
             var arg = new EventArg(game, define);
-            arg.setVar(VAR_CARD, card);
-            arg.setVar(VAR_EVENT_ARG, eventArg);
-            return arg;
+            arg.setVar(VAR_CARD, env.card);
+            arg.setVar(VAR_EVENT_ARG, env.eventArg);
+            arg.setVar(VAR_EFFECT_REF, EffectReference.fromEnv(env));
+            return game.triggers.doEvent(arg);
         }
         #region 私有方法
 
@@ -113,10 +90,6 @@ namespace TouhouHeartstone
             var card = eventArg.getVar<Card>(VAR_CARD);
             return new object[] { card.getFormatString() };
         }
-        private IEffect[] getEffectArray(CardDefine cardDefine, Buff buff)
-        {
-            return buff != null ? buff.getEffects() : cardDefine.getEffects();
-        }
 
         #endregion
 
@@ -125,9 +98,7 @@ namespace TouhouHeartstone
         [TranslateMsg("游戏事件日志项名称")]
         private const string LOG_ITEM_NAME = "陷阱";
         public static string VAR_CARD => EVENTVAR.CARD;
-        public const string VAR_BUFF = "效果所属增益";
-        public const string VAR_CARD_DEFINE = "效果所属卡牌定义";
-        public const string VAR_EFFECT_INDEX = "效果索引";
         public const string VAR_EVENT_ARG = "事件";
+        public const string VAR_EFFECT_REF = "效果引用";
     }
 }

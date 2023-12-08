@@ -29,52 +29,29 @@ namespace TouhouHeartstone
         public override void Record(CardEngine game, EventArg arg, EventRecord record)
         {
             record.setVar(EVENTVAR.PLAYER, arg);
-            record.setVar(VAR_BUFF, arg);
-            record.setVar(VAR_EFFECT_INDEX, arg);
+            record.setVar(VAR_EFFECT_REF, arg);
             record.setCardState(EVENTVAR.CARD, arg);
-            record.setVar(EVENTVAR.CARD_DEFINE, arg);
         }
         public override async Task execute(IEventArg arg)
         {
             var game = arg.game;
             var card = arg.getVar<Card>(EVENTVAR.CARD);
-            var cardDefine = arg.getVar<CardDefine>(EVENTVAR.CARD_DEFINE);
-            var buff = arg.getVar<Buff>(VAR_BUFF);
-            var effectIndex = arg.getVar<int>(VAR_EFFECT_INDEX);
-
-            var effects = getEffectArray(cardDefine, buff);
-            if (effects == null || effectIndex < 0 || effectIndex >= effects.Length)
-                return;
-            var effect = effects[effectIndex];
+            var effectRef = arg.getVar<EffectReference>(VAR_EFFECT_REF);
+            var effect = effectRef.getEffect();
             if (effect is IPassiveEffect genPassive)
             {
-                if (genPassive.checkCondition(game, card, buff, arg))
-                    await genPassive.execute(game, card, buff, arg);
+                var effectEnv = new EffectEnv(game, card, effectRef.cardDefine, effectRef.buff, arg as EventArg, effect);
+                if (genPassive.checkCondition(effectEnv))
+                    await genPassive.execute(effectEnv);
             }
         }
-        public static Task<EventArg> doEvent(CardEngine game, Card source, CardDefine cardDefine, IEffect effect)
+        public static Task<EventArg> doEvent(CardEngine game, Card card, CardDefine sourceCardDefine, Buff buff, IEffect effect)
         {
             var define = game.getEventDefine<LastwordEventDefine>();
             var arg = new EventArg(game, define);
-            arg.setVar(EVENTVAR.PLAYER, source.getOwner());
-            arg.setVar(EVENTVAR.CARD, source);
-
-            arg.setVar(EVENTVAR.CARD_DEFINE, cardDefine);
-            arg.setVar(VAR_EFFECT_INDEX, Array.IndexOf(cardDefine.getEffects(), effect));
-            return game.triggers.doEvent(arg);
-        }
-        public static Task<EventArg> doEvent(CardEngine game, Card source, Buff buff, IEffect effect)
-        {
-            if (buff == null)// 没有设置增益，直接使用卡牌的定义中的效果。
-                return doEvent(game, source, source.define, effect);
-
-            var define = game.getEventDefine<LastwordEventDefine>();
-            var arg = new EventArg(game, define);
-            arg.setVar(EVENTVAR.PLAYER, source.getOwner());
-            arg.setVar(EVENTVAR.CARD, source);
-
-            arg.setVar(VAR_BUFF, buff);
-            arg.setVar(VAR_EFFECT_INDEX, Array.IndexOf(buff.getEffects(), effect));
+            arg.setVar(EVENTVAR.PLAYER, card.getOwner());
+            arg.setVar(EVENTVAR.CARD, card);
+            arg.setVar(VAR_EFFECT_REF, EffectReference.fromAny(sourceCardDefine, buff, effect));
             return game.triggers.doEvent(arg);
         }
         #region 私有方法
@@ -121,10 +98,6 @@ namespace TouhouHeartstone
             bool isSameCardDefine = cardDefine == null || card.define == cardDefine;
             return isSameCardDefine ? TEMPLATE_SELF : TEMPLATE_OTHER;
         }
-        private IEffect[] getEffectArray(CardDefine cardDefine, Buff buff)
-        {
-            return buff != null ? buff.getEffects() : cardDefine.getEffects();
-        }
         #endregion
 
         [TranslateMsg("{0}是玩家，{1}是卡")]
@@ -133,7 +106,6 @@ namespace TouhouHeartstone
         const string TEMPLATE_OTHER = "{0} 使用 {1} 触发 {2} 的遗言";
         [TranslateMsg("游戏事件日志项名称")]
         private const string LOG_ITEM_NAME = "遗言";
-        public const string VAR_BUFF = "增益";
-        public const string VAR_EFFECT_INDEX = "效果索引";
+        public const string VAR_EFFECT_REF = "效果引用";
     }
 }

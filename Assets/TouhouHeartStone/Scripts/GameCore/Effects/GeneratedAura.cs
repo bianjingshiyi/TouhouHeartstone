@@ -28,15 +28,15 @@ namespace TouhouHeartstone
         public GeneratedAura()
         {
         }
-        public override async Task onEnable(IGame game, ICard card, IBuff buff)
+        public override async Task onEnable(CardEngine game, Card card, Buff buff)
         {
             await base.onEnable(game, card, buff);
-            await updateAura(game as CardEngine, card, buff, null);
+            await updateAura(game, card, buff, null);
         }
-        public override async Task onDisable(IGame game, ICard card, IBuff buff)
+        public override async Task onDisable(CardEngine game, Card card, Buff buff)
         {
             await base.onDisable(game, card, buff);
-            await updateAura(game as CardEngine, card, buff, null);
+            await updateAura(game, card, buff, null);
         }
         public override bool isDisabled(IGame game, ICard card, IBuff buff)
         {
@@ -47,7 +47,7 @@ namespace TouhouHeartstone
             }
             return base.isDisabled(game, card, buff);
         }
-        public override bool checkCondition(IGame game, ICard card, IBuff buff, IEventArg eventArg)
+        public override bool checkCondition(EffectEnv env)
         {
             return true;
         }
@@ -138,9 +138,9 @@ namespace TouhouHeartstone
             yield return affectCondition;
             yield return updateAction;
         }
-        protected override Task runEffect(CardEngine game, Card card, Buff buff, EventArg arg, string portName)
+        protected override Task runEffect(EffectEnv env, string portName)
         {
-            return updateAura(game, card, buff, arg);
+            return updateAura(env.game, env.card, env.buff, env.eventArg);
         }
         private async Task<bool> checkAuraCondition(CardEngine game, ICard card, IBuff buff, Card targetCard)
         {
