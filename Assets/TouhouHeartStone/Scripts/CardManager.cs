@@ -25,17 +25,19 @@ namespace Game
             {
                 throw new KeyNotFoundException($"不存在卡池{poolRef}");
             }
-            int cardId = 0;
-            for (int i = 1; i < 0xFFFF; i++)
-            {
-                cardId = i;
-                if (cardPool.cardDefineList.Exists(c => c.id == cardId))
-                    continue;
-                break;
-            }
+            var cardId = allocCardDefineID(cardPool);
             cardDefine = new CardDefine(cardId, DEFINE.SERVANT);
             cardDefine.cardPoolId = poolRef.CardPoolID;
             cardSkin = createSkin(cardDefine.cardPoolId, cardDefine.id);
+        }
+        public int allocCardDefineID(CardPool cardPool)
+        {
+            for (int i = 1; i < 0xFFFF; i++)
+            {
+                if (!cardPool.cardDefineList.Exists(c => c.id == i))
+                    return i;
+            }
+            return 0;
         }
         public CardDefine cloneCardDefine(CardDefine define)
         {

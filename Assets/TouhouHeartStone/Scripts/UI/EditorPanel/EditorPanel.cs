@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-using Game;
-using BJSYGameCore;
-using System.IO;
-using System;
 using UnityEngine.UI;
 
 namespace UI
@@ -14,12 +10,17 @@ namespace UI
         {
             _editorTitle.text = text;
         }
+        public void setPasteButtonInteractable(bool value)
+        {
+            _pasteCardButton.interactable = value;
+        }
         #region 私有方法
         #region 生命周期
         protected override void Awake()
         {
             base.Awake();
             _newCardButton.onClick.AddListener(onClickNewCardButtonCallback);
+            _pasteCardButton.onClick.AddListener(onClickPasteCardButtonCallback);
             _exportCardPoolButton.onClick.AddListener(onClickExportCardPoolButtonCallback);
             _importCardPoolButton.onClick.AddListener(onClickImportCardPoolButtonCallback);
         }
@@ -28,6 +29,10 @@ namespace UI
         private void onClickNewCardButtonCallback()
         {
             onClickNewCardButton?.Invoke();
+        }
+        private void onClickPasteCardButtonCallback()
+        {
+            onClickPasteCardButton?.Invoke();
         }
         private void onClickExportCardPoolButtonCallback()
         {
@@ -41,6 +46,7 @@ namespace UI
         #endregion
         #region 事件
         public event Action onClickNewCardButton;
+        public event Action onClickPasteCardButton;
         public event Action onClickExportCardPoolButton;
         public event Action onClickImportCardPoolButton;
         #endregion
@@ -49,6 +55,8 @@ namespace UI
         Text _editorTitle;
         [SerializeField]
         Button _newCardButton;
+        [SerializeField]
+        Button _pasteCardButton;
         [SerializeField]
         Button _exportCardPoolButton;
         [SerializeField]

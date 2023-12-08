@@ -226,6 +226,7 @@ namespace UI
         public void reset()
         {
             displayPage(_cardPage, _cardPageIndicator);
+            hideCopyHint();
             _skinDropdown.Hide();
             _languageDropdown.Hide();
             _characterDropdown.Hide();
@@ -357,6 +358,15 @@ namespace UI
         {
             _createCustomPropDialog.showErrorTip(message);
         }
+        public void showCopyHint()
+        {
+            _copyHintTextObj.SetActive(false);
+            _copyHintTextObj.SetActive(true);
+        }
+        public void hideCopyHint()
+        {
+            _copyHintTextObj.SetActive(false);
+        }
         #region 私有方法
         #region 生命周期
         protected void Awake()
@@ -397,6 +407,7 @@ namespace UI
             _effectList.onClickItemEditButton += onClickEffectListItemEditButton;
             _effectList.onClickItemRemoveButton += onClickEffectListItemRemoveButton;
             _effectList.onItemInputFieldEndEdit += onEffectListItemInputFieldEndEditCallback;
+            _copyCardButton.onClick.AddListener(onClickCopyCardButtonCallback);
             _deleteCardButton.onClick.AddListener(onClickDeleteCardButtonCallback);
             _saveCardButton.onClick.AddListener(onClickSaveCardButtonCallback);
             _closeCardButton.onClick.AddListener(onClickCloseCardButtonCallback);
@@ -643,6 +654,10 @@ namespace UI
         {
             onClickAddEffectMenu?.Invoke(index);
         }
+        private void onClickCopyCardButtonCallback()
+        {
+            onClickCopyCardButton?.Invoke();
+        }
         private void onClickDeleteCardButtonCallback()
         {
             onClickDeleteCardButton?.Invoke();
@@ -877,6 +892,10 @@ namespace UI
         /// 当点击删除卡牌按钮
         /// </summary>
         public event Action onClickDeleteCardButton;
+        /// <summary>
+        /// 当点击复制按钮
+        /// </summary>
+        public event Action onClickCopyCardButton;
         ///// <summary>
         ///// 当点击保存按钮
         ///// </summary>
@@ -997,6 +1016,8 @@ namespace UI
         [SerializeField]
         InputField _lifeInputField;
         [SerializeField]
+        Button _copyCardButton;
+        [SerializeField]
         Button _deleteCardButton;
         [SerializeField]
         Button _saveCardButton;
@@ -1035,6 +1056,9 @@ namespace UI
         [SerializeField]
         RectTransform _customPropertyItemTemplate;
         private List<RectTransform> _customPropertyItemList = new List<RectTransform>();
+
+        [Header("Misc")]
+        public GameObject _copyHintTextObj;
 
         public Button EditNameButton
         {

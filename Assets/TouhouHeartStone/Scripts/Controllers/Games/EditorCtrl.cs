@@ -79,6 +79,7 @@ namespace Controllers
                 _ui.setDeckListActive(false);
                 _ui.setEditDeckPanelActive(true);
                 _ui.updateCurCardPoolInfo(poolInfo.cardPoolName, image);
+                updatePasteButton();
                 await updateDeckCardListUI();
                 await _cardPoolViewPanelCtrl.display(cardPoolsRange: new long[] { poolId }, cardFilter: c =>
                 {
@@ -166,6 +167,11 @@ namespace Controllers
         {
             _displayPagePool.RemoveAll(p => p.displayObj.compareObj(obj));
         }
+        public void copyCard(DefineReference defineRef)
+        {
+            _copyingCard = defineRef;
+            updatePasteButton();
+        }
         #region 保存状态
         public void markCardPoolUnsaved(long cardPoolId)
         {
@@ -215,6 +221,7 @@ namespace Controllers
             _ui.onClickEditCardPoolImageButton += onClickEditCardPoolImageButtonCallback;
             _ui.onDeckNameInputFieldValueChanged += onDeckNameInputFieldValueChanged;
             _ui.onClickNewCardButton += onClickNewCardButton;
+            _ui.onClickPasteCardButton += onClickPasteCardButton;
             _ui.onClickExportCardPoolButton += onClickExportCardPoolButton;
             _ui.onClickImportCardPoolButton += onClickImportCardPoolButton;
 
@@ -309,6 +316,34 @@ namespace Controllers
         {
             createCard(out var newCardDefine, out _);
             await openCardEditor(newCardDefine);
+        }
+        /// <summary>
+        /// 当点击粘贴卡牌按钮
+        /// </summary>
+        private async void onClickPasteCardButton()
+        {
+            if (_copyingCard == null)
+                return;
+            var cardPoolId = _curCardPoolId;
+            markCardPoolUnsaved(cardPoolId);
+            var cardPoolRef = game.card.getLocalCardPoolReference(_copyingCard.cardPoolId);
+            var poolInfo = game.card.getCardPoolInfo(cardPoolRef);
+            var cardDefine = game.card.getCardDefine(cardPoolRef, _copyingCard.defineId);
+            var newCardDefine = game.card.cloneCardDefine(cardDefine);
+            var newCardSkins = game.card.cloneCardSkins(poolInfo, cardDefine.id);
+
+            var curCardPoolRef = game.card.getLocalCardPoolReference(cardPoolId);
+            var (_, cardPool) = await game.card.getOrLoadCardPool(curCardPoolRef);
+
+            newCardDefine.cardPoolId = cardPoolId;
+            newCardDefine.id = game.card.allocCardDefineID(cardPool);
+            game.card.addCard(cardPoolId, newCardDefine);
+            foreach (var skin in newCardSkins)
+            {
+                skin.id = newCardDefine.id;
+                game.card.addCardSkin(cardPoolId, skin);
+            }
+            display(false, false, -1, true);
         }
         /// <summary>
         /// 当点击保存按钮，保存当前编辑的卡池
@@ -903,6 +938,10 @@ namespace Controllers
             // 编辑的卡池不是一开始打开的卡池，并且目前的编辑器是栈中最后一个属于目前卡池的编辑器
             return true;
         }
+        private void updatePasteButton()
+        {
+            _ui.setPasteButtonInteractable(_copyingCard != null);
+        }
         #endregion
         #region 属性字段
         [TranslateMsg("卡池编辑器/退出跨卡池编辑器/提示经典卡池被修改")]
@@ -942,6 +981,7 @@ namespace Controllers
         private EditorPanel _ui;
         private List<long> _cardPoolIdList = new List<long>();
         private long _curCardPoolId = -1;
+        private DefineReference _copyingCard = null;
         private HashSet<long> _unsavedCardPools = new HashSet<long>();
         long _firstOpenedCardPoolId;
         /// <summary>

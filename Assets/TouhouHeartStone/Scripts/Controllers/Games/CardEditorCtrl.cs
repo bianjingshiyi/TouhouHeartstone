@@ -184,6 +184,7 @@ namespace Controllers
             _ui.setEffectTypes(game.card.getEffectNames());
 
             _ui.onClickDeleteCardButton += onClickDeleteCardButton;
+            _ui.onClickCopyCardButton += onClickCopyCardButton;
             _ui.onClickSaveButton += onClickSaveButton;
             _ui.onClickCloseButton += onClickCloseButton;
             _ui.onClickSkillRefButton += onClickSkillRefButton;
@@ -517,6 +518,11 @@ namespace Controllers
                    scene.editor.markCardPoolUnsaved(_cardPoolId);
                    await exit(true);
                });
+        }
+        public void onClickCopyCardButton()
+        {
+            scene.editor.copyCard(_cardDefine.getDefineRef());
+            _ui.showCopyHint();
         }
         private void onClickSaveButton()
         {
