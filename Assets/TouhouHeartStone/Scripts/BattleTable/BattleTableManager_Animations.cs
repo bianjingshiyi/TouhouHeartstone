@@ -29,8 +29,7 @@ namespace Game.BattleTable
                 Type baseType = type.BaseType;
                 if (!baseType.IsGenericType)
                     continue;
-                if (baseType.GetGenericTypeDefinition() != typeof(UIAnimation<>) &&
-                    baseType.GetGenericTypeDefinition() != typeof(EventAnimation<>) &&
+                if (baseType.GetGenericTypeDefinition() != typeof(EventAnimation<>) &&
                     baseType.GetGenericTypeDefinition() != typeof(RequestAnimation<>))
                     continue;
                 Type paraType = baseType.GetGenericArguments()[0];

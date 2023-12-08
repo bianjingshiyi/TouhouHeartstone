@@ -1,9 +1,5 @@
 ﻿using System;
-using TouhouCardEngine.Interfaces;
 using UnityEngine;
-using Game.Animations;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Game.BattleTable
 {
@@ -40,14 +36,5 @@ namespace Game.BattleTable
             _content = ToString();
         }
 #endif
-    }
-    [Serializable]
-    public abstract class UIAnimation<T> : UIAnimation where T : IEventArg
-    {
-        public T eventArg { get; protected set; }
-        public UIAnimation(T eventArg)
-        {
-            this.eventArg = eventArg;
-        }
     }
 }

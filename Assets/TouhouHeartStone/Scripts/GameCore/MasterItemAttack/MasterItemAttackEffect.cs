@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
@@ -21,7 +22,8 @@ namespace TouhouHeartstone
 
             game.logger.logTrace("Effect", $"{card}注册触发器{this}");
             Trigger trigger = new EffectTrigger(game, card, buff, this);
-            game.triggers.registerDelayed(triggerName, trigger);
+            var triggerTime = EventTriggerTime.fromName(0, EventHelper.getName(eventType));
+            game.triggers.registerDelayed(triggerTime.getTimeName(), trigger);
 
             return Task.CompletedTask;
         }
@@ -31,7 +33,8 @@ namespace TouhouHeartstone
                 return Task.CompletedTask;
 
             game.logger.logTrace("Effect", $"{card}注销触发器{this}");
-            var eventName = triggerName;
+            var triggerTime = EventTriggerTime.fromName(0, EventHelper.getName(eventType));
+            var eventName = triggerTime.getTimeName();
             var triggers = game.triggers.getTriggers(eventName);
             var trigger = triggers.FirstOrDefault(t => t is EffectTrigger eventTrigger && eventTrigger.effect == this);
             game.triggers.remove(eventName, trigger);
@@ -55,7 +58,8 @@ namespace TouhouHeartstone
 
         #region 属性字段
         public string[] piles => _piles;
-        protected abstract string triggerName { get; }
+        protected abstract Type eventType { get; }
+        protected abstract EventTriggerTimeType triggerType { get; }
         private string[] _piles = new string[] { PILE.MASTER };
         #endregion
     }
@@ -69,7 +73,8 @@ namespace TouhouHeartstone
             return argCard == card.getOwner().getItem() && propName == DEFINE.ATTACK;
         }
 
-        protected override string triggerName => EventHelper.getNameAfter(EventHelper.getName(typeof(CardPropChangeEventDefine)));
+        protected override Type eventType => typeof(CardPropChangeEventDefine);
+        protected override EventTriggerTimeType triggerType => EventTriggerTimeType.After;
     }
 
     public sealed class MasterItemAttackEffectSetDefine : MasterItemAttackEffect
@@ -79,7 +84,8 @@ namespace TouhouHeartstone
             var argCard = eventArg.getVar<Card>(SetCardDefineEventDefine.VAR_CARD);
             return argCard == card.getOwner().getItem();
         }
-        protected override string triggerName => EventHelper.getNameAfter(EventHelper.getName(typeof(SetCardDefineEventDefine)));
+        protected override Type eventType => typeof(SetCardDefineEventDefine);
+        protected override EventTriggerTimeType triggerType => EventTriggerTimeType.After;
     }
     public sealed class MasterItemAttackEffectMoveCard: MasterItemAttackEffect
     {
@@ -90,6 +96,7 @@ namespace TouhouHeartstone
             var argTo = eventArg.getVar<Pile>(MoveCardEventDefine.VAR_TO_PILE);
             return argFrom == player.getPile(PILE.ITEM) || argTo == player.getPile(PILE.ITEM);
         }
-        protected override string triggerName => EventHelper.getNameAfter(EventHelper.getName(typeof(MoveCardEventDefine)));
+        protected override Type eventType => typeof(MoveCardEventDefine);
+        protected override EventTriggerTimeType triggerType => EventTriggerTimeType.After;
     }
 }
