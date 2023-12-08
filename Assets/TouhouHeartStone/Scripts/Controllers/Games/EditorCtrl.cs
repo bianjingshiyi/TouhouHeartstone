@@ -324,11 +324,14 @@ namespace Controllers
         {
             if (_copyingCard == null)
                 return;
+
+            var cardPoolRef = game.card.getLocalCardPoolReference(_copyingCard.cardPoolId);
+            var cardDefine = game.card.getCardDefine(cardPoolRef, _copyingCard.defineId);
+            if (cardDefine == null) return;
+
             var cardPoolId = _curCardPoolId;
             markCardPoolUnsaved(cardPoolId);
-            var cardPoolRef = game.card.getLocalCardPoolReference(_copyingCard.cardPoolId);
             var poolInfo = game.card.getCardPoolInfo(cardPoolRef);
-            var cardDefine = game.card.getCardDefine(cardPoolRef, _copyingCard.defineId);
             var newCardDefine = game.card.cloneCardDefine(cardDefine);
             var newCardSkins = game.card.cloneCardSkins(poolInfo, cardDefine.id);
 
@@ -940,7 +943,18 @@ namespace Controllers
         }
         private void updatePasteButton()
         {
-            _ui.setPasteButtonInteractable(_copyingCard != null);
+            if (_copyingCard != null)
+            {
+                var cardPoolRef = game.card.getLocalCardPoolReference(_copyingCard.cardPoolId);
+                var cardDefine = game.card.getCardDefine(cardPoolRef, _copyingCard.defineId);
+                if (cardDefine != null)
+                {
+                    _ui.setPasteButtonInteractable(true);
+                    return;
+                }
+            }
+            _ui.setPasteButtonInteractable(false);
+            _copyingCard = null;
         }
         #endregion
         #region 属性字段
