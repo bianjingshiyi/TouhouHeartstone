@@ -37,7 +37,7 @@ namespace Game.BattleTable
                 var deckPos = table.WorldToTablePosition(targetDeck.HoverTransform.position);
                 var lossyScale = table.WorldToTableScale(targetDeck.transform.lossyScale);
                 cardUIOppo = table.createInvokeCard(oppoCard, deckPos, targetDeck.getCardHeight() * lossyScale.z);
-                cardUISelf.setFaceup(false);
+                cardUIOppo.setFaceup(false);
             }
 
             //播放位移曲线动画到对应的位置
@@ -64,11 +64,13 @@ namespace Game.BattleTable
             {
                 animflipFaceSelf = new AnimAnim(cardUISelf.animator, cardUISelf.onFlipToFace.animName);
                 table.setCard(cardUISelf, youCard);
+                cardUISelf.animateFaceup(true);
             }
             if (cardUIOppo && oppoCard != null)
             {
                 animflipFaceOppo = new AnimAnim(cardUIOppo.animator, cardUIOppo.onFlipToFace.animName);
                 table.setCard(cardUIOppo, oppoCard);
+                cardUIOppo.animateFaceup(true);
             }
             while (AnimHelper.isAnyAnimUpdating(table, _deltaTime, animflipFaceSelf, animflipFaceOppo))
                 yield return null;
