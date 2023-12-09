@@ -138,7 +138,7 @@ namespace TouhouHeartstone
                 {
                     Player p = arg.player;
                     card = arg.card;
-                    if (card.isSpell() && card.define.hasKeyword(KEYWORD.AUTOCAST))
+                    if (card.isSpell() && card.hasKeyword(game, KEYWORD.AUTOCAST))
                     {
                         await autocast(game, p, card);
                     }
