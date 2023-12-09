@@ -24,7 +24,7 @@ namespace Game.BattleTable
         }
 
 
-        public static void setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, BattleTableManager table)
+        public static void setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, CardManager cardManager)
         {
             string name = StringTable.BUILD_UNKNOW_CARD_NAME;
             string subName = string.Empty;
@@ -46,7 +46,7 @@ namespace Game.BattleTable
             ui.setAttackColor(PropertyNumberColor.White);
             ui.setLifeColor(PropertyNumberColor.White);
             ui.setType(card.type);
-            ui.setTranslatedTag(table.cardManager, card.getTags().FirstOrDefault());
+            ui.setTranslatedTag(cardManager, card.getTags().FirstOrDefault());
         }
         public static void setCard(this UICard ui, CardEngine game, Card card, CardSkinData skin, BattleTableManager table)
         {
@@ -115,7 +115,7 @@ namespace Game.BattleTable
         public static async Task setCardDefine(this UICard ui, CardDefine card, BattleTableManager table)
         {
             var skin = table.getCardSkin(card);
-            ui.setCardDefine(card, skin, table);
+            ui.setCardDefine(card, skin, table.cardManager);
 
             ui.setImageSprite(null);
             ui.setImageSprite(await table.loadCardImage(card));

@@ -153,6 +153,7 @@ namespace Controllers
             _ui.onChangeDesc += onChangeDesc;
             _ui.onChangeAttack += onChangeAttack;
             _ui.onChangeLife += onChangeLife;
+            _ui.onSaveCardFaceToImage += onSaveCardFaceToImage;
             _races = new string[]
             {
                 null,
@@ -434,7 +435,11 @@ namespace Controllers
                 _ui.setRace(-1, string.Empty);
             }
         }
-
+        private void onSaveCardFaceToImage()
+        {
+            //使用另一个摄像机对卡牌进行拍摄
+            StartCoroutine(game.ui.cardshot(_cardDefine, _curCardSkin));
+        }
         #region Effects
         private async void onCreateEffect(GeneratedEffect effect)
         {

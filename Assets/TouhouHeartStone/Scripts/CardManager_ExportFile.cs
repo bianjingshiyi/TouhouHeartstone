@@ -73,6 +73,32 @@ namespace Game
             return exportPath;
 #endif
         }
+        public async Task<string> exportAnyFile(byte[] bytes, string defaultFileName, string extension)
+        {
+#if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX 
+            var exportPath = StandaloneFileBrowser.SaveFilePanel("", "", defaultFileName, extension);
+            if (string.IsNullOrEmpty(exportPath))
+                return null;
+            await File.WriteAllBytesAsync(exportPath, bytes);
+            return exportPath;
+#elif UNITY_IOS || UNITY_ANDROID || UNITY_EDITOR
+            // 这个插件是先写出再复制到目标目录的
+            var exportPath = Path.Combine(Application.temporaryCachePath, string.Format("{0}.{1}", defaultFileName, extension));
+            await File.WriteAllBytesAsync(exportPath, bytes);
+
+            var t = new TaskCompletionSource<string>();
+            NativeFilePicker.ExportFile(exportPath, (bool success) =>
+            {
+                t.SetResult(success ? defaultFileName : null);
+                File.Delete(exportPath); // 清理临时文件
+            });
+            return await t.Task;
+#else
+            var exportPath = Path.Combine(Application.persistentDataPath, string.Format("{0}.{1}", defaultFileName, extension));
+            await File.WriteAllBytesAsync(exportPath, bytes);
+            return exportPath;
+#endif
+        }
         public async Task<bool> importCardPool()
         {
 #if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX || UNITY_EDITOR

@@ -394,6 +394,7 @@ namespace UI
             _editCostButton.onClick.AddListener(onEditCostButtonClicked);
             _editAttackButton.onClick.AddListener(onEditAttackButtonClicked);
             _editLifeButton.onClick.AddListener(onEditLifeButtonClicked);
+            _saveToImageButton.onClick.AddListener(onSaveToImageButtonClickedCallback);
             _nameInputField.onEndEdit.AddListener(onNameInputFieldEndEdit);
             _subnameInputField.onEndEdit.AddListener(onSubNameInputFieldEndEdit);
             _descEndEditButton.onClick.AddListener(onDescEndEditButtonClicked);
@@ -695,6 +696,10 @@ namespace UI
         {
             onSkillRefEditButtonClicked?.Invoke();
         }
+        private void onSaveToImageButtonClickedCallback()
+        {
+            onSaveCardFaceToImage?.Invoke();
+        }
 
         #region 关键词
         private void onClickKeywordItemButtonCallback(string name, int index)
@@ -871,6 +876,10 @@ namespace UI
         /// 当更改卡牌标签，参数为更改后的卡牌标签。
         /// </summary>
         public event Action<string> onChangeTag;
+        /// <summary>
+        /// 当将卡图保存为图片
+        /// </summary>
+        public event Action onSaveCardFaceToImage;
         public event Action<int> onChangeRace;
         /// <summary>
         /// 当点击编辑效果按钮，参数为效果索引。
@@ -896,13 +905,13 @@ namespace UI
         /// 当点击复制按钮
         /// </summary>
         public event Action onClickCopyCardButton;
-        ///// <summary>
-        ///// 当点击保存按钮
-        ///// </summary>
+        /// <summary>
+        /// 当点击保存按钮
+        /// </summary>
         public event Action onClickSaveButton;
-        ///// <summary>
-        ///// 当点击关闭按钮
-        ///// </summary>
+        /// <summary>
+        /// 当点击关闭按钮
+        /// </summary>
         public event Action onClickCloseButton;
         /// <summary>
         /// 当点击卡牌页面按钮
@@ -997,6 +1006,8 @@ namespace UI
         Button _editLifeButton;
         [SerializeField]
         Button _editImageButton;
+        [SerializeField]
+        Button _saveToImageButton;
 
         [Header("Fields")]
         [SerializeField]
