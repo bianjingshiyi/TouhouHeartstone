@@ -1,5 +1,4 @@
 ﻿using TMPro;
-using UI;
 using UnityEngine;
 
 namespace Game.BattleTable
@@ -8,26 +7,46 @@ namespace Game.BattleTable
     {
         public void setTextColor(PropertyNumberColor color)
         {
-            setTextGreen(color == PropertyNumberColor.Green);
-            setTextRed(color == PropertyNumberColor.Red);
+            if (color == PropertyNumberColor.Green)
+            {
+                setTextGreen();
+            }
+            else if (color == PropertyNumberColor.Red)
+            {
+                setTextRed();
+            }
+            else
+            {
+                setTextWhite();
+            }
         }
-        public void setTextGreen(bool green)
+
+        private void setTextWhite()
         {
-            _animator.SetBool("isGreen", green);
+            _meshRendererController.color = _whiteColor;
         }
-        public void setTextRed(bool red)
+        private void setTextGreen()
         {
-            _animator.SetBool("isRed", red);
+            _meshRendererController.color = _greenColor;
+        }
+        private void setTextRed()
+        {
+            _meshRendererController.color = _redColor;
         }
 
         public Animator animator => _animator;
-        public SimpleAnim textWhiteAnim;
-        public SimpleAnim textGreenAnim;
-        public SimpleAnim textRedAnim;
         [SerializeField]
         private Animator _animator;
         [SerializeField]
         private TextMeshPro _text;
+        [SerializeField]
+        private MeshRendererController _meshRendererController;
+        [SerializeField]
+        private Color _whiteColor = Color.white;
+        [SerializeField]
+        private Color _greenColor = Color.green;
+        [SerializeField]
+        private Color _redColor = Color.red;
 
         public string text
         {

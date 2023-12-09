@@ -62,22 +62,11 @@ namespace Game.BattleTable
             simpleAnim = null;
             if (propName == DEFINE.ATTACK)
             {
-                int attack = value is int intValue ? intValue : card.getAttack(table.game);
-                animator = servant.attackNumber.animator;
-                simpleAnim = attack > card.define.getAttack() ? servant.attackNumber.textGreenAnim : servant.attackNumber.textWhiteAnim;
+                servant.attackNumber.setTextColor(getAttackColor(table, card));
             }
             else if (propName == CARD.CURRENT_LIFE || propName == DEFINE.LIFE)
             {
-                int life = value is int lifeValue && propName == DEFINE.LIFE ? lifeValue : card.getLife(table.game);
-                int curLife = value is int curLifeValue && propName == CARD.CURRENT_LIFE ? curLifeValue : card.getCurrentLife(table.game);
-                animator = servant.lifeNumber.animator;
-                //判断是否是红字
-                if (curLife < life)
-                    simpleAnim = servant.lifeNumber.textRedAnim;
-                else if (life > card.define.getLife())
-                    simpleAnim = servant.lifeNumber.textGreenAnim;
-                else
-                    simpleAnim = servant.lifeNumber.textWhiteAnim;
+                servant.lifeNumber.setTextColor(getLifeColor(table, card));
             }
             else if (propName == CARD.SILENCE)
             {
@@ -89,82 +78,44 @@ namespace Game.BattleTable
         {
             var arg = tEventArg;
             var propName = arg.propName;
-            var value = arg.value;
             animator = null;
             simpleAnim = null;
             switch (propName)
             {
                 case DEFINE.LIFE:
                 case CARD.CURRENT_LIFE:
-                    {
-                        int life = value is int lifeValue && propName == DEFINE.LIFE ? lifeValue : card.getLife(table.game);
-                        int curLife = value is int curLifeValue && propName == CARD.CURRENT_LIFE ? curLifeValue : card.getCurrentLife(table.game);
-                        animator = master.lifeNumber.animator;
-                        //判断是否是红字
-                        if (curLife < life)
-                            simpleAnim = master.lifeNumber.textRedAnim;
-                        else if (life > card.define.getLife())
-                            simpleAnim = master.lifeNumber.textGreenAnim;
-                        else
-                            simpleAnim = master.lifeNumber.textWhiteAnim;
-                        break;
-                    }
+                    master.lifeNumber.setTextColor(getLifeColor(table, card));
+                    break;
                 case DEFINE.ATTACK:
-                    {
-                        int attack = value is int intValue ? intValue : card.getAttack(table.game);
-                        animator = master.attackNumber.animator;
-                        simpleAnim = attack > table.getMasterItemAttack(card) + card.define.getAttack() ? master.attackNumber.textGreenAnim : master.attackNumber.textWhiteAnim;
-                        break;
-                    }
+                    master.attackNumber.setTextColor(getMasterAttackColor(table, card));
+                    break;
             }
         }
         private void updateItem(BattleTableManager table, ICardData card, Item item, out Animator animator, out SimpleAnim simpleAnim)
         {
             var arg = tEventArg;
             var propName = arg.propName;
-            var value = arg.value;
             animator = null;
             simpleAnim = null;
             //判断是否是红字
             if (propName == DEFINE.ATTACK)
             {
-                int attack = value is int intValue ? intValue : card.getAttack(table.game);
-                animator = item.attackNumber.animator;
-                simpleAnim = attack > card.define.getAttack() ? item.attackNumber.textGreenAnim : item.attackNumber.textWhiteAnim;
+                item.attackNumber.setTextColor(getAttackColor(table, card));
             }
             else if (propName == CARD.CURRENT_LIFE || propName == DEFINE.LIFE)
             {
-                int life = value is int lifeValue && propName == DEFINE.LIFE ? lifeValue : card.getLife(table.game);
-                int curLife = value is int curLifeValue && propName == CARD.CURRENT_LIFE ? curLifeValue : card.getCurrentLife(table.game);
-                animator = item.durabilityNumber.animator;
-                //判断是否是红字
-                if (curLife < life)
-                    simpleAnim = item.durabilityNumber.textRedAnim;
-                else if (life > card.define.getLife())
-                    simpleAnim = item.durabilityNumber.textGreenAnim;
-                else
-                    simpleAnim = item.durabilityNumber.textWhiteAnim;
+                item.durabilityNumber.setTextColor(getLifeColor(table, card));
             }
         }
         private void updateSkill(BattleTableManager table, ICardData card, Skill skill, out Animator animator, out SimpleAnim simpleAnim)
         {
             var arg = tEventArg;
             var propName = arg.propName;
-            var value = arg.value;
             animator = null;
             simpleAnim = null;
             if (propName == DEFINE.COST)
             {
-                var propNum = skill.costNumber;
-                int cost = value is int intValue ? intValue : card.getCost(table.game);
-                int defineCost = card.define.getCost();
-                animator = propNum.animator;
-                if (cost < defineCost)
-                    simpleAnim = propNum.textGreenAnim;
-                else if (cost > defineCost)
-                    simpleAnim = propNum.textRedAnim;
-                else
-                    simpleAnim = propNum.textWhiteAnim;
+                skill.costNumber.setTextColor(getCostColor(table, card));
             }
         }
         private void updateHand(BattleTableManager table, ICardData card, HandItem hand, out Animator animator, out SimpleAnim simpleAnim)
@@ -180,11 +131,7 @@ namespace Game.BattleTable
                 if (!attackNumber)
                     return;
 
-                animator = attackNumber.animator;
-                if (card.getAttack(table.game) > card.define.getAttack())
-                    simpleAnim = attackNumber.textGreenAnim;
-                else
-                    simpleAnim = attackNumber.textWhiteAnim;
+                attackNumber.setTextColor(getAttackColor(table, card));
             }
             else if (propName == CARD.CURRENT_LIFE || propName == DEFINE.LIFE)
             {
@@ -192,13 +139,7 @@ namespace Game.BattleTable
                 if (!lifeNumber)
                     return;
 
-                animator = lifeNumber.animator;
-                if (card.getCurrentLife(table.game) < card.getLife(table.game))
-                    simpleAnim = lifeNumber.textRedAnim;
-                else if (card.getLife(table.game) > card.define.getLife())
-                    simpleAnim = lifeNumber.textGreenAnim;
-                else
-                    simpleAnim = lifeNumber.textWhiteAnim;
+                lifeNumber.setTextColor(getLifeColor(table, card));
             }
             else if (propName == DEFINE.COST)
             {
@@ -206,14 +147,50 @@ namespace Game.BattleTable
                 if (!costNumber)
                     return;
 
-                animator = costNumber.animator;
-                if (card.getCost(table.game) < card.define.getCost())
-                    simpleAnim = costNumber.textGreenAnim;
-                else if (card.getCost(table.game) > card.define.getCost())
-                    simpleAnim = costNumber.textRedAnim;
-                else
-                    simpleAnim = costNumber.textWhiteAnim;
+                costNumber.setTextColor(getCostColor(table, card));
             }
+        }
+        private PropertyNumberColor getAttackColor(BattleTableManager table, ICardData card)
+        {
+            var arg = tEventArg;
+            var value = arg.value;
+            int attack = value is int intValue ? intValue : card.getAttack(table.game);
+            return attack > card.define.getAttack() ? PropertyNumberColor.Green : PropertyNumberColor.White;
+        }
+        private PropertyNumberColor getMasterAttackColor(BattleTableManager table, ICardData card)
+        {
+            var arg = tEventArg;
+            var value = arg.value;
+            int attack = value is int intValue ? intValue : card.getAttack(table.game);
+            return attack > table.getMasterItemAttack(card) + card.define.getAttack() ? PropertyNumberColor.Green : PropertyNumberColor.White;
+        }
+        private PropertyNumberColor getLifeColor(BattleTableManager table, ICardData card)
+        {
+            var arg = tEventArg;
+            var propName = arg.propName;
+            var value = arg.value;
+            int life = value is int lifeValue && propName == DEFINE.LIFE ? lifeValue : card.getLife(table.game);
+            int curLife = value is int curLifeValue && propName == CARD.CURRENT_LIFE ? curLifeValue : card.getCurrentLife(table.game);
+            PropertyNumberColor color = PropertyNumberColor.White;
+            //判断是否是红字
+            if (curLife < life)
+                color = PropertyNumberColor.Red;
+            else if (life > card.define.getLife())
+                color = PropertyNumberColor.Green;
+            return color;
+        }
+        private PropertyNumberColor getCostColor(BattleTableManager table, ICardData card)
+        {
+            var arg = tEventArg;
+            var value = arg.value;
+            int cost = value is int intValue ? intValue : card.getCost(table.game);
+            int defineCost = card.define.getCost();
+            var color = PropertyNumberColor.White;
+            if (cost < defineCost)
+                color = PropertyNumberColor.Green;
+            else if (cost > defineCost)
+                color = PropertyNumberColor.Red;
+            return color;
         }
         public override bool continueNextGroup(AnimationGroup nextGroup)
         {
