@@ -12,6 +12,7 @@
         /// 蓄力层数
         /// </summary>
         public const string CHARGED_LEVEL = "chargedLevel";
+        public const string IS_USED = "isUsed";
 
     }
 }

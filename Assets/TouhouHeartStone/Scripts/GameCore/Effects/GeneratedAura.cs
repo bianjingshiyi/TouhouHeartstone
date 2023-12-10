@@ -67,7 +67,7 @@ namespace TouhouHeartstone
             Card selfCard = card as Card;
             Buff selfBuff = buff as Buff;
             EventArg selfEventArg = eventArg as EventArg;
-            Dictionary<Card, Buff> buffDict = getBuffDic(cardEngine, selfCard, selfBuff);
+            Dictionary<Card, Buff> buffDict = await getBuffDic(cardEngine, selfCard, selfBuff);
             // 如果该光环已被禁用。
             if (isDisabled(game, card, buff) || 
                 (selfCard != null && (pileList == null || !pileList.Contains(selfCard.pile.name))))
@@ -197,24 +197,30 @@ namespace TouhouHeartstone
                 }
             }
         }
-        private Dictionary<Card, Buff> getBuffDic(CardEngine game, Card card, Buff buff)
+        private async Task<Dictionary<Card, Buff>> getBuffDic(CardEngine game, Card card, Buff buff)
         {
-            var propName = "BuffDict";
-            string effectStr = Array.IndexOf(card.define.getEffects(), this).ToString();
-            propName = $"Aura{effectStr}/{propName}";
+            var cardId = card.id;
+            var effectIndex = Array.IndexOf(card.define.getEffects(), this);
+            Dictionary<Card, Buff> buffDict;
             if (buff != null)
             {
-                propName = $"Buff{buff.instanceID}/{propName}";
+                var propName = $"Card{cardId}/Buff{buff.instanceID}/Aura{effectIndex}/BuffDict";
+                buffDict = buff.getProp<Dictionary<Card, Buff>>(propName);
+                if (buffDict == null)
+                {
+                    buffDict = new Dictionary<Card, Buff>();
+                    await buff.setProp(game, propName, buffDict);
+                }
             }
-
-            Dictionary<Card, Buff> buffDict = buff != null ? buff.getProp<Dictionary<Card, Buff>>(propName) : card.getProp<Dictionary<Card, Buff>>(game, propName);
-            if (buffDict == null)
+            else
             {
-                buffDict = new Dictionary<Card, Buff>();
-                if (buff != null)
-                    buff.setProp(game, propName, buffDict);
-                else
-                    card.setProp(game, propName, buffDict);
+                var propName = $"Card{cardId}/Aura{effectIndex}/BuffDict";
+                buffDict = card.getProp<Dictionary<Card, Buff>>(game, propName);
+                if (buffDict == null)
+                {
+                    buffDict = new Dictionary<Card, Buff>();
+                    await card.setProp(game, propName, buffDict);
+                }
             }
             return buffDict;
         }
@@ -243,7 +249,7 @@ namespace TouhouHeartstone
         public ControlOutput updateAction => auraEntry?.getOutputPort<ControlOutput>(AuraEntryNode.actionPortName);
         public override ControlOutput onEnableAction => null;
         public override ControlOutput onDisableAction => null;
-        public string[] piles => pileList?.ToArray() ?? Array.Empty<string>();
+        public override string[] piles => pileList?.ToArray() ?? Array.Empty<string>();
         public override Node entryNode => auraEntry;
         #endregion
     }

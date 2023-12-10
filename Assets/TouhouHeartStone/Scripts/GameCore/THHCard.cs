@@ -118,7 +118,7 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static bool isUsed(this ICardData card, IGame game)
         {
-            return card.getProp<bool>(game, "isUsed");
+            return card.getProp<bool>(game, CARD.IS_USED);
         }
         /// <summary>
         /// 设置技能是否使用过。
@@ -127,7 +127,7 @@ namespace TouhouHeartstone
         /// <param name="value"></param>
         public static Task<PropChangeEventArg> setUsed(this Card card, IGame game, bool value)
         {
-            return card.setProp(game, "isUsed", value);
+            return card.setProp(game, CARD.IS_USED, value);
         }
         public static void setSkillRef(this CardDefine cardDefine, DefineReference defRef)
         {
@@ -1993,12 +1993,28 @@ namespace TouhouHeartstone
         const string SKILL_INVALID = "技能无效";
         [TranslateMsg]
         const string UNKNOWN_CARD = "这是一张未知的卡牌";
+        public static string[] persistentPropNames = new string[]
+        {
+            DEFINE.ATTACK,
+            DEFINE.LIFE,
+            DEFINE.TAGS,
+            DEFINE.SPELL_DAMAGE,
+            DEFINE.DAMAGE_REDUCE,
+            CARD.CHARGED_LEVEL,
+        };
         public static string[] persistentBattlefieldPropNames = new string[]
         {
+            DEFINE.KEYWORDS,
             CARD.CURRENT_LIFE,
             CARD.ARMOR,
             CARD.SILENCE,
-            DEFINE.KEYWORDS,
+        };
+        public static string[] temporaryBattlefieldPropNames = new string[]
+        {
+            CARD.IS_USED,
+            CARD.ISREADY,
+            CARD.ATTACK_TIMES,
+            CARD.ISDEAD,
         };
         #endregion
 
