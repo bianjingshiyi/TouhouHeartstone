@@ -1877,6 +1877,10 @@ namespace TouhouHeartstone
                 await clone.setProp(game, pair.Key, pair.Value);
             }
 
+            // 不移动到任何牌堆，直接返回复制。
+            if (targetPile == null)
+                return clone;
+
             // 源牌堆假定为要复制的卡牌的牌堆，用于处理战场→手牌，战场→牌库这样的逆向移动。
             Pile from = card.pile;
 
