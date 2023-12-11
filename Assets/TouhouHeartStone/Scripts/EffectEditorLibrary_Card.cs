@@ -1152,8 +1152,23 @@ namespace Game
             {
                 if (card == null)
                     continue;
-                else if (card.isSpell() || card.isSkill())
+                if (card.isSpell())
+                {
+                    if (card.isTrap(game) || card.hasKeyword(game, KEYWORD.MISSION))
+                    {
+                        var player = card.getOwner();
+                        await player.tryEnterHead(game, card.pile, card);
+                        await card.updateSecret(game);
+                    }
+                    else
+                    {
+                        await card.triggerSpellActiveEffect(game, targets);
+                    }
+                }
+                else if (card.isSkill())
+                {
                     await card.triggerSpellActiveEffect(game, targets);
+                }
             }
         }
         /// <summary>

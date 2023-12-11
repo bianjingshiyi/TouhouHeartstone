@@ -70,10 +70,6 @@ namespace TouhouHeartstone
                 {
                     await card.activeEffect(game, targets);
                     await player.getWarp().moveTo(game, card, player.getGrave());//送入墓地
-                    if (card.hasKeyword(game, KEYWORD._RETURNHEAD))
-                    {
-                        await card.returnToHand(game, player);
-                    }
                 }
             }
             else if (card.isItem())

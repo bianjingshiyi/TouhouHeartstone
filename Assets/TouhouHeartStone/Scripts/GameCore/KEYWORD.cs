@@ -85,15 +85,6 @@ namespace TouhouHeartstone
         /// 任务，委托，或者别的什么东西
         /// </summary>
         public const string MISSION = "mission";
-
-        /// <summary>
-        /// 内部关键词：使用后回到手牌。
-        /// </summary>
-        public const string _RETURNHEAD = "_returnHead";
-        /// <summary>
-        /// 信仰对决
-        /// </summary>
-        public const string _RevealDuel = "_revealDuel";
         /// <summary>
         /// 宣言
         /// </summary>
