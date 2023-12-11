@@ -258,7 +258,7 @@ namespace Game
         public const int CreateTokenToField = Type_Action + Category_Card + 3;    // 创建衍生卡并置入战场
         public const int CreateTokenToHand = Type_Action + Category_Card + 4;    // 创建衍生卡并置入手牌
         public const int CreateTokenToDeck = Type_Action + Category_Card + 5;    // 创建衍生卡并洗入牌库
-        public const int CreateTokenToItem = Type_Action + Category_Card + 6;    // 创建衍生卡兵装备到道具栏
+        public const int CreateTokenToItem = Type_Action + Category_Card + 6;    // 创建衍生卡并装备到道具栏
         public const int SetCardProp_Obsolete = Type_Action + Category_Card + 7;    // 设置属性（过时）
         public const int DealDamageOrSpellDamage_Obsolete = Type_Action + Category_Card + 8;    // 造成伤害或法伤（过时）
         public const int DealDamageSplitAmong_Obsolete = Type_Action + Category_Card + 9;    // 造成伤害或法伤并分配给目标（过时）
@@ -297,6 +297,8 @@ namespace Game
         public const int DealDamageSplitAmong = Type_Action + Category_Card + 42;    // 造成伤害或法伤兵分配给目标
         public const int DealDamageToRandomTargets = Type_Action + Category_Card + 43;    // 对固定数量的随机目标造成伤害或法伤
         public const int CloneCard = Type_Action + Category_Card + 44;    // 复制卡牌
+        public const int CreateTokenToHead = Type_Action + Category_Card + 45;    // 创建衍生卡并置入延迟区
+        public const int CreateTokenToPile = Type_Action + Category_Card + 46;    // 创建衍生卡并置入牌堆
 
         // 增益
         public const int AddBuff = Type_Action + Category_Buff + 1;    // 添加增益

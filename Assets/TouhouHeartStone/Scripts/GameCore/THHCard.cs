@@ -1128,7 +1128,7 @@ namespace TouhouHeartstone
         #endregion
 
         #region 单体移动
-        public static Task<EventArg> moveToHead(this Card card, CardEngine game, Player player)
+        public static Task<EventArg> moveToHead(this Card card, CardEngine game, Player player, int position = -1)
         {
             if (card == null || player == null)
                 return Task.FromResult<EventArg>(null);
@@ -1159,7 +1159,7 @@ namespace TouhouHeartstone
                 return Task.FromResult<EventArg>(null);
             return moveToItem(card, game, card.pile, player[PILE.ITEM]);
         }
-        public static async Task<EventArg> moveToHead(this Card card, CardEngine game, Pile from, Pile to)
+        public static async Task<EventArg> moveToHead(this Card card, CardEngine game, Pile from, Pile to, int position = -1)
         {
             if (isInvalidMove(card, from, to))
                 return null;
@@ -1173,7 +1173,10 @@ namespace TouhouHeartstone
                 return null;
 
             game.logger.logTrace($"将{string.Join("，", card)}置入{player}的延迟区");
-            return await from.moveTo(game, card, to);
+
+            if (position < 0)
+                position = to.count;
+            return await from.moveTo(game, card, to, position);
         }
         /// <summary>
         /// 将一张卡牌返回到指定玩家的手牌。
@@ -1182,7 +1185,7 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         /// <param name="player">移动至手牌的玩家。</param>
         /// <returns></returns>
-        public static async Task<EventArg> moveToHand(this Card card, CardEngine game, Pile from, Pile to)
+        public static async Task<EventArg> moveToHand(this Card card, CardEngine game, Pile from, Pile to, int position = -1)
         {
             if (isInvalidMove(card, from, to))
                 return null;
@@ -1205,14 +1208,18 @@ namespace TouhouHeartstone
                 return null;
             }
             // 手牌未满
+            if (position < 0)
+                position = to.count;
             game.logger.logTrace($"将{card}置入{player}的手牌");
-            return await from.moveTo(game, card, to, to.count);
+            return await from.moveTo(game, card, to, position);
         }
-        public static async Task<EventArg> moveToField(this Card card, CardEngine game, Pile from, Pile to)
+        public static async Task<EventArg> moveToField(this Card card, CardEngine game, Pile from, Pile to, int position = -1)
         {
             if (isInvalidMove(card, from, to))
                 return null;
-            var enterFieldArg = await to.owner.tryEnterField(game, from, card, to.count);
+            if (position < 0)
+                position = to.count;
+            var enterFieldArg = await to.owner.tryEnterField(game, from, card, position);
             if (enterFieldArg == null)
                 return null;
             return enterFieldArg.getChildEvents(EventState.Logic).OfType<EventArg>().FirstOrDefault();
@@ -1226,21 +1233,21 @@ namespace TouhouHeartstone
                 return null;
             return equipArg.getChildEvents(EventState.Logic).OfType<EventArg>().FirstOrDefault();
         }
-        public static async Task<EventArg> moveCardFromPileToPile(this Card card, CardEngine game, Pile fromPile, Pile toPile)
+        public static async Task<EventArg> moveCardFromPileToPile(this Card card, CardEngine game, Pile fromPile, Pile toPile, int position = -1)
         {
             var toName = toPile?.name;
             switch (toName)
             {
                 case PILE.HAND:
-                    return await card.moveToHand(game, fromPile, toPile);
+                    return await card.moveToHand(game, fromPile, toPile, position);
                 case PILE.HEAD:
-                    return await card.moveToHead(game, fromPile, toPile);
+                    return await card.moveToHead(game, fromPile, toPile, position);
                 case PILE.ITEM:
                     return await card.moveToItem(game, fromPile, toPile);
                 case PILE.FIELD:
-                    return await card.moveToField(game, fromPile, toPile);
+                    return await card.moveToField(game, fromPile, toPile, position);
             }
-            return await fromPile.moveTo(game, card, toPile);
+            return await fromPile.moveTo(game, card, toPile, position);
         }
         #endregion
         /// <summary>

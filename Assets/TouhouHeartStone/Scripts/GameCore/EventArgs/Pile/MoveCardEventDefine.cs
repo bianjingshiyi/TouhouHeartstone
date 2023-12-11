@@ -15,14 +15,14 @@ namespace TouhouHeartstone
             {
                 new EventVariableInfo() { name = VAR_FROM_PILE, type = typeof(Pile) },
                 new EventVariableInfo() { name = VAR_TO_PILE, type = typeof(Pile) },
-                new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card) },
+                new EventVariableInfo() { name = VAR_CARD, type = typeof(Card) },
                 new EventVariableInfo() { name = VAR_POSITION, type = typeof(int) },
             };
             afterVariableInfos = new EventVariableInfo[]
             {
                 new EventVariableInfo() { name = VAR_FROM_PILE, type = typeof(Pile) },
                 new EventVariableInfo() { name = VAR_TO_PILE, type = typeof(Pile) },
-                new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card) },
+                new EventVariableInfo() { name = VAR_CARD, type = typeof(Card) },
                 new EventVariableInfo() { name = VAR_POSITION, type = typeof(int) },
                 new EventVariableInfo() { name = VAR_SUCCESS, type = typeof(bool) },
             };
@@ -32,7 +32,7 @@ namespace TouhouHeartstone
         {
             record.setVar(VAR_FROM_PILE, arg);
             record.setVar(VAR_TO_PILE, arg);
-            record.setCardState(EVENTVAR.CARD, arg);
+            record.setCardState(VAR_CARD, arg);
             record.setVar(VAR_POSITION, arg);
             record.setVar(VAR_SUCCESS, arg);
         }
@@ -41,7 +41,7 @@ namespace TouhouHeartstone
             var game = arg.game;
             var from = arg.getVar<Pile>(VAR_FROM_PILE);
             var to = arg.getVar<Pile>(VAR_TO_PILE);
-            var card = arg.getVar<Card>(EVENTVAR.CARD);
+            var card = arg.getVar<Card>(VAR_CARD);
             var position = arg.getVar<int>(VAR_POSITION);
             var resetProps = arg.getVar<bool>(VAR_RESET_PROPS);
 
@@ -60,7 +60,7 @@ namespace TouhouHeartstone
         {
             var from = eventArg.getVar<Pile>(VAR_FROM_PILE);
             var to = eventArg.getVar<Pile>(VAR_TO_PILE);
-            var card = eventArg.getVar<Card>(EVENTVAR.CARD);
+            var card = eventArg.getVar<Card>(VAR_CARD);
             var position = eventArg.getVar<int>(VAR_POSITION);
             return $"将{card}从{from}移动到{to}的{position}";
         }
@@ -70,15 +70,16 @@ namespace TouhouHeartstone
             var arg = new EventArg(game, define);
             arg.setVar(VAR_FROM_PILE, from);
             arg.setVar(VAR_TO_PILE, to);
-            arg.setVar(EVENTVAR.CARD, card);
+            arg.setVar(VAR_CARD, card);
             arg.setVar(VAR_POSITION, position);
             arg.setVar(VAR_RESET_PROPS, resetProps);
             return game.triggers.doEvent(arg);
         }
         ICard ICardEventDefine.getCard(IEventArg eventArg)
         {
-            return eventArg.getVar<Card>(EVENTVAR.CARD);
+            return eventArg.getVar<Card>(VAR_CARD);
         }
+        public static string VAR_CARD => EVENTVAR.CARD;
         public static string VAR_FROM_PILE => EVENTVAR.FROM_PILE;
         public static string VAR_POSITION => EVENTVAR.POSITION;
         public const string VAR_TO_PILE = "目标牌堆";

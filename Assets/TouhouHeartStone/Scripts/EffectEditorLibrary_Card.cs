@@ -13,6 +13,10 @@ namespace Game
     {
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_CREATE_TOKEN_CARD_EQUIP_TO_ITEM = "创建衍生卡并装备到道具栏";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_HEAD = "创建衍生卡并置入延迟区";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_PILE = "创建衍生卡并置入牌堆";
         [TranslateMsg("动作图编辑器中动作节点名称之卡牌关键词判断")]
         public const string EDITOR_NODE_IS_KEYWORDS = "卡牌关键词判断";
         [TranslateMsg("动作图编辑器中动作节点名称之获取当前生命值")]
@@ -80,6 +84,8 @@ namespace Game
         const string EDITOR_PARAM_NAME_SET_CARD_DEFINE_EVENT = "设置卡牌定义事件";
         [TranslateMsg("节点参数")]
         const string EDITOR_PARAM_NAME_BE_CHARGED_EVENT = "蓄力事件";
+        [TranslateMsg("节点参数")]
+        private const string EDITOR_PARAM_NAME_POSITION = "位置";
 
         [TranslateMsg("编辑器-卡牌-参数名称")]
         public const string EDITOR_PARAM_NAME_MASS_DISCARD_EVENT = "群体弃牌事件";
@@ -235,6 +241,58 @@ namespace Game
             outEvent = await player.equip(game, null, createdCard);
             setOutParam(flow, node, nameof(outEvent), outEvent);
             return createdCard;
+        }
+        /// <summary>
+        /// 创建衍生物并置入延迟区
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
+        /// <param name="cardDefine"></param>
+        /// <returns></returns>
+        [EventNode(typeof(MoveCardEventDefine))]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CreateTokenToHead, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_HEAD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static async Task<Card> createTokenCardToHead(CardEngine game, Flow flow, ActionNode node,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
+            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)][NodeParamEventType(typeof(MoveCardEventDefine))] EventArg outEvent)
+        {
+            if (player == null || cardDefine == null)
+                return null;
+            Card createdCard = game.createCard(cardDefine);
+            outEvent = await createdCard.moveToHead(game, player);
+            setOutParam(flow, node, nameof(outEvent), outEvent);
+            return outEvent?.getVar<Card>(MoveCardEventDefine.VAR_CARD);
+        }
+        /// <summary>
+        /// 创建衍生物并置入牌堆
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
+        /// <param name="cardDefine"></param>
+        /// <returns></returns>
+        [EventNode(typeof(MoveCardEventDefine))]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CreateTokenToPile, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_PILE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static async Task<Card> createTokenCardToPile(CardEngine game, Flow flow, ActionNode node,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)] Pile pile,
+            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)][NodeParamEventType(typeof(MoveCardEventDefine))] EventArg outEvent,
+            [ActionNodeParam(EDITOR_PARAM_NAME_POSITION)] int position = -1)
+        {
+            if (cardDefine == null)
+                return null;
+            // 根据卡牌的定义创建一张新的卡牌。
+            var newCard = game.createCard(cardDefine);
+
+            // 不移动到任何牌堆，直接返回。
+            if (pile == null)
+                return newCard;
+
+            // 将卡牌移动到目标牌堆。
+            outEvent = await newCard.moveCardFromPileToPile(game, null, pile, position);
+            setOutParam(flow, node, nameof(outEvent), outEvent);
+            return newCard;
         }
         /// <summary>
         /// 复制卡牌

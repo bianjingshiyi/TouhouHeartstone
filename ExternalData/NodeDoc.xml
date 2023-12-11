@@ -3272,6 +3272,104 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>202045</defineId>
+    <obsoleteNames />
+    <editorName>创建衍生卡并置入延迟区</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要置入的延迟区的拥有者。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要创建的卡牌的卡牌定义。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>MoveCardEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌移动事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[将卡牌移动到延迟区的移动事件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[创建的卡牌。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[创建一张衍生的卡牌，并将其置入延迟区。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>202046</defineId>
+    <obsoleteNames />
+    <editorName>创建衍生卡并置入牌堆</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要创建的卡牌的卡牌定义。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Pile</type>
+        <name>pile</name>
+        <displayName>牌堆</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要将卡牌置入的牌堆。不提供输入则不会将卡牌移动，停留在空牌堆。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>position</name>
+        <displayName>位置</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要将卡牌置入的牌堆的位置。不提供输入则默认为牌堆的最后一个位置。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>MoveCardEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌移动事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌移动所产生的事件。若不提供牌堆输入，则不存在。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[创建的卡牌。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[创建一张衍生的卡牌，并将置入指定牌堆。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>102001</defineId>
     <obsoleteNames />
     <editorName>这张卡牌</editorName>
