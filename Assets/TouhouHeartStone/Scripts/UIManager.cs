@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using Game.BattleTable;
 using TouhouCardEngine;
 using UI;
@@ -34,7 +35,7 @@ namespace Game
             yield return new WaitForEndOfFrame();
             // 从Render Texture读取像素并保存为图片
             int exportWidth = 800;
-            Texture2D texture = new Texture2D(exportWidth, renderTexture.height, TextureFormat.RGB24, false);
+            Texture2D texture = new Texture2D(exportWidth, renderTexture.height, TextureFormat.RGBA32, false);
             RenderTexture.active = renderTexture;
             texture.ReadPixels(new Rect((renderTexture.width - exportWidth) / 2, 0, exportWidth, renderTexture.height), 0, 0);
             texture.Apply();
@@ -43,12 +44,18 @@ namespace Game
             renderTexture.Release();
 
             // 将Texture2D转换为字节流并保存为文件
-            byte[] bytes = texture.EncodeToJPG();
+            byte[] bytes = texture.EncodeToPNG();
             Destroy(texture);
             Destroy(renderTexture);
             _cardshotRoot.gameObject.SetActive(false);
 
-            _ = _game.card.exportAnyFile(bytes, cardSkin.name, "jpg");
+            var defaultFileName = cardSkin.name;
+            var invalidChars = Path.GetInvalidFileNameChars();
+            foreach (var chr in invalidChars)
+            {
+                defaultFileName = defaultFileName.Replace(chr, '_');
+            }
+            _ = _game.card.exportAnyFile(bytes, defaultFileName, "png");
         }
         #region 属性字段
         public UIDialog dialog => _dialog;
