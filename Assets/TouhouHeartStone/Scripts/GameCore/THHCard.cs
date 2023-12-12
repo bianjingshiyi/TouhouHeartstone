@@ -1425,7 +1425,7 @@ namespace TouhouHeartstone
                 // 复制卡牌所有效果的启用状态，用于复制被封印的仆从。
                 foreach (var (buff, effect) in clone.getEnabledEffects())
                 {
-                    await effect.onDisable(game, clone, buff);
+                    await effect.onDisable(game, clone, buff as Buff);
                 }
                 var enabledEffects = card.getEnabledEffects();
                 foreach (var (buff, effect) in enabledEffects)
@@ -1435,7 +1435,7 @@ namespace TouhouHeartstone
                         // 寻找卡牌复制中拥有同样实例ID的增益。
                         var cloneBuff = clone.getBuffs().FirstOrDefault(b => b.instanceID == buff.instanceID);
                         if (cloneBuff != null) // 如果没有找到，说明该增益没有被复制，不启用。
-                            await effect.onEnable(game, clone, buff);
+                            await effect.onEnable(game, clone, buff as Buff);
                     }
                     else
                     {
