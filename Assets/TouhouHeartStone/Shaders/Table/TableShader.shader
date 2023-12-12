@@ -1,18 +1,20 @@
 // Made with Amplify Shader Editor
 // Available at the Unity Asset Store - http://u3d.as/y3X 
-Shader "Custom/CardFrameShader"
+Shader "Custom/TableShader"
 {
 	Properties
 	{
 		_MainTex("MainTex", 2D) = "white" {}
 		_Color("Color", Color) = (1,1,1,1)
+		_Smoothness("Smoothness", Range( 0 , 1)) = 0.05
+		_AmbientOcculusion("Ambient Occulusion", Float) = 0
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
 		[HideInInspector] __dirty( "", Int ) = 1
 	}
 
 	SubShader
 	{
-		Tags{ "RenderType" = "Custom"  "Queue" = "Transparent+0" "IgnoreProjector" = "True" }
+		Tags{ "RenderType" = "Custom"  "Queue" = "Transparent+0" }
 		Cull Back
 		ZWrite Off
 		Blend SrcAlpha OneMinusSrcAlpha , One OneMinusSrcAlpha
@@ -29,20 +31,22 @@ Shader "Custom/CardFrameShader"
 		uniform sampler2D _MainTex;
 		uniform float4 _MainTex_ST;
 		uniform float4 _Color;
+		uniform float _Smoothness;
+		uniform float _AmbientOcculusion;
 
-		void surf( Input i , inout SurfaceOutputStandard o )
+		void surf( Input i , inout SurfaceOutputStandardSpecular o )
 		{
 			float2 uv_MainTex = i.uv_texcoord * _MainTex_ST.xy + _MainTex_ST.zw;
 			float4 temp_output_6_0 = ( tex2D( _MainTex, uv_MainTex ) * _Color );
 			o.Albedo = (temp_output_6_0).rgb;
-			o.Metallic = 1.0;
-			o.Smoothness = 0.05;
+			o.Smoothness = _Smoothness;
+			o.Occlusion = _AmbientOcculusion;
 			o.Alpha = (temp_output_6_0).a;
 		}
 
 		ENDCG
 		CGPROGRAM
-		#pragma surface surf Standard keepalpha fullforwardshadows 
+		#pragma surface surf StandardSpecular keepalpha fullforwardshadows novertexlights nolightmap  nodirlightmap nofog nometa noforwardadd 
 
 		ENDCG
 		Pass
@@ -101,8 +105,8 @@ Shader "Custom/CardFrameShader"
 				surfIN.uv_texcoord = IN.customPack1.xy;
 				float3 worldPos = IN.worldPos;
 				half3 worldViewDir = normalize( UnityWorldSpaceViewDir( worldPos ) );
-				SurfaceOutputStandard o;
-				UNITY_INITIALIZE_OUTPUT( SurfaceOutputStandard, o )
+				SurfaceOutputStandardSpecular o;
+				UNITY_INITIALIZE_OUTPUT( SurfaceOutputStandardSpecular, o )
 				surf( surfIN, o );
 				#if defined( CAN_SKIP_VPOS )
 				float2 vpos = IN.pos;
@@ -114,27 +118,27 @@ Shader "Custom/CardFrameShader"
 			ENDCG
 		}
 	}
-	Fallback "Diffuse"
+	Fallback "Standard"
 	CustomEditor "ASEMaterialInspector"
 }
 /*ASEBEGIN
 Version=17000
-258.4;393.6;1014.4;452.6;746.2458;93.17603;1.183066;True;True
+266.4;220;913.6;433.4;1426.88;299.2128;2.165851;True;False
 Node;AmplifyShaderEditor.ColorNode;5;-751.4266,112.7077;Float;False;Property;_Color;Color;1;0;Create;True;0;0;False;0;1,1,1,1;1,1,1,1;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.SamplerNode;7;-938.8469,-85.95619;Float;True;Property;_MainTex;MainTex;0;0;Create;True;0;0;False;0;45b5194d1dea29248ac052a68d2e0e9a;7167941497482ea47acff05b2836037c;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;6;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.SamplerNode;7;-938.8469,-85.95619;Float;True;Property;_MainTex;MainTex;0;0;Create;True;0;0;False;0;45b5194d1dea29248ac052a68d2e0e9a;26c2431a157208146a0975867f9409c2;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;6;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;6;-526.5969,-40.45769;Float;False;2;2;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;1;COLOR;0
-Node;AmplifyShaderEditor.ComponentMaskNode;1;-362.0411,56.72506;Float;False;False;False;False;True;1;0;COLOR;0,0,0,0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.ComponentMaskNode;2;-351.3711,-36.08871;Float;False;True;True;True;False;1;0;COLOR;0,0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.RangedFloatNode;3;-410.2284,159.4115;Float;False;Constant;_Metallic;Metallic;2;0;Create;True;0;0;False;0;1;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;4;-462.4989,267.8071;Float;False;Constant;_Smoothness;Smoothness;2;0;Create;True;0;0;False;0;0.05;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.StandardSurfaceOutputNode;0;0,0;Float;False;True;2;Float;ASEMaterialInspector;0;0;Standard;Custom/CardFrameShader;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;False;False;False;False;False;False;Back;2;False;-1;0;False;-1;False;0;False;-1;0;False;-1;False;0;Custom;0.5;True;True;0;True;Custom;;Transparent;All;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;0;False;-1;False;0;False;-1;255;False;-1;255;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;False;2;15;10;25;False;0.5;True;2;5;False;-1;10;False;-1;3;1;False;-1;10;False;-1;0;False;-1;0;False;-1;0;False;0;0,0,0,0;VertexOffset;True;False;Cylindrical;False;Relative;0;;2;-1;-1;-1;0;False;0;0;False;-1;-1;0;False;-1;0;0;0;False;0.1;False;-1;0;False;-1;16;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT3;0,0,0;False;3;FLOAT;0;False;4;FLOAT;0;False;5;FLOAT;0;False;6;FLOAT3;0,0,0;False;7;FLOAT3;0,0,0;False;8;FLOAT;0;False;9;FLOAT;0;False;10;FLOAT;0;False;13;FLOAT3;0,0,0;False;11;FLOAT3;0,0,0;False;12;FLOAT3;0,0,0;False;14;FLOAT4;0,0,0,0;False;15;FLOAT3;0,0,0;False;0
+Node;AmplifyShaderEditor.RangedFloatNode;4;-390.3115,155.6976;Float;False;Property;_Smoothness;Smoothness;3;0;Create;True;0;0;False;0;0.05;0;0;1;0;1;FLOAT;0
+Node;AmplifyShaderEditor.ComponentMaskNode;1;-349.8336,57.74236;Float;False;False;False;False;True;1;0;COLOR;0,0,0,0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;8;-330.0051,248.2979;Float;False;Property;_AmbientOcculusion;Ambient Occulusion;4;0;Create;True;0;0;False;0;0;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.StandardSurfaceOutputNode;0;0,0;Float;False;True;2;Float;ASEMaterialInspector;0;0;StandardSpecular;Custom/TableShader;False;False;False;False;False;True;True;False;True;True;True;True;False;False;False;False;False;False;False;False;False;Back;2;False;-1;0;False;-1;False;0;False;-1;0;False;-1;False;0;Custom;0.5;True;True;0;True;Custom;;Transparent;All;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;0;False;-1;False;0;False;-1;255;False;-1;255;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;False;2;15;10;25;False;0.5;True;2;5;False;-1;10;False;-1;3;1;False;-1;10;False;-1;0;False;-1;0;False;-1;0;False;0;0,0,0,0;VertexOffset;True;False;Cylindrical;False;Relative;0;Standard;2;-1;-1;-1;0;False;0;0;False;-1;-1;0;False;-1;0;0;0;False;0.1;False;-1;0;False;-1;16;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT3;0,0,0;False;3;FLOAT3;0,0,0;False;4;FLOAT;0;False;5;FLOAT;0;False;6;FLOAT3;0,0,0;False;7;FLOAT3;0,0,0;False;8;FLOAT;0;False;9;FLOAT;0;False;10;FLOAT;0;False;13;FLOAT3;0,0,0;False;11;FLOAT3;0,0,0;False;12;FLOAT3;0,0,0;False;14;FLOAT4;0,0,0,0;False;15;FLOAT3;0,0,0;False;0
 WireConnection;6;0;7;0
 WireConnection;6;1;5;0
-WireConnection;1;0;6;0
 WireConnection;2;0;6;0
+WireConnection;1;0;6;0
 WireConnection;0;0;2;0
-WireConnection;0;3;3;0
 WireConnection;0;4;4;0
+WireConnection;0;5;8;0
 WireConnection;0;9;1;0
 ASEEND*/
-//CHKSM=523257B38BEA164AF24703C7B58271F82CB6DD5B
+//CHKSM=40BF03442DF7179288C828C58C05AB0A50E33446

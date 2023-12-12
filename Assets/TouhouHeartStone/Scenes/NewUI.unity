@@ -2873,67 +2873,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1513578563794789387, guid: 61200305fab94464b82979faf2e99f54,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 7813074358893447725, guid: 61200305fab94464b82979faf2e99f54,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 4428253569758778378, guid: 61200305fab94464b82979faf2e99f54,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 293398955093507002, guid: 61200305fab94464b82979faf2e99f54,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 1429088729034814427, guid: 61200305fab94464b82979faf2e99f54,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 4966989178715522991, guid: 61200305fab94464b82979faf2e99f54,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 2089847469811394850, guid: 61200305fab94464b82979faf2e99f54,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 3103712154541835641, guid: 61200305fab94464b82979faf2e99f54,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 8735287303999392874, guid: 61200305fab94464b82979faf2e99f54,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 8180108485093776017, guid: 61200305fab94464b82979faf2e99f54,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 8295956729471966470, guid: 61200305fab94464b82979faf2e99f54,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 7569329725308029282, guid: 61200305fab94464b82979faf2e99f54,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 2825738089590791853, guid: 61200305fab94464b82979faf2e99f54,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 1717288793632984066, guid: 61200305fab94464b82979faf2e99f54,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 8829575310614123592, guid: 61200305fab94464b82979faf2e99f54,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 61200305fab94464b82979faf2e99f54, type: 3}
 --- !u!4 &97298501 stripped
 Transform:
@@ -5467,7 +5407,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 3
+  m_Intensity: 0.75
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -6944,7 +6884,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Version: 300
-  m_EffectMaterial: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
+  m_EffectMaterial: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
     type: 2}
   m_EffectFactor: 1
   m_ColorFactor: 1
@@ -7044,7 +6984,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Version: 300
-  m_EffectMaterial: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
+  m_EffectMaterial: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
     type: 2}
   m_EffectFactor: 1
   m_ColorFactor: 1
@@ -7072,7 +7012,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
+  m_Material: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
     type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -9537,7 +9477,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Version: 300
-  m_EffectMaterial: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
+  m_EffectMaterial: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
     type: 2}
   m_EffectFactor: 1
   m_ColorFactor: 1
@@ -9988,7 +9928,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Version: 300
-  m_EffectMaterial: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
+  m_EffectMaterial: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
     type: 2}
   m_EffectFactor: 1
   m_ColorFactor: 1
@@ -10573,7 +10513,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1894723637
 Transform:
   m_ObjectHideFlags: 0
