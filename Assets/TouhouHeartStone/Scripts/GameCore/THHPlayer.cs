@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using UnityEngine;
+using MukioI18n;
 
 namespace TouhouHeartstone
 {
@@ -238,7 +239,7 @@ namespace TouhouHeartstone
         }
         public static async Task<bool> tryEnterHead(this Player player, CardEngine game, Pile from, Card card)
         {
-            if (player.getHead().isFull)
+            if (!player.canAddToHead(game, card, out _))
                 return false;
             await from.moveTo(game, card, player.getHead());
             return true;
@@ -390,6 +391,58 @@ namespace TouhouHeartstone
                 await secret.updateSecret(game);
             }
         }
+        public static bool canAddToHead(this Player player, CardEngine game, Card card, out string info)
+        {
+            if (card.isSpell())
+            {
+                if (card.isTrap(game))
+                {
+                    if (!player.canAddTrap(card, out info))
+                        return false;
+                }
+                if (card.hasKeyword(game, KEYWORD.MISSION))
+                {
+                    if (!player.canAddMission(card, out info))
+                        return false;
+                }
+                info = null;
+                return true;
+            }
+            info = null;
+            return false;
+        }
+        public static bool canAddTrap(this Player player, Card card, out string info)
+        {
+            var head = player.getHead();
+            if (head.isFull)
+            {
+                info = NO_SPACE_FOR_TRAP;
+                return false;
+            }
+            if (head.Any(c => c.define == card.define))
+            {
+                info = DUPLICATED_TRAP;
+                return false;
+            }
+            info = null;
+            return true;
+        }
+        public static bool canAddMission(this Player player, Card card, out string info)
+        {
+            var head = player.getHead();
+            if (head.isFull)
+            {
+                info = NO_SPACE_FOR_TRAP;
+                return false;
+            }
+            if (head.Any(c => c.define.hasKeyword(KEYWORD.MISSION)))
+            {
+                info = ONLY_ONE_MISSION;
+                return false;
+            }
+            info = null;
+            return true;
+        }
         /// <summary>
         /// 尝试使用一张卡牌
         /// </summary>
@@ -449,6 +502,15 @@ namespace TouhouHeartstone
         #region 委托
         public delegate bool PoolRange(CardEngine game, CardDefine define);
         public delegate bool isInRange(CardEngine game, CardDefine define);
+        #endregion
+
+        #region 属性字段
+        [TranslateMsg]
+        const string NO_SPACE_FOR_TRAP = "你满头是包";
+        [TranslateMsg]
+        const string DUPLICATED_TRAP = "你已挂载了相同的陷阱";
+        [TranslateMsg]
+        const string ONLY_ONE_MISSION = "专注于你手头上的委托！";
         #endregion
     }
 

@@ -226,29 +226,13 @@ namespace TouhouHeartstone
                 }
                 if (card.isTrap(game))
                 {
-                    if (card.getOwner().getHead().count >= card.getOwner().getHead().maxCount)
-                    {
-                        info = NO_SPACE_FOR_TRAP;
+                    if (!player.canAddTrap(card, out info))
                         return false;
-                    }
-                    if (card.getOwner().getHead().Any(c => c.define == card.define))
-                    {
-                        info = DUPLICATED_TRAP;
-                        return false;
-                    }
                 }
                 if (card.hasKeyword(game, KEYWORD.MISSION))
                 {
-                    if (card.getOwner().getHead().count >= card.getOwner().getHead().maxCount)
-                    {
-                        info = NO_SPACE_FOR_TRAP;
+                    if (!player.canAddMission(card, out info))
                         return false;
-                    }
-                    if (card.getOwner().getHead().Any(c => c.define.hasKeyword(KEYWORD.MISSION)))
-                    {
-                        info = ONLY_ONE_MISSION;
-                        return false;
-                    }
                 }
                 info = null;
                 return true;
@@ -1185,16 +1169,8 @@ namespace TouhouHeartstone
                 return null;
             }
             var player = to.owner;
-            if (to.isFull)
-            {
-                game.logger.logTrace($"{player}的延迟区已满，无法将{string.Join(",", card)}置入延迟区");
+            if (!player.canAddToHead(game, card, out _))
                 return null;
-            }
-            if (to.Any(s => s.define == card.define))
-            {
-                game.logger.logTrace($"{player}的延迟区已包含{card.define}，无法将{string.Join(",", card)}置入延迟区");
-                return null;
-            }
 
             game.logger.logTrace($"将{string.Join("，", card)}置入{player}的延迟区");
             return await from.moveTo(game, card, to);
@@ -1488,12 +1464,6 @@ namespace TouhouHeartstone
         const string NO_TARGET = "没有目标";
         [TranslateMsg]
         const string SERVANT_FIELD_FULL = "位置已满";
-        [TranslateMsg]
-        const string NO_SPACE_FOR_TRAP = "你满头是包";
-        [TranslateMsg]
-        const string DUPLICATED_TRAP = "你已挂载了相同的陷阱";
-        [TranslateMsg]
-        const string ONLY_ONE_MISSION = "专注于你手头上的委托！";
         [TranslateMsg]
         const string SKILL_USED = "你已经使用过技能了";
         [TranslateMsg]
