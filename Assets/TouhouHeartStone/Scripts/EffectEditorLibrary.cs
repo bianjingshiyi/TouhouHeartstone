@@ -1278,7 +1278,7 @@ namespace Game
                 return cards;
             outEvent = await cards.moveToField(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
-            return outEvent.movedCards.ToArray();
+            return outEvent?.movedCards ?? Array.Empty<Card>();
         }
 
         /// <summary>
@@ -1298,7 +1298,7 @@ namespace Game
                 return cards;
             outEvent = await cards.returnToHand(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
-            return outEvent.movedCards;
+            return outEvent?.movedCards ?? Array.Empty<Card>();
         }
 
         /// <summary>
@@ -1319,7 +1319,7 @@ namespace Game
                 return cards;
             outEvent = await cards.moveToDeck(game, player, top);
             setOutParam(flow, node, nameof(outEvent), outEvent);
-            return outEvent.movedCards;
+            return outEvent?.movedCards ?? Array.Empty<Card>();
         }
 
         /// <summary>
@@ -1340,7 +1340,7 @@ namespace Game
 
             outEvent = await cards.moveToGrave(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
-            return outEvent.movedCards;
+            return outEvent?.movedCards ?? Array.Empty<Card>();
         }
 
         /// <summary>
@@ -1361,7 +1361,7 @@ namespace Game
 
             outEvent = await cards.moveToHead(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
-            return outEvent.movedCards;
+            return outEvent?.movedCards ?? Array.Empty<Card>();
         }
 
         /// <summary>
@@ -1398,7 +1398,7 @@ namespace Game
                 return cards;
             outEvent = await cards.moveToWarp(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
-            return outEvent.movedCards;
+            return outEvent?.movedCards ?? Array.Empty<Card>();
         }
         #endregion
     }
