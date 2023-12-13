@@ -628,8 +628,7 @@ namespace Controllers
         private async Task updateDeckCardListUI()
         {
             _ui.setDeckCardCount(_deck.cardList.Sum(e => e.count), game.deck.deckValidSize);
-            var cards = _deck.cardList.OrderBy(e => game.card.getLocalCardDefine(e.cardRef) is CardDefine cardDefine ? cardDefine.getCost() : 0).ToArray();
-            DeckCardViewData[] deckCardsViewData = await DeckCardViewData.fromDeckItems(cards, game.card, game.lang);
+            DeckCardViewData[] deckCardsViewData = await DeckCardViewData.fromDeck(_deck, game.card, game.lang);
             _ui.updateDeckCardList(deckCardsViewData);
         }
         private async Task showDragCard(bool isDeckListItem, bool force = false)

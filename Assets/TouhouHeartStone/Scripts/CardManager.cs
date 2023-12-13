@@ -304,8 +304,14 @@ namespace Game
                 }
             }
         }
-        public DeckItem[] orderDeckItemsByLocalPools(IEnumerable<DeckItem> deckItems)
+        public async Task<DeckItem[]> orderDeckItemsByLocalPools(IEnumerable<DeckItem> deckItems)
         {
+            // 加载未加载的卡池。
+            foreach (var deckItem in deckItems)
+            {
+                var poolRef = getLocalCardPoolReference(deckItem.cardRef.cardPoolId);
+                await getOrLoadCardPool(poolRef);
+            }
             return deckItems.OrderBy(item =>
             {
                 var cardRef = item.cardRef;
@@ -313,8 +319,14 @@ namespace Game
                 return getCardDefine(poolRef, cardRef.defineId) is CardDefine cardDefine ? cardDefine.getCost() : 0;
             }).ToArray();
         }
-        public DeckItem[] orderDeckItemsByPoolsInSet(IEnumerable<DeckItem> deckItems, IEnumerable<ICardPoolReference> poolSet)
+        public async Task<DeckItem[]> orderDeckItemsByPoolsInSet(IEnumerable<DeckItem> deckItems, IEnumerable<ICardPoolReference> poolSet)
         {
+            // 加载未加载的卡池。
+            foreach (var deckItem in deckItems)
+            {
+                var poolRef = getCardPoolReferenceInSet(deckItem.cardRef.cardPoolId, poolSet);
+                await getOrLoadCardPool(poolRef);
+            }
             return deckItems.OrderBy(item =>
             {
                 var cardRef = item.cardRef;

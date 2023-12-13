@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Game;
-using Game.BattleTable;
 using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -16,6 +15,11 @@ namespace UI
         public async Task setCard(CardDefine define, CardManager cardManager)
         {
             await _card.setCardDefine(define, cardManager);
+        }
+        public void setCardSelected(bool value)
+        {
+            _cardPageContent.SetActive(value);
+            _cardPageNotSelectedNote.SetActive(!value);
         }
         public void updateGemInventory(CardGemViewData[] viewDatas)
         {
@@ -120,6 +124,18 @@ namespace UI
             }
             return (-1, -1);
         }
+        public void updateDeck(DeckCardViewData[] viewDatas)
+        {
+            _deckCardList.update(viewDatas);
+        }
+        public void displayCardPage()
+        {
+            displayPage(_cardPage, _cardPageIndicator);
+        }
+        public void displayDeckPage()
+        {
+            displayPage(_deckPage, _deckPageIndicator);
+        }
         #endregion
 
         #region 私有方法
@@ -128,6 +144,11 @@ namespace UI
         private void Awake()
         {
             _draggingGemTemplate.SetActive(false);
+            _cardFacePageButton.onClick.AddListener(onCardFacePageButtonClicked);
+            _deckPageButton.onClick.AddListener(onDeckPageButtonClicked);
+            _deckCardList.onDeckItemClicked += onDeckItemClickedCallback;
+            _deckCardList.onDeckItemPointerEnter += onDeckItemPointerEnterCallback;
+            _deckCardList.onDeckItemPointerExit += onDeckItemPointerExitCallback;
             _closeButton.onClick.AddListener(() => onCloseClicked?.Invoke());
         }
         private void OnEnable()
@@ -135,8 +156,41 @@ namespace UI
             resetDragging();
         }
         #endregion
+        private void displayPage(GameObject toDisplay, GameObject indicator)
+        {
+            _cardPage.SetActive(false);
+            _deckPage.SetActive(false);
 
+            _cardPageIndicator.SetActive(false);
+            _deckPageIndicator.SetActive(false);
+
+            toDisplay.SetActive(true);
+            indicator.SetActive(true);
+        }
         #region 事件回调
+
+        #region 编辑器页面
+        private void onCardFacePageButtonClicked()
+        {
+            displayCardPage();
+        }
+        private void onDeckPageButtonClicked()
+        {
+            displayDeckPage();
+        }
+        private void onDeckItemClickedCallback(int index, PointerEventData pointer)
+        {
+            onDeckItemClicked?.Invoke(index, pointer);
+        }
+        private void onDeckItemPointerEnterCallback(int index, PointerEventData pointer)
+        {
+            onDeckItemPointerEnter?.Invoke(index, pointer);
+        }
+        private void onDeckItemPointerExitCallback(int index, PointerEventData pointer)
+        {
+            onDeckItemPointerExit?.Invoke(index, pointer);
+        }
+        #endregion
 
         #region 背包宝石
         private void onInventoryGemBeginDragCallback(CardGem gem, PointerEventData eventData)
@@ -185,19 +239,42 @@ namespace UI
         public event Action<int, int, PointerEventData> onSlotGemBeginDrag;
         public event Action<int, int, PointerEventData> onSlotGemDrag;
         public event Action<int, int, PointerEventData> onSlotGemEndDrag;
+
+        public event Action<int, PointerEventData> onDeckItemClicked;
+        public event Action<int, PointerEventData> onDeckItemPointerEnter;
+        public event Action<int, PointerEventData> onDeckItemPointerExit;
         #endregion
 
         #region 属性字段
+        public DeckCardList deckCardList => _deckCardList;
         private List<CardGem> _gemInventoryList = new List<CardGem>();
         private List<CardGemSlotGroup> _gemSlotGroupList = new List<CardGemSlotGroup>();
         [SerializeField]
         private Card _card;
+        [SerializeField]
+        private GameObject _cardPageContent;
+        [SerializeField]
+        private GameObject _cardPageNotSelectedNote;
+        [SerializeField]
+        private Button _cardFacePageButton;
+        [SerializeField]
+        private Button _deckPageButton;
+        [SerializeField]
+        GameObject _cardPage;
+        [SerializeField]
+        GameObject _deckPage;
+        [SerializeField]
+        GameObject _cardPageIndicator;
+        [SerializeField]
+        GameObject _deckPageIndicator;
         [SerializeField]
         private Button _closeButton;
         [SerializeField]
         private ElementList _gemInventoryElementList;
         [SerializeField]
         private ElementList _gemSlotGroupElementList;
+        [SerializeField]
+        private DeckCardList _deckCardList;
         [SerializeField]
         private GameObject _draggingGemTemplate;
         [SerializeField]

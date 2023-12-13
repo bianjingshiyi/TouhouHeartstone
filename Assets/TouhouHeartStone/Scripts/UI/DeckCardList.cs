@@ -46,6 +46,7 @@ namespace UI
                 rect =>
                 {
                     var listItem = rect.GetComponent<CardViewDeckCardListItem>();
+                    listItem.onClick += onDeckItemClickedCallback;
                     listItem.onBeginDrag += onDeckItemBeginDragCallback;
                     listItem.onDrag += onDeckItemDragCallback;
                     listItem.onEndDrag += onDeckItemEndDragCallback;
@@ -55,6 +56,7 @@ namespace UI
                 rect =>
                 {
                     var listItem = rect.GetComponent<CardViewDeckCardListItem>();
+                    listItem.onClick -= onDeckItemClickedCallback;
                     listItem.onBeginDrag -= onDeckItemBeginDragCallback;
                     listItem.onDrag -= onDeckItemDragCallback;
                     listItem.onEndDrag -= onDeckItemEndDragCallback;
@@ -88,6 +90,10 @@ namespace UI
         {
             onDeckItemPointerExit?.Invoke(_cardElementList.indexOf(item), pointer);
         }
+        private void onDeckItemClickedCallback(CardViewDeckCardListItem item, PointerEventData pointer)
+        {
+            onDeckItemClicked?.Invoke(_cardElementList.indexOf(item), pointer);
+        }
         #endregion
 
         #endregion
@@ -98,6 +104,7 @@ namespace UI
         public event Action<int, PointerEventData> onDeckItemEndDrag;
         public event Action<int, PointerEventData> onDeckItemPointerEnter;
         public event Action<int, PointerEventData> onDeckItemPointerExit;
+        public event Action<int, PointerEventData> onDeckItemClicked;
         #endregion
 
         #region 属性字段
@@ -112,31 +119,31 @@ namespace UI
     }
     public static class DeckCardListHelper
     {
-        public static Task showPreviewCardByLocalPool(this DeckCardList deckView, Deck deck, int index, CardManager cardManager)
+        public static async Task showPreviewCardByLocalPool(this DeckCardList deckView, Deck deck, int index, CardManager cardManager)
         {
             if (deck == null)
-                return Task.CompletedTask;
-            var deckItems = cardManager.orderDeckItemsByLocalPools(deck.cardList);
+                return;
+            var deckItems = await cardManager.orderDeckItemsByLocalPools(deck.cardList);
             var deckItem = deckItems[index];
             var defRef = deckItem.cardRef;
             if (defRef == null)
-                return Task.CompletedTask;
+                return;
             var poolRef = cardManager.getLocalCardPoolReference(defRef.cardPoolId);
             var cardDef = cardManager.getCardDefine(poolRef, defRef.defineId);
-            return deckView.showPreviewCard(cardDef, index, cardManager);
+            await deckView.showPreviewCard(cardDef, index, cardManager);
         }
-        public static Task showPreviewCardByPoolSet(this DeckCardList deckView, Deck deck, int index, CardManager cardManager, IEnumerable<ICardPoolReference> poolSet)
+        public static async Task showPreviewCardByPoolSet(this DeckCardList deckView, Deck deck, int index, CardManager cardManager, IEnumerable<ICardPoolReference> poolSet)
         {
             if (deck == null)
-                return Task.CompletedTask;
-            var deckItems = cardManager.orderDeckItemsByPoolsInSet(deck.cardList, poolSet);
+                return;
+            var deckItems = await cardManager.orderDeckItemsByPoolsInSet(deck.cardList, poolSet);
             var deckItem = deckItems[index];
             var defRef = deckItem.cardRef;
             if (defRef == null)
-                return Task.CompletedTask;
+                return;
             var poolRef = cardManager.getCardPoolReferenceInSet(defRef.cardPoolId, poolSet);
             var cardDef = cardManager.getCardDefine(poolRef, defRef.defineId);
-            return deckView.showPreviewCard(cardDef, index, cardManager);
+            await deckView.showPreviewCard(cardDef, index, cardManager);
         }
         public static async Task showPreviewCard(this DeckCardList deckView, CardDefine define, int index, CardManager cardManager)
         {
@@ -168,12 +175,11 @@ namespace UI
         {
             if (deckItems == null)
                 return Array.Empty<DeckCardViewData>();
-            var cards = cardManager.orderDeckItemsByLocalPools(deckItems).ToArray();
+            var cards = await cardManager.orderDeckItemsByLocalPools(deckItems);
             var deckCardsViewData = new DeckCardViewData[cards.Length];
             for (int i = 0; i < cards.Length; i++)
             {
                 var poolRef = cardManager.getLocalCardPoolReference(cards[i].cardRef.cardPoolId);
-                await cardManager.getOrLoadCardPool(poolRef);
                 CardDefine cardDefine = cardManager.getCardDefine(poolRef, cards[i].cardRef.defineId);
                 CardSkinData skin = cardDefine != null ? cardManager.getCardSkin(cardDefine) : null;
 

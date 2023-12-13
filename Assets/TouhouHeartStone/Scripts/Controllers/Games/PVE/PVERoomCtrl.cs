@@ -107,37 +107,7 @@ namespace Controllers
         }
         private async void onInventoryClickedCallback()
         {
-            CardDefine srcCardDefine = null;
-            CardDefine cardDefine = null;
-            var (genPoolInfo, generatedPool) = await game.pve.getGeneratedCardPool(getPVEDataName());
-            var generatedCard = generatedPool.cardDefineList.FirstOrDefault(d => PVEManager.cardDefineHasSlots(d));
-            if (generatedCard != null)
-            {
-                cardDefine = generatedCard;
-                var defRef = generatedCard.getProp<DefineReference>(PVEManager.CARD_PROP_TEMPLATE_DEFINE);
-                srcCardDefine = game.card.getLocalCardDefine(defRef);
-            }
-            else
-            {
-                // 从PVE中找一张有插槽的卡牌定义复制。
-                var (pvePoolInfo, pvePool) = await game.pve.getOrLoadPVECardPool();
-                var pveCard = pvePool.cardDefineList.FirstOrDefault(d => PVEManager.cardDefineHasSlots(d));
-                var clonedCard = game.card.cloneCardDefine(pveCard);
-                var cardSkins = game.card.cloneCardSkins(pvePoolInfo, pveCard.id);
-                clonedCard.cardPoolId = genPoolInfo.cardPoolId;
-                game.card.addCard(genPoolInfo.cardPoolId, clonedCard);
-                foreach (var skin in cardSkins)
-                {
-                    var image = await game.card.loadCardImage(pveCard);
-                    skin.imagePath = await game.card.saveImage(genPoolInfo.cardPoolId, image.texture);
-                    game.card.addCardSkin(genPoolInfo.cardPoolId, skin);
-                }
-                clonedCard.setProp(PVEManager.CARD_PROP_TEMPLATE_DEFINE, pveCard.getDefineRef());
-
-                srcCardDefine = pveCard;
-                cardDefine = clonedCard;
-            }
-            await _cardEditor.display(getPVEDataName(), _saveData, srcCardDefine, cardDefine, game.card);
+            await _cardEditor.display(getPVEDataName(), _saveData);
             _ui.openCardEditorPage();
             return;
         }
@@ -399,6 +369,10 @@ namespace Controllers
         private Task<DeckCardViewData[]> getCharacterDeckCardViewData(PVECharacter character)
         {
             var deck = character?.deck;
+            return getDeckCardViewData(deck);
+        }
+        private Task<DeckCardViewData[]> getDeckCardViewData(Deck deck)
+        {
             return DeckCardViewData.fromDeck(deck, game.card, game.lang);
         }
         private async Task<(string name, Sprite image)> getCharacterViewData(PVECharacter character)

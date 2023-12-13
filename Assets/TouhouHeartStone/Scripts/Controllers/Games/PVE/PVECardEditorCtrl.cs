@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using Game;
 using Game.PVE;
 using TouhouCardEngine;
 using TouhouHeartstone;
@@ -19,24 +17,20 @@ namespace Controllers
     class PVECardEditorCtrl : GameObjectCtrl<MainSceneCtrl>
     {
         #region 公有方法
-        public async Task display(string dataName, SaveData data, CardDefine srcCardDefine, CardDefine define, CardManager cardManager)
+        public async Task display(string dataName, SaveData data)
         {
-            gameObject.SetActive(true);
-            await _ui.setCard(define, cardManager);
-            var effect = define.getGeneratedEffects().FirstOrDefault();
-            if (effect == null)
-                _effectEditor.hideActionGraph();
-            else
-                await _effectEditor.display(define.cardPoolId, effect);
-
-            _srcCardDefine = srcCardDefine;
-            _cardDefine = define;
             _dataName = dataName;
             _saveData = data;
-
+            _srcCardDefine = null;
+            _cardDefine = null;
+            _slotGroups = null;
+            _ui.setCardSelected(false);
+            _ui.displayDeckPage();
+            await updateDeck();
             updateInventory();
-            _slotGroups = PVEManager.getCardDefineSlots(_saveData, define) ?? new CardGemSlotGroup[0];
             await updateAllGems();
+            _ui.deckCardList.hidePreviewCard();
+            gameObject.SetActive(true);
         }
         public void markUnsaved()
         {
@@ -56,6 +50,10 @@ namespace Controllers
             _ui.onSlotGemBeginDrag += onSlotGemBeginDragCallback;
             _ui.onSlotGemDrag += onSlotGemDragCallback;
             _ui.onSlotGemEndDrag += onSlotGemEndDragCallback;
+
+            _ui.onDeckItemClicked += onDeckItemClickedCallback;
+            _ui.onDeckItemPointerEnter += onDeckItemPointerEnterCallback;
+            _ui.onDeckItemPointerExit += onDeckItemPointerExitCallback;
         }
         #endregion
 
@@ -208,6 +206,25 @@ namespace Controllers
             _draggingGemSlotGroupIndex = -1;
             _draggingGemSlotIndex = -1;
         }
+
+        private async void onDeckItemClickedCallback(int index, PointerEventData pointer)
+        {
+            var deckItems = getEditorDeckItems();
+            var deckItem = deckItems[index];
+            await switchToCard(deckItem.cardRef);
+            _ui.deckCardList.hidePreviewCard();
+        }
+        private async void onDeckItemPointerEnterCallback(int index, PointerEventData pointer)
+        {
+            var deckItems = getEditorDeckItems();
+            var deckItem = deckItems[index];
+            var cardDefine = game.card.getLocalCardDefine(deckItem.cardRef);
+            await _ui.deckCardList.showPreviewCard(cardDefine, index, game.card);
+        }
+        private void onDeckItemPointerExitCallback(int index, PointerEventData pointer)
+        {
+            _ui.deckCardList.hidePreviewCard();
+        }
         #endregion
 
         #endregion
@@ -338,7 +355,8 @@ namespace Controllers
             {
                 var entryNode = entryEffect.entryNode;
                 var graph = effect.graph;
-                return oldConnections.Select(p => {
+                return oldConnections.Select(p =>
+                {
                     var src = entryNode.getOutputPort<ValueOutput>(p.name);
                     var destNode = graph.findNodeById(idMap[p.input.node.id]);
                     var dest = destNode.getInputPort<ValueInput>(p.input.name);
@@ -472,6 +490,11 @@ namespace Controllers
         }
         private async Task updateGemSlots()
         {
+            if (_slotGroups == null)
+            {
+                _ui.updateGemSlot(Array.Empty<CardGemSlotGroupViewData>());
+                return;
+            }
             var groupViews = new CardGemSlotGroupViewData[_slotGroups.Length];
             for (int g = 0; g < groupViews.Length; g++)
             {
@@ -501,6 +524,67 @@ namespace Controllers
         {
             await updateGemInventory();
             await updateGemSlots();
+        }
+        private DeckItem[] getEditorDeckItems()
+        {
+            return _saveData.deck.cardList.Where(c =>
+            {
+                var cardDefine = game.card.getLocalCardDefine(c.cardRef);
+                return PVEManager.cardDefineHasSlots(cardDefine);
+            }).ToArray();
+        }
+        private async Task updateDeck()
+        {
+            var cardDefines = getEditorDeckItems();
+            DeckCardViewData[] viewDatas = await DeckCardViewData.fromDeckItems(cardDefines, game.card, game.lang);
+            _ui.updateDeck(viewDatas);
+        }
+        private async Task switchToCard(DefineReference defineRef)
+        {
+            CardDefine srcCardDefine = null;
+            CardDefine cardDefine = null;
+            var (genPoolInfo, generatedPool) = await game.pve.getGeneratedCardPool(_dataName);
+            var generatedCard = generatedPool.cardDefineList.FirstOrDefault(d => d.cardPoolId == defineRef.cardPoolId && d.id == defineRef.defineId);
+            if (generatedCard != null)
+            {
+                cardDefine = generatedCard;
+                var defRef = generatedCard.getProp<DefineReference>(PVEManager.CARD_PROP_TEMPLATE_DEFINE);
+                srcCardDefine = game.card.getLocalCardDefine(defRef);
+            }
+            else
+            {
+                // 从PVE中找一张有插槽的卡牌定义复制。
+                var (pvePoolInfo, pvePool) = await game.pve.getOrLoadPVECardPool();
+                var pveCard = pvePool.cardDefineList.FirstOrDefault(d => d.cardPoolId == defineRef.cardPoolId && d.id == defineRef.defineId);
+                var clonedCard = game.card.cloneCardDefine(pveCard);
+                var cardSkins = game.card.cloneCardSkins(pvePoolInfo, pveCard.id);
+                clonedCard.cardPoolId = genPoolInfo.cardPoolId;
+                game.card.addCard(genPoolInfo.cardPoolId, clonedCard);
+                foreach (var skin in cardSkins)
+                {
+                    var image = await game.card.loadCardImage(pveCard);
+                    skin.imagePath = await game.card.saveImage(genPoolInfo.cardPoolId, image.texture);
+                    game.card.addCardSkin(genPoolInfo.cardPoolId, skin);
+                }
+                clonedCard.setProp(PVEManager.CARD_PROP_TEMPLATE_DEFINE, pveCard.getDefineRef());
+
+                srcCardDefine = pveCard;
+                cardDefine = clonedCard;
+            }
+            _srcCardDefine = srcCardDefine;
+            _cardDefine = cardDefine;
+            _slotGroups = PVEManager.getCardDefineSlots(_saveData, _cardDefine);
+
+            _ui.setCardSelected(true);
+            await _ui.setCard(cardDefine, game.card);
+            await updateGemSlots();
+            var effect = cardDefine.getGeneratedEffects().FirstOrDefault();
+            if (effect == null)
+                _effectEditor.hideActionGraph();
+            else
+                await _effectEditor.display(cardDefine.cardPoolId, effect);
+            _slotGroups = PVEManager.getCardDefineSlots(_saveData, cardDefine) ?? new CardGemSlotGroup[0];
+            _ui.displayCardPage();
         }
         #endregion
 
