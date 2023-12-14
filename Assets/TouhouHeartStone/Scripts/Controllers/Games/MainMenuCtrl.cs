@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using ExcelDataReader.Log;
 using Game;
+using IGensoukyo.Utilities;
 using MukioI18n;
 using NitoriNetwork.Common;
 using TouhouCardEngine;
@@ -68,6 +68,14 @@ namespace Controllers
             game.network.onAutoLogin += onAutoLoginCallback;
             game.network.onAutoLoginFinished += onAutoLoginFinishedCallback;
         }
+        private void OnEnable()
+        {
+            debugEntrance?.setEnabled(true);
+        }
+        private void OnDisable()
+        {
+            debugEntrance?.setEnabled(false);
+        }
         #endregion
         #region 事件回调
         private async void onClickVsBotButton()
@@ -85,12 +93,12 @@ namespace Controllers
         }
         private void onBuildButtonClick()
         {
-            _ui.gameObject.SetActive(false);
+            hide();
             scene.build.display();
         }
         private async void onReplayButtonClickedCallback()
         {
-            _ui.gameObject.SetActive(false);
+            hide();
             await scene.replay.display();
         }
         private void onLanButtonClickedCallback()
@@ -138,12 +146,12 @@ namespace Controllers
         private async void onEntryPVEMode()
         {
             await scene.pveRoom.display();
-            _ui.gameObject.SetActive(false);
+            hide();
         }
 
         private void onEditorButtonClick()
         {
-            _ui.gameObject.SetActive(false);
+            hide();
             scene.editor.display();
         }
         #region 注册界面
@@ -496,6 +504,8 @@ namespace Controllers
         private LangManager lang => game.lang;
         private Main main => game.ui.getObject<Main>();
         private bool _recoverEmailSent;
+        [SerializeField]
+        private DebugLabelEntrance debugEntrance;
         [SerializeField]
         MainMenu _ui;
         #endregion

@@ -7069,6 +7069,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9640d592e804eec4d91d5299522baa6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isEnabled: 1
   times: 10
   evt:
     m_PersistentCalls:
@@ -15534,6 +15535,11 @@ PrefabInstance:
       propertyPath: _scene
       value: 
       objectReference: {fileID: 59033839}
+    - target: {fileID: 6616506794799022529, guid: 3274ef919aad371409aa5b1167dc71b9,
+        type: 3}
+      propertyPath: debugEntrance
+      value: 
+      objectReference: {fileID: 1330733106}
     - target: {fileID: 7176640393361882401, guid: 3274ef919aad371409aa5b1167dc71b9,
         type: 3}
       propertyPath: m_AnchorMax.y

@@ -1,23 +1,25 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 namespace IGensoukyo.Utilities
 {
     class DebugLabelEntrance : MonoBehaviour, IPointerClickHandler
     {
-        [SerializeField]
-        int times = 10;
-
-        [SerializeField]
-        UnityEvent evt;
-
-        int counter = 0;
-        Stopwatch lastSw = null;
-
+        public void setEnabled(bool value)
+        {
+            isEnabled = value;
+            if (!value)
+            {
+                lastSw?.Stop();
+                counter = 0;
+            }
+        }
         public void OnPointerClick(PointerEventData eventData)
         {
+            if (!isEnabled)
+                return;
             if (lastSw == null)
             {
                 lastSw = new Stopwatch();
@@ -43,5 +45,14 @@ namespace IGensoukyo.Utilities
                 counter = 0;
             }
         }
+        [SerializeField]
+        bool isEnabled = true;
+        [SerializeField]
+        int times = 10;
+        [SerializeField]
+        UnityEvent evt;
+        int counter = 0;
+        Stopwatch lastSw = null;
+
     }
 }
