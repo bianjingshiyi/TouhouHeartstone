@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Game.BattleTable;
 using TouhouCardEngine;
 using UI;
@@ -20,19 +21,22 @@ namespace Game
             else
                 return languageName;
         }
-        public IEnumerator cardshot(CardDefine cardDefine, CardSkinData cardSkin)
+        public async Task<bool> cardshot(CardDefine cardDefine, CardSkinData cardSkin)
         {
             //激活摄像机与灯光
             _cardshotRoot.gameObject.SetActive(true);
             //设置卡牌
             _shotcard.setCardDefine(cardDefine, cardSkin, _game.card);
-            _shotcard.setImageSprite(_game.card.loadCardImage(_game.card.getLocalCardPoolReference(cardDefine.cardPoolId), cardDefine.id).Result);
+            var poolRef = _game.card.getLocalCardPoolReference(cardDefine.cardPoolId);
+            var image = await _game.card.loadCardImage(poolRef, cardDefine.id);
+            _shotcard.setImageSprite(image);
             //创建一个用于渲染卡图的RenderTexture
             RenderTexture renderTexture = new RenderTexture(1024, 1024, 24);
             renderTexture.antiAliasing = 2;
             _cardshotCamera.targetTexture = renderTexture;
-            //等待渲染
-            yield return new WaitForEndOfFrame();
+            _cardshotCamera.enabled = false;
+            // 相机渲染。
+            _cardshotCamera.Render();
             // 从Render Texture读取像素并保存为图片
             int exportWidth = 800;
             Texture2D texture = new Texture2D(exportWidth, renderTexture.height, TextureFormat.RGBA32, false);
@@ -55,7 +59,8 @@ namespace Game
             {
                 defaultFileName = defaultFileName.Replace(chr, '_');
             }
-            _ = _game.card.exportAnyFile(bytes, defaultFileName, "png");
+            var path = await _game.card.exportAnyFile(bytes, defaultFileName, "png");
+            return path != null;
         }
         #region 属性字段
         public UIDialog dialog => _dialog;

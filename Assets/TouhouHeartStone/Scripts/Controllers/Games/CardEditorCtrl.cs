@@ -435,10 +435,26 @@ namespace Controllers
                 _ui.setRace(-1, string.Empty);
             }
         }
-        private void onSaveCardFaceToImage()
+        private async void onSaveCardFaceToImage()
         {
             //使用另一个摄像机对卡牌进行拍摄
-            StartCoroutine(game.ui.cardshot(_cardDefine, _curCardSkin));
+            try
+            {
+                var success = await game.ui.cardshot(_cardDefine, _curCardSkin);
+                if (success)
+                {
+                    var title = game.lang._(StringTable.HINT_TITLE);
+                    var content = game.lang._(CARD_PICTURE_EXPORTED);
+                    game.ui.dialog.ShowConfirm(title, content);
+                }
+            }
+            catch (Exception e)
+            {
+                var title = game.lang._(StringTable.ERROR);
+                var content = game.lang._(CARD_PICTURE_EXPORT_FAILED);
+                game.ui.dialog.ShowConfirm(title, content);
+                throw;
+            }
         }
         #region Effects
         private async void onCreateEffect(GeneratedEffect effect)
@@ -1234,6 +1250,10 @@ namespace Controllers
         public const string CARD_CUSTOM_PROP_NAME_TAKEN = "该属性名已被使用！";
         [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]
         public const string CARD_CUSTOM_PROP_NAME_EMPTY = "请输入属性名！";
+        [TranslateMsg("卡牌图片导出成功")]
+        public const string CARD_PICTURE_EXPORTED = "卡牌图片导出成功。";
+        [TranslateMsg("卡牌图片导出失败")]
+        public const string CARD_PICTURE_EXPORT_FAILED = "卡牌图片导出失败。";
 
 
         [TranslateMsg("尝试添加重复名称的特效引用的错误提示")]
