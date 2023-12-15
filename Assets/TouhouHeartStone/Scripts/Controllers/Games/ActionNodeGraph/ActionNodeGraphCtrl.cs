@@ -667,8 +667,6 @@ namespace Controllers
             var name = inputPort.name;
             var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
             setNodeDefaultValue(node, name, paramIndex, value);
-            if (inputPort.define.isParams && node is ActionNode action)
-                action.Define();
             updateNodeItemInputPorts(node);
             addRecordBreakpoint();
         }

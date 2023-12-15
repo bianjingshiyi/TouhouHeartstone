@@ -39,12 +39,11 @@ namespace TouhouCardEngine
             var ports = node.getParamInputPorts(paramName);
 
             List<int> numList = new List<int>();
-            foreach (var port in ports)
+            for (int i = 0; i < ports.Length - 1; i++)
             {
-                if (port.getConnectedOutputPort() == null)
-                    continue;
+                var port = ports[i];
                 var value = await flow.getValue<int>(port);
-                numList.Add((int)value);
+                numList.Add(value);
             }
             var numbers = numList.ToArray();
 

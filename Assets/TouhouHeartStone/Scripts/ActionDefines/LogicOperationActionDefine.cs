@@ -37,7 +37,7 @@ namespace TouhouCardEngine
             else
                 op = LogicOperator.and;
 
-            var argPorts = node.getParamInputPorts("value").Select(port => port.getConnectedOutputPort()).Where(p => p != null);
+            var argPorts = node.getParamInputPorts("value").SkipLast(1);
             bool result = false;
             if (argPorts != null && argPorts.Count() > 0)
             {

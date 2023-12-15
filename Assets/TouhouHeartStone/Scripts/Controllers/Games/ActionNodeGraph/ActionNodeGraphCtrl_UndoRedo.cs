@@ -239,8 +239,6 @@ namespace Controllers
                 {
                     node.setInputDefaultValue(_inputName, _paramIndex, value);
                 }
-                if (_paramIndex >= 0 && node is ActionNode action)
-                    action.Define();
                 _graphCtrl.updateNodeItemInputPorts(node);
             }
             public override void undo()
