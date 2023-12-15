@@ -189,7 +189,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.OrderBy_Obsolete, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, "排序（过时）", EDITOR_NODE_NAME_ORDER_BY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array orderBy(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
-            [ActionNodeParam(EDITOR_PARAM_NAME_DESCENDING, isConst: true)] bool descending,
+            [ActionNodeParam(EDITOR_PARAM_NAME_DESCENDING)] bool descending,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
             [ActionNodeParam(EDITOR_PARAM_NAME_ORDER_KEY)] ControlInput condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
@@ -230,7 +230,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.OrderBy, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_ORDER_BY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array orderBy(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
-            [ActionNodeParam(EDITOR_PARAM_NAME_DESCENDING, isConst: true)] bool descending,
+            [ActionNodeParam(EDITOR_PARAM_NAME_DESCENDING)] bool descending,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
             [ActionNodeParam(EDITOR_PARAM_NAME_ORDER_KEY)] NodeValueRef<object> condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
@@ -820,7 +820,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.ContentEquals, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_CONTENT_EQUALS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool contentEquals(CardEngine game,
-            [ActionNodeParam(EDITOR_PARAM_NAME_IGNORE_ORDER, isConst: true)] bool ignoreOrder,
+            [ActionNodeParam(EDITOR_PARAM_NAME_IGNORE_ORDER)] bool ignoreOrder,
             [ActionNodeParam(EDITOR_PARAM_NAME_COLLECTION_A)] object[] arrayA,
             [ActionNodeParam(EDITOR_PARAM_NAME_COLLECTION_B)] object[] arrayB)
         {

@@ -49,7 +49,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.EffectHasTag, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_EFFECT_HAS_TAG)]
         public static bool effectHasTag(
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] IEffect effect,
-            [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_TAG, isConst: true)] EffectTag tag)
+            [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_TAG)] EffectTag tag)
         {
             if (tag == null)
                 return false;
@@ -65,7 +65,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetEffectProp, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_GET_EFFECT_PROPERTY)]
         public static object getEffectProp(
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] IEffect effect,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName)
         {
             if (effect is GeneratedEffect gen)
             {

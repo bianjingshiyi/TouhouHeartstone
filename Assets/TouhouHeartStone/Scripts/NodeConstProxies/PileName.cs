@@ -1,4 +1,6 @@
-﻿namespace Game
+﻿using TouhouCardEngine;
+
+namespace Game
 {
     public class PileName : NodeConstProxyString
     {

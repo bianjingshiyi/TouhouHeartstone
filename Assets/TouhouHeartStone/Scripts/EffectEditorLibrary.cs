@@ -79,7 +79,7 @@ namespace Game
         /// <param name="value"></param>
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetTempVar, EDITOR_CATEGORY_NAME_OTHER, EDIOTR_NODE_NAME_SET_TEMP_VARIABLE)]
         public static void setTempVariable(Flow flow,
-            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, isConst: true)] string variableName,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME)] string variableName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
             var key = variableName;
@@ -93,14 +93,14 @@ namespace Game
         /// <param name="value"></param>
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetTempVar, EDITOR_CATEGORY_NAME_OTHER, EDIOTR_NODE_NAME_GET_TEMP_VARIABLE)]
         public static object getTempVariable(Flow flow,
-            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, isConst: true)] string variableName)
+            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME)] string variableName)
         {
             var key = variableName;
             return flow.getFlowVariable(key);
         }
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.BranchAction, EDITOR_CATEGORY_NAME_OTHER, StringTable.EDIOTR_NODE_NAME_BRANCH_ACTION)]
-        public static async Task branchAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+        public static async Task branchAction(CardEngine game, Flow flow,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)] bool isTrue,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ControlInput thenAction,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELSE_ACTION, isOut: true)] ControlInput elseAction)
@@ -220,8 +220,8 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.RandomInt, EDITOR_CATEGORY_NAME_OTHER, EDITOR_NODE_NAME_GET_RANDOM_INT)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int randomInt(CardEngine game,
-           [ActionNodeParam(EDITOR_PARAM_NAME_GET_INT_X, isConst: false)] int countX,
-           [ActionNodeParam(EDITOR_PARAM_NAME_GET_INT_Y, isConst: false)] int countY)
+           [ActionNodeParam(EDITOR_PARAM_NAME_GET_INT_X)] int countX,
+           [ActionNodeParam(EDITOR_PARAM_NAME_GET_INT_Y)] int countY)
         {
             return game.randomInt(countX, countY);
         }
@@ -341,8 +341,8 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)]
         public static Pile createPile(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(EDITOR_PARAM_PILE_NAME, isConst: true)] string pileName,
-            [ActionNodeParam(EDITOR_PARAM_CAPACITY, isConst: true)] int capacity)
+            [ActionNodeParam(EDITOR_PARAM_PILE_NAME)] string pileName,
+            [ActionNodeParam(EDITOR_PARAM_CAPACITY)] int capacity)
         {
             if (player == null || pileName == null)
                 return null;
@@ -481,7 +481,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getPlayerProp(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName)
         {
             return player?.getProp(propName);
         }
@@ -494,7 +494,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetPlayerProp, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_SET_PLAYER_PROP)]
         public static void setPlayerProp(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
             player?.setProp(game, propName, value);
@@ -578,7 +578,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Task<Card> selectOneFromManyCards(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count)
         {
             if (cards == null)
                 return null;
@@ -589,8 +589,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static Task<CardDefine> selectOneFromManyDefines(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine[] defines,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count/*,
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_STRING, isConst: true)] string title = "选择一项"*/)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count)
         {
             if (defines == null)
                 return null;
@@ -730,7 +729,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetPlayerGem, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_AMOUNT_OF_GEM)]
         public static async Task setGem(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count,
             [ActionNodeParam(EDITOR_PARAM_NAME_SET_GEM_EVENT, isOut: true)][NodeParamEventType(typeof(SetGemEventDefine))] EventArg outEvent)
         {
             if (player == null)
@@ -746,7 +745,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddPlayerGem, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_GEM)]
         public static async Task addGem(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count,
             [ActionNodeParam(EDITOR_PARAM_NAME_SET_GEM_EVENT, isOut: true)][NodeParamEventType(typeof(SetGemEventDefine))] EventArg outEvent)
         {
             if (player == null)
@@ -762,7 +761,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetPlayerMaxGem, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_SET_MAX_GEM)]
         public static async Task setMaxGem(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count,
             [ActionNodeParam(EDITOR_PARAM_NAME_SET_MAX_GEM_EVENT, isOut: true)][NodeParamEventType(typeof(SetMaxGemEventDefine))] EventArg outEvent)
         {
             if (player == null)
@@ -778,7 +777,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddPlayerMaxGem, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_MAX_GEM)]
         public static async Task addMaxGem(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count,
             [ActionNodeParam(EDITOR_PARAM_NAME_SET_MAX_GEM_EVENT, isOut: true)][NodeParamEventType(typeof(SetMaxGemEventDefine))] EventArg outEvent)
         {
             if (player == null)
@@ -896,7 +895,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)]
         public static Pile getPile(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(EDITOR_PARAM_PILE_NAME, isConst: true)] PileName pileName)
+            [ActionNodeParam(EDITOR_PARAM_PILE_NAME)] PileName pileName)
         {
             return player.getPile(pileName);
         }
@@ -906,7 +905,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)]
         [Obsolete]
         public static Card getTarget(EventArg eventArg, 
-            [ActionNodeParam(EDITOR_PARAM_TARGET_NAME, true)] string targetName)
+            [ActionNodeParam(EDITOR_PARAM_TARGET_NAME)] string targetName)
         {
             if (targetName == "Target")
                 return eventArg.getVar<Card[]>(EVENTVAR.TARGET_CARD)[0];
@@ -1004,7 +1003,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         [Obsolete]
         public static async Task<Card[]> getCardsInDeckWithCondition(CardEngine game, Card card, IBuff buff, IEventArg eventArg, Flow flow, ActionNode node,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION, isConst: true)] ControlInput condition)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] ControlInput condition)
         {
             Pile deck = card.owner.getDeck();
             List<Card> cardList = new List<Card>();
@@ -1078,7 +1077,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool checkCardPileObsolete(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE, isConst: true)] string pileName)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)] string pileName)
         {
             return card?.pile?.name == pileName;
         }
@@ -1092,7 +1091,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool checkCardPile(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
-            [ActionNodeParam(EDITOR_PARAM_PILE_NAME, isConst: true)] PileName pileName)
+            [ActionNodeParam(EDITOR_PARAM_PILE_NAME)] PileName pileName)
         {
             return card?.pile?.name == pileName;
         }
@@ -1215,7 +1214,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetBuffProp, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_SET_BUFF_PROP)]
         public static async Task setBuffProp(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff[] buffs,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value,
             [ActionNodeParam(EDITOR_PARAM_NAME_BUFF_PROP_CHANGED_EVENT, isOut: true)][NodeParamEventType(typeof(BuffPropertyChangeEventDefine))] EventArg[] outEvent)
         {
@@ -1245,7 +1244,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getBuffProp(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName)
         {
             if (buff == null)
                 return default;
@@ -1364,7 +1363,7 @@ namespace Game
         public static async Task<Card[]> moveToDeck(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
-            [ActionNodeParam(StringTable.EDITOR_NODE_NAME_IS_DECK_TOP, isConst: true)] bool top,
+            [ActionNodeParam(StringTable.EDITOR_NODE_NAME_IS_DECK_TOP)] bool top,
             [ActionNodeParam(EDITOR_PARAM_NAME_MASS_SHUFFLE_TO_DECK_EVENT, isOut: true)][NodeParamEventType(typeof(MassShuffleToDeckEventDefine))] EventArg outEvent)
         {
             if (cards == null)

@@ -77,7 +77,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefine, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine getCardDefine(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, true)] DefineReference cardRef)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, isConst: true)] DefineReference cardRef)
         {
             if (cardRef == null)
                 return null;
@@ -89,7 +89,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineArray, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE_ARRAY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine[] getCardDefineArray(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, true)] DefineReference[] cardRefs)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, isConst: true)] DefineReference[] cardRefs)
         {
             if (cardRefs == null || cardRefs.Length < 1)
                 return new CardDefine[0];
@@ -180,7 +180,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool CardDefineHasKeywords(
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_DEFINE)] CardDefine card,
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_KEYWORDS_TYPE, isConst: true)] string select)
+            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_KEYWORDS_TYPE)] string select)
         {
             if (card == null)
                 return false;
@@ -230,7 +230,7 @@ namespace Game
         public static async Task<Card> cardSetDefine(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine define,
-            [ActionNodeParam(EDITOR_NODE_CARD_IS_RESET, isConst: true)] bool isreset,
+            [ActionNodeParam(EDITOR_NODE_CARD_IS_RESET)] bool isreset,
             [ActionNodeParam(EDITOR_PARAM_NAME_SET_CARD_DEFINE_EVENT, isOut: true)][NodeParamEventType(typeof(SetCardDefineEventDefine))] EventArg outEvent)
         {
             if (define == null)
@@ -260,7 +260,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getCardDefinePropByPropertyName(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] CardDefinePropertyGetterName propName)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] CardDefinePropertyGetterName propName)
         {
             return card?.getProp<object>(propName);
         }

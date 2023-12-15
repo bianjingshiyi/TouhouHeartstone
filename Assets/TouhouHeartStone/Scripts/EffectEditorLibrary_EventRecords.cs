@@ -44,7 +44,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getRecordVariable(CardEngine game,
             [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord record,
-            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, true)] EventVarName varName)
+            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME)] EventVarName varName)
         {
             if (record == null)
                 return null;

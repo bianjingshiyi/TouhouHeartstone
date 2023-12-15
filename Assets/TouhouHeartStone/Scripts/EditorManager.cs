@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BJSYGameCore;
+using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using UnityEngine;
@@ -83,6 +84,18 @@ namespace Game
         #region 私有方法
         #endregion
         #region 属性字段
+        [TranslateMsg("编辑器类型名称")]
+        public const string EDITOR_TYPE_NAME_CARD_PROP_GETTER_NAME = "卡牌属性名（获取）";
+        [TranslateMsg("编辑器类型名称")]
+        public const string EDITOR_TYPE_NAME_CARD_PROP_SETTER_NAME = "卡牌属性名（设置）";
+        [TranslateMsg("编辑器类型名称")]
+        public const string EDITOR_TYPE_NAME_CARD_DEFINE_PROP_GETTER_NAME = "卡牌定义属性名（获取）";
+        [TranslateMsg("编辑器类型名称")]
+        public const string EDITOR_TYPE_NAME_EFFECT_TAG = "效果标签";
+        [TranslateMsg("编辑器类型名称")]
+        public const string EDITOR_TYPE_NAME_EVENT_VAR_NAME = "事件变量名";
+        [TranslateMsg("编辑器类型名称")]
+        public const string EDITOR_TYPE_NAME_PILE_NAME = "牌堆名";
         public MainManager game
         {
             get { return _game; }
@@ -108,23 +121,32 @@ namespace Game
             new EditorTypeInfo() { type = typeof(Player), typeName = StringTable.EDITOR_TYPE_NAME_PLAYER, isVarType = true, color = new Color(.8f, .2f, 1, 1) },
             new EditorTypeInfo() { type = typeof(Pile), typeName = StringTable.EDITOR_TYPE_NAME_PILE, isVarType = true, color = new Color(.6f, .2f, 1, 1) },
             new EditorTypeInfo() { type = typeof(CardDefine), typeName = StringTable.EDITOR_TYPE_NAME_CARD_DEFINE, isVarType = true, color = new Color(.1f, .4f, .8f, 1) },
-            new EditorTypeInfo() { type = typeof(DefineReference), typeName = StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE, isVarType = true, color = new Color(.1f, .3f, .6f, 1) },
             new EditorTypeInfo() { type = typeof(Card), typeName = StringTable.EDITOR_TYPE_NAME_CARD, isVarType = true, color = new Color(.2f, .6f, 1, 1) },
             new EditorTypeInfo() { type = typeof(CardSnapshot), typeName = EffectEditorLibrary.EDITOR_VAR_TYPE_CARD_SNAPSHOT, isVarType = true, color = new Color(.5f, .6f, 7f, 1) },
             new EditorTypeInfo() { type = typeof(BuffDefine), typeName = StringTable.EDITOR_TYPE_NAME_BUFF_DEFINE, isVarType = true, color = new Color(.1f, .5f, .6f, 1) },
             new EditorTypeInfo() { type = typeof(Buff), typeName = StringTable.EDITOR_TYPE_NAME_BUFF, isVarType = true, color = new Color(.2f, .8f, 1, 1) },
             new EditorTypeInfo() { type = typeof(IEffect), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT, isVarType = true, color = new Color(.2f, 1, 1, 1) },
-            new EditorTypeInfo() { type = typeof(EffectTag), typeName = EffectEditorLibrary.EDITOR_PARAM_NAME_EFFECT_TAG, isVarType = true, color = new Color(.7f, .8f, .2f, 1) },
-
+            
             // 事件
-            new EditorTypeInfo() { type = typeof(EventReferenceProxy), typeName = EffectEditorLibrary.EDITOR_TYPE_NAME_EVENT_TYPE, isVarType = true,  color = new Color(1, 1, .2f, 1) },
             new EditorTypeInfo() { type = typeof(EventArg), typeName = StringTable.EDITOR_TYPE_NAME_EVENT_ARG, isVarType = true, color = new Color(1, 1, .2f, 1) },
             new EditorTypeInfo() { type = typeof(EventRecord), typeName = EffectEditorLibrary.EDITOR_TYPE_NAME_EVENT_RECORD, isVarType = true, color = new Color(.9f, .9f, .4f, 1) },
+            #endregion
+
+            #region 类型代理
+            new EditorTypeInfo() { type = typeof(CardPropertyGetterName), typeName = EDITOR_TYPE_NAME_CARD_PROP_GETTER_NAME, color = new Color(.7f, .8f, .2f, 1) },
+            new EditorTypeInfo() { type = typeof(CardPropertySetterName), typeName = EDITOR_TYPE_NAME_CARD_PROP_SETTER_NAME, color = new Color(.7f, .8f, .2f, 1) },
+            new EditorTypeInfo() { type = typeof(CardDefinePropertyGetterName), typeName = EDITOR_TYPE_NAME_CARD_DEFINE_PROP_GETTER_NAME, color = new Color(.7f, .8f, .2f, 1) },
+            new EditorTypeInfo() { type = typeof(EffectTag), typeName = EDITOR_TYPE_NAME_EFFECT_TAG, color = new Color(.7f, .8f, .2f, 1) },
+            new EditorTypeInfo() { type = typeof(EventVarName), typeName = EDITOR_TYPE_NAME_EVENT_VAR_NAME, color = new Color(.7f, .8f, .2f, 1) },
+            new EditorTypeInfo() { type = typeof(PileName), typeName = EDITOR_TYPE_NAME_PILE_NAME, color = new Color(.7f, .8f, .2f, 1) },
+
+            new EditorTypeInfo() { type = typeof(EventReferenceProxy), typeName = EffectEditorLibrary.EDITOR_TYPE_NAME_EVENT_TYPE, isVarType = true, color = new Color(1, 1, .2f, 1) },
             #endregion
 
             #region 隐藏类型
             new EditorTypeInfo() { type = typeof(Rule), typeName = StringTable.EDITOR_TYPE_NAME_RULE, color = new Color(.2f, .2f, .6f, 1) },
             new EditorTypeInfo() { type = typeof(CardEngine), typeName = StringTable.EDITOR_TYPE_NAME_CARD_ENGINE, color = new Color(.2f, .2f, 1, 1) },
+            new EditorTypeInfo() { type = typeof(DefineReference), typeName = StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE, color = new Color(.1f, .3f, .6f, 1) },
             new EditorTypeInfo() { type = typeof(PileNameCollection), typeName = StringTable.EDITOR_TYPE_NAME_PILE_NAME_COLLECTION, color = new Color(.2f, .1f, .6f, 1) },
             new EditorTypeInfo() { type = typeof(EffectTagCollection), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT_TAG_COLLECTION, color = new Color(.2f, .5f, .5f, 1) },
 

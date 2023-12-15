@@ -96,7 +96,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getVariable(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
-            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, true)] EventVarName varName)
+            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME)] EventVarName varName)
         {
             if (eventArg == null || varName == null)
                 return null;
@@ -118,7 +118,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetEventVariable, EDITOR_NODE_EVENT, StringTable.EDITOR_NODE_NAME_SET_VARIABLE, "SetVariable")]
         public static void setVariable(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
-            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, true)] EventVarName varName,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME)] EventVarName varName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
             if (eventArg == null || varName == null)

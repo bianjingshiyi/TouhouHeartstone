@@ -41,11 +41,11 @@ namespace Game
         {
             Type fromUnpacked = from;
             Type toUnpacked = to;
-            if (IsSubclassOfRawGeneric(typeof(NodeConstProxy<>), from, out var fromGenArgs))
+            if (from.IsSubclassOfRawGeneric(typeof(NodeConstProxy<>), out var fromGenArgs))
             {
                 fromUnpacked = fromGenArgs[0];
             }
-            if (IsSubclassOfRawGeneric(typeof(NodeConstProxy<>), to, out var toGenArgs))
+            if (to.IsSubclassOfRawGeneric(typeof(NodeConstProxy<>), out var toGenArgs))
             {
                 toUnpacked = toGenArgs[0];
             }
@@ -62,21 +62,6 @@ namespace Game
                 }
             }
             return input;
-        }
-        private static bool IsSubclassOfRawGeneric(Type generic, Type toCheck, out Type[] genericArgs)
-        {
-            while (toCheck != null && toCheck != typeof(object))
-            {
-                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
-                if (generic == cur)
-                {
-                    genericArgs = toCheck.GetGenericArguments();
-                    return true;
-                }
-                toCheck = toCheck.BaseType;
-            }
-            genericArgs = null;
-            return false;
         }
     }
     public class EventReferenceProxyConversion : ParamConversion
