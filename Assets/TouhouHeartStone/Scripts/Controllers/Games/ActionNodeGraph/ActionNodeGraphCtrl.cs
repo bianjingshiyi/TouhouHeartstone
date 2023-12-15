@@ -1903,7 +1903,8 @@ namespace Controllers
             {
                 // 这里不用setNodeDefaultValue，因为setNodeDefaultValue会调用addOperationRecord，将节点图变为未保存状态
                 var value = getValueTypeDefaultValue(valueInfo.type);
-                node.setInputDefaultValue(valueInfo.name, paramIndex, value);
+                if (value != null)
+                    node.setInputDefaultValue(valueInfo.name, paramIndex, value);
             }
         }
         private object getValueTypeDefaultValue(ActionNodeValueType valueType)
