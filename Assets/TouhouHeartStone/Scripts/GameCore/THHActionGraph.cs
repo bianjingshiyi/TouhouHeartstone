@@ -14,6 +14,7 @@ namespace TouhouHeartstone
             node.posY = posY;
             node.graph = graph;
             graph.addNode(node);
+            node.setInputDefaultValue(ActiveEntryNode.conditionPortName, true);
             return node;
         }
         public static PassiveEntryNode createPassiveEntryNode(this ActionGraph graph, float posX = 0, float posY = 0)
@@ -25,6 +26,7 @@ namespace TouhouHeartstone
             node.posY = posY;
             node.graph = graph;
             graph.addNode(node);
+            node.setInputDefaultValue(ActiveEntryNode.conditionPortName, true);
             return node;
         }
         public static EventEntryNode createEventEntryNode(this ActionGraph graph, EventTriggerTime triggerTime, float posX = 0, float posY = 0)
@@ -36,6 +38,7 @@ namespace TouhouHeartstone
             node.posY = posY;
             node.graph = graph;
             graph.addNode(node);
+            node.setInputDefaultValue(ActiveEntryNode.conditionPortName, true);
             return node;
         }
         public static EventEntryNode createEventEntryNode(this ActionGraph graph, EventDefine eventDefine, EventTriggerTimeType type, float posX = 0, float posY = 0)

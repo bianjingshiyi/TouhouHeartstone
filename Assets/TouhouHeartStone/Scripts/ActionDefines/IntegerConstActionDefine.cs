@@ -8,10 +8,9 @@ namespace TouhouCardEngine
         public IntegerConstActionDefine() : base(BuiltinActionDefineID.IntegerConst, defName, defName)
         {
             type = NodeDefineType.Function;
-            inputs = new PortDefine[0];
-            consts = new PortDefine[1]
+            inputs = new PortDefine[1]
             {
-                PortDefine.Const(typeof(int), "value")
+                PortDefine.Value(typeof(int), "value", isConst: true)
             };
             outputs = new PortDefine[]
             {
@@ -19,20 +18,17 @@ namespace TouhouCardEngine
             };
             category = EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER;
         }
-        public override Task<ControlOutput> run(Flow flow, Node node)
+        public override async Task<ControlOutput> run(Flow flow, Node node)
         {
-            flow.setValue(node.getOutputPort<ValueOutput>("result"), node.getConst<int>("value"));
-            return Task.FromResult(node.getOutputPort<ControlOutput>(exitPortName));
+            var value = await flow.getValue<int>(node.getInputPort<ValueInput>("value"));
+            flow.setValue(node.getOutputPort<ValueOutput>("result"), value);
+            return node.getOutputPort<ControlOutput>(exitPortName);
         }
         public const string defName = "IntegerConst";
         private PortDefine[] inputs { get; }
-        private PortDefine[] consts { get; }
         private PortDefine[] outputs { get; }
 
         public override IEnumerable<PortDefine> inputDefines => inputs;
-
-        public override IEnumerable<PortDefine> constDefines => consts;
-
         public override IEnumerable<PortDefine> outputDefines => outputs;
     }
 }

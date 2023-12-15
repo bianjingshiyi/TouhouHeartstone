@@ -14,6 +14,7 @@ namespace TouhouHeartstone
         {
             this.id = id;
             inputList.Add(new ValueInput(this, triggerConditionPortDefine));
+            inputList.Add(new ValueInput(this, tagsPortDefine));
             outputList.Add(new ControlOutput(this, actionPortDefine));
         }
         public override Task<ControlOutput> run(Flow flow)
@@ -41,6 +42,10 @@ namespace TouhouHeartstone
         {
             return getInputPorts<ValueInput>().FirstOrDefault(p => p.name == targetConditionName && p.paramIndex == index);
         }
+        public ValueInput getTagsPort()
+        {
+            return getInputPort<ValueInput>(tagsPortName);
+        }
         public ValueInput[] getTargetConditionPorts()
         {
             return getInputPorts<ValueInput>().Where(p => p.name == targetConditionName).ToArray();
@@ -51,15 +56,19 @@ namespace TouhouHeartstone
         }
         public void setTags(params string[] value)
         {
-            var tags = getConst<EffectTagCollection>(tagsConstName);
+            var tags = getInputDefaultValue<EffectTagCollection>(tagsPortName);
             if (tags == null)
             {
                 tags = new EffectTagCollection();
-                constList.Add(tagsConstName, tags);
+                setInputDefaultValue(tagsPortName, tags);
             }
             tags.Clear();
             if (value != null)
                 tags.AddRange(value);
+        }
+        public string[] getTags()
+        {
+            return getInputDefaultValue<EffectTagCollection>(tagsPortName).ToArray();
         }
         public void AddTargetChecker(TargetChecker checker)
         {
@@ -78,7 +87,7 @@ namespace TouhouHeartstone
             targetCheckerList.Remove(checker);
             DefinitionConditions();
         }
-        public override ISerializableNode ToSerializableNode()
+        public override SerializableNode ToSerializableNode()
         {
             return new SerializableActiveEntryNode(this);
         }
@@ -89,12 +98,15 @@ namespace TouhouHeartstone
             ValueInput valueCondition()
                  => inputList.OfType<ValueInput>().FirstOrDefault(d => d != null && d.define.Equals(triggerConditionPortDefine)) ??
                  new ValueInput(this, triggerConditionPortDefine);
+            ValueInput valueTags()
+                 => inputList.OfType<ValueInput>().FirstOrDefault(d => d != null && d.define.Equals(tagsPortDefine)) ??
+                 new ValueInput(this, tagsPortDefine);
             ValueInput targetCondition(int paramIndex)
                  => inputList.OfType<ValueInput>().FirstOrDefault(d => d != null && d.define.Equals(targetConditionPortDefine) && d.paramIndex == paramIndex) ??
                  new ValueInput(this, targetConditionPortDefine, paramIndex);
 
 
-            var inputs = new List<IPort> { valueCondition() };
+            var inputs = new List<IPort> { valueCondition(), valueTags() };
             for (int i = 0; i < targetCheckerList.Count; i++)
             {
                 inputs.Add(targetCondition(i));
@@ -135,7 +147,6 @@ namespace TouhouHeartstone
 
         #endregion
         public List<TargetChecker> targetCheckerList { get; private set; } = new List<TargetChecker>();
-        public IEnumerable<string> tags => getConst<EffectTagCollection>(tagsConstName);
 
         public const string conditionPortName = "condition";
         public const string targetConditionName = "targetCondition";
@@ -143,23 +154,20 @@ namespace TouhouHeartstone
         public const string playerPortName = "玩家";
         public const string cardPortName = "卡牌";
         public const string targetsPortName = "目标卡牌";
-        public const string tagsConstName = "tags";
+        public const string tagsPortName = "tags";
         private static PortDefine targetConditionPortDefine = PortDefine.Value(typeof(bool), targetConditionName, "目标{0}条件");
         private static PortDefine triggerConditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, "触发条件");
+        private static PortDefine tagsPortDefine = PortDefine.Value(typeof(EffectTagCollection), tagsPortName, "标签列表", isConst: true);
         private static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
         private static PortDefine playerPortDefine = PortDefine.Value(typeof(Player), playerPortName, "Player");
         private static PortDefine cardPortDefine = PortDefine.Value(typeof(Card), cardPortName, "Card");
         private static PortDefine targetsPortDefine = PortDefine.Value(typeof(Card[]), targetsPortName, "TargetCard");
     }
-    public class SerializableActiveEntryNode : ISerializableNode
+    public class SerializableActiveEntryNode : SerializableNode
     {
-        public SerializableActiveEntryNode(ActiveEntryNode activeEntry)
+        public SerializableActiveEntryNode(ActiveEntryNode activeEntry) : base(activeEntry)
         {
-            id = activeEntry.id;
-            consts = activeEntry.consts != null ? new Dictionary<string, object>(activeEntry.consts) : null;
             targetCheckerList = activeEntry.targetCheckerList.ConvertAll(t => new SerializableTargetChecker(t));
-            posX = activeEntry.posX;
-            posY = activeEntry.posY;
         }
         public ActiveEntryNode ToActionNode(ActionGraph graph)
         {
@@ -168,14 +176,8 @@ namespace TouhouHeartstone
                 posX = posX,
                 posY = posY,
             };
-            entry.graph = graph;
-            if (consts != null)
-            {
-                foreach (var pair in consts)
-                {
-                    entry.setConst(pair.Key, pair.Value);
-                }
-            }
+            var defaultValues = inputDefaultValues ?? consts;
+            InitNode(entry, defaultValues, graph);
             if (tags != null)
                 entry.setTags(tags);
             foreach (var seri in targetCheckerList)
@@ -185,13 +187,11 @@ namespace TouhouHeartstone
             }
             return entry;
         }
-        Node ISerializableNode.ToActionNode(ActionGraph graph) => ToActionNode(graph);
+        public override Node ToNode(ActionGraph graph) => ToActionNode(graph);
 
         [Obsolete]
         public string[] tags;
-        public int id;
-        public float posX;
-        public float posY;
+        [Obsolete]
         public Dictionary<string, object> consts;
         public List<SerializableTargetChecker> targetCheckerList = new List<SerializableTargetChecker>();
     }

@@ -5,7 +5,6 @@ namespace UI
     public enum ActionPortDefineType
     {
         Input,
-        Const,
         Output
     }
     public class ActionPortDefineItem

@@ -24,7 +24,7 @@ namespace Controllers
         }
         private async void onItemEditBuffCallback(ActionNodeItem item)
         {
-            if (tryGetBuffDefine(getActionNode(item).getConst(GetBuffDefineAction.constName), out GeneratedBuffDefine buffDefine))
+            if (tryGetBuffDefine(getActionNode(item).getInputDefaultValue(GetBuffDefineAction.constName), out GeneratedBuffDefine buffDefine))
             {
                 await scene.editor.openBuffEditor(buffDefine);
             }
@@ -98,7 +98,7 @@ namespace Controllers
             var action = getActionNode(item) as ActionNode;
             if (action == null)
                 return;
-            setNodeConst(action, GetBuffDefineAction.constName, new DefineReference(buffDefine.cardPoolId, buffDefine.id));
+            setNodeDefaultValue(action, GetBuffDefineAction.constName, new DefineReference(buffDefine.cardPoolId, buffDefine.id));
             BuffDefine[] buffDefines = game.card.getBuffDefines(cardPoolRef)
                 .OrderBy(p => p.Value.cardPoolId)
                 .ThenBy(p => p.Value.id)

@@ -12,11 +12,8 @@ namespace TouhouCardEngine
             type = NodeDefineType.Function;
             inputs = new PortDefine[]
             {
+                PortDefine.Value(typeof(LogicOperator), "operator", isConst: true),
                 PortDefine.Value(typeof(bool), "value", isParams: true)
-            };
-            consts = new PortDefine[1]
-            {
-                PortDefine.Const(typeof(LogicOperator), "operator")
             };
             outputs = new PortDefine[]
             {
@@ -26,7 +23,8 @@ namespace TouhouCardEngine
         }
         public override async Task<ControlOutput> run(Flow flow, Node node)
         {
-            var opObj = node.getConst("operator");
+            var operatorPort = node.getInputPort<ValueInput>("operator");
+            var opObj = await flow.getValue(operatorPort);
             LogicOperator op;
 
             if (opObj == null)
@@ -79,13 +77,9 @@ namespace TouhouCardEngine
         }
         public const string defName = "LogicOperation";
         public PortDefine[] inputs { get; }
-        public PortDefine[] consts { get; }
         public PortDefine[] outputs { get; }
 
         public override IEnumerable<PortDefine> inputDefines => inputs;
-
-        public override IEnumerable<PortDefine> constDefines => consts;
-
         public override IEnumerable<PortDefine> outputDefines => outputs;
     }
     public enum LogicOperator

@@ -26,7 +26,7 @@ namespace TouhouHeartstone
             }
             return Task.FromResult(getOutputPort<ControlOutput>(actionPortName));
         }
-        public override ISerializableNode ToSerializableNode()
+        public override SerializableNode ToSerializableNode()
         {
             return new SerializableEventEntryNode(this);
         }
@@ -56,15 +56,11 @@ namespace TouhouHeartstone
         public EventTriggerTime triggerTime { get; private set; }
     }
     [Serializable]
-    public class SerializableEventEntryNode : ISerializableNode
+    public class SerializableEventEntryNode : SerializableNode
     {
-        public SerializableEventEntryNode(EventEntryNode eventEntryNode)
+        public SerializableEventEntryNode(EventEntryNode eventEntryNode) : base(eventEntryNode)
         {
-            id = eventEntryNode.id;
             triggerTime = new SerializableEventTriggerTime(eventEntryNode.triggerTime);
-            posX = eventEntryNode.posX;
-            posY = eventEntryNode.posY;
-            consts = eventEntryNode.consts != null ? new Dictionary<string, object>(eventEntryNode.consts) : null;
         }
         public PassiveEntryNode ToActionNode(ActionGraph graph)
         {
@@ -83,25 +79,17 @@ namespace TouhouHeartstone
                 posX = posX,
                 posY = posY
             };
-            if (consts != null)
-            {
-                foreach (var pair in consts)
-                {
-                    entry.setConst(pair.Key, pair.Value);
-                }
-            }
+            var defaultValues = inputDefaultValues ?? consts;
+            InitNode(entry, defaultValues, graph);
             if (tags != null)
                 entry.setTags(tags);
             if (piles != null)
                 entry.setPiles(piles);
-            entry.graph = graph;
             return entry;
         }
-        Node ISerializableNode.ToActionNode(ActionGraph graph) => ToActionNode(graph);
+        public override Node ToNode(ActionGraph graph) => ToActionNode(graph);
 
-        public int id;
-        public float posX;
-        public float posY;
+        [Obsolete]
         public Dictionary<string, object> consts;
         public SerializableEventTriggerTime triggerTime;
         [Obsolete]

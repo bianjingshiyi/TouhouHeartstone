@@ -127,14 +127,19 @@ namespace Controllers
             }
             return viewData;
         }
-        private PortItemInfo[] getActionDefineReturnNodeInputViewData(GeneratedActionReturnNode returnNode)
+        private InputPortInfo[] getActionDefineReturnNodeInputViewData(GeneratedActionReturnNode returnNode)
         {
             var inputs = returnNode.inputPorts;
-            PortItemInfo[] viewData = new PortItemInfo[inputs.Count()];
-            for (int i = 0; i < inputs.Count(); i++)
+            int count = inputs.Count();
+            InputPortInfo[] viewData = new InputPortInfo[count];
+            for (int i = 0; i < count; i++)
             {
                 var input = inputs.ElementAt(i);
-                viewData[i] = new PortItemInfo(input.define?.getDisplayName(), game.editor.getColorByType(input.define?.type), input.GetPortType() == PortType.Control);
+                var portInfo = new PortItemInfo(input.define?.getDisplayName(), game.editor.getColorByType(input.define?.type), input.GetPortType() == PortType.Control);
+                var defaultValue = getDefaultValueInfoFromInput(input);
+                var showPort = shouldInputPortShowPort(input);
+                var showDefaultValue = shouldInputPortShowDefaultValue(input);
+                viewData[i] = new InputPortInfo(portInfo, defaultValue, showPort, showDefaultValue);
             }
             return viewData;
         }

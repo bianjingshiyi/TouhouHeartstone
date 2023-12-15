@@ -44,8 +44,6 @@ namespace Game
         const string InputParameter = "<p>输入参数</p>";
         [TranslateMsg("节点输出参数")]
         const string OutputParameter = "<p>输出参数</p>";
-        [TranslateMsg("节点常量参数")]
-        const string ConstParameter = "<p>常量参数</p>";
         [TranslateMsg("参数模板。{0}: 参数名称, {1}: 参数类型, {2}: 数组, {3}: 参数, {4}: 注释")]
         const string ParameterTemplate = "<li>{0}({1}): {4}</li>";
         [TranslateMsg("节点说明模板, {0} 为节点自带说明")]
@@ -85,11 +83,6 @@ namespace Game
             {
                 str += lang._(OutputParameter);
                 str += GetParametersStr(doc.outputs);
-            }
-            if (doc.consts.Length > 0)
-            {
-                str += lang._(ConstParameter);
-                str += GetParametersStr(doc.consts);
             }
 
             // 示例
@@ -225,6 +218,7 @@ namespace Game
         }
         public ActionParameterComment[] inputs;
         public ActionParameterComment[] outputs;
+        [Obsolete]
         public ActionParameterComment[] consts;
 
         public ActionComment() { }
@@ -247,7 +241,17 @@ namespace Game
 
             inputs = ActionParameterComment.GetArray(inputs, act.inputDefines.ToArray());
             outputs = ActionParameterComment.GetArray(outputs, act.outputDefines.ToArray());
-            consts = ActionParameterComment.GetArray(consts, act.constDefines.ToArray());
+            if (consts != null)
+            {
+                foreach (var com in consts)
+                {
+                    var input = inputs.FirstOrDefault(i => i.name == com.name);
+                    if (input == null)
+                        continue;
+                    input.summary = com.summary;
+                }
+                consts = null;
+            }
 
             category = act.category;
         }

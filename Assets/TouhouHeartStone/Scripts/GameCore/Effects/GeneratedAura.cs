@@ -51,12 +51,30 @@ namespace TouhouHeartstone
         {
             return true;
         }
+        #region 获取值
+        /// <summary>
+        /// 光环的生效范围
+        /// </summary>
+        public PileNameCollection getPileList()
+        {
+            return auraEntry?.getPiles();
+        }
+        /// <summary>
+        /// 光环的作用范围
+        /// </summary>
+        public PileNameCollection getRangeList()
+        {
+            return auraEntry?.getRanges();
+        }
+        public override string[] getPiles() => getPileList()?.ToArray() ?? Array.Empty<string>();
+        #endregion
         public async Task updateAura(CardEngine game, ICard card, IBuff buff, IEventArg eventArg)
         {
             Card selfCard = card as Card;
             Buff selfBuff = buff as Buff;
             EventArg selfEventArg = eventArg as EventArg;
             Dictionary<Card, Buff> buffDict = await getBuffDic(game, selfCard, selfBuff);
+            var pileList = getPileList();
             // 如果该光环已被禁用。
             if (isDisabled(game, card, buff) || 
                 (selfCard != null && (pileList == null || !pileList.Contains(selfCard.pile.name))))
@@ -74,6 +92,7 @@ namespace TouhouHeartstone
             }
 
             //获取光环的作用范围
+            var rangeList = getRangeList();
             IEnumerable<Pile> ranges = null;
             if (rangeList != null && rangeList.Count > 0 && game != null)
             {
@@ -210,14 +229,6 @@ namespace TouhouHeartstone
         #region 属性字段
         public AuraEntryNode auraEntry => graph?.findAuraEntryNode();
         /// <summary>
-        /// 光环的生效范围
-        /// </summary>
-        public PileNameCollection pileList => auraEntry?.getPiles();
-        /// <summary>
-        /// 光环的作用范围
-        /// </summary>
-        public PileNameCollection rangeList => auraEntry?.getRanges();
-        /// <summary>
         /// 光环所添加的增益Id
         /// </summary>
         public ValueInput getAuraBuffDefine => auraEntry?.getInputPort<ValueInput>(AuraEntryNode.buffDefineName);
@@ -231,7 +242,6 @@ namespace TouhouHeartstone
         public ControlOutput updateAction => auraEntry?.getOutputPort<ControlOutput>(AuraEntryNode.actionPortName);
         public override ControlOutput onEnableAction => null;
         public override ControlOutput onDisableAction => null;
-        public override string[] piles => pileList?.ToArray() ?? Array.Empty<string>();
         public override Node entryNode => auraEntry;
         #endregion
     }

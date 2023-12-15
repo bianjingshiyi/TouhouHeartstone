@@ -70,9 +70,6 @@ namespace Controllers
             _ui.onAddInput += onAddInput;
             _ui.onDeleteInput += onDeleteInput;
 
-            _ui.onAddConst += onAddConst;
-            _ui.onDeleteConst += onDeleteConst;
-
             _ui.onAddOutput += onAddOutput;
             _ui.onDeleteOutput += onDeleteOutput;
 
@@ -115,9 +112,6 @@ namespace Controllers
                 case ActionPortDefineType.Input:
                     duplicateName = _actionDefine.getInputDefine(name) != null;
                     break;
-                case ActionPortDefineType.Const:
-                    duplicateName = _actionDefine.getConstDefine(name) != null;
-                    break;
                 case ActionPortDefineType.Output:
                     duplicateName = _actionDefine.getOutputDefine(name) != null;
                     break;
@@ -147,10 +141,6 @@ namespace Controllers
                     }
                     updateInputs();
                     _actionNodeGraphCtrl.onAddActionDefineInputPort();
-                    break;
-                case ActionPortDefineType.Const:
-                    _actionDefine.addConst(valueDefine);
-                    updateConsts();
                     break;
                 case ActionPortDefineType.Output:
                     _actionDefine.addOutput(valueDefine);
@@ -222,17 +212,6 @@ namespace Controllers
             }
             return types;
         }
-        private (Type type, string name)[] getEditorConstTypes()
-        {
-            var typeNames = game.editor.getEditorConstTypeNames();
-            (Type type, string name)[] types = new (Type type, string name)[typeNames.Length];
-            for (int i = 0; i < types.Length; i++)
-            {
-                var name = typeNames[i];
-                types[i] = (game.editor.getEditorConstTypeAt(i), name);
-            }
-            return types;
-        }
         #region 输入变量
         private void onAddInput()
         {
@@ -247,23 +226,6 @@ namespace Controllers
             _actionNodeGraphCtrl.onDeleteActionDefineInputPort(portDefine.name);
             _actionDefine.removeInput(portDefine);
             updateInputs();
-            markUnsaved();
-        }
-        #endregion
-
-        #region 输入常量
-        private void onAddConst()
-        {
-            string title = game.lang._(ACTION_NEW_CONST_DIALOG_TITLE);
-            _ui.setActionPortTypes(getEditorConstTypes());
-            _ui.displayCreatePortDefineDialog(ActionPortDefineType.Const, title);
-        }
-        private void onDeleteConst(int constIndex)
-        {
-            var constDefine = _actionDefine.constDefines.ElementAt(constIndex);
-            _actionNodeGraphCtrl.onDeleteActionDefineConstPort(constDefine.name);
-            _actionDefine.removeConst(constDefine);
-            updateConsts();
             markUnsaved();
         }
         #endregion
@@ -313,7 +275,6 @@ namespace Controllers
         private void updateProperties()
         {
             updateInputs();
-            updateConsts();
             updateOutputs();
         }
         private void updateInputs()
@@ -342,31 +303,6 @@ namespace Controllers
             }).ToArray();
 
             _ui.updateInputList(viewDatas);
-            _actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
-        }
-        private void updateConsts()
-        {
-            var consts = _actionDefine.constDefines;
-            ActionPortDefineViewData[] viewDatas = consts.Select((cst, i) =>
-            {
-                Type type = cst.type;
-                bool isArray = isTypeArray(type);
-                if (isArray)
-                {
-                    type = type.GetElementType();
-                }
-                int typeIndex = game.editor.getEditorConstTypeNameIndex(type.Name);
-                var typeName = game.editor.getEditorConstTypeNames()[typeIndex];
-                var arrayStr = isArray ? game.lang._(ACTION_VARIABLE_IS_ARRAY) : string.Empty;
-                var typeNameStr = game.lang._(ACTION_VARIABLE_TYPE_NAME_TEMPLATE, typeName, arrayStr, string.Empty);
-                return new ActionPortDefineViewData()
-                {
-                    name = cst.getDisplayName(),
-                    typeName = typeNameStr
-                };
-            }).ToArray();
-
-            _ui.updateConstList(viewDatas);
             _actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void updateOutputs()

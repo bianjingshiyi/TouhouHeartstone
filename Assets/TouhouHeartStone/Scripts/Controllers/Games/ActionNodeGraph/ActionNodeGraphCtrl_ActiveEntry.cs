@@ -123,20 +123,26 @@ namespace Controllers
         private void updateActiveEntryNode(ActionNodeItem item, ActiveEntryNode activeEntry)
         {
             item.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getActiveEntryTargetCheckerViewData(activeEntry));
-            item.setInputs(getActiveEntryInputViewData(activeEntry));
+
+            var inputViewDatas = getActiveEntryInputViewData(activeEntry);
+            item.setInputs(inputViewDatas);
             item.setOutputs(getNodeOutputViewData(activeEntry));
             updateNodePortModes(activeEntry, _connectingPort);
         }
-        private PortItemInfo[] getActiveEntryInputViewData(ActiveEntryNode node)
+        private InputPortInfo[] getActiveEntryInputViewData(ActiveEntryNode node)
         {
-            List<PortItemInfo> viewDataList = new List<PortItemInfo>();
+            List<InputPortInfo> viewDataList = new List<InputPortInfo>();
             //值输入
             var conditionPorts = node.getInputPorts<ValueInput>();
             foreach (var port in conditionPorts)
             {
                 // 翻译输出节点
                 var inputName = game.lang._(port.define.getDisplayName(), port.paramIndex + 1);
-                viewDataList.Add(new PortItemInfo(inputName, game.editor.getColorByType(port.define.type), port.GetPortType() == PortType.Control));
+                var portInfo = new PortItemInfo(inputName, game.editor.getColorByType(port.define.type), port.GetPortType() == PortType.Control);
+                var defaultValue = getDefaultValueInfoFromInput(port);
+                var showPort = shouldInputPortShowPort(port);
+                var showDefaultValue = shouldInputPortShowDefaultValue(port);
+                viewDataList.Add(new InputPortInfo(portInfo, defaultValue, showPort, showDefaultValue));
             }
             return viewDataList.ToArray();
         }

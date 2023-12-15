@@ -51,6 +51,7 @@ namespace TouhouHeartstone
         {
             eventEntry?.setPiles(tags);
         }
+        public override string[] getPiles() => eventEntry?.getPiles()?.ToArray() ?? Array.Empty<string>();
         public override SerializableEffect Serialize()
         {
             return new SerializableEventEffect(this);
@@ -77,7 +78,6 @@ namespace TouhouHeartstone
         public virtual EventEntryNode eventEntry => graph?.findEventEntryNode();
         public override ControlOutput onEnableAction => null;
         public override ControlOutput onDisableAction => null;
-        public override string[] piles => eventEntry?.piles?.ToArray() ?? Array.Empty<string>();
         #endregion
     }
 

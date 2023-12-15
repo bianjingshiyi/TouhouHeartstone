@@ -66,13 +66,13 @@ namespace Controllers
             {
                 var definer = _graphCtrl.game.card.getLocalNodeDefiner();
 
-                var newNode = _seriNode.ToActionNode(_graphCtrl.graph);
+                var newNode = _seriNode.ToNode(_graphCtrl.graph);
                 _graphCtrl.graph.addNode(newNode);
                 definer.Define(newNode);
                 await _graphCtrl.createNodeUI4Node(newNode);
             }
             private int _nodeID;
-            private ISerializableNode _seriNode;
+            private SerializableNode _seriNode;
         }
         class DeleteNodeOperation : GraphOperation
         {
@@ -86,7 +86,7 @@ namespace Controllers
             {
                 var definer = _graphCtrl.game.card.getLocalNodeDefiner();
 
-                var newNode = _seriNode.ToActionNode(_graphCtrl.graph);
+                var newNode = _seriNode.ToNode(_graphCtrl.graph);
                 _graphCtrl.graph.addNode(newNode);
                 definer.Define(newNode);
                 await _graphCtrl.createNodeUI4Node(newNode);
@@ -99,7 +99,7 @@ namespace Controllers
                 _graphCtrl.removeActionNode(node);
             }
             private int _nodeID;
-            private ISerializableNode _seriNode;
+            private SerializableNode _seriNode;
         }
         class ConnectOperation : GraphOperation
         {
@@ -207,12 +207,12 @@ namespace Controllers
             private string _destName;
             private int _destParamIndex;
         }
-        class ChangeNodeConstOperation : GraphOperation
+        class ChangeNodeDefaultValueOperation : GraphOperation
         {
-            public ChangeNodeConstOperation(ActionNodeGraphCtrl graphCtrl, Node node, string constName, object beforeValue, object afterValue) : base(graphCtrl)
+            public ChangeNodeDefaultValueOperation(ActionNodeGraphCtrl graphCtrl, Node node, string inputName, object beforeValue, object afterValue) : base(graphCtrl)
             {
                 _nodeId = node.id;
-                _constName = constName;
+                _inputName = inputName;
                 _beforeValue = recordValue(beforeValue);
                 _afterValue = recordValue(afterValue);
             }
@@ -230,13 +230,13 @@ namespace Controllers
                 Node node = _graphCtrl.graph.findNodeById(_nodeId);
                 if (value is ICloneable cloneable)
                 {
-                    node.setConst(_constName, cloneable.Clone());
+                    node.setInputDefaultValue(_inputName, cloneable.Clone());
                 }
                 else
                 {
-                    node.setConst(_constName, value);
+                    node.setInputDefaultValue(_inputName, value);
                 }
-                _graphCtrl.updateNodeItemConsts(node);
+                _graphCtrl.updateNodeItemInputPorts(node);
             }
             public override void undo()
             {
@@ -247,7 +247,7 @@ namespace Controllers
                 setValue(_afterValue);
             }
             private int _nodeId;
-            private string _constName;
+            private string _inputName;
             private object _beforeValue;
             private object _afterValue;
         }

@@ -70,29 +70,6 @@ namespace UI
         }
         #endregion
 
-        #region 输入常量
-        public void updateConstList(ActionPortDefineViewData[] viewDatas)
-        {
-            UIHelper.updateList(_constItemRoot, _constItemTemplate, _constItemList, viewDatas.Length, (i, rect) =>
-            {
-                var cst = rect.GetComponent<EffectEditorValueDefineItem>();
-                var viewData = viewDatas[i];
-                cst.setType(viewData.typeName);
-                cst.setName(viewData.name);
-            },
-            rect =>
-            {
-                var cst = rect.GetComponent<EffectEditorValueDefineItem>();
-                cst.onDeleteButtonClicked += onDeleteConstCallback;
-            },
-            rect =>
-            {
-                var cst = rect.GetComponent<EffectEditorValueDefineItem>();
-                cst.onDeleteButtonClicked -= onDeleteConstCallback;
-            });
-        }
-        #endregion
-
 
         #region 输出变量
         public void updateOutputList(ActionPortDefineViewData[] viewDatas)
@@ -134,7 +111,6 @@ namespace UI
             _createPortDefineDialog.onConfirm += onCreatePortDefineCallback;
 
             _addInputItemButton.onClick.AddListener(onAddInputCallback);
-            _addConstItemButton.onClick.AddListener(onAddConstCallback);
             _addOutputItemButton.onClick.AddListener(onAddOutputCallback);
 
             _deleteCardButton.onClick.AddListener(onClickDeleteActionButtonCallback);
@@ -186,18 +162,6 @@ namespace UI
         {
             var itemIndex = _inputItemList.IndexOf(item.transform as RectTransform);
             onDeleteInput?.Invoke(itemIndex);
-        }
-        #endregion
-
-        #region 输入常量
-        void onAddConstCallback()
-        {
-            onAddConst?.Invoke();
-        }
-        void onDeleteConstCallback(EffectEditorValueDefineItem item)
-        {
-            var itemIndex = _constItemList.IndexOf(item.transform as RectTransform);
-            onDeleteConst?.Invoke(itemIndex);
         }
         #endregion
 
@@ -265,17 +229,6 @@ namespace UI
         public event Action<int> onDeleteInput;
         #endregion
 
-        #region 输入常量
-        /// <summary>
-        /// 当添加输入常量
-        /// </summary>
-        public event Action onAddConst;
-        /// 当输入常量被删除
-        /// 参数：输入常量索引。
-        /// </summary>
-        public event Action<int> onDeleteConst;
-        #endregion
-
         #region 输出变量
         /// <summary>
         /// 当添加输出变量
@@ -322,18 +275,6 @@ namespace UI
         List<RectTransform> _inputItemList;
         [SerializeField]
         Button _addInputItemButton;
-
-
-        [Header("Consts")]
-        [SerializeField]
-        RectTransform _constItemRoot;
-        [SerializeField]
-        RectTransform _constItemTemplate;
-        [SerializeField]
-        List<RectTransform> _constItemList;
-        [SerializeField]
-        Button _addConstItemButton;
-
 
         [Header("Outputs")]
         [SerializeField]

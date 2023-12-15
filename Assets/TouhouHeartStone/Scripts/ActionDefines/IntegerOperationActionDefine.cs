@@ -12,11 +12,8 @@ namespace TouhouCardEngine
             type = NodeDefineType.Function;
             inputs = new PortDefine[]
             {
-                PortDefine.Value(typeof(int), paramName, "Value", isParams: true)
-            };
-            consts = new PortDefine[]
-            {
-                PortDefine.Const(typeof(IntegerOperator), "operator")
+                PortDefine.Value(typeof(IntegerOperator), "operator", isConst: true),
+                PortDefine.Value(typeof(int), paramName, "Value", isParams: true),
             };
             outputs = new PortDefine[]
             {
@@ -26,7 +23,8 @@ namespace TouhouCardEngine
         }
         public override async Task<ControlOutput> run(Flow flow, Node node)
         {
-            var opObj = node.getConst("operator");
+            var operatorPort = node.getInputPort<ValueInput>("operator");
+            var opObj = await flow.getValue(operatorPort);
             IntegerOperator op;
 
             if (opObj == null)
@@ -93,15 +91,11 @@ namespace TouhouCardEngine
             return node.getOutputPort<ControlOutput>(exitPortName);
         }
         public PortDefine[] inputs { get; }
-        public PortDefine[] consts { get; }
         public PortDefine[] outputs { get; }
         public const string paramName = "arg";
         public const string resultName = "result";
         public const string defName = "IntegerOperation";
         public override IEnumerable<PortDefine> inputDefines => inputs;
-
-        public override IEnumerable<PortDefine> constDefines => consts;
-
         public override IEnumerable<PortDefine> outputDefines => outputs;
     }
     public enum IntegerOperator

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.VFX;
 
 namespace UI
 {
@@ -10,8 +7,7 @@ namespace UI
     {
         #region 公有方法
         public void setPreviewNode(string nodeName,
-            PortItemInfo[] inputViewData,
-            ActionNodeValueInfo[] constsInfo,
+            InputPortInfo[] inputViewData,
             PortItemInfo[] outputViewData,
             string obsoleteMsg = null,
             int docKey = -1,
@@ -23,14 +19,13 @@ namespace UI
             actionNodeItem.switchToActionNode();
             actionNodeItem.setName(nodeName);
             actionNodeItem.setInputs(inputViewData);
-            actionNodeItem.setConsts(constsInfo);
             actionNodeItem.setOutputs(outputViewData);
             actionNodeItem.setObsoleteMsg(obsoleteMsg);
             actionNodeItem.setDocumentKey(docKey);
             actionNodeItem.showVisualEffectButton(visualEffect);
         }
         public void setPreviewEventNode(string nodeName,
-            PortItemInfo[] inputViewData,
+            InputPortInfo[] inputViewData,
             PortItemInfo[] outputViewData)
         {
             ActionNodeItem actionNodeItem = _simulationNode;
@@ -44,7 +39,7 @@ namespace UI
             actionNodeItem.showVisualEffectButton(true);
         }
         public void setPreviewActiveEntryNode(string nodeName,
-            PortItemInfo[] inputViewData,
+            InputPortInfo[] inputViewData,
             PortItemInfo[] outputViewData,
             string[] targetCheckerTypes, (int typeIndex, string name, string errorTip)[] targetCheckers)
         {

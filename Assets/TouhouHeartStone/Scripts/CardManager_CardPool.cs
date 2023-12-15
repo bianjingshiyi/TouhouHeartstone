@@ -867,7 +867,7 @@ namespace Game
             }
             void addCardPoolByNode(Node node)
             {
-                foreach (var valueConst in node.consts)
+                foreach (var valueConst in node.inputDefaultValues)
                 {
                     addCardPoolOfObject(valueConst.Value);
                 }
@@ -1297,21 +1297,21 @@ namespace Game
             // 修复过时的CardReference或者int。
             void fixOldReferences(ActionNode actionNode)
             {
-                foreach (var constPair in actionNode.consts)
+                foreach (var constPair in actionNode.inputDefaultValues)
                 {
                     if (constPair.Value is CardReference cardRef)
                     {
                         //CardReference过期，使用DefineReference替代
-                        actionNode.setConst(constPair.Key, new DefineReference(cardRef.cardPoolId, cardRef.cardId));
+                        actionNode.setInputDefaultValue(constPair.Key, new DefineReference(cardRef.cardPoolId, cardRef.cardId));
                     }
                 }
                 // 将旧版的“获取增益定义”的ID从int变为DefineReference。
                 if (actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.GetBuffDefine))
                 {
-                    var constValue = actionNode.getConst(GetBuffDefineAction.constName);
+                    var constValue = actionNode.getInputDefaultValue(GetBuffDefineAction.constName);
                     if (constValue is int buffId)
                     {
-                        actionNode.setConst(GetBuffDefineAction.constName, new DefineReference(cardPoolInfo.cardPoolId, buffId));
+                        actionNode.setInputDefaultValue(GetBuffDefineAction.constName, new DefineReference(cardPoolInfo.cardPoolId, buffId));
                     }
                 }
             }
@@ -1408,12 +1408,12 @@ namespace Game
                 if (!defRef.isBuiltinReference(BuiltinActionDefineID.GetCardDefine) && !defRef.isBuiltinReference(BuiltinActionDefineID.GetCardDefineArray))
                     return;
 
-                var consts = actionNode.consts.ToArray();
+                var consts = actionNode.inputDefaultValues.ToArray();
                 foreach (var pair in consts)
                 {
                     var newValue = convertBuiltinRefToClassic(pair.Value);
                     if (newValue != null)
-                        actionNode.setConst(pair.Key, newValue);
+                        actionNode.setInputDefaultValue(pair.Key, newValue);
                 }
             }
             #endregion

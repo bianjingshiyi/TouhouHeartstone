@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Game;
 using TouhouCardEngine;
@@ -19,20 +20,18 @@ namespace Controllers
                 _nodeSnapped = true;
                 if (define.actionDefine != null)
                 {
-                    var inputInfos = new PortItemInfo[define.actionDefine.inputDefines.Count()];
-                    for (int i = 0; i < inputInfos.Length; i++)
+                    var inputCount = define.actionDefine.inputDefines.Count();
+                    var inputInfos = new InputPortInfo[inputCount];
+                    for (int i = 0; i < inputCount; i++)
                     {
                         var portDefine = define.actionDefine.inputDefines.ElementAtOrDefault(i);
                         var color = game.editor.getColorByType(portDefine?.type);
                         string name = tryTranslateWithDict(portDefine?.getDisplayName() ?? string.Empty);
-                        inputInfos[i] = new PortItemInfo(name, color, portDefine?.GetPortType() == PortType.Control);
-                    }
-
-                    var constsInfo = new ActionNodeValueInfo[define.actionDefine.constDefines.Count()];
-                    for (int i = 0; i < constsInfo.Length; i++)
-                    {
-                        var portDefine = define.actionDefine.constDefines.ElementAtOrDefault(i);
-                        constsInfo[i] = getConstValueInfoFromDefine(portDefine, null);
+                        var portInfo = new PortItemInfo(name, color, portDefine?.GetPortType() == PortType.Control);
+                        var defaultValue = getValueInfoFromPortDefine(portDefine, null);
+                        var showPort = !portDefine.isConst;
+                        var showDefaultValue = true;
+                        inputInfos[i] = new InputPortInfo(portInfo, defaultValue, showPort, showDefaultValue);
                     }
 
                     var outputInfos = new PortItemInfo[define.actionDefine.outputDefines.Count()];
@@ -52,7 +51,6 @@ namespace Controllers
                     var nodeName = getNodeDefineName(define);
                     _ui.setPreviewNode(nodeName,
                         inputInfos,
-                        constsInfo,
                         outputInfos,
                         define.actionDefine.obsoleteMsg,
                         docKey,
@@ -63,9 +61,24 @@ namespace Controllers
                     // 事件输入
                     var eventDefine = define.eventDefine;
                     var boolColor = game.editor.getColorByType(typeof(bool));
-                    var inputInfos = new PortItemInfo[1]
+                    var arrayColor = game.editor.getColorByType(typeof(Array));
+                    var inputInfos = new InputPortInfo[]
                     {
-                        new PortItemInfo(game.lang._(PassiveEntryNode.triggerConditionPortName), boolColor, false)
+                        new InputPortInfo(
+                            new PortItemInfo(game.lang._(PassiveEntryNode.triggerConditionPortName), boolColor, false),
+                            new ActionNodeValueInfo(PassiveEntryNode.triggerConditionPortName, ActionNodeValueType.boolean, true),
+                            true,
+                            true),
+                        new InputPortInfo(
+                            new PortItemInfo(game.lang._(PassiveEntryNode.tagsPortName), arrayColor, false),
+                            new ActionNodeValueInfo(PassiveEntryNode.tagsPortName, ActionNodeValueType.effectTagCollection, null),
+                            false,
+                            true),
+                        new InputPortInfo(
+                            new PortItemInfo(game.lang._(PassiveEntryNode.pileListPortName), arrayColor, false),
+                            new ActionNodeValueInfo(PassiveEntryNode.tagsPortName, ActionNodeValueType.effectTagCollection, null),
+                            false,
+                            true)
                     };
                     // 事件输出
                     var variableInfos = eventDefine.getVariableInfos(define.eventTriggerType);
@@ -101,35 +114,33 @@ namespace Controllers
             if (!_nodeSnapped)
             {
                 _nodeSnapped = true;
+                var inputViewDatas = getNodeInputViewData(node);
                 if (node is ActiveEntryNode)
                 {
                     string nodeName = game.lang._(EDITOR_NODE_NAME_ACTIVE_ENTRY_NODE);
                     _ui.setPreviewNode(tryTranslateWithDict(nodeName),
-                        getNodeInputViewData(node),
-                        getNodeConstValueInfos(node),
+                        inputViewDatas,
                         getNodeOutputViewData(node));
                 }
                 else if (node is EventEntryNode eventEntry)
                 {
                     var triggerTime = eventEntry.triggerTime;
                     _ui.setPreviewEventNode(tryTranslateWithDict(game.eventManager.translateEventTriggerTimeNameForEditor(triggerTime)),
-                        getNodeInputViewData(node),
+                        inputViewDatas,
                         getNodeOutputViewData(node));
                 }
                 else if (node is PassiveEntryNode)
                 {
                     string nodeName = game.lang._(EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE);
                     _ui.setPreviewNode(tryTranslateWithDict(nodeName),
-                        getNodeInputViewData(node),
-                        getNodeConstValueInfos(node),
+                        inputViewDatas,
                         getNodeOutputViewData(node));
                 }
                 else if (node is AuraEntryNode)
                 {
                     string nodeName = game.lang._(EDITOR_NODE_NAME_AURA_ENTRY_NODE);
                     _ui.setPreviewNode(tryTranslateWithDict(nodeName),
-                        getNodeInputViewData(node),
-                        getNodeConstValueInfos(node),
+                        inputViewDatas,
                         getNodeOutputViewData(node));
                 }
                 else if (node is ActionNode actionNode)
@@ -138,8 +149,7 @@ namespace Controllers
                     int docKey = CanNodeOpenDocument(actionNode) ? actionNode.defineRef.defineId : -1;
                     bool visualEffect = game.anims.canActionAddEffect(actionNode.defineRef);
                     _ui.setPreviewNode(tryTranslateWithDict(define.editorName),
-                        getNodeInputViewData(node),
-                        getNodeConstValueInfos(node),
+                        inputViewDatas,
                         getNodeOutputViewData(node),
                         define.obsoleteMsg,
                         docKey,

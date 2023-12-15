@@ -20,8 +20,7 @@ namespace UI
         /// <param name="outputViewData"></param>
         /// <returns></returns>
         public ActionNodeItem createNode(float posX, float posY, string nodeName,
-            PortItemInfo[] inputViewData,
-            ActionNodeValueInfo[] constsInfo,
+            InputPortInfo[] inputViewData,
             PortItemInfo[] outputViewData,
             string obsoleteMsg = null,
             int nodeKey = -1,
@@ -29,13 +28,13 @@ namespace UI
         {
             //当对应名称数组长度为0的时候，直接隐藏列表根节点。
             ActionNodeItem actionNodeItem = createNode(posX, posY);
-            actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
-            actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
-            actionNodeItem.onClickConstValueCardButton += onClickActionNodeItemConstValueCardButton;
-            actionNodeItem.onClickConstValueCardEditButton += onClickActionNodeItemConstValueCardEditButton;
-            actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
-            actionNodeItem.onClickConstValueItemCardButton += onClickActionNodeItemConstValueItemCardButton;
-            actionNodeItem.onClickConstValueItemCardEditButton += onClickActionNodeItemConstValueItemCardEditButton;
+            actionNodeItem.onDefaultValueChanged += onNodeInputDefaultValueChangedCallback;
+            actionNodeItem.onClickDefaultValueButton += onClickActionNodeItemDefaultValueButton;
+            actionNodeItem.onClickDefaultValueCardButton += onClickActionNodeItemDefaultValueCardButton;
+            actionNodeItem.onClickDefaultValueCardEditButton += onClickActionNodeItemDefaultValueCardEditButton;
+            actionNodeItem.onClickDefaultValueItemButton += onClickActionNodeItemDefaultValueItemButton;
+            actionNodeItem.onClickDefaultValueItemCardButton += onClickActionNodeItemDefaultValueItemCardButton;
+            actionNodeItem.onClickDefaultValueItemCardEditButton += onClickActionNodeItemDefaultValueItemCardEditButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
@@ -60,7 +59,6 @@ namespace UI
             actionNodeItem.switchToActionNode();
             actionNodeItem.setName(nodeName);
             actionNodeItem.setInputs(inputViewData);
-            actionNodeItem.setConsts(constsInfo);
             actionNodeItem.setOutputs(outputViewData);
             actionNodeItem.setObsoleteMsg(obsoleteMsg);
             actionNodeItem.setDocumentKey(nodeKey);
@@ -71,7 +69,7 @@ namespace UI
         /// 在指定位置上创建一个主动效果入口节点。
         /// </summary>
         public ActionNodeItem createActiveEntryNode(float posX, float posY, string nodeName,
-            PortItemInfo[] inputViewData,
+            InputPortInfo[] inputViewData,
             string[] targetCheckerTypes, (int typeIndex, string name, string errorTip)[] targetCheckers,
             PortItemInfo[] outputViewData)
         {
@@ -100,13 +98,13 @@ namespace UI
             actionNodeItem.onBeginDrag += onBeginDragActionNodeItem;
             actionNodeItem.onDrag += onDragActionNodeItem;
             actionNodeItem.onEndDrag += onEndDragActionNodeItem;
-            actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
-            actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
-            actionNodeItem.onClickConstValueCardButton += onClickActionNodeItemConstValueCardButton;
-            actionNodeItem.onClickConstValueCardEditButton += onClickActionNodeItemConstValueCardEditButton;
-            actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
-            actionNodeItem.onClickConstValueItemCardButton += onClickActionNodeItemConstValueItemCardButton;
-            actionNodeItem.onClickConstValueItemCardEditButton += onClickActionNodeItemConstValueItemCardEditButton;
+            actionNodeItem.onDefaultValueChanged += onNodeInputDefaultValueChangedCallback;
+            actionNodeItem.onClickDefaultValueButton += onClickActionNodeItemDefaultValueButton;
+            actionNodeItem.onClickDefaultValueCardButton += onClickActionNodeItemDefaultValueCardButton;
+            actionNodeItem.onClickDefaultValueCardEditButton += onClickActionNodeItemDefaultValueCardEditButton;
+            actionNodeItem.onClickDefaultValueItemButton += onClickActionNodeItemDefaultValueItemButton;
+            actionNodeItem.onClickDefaultValueItemCardButton += onClickActionNodeItemDefaultValueItemCardButton;
+            actionNodeItem.onClickDefaultValueItemCardEditButton += onClickActionNodeItemDefaultValueItemCardEditButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
@@ -139,13 +137,13 @@ namespace UI
         {
             //当对应名称数组长度为0的时候，直接隐藏列表根节点。
             ActionNodeItem actionNodeItem = createNode(posX, posY);
-            actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
-            actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
-            actionNodeItem.onClickConstValueCardButton += onClickActionNodeItemConstValueCardButton;
-            actionNodeItem.onClickConstValueCardEditButton += onClickActionNodeItemConstValueCardEditButton;
-            actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
-            actionNodeItem.onClickConstValueItemCardButton += onClickActionNodeItemConstValueItemCardButton;
-            actionNodeItem.onClickConstValueItemCardEditButton += onClickActionNodeItemConstValueItemCardEditButton;
+            actionNodeItem.onDefaultValueChanged += onNodeInputDefaultValueChangedCallback;
+            actionNodeItem.onClickDefaultValueButton += onClickActionNodeItemDefaultValueButton;
+            actionNodeItem.onClickDefaultValueCardButton += onClickActionNodeItemDefaultValueCardButton;
+            actionNodeItem.onClickDefaultValueCardEditButton += onClickActionNodeItemDefaultValueCardEditButton;
+            actionNodeItem.onClickDefaultValueItemButton += onClickActionNodeItemDefaultValueItemButton;
+            actionNodeItem.onClickDefaultValueItemCardButton += onClickActionNodeItemDefaultValueItemCardButton;
+            actionNodeItem.onClickDefaultValueItemCardEditButton += onClickActionNodeItemDefaultValueItemCardEditButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
@@ -1060,40 +1058,40 @@ namespace UI
             _dragItemPositionOffset = Vector3.zero;
             onEndDragActionNode?.Invoke(item);
         }
-        private void onActionNodeItemConstValueChanged(ActionNodeItem item, int constValueIndex, object value)
+        private void onNodeInputDefaultValueChangedCallback(ActionNodeItem item, int constValueIndex, object value)
         {
             setFocused();
-            onActionNodeValueChange?.Invoke(item, constValueIndex, value);
+            onNodeInputDefaultValueChanged?.Invoke(item, constValueIndex, value);
         }
-        private void onClickActionNodeItemConstValueButton(ActionNodeItem item, int constValueIndex)
+        private void onClickActionNodeItemDefaultValueButton(ActionNodeItem item, int constValueIndex)
         {
             setFocused();
-            onClickActionNodeConstValueButton?.Invoke(item, constValueIndex);
+            onClickActionNodeDefaultValueButton?.Invoke(item, constValueIndex);
         }
-        private void onClickActionNodeItemConstValueCardButton(ActionNodeItem item, int constValueIndex)
+        private void onClickActionNodeItemDefaultValueCardButton(ActionNodeItem item, int constValueIndex)
         {
             setFocused();
-            onClickActionNodeConstValueCardButton?.Invoke(item, constValueIndex);
+            onClickActionNodeDefaultValueCardButton?.Invoke(item, constValueIndex);
         }
-        private void onClickActionNodeItemConstValueCardEditButton(ActionNodeItem item, int constValueIndex)
+        private void onClickActionNodeItemDefaultValueCardEditButton(ActionNodeItem item, int constValueIndex)
         {
             setFocused();
-            onClickActionNodeConstValueCardEditButton?.Invoke(item, constValueIndex);
+            onClickActionNodeDefaultValueCardEditButton?.Invoke(item, constValueIndex);
         }
-        private void onClickActionNodeItemConstValueItemButton(ActionNodeItem item, int constValueIndex, int itemIndex)
+        private void onClickActionNodeItemDefaultValueItemButton(ActionNodeItem item, int constValueIndex, int itemIndex)
         {
             setFocused();
-            onClickActionNodeConstValueItemButton?.Invoke(item, constValueIndex, itemIndex);
+            onClickActionNodeDefaultValueItemButton?.Invoke(item, constValueIndex, itemIndex);
         }
-        private void onClickActionNodeItemConstValueItemCardButton(ActionNodeItem item, int constValueIndex, int itemIndex)
+        private void onClickActionNodeItemDefaultValueItemCardButton(ActionNodeItem item, int constValueIndex, int itemIndex)
         {
             setFocused();
-            onClickActionNodeConstValueItemCardButton?.Invoke(item, constValueIndex, itemIndex);
+            onClickActionNodeDefaultValueItemCardButton?.Invoke(item, constValueIndex, itemIndex);
         }
-        private void onClickActionNodeItemConstValueItemCardEditButton(ActionNodeItem item, int constValueIndex, int itemIndex)
+        private void onClickActionNodeItemDefaultValueItemCardEditButton(ActionNodeItem item, int constValueIndex, int itemIndex)
         {
             setFocused();
-            onClickActionNodeConstValueItemCardEditButton?.Invoke(item, constValueIndex, itemIndex);
+            onClickActionNodeDefaultValueItemCardEditButton?.Invoke(item, constValueIndex, itemIndex);
         }
         private void onClickTriggerNodeAddTargetCheckerButton(ActionNodeItem item)
         {
@@ -1381,31 +1379,31 @@ namespace UI
         /// <summary>
         /// 当节点的常量值输入改变，参数为被改变的节点，常量值索引和改变的值
         /// </summary>
-        public event Action<ActionNodeItem, int, object> onActionNodeValueChange;
+        public event Action<ActionNodeItem, int, object> onNodeInputDefaultValueChanged;
         /// <summary>
         /// 当节点的常量的编辑按钮被点击，参数为被点击的节点和常量索引
         /// </summary>
-        public event Action<ActionNodeItem, int> onClickActionNodeConstValueButton;
+        public event Action<ActionNodeItem, int> onClickActionNodeDefaultValueButton;
         /// <summary>
         /// 当节点的常量的卡牌选择按钮被点击，参数为被点击的节点和常量索引
         /// </summary>
-        public event Action<ActionNodeItem, int> onClickActionNodeConstValueCardButton;
+        public event Action<ActionNodeItem, int> onClickActionNodeDefaultValueCardButton;
         /// <summary>
         /// 当节点的常量的卡牌编辑按钮被点击，参数为被点击的节点和常量索引
         /// </summary>
-        public event Action<ActionNodeItem, int> onClickActionNodeConstValueCardEditButton;
+        public event Action<ActionNodeItem, int> onClickActionNodeDefaultValueCardEditButton;
         /// <summary>
         /// 当点击节点的常量的子项的编辑按钮，参数为点击的节点，常量索引和常量子项的索引
         /// </summary>
-        public event Action<ActionNodeItem, int, int> onClickActionNodeConstValueItemButton;
+        public event Action<ActionNodeItem, int, int> onClickActionNodeDefaultValueItemButton;
         /// <summary>
         /// 当点击节点的常量的子项的卡牌选择按钮，参数为点击的节点，常量索引和常量子项的索引
         /// </summary>
-        public event Action<ActionNodeItem, int, int> onClickActionNodeConstValueItemCardButton;
+        public event Action<ActionNodeItem, int, int> onClickActionNodeDefaultValueItemCardButton;
         /// <summary>
         /// 当点击节点的常量的子项的卡牌编辑按钮，参数为点击的节点，常量索引和常量子项的索引
         /// </summary>
-        public event Action<ActionNodeItem, int, int> onClickActionNodeConstValueItemCardEditButton;
+        public event Action<ActionNodeItem, int, int> onClickActionNodeDefaultValueItemCardEditButton;
         /// <summary>
         /// 当点击触发器节点的添加目标按钮
         /// </summary>
@@ -1628,6 +1626,10 @@ namespace UI
     }
     public enum ActionNodeValueType
     {
+        /// <summary>
+        /// 无
+        /// </summary>
+        none,
         /// <summary>
         /// 整数
         /// </summary>

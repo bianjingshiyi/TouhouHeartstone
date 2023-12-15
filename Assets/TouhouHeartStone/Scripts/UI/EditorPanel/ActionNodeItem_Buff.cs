@@ -14,7 +14,6 @@ namespace UI
             _triggerFieldsRoot.gameObject.SetActive(false);
             _effectPropertyFields.SetActive(false);
             _inputRoot.gameObject.SetActive(false);
-            _valueRoot.gameObject.SetActive(false);
             _outputRoot.gameObject.SetActive(true);
             SetDirty();
         }

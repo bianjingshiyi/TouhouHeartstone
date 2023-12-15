@@ -50,15 +50,19 @@ namespace TouhouHeartstone
         }
         public override string[] getTags()
         {
-            return passiveEntry?.tags?.ToArray() ?? Array.Empty<string>();
+            return passiveEntry?.getTags() ?? Array.Empty<string>();
         }
         public override bool hasTag(string tag)
         {
-            return passiveEntry?.tags?.Contains(tag) ?? false;
+            return getTags()?.Contains(tag) ?? false;
         }
         public virtual void setPiles(params string[] tags)
         {
             passiveEntry?.setPiles(tags);
+        }
+        public virtual string[] getPiles()
+        {
+            return passiveEntry?.getPiles().ToArray() ?? Array.Empty<string>();
         }
         public override SerializableEffect Serialize()
         {
@@ -93,7 +97,6 @@ namespace TouhouHeartstone
         public override ControlOutput onEnableAction => entryNode?.getOutputPort<ControlOutput>(enableActionName);
         public override ControlOutput onDisableAction => entryNode?.getOutputPort<ControlOutput>(disableActionName);
         public override ControlOutput executePort => entryNode?.getOutputPort<ControlOutput>(PassiveEntryNode.actionPortName);
-        public virtual string[] piles => passiveEntry?.piles?.ToArray() ?? Array.Empty<string>();
         public const string enableActionName = "enableAction";
         public const string disableActionName = "disableAction";
         public static readonly PortDefine enableActionPortDefine = PortDefine.Control(enableActionName, "EnableAction");

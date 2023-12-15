@@ -12,11 +12,8 @@ namespace TouhouCardEngine
             inputs = new PortDefine[]
             {
                 PortDefine.Value(typeof(object), "A"),
-                PortDefine.Value(typeof(object), "B")
-            };
-            consts = new PortDefine[1]
-            {
-                PortDefine.Const(typeof(CompareOperator), "operator")
+                PortDefine.Value(typeof(object), "B"),
+                PortDefine.Value(typeof(CompareOperator), "operator", isConst: true)
             };
             outputs = new PortDefine[]
             {
@@ -26,7 +23,7 @@ namespace TouhouCardEngine
         }
         public override async Task<ControlOutput> run(Flow flow, Node node)
         {
-            object opObj = node.getConst("operator");
+            object opObj = await flow.getValue(node.getInputPort<ValueInput>("operator"));
             CompareOperator op;
 
             if (opObj == null)
@@ -87,13 +84,9 @@ namespace TouhouCardEngine
         }
         public const string defName = "Compare";
         public PortDefine[] inputs { get; }
-        public PortDefine[] consts { get; }
         public PortDefine[] outputs { get; }
 
         public override IEnumerable<PortDefine> inputDefines => inputs;
-
-        public override IEnumerable<PortDefine> constDefines => consts;
-
         public override IEnumerable<PortDefine> outputDefines => outputs;
     }
     public enum CompareOperator

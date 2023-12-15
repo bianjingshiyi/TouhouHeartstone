@@ -93,11 +93,11 @@ namespace TouhouHeartstone
         }
         public override string[] getTags()
         {
-            return entryNode?.tags?.ToArray() ?? Array.Empty<string>();
+            return entryNode?.getTags()?.ToArray() ?? Array.Empty<string>();
         }
         public override bool hasTag(string tag)
         {
-            return entryNode?.tags?.Contains(tag) ?? false;
+            return entryNode?.getTags()?.Contains(tag) ?? false;
         }
         public override SerializableEffect Serialize()
         {

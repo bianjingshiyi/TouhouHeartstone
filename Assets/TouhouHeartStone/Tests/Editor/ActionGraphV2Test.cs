@@ -31,21 +31,21 @@ namespace Tests
 
             Flow flow;
             flow = new Flow(game, null, null, null, null);
-            compareNode.setConst("operator", CompareOperator.equals);
-            intNode1.setConst("value", 40);
-            intNode2.setConst("value", 18);
+            compareNode.setInputDefaultValue("operator", CompareOperator.equals);
+            intNode1.setInputDefaultValue("value", 40);
+            intNode2.setInputDefaultValue("value", 18);
             Assert.AreEqual(false, game.getValue<bool>(flow, compareNode.getOutputPort<ValueOutput>("result")).Result);
 
             flow = new Flow(game, null, null, null, null);
-            compareNode.setConst("operator", CompareOperator.unequals);
-            intNode1.setConst("value", 40);
-            intNode2.setConst("value", 40);
+            compareNode.setInputDefaultValue("operator", CompareOperator.unequals);
+            intNode1.setInputDefaultValue("value", 40);
+            intNode2.setInputDefaultValue("value", 40);
             Assert.AreEqual(false, game.getValue<bool>(flow, compareNode.getOutputPort<ValueOutput>("result")).Result);
 
             flow = new Flow(game, null, null, null, null);
-            compareNode.setConst("operator", CompareOperator.equals);
-            intNode1.setConst("value", 40);
-            intNode2.setConst("value", 40);
+            compareNode.setInputDefaultValue("operator", CompareOperator.equals);
+            intNode1.setInputDefaultValue("value", 40);
+            intNode2.setInputDefaultValue("value", 40);
             Assert.AreEqual(true, game.getValue<bool>(flow, compareNode.getOutputPort<ValueOutput>("result")).Result);
         }
         [Test]
@@ -61,9 +61,9 @@ namespace Tests
             var intNode1 = graph.createActionNode(constDefine);
             var intNode2 = graph.createActionNode(constDefine);
 
-            intOpNode.setConst("operator", IntegerOperator.add);
-            intNode1.setConst("value", 40);
-            intNode2.setConst("value", 18);
+            intOpNode.setInputDefaultValue("operator", IntegerOperator.add);
+            intNode1.setInputDefaultValue("value", 40);
+            intNode2.setInputDefaultValue("value", 18);
 
             graph.connect(intNode1.getOutputPort<ValueOutput>("result"), intOpNode.getParamInputPort("arg", 0));
             graph.connect(intNode2.getOutputPort<ValueOutput>("result"), intOpNode.getParamInputPort("arg", 1));

@@ -158,7 +158,7 @@ namespace Game
                     for (int i = 0; i < consts.Length; i++)
                     {
                         var input = seri.constList[i];
-                        consts[i] = PortDefine.Const(typeFinder(input.typeName), input.name, input.name);
+                        consts[i] = PortDefine.Value(typeFinder(input.typeName), input.name, input.name);
                     }
                 }
                 if (seri.outputList != null)
@@ -172,7 +172,7 @@ namespace Game
                 }
 
                 var graph = new ActionGraph();
-                GeneratedActionDefine action = new GeneratedActionDefine(graph, seri.id, NodeDefineType.Action, seri.category, seri.name, inputs, consts, outputs);
+                GeneratedActionDefine action = new GeneratedActionDefine(graph, seri.id, NodeDefineType.Action, seri.category, seri.name, inputs.Concat(consts).ToArray(), outputs);
                 action.cardPoolId = poolId;
 
                 dict.Add(seri, action);
@@ -382,12 +382,12 @@ namespace Game
 
                 // 光环的生效区域。
                 var pileList = effect.pileList;
-                dataNode.setConst(AuraEntryNode.pileListName, pileList);
+                dataNode.setPiles(pileList.ToArray());
 
                 // 光环的作用区域。
-                if (effect.propDict.TryGetValue(AuraEntryNode.rangeListName, out var rangeListObj) && rangeListObj is PileNameCollection rangeList)
+                if (effect.propDict.TryGetValue(AuraEntryNode.rangeListPortName, out var rangeListObj) && rangeListObj is PileNameCollection rangeList)
                 {
-                    dataNode.setConst(AuraEntryNode.rangeListName, rangeList);
+                    dataNode.setRanges(rangeList.ToArray());
                 }
 
                 SerializableActionNodeGraphInfo buffDefineGraphInfo = null;
@@ -478,7 +478,7 @@ namespace Game
                 // 添加属性
                 foreach (var pair in effect.propDict)
                 {
-                    if (pair.Key == AuraEntryNode.rangeListName ||
+                    if (pair.Key == AuraEntryNode.rangeListPortName ||
                         pair.Key == "getAuraBuffDefine" ||
                         pair.Key == "affectCondition" ||
                         pair.Key == "updateAction")
@@ -774,8 +774,8 @@ namespace Game
                 for (int i = 0; i < seriActionNode.consts.Length; i++)
                 {
                     var value = seriActionNode.consts[i];
-                    var constDefine = define.constDefines.ElementAt(i);
-                    actionNode.setConst(constDefine.name, value);
+                    var constDefine = define.inputDefines.ElementAt(seriActionNode.inputs.Length + i);
+                    actionNode.setInputDefaultValue(constDefine.name, value);
                 }
             }
 

@@ -53,12 +53,12 @@ namespace TouhouHeartstone
         {
             return !card.isEffectEnabled(buff, this);
         }
+        public string[] getPiles() => _piles;
         #endregion
 
         Task IEventEffect.onTrigger(EffectEnv env) => execute(env);
 
         #region 属性字段
-        public string[] piles => _piles;
         protected abstract Type eventType { get; }
         protected abstract EventTriggerTimeType triggerType { get; }
         private string[] _piles = new string[] { PILE.MASTER };

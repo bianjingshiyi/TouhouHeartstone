@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Controllers;
 using Game;
-using MukioI18n;
 using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UnityEngine.UI.Extensions;
 using UIHelper = BJSYGameCore.UI.UIHelper;
 
 namespace UI
@@ -22,7 +19,6 @@ namespace UI
             _triggerFieldsRoot.gameObject.SetActive(true);
             _effectPropertyFields.SetActive(true);
             _inputRoot.gameObject.SetActive(true);
-            _valueRoot.gameObject.SetActive(false);
             _outputRoot.gameObject.SetActive(true);
             SetDirty();
         }
@@ -32,7 +28,6 @@ namespace UI
             _triggerFieldsRoot.gameObject.SetActive(false);
             _effectPropertyFields.SetActive(false);
             _inputRoot.gameObject.SetActive(true);
-            _valueRoot.gameObject.SetActive(true);
             _outputRoot.gameObject.SetActive(true);
             SetDirty();
         }
@@ -42,7 +37,6 @@ namespace UI
             _triggerFieldsRoot.gameObject.SetActive(false);
             _effectPropertyFields.SetActive(true);
             _inputRoot.gameObject.SetActive(true);
-            _valueRoot.gameObject.SetActive(true);
             _outputRoot.gameObject.SetActive(true);
             SetDirty();
         }
@@ -51,7 +45,7 @@ namespace UI
             _nameText.text = name;
             SetDirty();
         }
-        public void setInputs(PortItemInfo[] inputViewData)
+        public void setInputs(InputPortInfo[] inputViewData)
         {
             if (inputViewData == null || inputViewData.Length < 1)
             {
@@ -63,9 +57,22 @@ namespace UI
                 UIHelper.updateList(_inputRoot, _inputTemplate, _inputList, inputViewData.Length, (i, itemRect) =>
                 {
                     ActionNodeItemInput item = itemRect.GetComponent<ActionNodeItemInput>();
-                    item.setName(inputViewData[i].name);
-                    item.setColor(inputViewData[i].color);
-                    item.isControl = inputViewData[i].isControl;
+                    var inputInfo = inputViewData[i];
+                    var portInfo = inputInfo.portInfo;
+                    var defaultValue = inputInfo.defaultValueInfo;
+                    var showPort = inputInfo.showPort;
+                    var showDefaultValue = inputInfo.showDefaultValue;
+
+                    item.setName(portInfo.name);
+                    item.setColor(portInfo.color);
+                    item.isControl = portInfo.isControl;
+
+                    item.setPortActive(showPort);
+                    item.setDefaultValueActive(showDefaultValue);
+                    if (showDefaultValue)
+                    {
+                        item.setDefaultValue(defaultValue);
+                    }
                 }, itemRect =>
                 {
                     ActionNodeItemInput item = itemRect.GetComponent<ActionNodeItemInput>();
@@ -73,6 +80,13 @@ namespace UI
                     item.onDragNode += onDragInputNodeCallback;
                     item.onEndDragNode += onEndDragInputNodeCallback;
                     item.onClickNode += onClickInputNodeCallback;
+                    item.onDefaultValueChanged += onDefaultValueChangedCallback;
+                    item.onClickDefaultValueButton += onDefaultValueButtonClickCallback;
+                    item.onClickDefaultValueCardButton += onDefaultValueCardButtonClickCallback;
+                    item.onClickDefaultValueCardEditButton += onDefaultValueCardEditButtonClickCallback;
+                    item.onClickDefaultValueItemButton += onDefaultValueItemButtonClickCallback;
+                    item.onClickDefaultValueItemCardButton += onDefaultValueItemCardButtonClickCallback;
+                    item.onClickDefaultValueItemCardEditButton += onDefaultValueItemCardEditButtonClickCallback;
                 }, itemRect =>
                 {
                     ActionNodeItemInput item = itemRect.GetComponent<ActionNodeItemInput>();
@@ -80,58 +94,20 @@ namespace UI
                     item.onDragNode -= onDragInputNodeCallback;
                     item.onEndDragNode -= onEndDragInputNodeCallback;
                     item.onClickNode -= onClickInputNodeCallback;
+                    item.onDefaultValueChanged -= onDefaultValueChangedCallback;
+                    item.onClickDefaultValueButton -= onDefaultValueButtonClickCallback;
+                    item.onClickDefaultValueCardButton -= onDefaultValueCardButtonClickCallback;
+                    item.onClickDefaultValueCardEditButton -= onDefaultValueCardEditButtonClickCallback;
+                    item.onClickDefaultValueItemButton -= onDefaultValueItemButtonClickCallback;
+                    item.onClickDefaultValueItemCardButton -= onDefaultValueItemCardButtonClickCallback;
+                    item.onClickDefaultValueItemCardEditButton -= onDefaultValueItemCardEditButtonClickCallback;
                 }, rebuild: true);
             }
             SetDirty();
         }
-        public void setConsts(ActionNodeValueInfo[] valueInfos)
+        public ValueInputField getInputDefaultValueInputField(int index)
         {
-            if (valueInfos == null || valueInfos.Length < 1)
-            {
-                _valueNameRoot.gameObject.SetActive(false);
-                _valueRoot.gameObject.SetActive(false);
-            }
-            else
-            {
-                _valueNameRoot.gameObject.SetActive(true);
-                _valueRoot.gameObject.SetActive(true);
-                UIHelper.updateList(_valueNameRoot, _valueNameTempltate, _valueNameList, valueInfos.Length, (i, itemRect) =>
-                {
-                    Text item = itemRect.GetComponentInChildren<Text>();
-                    item.text = valueInfos[i].displayName;
-                });
-                UIHelper.updateList(_valueRoot, _valueTemplate, _valueList, valueInfos.Length, (i, itemRect) =>
-                {
-                    ValueInputField item = itemRect.GetComponent<ValueInputField>();
-                    item.setValueInfo(valueInfos[i]);
-                    item.setReadonly(_isReadonly);
-                }, itemRect =>
-                {
-                    ValueInputField item = itemRect.GetComponent<ValueInputField>();
-                    item.onValueChanged += onConstValueChangedCallback;
-                    item.onClickButton += onConstValueButtonClickCallback;
-                    item.onClickCardButton += onConstValueCardButtonClickCallback;
-                    item.onClickCardEditButton += onConstValueCardEditButtonClickCallback;
-                    item.onClickItemButton += onConstValueItemButtonClickCallback;
-                    item.onClickItemCardButton += onConstValueItemCardButtonClickCallback;
-                    item.onClickItemCardEditButton += onConstValueItemCardEditButtonClickCallback;
-                }, itemRect =>
-                {
-                    ValueInputField item = itemRect.GetComponent<ValueInputField>();
-                    item.onValueChanged -= onConstValueChangedCallback;
-                    item.onClickButton -= onConstValueButtonClickCallback;
-                    item.onClickCardButton -= onConstValueCardButtonClickCallback;
-                    item.onClickCardEditButton -= onConstValueCardEditButtonClickCallback;
-                    item.onClickItemButton -= onConstValueItemButtonClickCallback;
-                    item.onClickItemCardButton -= onConstValueItemCardButtonClickCallback;
-                    item.onClickItemCardEditButton -= onConstValueItemCardEditButtonClickCallback;
-                }, rebuild: true);
-            }
-            SetDirty();
-        }
-        public ValueInputField getConstInputField(int index)
-        {
-            return _valueList[index].GetComponent<ValueInputField>();
+            return _inputList[index].GetComponent<ActionNodeItemInput>()?.defaultValueInputField;
         }
         /// <summary>
         /// 初始化事件名称
@@ -139,7 +115,7 @@ namespace UI
         /// <param name="eventNames"></param>
         public void initEventReferences(string[] eventNames, EventReference[] eventValues)
         {
-            ValueInputField item = _valueTemplate.GetComponent<ValueInputField>();
+            ActionNodeItemInput item = _inputTemplate.GetComponent<ActionNodeItemInput>();
             item.initEventReferences(eventNames, eventValues);
         }
         /// <summary>
@@ -148,7 +124,7 @@ namespace UI
         /// <param name="eventNames"></param>
         public void initPileNames(string[] pileNames, string[] pileValues)
         {
-            ValueInputField item = _valueTemplate.GetComponent<ValueInputField>();
+            ActionNodeItemInput item = _inputTemplate.GetComponent<ActionNodeItemInput>();
             item.initPileNames(pileNames, pileValues);
 
             PropertyItemField propItem = _effectPropertyItemTemplate.GetComponent<PropertyItemField>();
@@ -160,7 +136,7 @@ namespace UI
         /// <param name="eventNames"></param>
         public void initEffectTags(string[] effectTagNames, string[] effectTagValues)
         {
-            ValueInputField item = _valueTemplate.GetComponent<ValueInputField>();
+            ActionNodeItemInput item = _inputTemplate.GetComponent<ActionNodeItemInput>();
             item.initEffectTagNames(effectTagNames, effectTagValues);
         }
         /// <summary>
@@ -169,11 +145,11 @@ namespace UI
         /// <param name="eventNames"></param>
         public void setEventVarNames(string[] eventVarNameNames, string[] eventVarNameValues)
         {
-            ValueInputField item = _valueTemplate.GetComponent<ValueInputField>();
+            ActionNodeItemInput item = _inputTemplate.GetComponent<ActionNodeItemInput>();
             item.initEventVarNames(eventVarNameNames, eventVarNameValues);
-            foreach (var valueRect in _valueList)
+            foreach (var valueRect in _inputList)
             {
-                var valueItem = valueRect.GetComponent<ValueInputField>();
+                var valueItem = valueRect.GetComponent<ActionNodeItemInput>();
                 valueItem.initEventVarNames(eventVarNameNames, eventVarNameValues);
             }
         }
@@ -188,7 +164,7 @@ namespace UI
         /// <param name="cardProperties"></param>
         public void initCardProperties(CardPropertyNameItem[] cardProperties)
         {
-            ValueInputField item = _valueTemplate.GetComponent<ValueInputField>();
+            ActionNodeItemInput item = _inputTemplate.GetComponent<ActionNodeItemInput>();
             item.initCardProperties(cardProperties);
         }
 
@@ -425,9 +401,9 @@ namespace UI
                 var targetChecker = targetCheckerRect.GetComponent<ActionNodeItemTriggerTargetChecker>();
                 targetChecker.setReadonly(_isReadonly);
             }
-            foreach (var valueFieldRect in _valueList)
+            foreach (var inputRect in _inputList)
             {
-                var valueField = valueFieldRect.GetComponent<ValueInputField>();
+                var valueField = inputRect.GetComponent<ActionNodeItemInput>();
                 valueField.setReadonly(_isReadonly);
             }
         }
@@ -526,14 +502,6 @@ namespace UI
             {
                 _inputTemplate.gameObject.SetActive(false);
             }
-            if (_valueNameTempltate.transform.parent == _valueNameRoot)
-            {
-                _valueNameTempltate.gameObject.SetActive(false);
-            }
-            if (_valueTemplate.transform.parent == _valueRoot)
-            {
-                _valueTemplate.gameObject.SetActive(false);
-            }
             if (_outputTemplate.transform.parent == _outputRoot)
             {
                 _outputTemplate.gameObject.SetActive(false);
@@ -597,34 +565,36 @@ namespace UI
         {
             onClickOutputNode?.Invoke(this, item, eventData);
         }
-        private void onConstValueChangedCallback(ValueInputField item, object value)
+        #region 输入默认值
+        private void onDefaultValueChangedCallback(ActionNodeItemInput item, object value)
         {
-            onConstValueChanged?.Invoke(this, _valueList.IndexOf(item.transform as RectTransform), value);
+            onDefaultValueChanged?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform), value);
         }
-        private void onConstValueButtonClickCallback(ValueInputField item)
+        private void onDefaultValueButtonClickCallback(ActionNodeItemInput item)
         {
-            onClickConstValueButton?.Invoke(this, _valueList.IndexOf(item.transform as RectTransform));
+            onClickDefaultValueButton?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform));
         }
-        private void onConstValueCardButtonClickCallback(ValueInputField item)
+        private void onDefaultValueCardButtonClickCallback(ActionNodeItemInput item)
         {
-            onClickConstValueCardButton?.Invoke(this, _valueList.IndexOf(item.transform as RectTransform));
+            onClickDefaultValueCardButton?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform));
         }
-        private void onConstValueCardEditButtonClickCallback(ValueInputField item)
+        private void onDefaultValueCardEditButtonClickCallback(ActionNodeItemInput item)
         {
-            onClickConstValueCardEditButton?.Invoke(this, _valueList.IndexOf(item.transform as RectTransform));
+            onClickDefaultValueCardEditButton?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform));
         }
-        private void onConstValueItemButtonClickCallback(ValueInputField item, int index)
+        private void onDefaultValueItemButtonClickCallback(ActionNodeItemInput item, int index)
         {
-            onClickConstValueItemButton?.Invoke(this, _valueList.IndexOf(item.transform as RectTransform), index);
+            onClickDefaultValueItemButton?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform), index);
         }
-        private void onConstValueItemCardButtonClickCallback(ValueInputField item, int index)
+        private void onDefaultValueItemCardButtonClickCallback(ActionNodeItemInput item, int index)
         {
-            onClickConstValueItemCardButton?.Invoke(this, _valueList.IndexOf(item.transform as RectTransform), index);
+            onClickDefaultValueItemCardButton?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform), index);
         }
-        private void onConstValueItemCardEditButtonClickCallback(ValueInputField item, int index)
+        private void onDefaultValueItemCardEditButtonClickCallback(ActionNodeItemInput item, int index)
         {
-            onClickConstValueItemCardEditButton?.Invoke(this, _valueList.IndexOf(item.transform as RectTransform), index);
+            onClickDefaultValueItemCardEditButton?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform), index);
         }
+        #endregion
         private void onClickAddTargetCheckerButtonCallback()
         {
             onClickAddTargetCheckerButton?.Invoke(this);
@@ -752,14 +722,13 @@ namespace UI
         public event Action<ActionNodeItem, ActionNodeItemOutput, BaseEventData> onDragOutputNode;
         public event Action<ActionNodeItem, ActionNodeItemOutput, BaseEventData> onEndDragOutputNode;
         public event Action<ActionNodeItem, ActionNodeItemOutput, BaseEventData> onClickOutputNode;
-        public event Action<ActionNodeItem, int, object> onConstValueChanged;
-        public event Action<ActionNodeItem, int> onClickConstValueButton;
-        public event Action<ActionNodeItem, int> onClickConstValueCardButton;
-        public event Action<ActionNodeItem, int> onClickConstValueCardEditButton;
-        public event Action<ActionNodeItem, int, int> onClickConstValueItemButton;
-        public event Action<ActionNodeItem, int, int> onClickConstValueItemCardButton;
-        public event Action<ActionNodeItem, int, int> onClickConstValueItemCardEditButton;
-        public event Action<ActionNodeItem> onClickEditConditionButton;
+        public event Action<ActionNodeItem, int, object> onDefaultValueChanged;
+        public event Action<ActionNodeItem, int> onClickDefaultValueButton;
+        public event Action<ActionNodeItem, int> onClickDefaultValueCardButton;
+        public event Action<ActionNodeItem, int> onClickDefaultValueCardEditButton;
+        public event Action<ActionNodeItem, int, int> onClickDefaultValueItemButton;
+        public event Action<ActionNodeItem, int, int> onClickDefaultValueItemCardButton;
+        public event Action<ActionNodeItem, int, int> onClickDefaultValueItemCardEditButton;
         public event Action<ActionNodeItem> onClickAddTargetCheckerButton;
         public event Action<ActionNodeItem, int, int> onTargetCheckerTypeValueChanged;
         public event Action<ActionNodeItem, int> onClickEditTargetCheckerButton;
@@ -828,20 +797,6 @@ namespace UI
         RectTransform _inputTemplate;
         [SerializeField]
         List<RectTransform> _inputList = new List<RectTransform>();
-
-        [Header("值")]
-        [SerializeField]
-        RectTransform _valueNameRoot;
-        [SerializeField]
-        RectTransform _valueNameTempltate;
-        [SerializeField]
-        List<RectTransform> _valueNameList = new List<RectTransform>();
-        [SerializeField]
-        RectTransform _valueRoot;
-        [SerializeField]
-        RectTransform _valueTemplate;
-        [SerializeField]
-        List<RectTransform> _valueList = new List<RectTransform>();
 
         [Header("输出")]
         [SerializeField]

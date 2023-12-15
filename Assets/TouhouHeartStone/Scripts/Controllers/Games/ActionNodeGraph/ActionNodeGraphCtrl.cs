@@ -153,10 +153,10 @@ namespace Controllers
             // 虽然这以后肯定是要实现的，但是不是现在要做的事情
             if (node is ActionNode action && action.defineRef.isBuiltinReference(BuiltinActionDefineID.GetBuffDefine))
             {
-                var pairs = node.consts.Where(p => p.Value is DefineReference defRef && defRef.cardPoolId != _curCardPoolId).ToArray();
+                var pairs = node.inputDefaultValues.Where(p => p.Value is DefineReference defRef && defRef.cardPoolId != _curCardPoolId).ToArray();
                 foreach (var pair in pairs)
                 {
-                    node.setConst(pair.Key, new DefineReference(_curCardPoolId, 0));
+                    node.setInputDefaultValue(pair.Key, new DefineReference(_curCardPoolId, 0));
                 }
             }
         }
@@ -340,7 +340,7 @@ namespace Controllers
             }
             else
             {
-                selectCardForNodeConst(cardDefine);
+                selectCardForNodeInputDefaultValue(cardDefine);
             }
             //重置字段
             resetCardSelectInfo();
@@ -349,8 +349,8 @@ namespace Controllers
         {
             //重置字段
             _curEditNode = null;
-            _curEditActionNodeConstName = string.Empty;
-            _curEditActionNodeConstItemIndex = -1;
+            _curEditNodeInputDefaultValueName = string.Empty;
+            _curEditNodeInputDefaultValueItemIndex = -1;
             _curCardSeekingEffectPropName = string.Empty;
             _curCardSeekingEffectPropIndex = -1;
         }
@@ -361,9 +361,9 @@ namespace Controllers
         /// <param name="node">节点。</param>
         /// <param name="name">常量名。</param>
         /// <param name="value">常量值。</param>
-        public void setNodeConst(Node node, string name, object value)
+        public void setNodeDefaultValue(Node node, string name, object value)
         {
-            var beforeValue = node.getConst(name);
+            var beforeValue = node.getInputDefaultValue(name);
             if (value is ICloneable clonable)
             {
                 value = clonable.Clone();
@@ -372,8 +372,8 @@ namespace Controllers
             {
                 beforeValue = beforeClonable.Clone();
             }
-            node.setConst(name, value);
-            addOperationRecord(new ChangeNodeConstOperation(this, node, name, beforeValue, value));
+            node.setInputDefaultValue(name, value);
+            addOperationRecord(new ChangeNodeDefaultValueOperation(this, node, name, beforeValue, value));
         }
         public string getNodeDefineName(NodeDefine define)
         {
@@ -405,13 +405,13 @@ namespace Controllers
             _ui.onEndDragActionNode += onEndMoveActionNode;
             _ui.onStartConnection += onStartConnection;
             _ui.onEndConnection += onEndConnection;
-            _ui.onActionNodeValueChange += onActionNodeValueChange;
-            _ui.onClickActionNodeConstValueButton += onClickActionNodeConstValueButton;
-            _ui.onClickActionNodeConstValueCardButton += onClickActionNodeConstValueCardButton;
-            _ui.onClickActionNodeConstValueCardEditButton += onClickActionNodeConstValueCardEditButton;
-            _ui.onClickActionNodeConstValueItemButton += onClickActionNodeConstValueItemButton;
-            _ui.onClickActionNodeConstValueItemCardButton += onClickActionNodeConstValueItemCardButton;
-            _ui.onClickActionNodeConstValueItemCardEditButton += onClickActionNodeConstValueItemCardEditButton;
+            _ui.onNodeInputDefaultValueChanged += onNodeInputDefaultValueChangedCallback;
+            _ui.onClickActionNodeDefaultValueButton += onClickActionNodeDefaultValueButton;
+            _ui.onClickActionNodeDefaultValueCardButton += onClickNodeInputDefaultValueCardButton;
+            _ui.onClickActionNodeDefaultValueCardEditButton += onClickNodeDefaultValueCardEditButton;
+            _ui.onClickActionNodeDefaultValueItemButton += onClickNodeDefaultValueItemButton;
+            _ui.onClickActionNodeDefaultValueItemCardButton += onClickNodeDefaultValueItemCardButton;
+            _ui.onClickActionNodeDefaultValueItemCardEditButton += onClickNodeDefaultValueItemCardEditButton;
             _ui.onNodeSelected += onNodeSelected;
             _ui.onNodeDeselected += onNodeDeselected;
             _ui.onNodeVisualEffectButtonClicked += onNodeVisualEffectButtonClickedCallback;
@@ -655,40 +655,22 @@ namespace Controllers
         /// 当用户更改节点的常量值，设置对应的常量。
         /// </summary>
         /// <param name="actionNodeItem"></param>
-        /// <param name="constIndex"></param>
+        /// <param name="inputIndex"></param>
         /// <param name="value"></param>
-        private void onActionNodeValueChange(ActionNodeItem actionNodeItem, int constIndex, object value)
+        private void onNodeInputDefaultValueChangedCallback(ActionNodeItem actionNodeItem, int inputIndex, object value)
         {
             if (isReadonly)
                 return;
             var node = getActionNode(actionNodeItem);
-            if (node is ActionNode action)
-            {
-                var actionDefine = getActionDefine(action.defineRef);
-                var name = actionDefine.constDefines.ElementAt(constIndex).name;
-                setNodeConst(node, name, value);
-                updateNodeItemConsts(node);
-                addRecordBreakpoint();
-            }
-            else
-            {
-                string name = getNodeConstNameByIndex(node, constIndex);
-                if (!string.IsNullOrEmpty(name))
-                {
-                    setNodeConst(node, name, value);
-                    updateNodeItemConsts(node);
-                    addRecordBreakpoint();
-                }
-                else
-                {
-                    Debug.LogError($"节点{node}不包含常量{name}。");
-                }
-            }
+            var name = node.inputPorts.ElementAt(inputIndex).name;
+            setNodeDefaultValue(node, name, value);
+            updateNodeItemInputPorts(node);
+            addRecordBreakpoint();
         }
-        private void onClickActionNodeConstValueButton(ActionNodeItem actionNodeItem, int index)
+        private void onClickActionNodeDefaultValueButton(ActionNodeItem actionNodeItem, int index)
         {
         }
-        private async void onClickActionNodeConstValueCardButton(ActionNodeItem actionNodeItem, int index)
+        private async void onClickNodeInputDefaultValueCardButton(ActionNodeItem actionNodeItem, int index)
         {
             if (isReadonly)
                 return;
@@ -696,38 +678,38 @@ namespace Controllers
             if (!(actionNode is ActionNode action))
                 return;
             ActionDefine actionDefine = getActionDefine(action.defineRef);
-            var constDefine = actionDefine.constDefines.ElementAtOrDefault(index);
-            if (constDefine == null)
+            var inputDefine = actionDefine.inputDefines.ElementAtOrDefault(index);
+            if (inputDefine == null)
                 return;
-            if (constDefine.type == typeof(DefineReference))
+            if (inputDefine.type == typeof(DefineReference))
             {
                 long cardPoolId = _curCardPoolId;
-                if (action.getConst(constDefine.name) is DefineReference value)
+                if (action.getInputDefaultValue(inputDefine.name) is DefineReference value)
                 {
                     //打开卡牌选择界面
                     cardPoolId = value.cardPoolId;
                 }
                 await displayCardSelectPanel(cardPoolId);
                 _curEditNode = action;
-                _curEditActionNodeConstName = constDefine.name;
-                _curEditActionNodeConstItemIndex = -1;
+                _curEditNodeInputDefaultValueName = inputDefine.name;
+                _curEditNodeInputDefaultValueItemIndex = -1;
             }
         }
-        private void onClickActionNodeConstValueCardEditButton(ActionNodeItem actionNodeItem, int index)
+        private void onClickNodeDefaultValueCardEditButton(ActionNodeItem actionNodeItem, int index)
         {
             Node node = getActionNode(actionNodeItem);
             if (!(node is ActionNode action))
                 return;
             ActionDefine actionDefine = getActionDefine(action.defineRef);
-            var constDefine = actionDefine.constDefines.ElementAtOrDefault(index);
-            if (constDefine == null)
+            var inputDefine = actionDefine.inputDefines.ElementAtOrDefault(index);
+            if (inputDefine == null)
                 return;
-            onOpenActionNodeConstCardDefine?.Invoke(action, constDefine.name);
+            onOpenNodeInputDefaultValueCardDefine?.Invoke(action, inputDefine.name);
         }
-        private void onClickActionNodeConstValueItemButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
+        private void onClickNodeDefaultValueItemButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
         {
         }
-        private async void onClickActionNodeConstValueItemCardButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
+        private async void onClickNodeDefaultValueItemCardButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
         {
             if (isReadonly)
                 return;
@@ -735,13 +717,13 @@ namespace Controllers
             if (!(actionNode is ActionNode action))
                 return;
             ActionDefine actionDefine = getActionDefine(action.defineRef);
-            var constDefine = actionDefine.constDefines.ElementAtOrDefault(index);
-            if (constDefine == null)
+            var inputDefine = actionDefine.inputDefines.ElementAtOrDefault(index);
+            if (inputDefine == null)
                 return;
-            if (constDefine.type == typeof(CardReferenceCollection) || constDefine.type == typeof(DefineReference[]))
+            if (inputDefine.type == typeof(CardReferenceCollection) || inputDefine.type == typeof(DefineReference[]))
             {
                 long cardPoolId = _curCardPoolId;
-                if (actionNode.getConst(constDefine.name) is CardReferenceCollection defRefCol)
+                if (actionNode.getInputDefaultValue(inputDefine.name) is CardReferenceCollection defRefCol)
                 {
                     if (defRefCol[itemIndex] == null)
                     {
@@ -749,7 +731,7 @@ namespace Controllers
                     }
                     cardPoolId = defRefCol[itemIndex].cardPoolId;
                 }
-                else if (actionNode.getConst(constDefine.name) is DefineReference[] defRefs)
+                else if (actionNode.getInputDefaultValue(inputDefine.name) is DefineReference[] defRefs)
                 {
                     if (defRefs[itemIndex] == null)
                     {
@@ -760,20 +742,20 @@ namespace Controllers
                 //打开卡牌选择界面
                 await displayCardSelectPanel(cardPoolId);
                 _curEditNode = action;
-                _curEditActionNodeConstName = constDefine.name;
-                _curEditActionNodeConstItemIndex = itemIndex;
+                _curEditNodeInputDefaultValueName = inputDefine.name;
+                _curEditNodeInputDefaultValueItemIndex = itemIndex;
             }
         }
-        private void onClickActionNodeConstValueItemCardEditButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
+        private void onClickNodeDefaultValueItemCardEditButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
         {
             Node node = getActionNode(actionNodeItem);
             if (!(node is ActionNode action))
                 return;
             ActionDefine actionDefine = getActionDefine(action.defineRef);
-            var constDefine = actionDefine.constDefines.ElementAtOrDefault(index);
-            if (constDefine == null)
+            var inputDefine = actionDefine.inputDefines.ElementAtOrDefault(index);
+            if (inputDefine == null)
                 return;
-            onOpenActionNodeConstItemCardDefine?.Invoke(action, constDefine.name, itemIndex);
+            onOpenNodeInputDefaultValueItemCardDefine?.Invoke(action, inputDefine.name, itemIndex);
         }
         private void onNodeSelected(ActionNodeItem actionNodeItem)
         {
@@ -879,7 +861,7 @@ namespace Controllers
 
                 _actionNodeItemList.Add(actionNodeItem);
                 _actionNodeList.Add(node);
-                updateNodeItemConsts(node);
+                updateNodeItemInputPorts(node);
                 updateNodePortModes(node, _connectingPort);
                 return actionNodeItem;
             }
@@ -890,11 +872,10 @@ namespace Controllers
             else if (node is GeneratedActionEntryNode genEntry)
             {
                 string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_INPUT);
-                var inputViewData = new PortItemInfo[0];
-                ActionNodeValueInfo[] constsInfo = new ActionNodeValueInfo[0];
+                var inputViewData = new InputPortInfo[0];
                 var outputViewData = getActionDefineEntryNodeOutputViewData(genEntry);
 
-                var actionNodeItem = _ui.createNode(genEntry.posX, genEntry.posY, nodeName, inputViewData, constsInfo, outputViewData);
+                var actionNodeItem = _ui.createNode(genEntry.posX, genEntry.posY, nodeName, inputViewData, outputViewData);
                 _actionNodeItemList.Add(actionNodeItem);
                 _actionNodeList.Add(node);
                 updateNodePortModes(node, _connectingPort);
@@ -904,10 +885,9 @@ namespace Controllers
             {
                 string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_OUTPUT);
                 var inputViewData = getActionDefineReturnNodeInputViewData(genReturn);
-                ActionNodeValueInfo[] constsInfo = new ActionNodeValueInfo[0];
                 var outputViewData = new PortItemInfo[0];
 
-                var actionNodeItem = _ui.createNode(genReturn.posX, genReturn.posY, nodeName, inputViewData, constsInfo, outputViewData);
+                var actionNodeItem = _ui.createNode(genReturn.posX, genReturn.posY, nodeName, inputViewData, outputViewData);
                 _actionNodeItemList.Add(actionNodeItem);
                 _actionNodeList.Add(node);
                 updateNodePortModes(node, _connectingPort);
@@ -939,7 +919,7 @@ namespace Controllers
                 GeneratedBuffDefine generatedBuffDefine = null;
                 BuffSkin buffSkin = null;
                 string constName = GetBuffDefineAction.constName;
-                if (actionNode.consts == null || actionNode.consts.Count < 1 || !tryGetBuffDefine(actionNode.getConst(constName), out GeneratedBuffDefine buffDefine))
+                if (actionNode.inputDefaultValues == null || actionNode.inputDefaultValues.Count < 1 || !tryGetBuffDefine(actionNode.getInputDefaultValue(constName), out GeneratedBuffDefine buffDefine))
                 {
                     // 节点没有增益引用，或者找不到对应的增益
                     var localRef = game.card.getLocalCardPoolReference(_curCardPoolId);
@@ -955,7 +935,7 @@ namespace Controllers
                         // 设置为卡池内的第一个增益。
                         generatedBuffDefine = poolBuffs.Values.OfType<GeneratedBuffDefine>().FirstOrDefault(b => b != null);
                     }
-                    actionNode.setConst(constName, new DefineReference(generatedBuffDefine.cardPoolId, generatedBuffDefine.id));
+                    actionNode.setInputDefaultValue(constName, new DefineReference(generatedBuffDefine.cardPoolId, generatedBuffDefine.id));
                 }
                 else
                 {
@@ -993,15 +973,15 @@ namespace Controllers
             }
             else if (actionDefine != null)
             {
-                ActionNodeValueInfo[] constsInfo = getNodeConstValueInfos(actionNode);
+                ActionNodeValueInfo[] constsInfo = getNodeDefaultValueInfos(actionNode);
                 int nodeKey = CanNodeOpenDocument(actionNode) ? actionNode.defineRef.defineId : -1;
                 bool visualEffect = game.anims.canActionAddEffect(actionNode.defineRef);
+                var inputViewDatas = getNodeInputViewData(actionNode);
                 actionNodeItem = _ui.createNode(
                     actionNode.posX,
                     actionNode.posY,
                     getActionNodeName(actionNode),
-                    getNodeInputViewData(actionNode),
-                    constsInfo,
+                    inputViewDatas,
                     getNodeOutputViewData(actionNode),
                     getActionNodeObsoleteMsg(actionNode),
                     nodeKey,
@@ -1010,13 +990,13 @@ namespace Controllers
                 {
                     var constInfo = constsInfo[i];
                     var name = constInfo.name;
-                    if (actionNode.getConst(name) == null)
+                    if (actionNode.getInputDefaultValue(name) == null)
                     {
-                        await initNodeConstDefaultValue(actionNodeItem, actionNode, i, constInfo);
+                        await initNodeInputDefaultValue(actionNodeItem, actionNode, i, constInfo);
                     }
                     if (constInfo.type == ActionNodeValueType.cardReference || constInfo.type == ActionNodeValueType.cardReferenceCollection)
                     {
-                        await updateCardDefineConst(actionNodeItem, actionNode, i, actionNode.getConst(name));
+                        await updateCardDefineDefaultValue(actionNodeItem, actionNode, i, actionNode.getInputDefaultValue(name));
                     }
                 }
             }
@@ -1026,8 +1006,12 @@ namespace Controllers
                     actionNode.posX,
                     actionNode.posY,
                     game.langManager.getString(StringTable.EDITOR_NODE_NAME_UNKNOW));
-                actionNodeItem.setInputs(new PortItemInfo[] { new PortItemInfo(string.Empty, game.editor.getColorByType(typeof(ActionNode)), true) });
-                actionNodeItem.setOutputs(new PortItemInfo[] { new PortItemInfo(string.Empty, game.editor.getColorByType(typeof(ActionNode)), true) });
+
+                var actionPortInfo = new PortItemInfo(string.Empty, game.editor.getColorByType(typeof(ActionNode)), true);
+                var inputViewDatas = new InputPortInfo[] { new InputPortInfo(actionPortInfo, default, true, false) };
+                var outputViewDatas = new PortItemInfo[] { actionPortInfo };
+                actionNodeItem.setInputs(inputViewDatas);
+                actionNodeItem.setOutputs(outputViewDatas);
                 updateNodePortModes(actionNode, _connectingPort);
             }
             _actionNodeItemList.Add(actionNodeItem);
@@ -1062,7 +1046,6 @@ namespace Controllers
             var actionNodeItem = _ui.createNode(passiveEntry.posX, passiveEntry.posY,
                 nodeName,
                 inputViewData,
-                Array.Empty<ActionNodeValueInfo>(), // 清空常量，不然在下面初始化牌堆的时候，因为已经创建了，所以对模板的常量项的修改不会应用到新的上面。
                 outputViewData,
                 visualEffect: true);
             actionNodeItem.initEffectTags(_passiveEffectTagNames, _passiveEffectTags);
@@ -1070,7 +1053,7 @@ namespace Controllers
 
             _actionNodeItemList.Add(actionNodeItem);
             _actionNodeList.Add(passiveEntry);
-            updateNodeItemConsts(passiveEntry);
+            updateNodeItemInputPorts(passiveEntry);
             updateNodePortModes(passiveEntry, _connectingPort);
             return actionNodeItem;
         }
@@ -1084,14 +1067,13 @@ namespace Controllers
             var actionNodeItem = _ui.createNode(auraEntry.posX, auraEntry.posY,
                 nodeName,
                 inputViewData,
-                Array.Empty<ActionNodeValueInfo>(), // 清空常量，不然在下面初始化牌堆的时候，因为已经创建了，所以对模板的常量项的修改不会应用到新的上面。
                 outputViewData, 
                 visualEffect: false);
             actionNodeItem.switchToEventEntryNode();
 
             _actionNodeItemList.Add(actionNodeItem);
             _actionNodeList.Add(auraEntry);
-            updateNodeItemConsts(auraEntry);
+            updateNodeItemInputPorts(auraEntry);
             updateNodePortModes(auraEntry, _connectingPort);
             return actionNodeItem;
         }
@@ -1583,90 +1565,97 @@ namespace Controllers
             if (actionDefine.obsoleteMsg == "") return "";
             return game.lang._(actionDefine.obsoleteMsg);
         }
-        private void selectCardForNodeConst(CardDefine cardDefine)
+        private void selectCardForNodeInputDefaultValue(CardDefine cardDefine)
         {
             if (_curEditNode == null)
             {
                 return;
             }
             var defineRef = cardDefine.getDefineRef();
-            if (_curEditActionNodeConstItemIndex < 0)
+            if (_curEditNodeInputDefaultValueItemIndex < 0)
             {
-                setNodeConst(_curEditNode, _curEditActionNodeConstName, defineRef);
+                setNodeDefaultValue(_curEditNode, _curEditNodeInputDefaultValueName, defineRef);
             }
             else
             {
-                IList<DefineReference> collection = _curEditNode.getConst(_curEditActionNodeConstName) as IList<DefineReference>;
-                collection[_curEditActionNodeConstItemIndex] = defineRef;
-                setNodeConst(_curEditNode, _curEditActionNodeConstName, collection);
+                IList<DefineReference> collection = _curEditNode.getInputDefaultValue(_curEditNodeInputDefaultValueName) as IList<DefineReference>;
+                collection[_curEditNodeInputDefaultValueItemIndex] = defineRef;
+                setNodeDefaultValue(_curEditNode, _curEditNodeInputDefaultValueName, collection);
             }
             // 更新UI.
-            updateNodeItemConsts(_curEditNode);
+            updateNodeItemInputPorts(_curEditNode);
             addRecordBreakpoint();
         }
         #endregion
         #region 节点信息
-        private PortDefine[] getNodeConstDefines(Node node)
+        private ActionNodeValueInfo[] getNodeDefaultValueInfos(Node node)
         {
-            if (node is ActiveEntryNode)
-            {
-                return new PortDefine[]
-                {
-                    PortDefine.Const(typeof(EffectTagCollection), ActiveEntryNode.tagsConstName, StringTable.EDITOR_PARAM_NAME_TAG)
-                };
-            }
-            else if (node is AuraEntryNode)
-            {
-                return new PortDefine[]
-                {
-                    PortDefine.Const(typeof(PileNameCollection), AuraEntryNode.pileListName, StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST),
-                    PortDefine.Const(typeof(PileNameCollection), AuraEntryNode.rangeListName, StringTable.EDITOR_EFFECT_PROP_NAME_RANGE_LIST)
-                };
-            }
-            else if (node is PassiveEntryNode)
-            {
-                return new PortDefine[]
-                {
-                    PortDefine.Const(typeof(EffectTagCollection), PassiveEntryNode.tagsConstName, StringTable.EDITOR_PARAM_NAME_TAG),
-                    PortDefine.Const(typeof(PileNameCollection), PassiveEntryNode.pileListName, StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST),
-                };
-            }
-            else if (node is ActionNode actionNode)
-            {
-                var define = getActionDefine(actionNode.defineRef);
-                return define.constDefines.ToArray();
-            }
-            else
-            {
-                return Array.Empty<PortDefine>();
-            }
-        }
-        private ActionNodeValueInfo[] getNodeConstValueInfos(Node node)
-        {
-            var constDefines = getNodeConstDefines(node);
-            var count = constDefines.Length;
+            var inputPorts = node.inputPorts;
+            var count = inputPorts.Count();
             var infoArray = new ActionNodeValueInfo[count];
             for (int i = 0; i < count; i++)
             {
-                var constDefine = constDefines[i];
+                var inputPort = inputPorts.ElementAt(i);
                 // 翻译名称
-                infoArray[i] = getConstValueInfoFromDefine(constDefine, node.getConst(constDefine.name));
+                infoArray[i] = getDefaultValueInfoFromInput(inputPort);
             }
             return infoArray;
         }
-        private ActionNodeValueInfo getConstValueInfoFromDefine(PortDefine constDefine, object value)
+        private ActionNodeValueInfo getDefaultValueInfoFromInput(IPort port)
         {
-            var name = tryTranslateWithDict(constDefine.getDisplayName());
-            Type type = constDefine.type;
+            return getValueInfoFromPortDefine(port.define, port.node.getInputDefaultValue(port.name));
+        }
+        private static ActionNodeValueType getValueTypeFromType(Type type)
+        {
             if (type == typeof(int))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.integer, value);
+                return ActionNodeValueType.integer;
             else if (type == typeof(float))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.real, value);
+                return ActionNodeValueType.real;
             else if (type == typeof(bool))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.boolean, value);
+                return ActionNodeValueType.boolean;
             else if (type == typeof(string))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.text, value);
+                return ActionNodeValueType.text;
             else if (type.IsEnum)
+                return ActionNodeValueType.enumValue;
+            else if (type == typeof(EffectTag))
+                return ActionNodeValueType.effectTag;
+            else if (type == typeof(ActionValueRef))
+                return ActionNodeValueType.actionValueRef;
+            else if (type == typeof(DefineReference))
+                return ActionNodeValueType.cardReference;
+            else if (type == typeof(DefineReference[]))
+                return ActionNodeValueType.cardReferenceCollection;
+            else if (type == typeof(PileNameCollection))
+                return ActionNodeValueType.pileNameCollection;
+            else if (type == typeof(KeywordCollection))
+                return ActionNodeValueType.keywords;
+            else if (type == typeof(EventArgReference) || type == typeof(EventReferenceProxy))
+                return ActionNodeValueType.eventReference;
+            else if (type == typeof(EffectTagCollection))
+                return ActionNodeValueType.effectTagCollection;
+            else if (type == typeof(CardPropertySetterName))
+                return ActionNodeValueType.cardPropertyNameSet;
+            else if (type == typeof(CardPropertyGetterName))
+                return ActionNodeValueType.cardPropertyNameGet;
+            else if (type == typeof(CardDefinePropertyGetterName))
+                return ActionNodeValueType.cardDefinePropertyNameGet;
+            else if (type == typeof(PileName))
+                return ActionNodeValueType.pileName;
+            else if (type == typeof(EventVarName))
+                return ActionNodeValueType.eventVarName;
+            return ActionNodeValueType.none;
+        }
+        private static ActionNodeValueType getValueTypeFromPortDefine(PortDefine portDefine)
+        {
+            Type type = portDefine.type;
+            return getValueTypeFromType(type);
+        }
+        private ActionNodeValueInfo getValueInfoFromPortDefine(PortDefine portDefine, object value)
+        {
+            var name = tryTranslateWithDict(portDefine.getDisplayName());
+            var valueType = getValueTypeFromPortDefine(portDefine);
+            Type type = portDefine.type;
+            if (type.IsEnum)
             {
                 var optionalValues = Enum.GetValues(type).Cast<object>().ToArray();
                 var optionalNames = new string[optionalValues.Length];
@@ -1684,61 +1673,35 @@ namespace Controllers
                         optionalNames[j] = optName;
                     }
                 }
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.enumValue, value, optionalNames, optionalValues);
+                return new ActionNodeValueInfo(name, portDefine.name, valueType, value, optionalNames, optionalValues);
             }
-            else if (type == typeof(EffectTag))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.effectTag, value);
-            else if (type == typeof(ActionValueRef))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.actionValueRef, value);
-            else if (type == typeof(DefineReference))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardReference, value);
-            else if (type == typeof(DefineReference[]))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardReferenceCollection, value);
-            else if (type == typeof(PileNameCollection))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.pileNameCollection, value);
-            else if (type == typeof(KeywordCollection))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.keywords, value);
-            else if (type == typeof(EventArgReference) || type == typeof(EventReferenceProxy))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.eventReference, value);
-            else if (type == typeof(EffectTagCollection))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.effectTagCollection, value);
-            else if (type == typeof(CardPropertySetterName))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardPropertyNameSet, value);
-            else if (type == typeof(CardPropertyGetterName))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardPropertyNameGet, value);
-            else if (type == typeof(CardDefinePropertyGetterName))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardDefinePropertyNameGet, value);
-            else if (type == typeof(PileName))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.pileName, value);
-            else if (type == typeof(EventVarName))
-                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.eventVarName, value);
-            else
-                throw new NotImplementedException($"没有{type}对应的常数类型");
+            return new ActionNodeValueInfo(name, portDefine.name, valueType, value);
         }
-        private string[] getNodeInputNames(Node node)
+        private bool shouldInputPortShowPort(IPort inputPort)
         {
-            string[] inputNames = new string[node.inputPorts.Count()];
-            for (int i = 0; i < inputNames.Length; i++)
-            {
-                // 翻译输出节点
-                var outputName = node.inputPorts.ElementAt(i).define.getDisplayName();
-                inputNames[i] = tryTranslateWithDict(outputName);
-            }
-            return inputNames;
+            return inputPort is ValueInput valueInput && !valueInput.define.isConst;
         }
-        private PortItemInfo[] getNodeInputViewData(Node node)
+        private bool shouldInputPortShowDefaultValue(IPort inputPort)
+        {
+            return inputPort is ValueInput valueInput && valueInput.getConnectedOutputPort() == null;
+        }
+        private InputPortInfo[] getNodeInputViewData(Node node)
         {
             if (node is ActiveEntryNode activeEntry)
             {
                 return getActiveEntryInputViewData(activeEntry);
             }
-            List<PortItemInfo> viewDataList = new List<PortItemInfo>();
+            List<InputPortInfo> viewDataList = new List<InputPortInfo>();
             //值输入
             foreach (var inputPort in node.inputPorts)
             {
                 // 翻译输出节点
                 var inputName = tryTranslateWithDict(inputPort.define.getDisplayName());
-                viewDataList.Add(new PortItemInfo(inputName, game.editor.getColorByType(inputPort.define.type), inputPort.GetPortType() == PortType.Control));
+                var portInfo = new PortItemInfo(inputName, game.editor.getColorByType(inputPort.define.type), inputPort.GetPortType() == PortType.Control);
+                var defaultValue = getDefaultValueInfoFromInput(inputPort);
+                var showPort = shouldInputPortShowPort(inputPort);
+                var showDefaultValue = shouldInputPortShowDefaultValue(inputPort);
+                viewDataList.Add(new InputPortInfo(portInfo, defaultValue, showPort, showDefaultValue));
             }
             return viewDataList.ToArray();
         }
@@ -1788,58 +1751,46 @@ namespace Controllers
             }
             return targetCheckerTypes;
         }
-        #region 常量
-        public string getNodeConstNameByIndex(Node node, int index)
-        {
-            if (_nodeConstNameDict.TryGetValue(node.GetType(), out var constNames))
-            {
-                if (index >= 0 && index < constNames.Length)
-                {
-                    return constNames[index];
-                }
-            }
-            return null;
-        }
-        private async void updateNodeItemConsts(Node node)
+
+        #region 输入默认值
+        private async void updateNodeItemInputPorts(Node node)
         {
             var item = getActionNodeItem(node);
             if (node is ActionNode actionNode)
             {
                 if (actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.GetBuffDefine))
                 {
-                    if (tryGetBuffDefine(actionNode.getConst(GetBuffDefineAction.constName), out GeneratedBuffDefine buffDefine))
+                    if (tryGetBuffDefine(actionNode.getInputDefaultValue(GetBuffDefineAction.constName), out GeneratedBuffDefine buffDefine))
                     {
                         updateBuffActionNode(item, buffDefine);
                         return;
                     }
                 }
-            } 
+            }
 
-            ActionNodeValueInfo[] constViewData = getNodeConstValueInfos(node);
-            if (constViewData == null)
-                return;
-            item.setConsts(constViewData);
+            var inputViewDatas = getNodeInputViewData(node);
+            item.setInputs(inputViewDatas);
 
             // 更新卡牌引用。
-            foreach (var constPair in node.consts)
+            foreach (var constPair in node.inputDefaultValues)
             {
-                await updateCardDefineConst(item, node, constPair.Key, constPair.Value);
+                await updateCardDefineDefaultValue(item, node, constPair.Key, constPair.Value);
             }
             // 更新“转换事件类型”连接的输出端口。
             checkCastEventTypeNodeOutputs(node);
         }
-        private Task updateCardDefineConst(ActionNodeItem item, Node node, string name, object value)
+        private Task updateCardDefineDefaultValue(ActionNodeItem item, Node node, string name, object value)
         {
-            var consts = getNodeConstDefines(node);
-            var constDefine = consts.FirstOrDefault(c => c.name == name);
-            if (constDefine == null)
+            var inputPorts = node.inputPorts.ToArray();
+            var inputPort = inputPorts.FirstOrDefault(c => c.name == name);
+            if (inputPort == null)
                 return Task.CompletedTask;
-            var constIndex = Array.IndexOf(consts, constDefine);
-            return updateCardDefineConst(item, node, constIndex, value);
+            var constIndex = Array.IndexOf(inputPorts, inputPort);
+            return updateCardDefineDefaultValue(item, node, constIndex, value);
         }
-        private async Task updateCardDefineConst(ActionNodeItem item, Node node, int constIndex, object value)
+        private async Task updateCardDefineDefaultValue(ActionNodeItem item, Node node, int constIndex, object value)
         {
-            ValueInputField cardInputField = item.getConstInputField(constIndex);
+            ValueInputField cardInputField = item.getInputDefaultValueInputField(constIndex);
             if (value is DefineReference cardReference)
             {
                 await updateCardDefineInputField(node, cardInputField, cardReference);
@@ -1895,13 +1846,13 @@ namespace Controllers
             var eventVarNamesEditor = eventVarNames.Select(n => game.lang._(n)).ToArray();
 
             item.setEventVarNames(eventVarNamesEditor, eventVarNames);
-            var consts = getNodeConstValueInfos(node);
-            item.setConsts(consts);
+            var inputViewDatas = getNodeInputViewData(node);
+            item.setInputs(inputViewDatas);
 
             // 如果该节点的该常量的值是null，则设置为名称列表的第一个值。
-            if (node.getConst(EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY) == null && eventVarNames != null && eventVarNames.Count() > 0)
+            if (node.getInputDefaultValue(EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY) == null && eventVarNames != null && eventVarNames.Count() > 0)
             {
-                setNodeConst(node, EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY, eventVarNames.FirstOrDefault());
+                setNodeDefaultValue(node, EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY, eventVarNames.FirstOrDefault());
             }
         }
         /// <summary>
@@ -1920,7 +1871,7 @@ namespace Controllers
                 {
                     if (conAction.defineRef.isBuiltinReference(BuiltinActionDefineID.CastEventType))
                     {
-                        return conAction.getConst<EventReference>(EffectEditorLibrary.EVENT_CAST_EVENT_TYPE_NODE_TYPE_REF_PARAM_KEY);
+                        return conAction.getInputDefaultValue<EventReference>(EffectEditorLibrary.EVENT_CAST_EVENT_TYPE_NODE_TYPE_REF_PARAM_KEY);
                     }
                     else if (conAction.defineRef.isBuiltinReference(BuiltinActionDefineID.ThisEvent))
                     {
@@ -1946,21 +1897,21 @@ namespace Controllers
             }
             return null;
         }
-        private async Task initNodeConstDefaultValue(ActionNodeItem item, Node node, int constIndex, ActionNodeValueInfo constInfo)
+        private async Task initNodeInputDefaultValue(ActionNodeItem item, Node node, int inputIndex, ActionNodeValueInfo defaultInfo)
         {
-            if (constInfo.type == ActionNodeValueType.cardReference || constInfo.type == ActionNodeValueType.cardReferenceCollection)
+            if (defaultInfo.type == ActionNodeValueType.cardReference || defaultInfo.type == ActionNodeValueType.cardReferenceCollection)
             {
-                ValueInputField field = item.getConstInputField(constIndex);
+                ValueInputField field = item.getInputDefaultValueInputField(inputIndex);
                 await updateCardDefineInputField(node, field, null);
             }
             else
             {
-                // 这里不用setNodeConst，因为setNodeConst会调用addOperationRecord，将节点图变为未保存状态
-                var value = getNodeConstDefaultValue(constInfo.type);
-                node.setConst(constInfo.name, value);
+                // 这里不用setNodeDefaultValue，因为setNodeDefaultValue会调用addOperationRecord，将节点图变为未保存状态
+                var value = getNodeInputDefaultValue(defaultInfo.type);
+                node.setInputDefaultValue(defaultInfo.name, value);
             }
         }
-        private object getNodeConstDefaultValue(ActionNodeValueType valueType)
+        private object getNodeInputDefaultValue(ActionNodeValueType valueType)
         {
             switch (valueType)
             {
@@ -2018,7 +1969,8 @@ namespace Controllers
                             resetConnectingPort();
                         }
                     }
-                    inputNodeItem.setInputs(getNodeInputViewData(actionNode));
+                    var inputValues = getNodeInputViewData(actionNode);
+                    inputNodeItem.setInputs(inputValues);
                     updateNodePortModes(actionNode, _connectingPort);
                 }
             }
@@ -2053,8 +2005,8 @@ namespace Controllers
         public event Action<Node> OnNodeVisualEffectButtonClicked;
         public event Func<long, Task> onStartSelectCard;
         public event Action<string> onShowErrorTip;
-        public event Action<ActionNode, string> onOpenActionNodeConstCardDefine;
-        public event Action<ActionNode, string, int> onOpenActionNodeConstItemCardDefine;
+        public event Action<ActionNode, string> onOpenNodeInputDefaultValueCardDefine;
+        public event Action<ActionNode, string, int> onOpenNodeInputDefaultValueItemCardDefine;
         #endregion
         #region 属性字段
         [TranslateMsg("编辑器-在分类中返回上一层的按钮({0}为按钮文本)")]
@@ -2126,11 +2078,11 @@ namespace Controllers
         /// <summary>
         /// 当前正在编辑的动作节点常量名
         /// </summary>
-        string _curEditActionNodeConstName = string.Empty;
+        string _curEditNodeInputDefaultValueName = string.Empty;
         /// <summary>
         /// 当前正在编辑的动作节点常量子项索引
         /// </summary>
-        int _curEditActionNodeConstItemIndex = -1;
+        int _curEditNodeInputDefaultValueItemIndex = -1;
         string[] _targetCheckerTypes = new string[]
         {
             DEFINE.TARGET_TYPE_CHARACTER,
@@ -2289,26 +2241,6 @@ namespace Controllers
             { "Game.CardDefineSelect.Skill", EDITOR_ENUM_CARD_TYPE_SKILL },
             { "Game.CardDefineSelect.Master", EDITOR_ENUM_CARD_TYPE_MASTER },
             { "Game.CardDefineSelect.Item", EDITOR_ENUM_CARD_TYPE_ITEM },
-        };
-
-        readonly Dictionary<Type, string[]> _nodeConstNameDict = new Dictionary<Type, string[]>()
-        {
-            //节点分类
-            { typeof(ActiveEntryNode), new string[] { 
-                ActiveEntryNode.tagsConstName 
-            } },
-            { typeof(PassiveEntryNode), new string[] { 
-                PassiveEntryNode.tagsConstName,
-                PassiveEntryNode.pileListName
-            } },
-            { typeof(EventEntryNode), new string[] { 
-                PassiveEntryNode.tagsConstName,
-                PassiveEntryNode.pileListName
-            } },
-            { typeof(AuraEntryNode), new string[] {
-                AuraEntryNode.pileListName,
-                AuraEntryNode.rangeListName
-            } },
         };
         static readonly string[] _activeEffectTags = new string[]
         {

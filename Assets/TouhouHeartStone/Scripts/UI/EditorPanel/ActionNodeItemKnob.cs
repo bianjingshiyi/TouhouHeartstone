@@ -16,6 +16,20 @@ namespace UI
             this.isControl = isControl;
         }
     }
+    public struct InputPortInfo
+    {
+        public PortItemInfo portInfo;
+        public ActionNodeValueInfo defaultValueInfo;
+        public bool showPort;
+        public bool showDefaultValue;
+        public InputPortInfo(PortItemInfo portInfo, ActionNodeValueInfo defaultValueInfo, bool showPort, bool showDefaultValue)
+        {
+            this.portInfo = portInfo;
+            this.defaultValueInfo = defaultValueInfo;
+            this.showPort = showPort;
+            this.showDefaultValue = showDefaultValue;
+        }
+    }
     public enum NodePortMode
     {
         Connected,
@@ -27,6 +41,11 @@ namespace UI
         public void setName(string name)
         {
             _nameText.text = name;
+        }
+        public void setPortActive(bool value)
+        {
+            _interactableImage.enabled = value;
+            _slotRootObj.SetActive(value);
         }
         /// <summary>
         /// 设置节点高亮
@@ -95,7 +114,7 @@ namespace UI
                 _slotMaskImageNotConnected.color = Color.clear;
             }
         }
-        protected void Awake()
+        protected virtual void Awake()
         {
             EventTrigger trigger = _interactableObj.AddComponent<EventTrigger>();
 
@@ -141,8 +160,12 @@ namespace UI
         RectTransform _nodeRect;
         [SerializeField]
         GameObject _interactableObj;
+        [SerializeField]
+        Image _interactableImage;
 
         [Header("模式图像组")]
+        [SerializeField]
+        GameObject _slotRootObj;
         [SerializeField]
         GameObject _slotConnectedObj;
         [SerializeField]

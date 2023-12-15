@@ -13,6 +13,8 @@ namespace TouhouCardEngine
         public PassiveEntryNode()
         {
             inputList.Add(new ValueInput(this, triggerConditionPortDefine));
+            inputList.Add(new ValueInput(this, tagsPortDefine));
+            inputList.Add(new ValueInput(this, pileListPortDefine));
             outputList.Add(new ControlOutput(this, actionPortDefine));
         }
         public virtual void Define()
@@ -27,6 +29,7 @@ namespace TouhouCardEngine
             flow.setValue(getOutputPort<ValueOutput>(playerPortName), card?.getOwner());
             return Task.FromResult(getOutputPort<ControlOutput>(actionPortName));
         }
+        #region 获取端口
         public ValueInput getTriggerCondtionValuePort()
         {
             return getInputPort<ValueInput>(conditionPortName);
@@ -35,30 +38,53 @@ namespace TouhouCardEngine
         {
             return outputList?.FirstOrDefault() as ControlOutput;
         }
+        public ValueInput getTagsPort()
+        {
+            return getInputPort<ValueInput>(tagsPortName);
+        }
+        public ValueInput getPilesPort()
+        {
+            return getInputPort<ValueInput>(pileListPortName);
+        }
+        #endregion
+
+        #region 标签
         public void setTags(params string[] value)
         {
-            var tags = getConst<EffectTagCollection>(tagsConstName);
+            var tags = getInputDefaultValue<EffectTagCollection>(tagsPortName);
             if (tags == null)
             {
                 tags = new EffectTagCollection();
-                constList.Add(tagsConstName, tags);
+                setInputDefaultValue(tagsPortName, tags);
             }
             tags.Clear();
             if (value != null)
                 tags.AddRange(value);
         }
+        public string[] getTags()
+        {
+            return getInputDefaultValue<EffectTagCollection>(tagsPortName).ToArray();
+        }
+        #endregion
+
+        #region 生效区域
         public void setPiles(params string[] value)
         {
-            var tags = getConst<PileNameCollection>(pileListName);
+            var tags = getInputDefaultValue<PileNameCollection>(pileListPortName);
             if (tags == null)
             {
                 tags = new PileNameCollection();
-                constList.Add(pileListName, tags);
+                setInputDefaultValue(pileListPortName, tags);
             }
             tags.Clear();
             if (value != null)
                 tags.AddRange(value);
         }
+        public PileNameCollection getPiles()
+        {
+            return getInputDefaultValue<PileNameCollection>(pileListPortName);
+        }
+        #endregion
 
 
         private void DefinitionConditions()
@@ -66,9 +92,15 @@ namespace TouhouCardEngine
             ValueInput valueCondition()
                  => inputList.OfType<ValueInput>().FirstOrDefault(d => d != null && d.define.Equals(triggerConditionPortDefine)) ??
                  new ValueInput(this, triggerConditionPortDefine);
+            ValueInput valueTags()
+                 => inputList.OfType<ValueInput>().FirstOrDefault(d => d != null && d.define.Equals(tagsPortDefine)) ??
+                 new ValueInput(this, tagsPortDefine);
+            ValueInput valuePiles()
+                 => inputList.OfType<ValueInput>().FirstOrDefault(d => d != null && d.define.Equals(pileListPortDefine)) ??
+                 new ValueInput(this, pileListPortDefine);
 
 
-            var inputs = new List<IPort> { valueCondition() };
+            var inputs = new List<IPort> { valueCondition(), valueTags(), valuePiles() };
 
             foreach (var lostPort in inputList.Except(inputs))
             {
@@ -119,36 +151,32 @@ namespace TouhouCardEngine
             var exists = outputList.OfType<ControlOutput>().FirstOrDefault(d => d != null && d.define.Equals(portDefine));
             return exists ?? new ControlOutput(this, portDefine);
         }
-        public override ISerializableNode ToSerializableNode()
+        public override SerializableNode ToSerializableNode()
         {
             return new SerializablePassiveEntryNode(this);
         }
 
         #endregion
-        public IEnumerable<string> tags => getConst<EffectTagCollection>(tagsConstName);
-        public PileNameCollection piles => getConst<PileNameCollection>(pileListName);
 
         public const string conditionPortName = "condition";
         public const string actionPortName = "action";
         public const string playerPortName = "玩家";
         public const string cardPortName = "卡牌";
-        public const string tagsConstName = "tags";
-        public const string pileListName = "pileList";
+        public const string tagsPortName = "tags";
+        public const string pileListPortName = "pileList";
         public const string triggerConditionPortName = "触发条件";
         public static PortDefine triggerConditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, triggerConditionPortName);
         public static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
+        public static PortDefine tagsPortDefine = PortDefine.Value(typeof(EffectTagCollection), tagsPortName, "标签列表", isConst: true);
+        public static PortDefine pileListPortDefine = PortDefine.Value(typeof(PileNameCollection), pileListPortName, "生效区域", isConst: true);
         protected static PortDefine playerPortDefine = PortDefine.Value(typeof(Player), playerPortName, "Player");
         protected static PortDefine cardPortDefine = PortDefine.Value(typeof(Card), cardPortName, "Card");
     }
     [Serializable]
-    public class SerializablePassiveEntryNode : ISerializableNode
+    public class SerializablePassiveEntryNode : SerializableNode
     {
-        public SerializablePassiveEntryNode(PassiveEntryNode eventEntryNode)
+        public SerializablePassiveEntryNode(PassiveEntryNode eventEntryNode) : base(eventEntryNode)
         {
-            id = eventEntryNode.id;
-            posX = eventEntryNode.posX;
-            posY = eventEntryNode.posY;
-            consts = eventEntryNode.consts != null ? new Dictionary<string, object>(eventEntryNode.consts) : null;
         }
         public PassiveEntryNode ToActionNode(ActionGraph graph)
         {
@@ -158,25 +186,17 @@ namespace TouhouCardEngine
                 posX = posX,
                 posY = posY
             };
-            if (consts != null)
-            {
-                foreach (var pair in consts)
-                {
-                    entry.setConst(pair.Key, pair.Value);
-                }
-            }
+            var defaultValues = inputDefaultValues ?? consts;
+            InitNode(entry, defaultValues, graph);
             if (tags != null)
                 entry.setTags(tags);
             if (piles != null)
                 entry.setPiles(piles);
-            entry.graph = graph;
             return entry;
         }
-        Node ISerializableNode.ToActionNode(ActionGraph graph) => ToActionNode(graph);
+        public override Node ToNode(ActionGraph graph) => ToActionNode(graph);
 
-        public int id;
-        public float posX;
-        public float posY;
+        [Obsolete]
         public Dictionary<string, object> consts;
         [Obsolete]
         public string[] tags;

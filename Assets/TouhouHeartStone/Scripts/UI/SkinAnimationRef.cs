@@ -20,11 +20,11 @@ namespace UI
         }
         public static string getNodeKey(Node node)
         {
-            return node.getConst<string>(NODE_CONST_KEY);
+            return node.getProp<string>(NODE_CONST_KEY);
         }
         public static void setNodeKey(Node node, string value)
         {
-            node.setConst(NODE_CONST_KEY, value);
+            node.setProp(NODE_CONST_KEY, value);
         }
         public string key;
         public int sourcePosition;
