@@ -11,7 +11,7 @@ namespace TouhouCardEngine
             type = NodeDefineType.Function;
             inputs = new PortDefine[]
             {
-                PortDefine.Value(typeof(bool), "value", "Value")
+                PortDefine.Value(typeof(bool), "value", "Value", isConst: true)
             };
             outputs = new PortDefine[]
             {

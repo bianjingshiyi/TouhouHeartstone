@@ -153,10 +153,10 @@ namespace Controllers
             // 虽然这以后肯定是要实现的，但是不是现在要做的事情
             if (node is ActionNode action && action.defineRef.isBuiltinReference(BuiltinActionDefineID.GetBuffDefine))
             {
-                var pairs = node.inputDefaultValues.Where(p => p.Value is DefineReference defRef && defRef.cardPoolId != _curCardPoolId).ToArray();
+                var pairs = node.inputDefaultValues.Where(p => p.value is DefineReference defRef && defRef.cardPoolId != _curCardPoolId).ToArray();
                 foreach (var pair in pairs)
                 {
-                    node.setInputDefaultValue(pair.Key, new DefineReference(_curCardPoolId, 0));
+                    node.setInputDefaultValue(pair.name, pair.paramIndex, new DefineReference(_curCardPoolId, 0));
                 }
             }
         }
@@ -350,6 +350,7 @@ namespace Controllers
             //重置字段
             _curEditNode = null;
             _curEditNodeInputDefaultValueName = string.Empty;
+            _curEditNodeInputDefaultValueParamIndex = -1;
             _curEditNodeInputDefaultValueItemIndex = -1;
             _curCardSeekingEffectPropName = string.Empty;
             _curCardSeekingEffectPropIndex = -1;
@@ -361,9 +362,9 @@ namespace Controllers
         /// <param name="node">节点。</param>
         /// <param name="name">常量名。</param>
         /// <param name="value">常量值。</param>
-        public void setNodeDefaultValue(Node node, string name, object value)
+        public void setNodeDefaultValue(Node node, string name, int paramIndex, object value)
         {
-            var beforeValue = node.getInputDefaultValue(name);
+            var beforeValue = node.getInputDefaultValue(name, paramIndex);
             if (value is ICloneable clonable)
             {
                 value = clonable.Clone();
@@ -372,8 +373,8 @@ namespace Controllers
             {
                 beforeValue = beforeClonable.Clone();
             }
-            node.setInputDefaultValue(name, value);
-            addOperationRecord(new ChangeNodeDefaultValueOperation(this, node, name, beforeValue, value));
+            node.setInputDefaultValue(name, paramIndex, value);
+            addOperationRecord(new ChangeNodeDefaultValueOperation(this, node, name, paramIndex, beforeValue, value));
         }
         public string getNodeDefineName(NodeDefine define)
         {
@@ -662,8 +663,12 @@ namespace Controllers
             if (isReadonly)
                 return;
             var node = getActionNode(actionNodeItem);
-            var name = node.inputPorts.ElementAt(inputIndex).name;
-            setNodeDefaultValue(node, name, value);
+            var inputPort = node.getInputPortAt(inputIndex);
+            var name = inputPort.name;
+            var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
+            setNodeDefaultValue(node, name, paramIndex, value);
+            if (inputPort.define.isParams && node is ActionNode action)
+                action.Define();
             updateNodeItemInputPorts(node);
             addRecordBreakpoint();
         }
@@ -675,36 +680,36 @@ namespace Controllers
             if (isReadonly)
                 return;
             Node actionNode = getActionNode(actionNodeItem);
-            if (!(actionNode is ActionNode action))
+            var inputPort = actionNode.getInputPortAt(index);
+            if (inputPort == null)
                 return;
-            ActionDefine actionDefine = getActionDefine(action.defineRef);
-            var inputDefine = actionDefine.inputDefines.ElementAtOrDefault(index);
+            var inputDefine = inputPort.define;
             if (inputDefine == null)
                 return;
             if (inputDefine.type == typeof(DefineReference))
             {
+                var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
                 long cardPoolId = _curCardPoolId;
-                if (action.getInputDefaultValue(inputDefine.name) is DefineReference value)
+                if (actionNode.getInputDefaultValue(inputDefine.name, paramIndex) is DefineReference value)
                 {
                     //打开卡牌选择界面
                     cardPoolId = value.cardPoolId;
                 }
                 await displayCardSelectPanel(cardPoolId);
-                _curEditNode = action;
+                _curEditNode = actionNode;
                 _curEditNodeInputDefaultValueName = inputDefine.name;
+                _curEditNodeInputDefaultValueParamIndex = paramIndex;
                 _curEditNodeInputDefaultValueItemIndex = -1;
             }
         }
         private void onClickNodeDefaultValueCardEditButton(ActionNodeItem actionNodeItem, int index)
         {
             Node node = getActionNode(actionNodeItem);
-            if (!(node is ActionNode action))
+            var inputPort = node.getInputPortAt(index);
+            if (inputPort == null)
                 return;
-            ActionDefine actionDefine = getActionDefine(action.defineRef);
-            var inputDefine = actionDefine.inputDefines.ElementAtOrDefault(index);
-            if (inputDefine == null)
-                return;
-            onOpenNodeInputDefaultValueCardDefine?.Invoke(action, inputDefine.name);
+            var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
+            onOpenNodeInputDefaultValueCardDefine?.Invoke(node, inputPort.name, paramIndex);
         }
         private void onClickNodeDefaultValueItemButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
         {
@@ -713,17 +718,18 @@ namespace Controllers
         {
             if (isReadonly)
                 return;
-            Node actionNode = getActionNode(actionNodeItem);
-            if (!(actionNode is ActionNode action))
+            Node node = getActionNode(actionNodeItem);
+            var inputPort = node.getInputPortAt(index);
+            if (inputPort == null)
                 return;
-            ActionDefine actionDefine = getActionDefine(action.defineRef);
-            var inputDefine = actionDefine.inputDefines.ElementAtOrDefault(index);
+            var inputDefine = inputPort.define;
             if (inputDefine == null)
                 return;
             if (inputDefine.type == typeof(CardReferenceCollection) || inputDefine.type == typeof(DefineReference[]))
             {
+                var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
                 long cardPoolId = _curCardPoolId;
-                if (actionNode.getInputDefaultValue(inputDefine.name) is CardReferenceCollection defRefCol)
+                if (node.getInputDefaultValue(inputDefine.name, paramIndex) is CardReferenceCollection defRefCol)
                 {
                     if (defRefCol[itemIndex] == null)
                     {
@@ -731,7 +737,7 @@ namespace Controllers
                     }
                     cardPoolId = defRefCol[itemIndex].cardPoolId;
                 }
-                else if (actionNode.getInputDefaultValue(inputDefine.name) is DefineReference[] defRefs)
+                else if (node.getInputDefaultValue(inputDefine.name, paramIndex) is DefineReference[] defRefs)
                 {
                     if (defRefs[itemIndex] == null)
                     {
@@ -741,21 +747,20 @@ namespace Controllers
                 }
                 //打开卡牌选择界面
                 await displayCardSelectPanel(cardPoolId);
-                _curEditNode = action;
+                _curEditNode = node;
                 _curEditNodeInputDefaultValueName = inputDefine.name;
+                _curEditNodeInputDefaultValueParamIndex = paramIndex;
                 _curEditNodeInputDefaultValueItemIndex = itemIndex;
             }
         }
         private void onClickNodeDefaultValueItemCardEditButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
         {
             Node node = getActionNode(actionNodeItem);
-            if (!(node is ActionNode action))
+            var inputPort = node.getInputPortAt(index);
+            if (inputPort == null)
                 return;
-            ActionDefine actionDefine = getActionDefine(action.defineRef);
-            var inputDefine = actionDefine.inputDefines.ElementAtOrDefault(index);
-            if (inputDefine == null)
-                return;
-            onOpenNodeInputDefaultValueItemCardDefine?.Invoke(action, inputDefine.name, itemIndex);
+            var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
+            onOpenNodeInputDefaultValueItemCardDefine?.Invoke(node, inputPort.name, paramIndex, itemIndex);
         }
         private void onNodeSelected(ActionNodeItem actionNodeItem)
         {
@@ -919,7 +924,8 @@ namespace Controllers
                 GeneratedBuffDefine generatedBuffDefine = null;
                 BuffSkin buffSkin = null;
                 string constName = GetBuffDefineAction.constName;
-                if (actionNode.inputDefaultValues == null || actionNode.inputDefaultValues.Count < 1 || !tryGetBuffDefine(actionNode.getInputDefaultValue(constName), out GeneratedBuffDefine buffDefine))
+                var buffRefObj = actionNode.getInputDefaultValue(constName);
+                if (actionNode.inputDefaultValues == null || actionNode.inputDefaultValues.Count() < 1 || !tryGetBuffDefine(buffRefObj, out GeneratedBuffDefine buffDefine))
                 {
                     // 节点没有增益引用，或者找不到对应的增益
                     var localRef = game.card.getLocalCardPoolReference(_curCardPoolId);
@@ -973,7 +979,6 @@ namespace Controllers
             }
             else if (actionDefine != null)
             {
-                ActionNodeValueInfo[] constsInfo = getNodeDefaultValueInfos(actionNode);
                 int nodeKey = CanNodeOpenDocument(actionNode) ? actionNode.defineRef.defineId : -1;
                 bool visualEffect = game.anims.canActionAddEffect(actionNode.defineRef);
                 var inputViewDatas = getNodeInputViewData(actionNode);
@@ -986,18 +991,11 @@ namespace Controllers
                     getActionNodeObsoleteMsg(actionNode),
                     nodeKey,
                     visualEffect);
-                for (int i = 0; i < constsInfo.Length; i++)
+                var inputPorts = actionNode.inputPorts;
+                var count = inputPorts.Count();
+                for (int i = 0; i < count; i++)
                 {
-                    var constInfo = constsInfo[i];
-                    var name = constInfo.name;
-                    if (actionNode.getInputDefaultValue(name) == null)
-                    {
-                        await initNodeInputDefaultValue(actionNodeItem, actionNode, i, constInfo);
-                    }
-                    if (constInfo.type == ActionNodeValueType.cardReference || constInfo.type == ActionNodeValueType.cardReferenceCollection)
-                    {
-                        await updateCardDefineDefaultValue(actionNodeItem, actionNode, i, actionNode.getInputDefaultValue(name));
-                    }
+                    await initNodeInputDefaultValue(actionNodeItem, actionNode, i);
                 }
             }
             else
@@ -1145,6 +1143,7 @@ namespace Controllers
             updatePortMode(_connectingPort, inputPort);
             //更新变长参数。
             updateInputParamsPort(inputPort);
+            updateNodeItemInputPorts(inputPort.node);
             // 更新事件变量节点的事件变量名。
             checkEventVariableNodeItemVarNames(inputNodeItem, inputPort.node);
         }
@@ -1438,6 +1437,7 @@ namespace Controllers
                 updatePortMode(_connectingPort, inputPort);
                 //更新变长参数。
                 updateInputParamsPort(inputPort);
+                updateNodeItemInputPorts(inputPort.node);
                 // 更新事件变量节点的事件变量名。
                 checkEventVariableNodeItemVarNames(inputNodeItem, inputPort.node);
             }
@@ -1572,15 +1572,18 @@ namespace Controllers
                 return;
             }
             var defineRef = cardDefine.getDefineRef();
-            if (_curEditNodeInputDefaultValueItemIndex < 0)
+            var name = _curEditNodeInputDefaultValueName;
+            var paramIndex = _curEditNodeInputDefaultValueParamIndex;
+            var itemIndex = _curEditNodeInputDefaultValueItemIndex;
+            if (itemIndex < 0)
             {
-                setNodeDefaultValue(_curEditNode, _curEditNodeInputDefaultValueName, defineRef);
+                setNodeDefaultValue(_curEditNode, name, paramIndex, defineRef);
             }
             else
             {
-                IList<DefineReference> collection = _curEditNode.getInputDefaultValue(_curEditNodeInputDefaultValueName) as IList<DefineReference>;
-                collection[_curEditNodeInputDefaultValueItemIndex] = defineRef;
-                setNodeDefaultValue(_curEditNode, _curEditNodeInputDefaultValueName, collection);
+                IList<DefineReference> collection = _curEditNode.getInputDefaultValue(name, paramIndex) as IList<DefineReference>;
+                collection[itemIndex] = defineRef;
+                setNodeDefaultValue(_curEditNode, name, paramIndex, collection);
             }
             // 更新UI.
             updateNodeItemInputPorts(_curEditNode);
@@ -1588,22 +1591,10 @@ namespace Controllers
         }
         #endregion
         #region 节点信息
-        private ActionNodeValueInfo[] getNodeDefaultValueInfos(Node node)
-        {
-            var inputPorts = node.inputPorts;
-            var count = inputPorts.Count();
-            var infoArray = new ActionNodeValueInfo[count];
-            for (int i = 0; i < count; i++)
-            {
-                var inputPort = inputPorts.ElementAt(i);
-                // 翻译名称
-                infoArray[i] = getDefaultValueInfoFromInput(inputPort);
-            }
-            return infoArray;
-        }
         private ActionNodeValueInfo getDefaultValueInfoFromInput(IPort port)
         {
-            return getValueInfoFromPortDefine(port.define, port.node.getInputDefaultValue(port.name));
+            var paramIndex = port is ValueInput vi ? vi.paramIndex : -1;
+            return getValueInfoFromPortDefine(port.define, port.node.getInputDefaultValue(port.name, paramIndex));
         }
         private static ActionNodeValueType getValueTypeFromType(Type type)
         {
@@ -1679,7 +1670,7 @@ namespace Controllers
         }
         private bool shouldInputPortShowPort(IPort inputPort)
         {
-            return inputPort is ValueInput valueInput && !valueInput.define.isConst;
+            return inputPort is not ValueInput valueInput || !valueInput.define.isConst;
         }
         private bool shouldInputPortShowDefaultValue(IPort inputPort)
         {
@@ -1772,25 +1763,25 @@ namespace Controllers
             item.setInputs(inputViewDatas);
 
             // 更新卡牌引用。
-            foreach (var constPair in node.inputDefaultValues)
+            foreach (var defValue in node.inputDefaultValues)
             {
-                await updateCardDefineDefaultValue(item, node, constPair.Key, constPair.Value);
+                await updateCardDefineDefaultValue(item, node, defValue.name, defValue.paramIndex, defValue.value);
             }
             // 更新“转换事件类型”连接的输出端口。
             checkCastEventTypeNodeOutputs(node);
         }
-        private Task updateCardDefineDefaultValue(ActionNodeItem item, Node node, string name, object value)
+        private Task updateCardDefineDefaultValue(ActionNodeItem item, Node node, string name, int paramIndex, object value)
         {
             var inputPorts = node.inputPorts.ToArray();
-            var inputPort = inputPorts.FirstOrDefault(c => c.name == name);
+            var inputPort = inputPorts.FirstOrDefault(c => c.name == name && (paramIndex == -1 || (c is ValueInput vi && vi.paramIndex == paramIndex)));
             if (inputPort == null)
                 return Task.CompletedTask;
             var constIndex = Array.IndexOf(inputPorts, inputPort);
             return updateCardDefineDefaultValue(item, node, constIndex, value);
         }
-        private async Task updateCardDefineDefaultValue(ActionNodeItem item, Node node, int constIndex, object value)
+        private async Task updateCardDefineDefaultValue(ActionNodeItem item, Node node, int portIndex, object value)
         {
-            ValueInputField cardInputField = item.getInputDefaultValueInputField(constIndex);
+            ValueInputField cardInputField = item.getInputDefaultValueInputField(portIndex);
             if (value is DefineReference cardReference)
             {
                 await updateCardDefineInputField(node, cardInputField, cardReference);
@@ -1852,7 +1843,7 @@ namespace Controllers
             // 如果该节点的该常量的值是null，则设置为名称列表的第一个值。
             if (node.getInputDefaultValue(EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY) == null && eventVarNames != null && eventVarNames.Count() > 0)
             {
-                setNodeDefaultValue(node, EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY, eventVarNames.FirstOrDefault());
+                setNodeDefaultValue(node, EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY, -1, eventVarNames.FirstOrDefault());
             }
         }
         /// <summary>
@@ -1897,21 +1888,25 @@ namespace Controllers
             }
             return null;
         }
-        private async Task initNodeInputDefaultValue(ActionNodeItem item, Node node, int inputIndex, ActionNodeValueInfo defaultInfo)
+        private async Task initNodeInputDefaultValue(ActionNodeItem item, Node node, int inputIndex)
         {
-            if (defaultInfo.type == ActionNodeValueType.cardReference || defaultInfo.type == ActionNodeValueType.cardReferenceCollection)
+            var inputPort = node.getInputPortAt(inputIndex);
+            var valueInfo = getDefaultValueInfoFromInput(inputPort);
+            var name = inputPort.name;
+            var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
+            var defaultValue = node.getInputDefaultValue(name, paramIndex);
+            if (valueInfo.type == ActionNodeValueType.cardReference || valueInfo.type == ActionNodeValueType.cardReferenceCollection)
             {
-                ValueInputField field = item.getInputDefaultValueInputField(inputIndex);
-                await updateCardDefineInputField(node, field, null);
+                await updateCardDefineDefaultValue(item, node, inputIndex, defaultValue);
             }
-            else
+            else if (defaultValue == null)
             {
                 // 这里不用setNodeDefaultValue，因为setNodeDefaultValue会调用addOperationRecord，将节点图变为未保存状态
-                var value = getNodeInputDefaultValue(defaultInfo.type);
-                node.setInputDefaultValue(defaultInfo.name, value);
+                var value = getValueTypeDefaultValue(valueInfo.type);
+                node.setInputDefaultValue(valueInfo.name, paramIndex, value);
             }
         }
-        private object getNodeInputDefaultValue(ActionNodeValueType valueType)
+        private object getValueTypeDefaultValue(ActionNodeValueType valueType)
         {
             switch (valueType)
             {
@@ -1958,7 +1953,6 @@ namespace Controllers
         {
             if (inputPort.node is ActionNode actionNode)
             {
-                var inputNodeItem = getActionNodeItem(actionNode);
                 var lastInputDefine = actionNode.define?.inputDefines.LastOrDefault();
                 if (lastInputDefine == inputPort.define && lastInputDefine?.isParams == true)
                 {
@@ -1969,8 +1963,6 @@ namespace Controllers
                             resetConnectingPort();
                         }
                     }
-                    var inputValues = getNodeInputViewData(actionNode);
-                    inputNodeItem.setInputs(inputValues);
                     updateNodePortModes(actionNode, _connectingPort);
                 }
             }
@@ -2005,8 +1997,8 @@ namespace Controllers
         public event Action<Node> OnNodeVisualEffectButtonClicked;
         public event Func<long, Task> onStartSelectCard;
         public event Action<string> onShowErrorTip;
-        public event Action<ActionNode, string> onOpenNodeInputDefaultValueCardDefine;
-        public event Action<ActionNode, string, int> onOpenNodeInputDefaultValueItemCardDefine;
+        public event Action<Node, string, int> onOpenNodeInputDefaultValueCardDefine;
+        public event Action<Node, string, int, int> onOpenNodeInputDefaultValueItemCardDefine;
         #endregion
         #region 属性字段
         [TranslateMsg("编辑器-在分类中返回上一层的按钮({0}为按钮文本)")]
@@ -2076,9 +2068,13 @@ namespace Controllers
         /// </summary>
         Node _curEditNode = null;
         /// <summary>
-        /// 当前正在编辑的动作节点常量名
+        /// 当前正在编辑的动作节点输入默认值名
         /// </summary>
         string _curEditNodeInputDefaultValueName = string.Empty;
+        /// <summary>
+        /// 当前正在编辑的动作节点的输入默认值的变长索引
+        /// </summary>
+        int _curEditNodeInputDefaultValueParamIndex = -1;
         /// <summary>
         /// 当前正在编辑的动作节点常量子项索引
         /// </summary>

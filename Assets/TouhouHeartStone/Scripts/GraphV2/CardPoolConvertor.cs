@@ -769,16 +769,6 @@ namespace Game
             ActionNode actionNode = graph.createActionNode(define, posX + posOffset.x, posY + posOffset.y);
             actionNodeDict.Add(rootActionId, actionNode);
 
-            if (seriActionNode.consts != null)
-            {
-                for (int i = 0; i < seriActionNode.consts.Length; i++)
-                {
-                    var value = seriActionNode.consts[i];
-                    var constDefine = define.inputDefines.ElementAt(seriActionNode.inputs.Length + i);
-                    actionNode.setInputDefaultValue(constDefine.name, value);
-                }
-            }
-
             // 创建并连接与该节点相连的的其他节点（输入）。
             var inputs = seriActionNode.inputs;
             if (inputs != null)
@@ -790,6 +780,16 @@ namespace Game
                     var valueRef = ConvertActionValueRef(inputs[i], param);
                     IPort input = getActionNodeValueInput(actionNode, i);
                     ConnectValueRef(input, valueRef, param);
+                }
+            }
+
+            if (seriActionNode.consts != null)
+            {
+                for (int i = 0; i < seriActionNode.consts.Length; i++)
+                {
+                    var value = seriActionNode.consts[i];
+                    IPort input = getActionNodeValueInput(actionNode, inputs.Length + i);
+                    actionNode.setInputDefaultValue(input.name, value);
                 }
             }
 

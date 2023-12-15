@@ -176,8 +176,13 @@ namespace TouhouHeartstone
                 posX = posX,
                 posY = posY,
             };
-            var defaultValues = inputDefaultValues ?? consts;
+            IEnumerable<InputDefaultValue> defaultValues =
+                inputDefaultValues?.Select(dv => dv.deserialize())
+                ?? consts?.Select(c => new InputDefaultValue(c.Key, -1, c.Value));
             InitNode(entry, defaultValues, graph);
+            if (!entry.hasInputDefaultValue(ActiveEntryNode.conditionPortName))
+                entry.setInputDefaultValue(ActiveEntryNode.conditionPortName, true);
+
             if (tags != null)
                 entry.setTags(tags);
             foreach (var seri in targetCheckerList)

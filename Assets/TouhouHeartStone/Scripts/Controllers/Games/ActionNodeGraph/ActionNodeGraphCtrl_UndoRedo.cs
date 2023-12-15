@@ -149,6 +149,7 @@ namespace Controllers
                     }
                     inputPort = inputActionNode.getParamInputPort(_destName, _destParamIndex);
                     _graphCtrl.updateInputParamsPort(inputPort);
+                    _graphCtrl.updateNodeItemInputPorts(inputActionNode);
                 }
                 _graphCtrl.connectPorts(outputPort, inputPort);
             }
@@ -188,6 +189,7 @@ namespace Controllers
                     }
                     inputPort = inputActionNode.getParamInputPort(_destName, _destParamIndex);
                     _graphCtrl.updateInputParamsPort(inputPort);
+                    _graphCtrl.updateNodeItemInputPorts(inputActionNode);
                 }
                 _graphCtrl.connectPorts(outputPort, inputPort);
             }
@@ -209,10 +211,11 @@ namespace Controllers
         }
         class ChangeNodeDefaultValueOperation : GraphOperation
         {
-            public ChangeNodeDefaultValueOperation(ActionNodeGraphCtrl graphCtrl, Node node, string inputName, object beforeValue, object afterValue) : base(graphCtrl)
+            public ChangeNodeDefaultValueOperation(ActionNodeGraphCtrl graphCtrl, Node node, string inputName, int paramIndex, object beforeValue, object afterValue) : base(graphCtrl)
             {
                 _nodeId = node.id;
                 _inputName = inputName;
+                _paramIndex = paramIndex;
                 _beforeValue = recordValue(beforeValue);
                 _afterValue = recordValue(afterValue);
             }
@@ -230,12 +233,14 @@ namespace Controllers
                 Node node = _graphCtrl.graph.findNodeById(_nodeId);
                 if (value is ICloneable cloneable)
                 {
-                    node.setInputDefaultValue(_inputName, cloneable.Clone());
+                    node.setInputDefaultValue(_inputName, _paramIndex, cloneable.Clone());
                 }
                 else
                 {
-                    node.setInputDefaultValue(_inputName, value);
+                    node.setInputDefaultValue(_inputName, _paramIndex, value);
                 }
+                if (_paramIndex >= 0 && node is ActionNode action)
+                    action.Define();
                 _graphCtrl.updateNodeItemInputPorts(node);
             }
             public override void undo()
@@ -248,6 +253,7 @@ namespace Controllers
             }
             private int _nodeId;
             private string _inputName;
+            private int _paramIndex;
             private object _beforeValue;
             private object _afterValue;
         }

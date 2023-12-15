@@ -120,7 +120,9 @@ namespace TouhouHeartstone
                 posX = posX,
                 posY = posY
             };
-            var defaultValues = inputDefaultValues ?? consts;
+            IEnumerable<InputDefaultValue> defaultValues =
+                inputDefaultValues?.Select(dv => dv.deserialize())
+                ?? consts?.Select(c => new InputDefaultValue(c.Key, -1, c.Value));
             InitNode(entry, defaultValues, graph);
             if (piles != null)
                 entry.setPiles(piles);
