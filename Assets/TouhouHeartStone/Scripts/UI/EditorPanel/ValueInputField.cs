@@ -140,7 +140,14 @@ namespace UI
             }
             else if (_valueInfo.type == ActionNodeValueType.text)
             {
-                onValueChanged?.Invoke(this, text);
+                if (string.IsNullOrEmpty(text))
+                {
+                    onValueChanged?.Invoke(this, null);
+                }
+                else
+                {
+                    onValueChanged?.Invoke(this, text);
+                }
             }
         }
         private void onToggleValueChanged(bool value)

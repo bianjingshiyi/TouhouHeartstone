@@ -5,7 +5,16 @@
     <obsoleteNames />
     <editorName>BooleanConst</editorName>
     <category>其他</category>
-    <inputs />
+    <inputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>value</name>
+        <displayName>Value</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[选中为true，未选中为false]]></summary>
+      </ActionParameterComment>
+    </inputs>
     <outputs>
       <ActionParameterComment>
         <type>Boolean</type>
@@ -16,16 +25,6 @@
         <summary><![CDATA[输出的真值常量。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Boolean</type>
-        <name>value</name>
-        <displayName>Value</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[选中为true，未选中为false]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[输出一个固定的真值。<br>真值是只能为true（真）或者false（假）的值。]]></summary>
     <example><![CDATA[调试卡牌时，需要保持一个开关打开或者关闭时的情况。]]></example>
   </ActionComment>
@@ -35,6 +34,14 @@
     <editorName>Compare</editorName>
     <category>其他</category>
     <inputs>
+      <ActionParameterComment>
+        <type>CompareOperator</type>
+        <name>operator</name>
+        <displayName>operator</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[比较操作符，包括：<ul><li>等于</li><li>不等于</li><li>大于</li><li>大于等于</li><li>小于</li><li>小于等于</li></ul>]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Object</type>
         <name>A</name>
@@ -62,16 +69,6 @@
         <summary><![CDATA[两者的比较结果。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>CompareOperator</type>
-        <name>operator</name>
-        <displayName>operator</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[比较操作符，包括：<ul><li>等于</li><li>不等于</li><li>大于</li><li>大于等于</li><li>小于</li><li>小于等于</li></ul>]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[比较两个值是否相同或者不同。<br>如果这两个值是数字，还可以比较他们的大小。]]></summary>
     <example><![CDATA[<ul>
       <li>运尸车</li>
@@ -85,7 +82,16 @@
     </obsoleteNames>
     <editorName>获取增益定义</editorName>
     <category>Buff</category>
-    <inputs />
+    <inputs>
+      <ActionParameterComment>
+        <type>DefineReference</type>
+        <name>buffDefine</name>
+        <displayName>BuffDefine</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </inputs>
     <outputs>
       <ActionParameterComment>
         <type>BuffDefine</type>
@@ -96,16 +102,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>DefineReference</type>
-        <name>buffDefine</name>
-        <displayName>BuffDefine</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[获取一个固定的增益定义，决定要为卡牌施加哪种增益。]]></summary>
     <example><![CDATA[<ul>
       <li>春之风</li>
@@ -117,7 +113,16 @@
     <obsoleteNames />
     <editorName>IntegerConst</editorName>
     <category>其他</category>
-    <inputs />
+    <inputs>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>value</name>
+        <displayName>value</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[整数的值。]]></summary>
+      </ActionParameterComment>
+    </inputs>
     <outputs>
       <ActionParameterComment>
         <type>Int32</type>
@@ -128,16 +133,6 @@
         <summary><![CDATA[输出的真整数常量。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>value</name>
-        <displayName>value</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[整数的值。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[输出一个固定的整数。]]></summary>
     <example><![CDATA[<ul>
       <li>奥术知识</li>
@@ -150,6 +145,14 @@
     <editorName>IntegerOperation</editorName>
     <category>其他</category>
     <inputs>
+      <ActionParameterComment>
+        <type>IntegerOperator</type>
+        <name>operator</name>
+        <displayName>operator</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[整数运算符，包括：<ul><li>加</li><li>减</li><li>乘</li><li>除</li><li>取模（即获取余数）</li></ul>]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Int32</type>
         <name>arg</name>
@@ -169,16 +172,6 @@
         <summary><![CDATA[运算后的结果。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>IntegerOperator</type>
-        <name>operator</name>
-        <displayName>operator</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[整数运算符，包括：<ul><li>加</li><li>减</li><li>乘</li><li>除</li><li>取模（即获取余数）</li></ul>]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[对多个整数进行运算。]]></summary>
     <example><![CDATA[<ul>
       <li>八意永琳</li>
@@ -190,6 +183,14 @@
     <editorName>LogicOperation</editorName>
     <category>其他</category>
     <inputs>
+      <ActionParameterComment>
+        <type>LogicOperator</type>
+        <name>operator</name>
+        <displayName>operator</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[逻辑运算符，包括：<ul><li>非（输出与输入相反的真值）</li><li>与（所有输入都为true时，输出true，否则输出false）</li><li>或（任意输入为true时，输出true，否则输出false）</li></ul>]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Boolean</type>
         <name>value</name>
@@ -209,16 +210,6 @@
         <summary><![CDATA[运算后的结果。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>LogicOperator</type>
-        <name>operator</name>
-        <displayName>operator</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[逻辑运算符，包括：<ul><li>非（输出与输入相反的真值）</li><li>与（所有输入都为true时，输出true，否则输出false）</li><li>或（任意输入为true时，输出true，否则输出false）</li></ul>]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[对多个真值进行逻辑运算。]]></summary>
     <example><![CDATA[<ul>
       <li>野兔兽妖</li>
@@ -230,7 +221,16 @@
     <obsoleteNames />
     <editorName>StringConst</editorName>
     <category>其他</category>
-    <inputs />
+    <inputs>
+      <ActionParameterComment>
+        <type>String</type>
+        <name>value</name>
+        <displayName>Value</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[字符串的值。]]></summary>
+      </ActionParameterComment>
+    </inputs>
     <outputs>
       <ActionParameterComment>
         <type>String</type>
@@ -241,16 +241,6 @@
         <summary><![CDATA[输出的字符串常量。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>String</type>
-        <name>value</name>
-        <displayName>Value</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[字符串的值。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[输出一个固定的字符串（即一长串文字）。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -261,6 +251,14 @@
     <category>其他</category>
     <inputs>
       <ActionParameterComment>
+        <type>String</type>
+        <name>variableName</name>
+        <displayName>变量名</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置的临时变量名。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>Object</type>
         <name>value</name>
         <displayName>值</displayName>
@@ -270,16 +268,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts>
-      <ActionParameterComment>
-        <type>String</type>
-        <name>variableName</name>
-        <displayName>变量名</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要设置的临时变量名。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[设置一个临时变量的值，该值只在本次运行时存在。<br>如果该临时变量不存在，改为在当前作用域下创建一个临时变量。<br><b>注意：</b><b>分支动作</b>、<b>重复动作</b>等执行其他动作的节点，会在其下新建一个作用域。该作用域下可以访问到外部的临时变量，但外部无法访问到其内部的临时变量。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -288,7 +276,16 @@
     <obsoleteNames />
     <editorName>获取临时变量</editorName>
     <category>其他</category>
-    <inputs />
+    <inputs>
+      <ActionParameterComment>
+        <type>String</type>
+        <name>variableName</name>
+        <displayName>变量名</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取的临时变量名。]]></summary>
+      </ActionParameterComment>
+    </inputs>
     <outputs>
       <ActionParameterComment>
         <type>Object</type>
@@ -299,16 +296,6 @@
         <summary><![CDATA[获取到的临时变量值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>String</type>
-        <name>variableName</name>
-        <displayName>变量名</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要获取的临时变量名。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[获取一个临时变量的值，该值只在本次运行时存在。<br><b>注意：</b><b>分支动作</b>、<b>重复动作</b>等执行其他动作的节点，会在其下新建一个作用域。该作用域下可以访问到外部的临时变量，但外部无法访问到其内部的临时变量。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -345,7 +332,6 @@
         <summary><![CDATA[真值为false时执行的动作。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断真值是否为true，根据结果执行不同的动作。]]></summary>
     <example><![CDATA[<ul>
       <li>元素收割者</li>
@@ -384,7 +370,6 @@
         <summary><![CDATA[提供给执行的动作的值。第1次执行时输出1，第2次输出2……第n次输出n。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[重复执行某个动作n次。]]></summary>
     <example><![CDATA[<ul>
       <li>奥术知识</li>
@@ -435,7 +420,6 @@
         <summary><![CDATA[提供给执行的动作的值。第1次执行时输出1，第2次输出2……第n次输出n。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[重复执行某个动作，直到条件达成。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -479,7 +463,6 @@
         <summary><![CDATA[提供给执行的动作的值。第1次执行时输出1，第2次输出2……第n次输出n。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[重复执行某个动作，直到条件达成。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -516,7 +499,6 @@
         <summary><![CDATA[最小整数X到最大整数Y中随机获取的一个整数]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -545,7 +527,6 @@
         <summary><![CDATA[该值是否不存在。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断一个值是否不存在。<br>不存在的值仍可以参加节点运算，但大多数时候只会使节点产生默认值。<br><b>如果该值是一个整数，则其不会被认定为不存在。</b>]]></summary>
     <example><![CDATA[使用<b>简单抽牌</b>节点，判断抽到的牌是否存在，以确定是否真正抽到了牌。]]></example>
   </ActionComment>
@@ -556,7 +537,6 @@
     <category>其他</category>
     <inputs />
     <outputs />
-    <consts />
     <summary><![CDATA[停止整个重复动作，整个重复动作内的剩余节点都不再执行。<br>仅适用于<b>重复动作</b>、<b>重复动作直到</b>和<b>遍历</b>的内部。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -567,7 +547,6 @@
     <category>其他</category>
     <inputs />
     <outputs />
-    <consts />
     <summary><![CDATA[跳过本次重复动作，该次重复动作内的剩余节点都不再执行。<br>仅适用于<b>重复动作</b>、<b>重复动作直到</b>和<b>遍历</b>的内部。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -596,7 +575,6 @@
         <summary><![CDATA[游戏结束事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[使一些玩家获得对局胜利。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -625,7 +603,6 @@
         <summary><![CDATA[游戏结束事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[使一些玩家在对局中失败。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -643,18 +620,6 @@
         <isArray>false</isArray>
         <summary><![CDATA[牌堆的拥有者。]]></summary>
       </ActionParameterComment>
-    </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>Pile</type>
-        <name>return</name>
-        <displayName>牌堆</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[创建的牌堆。]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts>
       <ActionParameterComment>
         <type>String</type>
         <name>pileName</name>
@@ -671,7 +636,17 @@
         <isArray>false</isArray>
         <summary><![CDATA[该牌堆可以容纳多少卡牌。-1为无限制。]]></summary>
       </ActionParameterComment>
-    </consts>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Pile</type>
+        <name>return</name>
+        <displayName>牌堆</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[创建的牌堆。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <summary><![CDATA[为一位玩家创建新的牌堆。如果该名称的牌堆已经存在，不会新建一个牌堆，改为输出已经存在的牌堆。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -708,7 +683,6 @@
         <summary><![CDATA[是否成功删除？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[删除玩家的一个牌堆。<b>不能删除原版的牌堆。</b>]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -761,7 +735,6 @@
         <summary><![CDATA[是否成功移动？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[将一张卡牌从一个牌堆移动到另一个牌堆中。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -779,6 +752,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要获取属性的玩家。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取的属性名称。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -790,16 +771,6 @@
         <summary><![CDATA[获取到的属性。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>String</type>
-        <name>propName</name>
-        <displayName>属性名称</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要获取的属性名称。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[从一个玩家处获取一个指定名称的属性。]]></summary>
     <example><![CDATA[<ul>
       <li>多重施法</li>
@@ -820,6 +791,14 @@
         <summary><![CDATA[要设置属性的玩家。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置的属性名称。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>Object</type>
         <name>value</name>
         <displayName>值</displayName>
@@ -829,16 +808,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts>
-      <ActionParameterComment>
-        <type>String</type>
-        <name>propName</name>
-        <displayName>属性名称</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要设置的属性名称。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[为一个玩家设置一个指定名称的属性，可以是任何值。<br>该属性会保留直到游戏结束。]]></summary>
     <example><![CDATA[<ul>
       <li>多重施法</li>
@@ -869,7 +838,6 @@
         <summary><![CDATA[该玩家的对手。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个玩家的对手玩家。]]></summary>
     <example><![CDATA[<ul>
       <li>幻象震爆</li>
@@ -902,7 +870,6 @@
         <summary><![CDATA[获取到的英雄。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个玩家的英雄。]]></summary>
     <example><![CDATA[<ul>
       <li>幻象震爆</li>
@@ -925,7 +892,6 @@
         <summary><![CDATA[当前回合的玩家。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取正在进行当前回合的玩家。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -954,7 +920,6 @@
         <summary><![CDATA[获取到的玩家手牌集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个玩家的所有手牌，并输出一个集合。]]></summary>
     <example><![CDATA[<ul>
       <li>蕾米莉亚·斯卡蕾特</li>
@@ -986,7 +951,6 @@
         <summary><![CDATA[获取到的玩家墓地卡牌集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个玩家墓地中的所有卡牌，并输出一个集合。]]></summary>
     <example><![CDATA[<ul>
       <li>上白泽慧音</li>
@@ -1018,7 +982,6 @@
         <summary><![CDATA[获取到的玩家牌库卡牌集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个玩家牌库中的所有卡牌，并输出一个集合。]]></summary>
     <example><![CDATA[<ul>
       <li>大图书馆</li>
@@ -1058,7 +1021,6 @@
         <summary><![CDATA[手牌满时产生的爆牌事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[抽牌库中的一张目标卡牌。<br>玩家视目标卡牌的拥有者而定。]]></summary>
     <example><![CDATA[<ul>
       <li>大图书馆</li>
@@ -1079,6 +1041,14 @@
         <isArray>true</isArray>
         <summary><![CDATA[要检视的卡牌列表。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[一次最多检视的卡牌数量。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -1090,16 +1060,6 @@
         <summary><![CDATA[选择的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>count</name>
-        <displayName>数量</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[一次最多检视的卡牌数量。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[当前回合的玩家检视一定数量的卡牌，并从中选择一张。]]></summary>
     <example><![CDATA[<ul>
       <li>大图书馆</li>
@@ -1120,6 +1080,14 @@
         <isArray>true</isArray>
         <summary><![CDATA[要检视的卡牌定义列表。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[一次最多检视的卡牌定义数量。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -1131,16 +1099,6 @@
         <summary><![CDATA[选择的卡牌定义。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>count</name>
-        <displayName>数量</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[一次最多检视的卡牌定义数量。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[当前回合的玩家检视一定数量的卡牌定义，并从中选择一张。]]></summary>
     <example><![CDATA[<ul>
       <li>八意永琳</li>
@@ -1190,7 +1148,6 @@
         <summary><![CDATA[获取到的法术伤害。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个玩家拥有的所有法术伤害加成。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1219,7 +1176,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1248,7 +1204,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1277,7 +1232,6 @@
         <summary><![CDATA[复原技能产生的卡牌属性更改事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[复原一个玩家的技能。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1306,7 +1260,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1335,7 +1288,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1364,7 +1316,6 @@
         <summary><![CDATA[摧毁道具产生的卡牌属性更改事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[将一个玩家的道具标记为待摧毁，并在更新游戏状态时将其置入墓地。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1393,7 +1344,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1422,7 +1372,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1451,7 +1400,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1488,7 +1436,6 @@
         <summary><![CDATA[设置灵力值事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[设置一个玩家的当前灵力值。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1525,7 +1472,6 @@
         <summary><![CDATA[设置灵力值事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[增加一个玩家的当前灵力值。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1562,7 +1508,6 @@
         <summary><![CDATA[设置最大灵力值事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[设置一个玩家的最大灵力值。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1599,7 +1544,6 @@
         <summary><![CDATA[设置最大灵力值事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[增加一个玩家的最大灵力值。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1663,7 +1607,6 @@
         <summary><![CDATA[进行信仰对决的玩家是否胜利。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[使双方玩家各从牌库中选择并揭示一张符合条件的牌进行信仰对决，揭示的牌灵力值消耗较大的一方获胜。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1732,7 +1675,6 @@
         <summary><![CDATA[进行信仰对决的玩家是否胜利。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[使双方玩家各从牌库中选择并揭示一张符合条件的牌进行信仰对决，揭示的牌灵力值消耗较大的一方获胜。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1752,7 +1694,6 @@
         <summary><![CDATA[玩家集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取对战中的所有玩家。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1792,7 +1733,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取玩家的某个牌堆。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1810,6 +1750,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要获取牌堆的玩家。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>PileName</type>
+        <name>pileName</name>
+        <displayName>牌堆名</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取的牌堆名称。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -1821,16 +1769,6 @@
         <summary><![CDATA[获取到的牌堆。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>PileName</type>
-        <name>pileName</name>
-        <displayName>牌堆名</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要获取的牌堆名称。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[获取一个玩家的某个牌堆。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1840,7 +1778,16 @@
     <editorName>获取目标</editorName>
     <obsoleteMsg />
     <category>玩家</category>
-    <inputs />
+    <inputs>
+      <ActionParameterComment>
+        <type>String</type>
+        <name>targetName</name>
+        <displayName>目标名</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </inputs>
     <outputs>
       <ActionParameterComment>
         <type>Card</type>
@@ -1851,16 +1798,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>String</type>
-        <name>targetName</name>
-        <displayName>目标名</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1889,7 +1826,6 @@
         <summary><![CDATA[玩家的当前回合数。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个玩家从游戏开始时到现在经历的，自己的回合数。<br>该玩家第一个自己的回合中，输出为1；第二个自己的回合中为2。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1918,7 +1854,6 @@
         <summary><![CDATA[玩家是否是先手。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断一个玩家是否是先手。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -2061,7 +1996,6 @@
         <summary><![CDATA[牌堆中的卡牌集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[从一个牌堆中获取所有卡牌，并输出卡牌集合。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -2090,7 +2024,6 @@
         <summary><![CDATA[要筛选的卡牌集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取牌库中满足条件的卡牌。<br>请使用<b>集合运算-筛选</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -2136,7 +2069,6 @@
         <summary><![CDATA[满足条件的所有卡牌组成的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个卡牌集合中满足条件的卡牌。<br>请使用<b>集合运算-筛选</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -2166,7 +2098,6 @@
         <summary><![CDATA[卡牌集合内卡牌的数量。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取卡牌集合中卡牌的数量。<br>请使用<b>集合运算-获取元素数量</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -2185,18 +2116,6 @@
         <isArray>false</isArray>
         <summary><![CDATA[要判断所在牌堆的卡牌。]]></summary>
       </ActionParameterComment>
-    </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>Boolean</type>
-        <name>return</name>
-        <displayName>值</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[卡牌是否位于该牌堆中？]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts>
       <ActionParameterComment>
         <type>String</type>
         <name>pileName</name>
@@ -2216,7 +2135,17 @@
           <li>Head: 延迟区牌堆</li>
         </ul>]]></summary>
       </ActionParameterComment>
-    </consts>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌是否位于该牌堆中？]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <summary><![CDATA[判断一张卡牌是否位于某牌堆内。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -2234,6 +2163,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要判断所在牌堆的卡牌。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>PileName</type>
+        <name>pileName</name>
+        <displayName>牌堆名</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断卡牌所在的牌堆的名称。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -2245,16 +2182,6 @@
         <summary><![CDATA[卡牌是否位于该牌堆中？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>PileName</type>
-        <name>pileName</name>
-        <displayName>牌堆名</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要判断卡牌所在的牌堆的名称。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[判断一张卡牌是否位于某牌堆内。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -2292,7 +2219,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -2321,7 +2247,6 @@
         <summary><![CDATA[获取到的牌堆名称。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个牌堆的名称。内置的牌堆名包括：
           <li>Master: 英雄牌堆</li>
           <li>Hand: 手牌牌堆</li>
@@ -2359,7 +2284,6 @@
         <summary><![CDATA[获取到的牌堆的所属玩家。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个牌堆的所属玩家。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -2379,7 +2303,6 @@
         <summary><![CDATA[当前增益。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取当前效果所属的增益。<br>只在增益的效果中有效。]]></summary>
     <example><![CDATA[<ul>
       <li>机械帕秋莉</li>
@@ -2427,7 +2350,6 @@
         <summary><![CDATA[添加后的增益。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[为一张卡牌添加一项增益，并获取添加后的增益。]]></summary>
     <example><![CDATA[<ul>
       <li>春之风</li>
@@ -2475,7 +2397,6 @@
         <summary><![CDATA[增益是否被成功移除？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[移除一张卡牌上附加的某项增益。]]></summary>
     <example><![CDATA[<ul>
       <li>醉猫乱步</li>
@@ -2514,7 +2435,6 @@
         <summary><![CDATA[是否具有该增益？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断一张卡牌上是否有某项增益。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -2531,6 +2451,14 @@
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要设置属性的增益。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置的属性名称。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>Object</type>
@@ -2551,16 +2479,6 @@
         <summary><![CDATA[增益属性更改所产生的事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>String</type>
-        <name>propName</name>
-        <displayName>属性名称</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要设置的属性名称。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[为增益的某项属性设置属性值，可以是任何值。<br>增益可以使用该属性对卡牌的属性进行修改。]]></summary>
     <example><![CDATA[<ul>
       <li>图书馆保卫者</li>
@@ -2580,6 +2498,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要获取属性的增益。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取的属性名称。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -2591,16 +2517,6 @@
         <summary><![CDATA[获取到的属性值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>String</type>
-        <name>propName</name>
-        <displayName>属性名称</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要获取的属性名称。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[获取增益的某项属性的属性值。]]></summary>
     <example><![CDATA[<ul>
       <li>图书馆保卫者</li>
@@ -2631,7 +2547,6 @@
         <summary><![CDATA[获取到的增益定义。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取某个增益的增益定义。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -2660,7 +2575,6 @@
         <summary><![CDATA[这张卡牌上的增益组成的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张卡牌拥有的所有增益。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -2705,7 +2619,6 @@
         <summary><![CDATA[抽到的牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[使一个玩家抽一张牌。]]></summary>
     <example><![CDATA[<ul>
       <li>犬走椛</li>
@@ -2752,7 +2665,6 @@
         <summary><![CDATA[置入完毕后的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[将一张或多张卡牌从其他牌堆置入战场。]]></summary>
     <example><![CDATA[<ul>
       <li>琪斯美</li>
@@ -2799,7 +2711,6 @@
         <summary><![CDATA[移动完毕后的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[将一张或多张卡牌从其他牌堆移动到手牌。]]></summary>
     <example><![CDATA[<ul>
       <li>八云紫</li>
@@ -2828,6 +2739,14 @@
         <isArray>true</isArray>
         <summary><![CDATA[要洗入牌库的一张或多张卡牌。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>top</name>
+        <displayName>是否至于牌库顶</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[是否要将这些卡牌置入牌库顶？]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -2847,16 +2766,6 @@
         <summary><![CDATA[洗入完毕后的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Boolean</type>
-        <name>top</name>
-        <displayName>是否至于牌库顶</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[是否要将这些卡牌置入牌库顶？]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[将一张或多张卡牌洗入牌库，或置入牌库顶。<br>如果要将多张卡牌置入牌库顶，位于集合最后位置的卡牌最终将位于牌库最顶部。]]></summary>
     <example><![CDATA[<ul>
       <li>藤原妹红</li>
@@ -2903,7 +2812,6 @@
         <summary><![CDATA[置入墓地完毕后的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[将一张或多张卡牌置入墓地。<br>不触发死亡事件或遗言。]]></summary>
     <example><![CDATA[<ul>
       <li>上白泽慧音</li>
@@ -2950,7 +2858,6 @@
         <summary><![CDATA[置入延迟区完毕后的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[将一张或多张卡牌置入延迟区（陷阱、委托所在的位置）。]]></summary>
     <example><![CDATA[<ul>
       <li>因幡帝（铃仙的卡牌）</li>
@@ -2989,7 +2896,6 @@
         <summary><![CDATA[执行的装备道具事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[将一张卡牌装备到道具栏。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -3034,7 +2940,6 @@
         <summary><![CDATA[移动完毕后的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[将一张或多张卡牌移动到暂存区。<br>暂存区是法术施放时被暂时移动到的牌堆，之后才被置入墓地。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -3052,6 +2957,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要判断卡牌类型的卡牌。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>CardDefineSelect</type>
+        <name>select</name>
+        <displayName>卡牌类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断的卡牌类型。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -3063,16 +2976,6 @@
         <summary><![CDATA[卡牌是否属于该类型？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>CardDefineSelect</type>
-        <name>select</name>
-        <displayName>卡牌类型</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要判断的卡牌类型。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[判断一个卡牌是否属于某种卡牌类型。]]></summary>
     <example><![CDATA[<ul>
       <li>叛逃特工</li>
@@ -3093,18 +2996,6 @@
         <isArray>false</isArray>
         <summary><![CDATA[要判断拥有关键词的卡牌。]]></summary>
       </ActionParameterComment>
-    </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>Boolean</type>
-        <name>return</name>
-        <displayName>真值</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[卡牌是否拥有该关键词？]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts>
       <ActionParameterComment>
         <type>String</type>
         <name>select</name>
@@ -3127,7 +3018,17 @@
           <li>mission：委托</li>
         </ul>]]></summary>
       </ActionParameterComment>
-    </consts>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌是否拥有该关键词？]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <summary><![CDATA[判断一个卡牌是否拥有某种关键词。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -3157,7 +3058,6 @@
         <summary><![CDATA[获取到的随机卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[从一个卡牌集合中获取随机的卡牌。<br>请使用<b>集合运算-获取集合中的随机元素</b>]]></summary>
     <example><![CDATA[<ul>
       <li>元素精灵</li>
@@ -3204,7 +3104,6 @@
         <summary><![CDATA[创建出的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[创建一张衍生的卡牌，并将其置入战场。]]></summary>
     <example><![CDATA[<ul>
       <li>八云蓝</li>
@@ -3251,7 +3150,6 @@
         <summary><![CDATA[创建出的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[创建一张衍生的卡牌，并将其置入手牌。]]></summary>
     <example><![CDATA[<ul>
       <li>御神签炸弹</li>
@@ -3299,7 +3197,6 @@
         <summary><![CDATA[创建出的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[创建一张衍生的卡牌，并将其洗入牌库。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -3344,45 +3241,7 @@
         <summary><![CDATA[创建出的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[创建一张衍生的卡牌，并将其装备到道具栏。]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineId>202044</defineId>
-    <obsoleteNames />
-    <editorName>复制卡牌</editorName>
-    <category>卡牌</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>Card</type>
-        <name>card</name>
-        <displayName>卡牌</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要复制的卡牌。]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>Pile</type>
-        <name>targetPile</name>
-        <displayName>目标牌堆</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[卡牌复制要移动到的牌堆。]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>Card</type>
-        <name>return</name>
-        <displayName>卡牌</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[卡牌的复制。]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts />
-    <summary><![CDATA[创建一个卡牌的复制。该复制不位于任何牌堆中，需要搭配将卡牌置入指定牌堆的节点使用。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -3426,7 +3285,6 @@
         <summary><![CDATA[创建的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[创建一张衍生的卡牌，并将其置入延迟区。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -3458,7 +3316,7 @@
         <displayName>位置</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[要将卡牌置入的牌堆的位置。不提供输入则默认为牌堆的最后一个位置。]]></summary>
+        <summary><![CDATA[要将卡牌置入的牌堆的位置。提供-1则为牌堆的最后一个位置。]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs>
@@ -3479,8 +3337,43 @@
         <summary><![CDATA[创建的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[创建一张衍生的卡牌，并将置入指定牌堆。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>202044</defineId>
+    <obsoleteNames />
+    <editorName>复制卡牌</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要复制的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Pile</type>
+        <name>targetPile</name>
+        <displayName>目标牌堆</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌复制要移动到的牌堆。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌的复制。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[创建一个卡牌的复制。该复制不位于任何牌堆中，需要搭配将卡牌置入指定牌堆的节点使用。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -3499,7 +3392,6 @@
         <summary><![CDATA[拥有该效果的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[当前效果所属的卡牌，或者当前增益所属的卡牌（仅在增益的效果内）。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -3517,6 +3409,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要获取属性的卡牌。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>CardPropertyGetterName</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取的属性名称。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -3528,16 +3428,6 @@
         <summary><![CDATA[获取到的属性值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>CardPropertyGetterName</type>
-        <name>propName</name>
-        <displayName>属性名称</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要获取的属性名称。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[获取一张卡牌的某项属性。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -3554,6 +3444,14 @@
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置属性的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>CardPropertySetterName</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置的属性名称。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>Object</type>
@@ -3574,16 +3472,6 @@
         <summary><![CDATA[设置卡牌属性所产生的事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>CardPropertySetterName</type>
-        <name>propName</name>
-        <displayName>属性名称</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要设置的属性名称。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[设置一张卡牌的某项属性，可以是任何值。<br>该值会一直保存到这张卡牌中，直到游戏结束。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -3623,7 +3511,6 @@
         <summary><![CDATA[获取到的属性值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张卡牌的某项属性，可以是任何值。<br>请使用<b>获取卡牌属性</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -3671,7 +3558,6 @@
         <summary><![CDATA[更改该卡牌属性的事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[设置一张卡牌的某项属性，可以是任何值。<br>该值会一直保存到这张卡牌中，直到游戏结束。<br>请使用<b>设置卡牌属性</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -3700,7 +3586,6 @@
         <summary><![CDATA[获取到的灵力值消耗。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张卡牌的灵力值消耗。]]></summary>
     <example><![CDATA[<ul>
       <li>琪斯美</li>
@@ -3731,7 +3616,6 @@
         <summary><![CDATA[获取到的攻击力。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张卡牌的攻击力。]]></summary>
     <example><![CDATA[<ul>
       <li>水桥帕露西</li>
@@ -3762,7 +3646,6 @@
         <summary><![CDATA[获取到的最大生命值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张卡牌的最大生命值。]]></summary>
     <example><![CDATA[<ul>
       <li>八意永琳</li>
@@ -3793,7 +3676,6 @@
         <summary><![CDATA[获取到的当前生命值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张卡牌的当前生命值。]]></summary>
     <example><![CDATA[<ul>
       <li>八意永琳</li>
@@ -3825,7 +3707,6 @@
         <summary><![CDATA[执行的弃牌事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[弃掉一张或多张手牌，并将其置入墓地。<br>
       <b>注：</b><ul>
         <li>要求卡牌必须在手牌中。</li>
@@ -3862,7 +3743,6 @@
         <summary><![CDATA[弃掉多张牌产生的群体弃牌事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[弃掉一张或多张手牌，并将其置入墓地。<br>
       <b>注：</b><ul>
         <li>要求卡牌必须在手牌中。</li>
@@ -3878,8 +3758,17 @@
     <defineId>202019</defineId>
     <obsoleteNames />
     <editorName>增加固定数量护甲</editorName>
+    <obsoleteMsg />
     <category>卡牌</category>
     <inputs>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Player</type>
         <name>player</name>
@@ -3899,16 +3788,6 @@
         <summary><![CDATA[更改护甲所产生的事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>count</name>
-        <displayName>数量</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -3945,7 +3824,6 @@
         <summary><![CDATA[更改护甲所产生的事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -3982,7 +3860,6 @@
         <summary><![CDATA[更改护甲所产生的事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4011,7 +3888,6 @@
         <summary><![CDATA[根据增益获得的独一无二的属性名。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[根据增益获取一个独一无二的属性名，用于解决属性名冲突。<br><b>注意：</b>仅在“该增益”存在时有效。不在增益的效果内时，获取到的属性名等同于基础属性名。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4042,7 +3918,6 @@
         <summary><![CDATA[拥有这张卡牌的玩家。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取拥有这张卡牌的玩家。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4071,7 +3946,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4103,7 +3977,6 @@
         <summary><![CDATA[是否是法术牌？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断一张卡牌是否是法术牌。<br>请使用<b>卡牌-卡牌类型判断</b>。]]></summary>
     <example><![CDATA[<ul>
       <li>小恶魔</li>
@@ -4144,7 +4017,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4181,18 +4053,6 @@
         <isArray>false</isArray>
         <summary><![CDATA[造成伤害的来源卡牌。<br><b>注意：</b>如果为空，默认为“这张卡牌”，而非无来源。]]></summary>
       </ActionParameterComment>
-    </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>EventArg</type>
-        <name>return</name>
-        <displayName>伤害事件</displayName>
-        <isParams>false</isParams>
-        <isArray>true</isArray>
-        <summary><![CDATA[产生的伤害事件。]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts>
       <ActionParameterComment>
         <type>Boolean</type>
         <name>damagetype</name>
@@ -4209,7 +4069,17 @@
         <isArray>false</isArray>
         <summary><![CDATA[要增加的伤害量。]]></summary>
       </ActionParameterComment>
-    </consts>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[产生的伤害事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <summary><![CDATA[对一个或一些目标卡牌造成伤害或法术伤害。<br><b>注意：</b>该节点因伤害来源逻辑问题已过时。<br>请使用新版节点。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4246,18 +4116,6 @@
         <isArray>false</isArray>
         <summary><![CDATA[造成伤害的来源卡牌。<br><b>注意：</b>如果为空，默认为“这张卡牌”，而非无来源。]]></summary>
       </ActionParameterComment>
-    </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>EventArg</type>
-        <name>return</name>
-        <displayName>伤害事件</displayName>
-        <isParams>false</isParams>
-        <isArray>true</isArray>
-        <summary><![CDATA[产生的伤害事件。]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts>
       <ActionParameterComment>
         <type>Boolean</type>
         <name>damagetype</name>
@@ -4274,7 +4132,17 @@
         <isArray>false</isArray>
         <summary><![CDATA[要增加的伤害量。]]></summary>
       </ActionParameterComment>
-    </consts>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[产生的伤害事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <summary><![CDATA[选择一定目标，造成总量一定的伤害或法术伤害，随机分配到它们身上。<br><b>注意：</b>该节点因伤害来源逻辑问题已过时。<br>请使用新版节点。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4319,18 +4187,6 @@
         <isArray>false</isArray>
         <summary><![CDATA[造成伤害的来源卡牌。<br><b>注意：</b>如果为空，默认为“这张卡牌”，而非无来源。]]></summary>
       </ActionParameterComment>
-    </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>EventArg</type>
-        <name>return</name>
-        <displayName>伤害事件</displayName>
-        <isParams>false</isParams>
-        <isArray>true</isArray>
-        <summary><![CDATA[产生的伤害事件。]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts>
       <ActionParameterComment>
         <type>Boolean</type>
         <name>damagetype</name>
@@ -4355,7 +4211,17 @@
         <isArray>false</isArray>
         <summary><![CDATA[要增加的伤害量。]]></summary>
       </ActionParameterComment>
-    </consts>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[产生的伤害事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <summary><![CDATA[从一定目标中选择数个目标，对他们分别造成一定量的伤害。<br><b>注意：</b>该节点因伤害来源逻辑问题已过时。<br>请使用新版节点。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4390,18 +4256,6 @@
         <isArray>false</isArray>
         <summary><![CDATA[造成伤害的来源卡牌。如果为空，默认为无来源。]]></summary>
       </ActionParameterComment>
-    </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>EventArg</type>
-        <name>return</name>
-        <displayName>伤害事件</displayName>
-        <isParams>false</isParams>
-        <isArray>true</isArray>
-        <summary><![CDATA[产生的伤害事件。]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts>
       <ActionParameterComment>
         <type>Boolean</type>
         <name>damagetype</name>
@@ -4418,7 +4272,17 @@
         <isArray>false</isArray>
         <summary><![CDATA[要增加的伤害量。]]></summary>
       </ActionParameterComment>
-    </consts>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[产生的伤害事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <summary><![CDATA[对一个或一些目标卡牌造成伤害或法术伤害。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4437,6 +4301,14 @@
         <summary><![CDATA[要造成的伤害。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
+        <type>Int32</type>
+        <name>damage2</name>
+        <displayName>+</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要增加的伤害量。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>Card</type>
         <name>targets</name>
         <displayName>目标卡牌</displayName>
@@ -4452,6 +4324,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[造成伤害的来源卡牌。如果为空，默认为无来源。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>damagetype</name>
+        <displayName>是否为法术伤害</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -4463,24 +4343,6 @@
         <summary><![CDATA[对一个或多个目标造成伤害产生的群体伤害事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Boolean</type>
-        <name>damagetype</name>
-        <displayName>是否为法术伤害</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>damage2</name>
-        <displayName>+</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要增加的伤害量。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[对一个或多个目标卡牌造成伤害或法术伤害。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4515,18 +4377,6 @@
         <isArray>false</isArray>
         <summary><![CDATA[造成伤害的来源卡牌。如果为空，默认为无来源。]]></summary>
       </ActionParameterComment>
-    </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>EventArg</type>
-        <name>return</name>
-        <displayName>伤害事件</displayName>
-        <isParams>false</isParams>
-        <isArray>true</isArray>
-        <summary><![CDATA[产生的伤害事件。]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts>
       <ActionParameterComment>
         <type>Boolean</type>
         <name>damagetype</name>
@@ -4543,7 +4393,17 @@
         <isArray>false</isArray>
         <summary><![CDATA[要增加的伤害量。]]></summary>
       </ActionParameterComment>
-    </consts>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[产生的伤害事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <summary><![CDATA[选择一定目标，造成总量一定的伤害或法术伤害，随机分配到它们身上。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4562,6 +4422,14 @@
         <summary><![CDATA[要造成的总伤害量。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
+        <type>Int32</type>
+        <name>damage2</name>
+        <displayName>+</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要增加的伤害量。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>Card</type>
         <name>targets</name>
         <displayName>目标卡牌</displayName>
@@ -4577,6 +4445,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[造成伤害的来源卡牌。如果为空，默认为无来源。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>damagetype</name>
+        <displayName>是否为法术伤害</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -4588,24 +4464,6 @@
         <summary><![CDATA[对目标分配伤害产生的群体伤害事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Boolean</type>
-        <name>damagetype</name>
-        <displayName>是否为法术伤害</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>damage2</name>
-        <displayName>+</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要增加的伤害量。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[选择一定目标，造成总量一定的伤害或法术伤害，随机分配到它们身上。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4648,18 +4506,6 @@
         <isArray>false</isArray>
         <summary><![CDATA[造成伤害的来源卡牌。如果为空，默认为无来源。]]></summary>
       </ActionParameterComment>
-    </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>EventArg</type>
-        <name>return</name>
-        <displayName>伤害事件</displayName>
-        <isParams>false</isParams>
-        <isArray>true</isArray>
-        <summary><![CDATA[产生的伤害事件。]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts>
       <ActionParameterComment>
         <type>Boolean</type>
         <name>damagetype</name>
@@ -4684,7 +4530,17 @@
         <isArray>false</isArray>
         <summary><![CDATA[要增加的伤害量。]]></summary>
       </ActionParameterComment>
-    </consts>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[产生的伤害事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <summary><![CDATA[从一定目标中选择数个目标，对他们分别造成一定量的伤害。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4704,11 +4560,27 @@
       </ActionParameterComment>
       <ActionParameterComment>
         <type>Int32</type>
+        <name>count2</name>
+        <displayName>+</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要增加的目标数量。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
         <name>damage</name>
         <displayName>伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要对每个目标造成的伤害。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>damage2</name>
+        <displayName>+</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要增加的伤害量。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>Card</type>
@@ -4726,6 +4598,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[造成伤害的来源卡牌。如果为空，默认为无来源。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>damagetype</name>
+        <displayName>是否为法术伤害</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -4737,32 +4617,6 @@
         <summary><![CDATA[对一个或多个目标造成伤害产生的群体伤害事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Boolean</type>
-        <name>damagetype</name>
-        <displayName>是否为法术伤害</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>count2</name>
-        <displayName>+</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要增加的目标数量。]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>damage2</name>
-        <displayName>+</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要增加的伤害量。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[从一定目标中随机选择数个目标，对他们分别造成一定量的伤害。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4773,6 +4627,14 @@
     <obsoleteMsg />
     <category>卡牌</category>
     <inputs>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Card</type>
         <name>targets</name>
@@ -4792,16 +4654,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>damage</name>
-        <displayName>伤害</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4839,7 +4691,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4851,6 +4702,14 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>Card</type>
         <name>targets</name>
         <displayName>目标卡牌</displayName>
@@ -4869,16 +4728,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>damage</name>
-        <displayName>伤害</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4890,6 +4739,22 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>Card</type>
         <name>targets</name>
         <displayName>目标卡牌</displayName>
@@ -4908,24 +4773,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>count</name>
-        <displayName>数量</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>damage</name>
-        <displayName>伤害</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4937,6 +4784,22 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>Card</type>
         <name>targets</name>
         <displayName>目标卡牌</displayName>
@@ -4955,24 +4818,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>count</name>
-        <displayName>数量</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>damage</name>
-        <displayName>伤害</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5010,7 +4855,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5047,7 +4891,6 @@
         <summary><![CDATA[治疗一个或多个目标产生的群体治疗事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[治疗一个或多个目标。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5066,6 +4909,14 @@
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>value</name>
+        <displayName>值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -5077,16 +4928,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>value</name>
-        <displayName>值</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5106,7 +4947,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5126,7 +4966,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5146,7 +4985,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5166,7 +5004,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5186,7 +5023,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5206,7 +5042,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5235,7 +5070,6 @@
         <summary><![CDATA[禁锢仆从所产生的事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[禁锢一个仆从。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5265,7 +5099,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5294,7 +5127,6 @@
         <summary><![CDATA[封印一个或多个目标所产生的群体封印事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[封印一个或多个目标。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5323,7 +5155,6 @@
         <summary><![CDATA[消灭仆从所产生的属性变化事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[将一个仆从标记为待死亡，并在下一次更新游戏状态时将其置入墓地。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5334,7 +5165,6 @@
     <category>卡牌</category>
     <inputs />
     <outputs />
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5352,18 +5182,6 @@
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
-    </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>Boolean</type>
-        <name>return</name>
-        <displayName>濒死</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts>
       <ActionParameterComment>
         <type>Boolean</type>
         <name>checkHealth</name>
@@ -5380,7 +5198,17 @@
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
-    </consts>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>濒死</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5409,7 +5237,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5438,7 +5265,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5467,7 +5293,6 @@
         <summary><![CDATA[卡牌是否具有宣言关键词？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断卡牌是否具有宣言关键词]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5495,7 +5320,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[向目标卡牌触发该卡牌的宣言]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5524,7 +5348,6 @@
         <summary><![CDATA[卡牌是否具有遗言关键词？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断卡牌是否具有遗言关键词]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5544,7 +5367,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[触发该卡牌的遗言]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5572,7 +5394,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[向目标卡牌触发法术或技能卡牌的效果]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5601,7 +5422,6 @@
         <summary><![CDATA[卡牌是否是陷阱？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断一张卡牌是否是陷阱。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5630,7 +5450,6 @@
         <summary><![CDATA[获取到的所在牌堆。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个卡牌所在的牌堆。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5650,7 +5469,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5687,7 +5505,6 @@
         <summary><![CDATA[强制攻击所产生的攻击事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[强制一个角色攻击目标角色。该行为不会消耗攻击次数。]]></summary>
     <example><![CDATA[<ul>
     <li>樱花闪闪</li>
@@ -5718,7 +5535,6 @@
         <summary><![CDATA[卡牌属性更改所产生的事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[使一个角色在本回合中获得额外的一次攻击次数。]]></summary>
     <example><![CDATA[<ul>
     <li>猫步</li>
@@ -5749,7 +5565,6 @@
         <summary><![CDATA[获取到的卡牌的合法目标集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张卡牌的所有合法的目标，即可以指向哪些卡牌并使用。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5778,7 +5593,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5807,7 +5621,6 @@
         <summary><![CDATA[揭示卡牌所产生的事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[向双方玩家展示一张卡牌。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5844,7 +5657,6 @@
         <summary><![CDATA[卡牌移动所产生的事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[一方玩家获得一个仆从的控制权。<br>会使得该仆从进入未准备状态，在没有先攻、速攻的情况下无法在本回合进行攻击。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5873,7 +5685,6 @@
         <summary><![CDATA[判断是否已蓄力的结果。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断一张卡牌是否已蓄力。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5902,7 +5713,6 @@
         <summary><![CDATA[这张卡牌的蓄力层数。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张卡牌的蓄力层数。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5939,7 +5749,6 @@
         <summary><![CDATA[卡牌蓄力所产生的事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[设置一张卡牌的蓄力层数。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5959,7 +5768,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5968,18 +5776,7 @@
     <obsoleteNames />
     <editorName>获取卡牌定义</editorName>
     <category>卡牌定义</category>
-    <inputs />
-    <outputs>
-      <ActionParameterComment>
-        <type>CardDefine</type>
-        <name>return</name>
-        <displayName>卡牌定义</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts>
+    <inputs>
       <ActionParameterComment>
         <type>DefineReference</type>
         <name>cardRef</name>
@@ -5988,7 +5785,17 @@
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
-    </consts>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>return</name>
+        <displayName>卡牌定义</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -5997,7 +5804,16 @@
     <obsoleteNames />
     <editorName>获取卡牌定义列表</editorName>
     <category>卡牌定义</category>
-    <inputs />
+    <inputs>
+      <ActionParameterComment>
+        <type>DefineReference</type>
+        <name>cardRefs</name>
+        <displayName>卡牌引用</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </inputs>
     <outputs>
       <ActionParameterComment>
         <type>CardDefine</type>
@@ -6008,16 +5824,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>DefineReference</type>
-        <name>cardRefs</name>
-        <displayName>卡牌引用</displayName>
-        <isParams>false</isParams>
-        <isArray>true</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6063,7 +5869,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断卡牌定义是否具有某种标签。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6092,7 +5897,6 @@
         <summary><![CDATA[获取到的标签列表。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个卡牌定义具有的所有标签所组成的列表。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6122,7 +5926,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6140,6 +5943,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>CardDefineSelect</type>
+        <name>select</name>
+        <displayName>卡牌类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -6151,16 +5962,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>CardDefineSelect</type>
-        <name>select</name>
-        <displayName>卡牌类型</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6178,18 +5979,6 @@
         <isArray>false</isArray>
         <summary><![CDATA[要判断的卡牌定义。]]></summary>
       </ActionParameterComment>
-    </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>Boolean</type>
-        <name>return</name>
-        <displayName>真值</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[是否拥有该关键词？]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts>
       <ActionParameterComment>
         <type>String</type>
         <name>select</name>
@@ -6212,7 +6001,17 @@
           <li>mission：委托</li>
         </ul>]]></summary>
       </ActionParameterComment>
-    </consts>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[是否拥有该关键词？]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <summary><![CDATA[判断一个卡牌定义是否拥有某种关键词。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6241,7 +6040,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6270,7 +6068,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6296,6 +6093,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要变形成为的卡牌定义。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>isreset</name>
+        <displayName>是否重置卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[是否需要将卡牌重置为最初的状态。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -6315,16 +6120,6 @@
         <summary><![CDATA[变形成为的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Boolean</type>
-        <name>isreset</name>
-        <displayName>是否重置卡牌</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[是否需要将卡牌重置为最初的状态。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[将一个卡牌变形为指定的卡牌定义。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6362,7 +6157,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6380,6 +6174,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>CardDefinePropertyGetterName</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -6391,16 +6193,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>CardDefinePropertyGetterName</type>
-        <name>propName</name>
-        <displayName>属性名称</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6429,7 +6221,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6458,7 +6249,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6487,7 +6277,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6516,7 +6305,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6545,7 +6333,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6574,7 +6361,6 @@
         <summary><![CDATA[获取到的技能卡牌定义。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张英雄牌卡牌定义的技能。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6603,7 +6389,6 @@
         <summary><![CDATA[获取到的角色的卡牌定义。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个卡牌定义的所属角色。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6633,7 +6418,6 @@
         <summary><![CDATA[卡牌定义是否可收藏？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断一个卡牌定义是否可收藏（即可以在卡组构建页面加入卡组）。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6669,7 +6453,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[以一张卡牌为载体，触发另一个卡牌定义的宣言。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6698,7 +6481,6 @@
         <summary><![CDATA[卡牌定义是否具有宣言言？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断一个卡牌定义是否具有宣言。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6726,7 +6508,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[以一张卡牌为载体，触发另一个卡牌定义的遗言。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6755,7 +6536,6 @@
         <summary><![CDATA[卡牌定义是否具有遗言？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断一个卡牌定义是否具有遗言。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6791,7 +6571,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[以一张卡牌为载体，触发另一个法术或技能卡牌定义的效果。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6820,7 +6599,6 @@
         <summary><![CDATA[卡牌定义是否是陷阱？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断一个卡牌定义是否是陷阱。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6857,7 +6635,6 @@
         <summary><![CDATA[获取到的卡牌定义的所有合法目标的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张卡牌定义的所有合法的目标，即可以指向哪些卡牌并使用。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6886,7 +6663,6 @@
         <summary><![CDATA[卡牌快照对应的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张卡牌快照所记录的卡牌是哪张卡牌。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6915,7 +6691,6 @@
         <summary><![CDATA[卡牌快照在当时的的卡牌定义。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张卡牌快照在当时的卡牌定义。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6933,6 +6708,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要进行类型判断的卡牌快照。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>CardDefineSelect</type>
+        <name>select</name>
+        <displayName>卡牌类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要进行判断的卡牌类型。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -6944,16 +6727,6 @@
         <summary><![CDATA[卡牌快照是否是该类型？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>CardDefineSelect</type>
-        <name>select</name>
-        <displayName>卡牌类型</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要进行判断的卡牌类型。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[判断一个卡牌快照在当时是否属于某种卡牌类型。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -6971,6 +6744,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要进行关键词判断的卡牌快照。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>String</type>
+        <name>select</name>
+        <displayName>关键词类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要进行判断的关键词。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -6982,16 +6763,6 @@
         <summary><![CDATA[卡牌快照是否具有该关键词？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>String</type>
-        <name>select</name>
-        <displayName>关键词类型</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要进行判断的关键词。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[判断一个卡牌快照在当时是否有某种关键词。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7028,7 +6799,6 @@
         <summary><![CDATA[获取到的属性值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个卡牌快照在当时的某项属性值。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7057,7 +6827,6 @@
         <summary><![CDATA[获取到的灵力值消耗。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个卡牌快照在当时的灵力值消耗。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7086,7 +6855,6 @@
         <summary><![CDATA[获取到的攻击力。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个卡牌快照在当时的攻击力。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7115,7 +6883,6 @@
         <summary><![CDATA[获取到的最大生命值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个卡牌快照在当时的最大生命值。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7144,7 +6911,6 @@
         <summary><![CDATA[获取到的当前生命值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个卡牌快照在当时的当前生命值。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7173,7 +6939,6 @@
         <summary><![CDATA[获取到的玩家。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个卡牌快照在当时的拥有者。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7202,7 +6967,6 @@
         <summary><![CDATA[获取到的护甲值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个卡牌快照在当时的护甲值。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7231,7 +6995,6 @@
         <summary><![CDATA[卡牌快照是否已蓄力。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个卡牌快照在当时是否已蓄力。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7260,7 +7023,6 @@
         <summary><![CDATA[获取到的卡牌快照蓄力层数。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个卡牌快照在当时拥有的蓄力层数。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7289,7 +7051,6 @@
         <summary><![CDATA[卡牌快照是否具有宣言。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断一个卡牌快照在当时是否具有宣言。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7318,7 +7079,6 @@
         <summary><![CDATA[卡牌快照是否具有遗言。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断一个卡牌快照在当时是否具有遗言。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7347,7 +7107,6 @@
         <summary><![CDATA[卡牌快照是否是陷阱？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断一个卡牌快照是否是陷阱。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7376,7 +7135,6 @@
         <summary><![CDATA[创建的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[创建一个集合，将多个值加入到该集合中。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7413,7 +7171,6 @@
         <summary><![CDATA[添加元素完毕的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[向一个已经存在的集合内添加元素。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7461,7 +7218,6 @@
         <summary><![CDATA[所有满足条件的元素的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[从一个集合中筛选所有满足条件的元素，并将它们输出为集合。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7506,7 +7262,6 @@
         <summary><![CDATA[所有满足条件的元素的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[从一个集合中筛选所有满足条件的元素，并将它们输出为集合。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7535,7 +7290,6 @@
         <summary><![CDATA[集合内的元素数量。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个集合内的元素数量。]]></summary>
     <example><![CDATA[<ul>
       <li>洩矢诹访子</li>
@@ -7574,7 +7328,6 @@
         <summary><![CDATA[集合内是否包含元素？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[判断一个集合内是否包含某个元素。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7587,6 +7340,14 @@
     <obsoleteMsg />
     <category>集合运算</category>
     <inputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>descending</name>
+        <displayName>降序</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[是否进行降序排序？]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Object</type>
         <name>array</name>
@@ -7622,16 +7383,6 @@
         <summary><![CDATA[排序完毕后的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Boolean</type>
-        <name>descending</name>
-        <displayName>降序</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[是否进行降序排序？]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[对集合内的元素进行排序。<br>可以用于选出集合内某属性最高/最低的元素。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7641,6 +7392,14 @@
     <editorName>排序</editorName>
     <category>集合运算</category>
     <inputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>descending</name>
+        <displayName>降序</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[是否进行降序排序？]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Object</type>
         <name>array</name>
@@ -7676,16 +7435,6 @@
         <summary><![CDATA[排序完毕后的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Boolean</type>
-        <name>descending</name>
-        <displayName>降序</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[是否进行降序排序？]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[对集合内的元素进行排序。<br>可以用于选出集合内某属性最高/最低的元素。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7722,7 +7471,6 @@
         <summary><![CDATA[获取到的元素。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取集合内位于某个特定位置的元素。<br>第一个元素的位置为0，第二个为1，依此类推。]]></summary>
     <example><![CDATA[<ul>
       <li>东风谷早苗</li>
@@ -7761,7 +7509,6 @@
         <summary><![CDATA[提供给“动作”的输出值，表示当前正在遍历的元素。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[遍历集合内的每个元素，根据每个元素执行一次动作。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7790,7 +7537,6 @@
         <summary><![CDATA[获取到的元素。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取集合中的一个随机元素。]]></summary>
     <example><![CDATA[<ul>
       <li>元素精灵</li>
@@ -7821,7 +7567,6 @@
         <summary><![CDATA[反转元素位置后的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[将一个集合内的所有元素位置反转。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7850,7 +7595,6 @@
         <summary><![CDATA[去重后的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[去除集合内的所有重复元素，只保留一个。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7889,7 +7633,6 @@
         <summary><![CDATA[相减后的结果。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[从“集合”中去除“减去的集合”所包含的元素，并输出一个相减之后的新集合。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7918,7 +7661,6 @@
         <summary><![CDATA[集合中所有数字的和。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[计算一个集合中所有数字的和。<br>如果一个集合中没有元素或者元素都不是数字，输出0。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7947,7 +7689,6 @@
         <summary><![CDATA[获取到的数字最小值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个集合中所有数字中的最小值。<br>如果一个集合中没有元素或者元素都不是数字，输出0。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -7976,7 +7717,6 @@
         <summary><![CDATA[获取到的数字最大值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个集合中所有数字中的最大值。<br>如果一个集合中没有元素或者元素都不是数字，输出0。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8005,7 +7745,6 @@
         <summary><![CDATA[获取到的数字平均值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个集合中所有数字的平均值。（向下取整）<br>如果一个集合中没有元素或者元素都不是数字，输出0。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8042,7 +7781,6 @@
         <summary><![CDATA[拼接出的新集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[将两个集合内的元素拼接，组合成一个具有两个集合内所有元素的集合。<br>不同于<b>获取并集</b>，该节点会保留集合内的重复项。<br><b>例如：</b>集合[1,3,5,7,9]和[1,2,3,4,5]相加，结果为[1,3,5,7,9,1,2,3,4,5]。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8079,7 +7817,6 @@
         <summary><![CDATA[获取到的并集。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取两个集合的并集，即两个集合内的所有不重复元素。<br>不同于<b>集合相加</b>，该节点会舍弃集合内的重复项。<br><b>例如：</b>获取集合[1,3,5,7,9]和[1,2,3,4,5]的并集，结果为[1,3,5,7,9,2,4]。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8116,7 +7853,6 @@
         <summary><![CDATA[获取到的交集。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取两个集合的交集，即两个集合内都包含的元素。<br><b>例如：</b>获取集合[1,3,5,7,9]和[1,2,3,4,5]的交集，结果为[1,3,5]。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8153,7 +7889,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[检查“子集”是否是“集合”的子集，即“子集”内的元素是否都在“集合”中存在。<br><b>例如：</b>检查集合[1,2,3]是否是[1,2,3,4,5]的子集，结果为true。<br><b>注意：</b>空集合是所有集合的子集，包括空集合。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8198,7 +7933,6 @@
         <summary><![CDATA[是否所有元素都满足条件？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[检查一个集合内的元素是否都满足某种条件。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8243,7 +7977,6 @@
         <summary><![CDATA[是否有任意元素满足条件？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[检查一个集合内是否有任意元素满足某种条件。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8272,7 +8005,6 @@
         <summary><![CDATA[获取到的第一个元素。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取集合内的第一个元素。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8301,7 +8033,6 @@
         <summary><![CDATA[获取到的最后一个元素。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取集合内的最后一个元素。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8338,7 +8069,6 @@
         <summary><![CDATA[获取到的前X个元素组成的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取集合内的前X个元素。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8375,7 +8105,6 @@
         <summary><![CDATA[获取到的前X个元素之外的元素组成的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取集合内的前X个元素之外的其余元素。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8420,7 +8149,6 @@
         <summary><![CDATA[获取到的元素组成的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[根据条件获取集合内的元素。如果条件不成立，停止获取。<br><b>例如：</b>使用该节点获取[1,3,5,7,8,9,10]中的奇数，则输出[1,3,5,7]。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8465,7 +8193,6 @@
         <summary><![CDATA[获取到的元素组成的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[根据条件跳过集合内的元素。如果条件不成立，获取其余所有元素。<br><b>例如：</b>使用该节点跳过[1,3,5,7,8,9,10]中的奇数，则输出[8,9,10]。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8502,7 +8229,6 @@
         <summary><![CDATA[获取到的随机元素组成的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个集合内的随机X个元素，不重复获取同一个。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8547,7 +8273,6 @@
         <summary><![CDATA[获取到的元素属性组成的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取集合中每个元素的某项属性组成的集合。<br><b>例如：</b>获取[1,2,3,4,5]中的元素是否是奇数，则返回[true,false,true,false,true]。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8576,7 +8301,6 @@
         <summary><![CDATA[打乱顺序后的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个集合根据游戏内随机数打乱顺序后的一个新的集合。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8586,6 +8310,14 @@
     <editorName>集合内容是否相同</editorName>
     <category>集合运算</category>
     <inputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>ignoreOrder</name>
+        <displayName>忽略顺序</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[是否要忽略集合中元素的顺序？]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Object</type>
         <name>arrayA</name>
@@ -8613,16 +8345,6 @@
         <summary><![CDATA[两个集合是否内容相同。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>Boolean</type>
-        <name>ignoreOrder</name>
-        <displayName>忽略顺序</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[是否要忽略集合中元素的顺序？]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[比较两个集合的元素内容，输出它们是否内容相同。<br>可以使用“忽略顺序”无视集合内元素的顺序而只比较内容。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8642,7 +8364,6 @@
         <summary><![CDATA[当前效果。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取正在运行该节点图的效果。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8660,6 +8381,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要判断标签的效果。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>EffectTag</type>
+        <name>tag</name>
+        <displayName>效果标签</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断的效果标签。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -8671,16 +8400,6 @@
         <summary><![CDATA[效果是否具有标签。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>EffectTag</type>
-        <name>tag</name>
-        <displayName>效果标签</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要判断的效果标签。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[判断一个效果是否具有标签。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8698,6 +8417,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要获取属性的效果。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[属性名。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -8709,16 +8436,6 @@
         <summary><![CDATA[获取到的属性值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>String</type>
-        <name>propName</name>
-        <displayName>属性名称</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[属性名。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[获取一个效果的某项属性。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8747,7 +8464,6 @@
         <summary><![CDATA[获取到的效果集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张卡牌所拥有的的所有效果。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8776,7 +8492,6 @@
         <summary><![CDATA[获取到的效果集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个增益所拥有的的所有效果。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8805,7 +8520,6 @@
         <summary><![CDATA[获取到的效果集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个卡牌定义所拥有的的所有效果。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8842,49 +8556,7 @@
         <summary><![CDATA[获取到的效果的所有合法目标的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个效果的所有合法的目标，即可以指向哪些卡牌并使用。]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineId>109001</defineId>
-    <obsoleteNames />
-    <editorName>获取当前回合数（过时）</editorName>
-    <obsoleteMsg />
-    <category>事件</category>
-    <inputs />
-    <outputs>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>return</name>
-        <displayName>回合数</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[获取到的回合数。]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts />
-    <summary><![CDATA[获取当前回合数。<br>第一回合为0，一方玩家的回合开始后，回合数+1。<br><b>该节点因为起始回合数为0而已过时，请使用新版节点。</b>]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineId>109008</defineId>
-    <obsoleteNames />
-    <editorName>获取当前回合数</editorName>
-    <category>事件</category>
-    <inputs />
-    <outputs>
-      <ActionParameterComment>
-        <type>Int32</type>
-        <name>return</name>
-        <displayName>回合数</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[获取到的回合数。]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts />
-    <summary><![CDATA[获取当前回合数。<br>第一回合为1，一方玩家的回合开始后，回合数+1。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -8902,6 +8574,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要获取变量的事件记录。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>EventVarName</type>
+        <name>varName</name>
+        <displayName>变量名</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取的变量名称。<br>会根据连接的事件类型给出不同的预设属性名。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -8915,16 +8595,6 @@
         ]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>EventVarName</type>
-        <name>varName</name>
-        <displayName>变量名</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要获取的变量名称。<br>会根据连接的事件类型给出不同的预设属性名。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[获取一个事件记录的某项变量。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8943,6 +8613,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要转换类型的事件记录。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>EventReferenceProxy</type>
+        <name>eventReference</name>
+        <displayName>事件类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要转换成为的事件类型。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -8954,16 +8632,6 @@
         <summary><![CDATA[转换成为的事件记录。如果类型不正确则输出不存在值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>EventReferenceProxy</type>
-        <name>eventReference</name>
-        <displayName>事件类型</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要转换成为的事件类型。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[将一个事件记录转换为指定类型的事件记录。这会让<b>获取事件记录变量</b>自动检测该事件记录的变量名。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -8982,6 +8650,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要判断类型的事件记录。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>EventReferenceProxy</type>
+        <name>argRef</name>
+        <displayName>事件类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要进行判断的事件类型。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -8993,16 +8669,6 @@
         <summary><![CDATA[事件记录是否属于该类型？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>EventReferenceProxy</type>
-        <name>argRef</name>
-        <displayName>事件类型</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要进行判断的事件类型。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[判断一个事件记录是否是某种类型。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9023,7 +8689,6 @@
         <summary><![CDATA[获取到的事件列表。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取本局游戏中所有发生过的事件。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9044,7 +8709,6 @@
         <summary><![CDATA[获取到的事件列表。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取本回合中所有发生过的事件。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9094,7 +8758,6 @@
         <summary><![CDATA[获取到的事件列表。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取<b>前</b>X-Y回合内所有发生过的事件。<br>X必须大于或等于Y。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9132,7 +8795,6 @@
         <summary><![CDATA[获取到的卡牌快照。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张卡牌在某个事件发生后的卡牌快照。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9152,7 +8814,6 @@
         <summary><![CDATA[当前的事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取当前正在执行的事件。<br>仅能在触发器的节点图内使用。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9172,6 +8833,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要获取变量的事件。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>EventVarName</type>
+        <name>varName</name>
+        <displayName>变量名</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取的变量名称。<br>会根据连接的事件类型给出不同的预设属性名。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -9183,16 +8852,6 @@
         <summary><![CDATA[获取到的事件变量。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>EventVarName</type>
-        <name>varName</name>
-        <displayName>变量名</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要获取的变量名称。<br>会根据连接的事件类型给出不同的预设属性名。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[从一个事件中获取某项变量。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9210,6 +8869,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要转换类型的事件。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>EventReferenceProxy</type>
+        <name>eventReference</name>
+        <displayName>事件类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要转换成为的事件类型。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -9221,16 +8888,6 @@
         <summary><![CDATA[转换成为的事件。如果类型不正确则输出不存在值。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>EventReferenceProxy</type>
-        <name>eventReference</name>
-        <displayName>事件类型</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要转换成为的事件类型。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[将一个事件转换为指定类型的事件。这会让<b>获取变量</b>和<b>设置变量</b>自动检测该事件的变量名。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9251,6 +8908,14 @@
         <summary><![CDATA[要设置变量的事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
+        <type>EventVarName</type>
+        <name>varName</name>
+        <displayName>变量名</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置的变量名称。<br>会根据连接的事件类型给出不同的预设属性名。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>Object</type>
         <name>value</name>
         <displayName>值</displayName>
@@ -9260,16 +8925,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts>
-      <ActionParameterComment>
-        <type>EventVarName</type>
-        <name>varName</name>
-        <displayName>变量名</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要设置的变量名称。<br>会根据连接的事件类型给出不同的预设属性名。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[为一个事件设置某项变量。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9289,7 +8944,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[阻止一个即将执行的事件。<br><b>注意：</b>仅能对“XX时”事件生效，已经被执行的事件无法被阻止。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9318,7 +8972,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[更改“攻击时”事件的攻击目标。<br><b>注意：</b>仅能对“攻击时”事件生效。<br>请使用<b>转换事件类型</b>和<b>设置变量</b>。]]></summary>
     <example><![CDATA[<ul>
       <li>露米娅</li>
@@ -9350,7 +9003,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[更改“使用卡牌时”事件的目标卡牌。<br><b>注意：</b>仅能对“使用卡牌时”事件生效。<br>请使用<b>转换事件类型</b>和<b>设置变量</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9379,7 +9031,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[更改“伤害时”事件的受伤卡牌。<br><b>注意：</b>仅能对“伤害时”事件生效。<br>请使用<b>转换事件类型</b>和<b>设置变量</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9408,7 +9059,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[更改“伤害时”事件的伤害源。<br><b>注意：</b>仅能对“伤害时”事件生效。<br>请使用<b>转换事件类型</b>和<b>设置变量</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9437,7 +9087,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[更改“伤害时”事件的伤害数值。<br><b>注意：</b>仅能对“伤害时”事件生效。<br>请使用<b>转换事件类型</b>和<b>设置变量</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9466,7 +9115,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[更改“治疗时”事件的伤害数值。<br><b>注意：</b>仅能对“治疗时”事件生效。<br>请使用<b>转换事件类型</b>和<b>设置变量</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9484,6 +9132,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要判断类型的事件。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>EventReferenceProxy</type>
+        <name>argRef</name>
+        <displayName>事件类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要进行判断的事件类型。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -9495,16 +9151,6 @@
         <summary><![CDATA[事件是否属于该类型？]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>EventReferenceProxy</type>
-        <name>argRef</name>
-        <displayName>事件类型</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要进行判断的事件类型。]]></summary>
-      </ActionParameterComment>
-    </consts>
     <summary><![CDATA[判断一个事件是否是某种类型。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9524,7 +9170,6 @@
         <summary><![CDATA[获取到的事件列表。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取本局游戏中所有发生过的事件。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9544,7 +9189,6 @@
         <summary><![CDATA[获取到的事件列表。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取本回合中所有发生过的事件。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9593,7 +9237,6 @@
         <summary><![CDATA[获取到的事件列表。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取<b>前</b>X-Y回合内所有发生过的事件。<br>X必须大于或等于Y。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9630,7 +9273,6 @@
         <summary><![CDATA[获取到的卡牌快照。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张卡牌在某个事件发生前的卡牌快照。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -9667,8 +9309,46 @@
         <summary><![CDATA[获取到的卡牌快照。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一张卡牌在某个事件发生后的卡牌快照。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>109001</defineId>
+    <obsoleteNames />
+    <editorName>获取当前回合数（过时）</editorName>
+    <obsoleteMsg />
+    <category>事件</category>
+    <inputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>回合数</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的回合数。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[获取当前回合数。<br>第一回合为0，一方玩家的回合开始后，回合数+1。<br><b>该节点因为起始回合数为0而已过时，请使用新版节点。</b>]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>109008</defineId>
+    <obsoleteNames />
+    <editorName>获取当前回合数</editorName>
+    <category>事件</category>
+    <inputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>回合数</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的回合数。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[获取当前回合数。<br>第一回合为1，一方玩家的回合开始后，回合数+1。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
 </ArrayOfActionComment>

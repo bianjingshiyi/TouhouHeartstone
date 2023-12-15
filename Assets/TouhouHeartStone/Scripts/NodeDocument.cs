@@ -218,7 +218,6 @@ namespace Game
         }
         public ActionParameterComment[] inputs;
         public ActionParameterComment[] outputs;
-        [Obsolete]
         public ActionParameterComment[] consts;
 
         public ActionComment() { }
@@ -239,19 +238,10 @@ namespace Game
             obsoleteNames = act.obsoleteNames.Where(n => n != editorName).ToArray();
             obsoleteMsg = act.obsoleteMsg;
 
-            inputs = ActionParameterComment.GetArray(inputs, act.inputDefines.ToArray());
+            var origInputs = consts != null ? inputs.Concat(consts).ToArray() : inputs;
+            inputs = ActionParameterComment.GetArray(origInputs, act.inputDefines.ToArray());
             outputs = ActionParameterComment.GetArray(outputs, act.outputDefines.ToArray());
-            if (consts != null)
-            {
-                foreach (var com in consts)
-                {
-                    var input = inputs.FirstOrDefault(i => i.name == com.name);
-                    if (input == null)
-                        continue;
-                    input.summary = com.summary;
-                }
-                consts = null;
-            }
+            consts = null;
 
             category = act.category;
         }
