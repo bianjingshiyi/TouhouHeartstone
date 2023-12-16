@@ -7,7 +7,7 @@ using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
-    [EventChildren(typeof(CardPropChangeEventDefine))]
+    [EventChildren(typeof(SetCardPropEventDefine))]
     public class SilenceEventDefine : EventDefine, IDescribableEventDefine, ICardEventDefine
     {
         public SilenceEventDefine()

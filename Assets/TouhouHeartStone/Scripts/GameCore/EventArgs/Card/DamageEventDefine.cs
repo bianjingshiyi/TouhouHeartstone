@@ -6,7 +6,7 @@ using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
-    [EventChildren(typeof(CardPropChangeEventDefine))]
+    [EventChildren(typeof(SetCardPropEventDefine))]
     public class DamageEventDefine : EventDefine, IDescribableEventDefine, ICardEventDefine
     {
         public DamageEventDefine()

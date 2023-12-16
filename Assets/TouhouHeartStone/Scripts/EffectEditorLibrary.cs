@@ -620,11 +620,11 @@ namespace Game
         /// <summary>
         /// 复原技能
         /// </summary>
-        [EventNode(typeof(CardPropChangeEventDefine))]
+        [EventNode(typeof(SetCardPropEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.ResetSkill, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_RESET_SKILL)]
         public static async Task resetSkill(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(CardPropChangeEventDefine))] EventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(SetCardPropEventDefine))] EventArg outEvent)
         {
             if ((player != null) && player.getSkill().isUsed(game))
             {
@@ -657,11 +657,11 @@ namespace Game
         /// <summary>
         /// 摧毁道具
         /// </summary>
-        [EventNode(typeof(CardPropChangeEventDefine))]
+        [EventNode(typeof(SetCardPropEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DestroyItem, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_DESTROY_ITEM)]
         public static async Task destroyItem(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(CardPropChangeEventDefine))] EventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(SetCardPropEventDefine))] EventArg outEvent)
         {
             if (player == null || player.getItem() == null)
                 return;

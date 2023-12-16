@@ -337,14 +337,14 @@ namespace Game
         /// <summary>
         /// 设置卡牌属性
         /// </summary>
-        [EventNode(typeof(CardPropChangeEventDefine))]
+        [EventNode(typeof(SetCardPropEventDefine))]
         [THHActionMethod(BuiltinActionDefineID.SetCardProp, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_SET_CARD_PROPERTY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
         public static async Task setCardProp(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] CardPropertySetterName propName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value,
-            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(CardPropChangeEventDefine))] EventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(SetCardPropEventDefine))] EventArg outEvent)
         {
             if (card == null)
                 return;
@@ -368,7 +368,7 @@ namespace Game
         /// </summary>
         [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetCardProp_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_SET_PROPERTY, "SetProperty")]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)][return: NodeParamEventType(typeof(CardPropChangeEventDefine))]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)][return: NodeParamEventType(typeof(SetCardPropEventDefine))]
         public static Task<EventArg> setPropObsolete(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName,
@@ -1068,11 +1068,11 @@ namespace Game
                 return Task.FromResult<EventArg>(null);
             return cards.silence(game);
         }
-        [EventNode(typeof(CardPropChangeEventDefine))]
+        [EventNode(typeof(SetCardPropEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.Kill, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DESTROY)]
         public static async Task destroy(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
-            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(CardPropChangeEventDefine))] EventArg[] outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(SetCardPropEventDefine))] EventArg[] outEvent)
         {
             if (cards == null)
                 return;
@@ -1302,11 +1302,11 @@ namespace Game
         /// <summary>
         /// 本回合增加一次攻击次数
         /// </summary>
-        [EventNode(typeof(CardPropChangeEventDefine))]
+        [EventNode(typeof(SetCardPropEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddAttackChance, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_EXTRA_ATTACK)]
         public static async Task extraAttack(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(EDITOR_PARAM_NAME_FORCE_ATTACKER)] Card[] cards,
-            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(CardPropChangeEventDefine))] EventArg[] outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(SetCardPropEventDefine))] EventArg[] outEvent)
         {
             if (cards == null)
                 return;
@@ -1373,7 +1373,7 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="card"></param>
         /// <returns></returns>
-        [EventNode(typeof(MoveCardEventDefine), typeof(CardPropChangeEventDefine))]
+        [EventNode(typeof(MoveCardEventDefine), typeof(SetCardPropEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.TakeControl, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CARD_TAKE_CONTRL)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task takeControl(CardEngine game, Flow flow, ActionNode node,
@@ -1418,7 +1418,7 @@ namespace Game
         /// <summary>
         /// 设置蓄力层数
         /// </summary>
-        [EventNode(typeof(CardPropChangeEventDefine))]
+        [EventNode(typeof(BeChargedEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetChargedLevel, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_SET_CHARGED_LEVEL)]
         public static async Task setChargedLevel(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
