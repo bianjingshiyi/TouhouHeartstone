@@ -23,13 +23,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 166227762404091392}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6544611176994671600}
   m_Father: {fileID: 1483346613915965775}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4074535419625903746
 GameObject:
@@ -44,6 +45,7 @@ GameObject:
   - component: {fileID: 328804145003465526}
   - component: {fileID: 867717880089020223}
   - component: {fileID: 2882366054065771026}
+  - component: {fileID: 2463405283394867343}
   m_Layer: 0
   m_Name: Flamethrower
   m_TagString: Untagged
@@ -58,17 +60,18 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4074535419625903746}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3688790781747331338}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &7471902508016391099
 Animator:
-  serializedVersion: 3
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -81,10 +84,12 @@ Animator:
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &328804145003465526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,7 +105,7 @@ MonoBehaviour:
   _animator: {fileID: 7471902508016391099}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
-  _testMode: 0
+  testMode: 0
   _flyCurve:
     serializedVersion: 2
     m_Curve:
@@ -180,11 +185,27 @@ MonoBehaviour:
   se_name: 
   clip: {fileID: 8300000, guid: 9355ff8d4810b2b4cbb9f59b3bf7c225, type: 3}
   playOnEnable: 1
+  _fadeoutTime: 1
+--- !u!114 &2463405283394867343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4074535419625903746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b25a8bf6c57aaf45a086b14dd07c456, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _shakeValue: 0
+  _controllers: []
 --- !u!1001 &6544611176995029326
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 3688790781747331338}
     m_Modifications:
     - target: {fileID: 139654, guid: 066053404d559854a8850fd56b0c728e, type: 3}
@@ -236,6 +257,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 066053404d559854a8850fd56b0c728e, type: 3}
 --- !u!4 &6544611176994671600 stripped
 Transform:

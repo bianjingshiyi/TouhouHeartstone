@@ -14974,6 +14974,7 @@ GameObject:
   - component: {fileID: 8870694013726260511}
   - component: {fileID: 5911738962650608348}
   - component: {fileID: 1355552310837524824}
+  - component: {fileID: 2075864917988523628}
   m_Layer: 0
   m_Name: Phantom
   m_TagString: Untagged
@@ -15132,3 +15133,17 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2075864917988523628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7642641048087475869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b25a8bf6c57aaf45a086b14dd07c456, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _shakeValue: 0
+  _controllers: []

@@ -13,7 +13,7 @@ namespace Game
         private void OnFireButtonClick()
         {
             var srcTransform = _sourceTransform ?? transform;
-            ProjectileEffect projectile = Instantiate(_projectilePrefab, srcTransform.position, _projectilePrefab.transform.rotation);
+            ProjectileEffect projectile = Instantiate(_projectilePrefab, srcTransform.position, _projectilePrefab.transform.rotation, _root);
             projectile.sourceTransform = srcTransform;
             projectile.destTransform = _targetTransform;
             projectile.setTestMode(true);
@@ -21,6 +21,8 @@ namespace Game
         }
         [SerializeField]
         Button _fireButton;
+        [SerializeField]
+        Transform _root;
         [SerializeField]
         Transform _sourceTransform;
         [SerializeField]

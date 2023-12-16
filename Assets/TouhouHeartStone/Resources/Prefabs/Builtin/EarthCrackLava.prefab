@@ -23,13 +23,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2025340087039843455}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1591637368498659206}
   m_Father: {fileID: 4674418995370733954}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4663068633125681597
 GameObject:
@@ -43,6 +44,8 @@ GameObject:
   - component: {fileID: 1243086220839612505}
   - component: {fileID: 6902862519847680304}
   - component: {fileID: 4625844764271996108}
+  - component: {fileID: 7108076997123151565}
+  - component: {fileID: 1112144320133118554}
   m_Layer: 0
   m_Name: EarthCrackLava
   m_TagString: Untagged
@@ -57,13 +60,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4663068633125681597}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1601246081830311124}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1243086220839612505
 MonoBehaviour:
@@ -77,10 +81,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 592cd4d7f1a03d2488d873d315b9c80d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _animator: {fileID: 0}
+  _animator: {fileID: 1112144320133118554}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
-  _testMode: 0
+  testMode: 0
 --- !u!114 &6902862519847680304
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -112,11 +116,48 @@ MonoBehaviour:
   se_name: 
   clip: {fileID: 8300000, guid: 1e91f87b621a33846ab9cc3e234aa82f, type: 3}
   playOnEnable: 1
+  _fadeoutTime: 1
+--- !u!114 &7108076997123151565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4663068633125681597}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b25a8bf6c57aaf45a086b14dd07c456, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _shakeValue: 0
+  _controllers: []
+--- !u!95 &1112144320133118554
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4663068633125681597}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 335eb2ebc66b5cc4cb8987b8879c7442, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &2866672617155591161
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 1601246081830311124}
     m_Modifications:
     - target: {fileID: 1292150477, guid: f33c8b39e34a71843917c97c59db5f60, type: 3}
@@ -392,6 +433,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f33c8b39e34a71843917c97c59db5f60, type: 3}
 --- !u!4 &1591637368498659206 stripped
 Transform:

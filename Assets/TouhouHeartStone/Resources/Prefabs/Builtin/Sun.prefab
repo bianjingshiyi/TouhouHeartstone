@@ -29439,6 +29439,7 @@ GameObject:
   - component: {fileID: 5768425862695132109}
   - component: {fileID: 2202774157301251145}
   - component: {fileID: 5848198977864678274}
+  - component: {fileID: 1106877053339764160}
   m_Layer: 0
   m_Name: Sun
   m_TagString: Untagged
@@ -29593,6 +29594,20 @@ MonoBehaviour:
   clip: {fileID: 0}
   playOnEnable: 0
   _fadeoutTime: 1
+--- !u!114 &1106877053339764160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4685578134015856719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b25a8bf6c57aaf45a086b14dd07c456, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _shakeValue: 0
+  _controllers: []
 --- !u!1 &5689594550261584368
 GameObject:
   m_ObjectHideFlags: 0
