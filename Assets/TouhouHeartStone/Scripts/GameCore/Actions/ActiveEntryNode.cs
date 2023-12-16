@@ -68,7 +68,7 @@ namespace TouhouHeartstone
         }
         public string[] getTags()
         {
-            return getInputDefaultValue<EffectTagCollection>(tagsPortName).ToArray();
+            return getInputDefaultValue<EffectTagCollection>(tagsPortName)?.ToArray();
         }
         public void AddTargetChecker(TargetChecker checker)
         {

@@ -94,6 +94,8 @@ namespace Game
         #region 获取卡牌皮肤
         public CardSkinData getDefaultSkin(CardDefine cardDefine)
         {
+            if (cardDefine == null)
+                return null;
             var poolRef = getCardPoolReferenceOfCard(cardDefine);
             return getDefaultSkin(poolRef, cardDefine.id);
         }

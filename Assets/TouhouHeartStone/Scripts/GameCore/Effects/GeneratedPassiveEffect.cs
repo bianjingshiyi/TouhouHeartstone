@@ -62,7 +62,7 @@ namespace TouhouHeartstone
         }
         public virtual string[] getPiles()
         {
-            return passiveEntry?.getPiles().ToArray() ?? Array.Empty<string>();
+            return passiveEntry?.getPiles()?.ToArray() ?? Array.Empty<string>();
         }
         public override SerializableEffect Serialize()
         {

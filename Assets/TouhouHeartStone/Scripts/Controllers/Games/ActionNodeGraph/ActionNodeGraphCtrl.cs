@@ -1943,7 +1943,7 @@ namespace Controllers
             if (cardDefine != null)
             {
                 cardSkin = game.card.getDefaultSkin(cardDefine);
-                image = await game.card.loadCardImage(cardDefine);
+                image = await game.card.loadCardImage(cardDefine, false);
             }
             cardInputField.setCard(cardDefine, cardSkin, image);
         }

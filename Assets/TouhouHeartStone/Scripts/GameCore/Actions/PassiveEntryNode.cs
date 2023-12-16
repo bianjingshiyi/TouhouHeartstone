@@ -63,7 +63,7 @@ namespace TouhouCardEngine
         }
         public string[] getTags()
         {
-            return getInputDefaultValue<EffectTagCollection>(tagsPortName).ToArray();
+            return getInputDefaultValue<EffectTagCollection>(tagsPortName)?.ToArray();
         }
         #endregion
 
