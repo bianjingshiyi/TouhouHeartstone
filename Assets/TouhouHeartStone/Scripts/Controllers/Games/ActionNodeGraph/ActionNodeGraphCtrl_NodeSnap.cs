@@ -284,7 +284,7 @@ namespace Controllers
         private List<NodeSnapTarget> findNodeSnapTargets(Rect previewRect, NodeDefine nodeDefine)
         {
             // 获取此节点的输入和输出。
-            PortDefine[] inputDefines = nodeDefine.getInputDefines();
+            PortDefine[] inputDefines = nodeDefine.getInputDefines().Where(d => !d.isConst).ToArray();
             PortDefine[] outputDefines = nodeDefine.getOutputDefines();
             return findNodeSnapTargets(previewRect, inputDefines, outputDefines);
         }
@@ -292,7 +292,7 @@ namespace Controllers
         {
             var item = getActionNodeItem(node);
             var nodeRect = item.getNodeItemRect();
-            var inputDefines = node.inputPorts.Select(p => p.define).ToArray();
+            var inputDefines = node.inputPorts.Select(p => p.define).Where(d => !d.isConst).ToArray();
             var outputDefines = node.outputPorts.Select(p => p.define).ToArray();
             var connectedInputs = node.inputPorts.Select(p => p.connections.Any()).ToArray();
             var connectedOutputs = node.outputPorts.Select(p => p.connections.Any()).ToArray();
@@ -363,7 +363,7 @@ namespace Controllers
 
                     // 有有效连接。
                     var node = getActionNode(nodeItem);
-                    var validConnections = getSnapValidConnections(node.inputPorts, outputDefines, false, connectedOutputPorts);
+                    var validConnections = getSnapValidConnections(node.inputPorts.Where(p => !p.define.isConst), outputDefines, false, connectedOutputPorts);
 
                     if (validConnections.Length > 0)
                     {
