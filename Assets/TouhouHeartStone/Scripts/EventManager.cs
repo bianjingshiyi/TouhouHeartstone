@@ -163,6 +163,10 @@ namespace Game
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_MOVE_CARD = "卡牌移动";
         [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_CARD_PROP_CHANGE = "卡牌属性变动";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_SET_CARD_PROP = "修改卡牌属性";
+        [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_BE_CHARGED = "蓄力";
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_LASTWORD = "遗言";
@@ -237,6 +241,8 @@ namespace Game
             { "AddBuffEvent", EDITOR_EVENT_NAME_ADD_BUFF },
             { "RemoveBuffEvent", EDITOR_EVENT_NAME_REMOVE_BUFF },
             { "MoveCardEvent", EDITOR_EVENT_NAME_MOVE_CARD },
+            { "CardPropChangeEvent", EDITOR_EVENT_NAME_CARD_PROP_CHANGE },
+            { "SetCardPropEvent", EDITOR_EVENT_NAME_SET_CARD_PROP },
             { "TurnStartEvent", StringTable.EDITOR_EVENT_NAME_TURN_START },
             { "UseEvent", StringTable.EDITOR_EVENT_NAME_USE },
             { "SetArmorEvent", StringTable.EDITOR_EVENT_NAME_ARMOR_CHANGE },
