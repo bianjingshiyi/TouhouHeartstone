@@ -3,6 +3,7 @@
     Properties
     {
         _Color("Color", Color) = (1,1,1,1)
+        _ColorMask("Color Mask", Float) = 15
         _Fade("Fade", Range(0.0, 1.0)) = 0
 
         _StencilComp("Stencil Comparison", Float) = 8
@@ -34,6 +35,7 @@
         Lighting Off
         ZWrite Off
         Blend SrcAlpha OneMinusSrcAlpha
+        ColorMask[_ColorMask]
         LOD 100
 
         Pass

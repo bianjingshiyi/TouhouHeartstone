@@ -30,7 +30,7 @@ namespace Controllers
                         var portInfo = new PortItemInfo(name, color, portDefine?.GetPortType() == PortType.Control);
                         var defaultValue = getValueInfoFromPortDefine(portDefine, null);
                         var showPort = !portDefine.isConst;
-                        var showDefaultValue = true;
+                        var showDefaultValue = false;
                         inputInfos[i] = new InputPortInfo(portInfo, defaultValue, showPort, showDefaultValue);
                     }
 
@@ -68,17 +68,17 @@ namespace Controllers
                             new PortItemInfo(game.lang._(PassiveEntryNode.triggerConditionPortName), boolColor, false),
                             new ActionNodeValueInfo(PassiveEntryNode.triggerConditionPortName, ActionNodeValueType.boolean, true),
                             true,
-                            true),
+                            false),
                         new InputPortInfo(
                             new PortItemInfo(game.lang._(PassiveEntryNode.tagsPortName), arrayColor, false),
                             new ActionNodeValueInfo(PassiveEntryNode.tagsPortName, ActionNodeValueType.effectTagCollection, null),
                             false,
-                            true),
+                            false),
                         new InputPortInfo(
                             new PortItemInfo(game.lang._(PassiveEntryNode.pileListPortName), arrayColor, false),
                             new ActionNodeValueInfo(PassiveEntryNode.tagsPortName, ActionNodeValueType.effectTagCollection, null),
                             false,
-                            true)
+                            false)
                     };
                     // 事件输出
                     var variableInfos = eventDefine.getVariableInfos(define.eventTriggerType);

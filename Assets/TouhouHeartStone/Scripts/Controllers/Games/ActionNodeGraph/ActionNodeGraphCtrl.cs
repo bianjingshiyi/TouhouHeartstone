@@ -357,7 +357,7 @@ namespace Controllers
         }
 
         /// <summary>
-        /// 设置一个节点的一个常量的值，并将这次修改加入到撤销列表记录中。
+        /// 设置一个节点的一个输入端口的默认值，并将这次修改加入到撤销列表记录中。
         /// </summary>
         /// <param name="node">节点。</param>
         /// <param name="name">常量名。</param>
@@ -536,6 +536,18 @@ namespace Controllers
                 // 选择新的输入点。
                 _ui.selectPort(item.getInput(inputIndex));
                 _connectingPort = inputPort;
+
+                // 为该端口设置一个端口默认值，并使其显形。
+                var name = inputPort.name;
+                var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
+                if (!node.hasInputDefaultValue(name, paramIndex))
+                {
+                    Type type = inputPort.define.type;
+                    var defaultValue = type.getNodeValueType().getDefaultValue(type.IsArray);
+                    setNodeDefaultValue(node, name, paramIndex, defaultValue);
+                    updateNodeItemInputPorts(node);
+                }
+
                 updatePortModes(inputPort);
             }
         }
@@ -549,7 +561,7 @@ namespace Controllers
                 return;
             if (_connectingPort == outputPort)
             {
-                // 点击的输入点是本身。
+                // 点击的输出点是本身。
                 // 取消选择。
                 _ui.selectPort(null);
                 resetConnectingPort();
@@ -557,7 +569,7 @@ namespace Controllers
             }
             else if (_connectingPort != null && !_connectingPort.isOutput)
             {
-                // 选择的输出点存在。
+                // 选择的输入点存在。
                 var inputPort = _connectingPort;
                 bool connected = node.graph.isConnected(outputPort, _connectingPort);
 
@@ -581,8 +593,8 @@ namespace Controllers
             }
             else
             {
-                // 点击的输入点不是本身，并且当前选择的输出点不存在。
-                // 选择新的输入点。
+                // 点击的输入点不是本身，并且当前选择的输入点不存在。
+                // 选择新的输出点。
                 _ui.selectPort(item.getOutput(outputIndex));
                 _connectingPort = outputPort;
                 updatePortModes(outputPort);
@@ -650,6 +662,16 @@ namespace Controllers
         {
             if (isReadonly)
                 return;
+
+            if (!isOutput)
+            {
+                var node = getActionNode(actionNodeItem);
+                var port = node.getInputPortAt(index);
+                // 移除端口的输入默认值。
+                removeInputPortDefaultValue(port);
+                // 更新节点的输入端口列表
+                updateNodeItemInputPorts(node);
+            }
             resetConnectingPort();
         }
         /// <summary>
@@ -684,21 +706,18 @@ namespace Controllers
             var inputDefine = inputPort.define;
             if (inputDefine == null)
                 return;
-            if (inputDefine.type == typeof(DefineReference))
+            var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
+            long cardPoolId = _curCardPoolId;
+            if (actionNode.getInputDefaultValue(inputDefine.name, paramIndex) is DefineReference value)
             {
-                var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
-                long cardPoolId = _curCardPoolId;
-                if (actionNode.getInputDefaultValue(inputDefine.name, paramIndex) is DefineReference value)
-                {
-                    //打开卡牌选择界面
-                    cardPoolId = value.cardPoolId;
-                }
-                await displayCardSelectPanel(cardPoolId);
-                _curEditNode = actionNode;
-                _curEditNodeInputDefaultValueName = inputDefine.name;
-                _curEditNodeInputDefaultValueParamIndex = paramIndex;
-                _curEditNodeInputDefaultValueItemIndex = -1;
+                //打开卡牌选择界面
+                cardPoolId = value.cardPoolId;
             }
+            await displayCardSelectPanel(cardPoolId);
+            _curEditNode = actionNode;
+            _curEditNodeInputDefaultValueName = inputDefine.name;
+            _curEditNodeInputDefaultValueParamIndex = paramIndex;
+            _curEditNodeInputDefaultValueItemIndex = -1;
         }
         private void onClickNodeDefaultValueCardEditButton(ActionNodeItem actionNodeItem, int index)
         {
@@ -723,33 +742,30 @@ namespace Controllers
             var inputDefine = inputPort.define;
             if (inputDefine == null)
                 return;
-            if (inputDefine.type == typeof(CardReferenceCollection) || inputDefine.type == typeof(DefineReference[]))
+            var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
+            long cardPoolId = _curCardPoolId;
+            if (node.getInputDefaultValue(inputDefine.name, paramIndex) is CardReferenceCollection defRefCol)
             {
-                var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
-                long cardPoolId = _curCardPoolId;
-                if (node.getInputDefaultValue(inputDefine.name, paramIndex) is CardReferenceCollection defRefCol)
+                if (defRefCol[itemIndex] == null)
                 {
-                    if (defRefCol[itemIndex] == null)
-                    {
-                        defRefCol[itemIndex] = new DefineReference();
-                    }
-                    cardPoolId = defRefCol[itemIndex].cardPoolId;
+                    defRefCol[itemIndex] = new DefineReference();
                 }
-                else if (node.getInputDefaultValue(inputDefine.name, paramIndex) is DefineReference[] defRefs)
-                {
-                    if (defRefs[itemIndex] == null)
-                    {
-                        defRefs[itemIndex] = new DefineReference();
-                    }
-                    cardPoolId = defRefs[itemIndex].cardPoolId;
-                }
-                //打开卡牌选择界面
-                await displayCardSelectPanel(cardPoolId);
-                _curEditNode = node;
-                _curEditNodeInputDefaultValueName = inputDefine.name;
-                _curEditNodeInputDefaultValueParamIndex = paramIndex;
-                _curEditNodeInputDefaultValueItemIndex = itemIndex;
+                cardPoolId = defRefCol[itemIndex].cardPoolId;
             }
+            else if (node.getInputDefaultValue(inputDefine.name, paramIndex) is DefineReference[] defRefs)
+            {
+                if (defRefs[itemIndex] == null)
+                {
+                    defRefs[itemIndex] = new DefineReference();
+                }
+                cardPoolId = defRefs[itemIndex].cardPoolId;
+            }
+            //打开卡牌选择界面
+            await displayCardSelectPanel(cardPoolId);
+            _curEditNode = node;
+            _curEditNodeInputDefaultValueName = inputDefine.name;
+            _curEditNodeInputDefaultValueParamIndex = paramIndex;
+            _curEditNodeInputDefaultValueItemIndex = itemIndex;
         }
         private void onClickNodeDefaultValueItemCardEditButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
         {
@@ -1139,8 +1155,11 @@ namespace Controllers
             _ui.connectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex, ActionNodeConnectionType.value);
             updatePortMode(_connectingPort, outputPort);
             updatePortMode(_connectingPort, inputPort);
-            //更新变长参数。
+            // 更新变长参数。
             updateInputParamsPort(inputPort);
+            // 移除端口的输入默认值。
+            removeInputPortDefaultValue(inputPort);
+            // 更新节点的输入端口列表
             updateNodeItemInputPorts(inputPort.node);
             // 更新事件变量节点的事件变量名。
             checkEventVariableNodeItemVarNames(inputNodeItem, inputPort.node);
@@ -1637,7 +1656,14 @@ namespace Controllers
         }
         private bool shouldInputPortShowDefaultValue(IPort inputPort)
         {
-            return inputPort is ValueInput valueInput && valueInput.getConnectedOutputPort() == null;
+            if (inputPort is not ValueInput valueInput)
+                return false;
+            if (valueInput.getConnectedOutputPort() != null)
+                return false;
+            var defaultValue = inputPort.node.getInputDefaultValue(valueInput.name, valueInput.paramIndex);
+            if (!inputPort.define.isConst && defaultValue == null)
+                return false;
+            return true;
         }
         private InputPortInfo[] getNodeInputViewData(Node node)
         {
@@ -1707,6 +1733,12 @@ namespace Controllers
         }
 
         #region 输入默认值
+        private void removeInputPortDefaultValue(IPort port)
+        {
+            if (port is not ValueInput vi)
+                return;
+            port.node.removeInputDefaultValue(port.name, vi.paramIndex);
+        }
         private async void updateNodeItemInputPorts(Node node)
         {
             var item = getActionNodeItem(node);

@@ -82,6 +82,7 @@ namespace UI
                         ActionNodeValueType.boolean,
                         ActionNodeValueType.integer,
                         ActionNodeValueType.text,
+                        ActionNodeValueType.cardReference,
                     };
             }
             return null;
@@ -140,6 +141,7 @@ namespace UI
             { typeof(EffectTag), ActionNodeValueType.effectTag },
             { typeof(EffectTagCollection), ActionNodeValueType.effectTagCollection },
             { typeof(DefineReference), ActionNodeValueType.cardReference },
+            { typeof(BuffReference), ActionNodeValueType.buffReference },
             { typeof(DefineReference[]), ActionNodeValueType.cardReferenceCollection },
             { typeof(PileName), ActionNodeValueType.pileName },
             { typeof(PileNameCollection), ActionNodeValueType.pileNameCollection },
@@ -150,10 +152,13 @@ namespace UI
             { typeof(CardPropertyGetterName), ActionNodeValueType.cardPropertyNameGet },
             { typeof(CardDefinePropertyGetterName), ActionNodeValueType.cardDefinePropertyNameGet },
             { typeof(EventVarName), ActionNodeValueType.eventVarName },
+
+            { typeof(CardDefine), ActionNodeValueType.cardReference },
+            { typeof(BuffDefine), ActionNodeValueType.buffReference },
         };
         private static readonly Dictionary<ActionNodeValueType, Func<object>> defaultValues = new Dictionary<ActionNodeValueType, Func<object>>()
         {
-            { ActionNodeValueType.any, () => null},
+            { ActionNodeValueType.any, () => false},
             { ActionNodeValueType.integer, () => 0},
             { ActionNodeValueType.real, () => 0f },
             { ActionNodeValueType.boolean, () => false },
@@ -162,6 +167,7 @@ namespace UI
             { ActionNodeValueType.effectTagCollection, () => new EffectTagCollection() },
             { ActionNodeValueType.cardReference, () => new DefineReference() },
             { ActionNodeValueType.cardReferenceCollection, () => new DefineReference[0] },
+            { ActionNodeValueType.buffReference, () => new BuffReference(0, 0) },
             { ActionNodeValueType.pileName, () => new PileName(string.Empty) },
             { ActionNodeValueType.pileNameCollection, () => new PileNameCollection() },
             { ActionNodeValueType.keywords, () => new KeywordCollection() },
@@ -254,6 +260,10 @@ namespace UI
         /// <summary>
         /// 事件变量名
         /// </summary>
-        eventVarName
+        eventVarName,
+        /// <summary>
+        /// 增益引用
+        /// </summary>
+        buffReference,
     }
 }
