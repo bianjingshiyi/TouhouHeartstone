@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Game.BattleTable;
 using TouhouCardEngine;
-using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -25,6 +22,7 @@ namespace Game
             ui.setName(StringTable.BUILD_UNKNOW_CARD_NAME);
             ui.setSubname(string.Empty);
             ui.setDesc(string.Empty);
+            ui.setCostVisible(true);
             ui.setCost("0");
             ui.setAttack("0");
             ui.setLife("0");
@@ -50,6 +48,7 @@ namespace Game
             ui.setName(name);
             ui.setSubname(subName);
             ui.setDesc(desc);
+            ui.setCostVisible(!card.hasKeyword(KEYWORD.UNPLAYABLE));
             ui.setCost(card.getCost().ToString());
             ui.setAttack(card.getAttack().ToString());
             ui.setLife(card.getLife().ToString());
@@ -71,67 +70,6 @@ namespace Game
             ui.setImage(null);
             ui.setImage(await table.loadCardImage(card));
         }
-        public static void setCard(this UICard ui, CardEngine game, Card card, CardSkinData skin, bool isFaceUp = true)
-        {
-            if (card.define.type == DEFINE.MASTER)
-                ui.type = CATEGORY.MASTER;
-            else if (card.define.type == DEFINE.SERVANT)
-                ui.type = CATEGORY.SERVANT;
-            else if (card.define.type == DEFINE.SPELL)
-                ui.type = CATEGORY.SPELL;
-            else if (card.define.type == DEFINE.SKILL)
-                ui.type = CATEGORY.SKILL;
-            else if (card.define.type == DEFINE.ITEM)
-                ui.type = CATEGORY.ITEM;
-            else
-                throw new NotImplementedException();
-
-            string name = StringTable.BUILD_UNKNOW_CARD_NAME;
-            string subName = string.Empty;
-            string desc = string.Empty;
-            if (skin != null)
-            {
-                name = skin.name;
-                subName = skin.subname;
-                desc = skin.desc;
-            }
-            ui.isFaceup = isFaceUp;
-            ui.setName(name);
-            ui.setSubname(subName);
-            ui.setDesc(desc);
-            var attack = card.getAttack(game);
-            var curLife = card.getCurrentLife(game);
-            var life = card.getLife(game);
-            var cost = card.getCost(game);
-            ui.setCost(cost.ToString());
-            ui.setAttack(attack.ToString());
-            ui.setLife(curLife.ToString());
-
-            var costColor =
-                cost > card.define.getCost() ? PropertyNumberColor.Red :
-                cost < card.define.getCost() ? PropertyNumberColor.Green :
-                PropertyNumberColor.White;
-            var attackColor =
-                attack > card.define.getAttack() ? PropertyNumberColor.Green :
-                PropertyNumberColor.White;
-            var lifeColor =
-                curLife < life ? PropertyNumberColor.Red :
-                life > card.define.getLife() ? PropertyNumberColor.Green :
-                PropertyNumberColor.White;
-            ui.setCostColor(costColor);
-            ui.setAttackColor(attackColor);
-            ui.setLifeColor(lifeColor);
-            ui. setTag(card.getTags(game).FirstOrDefault());
-        }
-        public static async Task setCard(this UICard ui, CardEngine game, Card card, CardManager cardManager, bool isFaceUp = true)
-        {
-            var define = card.define;
-            var skin = cardManager.getCardSkin(define);
-            ui.setCard(game, card, skin, isFaceUp);
-            ui.setImage(null);
-            ui.setImage(await cardManager.loadCardImage(define));
-        }
-
         public static void setCard(this UICard ui, CardDescriptor card, CardSkinData skin, bool isFaceUp = true)
         {
             if (card.define.type == DEFINE.MASTER)
@@ -163,6 +101,7 @@ namespace Game
             var curLife = card.getCurrentLife();
             var life = card.getLife();
             var cost = card.getCost();
+            ui.setCostVisible(!card.define.hasKeyword(KEYWORD.UNPLAYABLE));
             ui.setCost(cost.ToString());
             ui.setAttack(attack.ToString());
             ui.setLife(curLife.ToString());
@@ -268,6 +207,12 @@ namespace Game
             ui.spellCardFace.image.GetComponent<AspectRatioFitter>().aspectRatio = aspect;
             ui.itemCardFace.image.sprite = sprite;
             ui.itemCardFace.image.GetComponent<AspectRatioFitter>().aspectRatio = aspect;
+        }
+        public static void setCostVisible(this UICard ui, bool value)
+        {
+            ui.servantCardFace.costPropNumber.text.gameObject.SetActive(value);
+            ui.spellCardFace.costPropNumber.text.gameObject.SetActive(value);
+            ui.itemCardFace.costPropNumber.text.gameObject.SetActive(value);
         }
         public static void setCost(this UICard ui, string value)
         {

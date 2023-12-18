@@ -17,6 +17,7 @@ namespace Game.BattleTable
             ui.setName(StringTable.BUILD_UNKNOW_CARD_NAME);
             ui.setSubname(string.Empty);
             ui.setDesc(string.Empty);
+            ui.setCostVisible(true);
             ui.setCost(0);
             ui.setType(DEFINE.SERVANT);
             ui.setAttack(0);
@@ -39,6 +40,7 @@ namespace Game.BattleTable
             ui.setSubname(subName);
             ui.setDesc(desc);
 
+            ui.setCostVisible(!card.hasKeyword(KEYWORD.UNPLAYABLE));
             ui.setCost(card.getCost());
             ui.setAttack(card.getAttack());
             ui.setLife(card.getLife());
@@ -70,6 +72,7 @@ namespace Game.BattleTable
             var attackColor = card.getAttackColor(game);
             var lifeColor = card.getLifeColor(game);
 
+            ui.setCostVisible(!card.define.hasKeyword(KEYWORD.UNPLAYABLE));
             ui.setCost(cost);
             ui.setAttack(attack);
             ui.setLife(currentLife);
@@ -102,6 +105,7 @@ namespace Game.BattleTable
             var attackColor = desc.getAttackColor();
             var lifeColor = desc.getLifeColor();
 
+            ui.setCostVisible(!desc.define.hasKeyword(KEYWORD.UNPLAYABLE));
             ui.setCost(cost);
             ui.setAttack(attack);
             ui.setLife(currentLife);

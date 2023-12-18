@@ -95,6 +95,12 @@ namespace Game.BattleTable
             _spellCardFace.descText.text = desc;
             _itemCardFace.descText.text = desc;
         }
+        public void setCostVisible(bool value)
+        {
+            _servantCardFace.costPropNumber.gameObject.SetActive(value);
+            _spellCardFace.costPropNumber.gameObject.SetActive(value);
+            _itemCardFace.costPropNumber.gameObject.SetActive(value);
+        }
         public void setCost(int value)
         {
             _servantCardFace.costPropNumber.text = value.ToString();

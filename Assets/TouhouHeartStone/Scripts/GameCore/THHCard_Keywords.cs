@@ -72,6 +72,10 @@ namespace TouhouHeartstone
         {
             return card.hasKeyword(game, KEYWORD.UNPLAYABLE);
         }
+        public static bool isModifiedUnplayable(this ICardData card, IGame game)
+        {
+            return card.hasModifiedKeyword(game, KEYWORD.UNPLAYABLE);
+        }
         public static int getSpellDamage(this ICardData card, IGame game)
         {
             return card.getProp<int>(game, DEFINE.SPELL_DAMAGE);
@@ -310,6 +314,13 @@ namespace TouhouHeartstone
             {
                 return false;
             }
+            return keywords.Contains(keyword);
+        }
+        public static bool hasModifiedKeyword(this ICardData card, IGame game, string keyword)
+        {
+            var keywords = card.modifyProp(game, DEFINE.KEYWORDS, Array.Empty<string>());
+            if (keywords == null)
+                return false;
             return keywords.Contains(keyword);
         }
         public static async Task<EventArg> setKeywords(this Card card, IGame game, string[] keywords)
