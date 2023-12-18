@@ -1592,60 +1592,18 @@ namespace Controllers
         private ActionNodeValueInfo getDefaultValueInfoFromInput(IPort port)
         {
             var paramIndex = port is ValueInput vi ? vi.paramIndex : -1;
-            return getValueInfoFromPortDefine(port.define, port.node.getInputDefaultValue(port.name, paramIndex));
-        }
-        private static ActionNodeValueType getValueTypeFromType(Type type)
-        {
-            if (type == typeof(int))
-                return ActionNodeValueType.integer;
-            else if (type == typeof(float))
-                return ActionNodeValueType.real;
-            else if (type == typeof(bool))
-                return ActionNodeValueType.boolean;
-            else if (type == typeof(string))
-                return ActionNodeValueType.text;
-            else if (type.IsEnum)
-                return ActionNodeValueType.enumValue;
-            else if (type == typeof(EffectTag))
-                return ActionNodeValueType.effectTag;
-            else if (type == typeof(ActionValueRef))
-                return ActionNodeValueType.actionValueRef;
-            else if (type == typeof(DefineReference))
-                return ActionNodeValueType.cardReference;
-            else if (type == typeof(DefineReference[]))
-                return ActionNodeValueType.cardReferenceCollection;
-            else if (type == typeof(PileNameCollection))
-                return ActionNodeValueType.pileNameCollection;
-            else if (type == typeof(KeywordCollection))
-                return ActionNodeValueType.keywords;
-            else if (type == typeof(EventArgReference) || type == typeof(EventReferenceProxy))
-                return ActionNodeValueType.eventReference;
-            else if (type == typeof(EffectTagCollection))
-                return ActionNodeValueType.effectTagCollection;
-            else if (type == typeof(CardPropertySetterName))
-                return ActionNodeValueType.cardPropertyNameSet;
-            else if (type == typeof(CardPropertyGetterName))
-                return ActionNodeValueType.cardPropertyNameGet;
-            else if (type == typeof(CardDefinePropertyGetterName))
-                return ActionNodeValueType.cardDefinePropertyNameGet;
-            else if (type == typeof(PileName))
-                return ActionNodeValueType.pileName;
-            else if (type == typeof(EventVarName))
-                return ActionNodeValueType.eventVarName;
-            return ActionNodeValueType.none;
-        }
-        private static ActionNodeValueType getValueTypeFromPortDefine(PortDefine portDefine)
-        {
-            Type type = portDefine.type;
-            return getValueTypeFromType(type);
+            var node = port.node;
+            var defaultValue = node.getInputDefaultValue(port.name, paramIndex);
+            return getValueInfoFromPortDefine(port.define, defaultValue);
         }
         private ActionNodeValueInfo getValueInfoFromPortDefine(PortDefine portDefine, object value)
         {
             var name = tryTranslateWithDict(portDefine.getDisplayName());
-            var valueType = getValueTypeFromPortDefine(portDefine);
             Type type = portDefine.type;
+
             if (type.IsEnum)
             {
+                var assignType = type.getNodeValueType();
                 var optionalValues = Enum.GetValues(type).Cast<object>().ToArray();
                 var optionalNames = new string[optionalValues.Length];
                 for (int j = 0; j < optionalNames.Length; j++)
@@ -1662,9 +1620,16 @@ namespace Controllers
                         optionalNames[j] = optName;
                     }
                 }
-                return new ActionNodeValueInfo(name, portDefine.name, valueType, value, optionalNames, optionalValues);
+                return new ActionNodeValueInfo(name, portDefine.name, assignType, value, optionalNames, optionalValues);
             }
-            return new ActionNodeValueInfo(name, portDefine.name, valueType, value);
+            else
+            {
+                var assignType = type.getNodeValueType();
+                var valueType = assignType.getAssignableValueTypeByValue(value);
+                var childTypes = assignType.getAssignableValueTypes();
+                var typeNames = childTypes?.Select(t => game.editor.getNameByValueType(t))?.ToArray();
+                return new ActionNodeValueInfo(name, portDefine.name, valueType, value, typeNames, assignType);
+            }
         }
         private bool shouldInputPortShowPort(IPort inputPort)
         {

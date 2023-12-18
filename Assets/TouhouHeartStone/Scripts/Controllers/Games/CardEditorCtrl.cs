@@ -97,6 +97,10 @@ namespace Controllers
             base.hide();
             AnimationManager.cleanUnusedVisualEffects(_curCardSkin, _cardDefine.getGeneratedEffects());
         }
+        public static bool isTypeCustomProp(ActionNodeValueType type)
+        {
+            return customPropTypes.Contains(type);
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -200,7 +204,7 @@ namespace Controllers
             _cancelCardPoolSelectButton.onClick.AddListener(onClickCancelCardPoolSelectButton);
 
             // Card Properties.
-            var customPropTypes = CardEditorCtrl.customPropTypes.Select(a => (a.type, game.lang._(a.name))).ToArray();
+            var customPropTypes = CardEditorCtrl.customPropTypes.Select(t => (t, game.editor.getNameByValueType(t))).ToArray();
             _ui.setCustomPropertyTypes(customPropTypes);
             _ui.onConfirmCreateCustomProperty += onConfirmCreateCustomPropertyCallback;
             _ui.onDeleteCustomProperty += onDeleteCustomPropertyCallback;
@@ -448,7 +452,7 @@ namespace Controllers
                     game.ui.dialog.ShowConfirm(title, content);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 var title = game.lang._(StringTable.ERROR);
                 var content = game.lang._(CARD_PICTURE_EXPORT_FAILED);
@@ -687,7 +691,7 @@ namespace Controllers
 
             if (item.value == null)
             {
-                item.value = getDefaultValue(item.type, item.isArray);
+                item.value = item.type.getDefaultValue(item.isArray);
             }
             setCardProp(true, item.propertyName, item.value);
 
@@ -756,9 +760,9 @@ namespace Controllers
             array.CopyTo(newArray, 0);
 
 
-            if (customPropTypeDict.TryGetValue(elementType, out var key))
+            if (elementType.tryGetValueTypeByType(out var valueType) && isTypeCustomProp(valueType))
             {
-                newArray.SetValue(getDefaultValue(key, false), newArray.Length - 1);
+                newArray.SetValue(valueType.getDefaultValue(false), newArray.Length - 1);
             }
             setCardProp(isCustom, name, newArray);
             markUnsaved();
@@ -1121,7 +1125,8 @@ namespace Controllers
             if (valueType == null)
                 return null;
 
-            if (!customPropTypeDict.TryGetValue(valueType, out ActionNodeValueType type))
+            var type = valueType.getNodeValueType();
+            if (!isTypeCustomProp(type))
                 return null;
 
             var item = new PropertyItemInfo(name, type, isArray)
@@ -1155,7 +1160,7 @@ namespace Controllers
                 isArray = true;
             }
             ActionNodeValueType valueType = ActionNodeValueType.boolean;
-            if (customPropTypeDict.TryGetValue(type, out var t))
+            if (type.tryGetValueTypeByType(out var t) && isTypeCustomProp(t))
             {
                 valueType = t;
             }
@@ -1169,34 +1174,6 @@ namespace Controllers
                 value = value
             };
             return item;
-        }
-
-        private object getDefaultValue(ActionNodeValueType valueType, bool isArray)
-        {
-            if (!customPropDefaultValues.TryGetValue(valueType, out var func))
-                return null;
-            var value = func();
-            if (!isArray)
-            {
-                // 不是数组
-                return value;
-            }
-
-            // 数组
-            Type type = null;
-            foreach (var pair in customPropTypeDict)
-            {
-                if (pair.Value == valueType)
-                {
-                    type = pair.Key;
-                    break;
-                }
-            }
-            if (type == null)
-                return null;
-            var array = Array.CreateInstance(type, 1);
-            array.SetValue(value, 0);
-            return array;
         }
         /// <summary>
         /// 属性名是否已经被使用。
@@ -1313,33 +1290,14 @@ namespace Controllers
             { PILE.ITEM, StringTable.GAME_ITEM },
             { PILE.HEAD, StringTable.GAME_DELAY }
         };
-        public static readonly (ActionNodeValueType type, string name)[] customPropTypes =
-            new (ActionNodeValueType type, string name)[]
+        public static readonly ActionNodeValueType[] customPropTypes = new ActionNodeValueType[]
         {
-            (ActionNodeValueType.integer, StringTable.EDITOR_TYPE_NAME_INT),
-            (ActionNodeValueType.boolean, StringTable.EDITOR_TYPE_NAME_BOOL),
-            (ActionNodeValueType.text, StringTable.EDITOR_TYPE_NAME_STRING),
-            (ActionNodeValueType.cardReference, StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE),
-            (ActionNodeValueType.pileNameCollection, StringTable.EDITOR_TYPE_NAME_PILE),
-            (ActionNodeValueType.keywords, StringTable.EDITOR_TYPE_NAME_KEYWORDS_TYPE),
-        };
-        public static readonly Dictionary<Type, ActionNodeValueType> customPropTypeDict = new Dictionary<Type, ActionNodeValueType>()
-        {
-            { typeof(int), ActionNodeValueType.integer },
-            { typeof(bool), ActionNodeValueType.boolean },
-            { typeof(string), ActionNodeValueType.text },
-            { typeof(DefineReference), ActionNodeValueType.cardReference },
-            { typeof(PileNameCollection), ActionNodeValueType.pileNameCollection },
-            { typeof(KeywordCollection), ActionNodeValueType.keywords },
-        };
-        public static readonly Dictionary<ActionNodeValueType, Func<object>> customPropDefaultValues = new Dictionary<ActionNodeValueType, Func<object>>()
-        {
-            { ActionNodeValueType.integer, () => 0},
-            { ActionNodeValueType.boolean, () => false },
-            { ActionNodeValueType.text, () => string.Empty },
-            { ActionNodeValueType.cardReference, () => new DefineReference() },
-            { ActionNodeValueType.pileNameCollection, () => new PileNameCollection() },
-            { ActionNodeValueType.keywords, () => new KeywordCollection() },
+            ActionNodeValueType.integer,
+            ActionNodeValueType.boolean,
+            ActionNodeValueType.text,
+            ActionNodeValueType.cardReference,
+            ActionNodeValueType.pileNameCollection,
+            ActionNodeValueType.keywords,
         };
 
 

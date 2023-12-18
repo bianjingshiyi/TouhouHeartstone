@@ -101,6 +101,7 @@ namespace UI
         #region 私有方法
         protected void Awake()
         {
+            _typeDropdown.onValueChanged.AddListener(onTypeDropdownValueChangedCallback);
             _inputField.onEndEdit.AddListener(onEndEditInputField);
             _toggle.onValueChanged.AddListener(onToggleValueChanged);
             _dropdown.onValueChanged.AddListener(onDropdownValueChangedCallback);
@@ -113,6 +114,30 @@ namespace UI
             _buildItemEditButton.onClick.AddListener(onClickCardEditButtonCallback);
         }
         #region 事件回调
+        private void onTypeDropdownValueChangedCallback(int index)
+        {
+            var typeValues = _valueInfo.assignableTypeValues;
+            if (typeValues != null)
+            {
+                var type = typeValues[index];
+                var value = _valueInfo.value;
+                bool notSameType = false;
+                if (value == null)
+                {
+                    notSameType = true;
+                }
+                else
+                {
+                    var valueType = value.GetType().getNodeValueType();
+                    if (valueType != type)
+                        notSameType = true;
+                }
+                if (notSameType)
+                {
+                    onValueChanged?.Invoke(this, type.getDefaultValue(_valueInfo.isArray));
+                }
+            }
+        }
         private void onEndEditInputField(string text)
         {
             if (_valueInfo.type == ActionNodeValueType.integer)
@@ -354,6 +379,8 @@ namespace UI
         {
             _removeItemButton.gameObject.SetActive(_isListItem);
 
+            updateTypeDropdown();
+
             if (_valueInfo.isArray)
             {
                 updateArray();
@@ -369,6 +396,19 @@ namespace UI
                 updateList();
                 updateCard();
                 updateMultiInputDropdown();
+            }
+        }
+        private void updateTypeDropdown()
+        {
+            var typeNames = _valueInfo.assignableTypeNames;
+            var typeValues = _valueInfo.assignableTypeValues;
+            var valueTypeCount = typeValues?.Length ?? 0;
+            _typeDropdown.gameObject.SetActive(valueTypeCount > 0);
+            _typeDropdown.ClearOptions();
+            if (typeValues != null && typeNames != null)
+            {
+                _typeDropdown.AddOptions(typeNames.ToList());
+                _typeDropdown.value = Array.IndexOf(typeValues, _valueInfo.type);
             }
         }
         private void updateArray()
@@ -612,9 +652,7 @@ namespace UI
         private void updateButton()
         {
             //按钮
-            if (_valueInfo.type == ActionNodeValueType.actionNode ||
-                _valueInfo.type == ActionNodeValueType.actionValueRef ||
-                _valueInfo.type == ActionNodeValueType.trigger)
+            if (_valueInfo.type == ActionNodeValueType.actionNode)
             {
                 _button.gameObject.SetActive(true);
             }
@@ -626,45 +664,7 @@ namespace UI
         private void updateList()
         {
             //列表
-            if (_valueInfo.type == ActionNodeValueType.triggerCollection)
-            {
-                _listRoot.gameObject.SetActive(true);
-                if (_valueInfo.value is TriggerCollection triggerCollection)
-                {
-                    UIHelper.updateList(_listContentRoot, GetListTemplate(), _list, triggerCollection.Count, (i, itemRect) =>
-                    {
-                        ValueInputField item = itemRect.GetComponent<ValueInputField>();
-                        item.setReadonly(_isReadonly);
-                        item.setValueInfo(null, new ActionNodeValueInfo()
-                        {
-                            type = ActionNodeValueType.trigger,
-                            value = triggerCollection[i]
-                        }, true);
-                    }, itemRect =>
-                    {
-                        ValueInputField item = itemRect.GetComponent<ValueInputField>();
-                        item.onValueChanged += onItemValueChangedCallback;
-                        item.onClickButton += onClickItemButtonCallback;
-                        item.onClickCardButton += onClickItemCardButtonCallback;
-                        item.onClickCardEditButton += onClickItemCardEditButtonCallback;
-                        item.onClickRemoveButton += onClickItemRemoveButtonCallback;
-                    }, itemRect =>
-                    {
-                        ValueInputField item = itemRect.GetComponent<ValueInputField>();
-                        item.onValueChanged -= onItemValueChangedCallback;
-                        item.onClickButton -= onClickItemButtonCallback;
-                        item.onClickCardButton -= onClickItemCardButtonCallback;
-                        item.onClickCardEditButton -= onClickItemCardEditButtonCallback;
-                        item.onClickRemoveButton -= onClickItemRemoveButtonCallback;
-                    });
-                }
-                else
-                {
-                    _valueInfo.value = new TriggerCollection();
-                    onValueChanged?.Invoke(this, _valueInfo.value);
-                }
-            }
-            else if (_valueInfo.type == ActionNodeValueType.cardReferenceCollection)
+            if (_valueInfo.type == ActionNodeValueType.cardReferenceCollection)
             {
                 _listRoot.gameObject.SetActive(true);
                 if (!(_valueInfo.value is IEnumerable<DefineReference> cardReferenceCollection))
@@ -765,7 +765,11 @@ namespace UI
         #region 属性字段
         private bool _isReadonly;
         [SerializeField]
+        Dropdown _typeDropdown;
+        [SerializeField]
         Text _nameText;
+
+        [Header("操作UI引用")]
         [SerializeField]
         InputField _inputField;
         [SerializeField]
@@ -797,6 +801,8 @@ namespace UI
         Button _addItemButton;
         [SerializeField]
         Button _removeItemButton;
+
+        [Header("下拉列表值")]
         [SerializeField]
         string[] _pileNames;
         [SerializeField]

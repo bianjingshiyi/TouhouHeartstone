@@ -4,7 +4,9 @@ using BJSYGameCore;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using UI;
 using UnityEngine;
+using Card = TouhouCardEngine.Card;
 
 namespace Game
 {
@@ -80,6 +82,14 @@ namespace Game
             }
             throw new ArgumentException($"不存在名为{name}的类型");
         }
+        public string getNameByValueType(ActionNodeValueType type)
+        {
+            if (valueTypeNames.TryGetValue(type, out var str))
+            {
+                return game.lang._(str);
+            }
+            return game.lang._(EDITOR_TYPE_NAME_UNKNOWN);
+        }
         #endregion
         #region 私有方法
         #endregion
@@ -96,6 +106,8 @@ namespace Game
         public const string EDITOR_TYPE_NAME_EVENT_VAR_NAME = "事件变量名";
         [TranslateMsg("编辑器类型名称")]
         public const string EDITOR_TYPE_NAME_PILE_NAME = "牌堆名";
+        [TranslateMsg("编辑器类型名称")]
+        public const string EDITOR_TYPE_NAME_UNKNOWN = "未知类型";
         public MainManager game
         {
             get { return _game; }
@@ -106,6 +118,16 @@ namespace Game
         public string searchFilter { get; set; }
         [SerializeField]
         MainManager _game;
+        static readonly Dictionary<ActionNodeValueType, string> valueTypeNames = new Dictionary<ActionNodeValueType, string>()
+        {
+            { ActionNodeValueType.any, StringTable.EDITOR_TYPE_NAME_OBJECT },
+            { ActionNodeValueType.boolean, StringTable.EDITOR_TYPE_NAME_BOOL },
+            { ActionNodeValueType.integer, StringTable.EDITOR_TYPE_NAME_INT },
+            { ActionNodeValueType.text, StringTable.EDITOR_TYPE_NAME_STRING },
+            { ActionNodeValueType.cardReference, StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE },
+            { ActionNodeValueType.pileNameCollection, StringTable.EDITOR_TYPE_NAME_PILE },
+            { ActionNodeValueType.keywords, StringTable.EDITOR_TYPE_NAME_KEYWORDS_TYPE }
+        };
         static EditorTypeInfo[] _editorTypeInfos = new EditorTypeInfo[]
         {
             #region 基础类型

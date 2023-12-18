@@ -145,7 +145,7 @@ namespace UI
             _cardSelectPanel.enableCount(false);
             _cardSelectPanel.onClickCard += onClickCardSelectPanelCardCallback;
 
-            var customPropTypes = CardEditorCtrl.customPropTypes.Select(a => (a.type, game.lang._(a.name))).ToArray();
+            var customPropTypes = CardEditorCtrl.customPropTypes.Select(t => (t, game.editor.getNameByValueType(t))).ToArray();
             setEffectPropertyTypes(customPropTypes);
 
             hideCardSelectPanel();

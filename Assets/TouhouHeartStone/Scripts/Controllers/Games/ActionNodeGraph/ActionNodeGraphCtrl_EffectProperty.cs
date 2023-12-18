@@ -113,7 +113,7 @@ namespace Controllers
             var propItem = GetEffectPropertyItem(name);
             var list = new List<object>(array)
             {
-                getDefaultValue(propItem.type, false)
+                propItem.type.getDefaultValue(false)
             };
             setEffectProp(name, list.ToArray());
             addRecordBreakpoint();
@@ -252,7 +252,7 @@ namespace Controllers
             if (valueType == null)
                 return null;
 
-            if (!_effectPropTypeDict.TryGetValue(valueType, out ActionNodeValueType type))
+            if (!valueType.tryGetValueTypeByType(out ActionNodeValueType type) || !CardEditorCtrl.isTypeCustomProp(type))
                 return null;
 
             var item = new PropertyItemInfo(name, type, isArray)
@@ -261,38 +261,11 @@ namespace Controllers
             };
             return item;
         }
-        private object getDefaultValue(ActionNodeValueType valueType, bool isArray)
-        {
-            if (!_effectPropDefaultValues.TryGetValue(valueType, out var func))
-                return null;
-            var value = func();
-            if (!isArray)
-            {
-                // 不是数组
-                return value;
-            }
-
-            // 数组
-            Type type = null;
-            foreach (var pair in _effectPropTypeDict)
-            {
-                if (pair.Value == valueType)
-                {
-                    type = pair.Key;
-                    break;
-                }
-            }
-            if (type == null)
-                return null;
-            var array = Array.CreateInstance(type, 1);
-            array.SetValue(value, 0);
-            return array;
-        }
         private void createEffectProperty(string name, ActionNodeValueType type, object value, bool isArray)
         {
             if (value == null)
             {
-                value = getDefaultValue(type, isArray);
+                value = type.getDefaultValue(isArray);
             }
             _effect.setProp(name, value);
             addOperationRecord(new AddEffectPropertyOperation(this, name, type, value, isArray));
@@ -421,9 +394,6 @@ namespace Controllers
         /// 当前正在选择的卡牌引用属性的列表索引。
         /// </summary>
         int _curCardSeekingEffectPropIndex;
-
-        static Dictionary<Type, ActionNodeValueType> _effectPropTypeDict => CardEditorCtrl.customPropTypeDict;
-        static Dictionary<ActionNodeValueType, Func<object>> _effectPropDefaultValues => CardEditorCtrl.customPropDefaultValues;
         #endregion
     }
 }
