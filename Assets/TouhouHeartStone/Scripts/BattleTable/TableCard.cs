@@ -140,6 +140,10 @@ namespace Game.BattleTable
             _spellCardFace.setImage(sprite);
             _itemCardFace.setImage(sprite);
         }
+        public void setHighlightColor(CardHighlightColor color)
+        {
+            animator.SetInteger("HighlightColor", (int)color);
+        }
         public void destroy()
         {
             Destroy(gameObject);
@@ -229,5 +233,13 @@ namespace Game.BattleTable
 
         private bool _isFaceup = true;
         #endregion
+    }
+
+    public enum CardHighlightColor
+    {
+        None = 0,
+        Green = 1,
+        Yellow = 2,
+        Red = 3
     }
 }

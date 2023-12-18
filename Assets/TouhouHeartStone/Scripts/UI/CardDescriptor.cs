@@ -32,6 +32,7 @@ namespace Game
         public bool isLethal { get; private set; }
         public bool isDrain { get; private set; }
         public bool isUsed { get; private set; }
+        public bool isModifiedUnplayable { get; private set; }
         public CardDescriptor()
         {
         }
@@ -62,6 +63,7 @@ namespace Game
             isLethal = card.isPoisonous(game);
             isDrain = card.isDrain(game);
             isUsed = card.isUsed(game);
+            isModifiedUnplayable = card.isModifiedUnplayable(game);
         }
         public bool isServant() => define.isServant();
         public bool isSpell() => define.isSpell();

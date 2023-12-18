@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UI;
+using UnityEngine;
 using Card = TouhouCardEngine.Card;
 using UICard = Game.BattleTable.TableCard;
 
@@ -17,6 +19,7 @@ namespace Game.BattleTable
             ui.setName(StringTable.BUILD_UNKNOW_CARD_NAME);
             ui.setSubname(string.Empty);
             ui.setDesc(string.Empty);
+            ui.setHighlightColor(CardHighlightColor.None);
             ui.setCostVisible(true);
             ui.setCost(0);
             ui.setType(DEFINE.SERVANT);
@@ -40,6 +43,7 @@ namespace Game.BattleTable
             ui.setSubname(subName);
             ui.setDesc(desc);
 
+            ui.setHighlightColor(CardHighlightColor.None);
             ui.setCostVisible(!card.hasKeyword(KEYWORD.UNPLAYABLE));
             ui.setCost(card.getCost());
             ui.setAttack(card.getAttack());
@@ -71,7 +75,9 @@ namespace Game.BattleTable
             var costColor = card.getCostColor(game);
             var attackColor = card.getAttackColor(game);
             var lifeColor = card.getLifeColor(game);
+            var highlightColor = card.isModifiedUnplayable(game) ? CardHighlightColor.Red : CardHighlightColor.None;
 
+            ui.setHighlightColor(highlightColor);
             ui.setCostVisible(!card.define.hasKeyword(KEYWORD.UNPLAYABLE));
             ui.setCost(cost);
             ui.setAttack(attack);
@@ -104,7 +110,9 @@ namespace Game.BattleTable
             var costColor = desc.getCostColor();
             var attackColor = desc.getAttackColor();
             var lifeColor = desc.getLifeColor();
+            var highlightColor = desc.isModifiedUnplayable ? CardHighlightColor.Red : CardHighlightColor.None;
 
+            ui.setHighlightColor(highlightColor);
             ui.setCostVisible(!desc.define.hasKeyword(KEYWORD.UNPLAYABLE));
             ui.setCost(cost);
             ui.setAttack(attack);
