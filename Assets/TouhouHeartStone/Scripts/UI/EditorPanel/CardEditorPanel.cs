@@ -305,32 +305,18 @@ namespace UI
                 PropertyItemField item = rect.GetComponent<PropertyItemField>();
                 item.setPiles(CardEditorCtrl.piles.Select(p => (p.Value, p.Key)));
                 item.setKeywords(CardEditorCtrl.getKeywords());
-                item.onClickItemButton += onClickCustomPropertyItemButtonCallback;
-                item.onClickItemCardButton += onClickCustomPropertyItemCardButtonCallback;
-                item.onClickItemCardEditButton += onClickCustomPropertyItemCardEditButtonCallback;
-                item.onItemValueChanged += onCustomPropertyItemValueChangedCallback;
-                item.onClickButton += onClickCustomPropertyButtonCallback;
-                item.onClickCardButton += onClickCustomPropertyCardButtonCallback;
-                item.onClickCardEditButton += onClickCustomPropertyCardEditButtonCallback;
                 item.onValueChanged += onCustomPropertyValueChangedCallback;
+                item.onClickButton += onClickCustomPropertyButtonCallback;
+                item.onClickItemButton += onClickCustomPropertyItemButtonCallback;
                 item.onClickDelete += onDeleteCustomPropertyCallback;
-                item.onClickAddItemButton += onClickCustomPropertyAddItemButtonCallback;
-                item.onClickRemoveItemButton += onClickCustomPropertyRemoveItemButtonCallback;
             },
             rect =>
             {
                 PropertyItemField item = rect.GetComponent<PropertyItemField>();
                 item.onClickItemButton -= onClickCustomPropertyItemButtonCallback;
-                item.onClickItemCardButton -= onClickCustomPropertyItemCardButtonCallback;
-                item.onClickItemCardEditButton -= onClickCustomPropertyItemCardEditButtonCallback;
-                item.onItemValueChanged -= onCustomPropertyItemValueChangedCallback;
                 item.onClickButton -= onClickCustomPropertyButtonCallback;
-                item.onClickCardButton -= onClickCustomPropertyCardButtonCallback;
-                item.onClickCardEditButton -= onClickCustomPropertyCardEditButtonCallback;
                 item.onValueChanged -= onCustomPropertyValueChangedCallback;
                 item.onClickDelete -= onDeleteCustomPropertyCallback;
-                item.onClickAddItemButton -= onClickCustomPropertyAddItemButtonCallback;
-                item.onClickRemoveItemButton -= onClickCustomPropertyRemoveItemButtonCallback;
             });
         }
 
@@ -425,16 +411,9 @@ namespace UI
 
             // Keywords.
             _keywordsFoldout.onClickPropButton += onClickKeywordButtonCallback;
-            _keywordsFoldout.onClickPropCardButton += onClickKeywordCardButtonCallback;
-            _keywordsFoldout.onClickPropCardEditButton += onClickKeywordCardEditButtonCallback;
             _keywordsFoldout.onPropValueChanged += onKeywordValueChangedCallback;
 
             _keywordsFoldout.onClickPropChildButton += onClickKeywordItemButtonCallback;
-            _keywordsFoldout.onClickPropChildCardButton += onClickKeywordItemCardButtonCallback;
-            _keywordsFoldout.onClickPropChildCardEditButton += onClickKeywordItemCardEditButtonCallback;
-            _keywordsFoldout.onPropChildValueChanged += onKeywordItemValueChangedCallback;
-            _keywordsFoldout.onClickPropAddChildButton += onClickKeywordAddItemButtonCallback;
-            _keywordsFoldout.onClickPropRemoveChildButton += onClickKeywordRemoveItemButtonCallback;
         }
         #endregion
         #region 事件回调
@@ -702,41 +681,13 @@ namespace UI
         }
 
         #region 关键词
-        private void onClickKeywordItemButtonCallback(string name, int index)
+        private void onClickKeywordItemButtonCallback(string name, int index, ValueInputFieldButton button)
         {
-            onClickPropertyItemButton?.Invoke(false, name, index);
+            onClickPropertyItemButton?.Invoke(false, name, index, button);
         }
-        private void onClickKeywordItemCardButtonCallback(string name, int index)
+        private void onClickKeywordButtonCallback(string name, ValueInputFieldButton button)
         {
-            onClickPropertyItemCardButton?.Invoke(false, name, index);
-        }
-        private void onClickKeywordItemCardEditButtonCallback(string name, int index)
-        {
-            onClickPropertyItemCardEditButton?.Invoke(false, name, index);
-        }
-        private void onKeywordItemValueChangedCallback(string name, int index, object value)
-        {
-            onPropertyItemValueChanged?.Invoke(false, name, index, value);
-        }
-        private void onClickKeywordAddItemButtonCallback(string name)
-        {
-            onClickPropertyAddItemButton?.Invoke(false, name);
-        }
-        private void onClickKeywordRemoveItemButtonCallback(string name, int index)
-        {
-            onClickPropertyRemoveItemButton?.Invoke(false, name, index);
-        }
-        private void onClickKeywordButtonCallback(string name)
-        {
-            onClickPropertyButton?.Invoke(false, name);
-        }
-        private void onClickKeywordCardButtonCallback(string name)
-        {
-            onClickPropertyCardButton?.Invoke(false, name);
-        }
-        private void onClickKeywordCardEditButtonCallback(string name)
-        {
-            onClickPropertyCardEditButton?.Invoke(false, name);
+            onClickPropertyButton?.Invoke(false, name, button);
         }
         private void onKeywordValueChangedCallback(string name, object value)
         {
@@ -745,41 +696,13 @@ namespace UI
         #endregion
 
         #region 自定义属性
-        private void onClickCustomPropertyItemButtonCallback(string name, int index)
+        private void onClickCustomPropertyItemButtonCallback(string name, int index, ValueInputFieldButton button)
         {
-            onClickPropertyItemButton?.Invoke(true, name, index);
+            onClickPropertyItemButton?.Invoke(true, name, index, button);
         }
-        private void onClickCustomPropertyItemCardButtonCallback(string name, int index)
+        private void onClickCustomPropertyButtonCallback(string name, ValueInputFieldButton button)
         {
-            onClickPropertyItemCardButton?.Invoke(true, name, index);
-        }
-        private void onClickCustomPropertyItemCardEditButtonCallback(string name, int index)
-        {
-            onClickPropertyItemCardEditButton?.Invoke(true, name, index);
-        }
-        private void onCustomPropertyItemValueChangedCallback(string name, int index, object value)
-        {
-            onPropertyItemValueChanged?.Invoke(true, name, index, value);
-        }
-        private void onClickCustomPropertyAddItemButtonCallback(string name)
-        {
-            onClickPropertyAddItemButton?.Invoke(true, name);
-        }
-        private void onClickCustomPropertyRemoveItemButtonCallback(string name, int index)
-        {
-            onClickPropertyRemoveItemButton?.Invoke(true, name, index);
-        }
-        private void onClickCustomPropertyButtonCallback(string name)
-        {
-            onClickPropertyButton?.Invoke(true, name);
-        }
-        private void onClickCustomPropertyCardButtonCallback(string name)
-        {
-            onClickPropertyCardButton?.Invoke(true, name);
-        }
-        private void onClickCustomPropertyCardEditButtonCallback(string name)
-        {
-            onClickPropertyCardEditButton?.Invoke(true, name);
+            onClickPropertyButton?.Invoke(true, name, button);
         }
         private void onCustomPropertyValueChangedCallback(string name, object value)
         {
@@ -939,17 +862,10 @@ namespace UI
         /// 当确认创建自定义属性。
         /// </summary>
         public event Action<PropertyItemInfo> onConfirmCreateCustomProperty;
-        public event Action<bool, string, int> onClickPropertyItemButton;
-        public event Action<bool, string, int> onClickPropertyItemCardButton;
-        public event Action<bool, string, int> onClickPropertyItemCardEditButton;
-        public event Action<bool, string, int, object> onPropertyItemValueChanged;
-        public event Action<bool, string> onClickPropertyButton;
-        public event Action<bool, string> onClickPropertyCardButton;
-        public event Action<bool, string> onClickPropertyCardEditButton;
         public event Action<bool, string, object> onPropertyValueChanged;
+        public event Action<bool, string, ValueInputFieldButton> onClickPropertyButton;
+        public event Action<bool, string, int, ValueInputFieldButton> onClickPropertyItemButton;
         public event Action<string> onDeleteCustomProperty;
-        public event Action<bool, string> onClickPropertyAddItemButton;
-        public event Action<bool, string, int> onClickPropertyRemoveItemButton;
         #endregion
 
         #endregion

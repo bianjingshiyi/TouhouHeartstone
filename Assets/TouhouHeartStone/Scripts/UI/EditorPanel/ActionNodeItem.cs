@@ -15,7 +15,6 @@ namespace UI
         #region 公有方法
         public void switchToActiveEntryNode()
         {
-            _buffFieldsRoot.gameObject.SetActive(false);
             _triggerFieldsRoot.gameObject.SetActive(true);
             _effectPropertyFields.SetActive(true);
             _inputRoot.gameObject.SetActive(true);
@@ -24,7 +23,6 @@ namespace UI
         }
         public void switchToActionNode()
         {
-            _buffFieldsRoot.gameObject.SetActive(false);
             _triggerFieldsRoot.gameObject.SetActive(false);
             _effectPropertyFields.SetActive(false);
             _inputRoot.gameObject.SetActive(true);
@@ -33,7 +31,6 @@ namespace UI
         }
         public void switchToEventEntryNode()
         {
-            _buffFieldsRoot.gameObject.SetActive(false);
             _triggerFieldsRoot.gameObject.SetActive(false);
             _effectPropertyFields.SetActive(true);
             _inputRoot.gameObject.SetActive(true);
@@ -82,11 +79,7 @@ namespace UI
                     item.onClickNode += onClickInputNodeCallback;
                     item.onDefaultValueChanged += onDefaultValueChangedCallback;
                     item.onClickDefaultValueButton += onDefaultValueButtonClickCallback;
-                    item.onClickDefaultValueCardButton += onDefaultValueCardButtonClickCallback;
-                    item.onClickDefaultValueCardEditButton += onDefaultValueCardEditButtonClickCallback;
                     item.onClickDefaultValueItemButton += onDefaultValueItemButtonClickCallback;
-                    item.onClickDefaultValueItemCardButton += onDefaultValueItemCardButtonClickCallback;
-                    item.onClickDefaultValueItemCardEditButton += onDefaultValueItemCardEditButtonClickCallback;
                 }, itemRect =>
                 {
                     ActionNodeItemInput item = itemRect.GetComponent<ActionNodeItemInput>();
@@ -96,11 +89,7 @@ namespace UI
                     item.onClickNode -= onClickInputNodeCallback;
                     item.onDefaultValueChanged -= onDefaultValueChangedCallback;
                     item.onClickDefaultValueButton -= onDefaultValueButtonClickCallback;
-                    item.onClickDefaultValueCardButton -= onDefaultValueCardButtonClickCallback;
-                    item.onClickDefaultValueCardEditButton -= onDefaultValueCardEditButtonClickCallback;
                     item.onClickDefaultValueItemButton -= onDefaultValueItemButtonClickCallback;
-                    item.onClickDefaultValueItemCardButton -= onDefaultValueItemCardButtonClickCallback;
-                    item.onClickDefaultValueItemCardEditButton -= onDefaultValueItemCardEditButtonClickCallback;
                 }, rebuild: true);
             }
             SetDirty();
@@ -166,6 +155,20 @@ namespace UI
         {
             ActionNodeItemInput item = _inputTemplate.GetComponent<ActionNodeItemInput>();
             item.initCardProperties(cardProperties);
+        }
+        /// <summary>
+        /// 初始化增益名称
+        /// </summary>
+        /// <param name="buffNames"></param>
+        public void initBuffReferences(string[] buffNames, BuffReference[] buffValues)
+        {
+            ActionNodeItemInput item = _inputTemplate.GetComponent<ActionNodeItemInput>();
+            item.initBuffReferences(buffNames, buffValues);
+            foreach (var valueRect in _inputList)
+            {
+                var valueItem = valueRect.GetComponent<ActionNodeItemInput>();
+                valueItem.initBuffReferences(buffNames, buffValues);
+            }
         }
 
 
@@ -391,8 +394,6 @@ namespace UI
             bool canEdit = !isReadonly;
             _addEffectPropertyItemButton.interactable = canEdit;
             _addTargetCheckerButton.interactable = canEdit;
-            _buffDropdown.interactable = canEdit;
-            _editBuffButton.interactable = canEdit;
             _visualEffectButton.interactable = canEdit;
             _visualEffectButton.interactable = canEdit;
 
@@ -419,31 +420,17 @@ namespace UI
                 PropertyItemField item = itemRect.GetComponent<PropertyItemField>();
                 item.onValueChanged += onEffectPropertyValueChangedCallback;
                 item.onClickButton += onClickEffectPropertyButtonCallback;
-                item.onClickCardButton += onClickEffectPropertyCardButtonCallback;
-                item.onClickCardEditButton += onClickEffectPropertyCardEditButtonCallback;
                 item.onClickDelete += onDeleteEffectPropertyCallback;
 
-                item.onClickAddItemButton += onClickEffectPropertyAddItemButtonCallback;
-                item.onItemValueChanged += onEffectPropertyItemValueChangedCallback;
                 item.onClickItemButton += onClickEffectPropertyItemButtonCallback;
-                item.onClickItemCardButton += onClickEffectPropertyItemCardButtonCallback;
-                item.onClickItemCardEditButton += onClickEffectPropertyItemCardEditButtonCallback;
-                item.onClickRemoveItemButton += onClickEffectPropertyRemoveItemButtonCallback;
             }, itemRect =>
             {
                 PropertyItemField item = itemRect.GetComponent<PropertyItemField>();
                 item.onValueChanged -= onEffectPropertyValueChangedCallback;
                 item.onClickButton -= onClickEffectPropertyButtonCallback;
-                item.onClickCardButton -= onClickEffectPropertyCardButtonCallback;
-                item.onClickCardEditButton -= onClickEffectPropertyCardEditButtonCallback;
                 item.onClickDelete -= onDeleteEffectPropertyCallback;
 
-                item.onClickAddItemButton -= onClickEffectPropertyAddItemButtonCallback;
-                item.onItemValueChanged -= onEffectPropertyItemValueChangedCallback;
                 item.onClickItemButton -= onClickEffectPropertyItemButtonCallback;
-                item.onClickItemCardButton -= onClickEffectPropertyItemCardButtonCallback;
-                item.onClickItemCardEditButton -= onClickEffectPropertyItemCardEditButtonCallback;
-                item.onClickRemoveItemButton -= onClickEffectPropertyRemoveItemButtonCallback;
             }, rebuild: true);
             SetDirty();
         }
@@ -519,8 +506,6 @@ namespace UI
             _helpBtn.onClick.AddListener(onClickHelpBtn);
             _visualEffectButton.onClick.AddListener(onClickVisualEffectButtonCallback);
             _addEffectPropertyItemButton.onClick.AddListener(onClickAddEffectPropertyButtonCallback);
-            //增益
-            onAwake_Buff();
         }
 
         private void LateUpdate()
@@ -570,29 +555,13 @@ namespace UI
         {
             onDefaultValueChanged?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform), value);
         }
-        private void onDefaultValueButtonClickCallback(ActionNodeItemInput item)
+        private void onDefaultValueButtonClickCallback(ActionNodeItemInput item, ValueInputFieldButton type)
         {
-            onClickDefaultValueButton?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform));
+            onClickDefaultValueButton?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform), type);
         }
-        private void onDefaultValueCardButtonClickCallback(ActionNodeItemInput item)
+        private void onDefaultValueItemButtonClickCallback(ActionNodeItemInput item, int index, ValueInputFieldButton type)
         {
-            onClickDefaultValueCardButton?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform));
-        }
-        private void onDefaultValueCardEditButtonClickCallback(ActionNodeItemInput item)
-        {
-            onClickDefaultValueCardEditButton?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform));
-        }
-        private void onDefaultValueItemButtonClickCallback(ActionNodeItemInput item, int index)
-        {
-            onClickDefaultValueItemButton?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform), index);
-        }
-        private void onDefaultValueItemCardButtonClickCallback(ActionNodeItemInput item, int index)
-        {
-            onClickDefaultValueItemCardButton?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform), index);
-        }
-        private void onDefaultValueItemCardEditButtonClickCallback(ActionNodeItemInput item, int index)
-        {
-            onClickDefaultValueItemCardEditButton?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform), index);
+            onClickDefaultValueItemButton?.Invoke(this, _inputList.IndexOf(item.transform as RectTransform), index, type);
         }
         #endregion
         private void onClickAddTargetCheckerButtonCallback()
@@ -621,41 +590,13 @@ namespace UI
         {
             onClickAddEffectPropertyButton?.Invoke();
         }
-        private void onClickEffectPropertyItemButtonCallback(string name, int index)
+        private void onClickEffectPropertyItemButtonCallback(string name, int index, ValueInputFieldButton buttonType)
         {
-            onClickEffectPropertyItemButton?.Invoke(name, index);
+            onClickEffectPropertyItemButton?.Invoke(name, index, buttonType);
         }
-        private void onClickEffectPropertyItemCardButtonCallback(string name, int index)
+        private void onClickEffectPropertyButtonCallback(string name, ValueInputFieldButton buttonType)
         {
-            onClickEffectPropertyItemCardButton?.Invoke(name, index);
-        }
-        private void onClickEffectPropertyItemCardEditButtonCallback(string name, int index)
-        {
-            onClickEffectPropertyItemCardEditButton?.Invoke(name, index);
-        }
-        private void onEffectPropertyItemValueChangedCallback(string name, int index, object value)
-        {
-            onEffectPropertyItemValueChanged?.Invoke(name, index, value);
-        }
-        private void onClickEffectPropertyAddItemButtonCallback(string name)
-        {
-            onClickEffectPropertyAddItemButton?.Invoke(name);
-        }
-        private void onClickEffectPropertyRemoveItemButtonCallback(string name, int index)
-        {
-            onClickEffectPropertyRemoveItemButton?.Invoke(name, index);
-        }
-        private void onClickEffectPropertyButtonCallback(string name)
-        {
-            onClickEffectPropertyButton?.Invoke(name);
-        }
-        private void onClickEffectPropertyCardButtonCallback(string name)
-        {
-            onClickEffectPropertyCardButton?.Invoke(name);
-        }
-        private void onClickEffectPropertyCardEditButtonCallback(string name)
-        {
-            onClickEffectPropertyCardEditButton?.Invoke(name);
+            onClickEffectPropertyButton?.Invoke(name, buttonType);
         }
         private void onEffectPropertyValueChangedCallback(string name, object value)
         {
@@ -723,12 +664,8 @@ namespace UI
         public event Action<ActionNodeItem, ActionNodeItemOutput, BaseEventData> onEndDragOutputNode;
         public event Action<ActionNodeItem, ActionNodeItemOutput, BaseEventData> onClickOutputNode;
         public event Action<ActionNodeItem, int, object> onDefaultValueChanged;
-        public event Action<ActionNodeItem, int> onClickDefaultValueButton;
-        public event Action<ActionNodeItem, int> onClickDefaultValueCardButton;
-        public event Action<ActionNodeItem, int> onClickDefaultValueCardEditButton;
-        public event Action<ActionNodeItem, int, int> onClickDefaultValueItemButton;
-        public event Action<ActionNodeItem, int, int> onClickDefaultValueItemCardButton;
-        public event Action<ActionNodeItem, int, int> onClickDefaultValueItemCardEditButton;
+        public event Action<ActionNodeItem, int, ValueInputFieldButton> onClickDefaultValueButton;
+        public event Action<ActionNodeItem, int, int, ValueInputFieldButton> onClickDefaultValueItemButton;
         public event Action<ActionNodeItem> onClickAddTargetCheckerButton;
         public event Action<ActionNodeItem, int, int> onTargetCheckerTypeValueChanged;
         public event Action<ActionNodeItem, int> onClickEditTargetCheckerButton;
@@ -744,17 +681,11 @@ namespace UI
         /// 当确认创建自定义属性。
         /// </summary>
         public event Action onClickAddEffectPropertyButton;
-        public event Action<string, int> onClickEffectPropertyItemButton;
-        public event Action<string, int> onClickEffectPropertyItemCardButton;
-        public event Action<string, int> onClickEffectPropertyItemCardEditButton;
-        public event Action<string, int, object> onEffectPropertyItemValueChanged;
-        public event Action<string> onClickEffectPropertyButton;
-        public event Action<string> onClickEffectPropertyCardButton;
-        public event Action<string> onClickEffectPropertyCardEditButton;
-        public event Action<string, object> onEffectPropertyValueChanged;
         public event Action<string> onDeleteEffectProperty;
-        public event Action<string> onClickEffectPropertyAddItemButton;
-        public event Action<string, int> onClickEffectPropertyRemoveItemButton;
+
+        public event Action<string, object> onEffectPropertyValueChanged;
+        public event Action<string, ValueInputFieldButton> onClickEffectPropertyButton;
+        public event Action<string, int, ValueInputFieldButton> onClickEffectPropertyItemButton;
         #endregion
         #endregion
         #region 属性字段

@@ -29,6 +29,10 @@ namespace UI
         {
             _defaultValueInputField.initCardProperties(cardProperties);
         }
+        public void initBuffReferences(string[] buffNames, BuffReference[] buffValues)
+        {
+            _defaultValueInputField.initBuffReferences(buffNames, buffValues);
+        }
         public void setReadonly(bool isReadonly)
         {
             _defaultValueInputField.setReadonly(isReadonly);
@@ -51,11 +55,7 @@ namespace UI
             base.Awake();
             _defaultValueInputField.onValueChanged += onDefaultValueChangedCallback;
             _defaultValueInputField.onClickButton += onDefaultValueButtonClickCallback;
-            _defaultValueInputField.onClickCardButton += onDefaultValueCardButtonClickCallback;
-            _defaultValueInputField.onClickCardEditButton += onDefaultValueCardEditButtonClickCallback;
             _defaultValueInputField.onClickItemButton += onDefaultValueItemButtonClickCallback;
-            _defaultValueInputField.onClickItemCardButton += onDefaultValueItemCardButtonClickCallback;
-            _defaultValueInputField.onClickItemCardEditButton += onDefaultValueItemCardEditButtonClickCallback;
         }
         #endregion
 
@@ -81,29 +81,13 @@ namespace UI
         {
             onDefaultValueChanged?.Invoke(this, value);
         }
-        private void onDefaultValueButtonClickCallback(ValueInputField item)
+        private void onDefaultValueButtonClickCallback(ValueInputField item, ValueInputFieldButton type)
         {
-            onClickDefaultValueButton?.Invoke(this);
+            onClickDefaultValueButton?.Invoke(this, type);
         }
-        private void onDefaultValueCardButtonClickCallback(ValueInputField item)
+        private void onDefaultValueItemButtonClickCallback(ValueInputField item, int index, ValueInputFieldButton type)
         {
-            onClickDefaultValueCardButton?.Invoke(this);
-        }
-        private void onDefaultValueCardEditButtonClickCallback(ValueInputField item)
-        {
-            onClickDefaultValueCardEditButton?.Invoke(this);
-        }
-        private void onDefaultValueItemButtonClickCallback(ValueInputField item, int index)
-        {
-            onClickDefaultValueItemButton?.Invoke(this, index);
-        }
-        private void onDefaultValueItemCardButtonClickCallback(ValueInputField item, int index)
-        {
-            onClickDefaultValueItemCardButton?.Invoke(this, index);
-        }
-        private void onDefaultValueItemCardEditButtonClickCallback(ValueInputField item, int index)
-        {
-            onClickDefaultValueItemCardEditButton?.Invoke(this, index);
+            onClickDefaultValueItemButton?.Invoke(this, index, type);
         }
         #endregion
 
@@ -121,12 +105,8 @@ namespace UI
         #region 默认值
 
         public event Action<ActionNodeItemInput, object> onDefaultValueChanged;
-        public event Action<ActionNodeItemInput> onClickDefaultValueButton;
-        public event Action<ActionNodeItemInput> onClickDefaultValueCardButton;
-        public event Action<ActionNodeItemInput> onClickDefaultValueCardEditButton;
-        public event Action<ActionNodeItemInput, int> onClickDefaultValueItemButton;
-        public event Action<ActionNodeItemInput, int> onClickDefaultValueItemCardButton;
-        public event Action<ActionNodeItemInput, int> onClickDefaultValueItemCardEditButton;
+        public event Action<ActionNodeItemInput, ValueInputFieldButton> onClickDefaultValueButton;
+        public event Action<ActionNodeItemInput, int, ValueInputFieldButton> onClickDefaultValueItemButton;
 
         #endregion
 

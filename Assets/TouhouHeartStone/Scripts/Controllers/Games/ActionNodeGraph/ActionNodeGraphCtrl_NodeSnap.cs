@@ -66,17 +66,17 @@ namespace Controllers
                     {
                         new InputPortInfo(
                             new PortItemInfo(game.lang._(PassiveEntryNode.triggerConditionPortName), boolColor, false),
-                            new ActionNodeValueInfo(PassiveEntryNode.triggerConditionPortName, ActionNodeValueType.boolean, true),
+                            new ActionNodeValueInfo(PassiveEntryNode.triggerConditionPortName, new NodeValueType(ActionNodeValueType.boolean), true),
                             true,
                             false),
                         new InputPortInfo(
                             new PortItemInfo(game.lang._(PassiveEntryNode.tagsPortName), arrayColor, false),
-                            new ActionNodeValueInfo(PassiveEntryNode.tagsPortName, ActionNodeValueType.effectTagCollection, null),
+                            new ActionNodeValueInfo(PassiveEntryNode.tagsPortName, new NodeValueType(ActionNodeValueType.effectTagCollection), null),
                             false,
                             false),
                         new InputPortInfo(
                             new PortItemInfo(game.lang._(PassiveEntryNode.pileListPortName), arrayColor, false),
-                            new ActionNodeValueInfo(PassiveEntryNode.tagsPortName, ActionNodeValueType.effectTagCollection, null),
+                            new ActionNodeValueInfo(PassiveEntryNode.tagsPortName, new NodeValueType(ActionNodeValueType.effectTagCollection), null),
                             false,
                             false)
                     };

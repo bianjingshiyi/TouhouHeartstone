@@ -14,15 +14,8 @@ namespace UI
         private void Awake()
         {
             _valueInputField.onValueChanged += (item, value) => onValueChanged?.Invoke(_name, value);
-            _valueInputField.onClickButton += (item) => onClickButton?.Invoke(_name);
-            _valueInputField.onClickCardButton += (item) => onClickCardButton?.Invoke(_name);
-            _valueInputField.onClickCardEditButton += (item) => onClickCardEditButton?.Invoke(_name);
-            _valueInputField.onItemValueChanged += (item, index, value) => onItemValueChanged?.Invoke(_name, index, value);
-            _valueInputField.onClickItemButton += (item, index) => onClickItemButton?.Invoke(_name, index);
-            _valueInputField.onClickItemCardButton += (item, index) => onClickItemCardButton?.Invoke(_name, index);
-            _valueInputField.onClickItemCardEditButton += (item, index) => onClickItemCardEditButton?.Invoke(_name, index);
-            _valueInputField.onClickAddItemButton += (item) => onClickAddItemButton?.Invoke(_name);
-            _valueInputField.onClickItemRemoveButton += (item, index) => onClickRemoveItemButton?.Invoke(_name, index);
+            _valueInputField.onClickButton += (item, type) => onClickButton?.Invoke(_name, type);
+            _valueInputField.onClickItemButton += (item, index, type) => onClickItemButton?.Invoke(_name, index, type);
             _deleteButton.onClick.AddListener(() => onClickDelete?.Invoke(_name));
         }
         public async Task updateItem(PropertyItemInfo info, CardManager cardManager)
@@ -32,20 +25,17 @@ namespace UI
 
             var type = info.type;
             var value = info.value;
-            var valueInfo = new ActionNodeValueInfo(string.Empty, type, value)
-            {
-                isArray = info.isArray
-            };
+            var valueInfo = new ActionNodeValueInfo(string.Empty, type, value);
             _valueInputField.setValueInfo(string.Empty, valueInfo);
 
 
-            if (info.type == ActionNodeValueType.cardReference)
+            if (type.type == ActionNodeValueType.cardReference)
             {
                 if (info.value is DefineReference defRef)
                 {
                     await setCard(_valueInputField, defRef, cardManager);
                 }
-                else if (info.isArray && info.value is DefineReference[] defRefs)
+                else if (type.isArray && info.value is DefineReference[] defRefs)
                 {
                     for (int i = 0; i < defRefs.Length; i++)
                     {
@@ -85,17 +75,11 @@ namespace UI
         }
 
 
-        public event Action<string, int, object> onItemValueChanged;
-        public event Action<string, int> onClickItemButton;
-        public event Action<string, int> onClickItemCardButton;
-        public event Action<string, int> onClickItemCardEditButton;
-        public event Action<string, object> onValueChanged;
-        public event Action<string> onClickButton;
-        public event Action<string> onClickCardButton;
-        public event Action<string> onClickCardEditButton;
         public event Action<string> onClickDelete;
-        public event Action<string> onClickAddItemButton;
-        public event Action<string, int> onClickRemoveItemButton;
+
+        public event Action<string, object> onValueChanged;
+        public event Action<string, ValueInputFieldButton> onClickButton;
+        public event Action<string, int, ValueInputFieldButton> onClickItemButton;
 
         public string propertyName => _name;
         private string _name;
@@ -110,22 +94,19 @@ namespace UI
     {
         public string propertyName;
         public string displayName;
-        public ActionNodeValueType type;
-        public bool isArray;
+        public NodeValueType type;
         public object value;
 
-        public PropertyItemInfo(string name, ActionNodeValueType type, bool isArray)
+        public PropertyItemInfo(string name, NodeValueType type)
         {
             propertyName = name;
             this.type = type;
-            this.isArray = isArray;
         }
-        public PropertyItemInfo(string name, string displayName, ActionNodeValueType type, bool isArray)
+        public PropertyItemInfo(string name, string displayName, NodeValueType type)
         {
             propertyName = name;
             this.displayName = displayName;
             this.type = type;
-            this.isArray = isArray;
         }
         public string getDisplayName()
         {

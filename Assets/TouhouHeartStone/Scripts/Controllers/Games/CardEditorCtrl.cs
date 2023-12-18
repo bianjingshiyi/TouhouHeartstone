@@ -211,14 +211,7 @@ namespace Controllers
 
             _ui.onPropertyValueChanged += onPropertyValueChangedCallback;
             _ui.onClickPropertyButton += onClickPropertyButtonCallback;
-            _ui.onClickPropertyCardButton += onClickPropertyCardButtonCallback;
-            _ui.onClickPropertyCardEditButton += onClickPropertyCardEditButtonCallback;
-            _ui.onPropertyItemValueChanged += onPropertyItemValueChangedCallback;
             _ui.onClickPropertyItemButton += onClickPropertyItemButtonCallback;
-            _ui.onClickPropertyItemCardButton += onClickPropertyItemCardButtonCallback;
-            _ui.onClickPropertyItemCardEditButton += onClickPropertyItemCardEditButtonCallback;
-            _ui.onClickPropertyAddItemButton += onClickPropertyAddItemButtonCallback;
-            _ui.onClickPropertyRemoveItemButton += onClickPropertyRemoveItemButtonCallback;
 
             _effectEditorCtrl.onCreateEffect += onCreateEffect;
             _effectEditorCtrl.OnGraphEdited += onGraphEdited;
@@ -691,7 +684,7 @@ namespace Controllers
 
             if (item.value == null)
             {
-                item.value = item.type.getDefaultValue(item.isArray);
+                item.value = item.type.getDefaultValue();
             }
             setCardProp(true, item.propertyName, item.value);
 
@@ -699,18 +692,20 @@ namespace Controllers
             updateCustomProperties();
             _ui.displayCustomPropertyDialog(false);
         }
-        private void onPropertyItemValueChangedCallback(bool isCustom, string name, int index, object value)
+        private void onClickPropertyItemButtonCallback(bool isCustom, string name, int index, ValueInputFieldButton button)
         {
-            var prop = _cardDefine.getProp<object>(name);
-            if (prop is Array array)
+            switch (button)
             {
-                array.SetValue(value, index);
-                markUnsaved();
-                updatePropertyItem(isCustom, name);
+                case ValueInputFieldButton.CardButton:
+                    onClickPropertyItemCardButtonCallback(isCustom, name, index);
+                    break;
+                case ValueInputFieldButton.CardEditButton:
+                    onClickPropertyItemCardEditButtonCallback(isCustom, name, index);
+                    break;
+                case ValueInputFieldButton.BuffEditButton:
+                    onClickPropertyItemBuffEditButtonCallback(isCustom, name, index);
+                    break;
             }
-        }
-        private void onClickPropertyItemButtonCallback(bool isCustom, string name, int index)
-        {
         }
         private async void onClickPropertyItemCardButtonCallback(bool isCustom, string name, int index)
         {
@@ -747,66 +742,38 @@ namespace Controllers
                 updatePropertyItem(isCustom, name);
             }
         }
-        private void onClickPropertyAddItemButtonCallback(bool isCustom, string name)
+        private async void onClickPropertyItemBuffEditButtonCallback(bool isCustom, string name, int index)
         {
-            var array = _cardDefine.getProp<Array>(name);
-            if (array == null)
+            var prop = _cardDefine.getProp<DefineReference[]>(name);
+            if (prop == null || index < 0 || index >= prop.Length)
                 return;
-            var arrayType = array.GetType();
-            var elementType = arrayType.GetElementType();
-            if (elementType == null)
-                return;
-            var newArray = Array.CreateInstance(elementType, array.Length + 1);
-            array.CopyTo(newArray, 0);
-
-
-            if (elementType.tryGetValueTypeByType(out var valueType) && isTypeCustomProp(valueType))
+            var define = prop[index];
+            var poolRef = game.card.getLocalCardPoolReference(define.cardPoolId);
+            if (game.card.tryGetBuffDefine(poolRef, define.defineId, out GeneratedBuffDefine buffDefine))
             {
-                newArray.SetValue(valueType.getDefaultValue(false), newArray.Length - 1);
+                await scene.editor.openBuffEditor(buffDefine);
             }
-            setCardProp(isCustom, name, newArray);
-            markUnsaved();
-            updatePropertyItem(isCustom, name);
-        }
-
-        private void onClickPropertyRemoveItemButtonCallback(bool isCustom, string name, int index)
-        {
-            var array = _cardDefine.getProp<Array>(name);
-            if (array == null)
-                return;
-            var arrayType = array.GetType();
-            var elementType = arrayType.GetElementType();
-            if (elementType == null)
-                return;
-            var newArray = Array.CreateInstance(elementType, array.Length - 1);
-            int newIndex = 0;
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (i == index)
-                    continue;
-                newArray.SetValue(array.GetValue(i), newIndex);
-                newIndex++;
-            }
-            setCardProp(isCustom, name, newArray);
-            markUnsaved();
-            updatePropertyItem(isCustom, name);
         }
         private void onPropertyValueChangedCallback(bool isCustom, string name, object value)
         {
-            var prop = _cardDefine.getProp<object>(name);
-            if (prop is Array array)
-            {
-                array.SetValue(value, 0);
-            }
-            else
-            {
-                setCardProp(isCustom, name, value);
-            }
+            setCardProp(isCustom, name, value);
             markUnsaved();
             updatePropertyItem(isCustom, name);
         }
-        private void onClickPropertyButtonCallback(bool isCustom, string name)
+        private void onClickPropertyButtonCallback(bool isCustom, string name, ValueInputFieldButton button)
         {
+            switch (button)
+            {
+                case ValueInputFieldButton.CardButton:
+                    onClickPropertyCardButtonCallback(isCustom, name);
+                    break;
+                case ValueInputFieldButton.CardEditButton:
+                    onClickPropertyCardEditButtonCallback(isCustom, name);
+                    break;
+                case ValueInputFieldButton.BuffEditButton:
+                    onClickPropertyBuffEditButtonCallback(isCustom, name);
+                    break;
+            }
         }
         private async void onClickPropertyCardButtonCallback(bool isCustom, string name)
         {
@@ -836,6 +803,17 @@ namespace Controllers
                 _cardDefine.setProp(name, new DefineReference(cardDefine.cardPoolId, cardDefine.id));
                 markUnsaved();
                 updatePropertyItem(isCustom, name);
+            }
+        }
+        private async void onClickPropertyBuffEditButtonCallback(bool isCustom, string name)
+        {
+            var prop = _cardDefine.getProp<DefineReference>(name);
+            if (prop == null)
+                return;
+            var poolRef = game.card.getLocalCardPoolReference(prop.cardPoolId);
+            if (game.card.tryGetBuffDefine(poolRef, prop.defineId, out GeneratedBuffDefine buffDefine))
+            {
+                await scene.editor.openBuffEditor(buffDefine);
             }
         }
         private void onDeleteCustomPropertyCallback(string name)
@@ -1116,20 +1094,11 @@ namespace Controllers
                 return null;
 
             var valueType = value.GetType();
-            bool isArray = valueType.IsArray;
-            if (isArray)
-            {
-                valueType = valueType.GetElementType();
-            }
-            // 防止出现什么Array类型的参数，GetElementType会返回null。
-            if (valueType == null)
-                return null;
-
             var type = valueType.getNodeValueType();
-            if (!isTypeCustomProp(type))
+            if (!isTypeCustomProp(type.type))
                 return null;
 
-            var item = new PropertyItemInfo(name, type, isArray)
+            var item = new PropertyItemInfo(name, type)
             {
                 value = value
             };
@@ -1153,14 +1122,8 @@ namespace Controllers
             if (!keywordInfos.TryGetValue(name, out var info))
                 return null;
             var type = info.type;
-            bool isArray = false;
-            if (info.type.IsArray)
-            {
-                type = info.type.GetElementType();
-                isArray = true;
-            }
-            ActionNodeValueType valueType = ActionNodeValueType.boolean;
-            if (type.tryGetValueTypeByType(out var t) && isTypeCustomProp(t))
+            NodeValueType valueType = new NodeValueType(ActionNodeValueType.boolean);
+            if (type.tryGetValueTypeByType(out var t) && isTypeCustomProp(t.type))
             {
                 valueType = t;
             }
@@ -1169,7 +1132,7 @@ namespace Controllers
                 valueAction.Item2(_cardDefine) :
                 _cardDefine.hasKeyword(name);
 
-            var item = new PropertyItemInfo(name, game.lang._(info.displayName), valueType, isArray)
+            var item = new PropertyItemInfo(name, game.lang._(info.displayName), valueType)
             {
                 value = value
             };

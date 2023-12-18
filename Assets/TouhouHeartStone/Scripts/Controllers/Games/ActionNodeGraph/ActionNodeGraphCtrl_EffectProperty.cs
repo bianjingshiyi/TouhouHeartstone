@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouHeartstone;
@@ -11,7 +12,7 @@ namespace Controllers
     {
         public void addEffectProperty(PropertyItemInfo item)
         {
-            createEffectProperty(item.propertyName, item.type, item.value, item.isArray);
+            createEffectProperty(item.propertyName, item.type, item.value);
             updateEffectProperties();
             addRecordBreakpoint();
         }
@@ -65,21 +66,20 @@ namespace Controllers
                 return;
             onAddEffectPropertyButtonClicked?.Invoke();
         }
-        private void onEffectPropertyItemValueChangedCallback(string name, int index, object value)
+        private void onClickEffectPropertyItemButtonCallback(string name, int index, ValueInputFieldButton button)
         {
-            if (isReadonly)
-                return;
-            var prop = _effect.getProp(name);
-            if (prop is object[] array)
+            switch (button)
             {
-                var list = new List<object>(array);
-                list[index] = value;
-                setEffectProp(name, list.ToArray());
-                addRecordBreakpoint();
+                case ValueInputFieldButton.CardButton:
+                    onClickEffectPropertyItemCardButtonCallback(name, index);
+                    break;
+                case ValueInputFieldButton.CardEditButton:
+                    onClickEffectPropertyItemCardEditButtonCallback(name, index);
+                    break;
+                case ValueInputFieldButton.BuffEditButton:
+                    onClickEffectPropertyItemBuffEditButtonCallback(name, index);
+                    break;
             }
-        }
-        private void onClickEffectPropertyItemButtonCallback(string name, int index)
-        {
         }
         private async void onClickEffectPropertyItemCardButtonCallback(string name, int index)
         {
@@ -103,34 +103,6 @@ namespace Controllers
         {
             onOpenEffectPropertyItemCardDefine?.Invoke(_effect, name, index);
         }
-        private void onClickEffectPropertyAddItemButtonCallback(string name)
-        {
-            if (isReadonly)
-                return;
-            var array = _effect.getProp<object[]>(name);
-            if (array == null)
-                return;
-            var propItem = GetEffectPropertyItem(name);
-            var list = new List<object>(array)
-            {
-                propItem.type.getDefaultValue(false)
-            };
-            setEffectProp(name, list.ToArray());
-            addRecordBreakpoint();
-        }
-
-        private void onClickEffectPropertyRemoveItemButtonCallback(string name, int index)
-        {
-            if (isReadonly)
-                return;
-            var array = _effect.getProp<object[]>(name);
-            if (array == null)
-                return;
-            var list = new List<object>(array);
-            list.RemoveAt(index);
-            setEffectProp(name, list.ToArray());
-            addRecordBreakpoint();
-        }
         private void onEffectPropertyValueChangedCallback(string name, object value)
         {
             if (isReadonly)
@@ -143,8 +115,20 @@ namespace Controllers
             setEffectProp(name, value);
             addRecordBreakpoint();
         }
-        private void onClickEffectPropertyButtonCallback(string name)
+        private void onClickEffectPropertyButtonCallback(string name, ValueInputFieldButton button)
         {
+            switch (button)
+            {
+                case ValueInputFieldButton.CardButton:
+                    onClickEffectPropertyCardButtonCallback(name);
+                    break;
+                case ValueInputFieldButton.CardEditButton:
+                    onClickEffectPropertyCardEditButtonCallback(name);
+                    break;
+                case ValueInputFieldButton.BuffEditButton:
+                    onClickEffectPropertyBuffEditButtonCallback(name);
+                    break;
+            }
         }
         private async void onClickEffectPropertyCardButtonCallback(string name)
         {
@@ -167,7 +151,25 @@ namespace Controllers
         {
             onOpenEffectPropertyCardDefine?.Invoke(_effect, name);
         }
-
+        private async void onClickEffectPropertyBuffEditButtonCallback(string name)
+        {
+            var buffRefObj = _effect.getProp(name);
+            if (tryGetBuffDefine(buffRefObj, out GeneratedBuffDefine buffDefine))
+            {
+                await scene.editor.openBuffEditor(buffDefine);
+            }
+        }
+        private async void onClickEffectPropertyItemBuffEditButtonCallback(string name, int index)
+        {
+            var prop = _effect.getProp<IEnumerable<DefineReference>>(name);
+            if (prop == null)
+                return;
+            var buffRef = prop.ElementAt(index);
+            if (tryGetBuffDefine(buffRef, out GeneratedBuffDefine buffDefine))
+            {
+                await scene.editor.openBuffEditor(buffDefine);
+            }
+        }
         private void onDeleteEffectPropertyCallback(string name)
         {
             if (isReadonly)
@@ -243,32 +245,23 @@ namespace Controllers
                 value = cloneable.Clone();
             }
             var valueType = value.GetType();
-            bool isArray = valueType.IsArray;
-            if (isArray)
-            {
-                valueType = valueType.GetElementType();
-            }
-            // 防止出现什么Array类型的参数，GetElementType会返回null。
-            if (valueType == null)
+            if (!valueType.tryGetValueTypeByType(out var type) || !CardEditorCtrl.isTypeCustomProp(type.type))
                 return null;
 
-            if (!valueType.tryGetValueTypeByType(out ActionNodeValueType type) || !CardEditorCtrl.isTypeCustomProp(type))
-                return null;
-
-            var item = new PropertyItemInfo(name, type, isArray)
+            var item = new PropertyItemInfo(name, type)
             {
                 value = value
             };
             return item;
         }
-        private void createEffectProperty(string name, ActionNodeValueType type, object value, bool isArray)
+        private void createEffectProperty(string name, NodeValueType type, object value)
         {
             if (value == null)
             {
-                value = type.getDefaultValue(isArray);
+                value = type.getDefaultValue();
             }
             _effect.setProp(name, value);
-            addOperationRecord(new AddEffectPropertyOperation(this, name, type, value, isArray));
+            addOperationRecord(new AddEffectPropertyOperation(this, name, type, value));
         }
         private void selectCardForEffectProperty(CardDefine cardDefine)
         {
@@ -299,15 +292,14 @@ namespace Controllers
         class AddEffectPropertyOperation : GraphOperation
         {
             public AddEffectPropertyOperation(ActionNodeGraphCtrl graphCtrl, PropertyItemInfo propItem) : 
-                this(graphCtrl, propItem.propertyName, propItem.type, propItem.value, propItem.isArray)
+                this(graphCtrl, propItem.propertyName, propItem.type, propItem.value)
             {
             }
-            public AddEffectPropertyOperation(ActionNodeGraphCtrl graphCtrl, string propertyName, ActionNodeValueType type, object value, bool isArray) : base(graphCtrl)
+            public AddEffectPropertyOperation(ActionNodeGraphCtrl graphCtrl, string propertyName, NodeValueType type, object value) : base(graphCtrl)
             {
                 _propertyName = propertyName;
                 _type = type;
                 _value = value;
-                _isArray = isArray;
             }
             public override void undo()
             {
@@ -316,13 +308,12 @@ namespace Controllers
             }
             public override void redo()
             {
-                _graphCtrl.createEffectProperty(_propertyName, _type, _value, _isArray);
+                _graphCtrl.createEffectProperty(_propertyName, _type, _value);
                 _graphCtrl.updateEffectProperties();
             }
             private string _propertyName;
-            private ActionNodeValueType _type;
+            private NodeValueType _type;
             private object _value;
-            private bool _isArray;
         }
         class RemoveEffectPropertyOperation : GraphOperation
         {
@@ -331,11 +322,10 @@ namespace Controllers
                 _propertyName = propItem.propertyName;
                 _type = propItem.type;
                 _value = propItem.value;
-                _isArray = propItem.isArray;
             }
             public override void undo()
             {
-                _graphCtrl.createEffectProperty(_propertyName, _type, _value, _isArray);
+                _graphCtrl.createEffectProperty(_propertyName, _type, _value);
                 _graphCtrl.updateEffectProperties();
             }
             public override void redo()
@@ -344,9 +334,8 @@ namespace Controllers
                 _graphCtrl.updateEffectProperties();
             }
             private string _propertyName;
-            private ActionNodeValueType _type;
+            private NodeValueType _type;
             private object _value;
-            private bool _isArray;
         }
         class ChangeEffectPropertyValueOperation : GraphOperation
         {

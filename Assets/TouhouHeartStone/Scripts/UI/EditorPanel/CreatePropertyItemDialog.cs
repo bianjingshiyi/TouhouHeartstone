@@ -55,7 +55,7 @@ namespace UI
             var index = _typeDropdown.value;
             if (index >= 0 && index < _propTypes.Length)
                 type = _propTypes[index].type;
-            var item = new PropertyItemInfo(_propertyName.text, type, _isArrayToggle.isOn);
+            var item = new PropertyItemInfo(_propertyName.text, new NodeValueType(type, _isArrayToggle.isOn));
             return item;
         }
         #endregion

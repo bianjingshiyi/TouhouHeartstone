@@ -107,6 +107,8 @@ namespace Game
         [TranslateMsg("编辑器类型名称")]
         public const string EDITOR_TYPE_NAME_PILE_NAME = "牌堆名";
         [TranslateMsg("编辑器类型名称")]
+        public const string EDITOR_TYPE_NAME_BUFF_REFERENCE = "增益定义引用";
+        [TranslateMsg("编辑器类型名称")]
         public const string EDITOR_TYPE_NAME_UNKNOWN = "未知类型";
         public MainManager game
         {
@@ -125,6 +127,7 @@ namespace Game
             { ActionNodeValueType.integer, StringTable.EDITOR_TYPE_NAME_INT },
             { ActionNodeValueType.text, StringTable.EDITOR_TYPE_NAME_STRING },
             { ActionNodeValueType.cardReference, StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE },
+            { ActionNodeValueType.buffReference, EDITOR_TYPE_NAME_BUFF_REFERENCE },
             { ActionNodeValueType.pileNameCollection, StringTable.EDITOR_TYPE_NAME_PILE },
             { ActionNodeValueType.keywords, StringTable.EDITOR_TYPE_NAME_KEYWORDS_TYPE }
         };

@@ -13,56 +13,24 @@ namespace UI
     public partial class ActionNodeGraphPanel : MonoBehaviour
     {
         #region 公有方法
+
+        #region 创建节点
         /// <summary>
         /// 在指定位置上创建一个具有指定名称，输入，常量值和输出的节点。
         /// </summary>
         /// <param name="nodeName"></param>
         /// <param name="outputViewData"></param>
         /// <returns></returns>
-        public ActionNodeItem createNode(float posX, float posY, string nodeName,
+        public ActionNodeItem createActionNode(float posX, float posY, string nodeName,
             InputPortInfo[] inputViewData,
             PortItemInfo[] outputViewData,
             string obsoleteMsg = null,
             int nodeKey = -1,
             bool visualEffect = false)
         {
-            //当对应名称数组长度为0的时候，直接隐藏列表根节点。
-            ActionNodeItem actionNodeItem = createNode(posX, posY);
-            actionNodeItem.onDefaultValueChanged += onNodeInputDefaultValueChangedCallback;
-            actionNodeItem.onClickDefaultValueButton += onClickActionNodeItemDefaultValueButton;
-            actionNodeItem.onClickDefaultValueCardButton += onClickActionNodeItemDefaultValueCardButton;
-            actionNodeItem.onClickDefaultValueCardEditButton += onClickActionNodeItemDefaultValueCardEditButton;
-            actionNodeItem.onClickDefaultValueItemButton += onClickActionNodeItemDefaultValueItemButton;
-            actionNodeItem.onClickDefaultValueItemCardButton += onClickActionNodeItemDefaultValueItemCardButton;
-            actionNodeItem.onClickDefaultValueItemCardEditButton += onClickActionNodeItemDefaultValueItemCardEditButton;
-            actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
-            actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
-            actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
-            actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
-            actionNodeItem.onClickHelpButton += onActionNodeClickHelpButton;
-            actionNodeItem.onClickObsoleteButton += onActionNodeClickObsoleteButtonCallback;
-            actionNodeItem.onClickVisualEffectButton += onActionNodeVisualEffectButtonClickedCallback;
-
-            actionNodeItem.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
-            actionNodeItem.onClickEffectPropertyItemButton += onClickEffectPropertyItemButtonCallback;
-            actionNodeItem.onClickEffectPropertyItemCardButton += onClickEffectPropertyItemCardButtonCallback;
-            actionNodeItem.onClickEffectPropertyItemCardEditButton += onClickEffectPropertyItemCardEditButtonCallback;
-            actionNodeItem.onEffectPropertyItemValueChanged += onEffectPropertyItemValueChangedCallback;
-            actionNodeItem.onClickEffectPropertyButton += onClickEffectPropertyButtonCallback;
-            actionNodeItem.onClickEffectPropertyCardButton += onClickEffectPropertyCardButtonCallback;
-            actionNodeItem.onClickEffectPropertyCardEditButton += onClickEffectPropertyCardEditButtonCallback;
-            actionNodeItem.onEffectPropertyValueChanged += onEffectPropertyValueChangedCallback;
-            actionNodeItem.onDeleteEffectProperty += onDeleteEffectPropertyCallback;
-            actionNodeItem.onClickEffectPropertyAddItemButton += onClickEffectPropertyAddItemButtonCallback;
-            actionNodeItem.onClickEffectPropertyRemoveItemButton += onClickEffectPropertyRemoveItemButtonCallback;
-
+            ActionNodeItem actionNodeItem = createNode(posX, posY, nodeName, inputViewData, outputViewData, obsoleteMsg, nodeKey, visualEffect);
             actionNodeItem.switchToActionNode();
-            actionNodeItem.setName(nodeName);
-            actionNodeItem.setInputs(inputViewData);
-            actionNodeItem.setOutputs(outputViewData);
-            actionNodeItem.setObsoleteMsg(obsoleteMsg);
-            actionNodeItem.setDocumentKey(nodeKey);
-            actionNodeItem.showVisualEffectButton(visualEffect);
+            clearFreePlaceCheckRegion();
             return actionNodeItem;
         }
         /// <summary>
@@ -73,85 +41,13 @@ namespace UI
             string[] targetCheckerTypes, (int typeIndex, string name, string errorTip)[] targetCheckers,
             PortItemInfo[] outputViewData)
         {
-            ActionNodeItem actionNodeItem = Instantiate(_actionNodeItemTemplate, _actionNodesRoot);
-            _actionNodeItemList.Add(actionNodeItem);
-            actionNodeItem.gameObject.SetActive(true);
-            RectTransform itemRect = actionNodeItem.transform as RectTransform;
-            itemRect.anchoredPosition = new Vector2(posX, posY);
-            actionNodeItem.setName(nodeName);
+            ActionNodeItem actionNodeItem = createNode(posX, posY, nodeName, inputViewData, outputViewData, null, -1, true);
             actionNodeItem.switchToActiveEntryNode();
             actionNodeItem.setActiveEntry(targetCheckerTypes, targetCheckers);
-            actionNodeItem.setInputs(inputViewData);
-            actionNodeItem.setOutputs(outputViewData);
-            actionNodeItem.showVisualEffectButton(true);
-
-            actionNodeItem.onBeginDragInputNode += onBeginDragInputNode;
-            actionNodeItem.onDragInputNode += onDragInputNode;
-            actionNodeItem.onEndDragInputNode += onEndDragInputNode;
-            actionNodeItem.onClickInputNode += onClickInputNode;
-            actionNodeItem.onBeginDragOutputNode += onBeginDragOutputNode;
-            actionNodeItem.onDragOutputNode += onDragOutputNode;
-            actionNodeItem.onEndDragOutputNode += onEndDragOutputNode;
-            actionNodeItem.onClickOutputNode += onClickOutputNode;
-            actionNodeItem.onPointerDown += onPointerDownActionNodeItem;
-            actionNodeItem.onPointerUp += onPointerUpActionNodeItem;
-            actionNodeItem.onBeginDrag += onBeginDragActionNodeItem;
-            actionNodeItem.onDrag += onDragActionNodeItem;
-            actionNodeItem.onEndDrag += onEndDragActionNodeItem;
-            actionNodeItem.onDefaultValueChanged += onNodeInputDefaultValueChangedCallback;
-            actionNodeItem.onClickDefaultValueButton += onClickActionNodeItemDefaultValueButton;
-            actionNodeItem.onClickDefaultValueCardButton += onClickActionNodeItemDefaultValueCardButton;
-            actionNodeItem.onClickDefaultValueCardEditButton += onClickActionNodeItemDefaultValueCardEditButton;
-            actionNodeItem.onClickDefaultValueItemButton += onClickActionNodeItemDefaultValueItemButton;
-            actionNodeItem.onClickDefaultValueItemCardButton += onClickActionNodeItemDefaultValueItemCardButton;
-            actionNodeItem.onClickDefaultValueItemCardEditButton += onClickActionNodeItemDefaultValueItemCardEditButton;
-            actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
-            actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
-            actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
-            actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
-            actionNodeItem.onUpdateTransform += onActionNodeItemUpdateTransform;
-
-            actionNodeItem.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
-            actionNodeItem.onClickEffectPropertyItemButton += onClickEffectPropertyItemButtonCallback;
-            actionNodeItem.onClickEffectPropertyItemCardButton += onClickEffectPropertyItemCardButtonCallback;
-            actionNodeItem.onClickEffectPropertyItemCardEditButton += onClickEffectPropertyItemCardEditButtonCallback;
-            actionNodeItem.onEffectPropertyItemValueChanged += onEffectPropertyItemValueChangedCallback;
-            actionNodeItem.onClickEffectPropertyButton += onClickEffectPropertyButtonCallback;
-            actionNodeItem.onClickEffectPropertyCardButton += onClickEffectPropertyCardButtonCallback;
-            actionNodeItem.onClickEffectPropertyCardEditButton += onClickEffectPropertyCardEditButtonCallback;
-            actionNodeItem.onEffectPropertyValueChanged += onEffectPropertyValueChangedCallback;
-            actionNodeItem.onDeleteEffectProperty += onDeleteEffectPropertyCallback;
-            actionNodeItem.onClickEffectPropertyAddItemButton += onClickEffectPropertyAddItemButtonCallback;
-            actionNodeItem.onClickEffectPropertyRemoveItemButton += onClickEffectPropertyRemoveItemButtonCallback;
-            actionNodeItem.onClickVisualEffectButton += onActionNodeVisualEffectButtonClickedCallback;
-
             clearFreePlaceCheckRegion();
             return actionNodeItem;
         }
-        /// <summary>
-        /// 在指定位置上创建一个具有指定名称的节点。
-        /// </summary>
-        /// <param name="nodeName"></param>
-        /// <returns></returns>
-        public ActionNodeItem createNode(float posX, float posY, string nodeName)
-        {
-            //当对应名称数组长度为0的时候，直接隐藏列表根节点。
-            ActionNodeItem actionNodeItem = createNode(posX, posY);
-            actionNodeItem.onDefaultValueChanged += onNodeInputDefaultValueChangedCallback;
-            actionNodeItem.onClickDefaultValueButton += onClickActionNodeItemDefaultValueButton;
-            actionNodeItem.onClickDefaultValueCardButton += onClickActionNodeItemDefaultValueCardButton;
-            actionNodeItem.onClickDefaultValueCardEditButton += onClickActionNodeItemDefaultValueCardEditButton;
-            actionNodeItem.onClickDefaultValueItemButton += onClickActionNodeItemDefaultValueItemButton;
-            actionNodeItem.onClickDefaultValueItemCardButton += onClickActionNodeItemDefaultValueItemCardButton;
-            actionNodeItem.onClickDefaultValueItemCardEditButton += onClickActionNodeItemDefaultValueItemCardEditButton;
-            actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
-            actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
-            actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
-            actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
-            actionNodeItem.switchToActionNode();
-            actionNodeItem.setName(nodeName);
-            return actionNodeItem;
-        }
+        #endregion
 
         /// <summary>
         /// 将节点的指定输出连接到目标节点的输入上
@@ -349,6 +245,14 @@ namespace UI
         public void initEventReferences(string[] eventNames, EventReference[] eventValues)
         {
             _actionNodeItemTemplate.initEventReferences(eventNames, eventValues);
+        }
+        public void initBuffReferences(string[] buffNames, BuffReference[] buffValues)
+        {
+            _actionNodeItemTemplate.initBuffReferences(buffNames, buffValues);
+            foreach (var node in _actionNodeItemList)
+            {
+                node.initBuffReferences(buffNames, buffValues);
+            }
         }
         public void resetView()
         {
@@ -1063,35 +967,15 @@ namespace UI
             setFocused();
             onNodeInputDefaultValueChanged?.Invoke(item, constValueIndex, value);
         }
-        private void onClickActionNodeItemDefaultValueButton(ActionNodeItem item, int constValueIndex)
+        private void onClickActionNodeItemDefaultValueButton(ActionNodeItem item, int constValueIndex, ValueInputFieldButton type)
         {
             setFocused();
-            onClickActionNodeDefaultValueButton?.Invoke(item, constValueIndex);
+            onClickActionNodeDefaultValueButton?.Invoke(item, constValueIndex, type);
         }
-        private void onClickActionNodeItemDefaultValueCardButton(ActionNodeItem item, int constValueIndex)
+        private void onClickActionNodeItemDefaultValueItemButton(ActionNodeItem item, int constValueIndex, int itemIndex, ValueInputFieldButton type)
         {
             setFocused();
-            onClickActionNodeDefaultValueCardButton?.Invoke(item, constValueIndex);
-        }
-        private void onClickActionNodeItemDefaultValueCardEditButton(ActionNodeItem item, int constValueIndex)
-        {
-            setFocused();
-            onClickActionNodeDefaultValueCardEditButton?.Invoke(item, constValueIndex);
-        }
-        private void onClickActionNodeItemDefaultValueItemButton(ActionNodeItem item, int constValueIndex, int itemIndex)
-        {
-            setFocused();
-            onClickActionNodeDefaultValueItemButton?.Invoke(item, constValueIndex, itemIndex);
-        }
-        private void onClickActionNodeItemDefaultValueItemCardButton(ActionNodeItem item, int constValueIndex, int itemIndex)
-        {
-            setFocused();
-            onClickActionNodeDefaultValueItemCardButton?.Invoke(item, constValueIndex, itemIndex);
-        }
-        private void onClickActionNodeItemDefaultValueItemCardEditButton(ActionNodeItem item, int constValueIndex, int itemIndex)
-        {
-            setFocused();
-            onClickActionNodeDefaultValueItemCardEditButton?.Invoke(item, constValueIndex, itemIndex);
+            onClickActionNodeDefaultValueItemButton?.Invoke(item, constValueIndex, itemIndex, type);
         }
         private void onClickTriggerNodeAddTargetCheckerButton(ActionNodeItem item)
         {
@@ -1140,60 +1024,25 @@ namespace UI
             setFocused();
             onClickAddEffectPropertyButton?.Invoke();
         }
-        private void onClickEffectPropertyItemButtonCallback(string name, int index)
+        private void onDeleteEffectPropertyCallback(string name)
         {
             setFocused();
-            onClickEffectPropertyItemButton?.Invoke(name, index);
+            onDeleteEffectProperty?.Invoke(name);
         }
-        private void onClickEffectPropertyItemCardButtonCallback(string name, int index)
+        private void onClickEffectPropertyButtonCallback(string name, ValueInputFieldButton button)
         {
             setFocused();
-            onClickEffectPropertyItemCardButton?.Invoke(name, index);
-        }
-        private void onClickEffectPropertyItemCardEditButtonCallback(string name, int index)
-        {
-            setFocused();
-            onClickEffectPropertyItemCardEditButton?.Invoke(name, index);
-        }
-        private void onEffectPropertyItemValueChangedCallback(string name, int index, object value)
-        {
-            setFocused();
-            onEffectPropertyItemValueChanged?.Invoke(name, index, value);
-        }
-        private void onClickEffectPropertyAddItemButtonCallback(string name)
-        {
-            setFocused();
-            onClickEffectPropertyAddItemButton?.Invoke(name);
-        }
-        private void onClickEffectPropertyRemoveItemButtonCallback(string name, int index)
-        {
-            setFocused();
-            onClickEffectPropertyRemoveItemButton?.Invoke(name, index);
-        }
-        private void onClickEffectPropertyButtonCallback(string name)
-        {
-            setFocused();
-            onClickEffectPropertyButton?.Invoke(name);
-        }
-        private void onClickEffectPropertyCardButtonCallback(string name)
-        {
-            setFocused();
-            onClickEffectPropertyCardButton?.Invoke(name);
-        }
-        private void onClickEffectPropertyCardEditButtonCallback(string name)
-        {
-            setFocused();
-            onClickEffectPropertyCardEditButton?.Invoke(name);
+            onClickEffectPropertyButton?.Invoke(name, button);
         }
         private void onEffectPropertyValueChangedCallback(string name, object value)
         {
             setFocused();
             onEffectPropertyValueChanged?.Invoke(name, value);
         }
-        private void onDeleteEffectPropertyCallback(string name)
+        private void onClickEffectPropertyItemButtonCallback(string name, int index, ValueInputFieldButton button)
         {
             setFocused();
-            onDeleteEffectProperty?.Invoke(name);
+            onClickEffectPropertyItemButton?.Invoke(name, index, button);
         }
         #endregion
 
@@ -1244,7 +1093,29 @@ namespace UI
             RectTransform itemRect = actionNodeItem.transform as RectTransform;
             //设置当前节点的位置
             itemRect.anchoredPosition = new Vector2(posX, posY);
+
+            initNodeCallbacks(actionNodeItem);
+
             //调整当前背景大小
+            clearFreePlaceCheckRegion();
+            return actionNodeItem;
+        }
+        private ActionNodeItem createNode(float posX, float posY, string nodeName,
+            InputPortInfo[] inputViewData, PortItemInfo[] outputViewData,
+            string obsoleteMsg = null, int nodeKey = -1, bool visualEffect = false)
+        {
+            var actionNodeItem = createNode(posX, posY);
+            actionNodeItem.setName(nodeName);
+            actionNodeItem.setInputs(inputViewData);
+            actionNodeItem.setOutputs(outputViewData);
+            actionNodeItem.setObsoleteMsg(obsoleteMsg);
+            actionNodeItem.setDocumentKey(nodeKey);
+            actionNodeItem.showVisualEffectButton(visualEffect);
+            return actionNodeItem;
+        }
+        private void initNodeCallbacks(ActionNodeItem actionNodeItem)
+        {
+            // UI操作。
             actionNodeItem.onBeginDragInputNode += onBeginDragInputNode;
             actionNodeItem.onDragInputNode += onDragInputNode;
             actionNodeItem.onEndDragInputNode += onEndDragInputNode;
@@ -1259,8 +1130,29 @@ namespace UI
             actionNodeItem.onDrag += onDragActionNodeItem;
             actionNodeItem.onEndDrag += onEndDragActionNodeItem;
             actionNodeItem.onUpdateTransform += onActionNodeItemUpdateTransform;
-            clearFreePlaceCheckRegion();
-            return actionNodeItem;
+
+            // 输入默认值。
+            actionNodeItem.onDefaultValueChanged += onNodeInputDefaultValueChangedCallback;
+            actionNodeItem.onClickDefaultValueButton += onClickActionNodeItemDefaultValueButton;
+            actionNodeItem.onClickDefaultValueItemButton += onClickActionNodeItemDefaultValueItemButton;
+
+            // 效果属性。
+            actionNodeItem.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
+            actionNodeItem.onClickEffectPropertyItemButton += onClickEffectPropertyItemButtonCallback;
+            actionNodeItem.onClickEffectPropertyButton += onClickEffectPropertyButtonCallback;
+            actionNodeItem.onEffectPropertyValueChanged += onEffectPropertyValueChangedCallback;
+            actionNodeItem.onDeleteEffectProperty += onDeleteEffectPropertyCallback;
+
+            // 杂项按钮。
+            actionNodeItem.onClickHelpButton += onActionNodeClickHelpButton;
+            actionNodeItem.onClickObsoleteButton += onActionNodeClickObsoleteButtonCallback;
+            actionNodeItem.onClickVisualEffectButton += onActionNodeVisualEffectButtonClickedCallback;
+
+            // 目标检查器。
+            actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
+            actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
+            actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
+            actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
         }
         private Vector3 ClampDesiredScale(Vector3 desiredScale)//clamp函数
         {
@@ -1383,27 +1275,11 @@ namespace UI
         /// <summary>
         /// 当节点的常量的编辑按钮被点击，参数为被点击的节点和常量索引
         /// </summary>
-        public event Action<ActionNodeItem, int> onClickActionNodeDefaultValueButton;
-        /// <summary>
-        /// 当节点的常量的卡牌选择按钮被点击，参数为被点击的节点和常量索引
-        /// </summary>
-        public event Action<ActionNodeItem, int> onClickActionNodeDefaultValueCardButton;
-        /// <summary>
-        /// 当节点的常量的卡牌编辑按钮被点击，参数为被点击的节点和常量索引
-        /// </summary>
-        public event Action<ActionNodeItem, int> onClickActionNodeDefaultValueCardEditButton;
+        public event Action<ActionNodeItem, int, ValueInputFieldButton> onClickActionNodeDefaultValueButton;
         /// <summary>
         /// 当点击节点的常量的子项的编辑按钮，参数为点击的节点，常量索引和常量子项的索引
         /// </summary>
-        public event Action<ActionNodeItem, int, int> onClickActionNodeDefaultValueItemButton;
-        /// <summary>
-        /// 当点击节点的常量的子项的卡牌选择按钮，参数为点击的节点，常量索引和常量子项的索引
-        /// </summary>
-        public event Action<ActionNodeItem, int, int> onClickActionNodeDefaultValueItemCardButton;
-        /// <summary>
-        /// 当点击节点的常量的子项的卡牌编辑按钮，参数为点击的节点，常量索引和常量子项的索引
-        /// </summary>
-        public event Action<ActionNodeItem, int, int> onClickActionNodeDefaultValueItemCardEditButton;
+        public event Action<ActionNodeItem, int, int, ValueInputFieldButton> onClickActionNodeDefaultValueItemButton;
         /// <summary>
         /// 当点击触发器节点的添加目标按钮
         /// </summary>
@@ -1442,24 +1318,17 @@ namespace UI
         /// 当点击一个节点的输出端口。
         /// </summary>
         public event Action<ActionNodeItem, int> onClickOutputPort;
+        public event Action<string> onClickActionNodeObsoleteButton;
 
         #region 效果属性
         /// <summary>
         /// 当确认创建自定义属性。
         /// </summary>
         public event Action onClickAddEffectPropertyButton;
-        public event Action<string, int> onClickEffectPropertyItemButton;
-        public event Action<string, int> onClickEffectPropertyItemCardButton;
-        public event Action<string, int> onClickEffectPropertyItemCardEditButton;
-        public event Action<string, int, object> onEffectPropertyItemValueChanged;
-        public event Action<string> onClickEffectPropertyButton;
-        public event Action<string> onClickEffectPropertyCardButton;
-        public event Action<string> onClickEffectPropertyCardEditButton;
-        public event Action<string, object> onEffectPropertyValueChanged;
         public event Action<string> onDeleteEffectProperty;
-        public event Action<string> onClickEffectPropertyAddItemButton;
-        public event Action<string, int> onClickEffectPropertyRemoveItemButton;
-        public event Action<string> onClickActionNodeObsoleteButton;
+        public event Action<string, object> onEffectPropertyValueChanged;
+        public event Action<string, ValueInputFieldButton> onClickEffectPropertyButton;
+        public event Action<string, int, ValueInputFieldButton> onClickEffectPropertyItemButton;
         #endregion
         #endregion
         #region 属性字段

@@ -36,7 +36,7 @@ namespace UI
                 var info = modifierInfos[i];
                 var valueInfo = new ActionNodeValueInfo()
                 {
-                    type = info.valueType, 
+                    type = new NodeValueType(info.valueType), 
                     value = info.value
                 };
                 item.updateValues(info.propertyTypeIndex, info.customPropertyName, info.modifyTypes, info.modifyTypeIndex, valueInfo);

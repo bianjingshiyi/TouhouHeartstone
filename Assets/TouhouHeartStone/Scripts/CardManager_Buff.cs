@@ -81,7 +81,8 @@ namespace Game
         {
             if (!tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
-                throw new KeyNotFoundException($"不存在卡池{cardPoolRef}");
+                buffDefine = null;
+                return false;
             }
             buffDefine = cardPool.buffDefineList.Find(b => b.id == buffDefineId);
             return buffDefine != null;

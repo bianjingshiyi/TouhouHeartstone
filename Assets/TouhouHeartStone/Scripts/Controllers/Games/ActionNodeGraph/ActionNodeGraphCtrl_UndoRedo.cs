@@ -233,12 +233,12 @@ namespace Controllers
                 Node node = _graphCtrl.graph.findNodeById(_nodeId);
                 if (value is ICloneable cloneable)
                 {
-                    node.setInputDefaultValue(_inputName, _paramIndex, cloneable.Clone());
+                    value = cloneable.Clone();
                 }
+                if (value == null)
+                    node.removeInputDefaultValue(_inputName, _paramIndex);
                 else
-                {
                     node.setInputDefaultValue(_inputName, _paramIndex, value);
-                }
                 _graphCtrl.updateNodeItemInputPorts(node);
             }
             public override void undo()
