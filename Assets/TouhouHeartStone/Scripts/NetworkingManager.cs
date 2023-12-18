@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using BJSYGameCore;
@@ -92,11 +94,24 @@ namespace Game
         }
         public string[] getAddresses()
         {
-            var hostName = Dns.GetHostName();
-            var hostEntry = Dns.GetHostEntry(hostName);
-            var interNetworks = hostEntry.AddressList.Where(ip => ip.AddressFamily == AddressFamily.InterNetwork);
-            var addresses = interNetworks.Select(i => i.ToString() + ":" + LANPort);
-            return addresses.ToArray();
+            List<string> result = new List<string>();
+            foreach (var inf in NetworkInterface.GetAllNetworkInterfaces()) 
+            {
+                if (inf.IsReceiveOnly || 
+                    inf.OperationalStatus != OperationalStatus.Up || 
+                    inf.NetworkInterfaceType == NetworkInterfaceType.Loopback)
+                    continue;
+
+                IPInterfaceProperties ipProps = inf.GetIPProperties();
+                foreach (var addr in ipProps.UnicastAddresses)
+                {
+                    if (addr.Address.AddressFamily != AddressFamily.InterNetwork)
+                        continue;
+                    result.Add($"{addr.Address.ToString()}:{LANPort}");
+                }
+            }
+
+            return result.ToArray();
         }
         public int[] getPorts()
         {

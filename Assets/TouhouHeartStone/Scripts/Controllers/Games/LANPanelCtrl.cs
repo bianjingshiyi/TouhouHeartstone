@@ -258,11 +258,10 @@ namespace Controllers
             setRoomDelegates();
 
             hide();
-            var addresses = network.getAddresses();
             RoomData roomData = logic.CurrentRoom;
             var roomMode = isServerMode ? RoomMode.NetworkingClient : RoomMode.NetworkingHost;
-            var ipText = "IP：" + string.Join(", ", addresses);
-            roomCtrl.display(roomData, ipText, roomMode);
+            string text = isServerMode ? string.Empty : "IP：" + string.Join(", ", network.getAddresses());
+            roomCtrl.display(roomData, text, roomMode);
             //  加载聊天框
             scene.chatCtrl.display(roomData);
         }
