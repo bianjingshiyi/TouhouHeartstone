@@ -242,6 +242,7 @@ namespace Game
             KEYWORD.IMMUNITY,
             KEYWORD.MISSION,
             KEYWORD.PERMANENT_FROZEN,
+            KEYWORD.UNPLAYABLE,
             KEYWORD.CAN_BE_CHARGED,
             DEFINE.SPELL_DAMAGE,
             DEFINE.DAMAGE_REDUCE,

@@ -93,6 +93,10 @@ namespace TouhouHeartstone
         /// 可蓄力
         /// </summary>
         public const string CAN_BE_CHARGED = "preheat";
+        /// <summary>
+        /// 不能被使用
+        /// </summary>
+        public const string UNPLAYABLE = "unplayable";
 
         #region 效果关键词
         /// <summary>

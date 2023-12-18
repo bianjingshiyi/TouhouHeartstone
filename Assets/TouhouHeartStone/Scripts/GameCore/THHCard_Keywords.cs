@@ -68,6 +68,10 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(game, CARD.CHARGED_LEVEL);
         }
+        public static bool isUnplayable(this ICardData card, IGame game)
+        {
+            return card.hasKeyword(game, KEYWORD.UNPLAYABLE);
+        }
         public static int getSpellDamage(this ICardData card, IGame game)
         {
             return card.getProp<int>(game, DEFINE.SPELL_DAMAGE);

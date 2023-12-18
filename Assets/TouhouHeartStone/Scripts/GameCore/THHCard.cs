@@ -187,6 +187,11 @@ namespace TouhouHeartstone
                 info = ONLY_SKILL_OR_HAND;
                 return false;
             }
+            if (card.isUnplayable(game))
+            {
+                info = INFO_UNPLAYABLE;
+                return false;
+            }
             if (card.define.isServant())
             {
                 if (player.getGem() < card.getCost(game))//费用不够
@@ -1476,6 +1481,8 @@ namespace TouhouHeartstone
         const string NOT_YOUR_CARD = "你不能使用不属于你的卡牌";
         [TranslateMsg]
         const string ONLY_SKILL_OR_HAND = "你只能使用技能或手牌";
+        [TranslateMsg]
+        const string INFO_UNPLAYABLE = "该卡牌无法被使用";
         [TranslateMsg]
         const string NOT_ENOUGH_SPIRIT = "灵力值不足";
         [TranslateMsg]

@@ -114,6 +114,7 @@ namespace Game
             addKeywordInfo(KEYWORD.IMMUNITY, StringTable.GAME_KEYWORD_IMMUNITY, KEYWORD_DESC_IMMUNITY);
             addKeywordInfo(KEYWORD.MISSION, StringTable.GAME_KEYWORD_MISSION, KEYWORD_DESC_MISSION);
             addKeywordInfo(KEYWORD.PERMANENT_FROZEN, StringTable.GAME_KEYWORD_PERMANENT_FROZEN, KEYWORD_DESC_PERMANENT_FROZEN);
+            addKeywordInfo(KEYWORD.UNPLAYABLE, KEYWORD_NAME_UNPLAYABLE, KEYWORD_DESC_UNPLAYABLE);
             addKeywordInfo(DEFINE.SPELL_DAMAGE, StringTable.GAME_CARD_PROP_NAME_SPELL_DAMAGE, KEYWORD_DESC_SPELL_DAMAGE, typeof(int));
             addKeywordInfo(DEFINE.DAMAGE_REDUCE, StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE, KEYWORD_DESC_DAMAGE_REDUCE, typeof(int));
 
@@ -151,6 +152,8 @@ namespace Game
         public const string KEYWORD_NAME_SEAL = "封印";
         [TranslateMsg("关键词名称-信仰对决")]
         public const string KEYWORD_NAME_FAITHDUEL = "信仰对决";
+        [TranslateMsg("关键词名称-无法使用")]
+        public const string KEYWORD_NAME_UNPLAYABLE = "无法使用";
 
         [TranslateMsg("关键词描述-守卫")]
         public const string KEYWORD_DESC_TAUNT = "敌人必须优先攻击具有<b>守卫</b>的角色。";
@@ -192,6 +195,8 @@ namespace Game
         public const string KEYWORD_DESC_DEATHRATTLE = "在仆从死亡或道具被摧毁后，产生某些效果。";
         [TranslateMsg("关键词描述-永久禁锢")]
         public const string KEYWORD_DESC_PERMANENT_FROZEN = "失去所有攻击机会。";
+        [TranslateMsg("关键词描述-无法使用")]
+        public const string KEYWORD_DESC_UNPLAYABLE = "无法从手牌中被主动使用。";
         [TranslateMsg("关键词描述-蓄力")]
         public const string KEYWORD_DESC_CAN_BE_CHARGED = "你的回合结束后，为手牌中所有灵力值消耗小于或等于你灵力珠数量的<b>蓄力</b>牌进行蓄力。";
         [TranslateMsg("关键词描述-法术伤害")]
