@@ -1431,6 +1431,15 @@ namespace Game
             outEvent = await card.setChargeLevel(game, level);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
+        [Obsolete]
+        public static readonly Dictionary<int, string> obsoleteConstNodeDict = new Dictionary<int, string>()
+        {
+            { BuiltinActionDefineID.BooleanConst, "value" },
+            { BuiltinActionDefineID.IntegerConst, "value" },
+            { BuiltinActionDefineID.StringConst, "value" },
+            { BuiltinActionDefineID.GetCardDefine, "cardRef" },
+            { BuiltinActionDefineID.GetBuffDefine, GetBuffDefineAction.constName },
+        };
     }
 }
 

@@ -74,6 +74,7 @@ namespace Game
 
 
         /// 获取单个卡牌定义
+        [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefine, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine getCardDefine(CardEngine game,

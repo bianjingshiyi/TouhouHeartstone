@@ -17,6 +17,7 @@ namespace TouhouCardEngine
             {
                 PortDefine.Value(typeof(string), "value", "Value")
             };
+            obsoleteMsg = "";
             category = EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER;
         }
         public override async Task<ControlOutput> run(Flow flow, Node node)

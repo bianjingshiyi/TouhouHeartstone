@@ -17,6 +17,7 @@ namespace TouhouCardEngine
             {
                 PortDefine.Value(typeof(bool), "return", "Value")
             };
+            obsoleteMsg = "";
             category = EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER;
         }
 

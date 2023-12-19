@@ -17,6 +17,7 @@ namespace TouhouCardEngine
             {
                 PortDefine.Value(typeof(BuffDefine), outputName, "BuffDefine")
             };
+            obsoleteMsg = "";
             category = "Buff";
         }
         private PortDefine[] _inputs;

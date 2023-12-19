@@ -1179,7 +1179,7 @@ namespace Game
             #region 修复节点信息
             void fixGraph(ActionGraph graph)
             {
-                foreach (var node in graph.nodes)
+                foreach (var node in graph.nodes.ToArray())
                 {
                     fixNode(node);
                 }
@@ -1203,6 +1203,7 @@ namespace Game
                 fixOldReferences(actionNode);
                 fixConditionalNode(actionNode);
                 fixBuiltinCardRefs(actionNode);
+                fixConstsToDefaultValues(actionNode);
             }
             // 修复未知或过时的节点。
             async Task fixUnknownOrObsoleteNode(ActionNode actionNode)
@@ -1414,6 +1415,29 @@ namespace Game
                     var newValue = convertBuiltinRefToClassic(defVal.value);
                     if (newValue != null)
                         actionNode.setInputDefaultValue(defVal.name, defVal.paramIndex, newValue);
+                }
+            }
+            void fixConstsToDefaultValues(ActionNode action)
+            {
+                if (action.defineRef == null)
+                    return;
+                var constValues = EffectEditorLibrary.obsoleteConstNodeDict;
+                foreach (var constPair in constValues)
+                {
+                    if (action.defineRef.isBuiltinReference(constPair.Key))
+                    {
+                        var output = action.getOutputPorts<ValueOutput>().FirstOrDefault();
+                        var constName = constPair.Value;
+                        foreach (var connection in output.connections)
+                        {
+                            var dest = connection.destination;
+                            if (dest is not ValueInput vi)
+                                continue;
+                            dest.node.setInputDefaultValue(vi.name, vi.paramIndex, action.getInputDefaultValue(constName));
+                        }
+                        action.graph.removeNode(action);
+                        break;
+                    }
                 }
             }
             #endregion
