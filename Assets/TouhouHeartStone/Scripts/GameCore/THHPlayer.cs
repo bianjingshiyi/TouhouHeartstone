@@ -52,8 +52,6 @@ namespace TouhouHeartstone
         {
             return SetMaxGemEventDefine.doEvent(game, player, value);
         }
-        public static void setFatigue(this Player player, CardEngine game, int value) => player.setProp(game, PLAYER.FATIGUE, value);
-        public static int getFatigue(this Player player) => player.getProp<int>(PLAYER.FATIGUE);
         #endregion
 
         #region 抽牌
@@ -132,6 +130,15 @@ namespace TouhouHeartstone
                 drawEvent = null;
                 return Task.CompletedTask;
             }
+        }
+        #endregion
+
+        #region 疲劳
+        public static void setFatigue(this Player player, CardEngine game, int value) => player.setProp(game, PLAYER.FATIGUE, value);
+        public static int getFatigue(this Player player) => player.getProp<int>(PLAYER.FATIGUE);
+        public static Task<EventArg> fatigue(this Player player, CardEngine game)
+        {
+            return FatigueEventDefine.doEvent(game, player);
         }
         #endregion
 

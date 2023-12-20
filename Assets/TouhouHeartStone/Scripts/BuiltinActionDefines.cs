@@ -58,6 +58,7 @@ namespace Game
         public const int GetPlayerTurnCount = Type_Function + Category_Player + 18;    // 获取玩家的回合数
         public const int IsOffensivePlayer = Type_Function + Category_Player + 19;    // 玩家是否是先手
         public const int GetAllPlayers = Type_Function + Category_Player + 20;    // 获取所有玩家
+        public const int GetFatigue = Type_Function + Category_Player + 21; // 获取疲劳层数
 
         // 卡牌
         public const int ThisCard = Type_Function + Category_Card + 1; // 这张卡牌
@@ -251,6 +252,9 @@ namespace Game
         public const int AddPlayerMaxGem = Type_Action + Category_Player + 10;    // 增加灵力上限
         public const int FaithDuel_Obsolete = Type_Action + Category_Player + 11;    // 信仰对决（过时）
         public const int FaithDuel = Type_Action + Category_Player + 12;    // 信仰对决
+        public const int SetFatigue = Type_Action + Category_Player + 13; // 设置疲劳层数
+        public const int AddFatigue = Type_Action + Category_Player + 14; // 增加疲劳层数
+        public const int TakeFatigueDamage = Type_Action + Category_Player + 15; // 受到疲劳伤害
 
         // 卡牌
         public const int Damage = Type_Action + Category_Card + 1;    // 造成伤害

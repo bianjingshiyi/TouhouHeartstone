@@ -445,7 +445,15 @@ namespace Game
         public const string EDITOR_NODE_IS_OFFENSIVE_PLAYER = "玩家是否是先手";
         [TranslateMsg("节点名称")]
         public const string EDITOR_NODE_GET_ALL_PLAYERS = "获取所有玩家";
-        
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_GET_FATIGUE = "获取疲劳层数";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_SET_FATIGUE = "设置疲劳层数";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_ADD_FATIGUE = "增加疲劳层数";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_TAKE_FATIGUE_DAMAGE = "受到疲劳伤害";
+
 
         [TranslateMsg("节点参数 TargetName")]
         const string EDITOR_PARAM_TARGET_NAME = "目标名";
@@ -457,6 +465,10 @@ namespace Game
         const string EDITOR_PARAM_NAME_SET_MAX_GEM_EVENT = "设置最大灵力值事件";
         [TranslateMsg("节点参数")]
         const string EDITOR_PARAM_NAME_FAITH_DUEL_EVENT = "信仰对决事件";
+        [TranslateMsg("节点参数")]
+        const string EDITOR_PARAM_NAME_FATIGUE_EVENT = "疲劳事件";
+        [TranslateMsg("节点参数")]
+        const string EDITOR_PARAM_FATIGUE_COUNT = "疲劳层数"; 
 
 
         /// <summary>
@@ -920,7 +932,47 @@ namespace Game
                 return false;
             return game.getSortedPlayers().FirstOrDefault() == player;
         }
-        
+
+
+        [THHActionMethod(BuiltinActionDefineID.GetFatigue, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_GET_FATIGUE)]
+        [return: ActionNodeParam(EDITOR_PARAM_FATIGUE_COUNT)]
+        public static int getFatigue(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            if (player == null)
+                return 0;
+            return player.getFatigue();
+        }
+
+        [THHActionMethod(BuiltinActionDefineID.SetFatigue, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_SET_FATIGUE)]
+        public static void setFatigue(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int value)
+        {
+            if (game == null || player == null)
+                return;
+            player.setFatigue(game, value);
+        }
+        [THHActionMethod(BuiltinActionDefineID.AddFatigue, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_FATIGUE)]
+        public static void addFatigue(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int value)
+        {
+            if (game == null || player == null)
+                return;
+            player.setFatigue(game, player.getFatigue() + value);
+        }
+        [THHActionMethod(BuiltinActionDefineID.TakeFatigueDamage, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_TAKE_FATIGUE_DAMAGE)]
+        public static async Task takeFatigueDamage(Flow flow, ActionNode node, CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(EDITOR_PARAM_NAME_FATIGUE_EVENT, isOut: true)][NodeParamEventType(typeof(FatigueEventDefine))] EventArg outEvent)
+        {
+            if (game == null || player == null)
+                return;
+            outEvent = await player.fatigue(game);
+            setOutParam(flow, node, nameof(outEvent), outEvent);
+        }
+
         #endregion
 
         //  有关牌堆的操作，比如说洗牌，获取特定牌等等

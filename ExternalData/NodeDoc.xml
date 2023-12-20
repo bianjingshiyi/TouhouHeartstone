@@ -588,7 +588,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>GameEndEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>游戏结束事件</displayName>
         <isParams>false</isParams>
@@ -617,7 +617,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>GameEndEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>游戏结束事件</displayName>
         <isParams>false</isParams>
@@ -745,7 +745,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MoveCardEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>卡牌移动事件</displayName>
         <isParams>false</isParams>
@@ -1042,7 +1042,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>DrawEventArg</type>
+        <type>EventArg</type>
         <name>outEventDraw</name>
         <displayName>抽牌事件</displayName>
         <isParams>false</isParams>
@@ -1050,7 +1050,7 @@
         <summary><![CDATA[成功抽牌之后产生的抽牌事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>BurnEventArg</type>
+        <type>EventArg</type>
         <name>outEventBurn</name>
         <displayName>爆牌事件</displayName>
         <isParams>false</isParams>
@@ -1269,7 +1269,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>PropChangeEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>卡牌属性更改事件</displayName>
         <isParams>false</isParams>
@@ -1356,7 +1356,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>PropChangeEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>卡牌属性更改事件</displayName>
         <isParams>false</isParams>
@@ -1480,7 +1480,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>SetGemEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>设置灵力值事件</displayName>
         <isParams>false</isParams>
@@ -1517,7 +1517,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>SetGemEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>设置灵力值事件</displayName>
         <isParams>false</isParams>
@@ -1554,7 +1554,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>SetMaxGemEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>设置最大灵力值事件</displayName>
         <isParams>false</isParams>
@@ -1591,7 +1591,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>SetMaxGemEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>设置最大灵力值事件</displayName>
         <isParams>false</isParams>
@@ -1716,7 +1716,7 @@
         <summary><![CDATA[被进行信仰对决一方揭示的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>RevealDuelEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>信仰对决事件</displayName>
         <isParams>false</isParams>
@@ -1920,6 +1920,120 @@
     </outputs>
     <consts />
     <summary><![CDATA[判断一个玩家是否是先手。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>101021</defineId>
+    <obsoleteNames />
+    <editorName>获取疲劳层数</editorName>
+    <category>玩家</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取疲劳层数的玩家。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>疲劳层数</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的疲劳层数。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个玩家的当前疲劳层数。未受到疲劳伤害时为0，受到一次疲劳伤害后为1。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>201013</defineId>
+    <obsoleteNames />
+    <editorName>设置疲劳层数</editorName>
+    <category>玩家</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置疲劳层数的玩家。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>value</name>
+        <displayName>数量</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置成为的疲劳层数。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts />
+    <summary><![CDATA[设置一个玩家的当前疲劳层数。未受到疲劳伤害时为0，受到一次疲劳伤害后为1。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>201014</defineId>
+    <obsoleteNames />
+    <editorName>增加疲劳层数</editorName>
+    <category>玩家</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要增加疲劳层数的玩家。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>value</name>
+        <displayName>数量</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要增加的疲劳层数。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts />
+    <summary><![CDATA[增加一个玩家的当前疲劳层数。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>201015</defineId>
+    <obsoleteNames />
+    <editorName>受到疲劳伤害</editorName>
+    <category>玩家</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要受到疲劳伤害的玩家。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>outEvent</name>
+        <displayName>疲劳事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[疲劳产生的事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[使一个玩家的英雄受到一次疲劳伤害。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -2297,7 +2411,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MassAddBuffEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>群体添加增益事件</displayName>
         <isParams>false</isParams>
@@ -2345,7 +2459,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>RemoveBuffEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>移除增益事件</displayName>
         <isParams>false</isParams>
@@ -2429,7 +2543,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>PropertyChangeEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>增益属性更改事件</displayName>
         <isParams>false</isParams>
@@ -2567,7 +2681,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>DrawEventArg</type>
+        <type>EventArg</type>
         <name>outEventDraw</name>
         <displayName>抽牌事件</displayName>
         <isParams>false</isParams>
@@ -2575,7 +2689,7 @@
         <summary><![CDATA[抽牌成功后产生的事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>BurnEventArg</type>
+        <type>EventArg</type>
         <name>outEventBurn</name>
         <displayName>爆牌事件</displayName>
         <isParams>false</isParams>
@@ -2622,7 +2736,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MassEnterFieldEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>群体入场事件</displayName>
         <isParams>false</isParams>
@@ -2669,7 +2783,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MassReturnHandEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>群体进入手牌事件</displayName>
         <isParams>false</isParams>
@@ -2717,7 +2831,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MassShuffleToDeckEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>群体洗入牌库事件</displayName>
         <isParams>false</isParams>
@@ -2773,7 +2887,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MassMoveCardEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>群体移动卡牌事件</displayName>
         <isParams>false</isParams>
@@ -2820,7 +2934,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MassMoveToHeadEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>群体置入延迟区事件</displayName>
         <isParams>false</isParams>
@@ -2867,7 +2981,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>EquipItemEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>装备事件</displayName>
         <isParams>false</isParams>
@@ -2904,7 +3018,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MassMoveCardEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>群体移动卡牌事件</displayName>
         <isParams>false</isParams>
@@ -3074,7 +3188,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>EnterFieldEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>入场事件</displayName>
         <isParams>false</isParams>
@@ -3121,7 +3235,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MoveCardEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>卡牌移动事件</displayName>
         <isParams>false</isParams>
@@ -3169,7 +3283,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MoveCardEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>卡牌移动事件</displayName>
         <isParams>false</isParams>
@@ -3214,7 +3328,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>EquipItemEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>装备事件</displayName>
         <isParams>false</isParams>
@@ -3296,7 +3410,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MoveCardEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>卡牌移动事件</displayName>
         <isParams>false</isParams>
@@ -3349,7 +3463,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MoveCardEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>卡牌移动事件</displayName>
         <isParams>false</isParams>
@@ -3452,7 +3566,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>PropChangeEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>卡牌属性更改事件</displayName>
         <isParams>false</isParams>
@@ -3549,7 +3663,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>PropChangeEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>属性更改事件</displayName>
         <isParams>false</isParams>
@@ -3703,7 +3817,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>DiscardEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>抽牌事件</displayName>
         <isParams>false</isParams>
@@ -3740,7 +3854,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MassDiscardEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>群体弃牌事件</displayName>
         <isParams>false</isParams>
@@ -3777,7 +3891,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>SetArmorEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>护甲改变事件</displayName>
         <isParams>false</isParams>
@@ -3823,7 +3937,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>SetArmorEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>护甲改变事件</displayName>
         <isParams>false</isParams>
@@ -3860,7 +3974,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>SetArmorEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>护甲改变事件</displayName>
         <isParams>false</isParams>
@@ -4070,7 +4184,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>DamageEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>伤害事件</displayName>
         <isParams>false</isParams>
@@ -4135,7 +4249,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>DamageEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>伤害事件</displayName>
         <isParams>false</isParams>
@@ -4208,7 +4322,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>DamageEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>伤害事件</displayName>
         <isParams>false</isParams>
@@ -4279,7 +4393,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>DamageEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>伤害事件</displayName>
         <isParams>false</isParams>
@@ -4341,7 +4455,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MassDamageEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>群体伤害事件</displayName>
         <isParams>false</isParams>
@@ -4404,7 +4518,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>DamageEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>伤害事件</displayName>
         <isParams>false</isParams>
@@ -4466,7 +4580,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>SplitDamageEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>分配伤害事件</displayName>
         <isParams>false</isParams>
@@ -4537,7 +4651,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>DamageEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>伤害事件</displayName>
         <isParams>false</isParams>
@@ -4615,7 +4729,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MassDamageEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>群体伤害事件</displayName>
         <isParams>false</isParams>
@@ -4670,7 +4784,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>DamageEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>伤害事件</displayName>
         <isParams>false</isParams>
@@ -4717,7 +4831,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>DamageEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>伤害事件</displayName>
         <isParams>false</isParams>
@@ -4747,7 +4861,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>DamageEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>伤害事件</displayName>
         <isParams>false</isParams>
@@ -4786,7 +4900,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>DamageEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>伤害事件</displayName>
         <isParams>false</isParams>
@@ -4833,7 +4947,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>DamageEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>伤害事件</displayName>
         <isParams>false</isParams>
@@ -4888,7 +5002,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>HealEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>治疗事件</displayName>
         <isParams>false</isParams>
@@ -4925,7 +5039,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MassHealEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>群体治疗事件</displayName>
         <isParams>false</isParams>
@@ -4955,7 +5069,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>HealEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>治疗事件</displayName>
         <isParams>false</isParams>
@@ -5113,7 +5227,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>ShackleEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>禁锢事件</displayName>
         <isParams>false</isParams>
@@ -5143,7 +5257,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>SilenceEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>沉默事件</displayName>
         <isParams>false</isParams>
@@ -5172,7 +5286,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MassSealEventArg</type>
+        <type>EventArg</type>
         <name>return</name>
         <displayName>群体封印事件</displayName>
         <isParams>false</isParams>
@@ -5201,7 +5315,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>PropChangeEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>卡牌属性更改事件</displayName>
         <isParams>false</isParams>
@@ -5565,7 +5679,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>AttackEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>攻击事件</displayName>
         <isParams>false</isParams>
@@ -5596,7 +5710,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>PropChangeEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>卡牌属性更改事件</displayName>
         <isParams>false</isParams>
@@ -5685,7 +5799,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>RevealEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>揭示事件</displayName>
         <isParams>false</isParams>
@@ -5722,7 +5836,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>MoveCardEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>卡牌移动事件</displayName>
         <isParams>false</isParams>
@@ -5817,7 +5931,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>BeChargedEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>蓄力事件</displayName>
         <isParams>false</isParams>
@@ -6185,7 +6299,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>SetDefineEventArg</type>
+        <type>EventArg</type>
         <name>outEvent</name>
         <displayName>设置卡牌定义事件</displayName>
         <isParams>false</isParams>
