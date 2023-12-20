@@ -1439,6 +1439,13 @@ namespace Game
                         break;
                     }
                 }
+                // 将特效的InputDefaultValue替换为Prop。
+                var animRefName = action.getInputDefaultValue<string>(SkinAnimationRef.NODE_CONST_KEY);
+                if (animRefName != null)
+                {
+                    action.removeInputDefaultValue(SkinAnimationRef.NODE_CONST_KEY);
+                    action.setProp(SkinAnimationRef.NODE_CONST_KEY, animRefName);
+                }
             }
             #endregion
 
