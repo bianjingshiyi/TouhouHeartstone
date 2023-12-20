@@ -42,7 +42,8 @@ namespace TouhouHeartstone
                 game.logger.logTrace("Effect", $"{card}注销触发器{this}");
                 var triggerTime = eventEntry.triggerTime;
                 var triggers = game.triggers.getTriggers(triggerTime);
-                var trigger = triggers.FirstOrDefault(t => t is EffectTrigger eventTrigger && eventTrigger.effect == this);
+                var buffInstanceId = buff?.instanceID ?? -1;
+                var trigger = triggers.FirstOrDefault(t => t is EffectTrigger eventTrigger && eventTrigger.card == card && (eventTrigger.buff?.instanceID ?? -1) == buffInstanceId);
                 game.triggers.remove(triggerTime, trigger);
             }
             await base.onDisable(game, card, buff);
