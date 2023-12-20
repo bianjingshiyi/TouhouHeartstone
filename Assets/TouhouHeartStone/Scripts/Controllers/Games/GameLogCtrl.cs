@@ -149,15 +149,10 @@ namespace Controllers
             Player player = null;
             var eventDefine = obj.define;
 
-            Card imageCard = null;
-            CardDefine imageCardDefine = null;
+            DescribableCard descCard = null;
             if (eventDefine is IDescribableEventDefine descriable)
             {
-                var descCard = descriable.getCard(tableManager.game, obj as EventArg, _localPlayer);
-                if (descCard.card != null)
-                    imageCard = descCard.card;
-                else if (descCard.define != null)
-                    imageCardDefine = descCard.define;
+                descCard = descriable.getCard(tableManager.game, obj as EventArg, _localPlayer);
 
                 player = descriable.getPlayer(tableManager.game, obj as EventArg);
 
@@ -220,16 +215,7 @@ namespace Controllers
             item.IconImage.sprite = icon;
             item.Text.text = text;
             item.BorderImage.sprite = player == _localPlayer ? item.selfsprite : item.opposprite;
-            Sprite image = null;
-            if (imageCard != null)
-            {
-                image = await getCardSprite(imageCard);
-            }
-            else if (imageCardDefine != null)
-            {
-                image = await getCardDefineSprite(imageCardDefine);
-            }
-            item.Image.sprite = image;
+            item.Image.sprite = await getCardImageByEvent(descCard, obj);
         }
         private async void onLogListItemEnter(LogListItem item)
         {
@@ -242,15 +228,7 @@ namespace Controllers
                 var logInfoHori = _logScrollView.LogInfoHorizantal;
                 logInfoHori.display();
                 string info = lang._(describable.localizeTemplateString(_game, arg, _localPlayer), describable.localizeStringArgs(_game, arg, _localPlayer));
-                info = Regex.Replace(info, @"{card:(?<poolId>-?\d+),(?<id>-?\d+)}",
-                    m =>
-                    {
-                        if (int.TryParse(m.Groups["id"].Value, out var id) && long.TryParse(m.Groups["poolId"].Value, out var poolId))
-                        {
-                            return tableManager.getCardSkin(poolId, id).name;
-                        }
-                        return "未知卡牌";
-                    });
+                info = processLogInfo(info, arg);
                 logInfoHori.Text.text = info;
 
                 var eventCard = describable.getCard(_game, arg, _localPlayer);
@@ -300,6 +278,68 @@ namespace Controllers
             logItems.Add(item);
             _logScrollView.LogList.updateLogListCount(logItems.Count);
         }
+        private string processLogInfo(string info, EventArg arg)
+        {
+            info = Regex.Replace(info, cardDefinePattern,
+                m =>
+                {
+                    if (int.TryParse(m.Groups["id"].Value, out var id) && long.TryParse(m.Groups["poolId"].Value, out var poolId))
+                    {
+                        return tableManager.getCardSkin(poolId, id).name;
+                    }
+                    return "未知卡牌";
+                });
+            info = Regex.Replace(info, cardPattern,
+                m =>
+                {
+                    if (int.TryParse(m.Groups["id"].Value, out var id))
+                    {
+                        var card = tableManager.game.getCard(id);
+                        CardSkinData skin = null;
+                        if (card != null)
+                        {
+                            var cardSnapshot = getCardSnapshotOfEvent(card, arg);
+                            var define = cardSnapshot?.define ?? card.define;
+                            skin = tableManager.getCardSkin(define);
+                        }
+                        if (skin != null)
+                        {
+                            return skin.name;
+                        }
+                    }
+                    return "未知卡牌";
+                });
+            return info;
+        }
+        private CardSnapshot getCardSnapshotOfEvent(Card card, IEventArg arg)
+        {
+            return _game.getCardSnapshotBeforeEvent(card, arg);
+        }
+        private CardDefine getCardDefineByEvent(DescribableCard card, IEventArg arg)
+        {
+            if (card == null)
+                return null;
+            if (card.card is Card cardObj)
+            {
+                if (arg != null)
+                {
+                    return getCardSnapshotOfEvent(cardObj, arg)?.define;
+                }
+                return cardObj.define;
+            }
+            else if (card.define is CardDefine cardDefine)
+            {
+                return cardDefine;
+            }
+            return null;
+        }
+        private async Task<Sprite> getCardImageByEvent(DescribableCard card, IEventArg arg)
+        {
+            var cardDefine = getCardDefineByEvent(card, arg);
+            if (cardDefine == null)
+                return _main.card.getDefaultSprite();
+            return await tableManager.loadCardImage(cardDefine);
+        }
         private async Task setCardUIByEvent(UICard ui, DescribableCard card, IEventArg arg)
         {
             if (ui == null || card == null)
@@ -308,7 +348,7 @@ namespace Controllers
             {
                 if (arg != null)
                 {
-                    CardSnapshot cardSnapshot = _game.getCardSnapshotAfterEvent(cardObj, arg);
+                    CardSnapshot cardSnapshot = getCardSnapshotOfEvent(cardObj, arg);
                     if (cardSnapshot != null)
                     {
                         var descriptor = new CardDescriptor(_game, cardSnapshot);
@@ -323,15 +363,6 @@ namespace Controllers
                 await ui.setCardDefine(cardDefine, tableManager);
             }
         }
-
-        private Task<Sprite> getCardSprite(Card card)
-        {
-            return getCardDefineSprite(card.define);
-        }
-        private Task<Sprite> getCardDefineSprite(CardDefine cardDefine)
-        {
-            return tableManager.loadCardImage(cardDefine);
-        }
         public LangManager lang => _main.lang;
         public BattleTableManager tableManager => _battleTableManager;
 
@@ -345,5 +376,7 @@ namespace Controllers
         private Player _localPlayer;
         ActionEventCache gameTriggerEventCache { get; } = new ActionEventCache();
         private List<LogItem> logItems = new List<LogItem>();
+        private const string cardDefinePattern = @"{cardDefine:(?<poolId>-?\d+),(?<id>-?\d+)}";
+        private const string cardPattern = @"{card:(?<id>-?\d+)}";
     }
 }
