@@ -73,6 +73,20 @@ namespace Game.BattleTable
             {
                 setCard(hand.card, card);
             }
+            else if (tryGetMovingCard(card, out var movingCard))
+            {
+                setCard(movingCard, card);
+            }
+            else if (tryGetDeckOfCard(card, out Deck deck))
+            {
+                updateCardDescriptor(card);
+                updateDeckPanel(deck);
+            }
+            else if (tryGetGraveOfCard(card, out Deck grave))
+            {
+                updateCardDescriptor(card);
+                updateDeckPanel(grave);
+            }
         }
         /// <summary>
         /// 将使用卡牌状态重置到什么也没做的状态。
@@ -2360,6 +2374,16 @@ namespace Game.BattleTable
                 setCardDesc(item.card, desc);
                 item.card.setFaceup(true);
             }
+        }
+        private void updateDeckPanel(Deck deckUI)
+        {
+            Player player = this.player;
+            string pileName = PILE.DECK;
+            if (deckUI == table.EnemyDeck || deckUI == table.EnemyGrave)
+                player = game.getOpponent(this.player);
+            if (deckUI == table.SelfGrave || deckUI == table.EnemyGrave)
+                pileName = PILE.GRAVE;
+            updateDeckPanel(player, pileName);
         }
         private void updateDeckPanel(Player player, string pileName)
         {
