@@ -91,7 +91,7 @@ namespace Game.BattleTable
                     parent = parent.parent;
                 }
             }
-            else if (anim is PropChangeAnim)
+            else if (anim.isInstantAnimation())
             {
                 return true;
             }

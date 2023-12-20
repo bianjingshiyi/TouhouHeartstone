@@ -123,6 +123,13 @@ namespace Game.BattleTable
     public abstract class EventAnimation<T> : EventAnimation where T : EventDefine
     {
     }
+    public static class AnimationHelper
+    {
+        public static bool isInstantAnimation(this TableAnimation anim)
+        {
+            return anim is PropChangeAnim || anim is AddBuffAnim || anim is RemoveBuffAnim;
+        }
+    }
     public enum EventAnimState
     {
         NotStarted,
