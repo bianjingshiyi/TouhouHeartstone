@@ -30,7 +30,6 @@ namespace Controllers
             registerClass<EventReference>();
             registerClass<EffectTag>();
             registerClass<EventArgReference>();
-            registerClass<EventReferenceProxy>();
             registerClass<EventVarName>();
             registerClass<ObjectProxy>();
             registerClass<ActionValueRef>();

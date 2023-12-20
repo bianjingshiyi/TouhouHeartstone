@@ -2,13 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Game;
 using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using EventArgReference = Game.EventArgReference;
-using EventReferenceProxy = Game.EventReferenceProxy;
 using UIHelper = BJSYGameCore.UI.UIHelper;
 
 namespace UI
@@ -563,10 +561,6 @@ namespace UI
                 else if (_valueInfo.value is EventReference evtRef)
                 {
                     index = Array.IndexOf(_eventValues, evtRef);
-                }
-                else if (_valueInfo.value is EventReferenceProxy proxy)
-                {
-                    index = Array.IndexOf(_eventValues, proxy.value);
                 }
                 if (index < 0)
                     index = 0;

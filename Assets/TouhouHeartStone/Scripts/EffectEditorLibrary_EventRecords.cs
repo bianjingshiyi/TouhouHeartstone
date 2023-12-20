@@ -62,23 +62,26 @@ namespace Game
         [return: ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)]
         public static EventRecord castEventRecordType(
             [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord eventRecord,
-            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_TYPE, isConst: true)] EventReferenceProxy eventReference)
+            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_TYPE, isConst: true)] EventReference eventReference)
         {
             if (eventRecord == null || eventReference == null)
                 return null;
-            EventReference refer = CardManager.getEventReferenceOfEventArg(eventRecord.eventArg);
-            return refer == eventReference.value ? eventRecord : null;
+            var define = eventRecord.eventArg.define;
+            bool equals = define.cardPoolId == eventReference.cardPoolId && define.eventName == eventReference.eventName;
+            return equals ? eventRecord : null;
         }
         [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.CheckEventRecordType, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_CHECK_EVENT_RECORD_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool checkEventRecordType(CardEngine game,
             [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord evt,
-            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_TYPE, isConst: true)] EventReferenceProxy argRef)
+            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_TYPE, isConst: true)] EventReference argRef)
         {
             if (evt == null || argRef == null)
                 return false;
-            if (CardManager.getEventReferenceOfEventArg(evt.eventArg) == argRef.value)
+            var define = evt.eventArg.define;
+            bool equals = define.cardPoolId == argRef.cardPoolId && define.eventName == argRef.eventName;
+            if (equals)
                 return true;
             return false;
         }

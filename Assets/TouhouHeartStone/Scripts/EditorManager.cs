@@ -165,7 +165,7 @@ namespace Game
             new EditorTypeInfo() { type = typeof(EventVarName), typeName = EDITOR_TYPE_NAME_EVENT_VAR_NAME, color = new Color(.7f, .8f, .2f, 1) },
             new EditorTypeInfo() { type = typeof(PileName), typeName = EDITOR_TYPE_NAME_PILE_NAME, color = new Color(.7f, .8f, .2f, 1) },
 
-            new EditorTypeInfo() { type = typeof(EventReferenceProxy), typeName = EffectEditorLibrary.EDITOR_TYPE_NAME_EVENT_TYPE, isVarType = true, color = new Color(1, 1, .2f, 1) },
+            new EditorTypeInfo() { type = typeof(EventReference), typeName = EffectEditorLibrary.EDITOR_TYPE_NAME_EVENT_TYPE, isVarType = true, color = new Color(1, 1, .2f, 1) },
             #endregion
 
             #region 隐藏类型
