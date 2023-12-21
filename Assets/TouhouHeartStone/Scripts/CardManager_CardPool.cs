@@ -1433,7 +1433,19 @@ namespace Game
                             var dest = connection.destination;
                             if (dest is not ValueInput vi)
                                 continue;
-                            dest.node.setInputDefaultValue(vi.name, vi.paramIndex, action.getInputDefaultValue(constName));
+                            var defaultValue = action.getInputDefaultValue(constName);
+                            if (defaultValue == null)
+                            {
+                                switch (constPair.Key)
+                                {
+                                    case BuiltinActionDefineID.BooleanConst: defaultValue = false; break;
+                                    case BuiltinActionDefineID.IntegerConst: defaultValue = 0; break;
+                                    case BuiltinActionDefineID.StringConst: defaultValue = string.Empty; break;
+                                    case BuiltinActionDefineID.GetCardDefine: defaultValue = new DefineReference(0, 0); break;
+                                    case BuiltinActionDefineID.GetBuffDefine: defaultValue = new BuffReference(0, 0); break;
+                                }
+                            }
+                            dest.node.setInputDefaultValue(vi.name, vi.paramIndex, defaultValue);
                         }
                         action.graph.removeNode(action);
                         break;

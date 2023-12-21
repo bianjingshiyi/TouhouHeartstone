@@ -263,14 +263,7 @@ namespace UI
             }
             else if (valueType == ActionNodeValueType.text)
             {
-                if (string.IsNullOrEmpty(text))
-                {
-                    callValueChangedCallback(null);
-                }
-                else
-                {
-                    callValueChangedCallback(text);
-                }
+                callValueChangedCallback(text);
             }
         }
         private void onToggleValueChanged(bool value)
