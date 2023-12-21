@@ -32,6 +32,11 @@ namespace Controllers
             string[] languages = game.langManager.getLanguages();
             _ui.setLanguage(languages.indexOf(_curLanguage));
 
+            var persistentAnimNames = game.anims.getAnimationEditorNamesForBuff();
+            _ui.initPersistentAnims(persistentAnimNames);
+
+            _persistentAnimRefs = game.anims.getAnimationDefinesForBuff().Select(def => new DefineReference(def.cardPoolId, def.id)).ToArray();
+
             updateSkinNames();
             _ui.setId(buffDefine.id);
             GeneratedEffect[] effects = buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
@@ -99,6 +104,7 @@ namespace Controllers
             }
             _ui.initLanguages(languages);
             _ui.onChangeLanguage += onChangeLanguage;
+            _ui.onChangePersistentAnim += onChangePersistentAnimCallback;
 
 
             _ui.onClickEditEffectButton += onClickEditEffectButton;
@@ -209,9 +215,6 @@ namespace Controllers
             _curBuffSkin.desc = desc;
             _ui.setDesc(desc);
         }
-        #endregion
-
-
         private async void onChangeLanguage(int languageIndex)
         {
             string language = game.langManager.getLanguages()[languageIndex];
@@ -226,16 +229,20 @@ namespace Controllers
                 _buffSkins.Add(targetSkin);
             }
             updateSkinNames();
-            _curBuffSkin = targetSkin;
-            _ui.setLanguage(languageIndex);
-            _ui.setName(targetSkin.name);
-            _ui.setDesc(targetSkin.desc);
-            _ui.setSkin(getCurrentLangSkins().indexOf(targetSkin));
-            string path = targetSkin.imagePath;
-            var poolRef = game.card.getLocalCardPoolReference(_cardPoolId);
-            Sprite image = await game.card.loadBuffImage(poolRef, targetSkin);
-            _ui.setImage(image);
+            var skinIndex = getCurrentLangSkins().indexOf(targetSkin);
+            await setCurSkinIndex(skinIndex);
         }
+        private void onChangePersistentAnimCallback(int index)
+        {
+            markUnsaved();
+            var animRef = index <= 0 ? null : _persistentAnimRefs[index - 1];
+            _curBuffSkin.persistentAnimRef = animRef;
+            _ui.setPersistentAnim(index);
+        }
+
+        #endregion
+
+
 
         #region 效果
         private async void onCreateEffect(GeneratedEffect effect)
@@ -485,12 +492,19 @@ namespace Controllers
             var skin = skinGroup[skinIndex];
 
             _curBuffSkin = skin;
-            _ui.setSkin(skinIndex);
+
+            string[] languages = game.langManager.getLanguages();
+            var languageIndex = Array.IndexOf(languages, skin.language);
+            _ui.setLanguage(languageIndex);
             _ui.setName(skin.name);
             _ui.setDesc(skin.desc);
+            _ui.setSkin(skinIndex);
             var poolRef = game.card.getLocalCardPoolReference(_cardPoolId);
-            Sprite image = await game.card.loadImage(poolRef, skin.imagePath);
+            Sprite image = await game.card.loadBuffImage(poolRef, skin);
             _ui.setImage(image);
+            var animRef = skin.persistentAnimRef;
+            _ui.setPersistentAnim(animRef != null ? Array.IndexOf(_persistentAnimRefs, animRef) + 1 : 0);
+
         }
         private int getSkinCount()
         {
@@ -897,6 +911,7 @@ namespace Controllers
         /// </summary>
         List<BuffSkin> _buffSkins = new List<BuffSkin>();
         string _curLanguage;
+        DefineReference[] _persistentAnimRefs;
         EventTriggerTime[] _eventTriggerTimes;
         #endregion
     }

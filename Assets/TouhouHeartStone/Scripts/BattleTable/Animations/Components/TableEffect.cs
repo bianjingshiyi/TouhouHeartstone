@@ -1,12 +1,13 @@
-﻿using Game.BattleTable;
-using System;
+﻿using System;
 using System.Diagnostics;
+using Game.BattleTable;
 using UnityEngine;
 
 namespace Game.Animations
 {
     public abstract class TableEffect : MonoBehaviour
     {
+        #region 公有方法
         public virtual void init(BattleTableManager table, AnimationDefine define, VisualEffectInfo info)
         {
             _table = table;
@@ -16,53 +17,57 @@ namespace Game.Animations
             _destTransform = info.destTransform;
             _duration = define.duration;
             _blockTime = define.blockTime;
-        }
-        private void Start()
-        {
-            if (isTestMode())
-            {
-                _time = 0;
-                _duration = GetComponent<BuiltinEffect>()?.duration ?? 0;
-            }
-        }
-        private void Update()
-        {
-            if (isTestMode())
-            {
-                update(Time.deltaTime);
-            }
+            _isPersistent = define.isPersistent;
         }
         public void update(float deltaTime)
         {
-            if (!_isStarted)
+            if (_state == EffectState.None)
             {
+                // 必须要求存在源位置才能播放。
                 if (sourceTransform == null)
                 {
                     rootObj?.SetActive(false);
                     return;
                 }
-                else if (!rootObj.activeSelf)
+                // 源位置存在，启动。
+                if (!rootObj.activeSelf)
                 {
                     rootObj?.SetActive(true);
                 }
-                _isStarted = true;
+                _state = EffectState.Started;
+                transform.position = sourceTransform.position;
             }
+            // 更新动画器。
             if (_animator)
             {
                 _animator.enabled = false;
                 _animator.Update(deltaTime);
             }
+            // 更新动画。
             updateAnim(deltaTime);
-            _time += deltaTime;
-            if (_duration > 0 && _time > _duration)
+            if (_isPersistent)
             {
-                finish();
+                updatePersistentAnim();
             }
+            _time += deltaTime;
+
+            // 动画结束判断。
+            checkFinished();
         }
-        protected abstract void updateAnim(float deltaTime);
+        public void end()
+        {
+            if (_state == EffectState.Stopped || _state == EffectState.Finished)
+                return;
+            _state = EffectState.Stopped;
+            if (_animator)
+                _animator.SetTrigger("End");
+            stopParticles();
+        }
         public void finish()
         {
-            _finished = true;
+            if (_state == EffectState.Finished)
+                return;
+            _state = EffectState.Finished;
             if (isTestMode())
             {
                 gameObject.SetActive(false);
@@ -71,8 +76,38 @@ namespace Game.Animations
         }
         public bool isFinished()
         {
-            return _finished;
+            return _state == EffectState.Finished;
         }
+        [Conditional("UNITY_EDITOR")]
+        public void setTestMode(bool value)
+        {
+#if UNITY_EDITOR
+            testMode = value;
+#endif
+        }
+        #endregion
+
+        #region 私有方法
+
+        #region 生命周期
+        private void Start()
+        {
+            if (isTestMode())
+            {
+                _time = 0;
+                _duration = GetComponent<BuiltinEffect>()?.duration ?? 0;
+            }
+            _particleSystems = GetComponentsInChildren<ParticleSystem>();
+        }
+        private void Update()
+        {
+            if (isTestMode())
+            {
+                update(Time.deltaTime);
+            }
+        }
+        #endregion
+        protected abstract void updateAnim(float deltaTime);
         protected bool isTestMode()
         {
 #if UNITY_EDITOR
@@ -81,16 +116,73 @@ namespace Game.Animations
             return false;
 #endif
         }
-        [Conditional("UNITY_EDITOR")]
-        public void setTestMode(bool value)
+        private void updatePersistentAnim()
         {
-
-#if UNITY_EDITOR
-            testMode = value;
-#endif
+            if (!sourceTransform && _state == EffectState.Started)
+            {
+                _state = EffectState.Dormant;
+                stopParticles();
+            }
+            else if (_state == EffectState.Dormant)
+            {
+                _state = EffectState.Started;
+                resumeParticles();
+            }
         }
-        public float blockTime => _blockTime;
-        public Transform sourceTransform 
+        private void checkFinished()
+        {
+            if (_isPersistent) // 持续性特效
+            {
+                if (_state == EffectState.Stopped)
+                {
+                    bool allStopped = true;
+                    foreach (var particleSystem in _particleSystems)
+                    {
+                        if (!particleSystem.isStopped)
+                        {
+                            allStopped = false;
+                            break;
+                        }
+                    }
+                    if (allStopped)
+                    {
+                        finish();
+                    }
+                }
+            }
+            else // 非持续性特效。
+            {
+                if (_state == EffectState.Started)
+                {
+                    if (_duration > 0 && _time > _duration)
+                    {
+                        finish();
+                    }
+                }
+            }
+        }
+        private void stopParticles()
+        {
+            foreach (var particleSystem in _particleSystems)
+            {
+                if (!particleSystem.isEmitting)
+                    continue;
+                particleSystem.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            }
+        }
+        private void resumeParticles()
+        {
+            foreach (var particleSystem in _particleSystems)
+            {
+                if (particleSystem.isEmitting)
+                    continue;
+                particleSystem.Play(true);
+            }
+        }
+        #endregion
+
+        #region 属性字段
+        public Transform sourceTransform
         {
             get => _srcTransform;
             set => _srcTransform = value;
@@ -102,8 +194,8 @@ namespace Game.Animations
         }
         public GameObject rootObj
         {
-            get 
-            { 
+            get
+            {
                 if (!_rootObj)
                 {
                     _rootObj = transform.Find("Root").gameObject;
@@ -111,10 +203,11 @@ namespace Game.Animations
                 return _rootObj;
             }
         }
-        public bool isStarted => _isStarted;
         public BattleTableManager table => _table;
         public float time => _time;
         public float duration => _duration;
+        public float blockTime => _blockTime;
+        public EffectState state => _state;
         public event Action<TableEffect> onFinished;
         [SerializeField]
         protected Animator _animator;
@@ -126,13 +219,38 @@ namespace Game.Animations
         [SerializeField]
         private bool testMode;
 #endif
-        protected bool _finished;
+        private ParticleSystem[] _particleSystems;
         protected float _time;
         protected float _duration;
         protected float _blockTime;
+        protected bool _isPersistent;
         protected GameObject _rootObj;
         protected BattleTableManager _table;
-        private bool _isStarted;
+        protected EffectState _state;
+        #endregion
+    }
+    public enum EffectState
+    {
+        /// <summary>
+        /// 没有状态。
+        /// </summary>
+        None,
+        /// <summary>
+        /// 播放状态。播放特效。
+        /// </summary>
+        Started,
+        /// <summary>
+        /// 停止播放状态。不再产生新的粒子，并在所有粒子都消失后被清理。
+        /// </summary>
+        Stopped,
+        /// <summary>
+        /// 完成状态。所有特效都已经消失，等待被摧毁。
+        /// </summary>
+        Finished,
+        /// <summary>
+        /// 休眠状态。不存在有效源位置的持续性特效会进入休眠，停止所有粒子，直到源位置再次有效。
+        /// </summary>
+        Dormant
     }
     public class VisualEffectInfo
     {

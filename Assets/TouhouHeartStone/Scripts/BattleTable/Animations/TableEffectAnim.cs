@@ -36,7 +36,7 @@ namespace Game.Animations
                 };
                 effect = table.createEffect(define, info);
             }
-            while (!effect.isFinished() && !(!effect.isStarted && _duration >= 10f)) // 十秒没播放算超时
+            while (!effect.isFinished() && !(effect.state == EffectState.None && _duration >= 10f)) // 十秒没播放算超时
             {
                 // 防止类似飞刀的弹射物特效在击杀目标后又突然插在其他卡牌上之类的
                 if (!_sourceConfirmed && !effect.sourceTransform && source != null)
@@ -60,7 +60,7 @@ namespace Game.Animations
         {
             if (!effect)
                 return true;
-            if (!effect.isStarted)
+            if (effect.state == EffectState.None || effect.state == EffectState.Dormant)
                 return true;
             var blockTime = effect.blockTime;
             return _duration > blockTime && blockTime >= 0;

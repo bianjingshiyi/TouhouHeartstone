@@ -29,7 +29,7 @@ namespace UI
             updateNodeDefines();
             updateNodesList();
 
-            var animations = game.anims.getAllAnimationDefines().Select(d => game.lang._(d.name)).Prepend(game.lang._(VISUAL_EFFECT_NAME_NONE)).ToArray();
+            var animations = game.anims.getAnimationEditorNamesForNode();
             var positions = visualEffectPositions.Select(p => game.lang._(p)).ToArray();
             initNodeAnimationDialog(animations, positions);
 
@@ -831,8 +831,6 @@ namespace UI
         public const string EDITOR_ERROR_ACTION_DEFINE_NAME_EMPTY = "请输入动作名称";
 
 
-        [TranslateMsg("特效动画的无特效引用选项")]
-        public const string VISUAL_EFFECT_NAME_NONE = "无";
         [TranslateMsg("特效动画的始末位置选项")]
         public const string VISUAL_EFFECT_POSITION_SELF_MASTER = "己方英雄";
         [TranslateMsg("特效动画的始末位置选项")]

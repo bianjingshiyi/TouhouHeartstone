@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Game.BattleTable;
 using UnityEngine;
+using static Sentry.MeasurementUnit;
 
 namespace Game.Animations
 {
@@ -33,6 +34,8 @@ namespace Game.Animations
         {
             id = animDef.id;
             name = animDef.name;
+            duration = animDef.duration;
+            blockTime = animDef.blockTime;
             foreach (string propName in animDef.getPropNames())
             {
                 propDict.Add(propName, animDef.getProp<object>(propName));
@@ -42,6 +45,8 @@ namespace Game.Animations
         public GeneratedAnimationDefine toAnimDefine()
         {
             var anim = new GeneratedAnimationDefine(id, name);
+            anim.duration = duration;
+            anim.blockTime = blockTime;
             foreach (var pair in propDict)
             {
                 anim.setProp(pair.Key, pair.Value);
@@ -52,6 +57,8 @@ namespace Game.Animations
         #region 属性字段
         public int id;
         public string name;
+        public float duration;
+        public float blockTime;
         public Dictionary<string, object> propDict = new Dictionary<string, object>();
         #endregion
     }

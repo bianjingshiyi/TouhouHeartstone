@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BJSYGameCore.UI;
-using Controllers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -158,6 +157,22 @@ namespace UI
         }
         #endregion
 
+        #region 语言
+        public void initPersistentAnims(string[] animNames)
+        {
+            _persistentAnimDropdown.ClearOptions();
+            _persistentAnimDropdown.AddOptions(new List<string>(animNames));
+        }
+        /// <summary>
+        /// 设置当前语言索引
+        /// </summary>
+        /// <param name="index"></param>
+        public void setPersistentAnim(int index)
+        {
+            _persistentAnimDropdown.SetValueWithoutNotify(index);
+        }
+        #endregion
+
         #region 效果
         public void showEffectListItemInputField(int index, string value)
         {
@@ -190,6 +205,7 @@ namespace UI
             _skinDropdown.Hide();
             _skinNameInputField.DeactivateInputField();
             _languageDropdown.Hide();
+            _persistentAnimDropdown.Hide();
             _nameInputField.DeactivateInputField();
             _descInputField.DeactivateInputField();
         }
@@ -227,6 +243,7 @@ namespace UI
             _skinNameInputField.gameObject.SetActive(false);
             _skinNameInputField.onEndEdit.AddListener(onSkinNameInputFieldEndEdit);
             _languageDropdown.onValueChanged.AddListener(onLanguageDropdownValueChanged);
+            _persistentAnimDropdown.onValueChanged.AddListener(onPersistentAnimDropdownValueChanged);
 
             _nameInputField.onEndEdit.AddListener(onNameInputFieldEndEdit);
             _descInputField.onEndEdit.AddListener(onDescInputFieldEndEdit);
@@ -306,12 +323,13 @@ namespace UI
         {
             onChangeDesc?.Invoke(text);
         }
-        #endregion
-
-        #region 语言
         private void onLanguageDropdownValueChanged(int value)
         {
             onChangeLanguage?.Invoke(value);
+        }
+        private void onPersistentAnimDropdownValueChanged(int value)
+        {
+            onChangePersistentAnim?.Invoke(value);
         }
         #endregion
         #region 修改器
@@ -455,12 +473,15 @@ namespace UI
         /// 当更改卡牌描述，参数为更改后的卡牌描述。
         /// </summary>
         public event Action<string> onChangeDesc;
-        #endregion
-
         /// <summary>
         /// 当更换了语言，参数为更换的语言索引。
         /// </summary>
         public event Action<int> onChangeLanguage;
+        /// <summary>
+        /// 当更换了持续特效，参数为更换的特效索引。
+        /// </summary>
+        public event Action<int> onChangePersistentAnim;
+        #endregion
 
         #region 修改器
         public event Action<int> OnRemoveModifier;
@@ -569,10 +590,11 @@ namespace UI
         [SerializeField]
         InputField _descInputField;
         [SerializeField]
-        AnimationRefList _animationRefList;
-
-        [SerializeField]
         Dropdown _languageDropdown;
+        [SerializeField]
+        Dropdown _persistentAnimDropdown;
+        [SerializeField]
+        AnimationRefList _animationRefList;
 
         [Header("Pages")]
         [SerializeField]

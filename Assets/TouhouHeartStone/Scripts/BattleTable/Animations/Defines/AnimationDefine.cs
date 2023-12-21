@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Game.BattleTable;
 using TouhouCardEngine;
 using UnityEngine;
@@ -12,7 +11,7 @@ namespace Game.Animations
     /// </summary>
     public abstract class AnimationDefine
     {
-        #region 方法
+        #region 公有方法
         public AnimationDefine(long cardPoolId, int id, string name)
         {
             this.cardPoolId = cardPoolId;
@@ -75,6 +74,7 @@ namespace Game.Animations
             return new DefineReference(cardPoolId, id);
         }
         #endregion
+
         #region 属性字段
         /// <summary>
         /// 动画定义ID，这个ID应该是独特的并用于区分不同的卡片。
@@ -92,16 +92,9 @@ namespace Game.Animations
         }
         string _name;
         public long cardPoolId;
-        public float duration 
-        {
-            get => getProp<float>("duration");
-            set => setProp("duration", value);
-        }
-        public float blockTime
-        {
-            get => getProp<float>("blockTime");
-            set => setProp("blockTime", value);
-        }
+        public float duration;
+        public float blockTime;
+        public bool isPersistent;
         Dictionary<string, object> _propDict = new Dictionary<string, object>();
         #endregion
     }

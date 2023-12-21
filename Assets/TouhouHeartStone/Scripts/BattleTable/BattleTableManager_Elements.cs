@@ -1090,7 +1090,7 @@ namespace Game.BattleTable
         #region 特效
         public TableEffect createEffect(DefineReference defRef, VisualEffectInfo info)
         {
-            var define = gameManager.getAnimationDefine(defRef);
+            var define = getAnimationDefine(defRef);
             return createEffect(define, info);
         }
         public TableEffect createEffect(AnimationDefine animDef, VisualEffectInfo info)
@@ -1160,47 +1160,51 @@ namespace Game.BattleTable
         {
             return getCardTransform(card.id);
         }
-        public Transform getCardTransform(int cardId)
+        public Transform getCardTransform(int cardId, bool ignoreDeck = false)
         {
             if (tryGetServant(cardId, out Servant servant))
             {
-                return servant.transform;
+                return servant.positionLerp.transform;
             }
             else if (tryGetMaster(cardId, out Master master))
             {
-                return master.transform;
+                return master.positionLerp.transform;
             }
             else if (tryGetItem(cardId, out Item item))
             {
-                return item.transform;
+                return item.positionLerp.transform;
             }
             else if (tryGetHand(cardId, out HandItem hand))
             {
-                return hand.transform;
+                return hand.positionLerp.transform;
             }
             else if (tryGetSecret(cardId, out Secret secret))
             {
-                return secret.transform;
+                return secret.positionLerp.transform;
             }
             else if (tryGetSkill(cardId, out Skill skill))
             {
-                return skill.transform;
+                return skill.positionLerp.transform;
             }
             else if (tryGetMovingCard(cardId, out var movingCard))
             {
-                return movingCard.transform;
+                return movingCard.positionLerp.transform;
             }
             else if (tryGetDeadCardAnchor(cardId, out Transform trans))
             {
                 return trans;
             }
-            else if (tryGetDeckOfCard(cardId, out Deck deck))
+
+            if (!ignoreDeck)
             {
-                return deck.transform;
-            }
-            else if (tryGetGraveOfCard(cardId, out Deck grave))
-            {
-                return grave.transform;
+                if (tryGetDeckOfCard(cardId, out Deck deck))
+                {
+                    return deck.transform;
+                }
+                else if (tryGetGraveOfCard(cardId, out Deck grave))
+                {
+                    return grave.transform;
+                }
             }
             return null;
         }

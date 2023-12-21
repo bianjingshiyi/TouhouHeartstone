@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Game.Animations;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
@@ -10,6 +11,14 @@ namespace Game
 {
     public partial class AnimationManager
     {
+        public AnimationDefine[] getAnimationDefinesForNode()
+        {
+            return getAllAnimationDefines(false);
+        }
+        public string[] getAnimationEditorNamesForNode()
+        {
+            return getAnimationDefinesForNode().Select(d => main.lang._(d.name)).Prepend(main.lang._(VISUAL_EFFECT_NAME_NONE)).ToArray();
+        }
         public static void cleanUnusedVisualEffects(ISkin skin, IEnumerable<GeneratedEffect> effects)
         {
             var allAnimRefs = skin.getAllAnimRefs();
@@ -25,7 +34,7 @@ namespace Game
         }
         public VisualEffectDialogInfo getNodeAnimationViewData(Node node, ISkin skin)
         {
-            var defines = getAllAnimationDefines();
+            var defines = getAnimationDefinesForNode();
             var key = getOrInitNodeAnimationKey(node, skin);
             SkinAnimationRef animRef = skin.getAnimRef(key);
 
@@ -109,7 +118,7 @@ namespace Game
             var animRef = skin.getAnimRef(key);
             if (animRef == null)
             {
-                var defines = getAllAnimationDefines();
+                var defines = getAnimationDefinesForNode();
                 var defaultDefine = defines.FirstOrDefault();
                 var defRef = new DefineReference(defaultDefine?.cardPoolId ?? 0, defaultDefine?.id ?? 1);
                 animRef = new SkinAnimationRef(key, defRef);
@@ -120,7 +129,7 @@ namespace Game
         public void updateNodeAnimRef(Node node, ISkin skin, VisualEffectDialogInfo info)
         {
             var animRef = getOrInitNodeAnimationRef(node, skin);
-            var defines = getAllAnimationDefines();
+            var defines = getAnimationDefinesForNode();
             var eventRefs = getLocalNodeVisualEffectEventRefs(node);
             var animIndex = info.animIndex;
             if (animIndex < 0)

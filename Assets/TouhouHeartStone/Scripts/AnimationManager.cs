@@ -2,6 +2,7 @@
 using System.Linq;
 using BJSYGameCore;
 using Game.Animations;
+using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using UnityEngine;
@@ -14,10 +15,6 @@ namespace Game
     public partial class AnimationManager : Manager
     {
         #region 公有方法
-        public IEnumerable<string> getBuiltinEffectNames()
-        {
-            return builtinEffectList.Select(e => e.defineName).ToArray();
-        }
         /// <summary>
         /// 从给出的路径中加载卡片和皮肤，支持通配符，比如“Cards/*.xls”
         /// </summary>
@@ -50,6 +47,10 @@ namespace Game
             }
             return null;
         }
+        public IEnumerable<string> getBuiltinEffectNames()
+        {
+            return builtinEffectList.Select(e => e.defineName).ToArray();
+        }
         public AnimationDefine[] getBuiltinAnimationDefines()
         {
             return builtinAnimationDic.Values.ToArray();
@@ -57,6 +58,10 @@ namespace Game
         public AnimationDefine[] getAllAnimationDefines()
         {
             return getBuiltinAnimationDefines();
+        }
+        public AnimationDefine[] getAllAnimationDefines(bool isPersistent)
+        {
+            return getAllAnimationDefines().Where(d => d.isPersistent == isPersistent).ToArray();
         }
         public bool canActionAddEffect(ActionReference actionRef)
         {
@@ -70,6 +75,8 @@ namespace Game
         Dictionary<int, AnimationDefine> builtinAnimationDic { get; set; } = new Dictionary<int, AnimationDefine>();
         [SerializeField]
         private BuiltinEffect[] builtinEffectList;
+        [TranslateMsg("特效动画的无特效引用选项")]
+        public const string VISUAL_EFFECT_NAME_NONE = "无";
         #endregion
     }
 }

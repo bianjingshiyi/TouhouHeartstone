@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Game.Animations;
 using TouhouCardEngine;
 
 namespace Game.BattleTable
@@ -10,7 +11,14 @@ namespace Game.BattleTable
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
             var card = table.getEventCardSnapshot(eventArg, Arg.VAR_CARD);
+            var buff = eventArg.getVar<Buff>(Arg.VAR_BUFF);
             table.updateCardBySnapshot(card);
+
+            if (table.tryGetCardBuffEffect(card.id, buff.instanceID, out TableEffect effect))
+            {
+                effect.end();
+            }
+
             yield break;
         }
         public override bool continueNextGroup(AnimationGroup nextGroup)

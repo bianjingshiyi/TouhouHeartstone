@@ -152,7 +152,51 @@ namespace Game.BattleTable
         }
         #endregion
 
+        #region 增益特效
+        public void addCardBuffEffect(int cardId, int buffInstanceId, TableEffect effect)
+        {
+            if (!cardBuffEffects.TryGetValue(cardId, out var effectDict))
+            {
+                effectDict = new Dictionary<int, TableEffect>();
+                cardBuffEffects[cardId] = effectDict;
+            }
+            effectDict.Add(buffInstanceId, effect);
+        }
+        public bool removeCardBuffEffect(int cardId, int buffInstanceId)
+        {
+            if (cardBuffEffects.TryGetValue(cardId, out var effectDict))
+            {
+                return effectDict.Remove(buffInstanceId);
+            }
+            return false;
+        }
+        public bool tryGetCardBuffEffect(int cardId, int buffInstanceId, out TableEffect effect)
+        {
+            if (cardBuffEffects.TryGetValue(cardId, out var effectDict))
+            {
+                return effectDict.TryGetValue(buffInstanceId, out effect);
+            }
+            effect = null;
+            return false;
+        }
+        public void clearCardBuffEffects()
+        {
+            foreach (var cardPair in cardBuffEffects)
+            {
+                foreach (var buffPair in cardPair.Value)
+                {
+                    Destroy(buffPair.Value.gameObject);
+                }
+            }
+            cardBuffEffects.Clear();
+        }
+        #endregion
+
         #region 特效动画
+        public AnimationDefine getAnimationDefine(DefineReference animRef)
+        {
+            return gameManager.getAnimationDefine(animRef);
+        }
         private void checkCardSkinEffectAnimations(IEventArg arg)
         {
             if (arg is EventArg eventArg && eventArg.define is EffectTriggerEventDefine)
@@ -166,7 +210,7 @@ namespace Game.BattleTable
             var skinAnimRef = getEventSkinAnimRef(arg, effectTriggerArg);
             if (skinAnimRef == null)
                 return;
-            var animationDef = gameManager.getAnimationDefine(skinAnimRef.animRef);
+            var animationDef = getAnimationDefine(skinAnimRef.animRef);
             if (animationDef != null)
             {
                 var anim = new EventEffectAnim(animationDef, arg, effectTriggerArg, skinAnimRef);
@@ -181,7 +225,7 @@ namespace Game.BattleTable
             var skinAnimRef = getEffectEntrySkinAnimRef(arg);
             if (skinAnimRef == null)
                 return;
-            var animationDef = gameManager.getAnimationDefine(skinAnimRef.animRef);
+            var animationDef = getAnimationDefine(skinAnimRef.animRef);
             if (animationDef != null)
             {
                 addAnim(new EventEffectAnim(animationDef, arg, arg, skinAnimRef));
@@ -310,6 +354,31 @@ namespace Game.BattleTable
         #endregion
 
         #endregion
+
+        #region 私有方法
+        private void updateCardBuffEffects(float deltaTime)
+        {
+            foreach (var cardPair in cardBuffEffects)
+            {
+                var cardId = cardPair.Key;
+                var effectDict = cardPair.Value;
+                var buffInstanceIds = effectDict.Keys.ToList();
+                foreach (var buffInstanceId in buffInstanceIds)
+                {
+                    var effect = effectDict[buffInstanceId];
+                    if (!effect.sourceTransform)
+                    {
+                        effect.sourceTransform = getCardTransform(cardId, true);
+                    }
+                    effect.update(deltaTime);
+                    if (effect.isFinished())
+                    {
+                        Destroy(effect.gameObject);
+                        effectDict.Remove(buffInstanceId);
+                    }
+                }
+            }
+        }
         private void addToInsertedAnimsOfParent(IEventArg arg, TableAnimation anim)
         {
             var parent = arg.parent;
@@ -327,6 +396,7 @@ namespace Game.BattleTable
             }
         }
 
+        #endregion
         /// <summary>
         /// 等待被加入到待播放队列中的动画。
         /// </summary>
@@ -460,6 +530,7 @@ namespace Game.BattleTable
         public Player currentAnimPlayer { get; set; }
         Dictionary<int, HandToFieldAnim> _servantPreviewAnimDict = new Dictionary<int, HandToFieldAnim>();
         Dictionary<int, Transform> deadCardAnchors = new Dictionary<int, Transform>();
+        Dictionary<int, Dictionary<int, TableEffect>> cardBuffEffects = new Dictionary<int, Dictionary<int, TableEffect>>();
         #endregion
     }
 }

@@ -14,6 +14,7 @@ namespace UI
         public string desc;
         public string imagePath;
         List<SkinAnimationRef> _animationRefs = new List<SkinAnimationRef>();
+        public DefineReference persistentAnimRef;
         int ISkin.skinId 
         {
             get => buffId;
@@ -46,6 +47,7 @@ namespace UI
             name = skin.name;
             desc = skin.desc;
             imagePath = skin.imagePath;
+            persistentAnimRef = skin.persistentAnimRef;
             foreach (var animRef in skin.getAllAnimRefs())
             {
                 _animationRefs.Add(new SerializableSkinAnimationRef(animRef));
@@ -60,6 +62,7 @@ namespace UI
                 name = name,
                 desc = desc,
                 imagePath = imagePath,
+                persistentAnimRef = persistentAnimRef
             };
             if (_animationRefs != null)
             {
@@ -76,5 +79,6 @@ namespace UI
         public string desc;
         public string imagePath;
         List<SerializableSkinAnimationRef> _animationRefs = new List<SerializableSkinAnimationRef>();
+        public DefineReference persistentAnimRef;
     }
 }

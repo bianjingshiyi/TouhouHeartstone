@@ -155,8 +155,17 @@ namespace Game.BattleTable
         }
         public BuffSkin getBuffSkin(BuffDefine define)
         {
+            if (define == null)
+                return null;
             var poolRef = getCardPoolReference(define.cardPoolId);
             return cardManager.getBuffSkin(poolRef, define.id);
+        }
+        public BuffSkin getBuffSkin(DefineReference defineRef)
+        {
+            if (defineRef == null)
+                return null;
+            var poolRef = getCardPoolReference(defineRef.cardPoolId);
+            return cardManager.getBuffSkin(poolRef, defineRef.defineId);
         }
         public Task<Sprite> loadCardImage(CardDescriptor desc)
         {
@@ -344,6 +353,7 @@ namespace Game.BattleTable
             //动画
             queueAnims();
             updateAnim();
+            updateCardBuffEffects(Time.deltaTime);
             if (_allControlDirty)
             {
                 updateAllControlable();
@@ -560,6 +570,7 @@ namespace Game.BattleTable
             }
             cardHandDic.Clear();
             clearDeadCardAnchors();
+            clearCardBuffEffects();
             DestroyInvokeCard();
         }
         #endregion
