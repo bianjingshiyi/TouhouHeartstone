@@ -88,6 +88,13 @@ namespace Controllers
             registerClass<TurnEndResponse>();
             registerClass<UseResponse>();
 
+            // Rule Logics.
+            registerClass<SerializableGeneratedRuleLogic>();
+            registerClass<SerializableGeneratedRuleGameLogic>();
+            registerClass<SerializableGeneratedRuleEventLogic>();
+            registerClass<SerializableGameRuleEntryNode>();
+            registerClass<SerializableEventRuleEntryNode>();
+
             // PVE.
             registerClass<SerializableSaveData>();
             registerClass<SerializableCardGem>();

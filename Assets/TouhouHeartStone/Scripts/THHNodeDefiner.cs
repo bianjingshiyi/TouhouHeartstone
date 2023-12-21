@@ -33,9 +33,18 @@ namespace Game
                     active.Define();
                     break;
                 case EventEntryNode evt:
-                    var eventDefine = eventFinder.Invoke(evt.triggerTime.defineRef);
-                    evt.setEventDefine(eventDefine, evt.triggerTime.type);
-                    evt.Define();
+                    {
+                        var eventDefine = eventFinder.Invoke(evt.triggerTime.defineRef);
+                        evt.setEventDefine(eventDefine, evt.triggerTime.type);
+                        evt.Define();
+                    }
+                    break;
+                case EventRuleEntryNode evtRule:
+                    {
+                        var eventDefine = eventFinder.Invoke(evtRule.triggerTime.defineRef);
+                        evtRule.setEventDefine(eventDefine, evtRule.triggerTime.type);
+                        evtRule.Define();
+                    }
                     break;
                 case PassiveEntryNode passive:
                     passive.Define();

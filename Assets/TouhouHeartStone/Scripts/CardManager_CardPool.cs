@@ -1227,7 +1227,7 @@ namespace Game
                     // 检查动作是否存在。
                     if (defineRef.cardPoolId == 0)
                     {
-                        actionExists = builtinActions.ContainsKey(defineRef.defineId);
+                        actionExists = builtinActions.Exists(a => a.defineId == defineRef.defineId);
                     }
                     else if (definePool != null)
                     {
@@ -1239,7 +1239,7 @@ namespace Game
                     //包含不存在的动作名称，可能是名称过期了
                     ActionReference newDefineRef = null;
                     // 内置动作。
-                    foreach (ActionDefine actionDefine in builtinActions.Values)
+                    foreach (ActionDefine actionDefine in builtinActions)
                     {
                         if (actionDefine.obsoleteNames?.Contains(actionNode.defineName) == true)
                         {

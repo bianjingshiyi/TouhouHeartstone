@@ -17,13 +17,14 @@ namespace TouhouHeartstone
         public override async Task execute(IEventArg arg)
         {
             var game = arg.game;
+            var gamePlayers = game.players;
             //决定玩家行动顺序
             var optionPlayers = game.getOption().sortedPlayers;
-            if (optionPlayers == null || optionPlayers.Length != game.players.Length)
+            if (optionPlayers == null || optionPlayers.Length != gamePlayers.Length)
             {
-                if (optionPlayers != null && optionPlayers.Length != game.players.Length)
+                if (optionPlayers != null && optionPlayers.Length != gamePlayers.Length)
                     game.logger?.logWarn("游戏参数玩家行动顺序长度与实际数量不匹配");
-                List<Player> remainedList = new List<Player>(game.players);
+                List<Player> remainedList = new List<Player>(gamePlayers);
                 Player[] sortedPlayers = new Player[remainedList.Count];
                 for (int i = 0; i < sortedPlayers.Length; i++)
                 {
@@ -35,7 +36,7 @@ namespace TouhouHeartstone
             }
             else
             {
-                game.setProp(GAME.SORTEDPLAYER, optionPlayers.Select(id => game.players.FirstOrDefault(p => p.id == id)).ToArray());
+                game.setProp(GAME.SORTEDPLAYER, optionPlayers.Select(id => gamePlayers.FirstOrDefault(p => p.id == id)).ToArray());
             }
 
             //创建主人公和技能卡

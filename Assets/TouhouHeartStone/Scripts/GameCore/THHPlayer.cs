@@ -52,6 +52,14 @@ namespace TouhouHeartstone
         {
             return SetMaxGemEventDefine.doEvent(game, player, value);
         }
+        public static void setStartDeck(this Player player, CardEngine game, CardDefine[] value)
+        {
+            player.setProp(game, PLAYER.START_DECK, value);
+        }
+        public static CardDefine[] getStartDeck(this Player player)
+        {
+            return player.getProp<CardDefine[]>(PLAYER.START_DECK);
+        }
         #endregion
 
         #region 抽牌
@@ -289,14 +297,6 @@ namespace TouhouHeartstone
             await player.getDeck().insert(game, card, game.randomInt(0, player.getDeck().count));
             return card;
         }
-        public static Task<Card> shuffleCardToDeck<T>(this Player player, CardEngine game) where T : CardDefine
-        {
-            return shuffleCardToDeck(player, game, game.getDefine<T>());
-        }
-        public static Task<Card> addCardToHand<T>(this Player player, CardEngine game) where T : CardDefine
-        {
-            return player.addCardToHand(game, game.getDefine<T>());
-        }
         public async static Task<Card> addCardToHand(this Player player, CardEngine game, CardDefine cardDefine)
         {
             if (player.getHand().isFull)
@@ -519,9 +519,5 @@ namespace TouhouHeartstone
         [TranslateMsg]
         const string ONLY_ONE_MISSION = "专注于你手头上的委托！";
         #endregion
-    }
-
-    public partial class HearthStoneRule
-    {
     }
 }

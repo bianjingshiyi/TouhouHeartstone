@@ -135,13 +135,14 @@ namespace Game
         private async Task<CardEngine> createGame(HearthstoneOption option, IEnumerable<IRoomPlayer> playerList)
         {
             //加载外部卡牌
-            Dictionary<long, Dictionary<int, CardDefine>> cardDict = new Dictionary<long, Dictionary<int, CardDefine>>();
-            Dictionary<long, Dictionary<int, BuffDefine>> buffDict = new Dictionary<long, Dictionary<int, BuffDefine>>();
-            Dictionary<long, Dictionary<int, ActionDefine>> actionDefines = new Dictionary<long, Dictionary<int, ActionDefine>>();
+            List<CardDefine> cards = new List<CardDefine>();
+            List<BuffDefine> buffs = new List<BuffDefine>();
+            List<ActionDefine> actionDefines = new List<ActionDefine>();
+            List<Rule> rules = new List<Rule>();
             var eventDefines = main.card.getAllEventDefines(true, option.cardPools);
             try
             {
-                await LoadExternalCardsAndBuffs(option, cardDict, buffDict, actionDefines);
+                await LoadExternalCardsAndBuffs(option, cards, buffs, actionDefines, rules);
             }
             catch (Exception)
             {
@@ -173,26 +174,26 @@ namespace Game
                 }
             }
 #endif
-
-            foreach (var pair in actionDefines)
+            foreach (var actionDefine in actionDefines)
             {
-                long cardPoolId = pair.Key;
-                foreach (var actionPair in pair.Value)
-                {
-                    game.addActionDefine(new ActionReference(cardPoolId, actionPair.Key), actionPair.Value);
-                }
+                game.addActionDefine(actionDefine);
             }
 
             foreach (var eventDefine in eventDefines)
             {
                 game.addEventDefine(eventDefine);
             }
-
-            Rule rule = new HearthStoneRule(cardDict, buffDict);
-            await game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly },
-                rule,
-                option,
-                playerList.ToArray());
+            Player[] players = new Player[playerList.Count()];
+            for (int i = 0; i < players.Length; i++)
+            {
+                var playerInfo = playerList.ElementAt(i);
+                var player = new Player(playerInfo.ID, playerInfo.Name);
+                var startDeck = playerInfo.getDeck().toDefRefArray();
+                var defineArray = startDeck.Select(d => cards.FirstOrDefault(c => c.cardPoolId == d.cardPoolId && c.id == d.defineId)).ToArray();
+                player.setStartDeck(game, defineArray);
+                players[i] = player;
+            }
+            await game.init(cards.ToArray(), buffs.ToArray(), rules.ToArray(), option, players);
             return game;
         }
 
@@ -203,37 +204,48 @@ namespace Game
             return gameTask;
         }
         private async Task LoadExternalCardsAndBuffs(HearthstoneOption option,
-            Dictionary<long, Dictionary<int, CardDefine>> cardDict,
-            Dictionary<long, Dictionary<int, BuffDefine>> buffDict,
-            Dictionary<long, Dictionary<int, ActionDefine>> actionDefines)
+            List<CardDefine> cards,
+            List<BuffDefine> buffs,
+            List<ActionDefine> actions,
+            List<Rule> rules)
         {
-            var cardManager = cards;
+            var cardManager = this.cards;
             animDict.Clear();
             animDict.Add(0, main.anims.getBuiltinAnimationDefines().ToDictionary(a => a.id)); // 内置特效
+            //内置动作定义
+            var assemblies = new Assembly[] {
+                typeof(CardEngine).Assembly,
+                typeof(HearthStoneRule).Assembly,
+                typeof(EffectEditorLibrary).Assembly
+            };
+            actions.AddRange(ActionDefine.loadDefinesFromAssemblies(assemblies));
+            // 内置规则。
+            rules.Add(new HearthStoneRule());
             // 尝试从本地获取卡组，否则读取缓存卡组。
             foreach (var poolRef in option.cardPools)
             {
                 long poolId = poolRef.cardPoolId;
                 CardPool cardPool = null;
-                var poolInfo = cards.getCardPoolInfo(poolRef);
+                var poolInfo = this.cards.getCardPoolInfo(poolRef);
                 // 尝试获取本地卡池的卡牌定义（要求版本正确）。
                 if (poolInfo != null && poolInfo.editTime == poolRef.version)
                 {
-                    cardPool = (await cards.getOrLoadCardPool(poolRef)).cardPool;
+                    cardPool = (await this.cards.getOrLoadCardPool(poolRef)).cardPool;
                 }
                 // 如果本地卡地没有任何卡牌定义，或者版本不正确，尝试获取缓存内的该卡池。
                 if (cardPool == null)
                 {
-                    cardPool = (await cards.loadCachedCardPoolAsync(poolId, poolRef.version)).cardPool;
+                    cardPool = (await this.cards.loadCachedCardPoolAsync(poolId, poolRef.version)).cardPool;
                 }
                 if (cardPool != null)
                 {
                     var cardDefines = cardPool.cardDefineList.ToArray();
                     var buffDefines = cardPool.buffDefineList.ToArray();
-                    cardDict.Add(poolId, cardDefines.ToDictionary(c => c.id));
-                    buffDict.Add(poolId, buffDefines.ToDictionary<BuffDefine, int>(c => c.id));
-                    actionDefines.Add(poolId, cardPool.actionDefineList.ToDictionary<ActionDefine, int>(c => c.defineId));
+                    cards.AddRange(cardDefines);
+                    buffs.AddRange(buffDefines);
+                    actions.AddRange(cardPool.actionDefineList);
                     animDict.Add(poolId, cardPool.animationDefineList.ToDictionary<AnimationDefine, int>(a => a.id));
+                    rules.Add(new GeneratedRule(cardPool.ruleLogicList));
                 }
             }
         }

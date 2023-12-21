@@ -50,9 +50,8 @@ namespace Game
             }
 
             List<ActionComment> list = new List<ActionComment>();
-            foreach (var kv in defines)
+            foreach (var define in defines)
             {
-                var define = kv.Value;
                 ActionComment comment = null;
                 if (oldDict != null)
                 {

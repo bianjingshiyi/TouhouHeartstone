@@ -12,23 +12,9 @@ namespace TouhouHeartstone
     public static class THHGame
     {
         public static HearthstoneOption getOption(this CardEngine game) => game.option as HearthstoneOption;
-        public static HearthStoneRule getRule(this CardEngine game) => game.rule as HearthStoneRule;
+        public static HearthStoneRule getRule(this CardEngine game) => game.rules.OfType<HearthStoneRule>().FirstOrDefault();
 
         #region Player
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="name"></param>
-        /// <param name="master"></param>
-        /// <param name="deck">注意，牌库的第一张是牌库的底端</param>
-        /// <returns></returns>
-        public static Player createPlayer(this CardEngine game, int id, string name, CardDefine master,
-            IEnumerable<CardDefine> deck)
-        {
-            return game.getRule().createPlayer(game, id, name, master, deck.ToArray());
-        }
 
         public static Player getPlayer(this CardEngine game, int id)
         {
@@ -64,11 +50,6 @@ namespace TouhouHeartstone
         #endregion
 
         #region Card
-        public static Card createCard<T>(this CardEngine game) where T : CardDefine
-        {
-            return game.createCard(game.getDefine<T>());
-        }
-
         public static Card createCardByRandom(this CardEngine game, IEnumerable<CardDefine> defines)
         {
             return game.createCard(defines.random(game));
@@ -368,7 +349,7 @@ namespace TouhouHeartstone
     public partial class HearthStoneRule : Rule
     {
         #region 公有方法
-        public HearthStoneRule(Dictionary<long, Dictionary<int, CardDefine>> defines, Dictionary<long, Dictionary<int, BuffDefine>> buffs) : base(defines, buffs)
+        public HearthStoneRule() : base()
         {
         }
         #region 重写
@@ -388,26 +369,43 @@ namespace TouhouHeartstone
             await player.setGem(game, 0);
             await player.setMaxGem(game, 0);
             player.setFatigue(game, 0);
-        }
-        public override Task onGameInit(CardEngine game, GameOption options, IRoomPlayer[] players)
-        {
-            game.option = options;
-            game.logger.log($"游戏开始，本局游戏设置：{options.ToJson()}");
-            foreach (var playerInfo in players)
+
+
+            CardDefine[] playerDeck = player.getStartDeck();
+            var master = playerDeck[0];
+            var deck = playerDeck.Skip(1).ToArray();
+            CardDefine luckyCoinDefine = game.getDefine(1, ClassicCardID.LuckyCoin);
+            for (int i = 1; i < deck.Length; i++)
             {
-                Deck deck = playerInfo.getDeck();
-                createPlayer(
-                    game,
-                    playerInfo.ID,
-                    playerInfo.Name,
-                    game.getDefine(deck.masterCardRef),
-                    Array.ConvertAll(deck.toDefRefArray(false), r => game.getDefine(r.cardPoolId, r.defineId)).ToArray());
+                var define = deck[i];
+                if (define == null)
+                {
+                    game.logger.logError($"非法卡牌ID{deck[i]}被替换为幸运币");
+                    deck[i] = luckyCoinDefine;
+                }
+
+                if (define.isToken())
+                {
+                    game.logger.log("为什么你的牌库里会有衍生物？让我把它换成幸运币");
+                    deck[i] = luckyCoinDefine;
+                }
             }
-            return init(game);
+
+            DefineReference skillRef = master.getSkillRef();
+            var skillDef = game.getDefine(skillRef.cardPoolId, skillRef.defineId);
+            await player[PILE.MASTER].add(game, game.createCard(master));
+            await player[PILE.SKILL].add(game, game.createCard(skillDef));
+            await player[PILE.DECK].add(game, Array.ConvertAll(deck, d => game.createCard(d)).Reverse());
         }
-        public override Task onGameStart(CardEngine game)
+        public override Task onPlayerExit(CardEngine game, Player player)
         {
-            return start(game);
+            game.logger.logWarn($"玩家{player}已退出游戏！");
+            return Task.CompletedTask;
+        }
+        public override Task onGameInit(CardEngine game, GameOption options)
+        {
+            game.logger.log($"游戏开始，本局游戏设置：{options.ToJson()}");
+            return init(game);
         }
         public override Task onGameRun(CardEngine game)
         {
@@ -429,44 +427,6 @@ namespace TouhouHeartstone
         #endregion
 
         public HearthstoneOption getOption(CardEngine game) => game.option as HearthstoneOption;
-        public Player createPlayer(CardEngine game, int id, string name, CardDefine master, CardDefine[] deck)
-        {
-            CardDefine luckyCoinDefine = game.getDefine(1, ClassicCardID.LuckyCoin);
-            for (int i = 1; i < deck.Length; i++)
-            {
-                var define = deck[i];
-                if (define == null)
-                {
-                    game.logger.logError($"非法卡牌ID{deck[i]}被替换为幸运币");
-                    deck[i] = luckyCoinDefine;
-                }
-
-                if (define.isToken())
-                {
-                    game.logger.log("为什么你的牌库里会有衍生物？让我把它换成幸运币");
-                    deck[i] = luckyCoinDefine;
-                }
-            }
-
-            if (game.players.Any(p => p.id == id))
-                throw new ArgumentException($"已经存在ID为{id}的玩家");
-            Player player = new Player(id, name);
-
-            game.initPlayer(player);
-
-            player[PILE.MASTER].add(game, game.createCard(master)).Wait();
-            DefineReference skillRef = master.getSkillRef();
-            // TODO: 要么把CardEngine.GetDefine()改成返回null，要么加个CardEngine.TryGetDefine();
-            var skillDef = game.getDefine(skillRef.cardPoolId, skillRef.defineId);
-            if (skillDef != null)
-            {
-                player[PILE.SKILL].add(game, game.createCard(skillDef)).Wait();
-            }
-            player[PILE.DECK].add(game, Array.ConvertAll(deck, d => game.createCard(d)).Reverse()).Wait();
-
-            game.addPlayer(player);
-            return player;
-        }
         public Player getPlayer(CardEngine game, int id)
         {
             return game.players.FirstOrDefault(p => p.id == id);
@@ -560,7 +520,7 @@ namespace TouhouHeartstone
                     await game.surrender(player);
             }
 
-            await game.startGame();
+            await start(game);
             setCurrentPlayer(game, game.getSortedPlayers()[0]);
             for (int i = 0; i < 100; i++)
             {

@@ -123,7 +123,7 @@ namespace TouhouHeartstone
             IEnumerable<InputDefaultValue> defaultValues =
                 inputDefaultValues?.Select(dv => dv.deserialize())
                 ?? consts?.Select(c => new InputDefaultValue(c.Key, -1, c.Value));
-            InitNode(entry, defaultValues, graph);
+            InitNode(entry, graph, defaultValues);
             if (piles != null)
                 entry.setPiles(piles);
             if (ranges != null)

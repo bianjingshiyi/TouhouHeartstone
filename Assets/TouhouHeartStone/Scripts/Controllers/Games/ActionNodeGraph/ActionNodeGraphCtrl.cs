@@ -70,9 +70,8 @@ namespace Controllers
         }
         public bool isActionDefineNameExist(string name)
         {
-            foreach (var pair in game.card.builtinActionDefines)
+            foreach (var actionDefine in game.card.builtinActionDefines)
             {
-                var actionDefine = pair.Value;
                 if (actionDefine.editorName == name)
                 {
                     return true;

@@ -5,6 +5,7 @@ using Controllers;
 using Game.Animations;
 using MongoDB.Bson.Serialization.Attributes;
 using TouhouCardEngine;
+using TouhouHeartstone;
 using UI;
 
 namespace Game
@@ -18,6 +19,7 @@ namespace Game
         public List<GeneratedActionDefine> actionDefineList = new List<GeneratedActionDefine>();
         public List<GeneratedAnimationDefine> animationDefineList = new List<GeneratedAnimationDefine>();
         public List<EventDefine> eventDefineList = new List<EventDefine>();
+        public List<GeneratedRuleLogic> ruleLogicList = new List<GeneratedRuleLogic>();
     }
     [Serializable]
     public class SerializableCardPool
@@ -37,6 +39,7 @@ namespace Game
             else
                 actionDefineList = new List<SerializableActionDefine>();
             animationDefineList = cardPool.animationDefineList.ConvertAll(a => new SerializableAnimationDefine(a));
+            ruleLogicList = cardPool.ruleLogicList.ConvertAll(r => r.serialize());
         }
         #endregion
         public CardPool toCardPool(long cardPoolId, MainManager mainManager, TypeFinder typeFinder)
@@ -58,6 +61,7 @@ namespace Game
                 buffDefineList = buffDefines,
                 actionDefineList = new List<GeneratedActionDefine>(_genActionDefines),
                 animationDefineList = animationDefines,
+                ruleLogicList = ruleLogicList?.ConvertAll(r => r.deserialize(_nodeDefiner)) ?? new List<GeneratedRuleLogic>(),
                 cardSkinList = cardSkinList.ConvertAll(s => s.toSkin()),
                 buffSkinList = buffSkinList.ConvertAll(s => s.toSkin()),
                 eventDefineList = new List<EventDefine>(_loadedEventDefines)
@@ -148,6 +152,7 @@ namespace Game
         public List<SerializableBuffSkin> buffSkinList = new List<SerializableBuffSkin>();
         public List<SerializableActionDefine> actionDefineList;
         public List<SerializableAnimationDefine> animationDefineList;
+        public List<SerializableGeneratedRuleLogic> ruleLogicList;
         [Obsolete]
         public List<SerializableActionNodeGraphInfo> actionNodeGraphInfoList = new List<SerializableActionNodeGraphInfo>();
         #endregion

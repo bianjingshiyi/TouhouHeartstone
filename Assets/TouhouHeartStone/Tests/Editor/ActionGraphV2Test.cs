@@ -1,13 +1,5 @@
-﻿using System.Collections;
-using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.TestTools;
-using System.Linq;
-using TouhouHeartstone;
-using Game;
+﻿using NUnit.Framework;
 using TouhouCardEngine;
-using Controllers;
-using TouhouCardEngine.Interfaces;
 
 namespace Tests
 {
@@ -19,8 +11,8 @@ namespace Tests
             CardEngine game = new CardEngine();
             var constDefine = new IntegerConstActionDefine();
             var compareDefine = new CompareActionDefine();
-            game.addActionDefine(new ActionReference(0, 0), constDefine);
-            game.addActionDefine(new ActionReference(0, 1), compareDefine);
+            game.addActionDefine(constDefine);
+            game.addActionDefine(compareDefine);
             ActionGraph graph = new ActionGraph();
             var compareNode = graph.createActionNode(compareDefine);
             var intNode1 = graph.createActionNode(constDefine);
@@ -54,8 +46,8 @@ namespace Tests
             CardEngine game = new CardEngine();
             var constDefine = new IntegerConstActionDefine();
             var opDefine = new IntegerOperationActionDefine();
-            game.addActionDefine(new ActionReference(0, 0), constDefine);
-            game.addActionDefine(new ActionReference(0, 1), opDefine);
+            game.addActionDefine(constDefine);
+            game.addActionDefine(opDefine);
             ActionGraph graph = new ActionGraph();
             var intOpNode = graph.createActionNode(opDefine);
             var intNode1 = graph.createActionNode(constDefine);

@@ -107,10 +107,11 @@ namespace Game
             else if (isBuiltinCardPool(poolRef.CardPoolID))
             {
                 //内置
-                if (builtinActionDefines.TryGetValue(id, out ActionDefine actionDefine))
+                var actionDefine = builtinActionDefines.FirstOrDefault(a => a.defineId == id);
+                if (actionDefine != null)
                     return actionDefine;
                 // 过时内置。
-                var obsoleteDefine = builtinActionDefines.Values.FirstOrDefault(d => d.obsoleteNames.Contains(name));
+                var obsoleteDefine = builtinActionDefines.FirstOrDefault(d => d.obsoleteNames.Contains(name));
                 if (obsoleteDefine != null)
                     return obsoleteDefine;
             }
@@ -134,7 +135,7 @@ namespace Game
         /// <returns></returns>
         public ActionReference getBuiltinActionReferenceFromName(string name)
         {
-            var builtin = builtinActionDefines.Values.FirstOrDefault(d => d.obsoleteNames.Contains(name));
+            var builtin = builtinActionDefines.FirstOrDefault(d => d.obsoleteNames.Contains(name));
             if (builtin != null)
                 return new ActionReference(0, builtin.defineId);
             return null;
@@ -171,9 +172,9 @@ namespace Game
         {
             //内置
             List<ActionDefine> actionDefineList = new List<ActionDefine>();
-            foreach (var pair in builtinActionDefines)
+            foreach (var actionDefine in builtinActionDefines)
             {
-                actionDefineList.Add(pair.Value);
+                actionDefineList.Add(actionDefine);
             }
             //自定义
             if (includedCardPools != null)
@@ -212,7 +213,7 @@ namespace Game
         #endregion
 
         #region 属性字段
-        public Dictionary<int, ActionDefine> builtinActionDefines { get; private set; }
+        public List<ActionDefine> builtinActionDefines { get; private set; }
         #endregion
     }
 }

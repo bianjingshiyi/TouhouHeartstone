@@ -82,7 +82,7 @@ namespace TouhouHeartstone
             IEnumerable<InputDefaultValue> defaultValues =
                 inputDefaultValues?.Select(dv => dv.deserialize())
                 ?? consts?.Select(c => new InputDefaultValue(c.Key, -1, c.Value));
-            InitNode(entry, defaultValues, graph);
+            InitNode(entry, graph, defaultValues);
             if (!entry.hasInputDefaultValue(PassiveEntryNode.conditionPortName))
                 entry.setInputDefaultValue(PassiveEntryNode.conditionPortName, true);
 
