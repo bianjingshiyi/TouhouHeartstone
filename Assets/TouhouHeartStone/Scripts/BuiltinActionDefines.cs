@@ -311,6 +311,7 @@ namespace Game
         public const int AddBuff = Type_Action + Category_Buff + 1;    // 添加增益
         public const int RemoveBuff = Type_Action + Category_Buff + 2;    // 移除增益
         public const int SetBuffProp = Type_Action + Category_Buff + 3;    // 设置增益属性
+        public const int SetBuffPropVisibility = Type_Action + Category_Buff + 4; // 设置增益属性可见性
 
         // 事件
         public const int SetEventVariable = Type_Action + Category_Event + 1;    // 设置变量

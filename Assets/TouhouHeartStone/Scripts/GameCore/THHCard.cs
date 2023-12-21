@@ -1375,6 +1375,17 @@ namespace TouhouHeartstone
             {
                 await clone.setProp(game, pair.Key, pair.Value);
             }
+            // 复制所有卡牌的属性可见性
+            foreach (var invisiblePropName in card.getInvisibleProps())
+            {
+                var invisiblePlayers = card.getPropInvisiblePlayers(invisiblePropName);
+                if (invisiblePlayers == null)
+                    continue;
+                foreach (var player in invisiblePlayers)
+                {
+                    clone.setPropInvisibleTo(invisiblePropName, player, true);
+                }
+            }
 
             // 不移动到任何牌堆，直接返回复制。
             if (targetPile == null)

@@ -19,6 +19,11 @@ namespace TouhouHeartstone
         }
         #endregion
 
+        public static bool isIllusive(this Buff buff)
+        {
+            return buff.getProp<bool>(BUFF.ILLUSIVE);
+        }
+
         #endregion
     }
 }

@@ -1170,6 +1170,9 @@ namespace Game
         private const string EDITOR_NODE_NAME_GET_DEFINE_OF_BUFF = "获取单个增益的定义";
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_GET_ALL_BUFFS_ON_CARD = "获取卡牌上的所有增益";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_SET_BUFF_PROP_VISIBILITY = "设置增益属性可见性";
+
         [TranslateMsg("节点参数")]
         private const string EDITOR_PARAM_NAME_REMOVE_BUFF_EVENT = "移除增益事件";
         [TranslateMsg("节点参数")]
@@ -1186,6 +1189,8 @@ namespace Game
         private const string EDITOR_PARAM_NAME_MASS_MOVE_TO_HEAD_EVENT = "群体置入延迟区事件";
         [TranslateMsg("节点参数")]
         private const string EDITOR_PARAM_NAME_MASS_MOVE_CARD_EVENT = "群体移动卡牌事件";
+        [TranslateMsg("节点参数")]
+        private const string EDITOR_PARAM_NAME_INVISIBLE = "不可见"; 
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.ThisBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_THIS_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
@@ -1292,7 +1297,26 @@ namespace Game
         {
             return card.getBuffs();
         }
-        
+
+        [THHActionMethod(BuiltinActionDefineID.SetBuffPropVisibility, StringTable.EDITOR_NODE_CATEGORY_BUFF, EDITOR_NODE_NAME_SET_BUFF_PROP_VISIBILITY)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
+        public static void setBuffPropVisibility(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff[] buffs,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(EDITOR_PARAM_NAME_INVISIBLE)] bool invisible)
+        {
+            if (buffs == null || player == null || propName == null)
+                return;
+            foreach (var buff in buffs)
+            {
+                if (buff == null)
+                    continue;
+                buff.setPropInvisibleTo(propName, player, invisible);
+            }
+        }
+
+
         #endregion
         //  玩家的行动，比如抽一张牌，获得一张牌
         #region 行动

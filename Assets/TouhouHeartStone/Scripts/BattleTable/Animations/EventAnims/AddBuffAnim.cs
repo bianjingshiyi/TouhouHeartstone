@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using Game.Animations;
 using TouhouCardEngine;
+using TouhouHeartstone;
 using UI;
 
 namespace Game.BattleTable
@@ -28,7 +29,9 @@ namespace Game.BattleTable
                         srcTransform = srcTransform,
                         destTransform = srcTransform,
                     };
+                    bool invisible = !buff.isIllusive() && !buff.isPropInvisibleTo(BUFF.ILLUSIVE, table.player);
                     var effect = table.createEffect(animRef, info);
+                    effect.setVisible(!invisible);
                     table.addCardBuffEffect(card.id, buff.instanceID, effect);
                 }
             }
