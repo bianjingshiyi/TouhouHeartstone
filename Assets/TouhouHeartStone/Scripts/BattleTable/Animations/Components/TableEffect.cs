@@ -78,6 +78,10 @@ namespace Game.Animations
         {
             return _state == EffectState.Finished;
         }
+        public void setVisible(bool visible)
+        {
+            _visible = visible;
+        }
         [Conditional("UNITY_EDITOR")]
         public void setTestMode(bool value)
         {
@@ -118,7 +122,7 @@ namespace Game.Animations
         }
         private void updatePersistentAnim()
         {
-            if (!sourceTransform && _state == EffectState.Started)
+            if ((!sourceTransform || !_visible) && _state == EffectState.Started)
             {
                 _state = EffectState.Dormant;
                 stopParticles();
@@ -227,6 +231,7 @@ namespace Game.Animations
         protected GameObject _rootObj;
         protected BattleTableManager _table;
         protected EffectState _state;
+        protected bool _visible = true;
         #endregion
     }
     public enum EffectState

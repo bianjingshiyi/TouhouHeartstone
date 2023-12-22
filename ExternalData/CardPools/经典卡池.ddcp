@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 361, "dependencyRefs" : [] }
+{ "_t" : "SerializableCardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 362, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -301,8 +301,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterTurnStartEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -313,6 +311,15 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnStartEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -1014,8 +1021,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -1026,6 +1031,14 @@
                     "_v" : ["Hand"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -1353,8 +1366,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -1365,6 +1376,14 @@
                     "_v" : ["Hand"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -1949,8 +1968,6 @@
                 "_id" : 1,
                 "posX" : -69.520927429199219,
                 "posY" : -0.14696502685546875,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterDamageEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -1961,6 +1978,15 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "DamageEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }],
@@ -2020,8 +2046,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -2032,6 +2056,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -2199,8 +2231,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -2211,6 +2241,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -3375,8 +3413,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterUseEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -3387,6 +3423,15 @@
                     "_v" : ["Hand"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "UseEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -6306,8 +6351,6 @@
                 "_id" : 1,
                 "posX" : -999.11041259765625,
                 "posY" : -207.83096313476563,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterDrawEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -6318,6 +6361,15 @@
                     "_v" : ["Item"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "DrawEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -8065,8 +8117,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterDamageEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -8077,6 +8127,15 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "DamageEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -8781,8 +8840,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -8793,6 +8850,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -10509,8 +10574,6 @@
                 "_id" : 1,
                 "posX" : -153.59494018554688,
                 "posY" : -3.1096649169921875,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -10521,6 +10584,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -10811,8 +10882,6 @@
                 "_id" : 1,
                 "posX" : -1018.29443359375,
                 "posY" : -71.214309692382813,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterAttackEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -10823,6 +10892,15 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "AttackEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -11630,8 +11708,6 @@
                 "_id" : 1,
                 "posX" : -557.09600830078125,
                 "posY" : -348.09918212890625,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterUseEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -11642,6 +11718,15 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "UseEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -12352,8 +12437,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnStartEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -12364,6 +12447,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnStartEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -12838,8 +12929,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeUseEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -12850,6 +12939,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "UseEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -13748,8 +13845,6 @@
                 "_id" : 1,
                 "posX" : -366.6251220703125,
                 "posY" : -295.68515014648438,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeAttackEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -13760,6 +13855,14 @@
                     "_v" : ["Head"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "AttackEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -13971,8 +14074,6 @@
                 "_id" : 1,
                 "posX" : 88.493804931640625,
                 "posY" : -273.14834594726563,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeAttackEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -13983,6 +14084,14 @@
                     "_v" : ["Head"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "AttackEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -14293,8 +14402,6 @@
                 "_id" : 1,
                 "posX" : -107.02151489257813,
                 "posY" : -174.29217529296875,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeUseEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -14305,6 +14412,14 @@
                     "_v" : ["Head"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "UseEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -14587,8 +14702,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeUseEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -14599,6 +14712,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "UseEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -14908,8 +15029,6 @@
                 "_id" : 1,
                 "posX" : -987.63702392578125,
                 "posY" : -186.30224609375,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterUseEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -14920,6 +15039,15 @@
                     "_v" : ["Item"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "UseEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -16123,8 +16251,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterDeathEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -16135,6 +16261,15 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "DeathEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -16996,8 +17131,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterAttackEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -17008,6 +17141,15 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "AttackEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -18699,8 +18841,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -18711,6 +18851,15 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -19485,8 +19634,6 @@
                 "_id" : 1,
                 "posX" : -370.0111083984375,
                 "posY" : 19.221359252929688,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterHealEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -19497,6 +19644,15 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "HealEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -21351,8 +21507,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -21363,6 +21517,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -21727,8 +21889,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeAttackEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -21739,6 +21899,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "AttackEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -21931,8 +22099,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterAttackEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -21943,6 +22109,15 @@
                     "_v" : ["Item"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "AttackEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -23571,8 +23746,6 @@
                 "_id" : 1,
                 "posX" : -177.79754638671875,
                 "posY" : -16.818695068359375,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterUseEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -23583,6 +23756,15 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "UseEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -24161,8 +24343,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnStartEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -24173,6 +24353,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnStartEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -25877,8 +26065,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -25889,6 +26075,14 @@
                     "_v" : ["Item"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -31437,8 +31631,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -31449,6 +31641,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -34821,8 +35021,6 @@
                 "_id" : 1,
                 "posX" : -1120.8453369140625,
                 "posY" : -108.12018585205078,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeEquipItemEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -34833,6 +35031,14 @@
                     "_v" : ["Hand"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "EquipItemEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -35166,8 +35372,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeAttackEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -35178,6 +35382,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "AttackEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -35428,8 +35640,6 @@
                 "_id" : 1,
                 "posX" : -114.9716796875,
                 "posY" : -81.947891235351563,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeAttackEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -35440,6 +35650,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "AttackEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -35603,14 +35821,20 @@
                 "_id" : 1,
                 "posX" : -170.07467651367188,
                 "posY" : -269.55224609375,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeUseEvent",
                 "consts" : {
                   "pileList" : {
                     "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "UseEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -35791,8 +36015,6 @@
                 "_id" : 1,
                 "posX" : -218.9354248046875,
                 "posY" : -116.19476318359375,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeUseEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -35803,6 +36025,14 @@
                     "_v" : ["Head"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "UseEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -36158,8 +36388,6 @@
                 "_id" : 1,
                 "posX" : -276.30697631835938,
                 "posY" : 39.64404296875,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeDamageEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -36170,6 +36398,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "DamageEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -36365,8 +36601,6 @@
                 "_id" : 1,
                 "posX" : 66.073455810546875,
                 "posY" : -192.213623046875,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeHealEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -36377,6 +36611,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "HealEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -36665,8 +36907,6 @@
                 "_id" : 1,
                 "posX" : -751.623291015625,
                 "posY" : -583.25677490234375,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeAttackEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -36677,6 +36917,14 @@
                     "_v" : ["Head"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "AttackEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -37554,8 +37802,6 @@
                 "_id" : 1,
                 "posX" : -19.217758178710938,
                 "posY" : -822.425048828125,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -37566,6 +37812,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -39073,8 +39327,6 @@
                 "_id" : 1,
                 "posX" : -941.4793701171875,
                 "posY" : -113.02853393554688,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -39085,6 +39337,15 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -43818,8 +44079,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -43830,6 +44089,14 @@
                     "_v" : []
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -43897,168 +44164,6 @@
           }
         }]
     }, {
-      "_id" : 8,
-      "propModifierList" : [{
-          "_t" : "DamageReduceModifier",
-          "propertyName" : "damageReduce",
-          "defaultValue" : 3
-        }],
-      "existLimitList" : [],
-      "effects" : [{
-          "_t" : "SerializableEventEffect",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableEventEntryNode",
-                "_id" : 1,
-                "posX" : 0.0,
-                "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnStartEvent",
-                "consts" : {
-                  "tags" : {
-                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                    "_v" : []
-                  },
-                  "pileList" : {
-                    "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                    "_v" : ["Field", "Master"]
-                  }
-                },
-                "tags" : null,
-                "piles" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112002
-                },
-                "posX" : -45.096923828125,
-                "posY" : 306.06845092773438,
-                "constDict" : {
-                  "operator" : null
-                },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102010
-                },
-                "posX" : -501.2135009765625,
-                "posY" : 318.30145263671875,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102001
-                },
-                "posX" : -787.95379638671875,
-                "posY" : 320.40206909179688,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 206002
-                },
-                "posX" : 625.970947265625,
-                "posY" : -31.21307373046875,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 6,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102001
-                },
-                "posX" : 234.51458740234375,
-                "posY" : -268.883056640625,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 7,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 106001
-                },
-                "posX" : 239.75738525390625,
-                "posY" : -503.0577392578125,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "return",
-                "sourceNodeId" : 4,
-                "destName" : "card",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "A",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "玩家",
-                "sourceNodeId" : 1,
-                "destName" : "B",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 2,
-                "destName" : "condition",
-                "destNodeId" : 1
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 6,
-                "destName" : "card",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 7,
-                "destName" : "buff",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 5
-              }]
-          }
-        }]
-    }, {
       "_id" : 9,
       "propModifierList" : [{
           "_t" : "CostModifier",
@@ -44084,8 +44189,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterTurnStartEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -44096,6 +44199,15 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnStartEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -44336,8 +44448,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -44348,6 +44458,14 @@
                     "_v" : ["Hand"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -44452,136 +44570,6 @@
       "existLimitList" : [],
       "effects" : []
     }, {
-      "_id" : 26,
-      "propModifierList" : [],
-      "existLimitList" : [],
-      "effects" : [{
-          "_t" : "SerializablePassiveEffect",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializablePassiveEntryNode",
-                "_id" : 1,
-                "posX" : 0.0,
-                "posY" : 0.0,
-                "consts" : {
-                  "tags" : {
-                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                    "_v" : ["lastword"]
-                  },
-                  "pileList" : {
-                    "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                    "_v" : []
-                  }
-                },
-                "tags" : null,
-                "piles" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 202003
-                },
-                "posX" : 882.5050048828125,
-                "posY" : 29.9027099609375,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 103008
-                },
-                "posX" : 565.94390869140625,
-                "posY" : -272.46316528320313,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 206001
-                },
-                "posX" : 1245.9119873046875,
-                "posY" : 62.552597045898438,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 106002
-                },
-                "posX" : 628.4041748046875,
-                "posY" : -821.83209228515625,
-                "constDict" : {
-                  "buffDefine" : {
-                    "_t" : "DefineReference",
-                    "cardPoolId" : NumberLong(1),
-                    "defineId" : 27
-                  }
-                },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "玩家",
-                "sourceNodeId" : 1,
-                "destName" : "player",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "card",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "cardDefine",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 2,
-                "destName" : "cards",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "value",
-                "sourceNodeId" : 5,
-                "destName" : "buffDefine",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "exit",
-                "sourceNodeId" : 2,
-                "destName" : "enter",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 2
-              }]
-          }
-        }]
-    }, {
       "_id" : 27,
       "propModifierList" : [{
           "_t" : "AttackModifier",
@@ -44611,8 +44599,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -44623,6 +44609,14 @@
                     "_v" : ["Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -44739,8 +44733,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -44751,6 +44743,14 @@
                     "_v" : ["Item"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -44834,8 +44834,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -44846,6 +44844,14 @@
                     "_v" : ["Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -44929,8 +44935,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -44941,6 +44945,14 @@
                     "_v" : ["Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -45037,8 +45049,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -45049,6 +45059,14 @@
                     "_v" : ["Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -45152,8 +45170,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -45164,6 +45180,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -45262,8 +45286,6 @@
                 "_id" : 1,
                 "posX" : -462.513916015625,
                 "posY" : 49.254730224609375,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -45274,6 +45296,15 @@
                     "_v" : ["Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -45358,8 +45389,6 @@
                 "_id" : 1,
                 "posX" : -394.037841796875,
                 "posY" : 37.241386413574219,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -45370,6 +45399,15 @@
                     "_v" : ["Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -45450,8 +45488,6 @@
                 "_id" : 1,
                 "posX" : -265.87451171875,
                 "posY" : -71.231498718261719,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnStartEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -45462,6 +45498,14 @@
                     "_v" : ["Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnStartEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -45945,8 +45989,6 @@
                 "_id" : 1,
                 "posX" : -245.07229614257813,
                 "posY" : -169.68853759765625,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterUseEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -45957,6 +45999,15 @@
                     "_v" : ["Skill"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "UseEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -46075,8 +46126,6 @@
                 "_id" : 1,
                 "posX" : -275.40597534179688,
                 "posY" : -66.373779296875,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnStartEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -46087,6 +46136,14 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnStartEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -46206,8 +46263,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeDrawEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -46218,6 +46273,14 @@
                     "_v" : ["Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "DrawEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -46340,8 +46403,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -46352,6 +46413,14 @@
                     "_v" : ["Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -46668,8 +46737,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeFatigueEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -46680,6 +46747,14 @@
                     "_v" : ["Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "FatigueEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -46922,8 +46997,6 @@
                 "_id" : 1,
                 "posX" : -170.01132202148438,
                 "posY" : -73.386184692382813,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnStartEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -46934,6 +47007,14 @@
                     "_v" : ["Hand"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnStartEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -47084,8 +47165,6 @@
                 "_id" : 1,
                 "posX" : -208.5390625,
                 "posY" : -90.5096435546875,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterTurnStartEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -47096,6 +47175,15 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnStartEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -47254,14 +47342,21 @@
                 "_id" : 1,
                 "posX" : -102.11343383789063,
                 "posY" : -2.4026641845703125,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterTurnEndEvent",
                 "consts" : {
                   "pileList" : {
                     "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
                     "_v" : ["Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -47352,8 +47447,6 @@
                 "_id" : 1,
                 "posX" : -280.31149291992188,
                 "posY" : 6.0066680908203125,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterAttackEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -47364,6 +47457,15 @@
                     "_v" : ["Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "AttackEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -47621,8 +47723,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -47633,6 +47733,14 @@
                     "_v" : ["Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -47713,8 +47821,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -47725,6 +47831,14 @@
                     "_v" : ["Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -47800,8 +47914,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeUseEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -47812,6 +47924,14 @@
                     "_v" : ["Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "UseEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -48353,8 +48473,6 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterTurnStartEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -48365,6 +48483,15 @@
                     "_v" : ["Field"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnStartEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -48477,8 +48604,6 @@
                 "_id" : 1,
                 "posX" : -266.86801147460938,
                 "posY" : -378.24884033203125,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterUseEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -48489,6 +48614,15 @@
                     "_v" : ["Skill"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "UseEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -48751,8 +48885,6 @@
                 "_id" : 1,
                 "posX" : -488.448486328125,
                 "posY" : -131.17779541015625,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterTurnEndEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -48763,6 +48895,15 @@
                     "_v" : ["Field", "Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnEndEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -48838,8 +48979,6 @@
                 "_id" : 1,
                 "posX" : -833.151611328125,
                 "posY" : 59.364227294921875,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "AfterRevealDuelEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -48850,6 +48989,15 @@
                     "_v" : ["Field", "Master"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "RevealDuelEvent"
+                  },
+                  "type" : 1
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -49031,8 +49179,6 @@
                 "_id" : 1,
                 "posX" : -249.51300048828125,
                 "posY" : 8.5617218017578125,
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : "BeforeDamageEvent",
                 "consts" : {
                   "tags" : {
                     "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
@@ -49043,6 +49189,14 @@
                     "_v" : ["Skill"]
                   }
                 },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "DamageEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
                 "tags" : null,
                 "piles" : null
               }, {
@@ -49243,6 +49397,306 @@
         }],
       "existLimitList" : [],
       "effects" : []
+    }, {
+      "_id" : 8,
+      "propModifierList" : [{
+          "_t" : "DamageReduceModifier",
+          "propertyName" : "damageReduce",
+          "defaultValue" : 3
+        }],
+      "existLimitList" : [],
+      "effects" : [{
+          "_t" : "SerializableEventEffect",
+          "name" : "事件效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableEventEntryNode",
+                "_id" : 1,
+                "posX" : 0.0,
+                "posY" : 0.0,
+                "consts" : {
+                  "tags" : {
+                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
+                    "_v" : []
+                  },
+                  "pileList" : {
+                    "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
+                    "_v" : ["Field", "Master"]
+                  }
+                },
+                "triggerTime" : {
+                  "defineRef" : {
+                    "cardPoolId" : NumberLong(0),
+                    "eventName" : "TurnStartEvent"
+                  }
+                },
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : null,
+                "tags" : null,
+                "piles" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112002
+                },
+                "posX" : -45.096923828125,
+                "posY" : 306.06845092773438,
+                "constDict" : {
+                  "operator" : null
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102010
+                },
+                "posX" : -501.2135009765625,
+                "posY" : 318.30145263671875,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102001
+                },
+                "posX" : -787.95379638671875,
+                "posY" : 320.40206909179688,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 206002
+                },
+                "posX" : 625.970947265625,
+                "posY" : -31.21307373046875,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102001
+                },
+                "posX" : 234.51458740234375,
+                "posY" : -268.883056640625,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 7,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 106001
+                },
+                "posX" : 239.75738525390625,
+                "posY" : -503.0577392578125,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "return",
+                "sourceNodeId" : 4,
+                "destName" : "card",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 3,
+                "destName" : "A",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "B",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 2,
+                "destName" : "condition",
+                "destNodeId" : 1
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 6,
+                "destName" : "card",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 7,
+                "destName" : "buff",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 5
+              }]
+          }
+        }]
+    }, {
+      "_id" : 26,
+      "propModifierList" : [],
+      "existLimitList" : [],
+      "effects" : [{
+          "_t" : "SerializablePassiveEffect",
+          "name" : "被动效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializablePassiveEntryNode",
+                "_id" : 1,
+                "posX" : 0.0,
+                "posY" : 0.0,
+                "consts" : {
+                  "tags" : {
+                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
+                    "_v" : ["lastword"]
+                  },
+                  "pileList" : {
+                    "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
+                    "_v" : []
+                  }
+                },
+                "tags" : null,
+                "piles" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 202003
+                },
+                "posX" : 882.5050048828125,
+                "posY" : 29.9027099609375,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 103008
+                },
+                "posX" : 565.94390869140625,
+                "posY" : -272.46316528320313,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 206001
+                },
+                "posX" : 1245.9119873046875,
+                "posY" : 62.552597045898438,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 106002
+                },
+                "posX" : 628.4041748046875,
+                "posY" : -821.83209228515625,
+                "constDict" : {
+                  "buffDefine" : {
+                    "_t" : "DefineReference",
+                    "cardPoolId" : NumberLong(1),
+                    "defineId" : 27
+                  }
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "player",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "卡牌",
+                "sourceNodeId" : 1,
+                "destName" : "card",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 3,
+                "destName" : "cardDefine",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 2,
+                "destName" : "cards",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "value",
+                "sourceNodeId" : 5,
+                "destName" : "buffDefine",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 2,
+                "destName" : "enter",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 2
+              }]
+          }
+        }]
     }],
   "buffSkinList" : [{
       "buffId" : 5,
@@ -49271,13 +49725,6 @@
       "name" : "风灵角笛",
       "desc" : "属性+3/+6",
       "imagePath" : "03f9c2e9ce74a3cd7282787f4fd38a12309cb9a53f7f2e242e2fea8766dbf5a5.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 8,
-      "language" : "zh-Hans",
-      "name" : "水精公主",
-      "desc" : "本回合减伤+3",
-      "imagePath" : "d56227aeaba39f9a42bc36ad95b18c6675e64693d51e14e2e3e740dd8bb83181.jpg",
       "_animationRefs" : []
     }, {
       "buffId" : 9,
@@ -49407,13 +49854,6 @@
       "imagePath" : "faf51e8361197987cc1fa70ba3c89d957e240f1264aca42bbb88e7bc57143573.jpg",
       "_animationRefs" : []
     }, {
-      "buffId" : 26,
-      "language" : "zh-Hans",
-      "name" : "抽芽复行",
-      "desc" : "遗言：召唤自身复制并+3/+3",
-      "imagePath" : "1cb59acc395a5f42fbcbb0730446dfeec0930399f1c5ebc1b9e137f27a2db3cd.jpg",
-      "_animationRefs" : []
-    }, {
       "buffId" : 27,
       "language" : "zh-Hans",
       "name" : "抽芽",
@@ -49430,14 +49870,6 @@
       "_animationRefs" : []
     }, {
       "buffId" : 27,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 26,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 26,
       "language" : "zh-Hans",
       "_animationRefs" : []
     }, {
@@ -49785,6 +50217,36 @@
       "name" : "秘藏魔法-效果",
       "desc" : "这张法术牌的花费-5",
       "imagePath" : "3979b40b2ad1c123f65d1a805ee335495ec820ec835b7429474e0dc4ae967cc4.jpg",
+      "_animationRefs" : []
+    }, {
+      "buffId" : 8,
+      "language" : "zh-Hans",
+      "name" : "水精公主",
+      "desc" : "本回合减伤+3",
+      "imagePath" : "d56227aeaba39f9a42bc36ad95b18c6675e64693d51e14e2e3e740dd8bb83181.jpg",
+      "persistentAnimRef" : {
+        "cardPoolId" : NumberLong(0),
+        "defineId" : 27
+      },
+      "_animationRefs" : []
+    }, {
+      "buffId" : 26,
+      "language" : "zh-Hans",
+      "name" : "抽芽复行",
+      "desc" : "遗言：召唤自身复制并+3/+3",
+      "imagePath" : "1cb59acc395a5f42fbcbb0730446dfeec0930399f1c5ebc1b9e137f27a2db3cd.jpg",
+      "persistentAnimRef" : {
+        "cardPoolId" : NumberLong(0),
+        "defineId" : 29
+      },
+      "_animationRefs" : []
+    }, {
+      "buffId" : 26,
+      "language" : "zh-Hans",
+      "_animationRefs" : []
+    }, {
+      "buffId" : 26,
+      "language" : "zh-Hans",
       "_animationRefs" : []
     }],
   "actionDefineList" : [{

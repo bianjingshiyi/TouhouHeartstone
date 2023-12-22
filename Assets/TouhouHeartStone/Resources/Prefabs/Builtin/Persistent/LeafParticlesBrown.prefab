@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &4306663878576869994
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 657284799542618594, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 657284799542618594, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.5019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 657284799542618594, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.69803923
+      objectReference: {fileID: 0}
+    - target: {fileID: 657337502833777730, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 657337502833777730, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.2509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 657337502833777730, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.34901962
+      objectReference: {fileID: 0}
+    - target: {fileID: 3885400720277652299, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3885400720277652299, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3885400720277652299, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3885400720277652299, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3885400720277652299, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3885400720277652299, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3885400720277652299, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3885400720277652299, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3885400720277652299, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3885400720277652299, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6548975100610074673, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: m_Name
+      value: LeafParticlesBrown
+      objectReference: {fileID: 0}
+    - target: {fileID: 8312322311565465712, guid: 8692f0da39fdf404b94820b693eb1142,
+        type: 3}
+      propertyPath: defineName
+      value: "\u6811\u53F6\u7C92\u5B50_\u68D5\u8272"
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8692f0da39fdf404b94820b693eb1142, type: 3}
