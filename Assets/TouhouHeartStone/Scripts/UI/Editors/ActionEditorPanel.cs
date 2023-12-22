@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using BJSYGameCore.UI;
-using Controllers;
-using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI
 {
-    public class ActionEditorPanel : MonoBehaviour
+    public class ActionEditorPanel : EditorPanelBase
     {
         #region 公有方法
-        public void setTitleText(string title)
-        {
-            _editorTitle.text = title;
-        }
+
         #region 基础
         public void setName(string name)
         {
@@ -96,7 +91,7 @@ namespace UI
 
         #endregion
 
-        public void reset()
+        public override void reset()
         {
             displayPage(_actionPage, _actionPageIndicator);
         }
@@ -104,8 +99,9 @@ namespace UI
 
         #region 私有方法
         #region 生命周期
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _categoryInputField.onValueChanged.AddListener(onChangeCategoryCallback);
 
             _createPortDefineDialog.onConfirm += onCreatePortDefineCallback;
@@ -113,12 +109,7 @@ namespace UI
             _addInputItemButton.onClick.AddListener(onAddInputCallback);
             _addOutputItemButton.onClick.AddListener(onAddOutputCallback);
 
-            _deleteCardButton.onClick.AddListener(onClickDeleteActionButtonCallback);
-            _saveCardButton.onClick.AddListener(onClickSaveButtonCallback);
-            _closeCardButton.onClick.AddListener(onClickCloseButtonCallback);
-
             _actionPageButton.onClick.AddListener(onClickBasicPageButtonCallback);
-            _nodesPageButton.onClick.AddListener(onClickNodesPageButtonCallback);
         }
 
         #endregion
@@ -132,25 +123,9 @@ namespace UI
         {
             displayPage(_actionPage, _actionPageIndicator);
         }
-        void onClickNodesPageButtonCallback()
-        {
-            displayPage(_nodesPage, _nodesPageIndicator);
-        }
         private void onCreatePortDefineCallback(ActionPortDefineItem item)
         {
             onCreatePortDefine?.Invoke(item);
-        }
-        void onClickDeleteActionButtonCallback()
-        {
-            onClickDeleteActionButton?.Invoke();
-        }
-        void onClickSaveButtonCallback()
-        {
-            onClickSaveButton?.Invoke();
-        }
-        void onClickCloseButtonCallback()
-        {
-            onClickCloseButton?.Invoke();
         }
 
         #region 输入变量
@@ -180,16 +155,21 @@ namespace UI
 
         #endregion
 
-        private void displayPage(GameObject pageObj, GameObject indicator)
+        protected override IEnumerable<GameObject> getPages()
         {
-            _actionPage.SetActive(false);
-            _nodesPage.SetActive(false);
-
-            _actionPageIndicator.SetActive(false);
-            _nodesPageIndicator.SetActive(false);
-
-            pageObj.SetActive(true);
-            indicator.SetActive(true);
+            foreach (var page in base.getPages())
+            {
+                yield return page;
+            }
+            yield return _actionPage;
+        }
+        protected override IEnumerable<GameObject> getPageIndicators()
+        {
+            foreach (var indicator in base.getPageIndicators())
+            {
+                yield return indicator;
+            }
+            yield return _actionPageIndicator;
         }
         #endregion
 
@@ -208,14 +188,6 @@ namespace UI
         /// 当点击删除动作按钮
         /// </summary>
         public event Action onClickDeleteActionButton;
-        /// <summary>
-        /// 当点击保存按钮
-        /// </summary>
-        public event Action onClickSaveButton;
-        /// <summary>
-        /// 当点击关闭按钮
-        /// </summary>
-        public event Action onClickCloseButton;
 
         #region 输入变量
         /// <summary>
@@ -244,16 +216,6 @@ namespace UI
         #endregion
 
         #region 属性字段
-
-        [SerializeField]
-        Text _editorTitle;
-        [Header("Generic")]
-        [SerializeField]
-        Button _deleteCardButton;
-        [SerializeField]
-        Button _saveCardButton;
-        [SerializeField]
-        Button _closeCardButton;
 
         [Header("Basic")]
         [SerializeField]
@@ -290,15 +252,9 @@ namespace UI
         [SerializeField]
         Button _actionPageButton;
         [SerializeField]
-        Button _nodesPageButton;
-        [SerializeField]
         GameObject _actionPage;
         [SerializeField]
-        GameObject _nodesPage;
-        [SerializeField]
         GameObject _actionPageIndicator;
-        [SerializeField]
-        GameObject _nodesPageIndicator;
         #endregion
     }
 

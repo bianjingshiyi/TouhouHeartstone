@@ -2143,9 +2143,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _editorTitle: {fileID: 1467847593488728190}
-  _deleteCardButton: {fileID: 2098951483776771829}
-  _saveCardButton: {fileID: 4219792987670040964}
-  _closeCardButton: {fileID: 8272896732556305646}
+  _deleteButton: {fileID: 2098951483776771829}
+  _saveButton: {fileID: 4219792987670040964}
+  _closeButton: {fileID: 8272896732556305646}
+  _nodesPageButton: {fileID: 7852992149506145342}
+  _nodesPage: {fileID: 4517405053541513434}
+  _nodesPageIndicator: {fileID: 3601132615728214355}
   _nameText: {fileID: 7365874529870895999}
   _categoryInputField: {fileID: 3852698890997509005}
   _defineTypeText: {fileID: 3757255832166275350}
@@ -2159,11 +2162,8 @@ MonoBehaviour:
   _outputItemList: []
   _addOutputItemButton: {fileID: 9046594510650277769}
   _actionPageButton: {fileID: 5636569308960768216}
-  _nodesPageButton: {fileID: 7852992149506145342}
   _actionPage: {fileID: 3195968248179095695}
-  _nodesPage: {fileID: 4517405053541513434}
   _actionPageIndicator: {fileID: 1385903776158371253}
-  _nodesPageIndicator: {fileID: 3601132615728214355}
 --- !u!114 &7569220117993458127
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2180,7 +2180,6 @@ MonoBehaviour:
   _effectEditorCtrl: {fileID: 0}
   _graphEditor: {fileID: 4568162287426417985}
   _actionNodeGraphCtrl: {fileID: 8770111921071751288}
-  _graphEditorPanelCtrl: {fileID: 4568162287426417985}
 --- !u!114 &4568162287426417985
 MonoBehaviour:
   m_ObjectHideFlags: 0

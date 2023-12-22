@@ -4,6 +4,7 @@ using BJSYGameCore;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using TouhouHeartstone;
 using UI;
 using UnityEngine;
 using Card = TouhouCardEngine.Card;
@@ -90,6 +91,30 @@ namespace Game
             }
             return game.lang._(EDITOR_TYPE_NAME_UNKNOWN);
         }
+        public string getRuleLogicTypeEditorName(GameRuleLogicType type)
+        {
+            string str = null;
+            switch (type)
+            {
+                case GameRuleLogicType.GameStart:
+                    str = RULE_NAME_POST_GAME_START;
+                    break;
+                case GameRuleLogicType.PlayerEnter:
+                    str = RULE_NAME_POST_PLAYER_ENTER;
+                    break;
+                case GameRuleLogicType.PlayerExit:
+                    str = RULE_NAME_POST_PLAYER_EXIT;
+                    break;
+                case GameRuleLogicType.GameEnd:
+                    str = RULE_NAME_POST_GAME_END;
+                    break;
+            }
+            if (str != null)
+            {
+                return game.lang._(str);
+            }
+            return game.lang._(RULE_NAME_UNKNOWN);
+        }
         #endregion
         #region 私有方法
         #endregion
@@ -110,6 +135,17 @@ namespace Game
         public const string EDITOR_TYPE_NAME_BUFF_REFERENCE = "增益定义引用";
         [TranslateMsg("编辑器类型名称")]
         public const string EDITOR_TYPE_NAME_UNKNOWN = "未知类型";
+
+        [TranslateMsg("游戏规则逻辑类型")]
+        public const string RULE_NAME_POST_GAME_START = "游戏开始后";
+        [TranslateMsg("游戏规则逻辑类型")]
+        public const string RULE_NAME_POST_PLAYER_ENTER = "玩家加入后";
+        [TranslateMsg("游戏规则逻辑类型")]
+        public const string RULE_NAME_POST_PLAYER_EXIT = "玩家离开后";
+        [TranslateMsg("游戏规则逻辑类型")]
+        public const string RULE_NAME_POST_GAME_END = "游戏结束后";
+        [TranslateMsg("游戏规则逻辑类型")]
+        public const string RULE_NAME_UNKNOWN = "未知规则";
         public MainManager game
         {
             get { return _game; }

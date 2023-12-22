@@ -112,7 +112,7 @@ namespace Controllers
             _ui.setEffectTypes(game.card.getEffectNames());
             _ui.onClickAddEffectMenu += onClickAddEffectMenu;
             _ui.onEffectListItemInputFieldEndEdit += onEffectListItemInputFieldEndEditCallback;
-            _ui.onClickDeleteCardButton += onClickDeleteCardButton;
+            _ui.onClickDeleteButton += onClickDeleteButton;
             _ui.onClickSaveButton += onClickSaveButton;
             _ui.onClickCloseButton += onClickCloseButton;
 
@@ -420,7 +420,7 @@ namespace Controllers
             markUnsaved();
         }
         #endregion
-        private void onClickDeleteCardButton()
+        private void onClickDeleteButton()
         {
             //询问玩家
             game.ui.dialog.ShowQuestion(

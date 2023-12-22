@@ -7,6 +7,7 @@ using Game;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
+using TouhouHeartstone;
 using UI;
 using UnityEngine;
 
@@ -74,13 +75,22 @@ namespace Controllers
                 var poolInfo = getCardPoolInfo(poolId);
                 //更新牌库信息
                 Sprite image = await game.card.loadCardPoolImage(poolInfo);
+
+                // 自定义规则
+                _eventTriggerTimes = game.card.getAllEventDefines(false, poolInfo).getEventTriggerTimes();
+                var ruleNames = _gameRuleLogicTypes
+                    .Select(t => game.editor.getRuleLogicTypeEditorName(t))
+                    //.Concat(_eventTriggerTimes.getEventTriggerTimeNamesForEditor(game))
+                    .ToArray();
+                _ui.initRuleNames(ruleNames);
+                updateUIRuleList();
+
                 //更新UI
                 gameObject.SetActive(true);
                 _ui.setDeckListActive(false);
                 _ui.setEditDeckPanelActive(true);
                 _ui.updateCurCardPoolInfo(poolInfo.cardPoolName, image);
                 updatePasteButton();
-                await updateDeckCardListUI();
                 await _cardPoolViewPanelCtrl.display(cardPoolsRange: new long[] { poolId }, cardFilter: c =>
                 {
                     //显示所有卡牌，包括角色，技能和衍生物
@@ -88,6 +98,8 @@ namespace Controllers
                 });
             }
         }
+
+        #region 打开编辑器
         public Task openCardEditor(CardDefine cardDefine)
         {
             var infoData = new CardPoolDisplayObject(cardDefine);
@@ -103,6 +115,14 @@ namespace Controllers
             var infoData = new CardPoolDisplayObject(buffDefine);
             return openEditorByObject(infoData);
         }
+        public Task openRuleEditor(GeneratedRuleLogic ruleLogic)
+        {
+            var infoData = new CardPoolDisplayObject(ruleLogic);
+            return openEditorByObject(infoData);
+        }
+
+        #endregion
+
         /// <summary>
         /// 关闭当前编辑器。如果正在进行跨卡池编辑，进行一次卡池保存检测。
         /// </summary>
@@ -138,7 +158,7 @@ namespace Controllers
                 // 新建一个卡牌并打开
                 await createNewCardAndOpen(setPropAction);
             }
-            else 
+            else
             {
                 var cardDefine = game.card.getLocalCardDefine(defRef);
                 if (cardDefine == null)
@@ -201,8 +221,11 @@ namespace Controllers
             _ui.setTitleText(getTitleText(isCurrentCardPoolUnsaved(), game.lang._(EDITOR_TITLE)));
         }
         #endregion
+
         #endregion
+
         #region 私有方法
+
         #region 生命周期
         protected void Awake()
         {
@@ -225,10 +248,15 @@ namespace Controllers
             _ui.onClickExportCardPoolButton += onClickExportCardPoolButton;
             _ui.onClickImportCardPoolButton += onClickImportCardPoolButton;
 
+            // 自定义规则
+            _ui.onClickAddRuleItem += onClickAddRuleItemCallback;
+            _ui.onClickRuleItem += onClickRuleItemCallback;
+
             _cardPoolViewPanelCtrl.onClickCard += onClickCard;
             _cardPoolViewPanelCtrl.onUpdateCardListItem += onUpdateCardListItem;
         }
         #endregion
+
         #region 事件回调
         /// <summary>
         /// 当用户点击返回按钮，返回主菜单
@@ -454,7 +482,55 @@ namespace Controllers
             poolInfo.cardPoolName = value;
             _cardPoolViewPanelCtrl.updateCardPoolFilterNames();
         }
+
+        #region 自定义规则
+        private void onClickAddRuleItemCallback(int index)
+        {
+            markCardPoolUnsaved(_curCardPoolId);
+            GeneratedRuleLogic logic;
+            if (index < _gameRuleLogicTypes.Length)
+                logic = game.card.createRuleGameLogic(_curCardPoolId, _gameRuleLogicTypes[index]);
+            else
+                logic = game.card.createRuleEventLogic(_curCardPoolId, _eventTriggerTimes[index - _gameRuleLogicTypes.Length]);
+            game.card.addRuleLogic(_curCardPoolId, logic);
+
+            openRuleEditor(logic);
+        }
+        private void onClickRuleItemCallback(int index)
+        {
+            var ruleLogics = game.card.getLocalRuleLogics(_curCardPoolId);
+            GeneratedRuleLogic logic = ruleLogics[index];
+            openRuleEditor(logic);
+        }
         #endregion
+
+        #endregion
+
+        #region 自定义规则
+        private void updateUIRuleList()
+        {
+            var ruleLogics = game.card.getLocalRuleLogics(_curCardPoolId);
+            var names = new string[ruleLogics.Length];
+            for (int i = 0; i < names.Length; i++)
+            {
+                var logic = ruleLogics[i];
+                if (logic is GeneratedRuleGameLogic gameLogic)
+                {
+                    names[i] = game.editor.getRuleLogicTypeEditorName(gameLogic.type);
+                }
+                else if (logic is GeneratedRuleEventLogic eventLogic)
+                {
+                    names[i] = game.eventManager.translateEventTriggerTimeNameForEditor(eventLogic.triggerTime);
+                }
+                else
+                {
+                    names[i] = game.lang._(EditorManager.RULE_NAME_UNKNOWN);
+                }
+            }
+            _ui.updateRules(names);
+        }
+        #endregion
+
         /// <summary>
         /// 读取所有卡池文件中的卡池信息。
         /// </summary>
@@ -547,7 +623,8 @@ namespace Controllers
                             await saveCardPool();
                             onEndAction?.Invoke(true);
                         },
-                        () => {
+                        () =>
+                        {
                             onEndAction?.Invoke(false);
                         });
                 }
@@ -692,21 +769,6 @@ namespace Controllers
             }
             _ui.updateDeckList(viewData);
         }
-        private async Task updateDeckCardListUI()
-        {
-            var cardPoolId = _curCardPoolId;
-            var poolRef = getCardPoolRef(cardPoolId);
-            CardDefine[] cardDefines = game.card.getCardDefines(poolRef).Select(p => p.Value).ToArray();
-            (string name, Sprite image, int count)[] viewData = new (string name, Sprite image, int count)[cardDefines.Length];
-            for (int i = 0; i < viewData.Length; i++)
-            {
-                CardSkinData skin = game.card.getCardSkin(cardDefines[i]);
-                viewData[i].name = skin.name;
-                viewData[i].image = await game.card.loadCardImage(poolRef, skin);
-                viewData[i].count = 0;
-            }
-            _ui.updateDeckCardList(viewData);
-        }
         private void createCard(out CardDefine newCardDefine, out CardSkinData skin)
         {
             var cardPoolId = _curCardPoolId;
@@ -767,6 +829,17 @@ namespace Controllers
                     };
                     _displayPagePool.Add(displayInfo);
                 }
+                else if (infoData.ruleLogic is GeneratedRuleLogic ruleLogic)
+                {
+                    var newLogic = game.card.cloneRuleLogic(ruleLogic.cardPoolId, ruleLogic);
+                    var displayObj = new CardPoolDisplayObject(newLogic);
+                    displayInfo = new CardPoolDisplayPage()
+                    {
+                        cardPoolId = newLogic.cardPoolId,
+                        displayObj = displayObj,
+                    };
+                    _displayPagePool.Add(displayInfo);
+                }
             }
             return displayInfo;
         }
@@ -788,12 +861,22 @@ namespace Controllers
         {
             CardPoolEditor editor = null;
             var displayObj = displayInfo.displayObj;
-            if (displayObj.cardDefine != null)
-                editor = scene.cardEditor;
-            else if (displayObj.buffDefine != null)
-                editor = scene.buffEditor;
-            else if (displayObj.actionDefine != null)
-                editor = scene.actionEditor;
+            switch (displayObj.type)
+            {
+                case CardPoolDisplayObject.Type.Card:
+                    editor = scene.cardEditor;
+                    break;
+                case CardPoolDisplayObject.Type.Buff:
+                    editor = scene.buffEditor;
+                    break;
+                case CardPoolDisplayObject.Type.Action:
+                    editor = scene.actionEditor;
+                    break;
+                case CardPoolDisplayObject.Type.RuleLogic:
+                    editor = scene.ruleEditor;
+                    break;
+
+            }
             if (editor != null)
             {
                 _curCardPoolId = displayInfo.cardPoolId;
@@ -957,9 +1040,10 @@ namespace Controllers
             _copyingCard = null;
         }
         #endregion
+
         #region 属性字段
         [TranslateMsg("卡池编辑器/退出跨卡池编辑器/提示经典卡池被修改")]
-        public const string EDITOR_TRY_TO_SAVE_STANDARD_CARDPOOL = "您对经典卡池进行了更改，但该卡池无法被修改。\n是否要离开该卡池？"; 
+        public const string EDITOR_TRY_TO_SAVE_STANDARD_CARDPOOL = "您对经典卡池进行了更改，但该卡池无法被修改。\n是否要离开该卡池？";
         [TranslateMsg("卡池编辑器/退出跨卡池编辑器/提示要求保存卡池（{0}是卡池名）")]
         public const string EDITOR_NEED_TO_SAVE_CARDPOOL = "您对卡池({0})进行了更改，是否要保存该卡池？";
         [TranslateMsg("卡池编辑器/退出未保存卡池/选项名")]
@@ -990,7 +1074,6 @@ namespace Controllers
         const string IMPORT_SUCCESS = "卡池已导入";
 
 
-
         public string nodeClipboard { get; set; }
         private EditorPanel _ui;
         private List<long> _cardPoolIdList = new List<long>();
@@ -1007,6 +1090,14 @@ namespace Controllers
         /// </summary>
         private List<CardPoolDisplayPage> _displayPagePool = new List<CardPoolDisplayPage>();
         private CardPoolEditor _currentEditor;
+        private EventTriggerTime[] _eventTriggerTimes;
+        private static GameRuleLogicType[] _gameRuleLogicTypes = new GameRuleLogicType[]
+        {
+            GameRuleLogicType.GameStart,
+            GameRuleLogicType.PlayerEnter,
+            GameRuleLogicType.PlayerExit,
+            GameRuleLogicType.GameEnd
+        };
         [SerializeField]
         private CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         [SerializeField]

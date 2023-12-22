@@ -149,7 +149,7 @@ namespace UI
             _saveCardPoolButton.onClick.AddListener(onClickSaveCardPoolButtonCallback);
             _returnToCardPoolViewButton.onClick.AddListener(onClickReturnToCardPoolViewButtonCallback);
             _deleteCurCardPoolButton.onClick.AddListener(onClickDeleteCurCardPoolButtonCallback);
-            if (_cardPoolCardListItemTemplate.transform.parent == _cardPoolCardListRoot)
+            if (_cardPoolCardListItemTemplate && _cardPoolCardListItemTemplate.transform.parent == _cardPoolCardListRoot)
             {
                 _cardPoolCardListItemTemplate.gameObject.SetActive(false);
             }

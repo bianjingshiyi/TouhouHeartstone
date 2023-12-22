@@ -188,7 +188,7 @@ namespace Controllers
             _ui.onEffectListItemInputFieldEndEdit += onEffectListItemInputFieldEndEditCallback;
             _ui.setEffectTypes(game.card.getEffectNames());
 
-            _ui.onClickDeleteCardButton += onClickDeleteCardButton;
+            _ui.onClickDeleteButton += onClickDeleteCardButton;
             _ui.onClickCopyCardButton += onClickCopyCardButton;
             _ui.onClickSaveButton += onClickSaveButton;
             _ui.onClickCloseButton += onClickCloseButton;

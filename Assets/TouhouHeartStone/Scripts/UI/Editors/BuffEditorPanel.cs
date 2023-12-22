@@ -7,13 +7,9 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    public class BuffEditorPanel : MonoBehaviour
+    public class BuffEditorPanel : EditorPanelBase
     {
         #region 公有方法
-        public void setTitleText(string title)
-        {
-            _editorTitle.text = title;
-        }
         /// <summary>
         /// 设置增益的图片。
         /// </summary>
@@ -199,7 +195,7 @@ namespace UI
             _effectList.updateList(effectNames, activeIndex);
         }
         #endregion
-        public void reset()
+        public override void reset()
         {
             displayPage(_buffPage, _buffPageIndicator);
             _skinDropdown.Hide();
@@ -210,10 +206,6 @@ namespace UI
             _descInputField.DeactivateInputField();
         }
 
-        public void displayCardSelectPanel(bool display)
-        {
-            _cardPoolViewPanelObj.SetActive(display);
-        }
         public void updateAnimationRefs(AnimationRefViewData[] viewDatas, string[] anims, string[] positions)
         {
             _animationRefList.update(viewDatas, anims, positions);
@@ -222,13 +214,9 @@ namespace UI
 
         #region 私有方法
         #region 生命周期
-        protected void Awake()
+        protected override void Awake()
         {
-            // Generic
-            _deleteCardButton.onClick.AddListener(onClickDeleteCardButtonCallback);
-            _saveCardButton.onClick.AddListener(onClickSaveCardButtonCallback);
-            _closeCardButton.onClick.AddListener(onClickCloseCardButtonCallback);
-
+            base.Awake();
             _addPropertyModifierButton.onClick.AddListener(onClickAddModifierButton);
             _addExistLimitButton.onClick.AddListener(onClickAddExistLimitButton);
 
@@ -257,7 +245,6 @@ namespace UI
             // Pages.
             _buffPageButton.onClick.AddListener(() => displayPage(_buffPage, _buffPageIndicator));
             _propertyPageButton.onClick.AddListener(() => displayPage(_propertyPage, _propertyPageIndicator));
-            _nodesPageButton.onClick.AddListener(() => displayPage(_nodesPage, _nodesPageIndicator));
 
             _animationRefList.onAddButtonClicked += onAddAnimationRefButtonClickedCallback;
             _animationRefList.onAnimationChanged += onAnimationRefAnimationChangedCallback;
@@ -392,18 +379,6 @@ namespace UI
         {
             onEffectListItemInputFieldEndEdit?.Invoke(index, value);
         }
-        private void onClickDeleteCardButtonCallback()
-        {
-            onClickDeleteCardButton?.Invoke();
-        }
-        private void onClickSaveCardButtonCallback()
-        {
-            onClickSaveButton?.Invoke();
-        }
-        private void onClickCloseCardButtonCallback()
-        {
-            onClickCloseButton?.Invoke();
-        }
 
         #region 特效
         private void onAddAnimationRefButtonClickedCallback()
@@ -427,20 +402,8 @@ namespace UI
             onRemoveAnimationRefButtonClicked?.Invoke(index);
         }
         #endregion
+
         #endregion
-        private void displayPage(GameObject toDisplay, GameObject indicator)
-        {
-            _buffPage.SetActive(false);
-            _propertyPage.SetActive(false);
-            _nodesPage.SetActive(false);
-
-            _buffPageIndicator.SetActive(false);
-            _propertyPageIndicator.SetActive(false);
-            _nodesPageIndicator.SetActive(false);
-
-            toDisplay.SetActive(true);
-            indicator.SetActive(true);
-        }
         #endregion
 
         #region 事件
@@ -513,18 +476,6 @@ namespace UI
         /// 当效果标题输入框结束编辑
         /// </summary>
         public event Action<int, string> onEffectListItemInputFieldEndEdit;
-        /// <summary>
-        /// 当点击删除卡牌按钮
-        /// </summary>
-        public event Action onClickDeleteCardButton;
-        ///// <summary>
-        ///// 当点击保存按钮
-        ///// </summary>
-        public event Action onClickSaveButton;
-        ///// <summary>
-        ///// 当点击关闭按钮
-        ///// </summary>
-        public event Action onClickCloseButton;
         #region 特效
         public event Action onAddAnimationRefButtonClicked;
         public event Action<int, int> onAnimationRefAnimationChanged;
@@ -536,21 +487,11 @@ namespace UI
 
         #region 属性字段
         [SerializeField]
-        Text _editorTitle;
-        [SerializeField]
         Text _idText;
         [SerializeField]
         Button _editBuffImageButton;
         [SerializeField]
         Image _buffImage;
-
-        [Header("General")]
-        [SerializeField]
-        Button _deleteCardButton;
-        [SerializeField]
-        Button _saveCardButton;
-        [SerializeField]
-        Button _closeCardButton;
 
         [Header("Property Modifiers")]
         [SerializeField]
@@ -602,19 +543,13 @@ namespace UI
         [SerializeField]
         Button _propertyPageButton;
         [SerializeField]
-        Button _nodesPageButton;
-        [SerializeField]
         GameObject _buffPage;
         [SerializeField]
         GameObject _propertyPage;
         [SerializeField]
-        GameObject _nodesPage;
-        [SerializeField]
         GameObject _buffPageIndicator;
         [SerializeField]
         GameObject _propertyPageIndicator;
-        [SerializeField]
-        GameObject _nodesPageIndicator;
         #endregion
     }
 

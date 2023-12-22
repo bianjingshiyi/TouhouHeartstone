@@ -29,7 +29,7 @@ namespace Controllers
 
             await _actionNodeGraphCtrl.display(new ActionNodeGraphCtrl.DisplayInfo(cardPoolId, actionDefine));
             updateProperties();
-            _graphEditorPanelCtrl.display(_cardPoolId);
+            _graphEditor.display(_cardPoolId);
         }
         public override async Task display(CardPoolDisplayPage info)
         {
@@ -368,8 +368,6 @@ namespace Controllers
         ActionEditorPanel _ui;
         [SerializeField]
         ActionNodeGraphCtrl _actionNodeGraphCtrl;
-        [SerializeField]
-        GraphEditorPanelCtrl _graphEditorPanelCtrl;
 
 
         [TranslateMsg("动作编辑器/标题")]

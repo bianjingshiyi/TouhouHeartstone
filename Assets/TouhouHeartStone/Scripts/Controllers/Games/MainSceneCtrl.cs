@@ -39,6 +39,10 @@ namespace Controllers
             {
                 _actionEditor = TransformHelper.findComponentInScene<ActionEditorCtrl>(gameObject.scene);
             }
+            if (_ruleEditor == null)
+            {
+                _ruleEditor = TransformHelper.findComponentInScene<RuleEditorCtrl>(gameObject.scene);
+            }
             if (_chatCtrl == null)
             {
                 _chatCtrl = TransformHelper.findComponentInScene<ChatCtrl>(gameObject.scene);
@@ -59,6 +63,7 @@ namespace Controllers
             _cardEditor.gameObject.SetActive(false);
             _buffEditor.gameObject.SetActive(false);
             _actionEditor.gameObject.SetActive(false);
+            _ruleEditor.gameObject.SetActive(false);
             _chatCtrl.gameObject.SetActive(false);
             _lanCtrl.gameObject.SetActive(false);
             _replayCtrl.gameObject.SetActive(false);
@@ -71,6 +76,7 @@ namespace Controllers
         public CardEditorCtrl cardEditor => _cardEditor;
         public BuffEditorCtrl buffEditor => _buffEditor;
         public ActionEditorCtrl actionEditor => _actionEditor;
+        public RuleEditorCtrl ruleEditor => _ruleEditor;
         public ChatCtrl chatCtrl => _chatCtrl;
         public LANPanelCtrl lan => _lanCtrl;
         public ReplaySelectPanelCtrl replay => _replayCtrl;
@@ -88,6 +94,8 @@ namespace Controllers
         CardEditorCtrl _cardEditor;
         [SerializeField]
         ActionEditorCtrl _actionEditor;
+        [SerializeField]
+        RuleEditorCtrl _ruleEditor;
         [SerializeField]
         BuffEditorCtrl _buffEditor;
         [SerializeField]

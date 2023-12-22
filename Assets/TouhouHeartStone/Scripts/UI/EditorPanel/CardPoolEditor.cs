@@ -2,6 +2,7 @@
 using Controllers;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouHeartstone;
 using UnityEngine;
 
 namespace UI
@@ -82,33 +83,46 @@ namespace UI
         public CardDefine cardDefine { get; private set; }
         public GeneratedBuffDefine buffDefine { get; private set; }
         public GeneratedActionDefine actionDefine { get; private set; }
+        public GeneratedRuleLogic ruleLogic { get; private set; }
+        public Type type { get; private set; }
         public CardPoolDisplayObject(CardDefine card)
         {
             cardDefine = card;
+            type = Type.Card;
         }
         public CardPoolDisplayObject(GeneratedBuffDefine buff)
         {
             buffDefine = buff;
+            type = Type.Buff;
         }
         public CardPoolDisplayObject(GeneratedActionDefine action)
         {
             actionDefine = action;
+            type = Type.Action;
+        }
+        public CardPoolDisplayObject(GeneratedRuleLogic logic)
+        {
+            ruleLogic = logic;
+            type = Type.RuleLogic;
+        }
+        public object getObj()
+        {
+            switch (type)
+            {
+                case Type.Card:
+                    return cardDefine;
+                case Type.Buff:
+                    return buffDefine;
+                case Type.Action:
+                    return actionDefine;
+                case Type.RuleLogic:
+                    return ruleLogic;
+            }
+            return null;
         }
         public bool compare(CardPoolDisplayObject obj)
         {
-            if (cardDefine is CardDefine card1 && obj.cardDefine is CardDefine card2)
-            {
-                return card1.cardPoolId == card2.cardPoolId && card1.id == card2.id;
-            }
-            else if (buffDefine is GeneratedBuffDefine buff1 && obj.buffDefine is GeneratedBuffDefine buff2)
-            {
-                return buff1.cardPoolId == buff2.cardPoolId && buff1.id == buff2.id;
-            }
-            else if (actionDefine is GeneratedActionDefine action1 && obj.actionDefine is GeneratedActionDefine action2)
-            {
-                return action1.cardPoolId == action2.cardPoolId && action1.defineId == action2.defineId;
-            }
-            return false;
+            return compareObj(obj.getObj());
         }
         public bool compareObj(object obj)
         {
@@ -124,7 +138,18 @@ namespace UI
             {
                 return action1.cardPoolId == action2.cardPoolId && action1.defineId == action2.defineId;
             }
+            else if (ruleLogic is GeneratedRuleLogic logic1 && obj is GeneratedRuleLogic logic2)
+            {
+                return logic1.cardPoolId == logic2.cardPoolId && logic1.id == logic2.id;
+            }
             return false;
+        }
+        public enum Type
+        {
+            Card,
+            Buff,
+            Action,
+            RuleLogic
         }
     }
 }

@@ -69,7 +69,7 @@ namespace Controllers
                 var newNode = _seriNode.ToNode(_graphCtrl.graph);
                 _graphCtrl.graph.addNode(newNode);
                 definer.Define(newNode);
-                await _graphCtrl.createNodeUI4Node(newNode);
+                await _graphCtrl.applyNode(newNode);
             }
             private int _nodeID;
             private SerializableNode _seriNode;
@@ -89,7 +89,7 @@ namespace Controllers
                 var newNode = _seriNode.ToNode(_graphCtrl.graph);
                 _graphCtrl.graph.addNode(newNode);
                 definer.Define(newNode);
-                await _graphCtrl.createNodeUI4Node(newNode);
+                await _graphCtrl.applyNode(newNode);
             }
             public override void redo()
             {

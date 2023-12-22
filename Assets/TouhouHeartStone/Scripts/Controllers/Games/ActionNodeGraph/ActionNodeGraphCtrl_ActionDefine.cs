@@ -85,6 +85,7 @@ namespace Controllers
         {
             resetEditObjects();
             _generatedActionDefine = generatedActionDefine;
+            graph = generatedActionDefine.graph;
             //显示UI
             _ui.clearGraph();
             //创建动作节点

@@ -1,24 +1,18 @@
-﻿using BJSYGameCore.UI;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Controllers;
+using Game;
+using TouhouCardEngine;
+using TouhouHeartstone;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using Game;
-using System.Threading.Tasks;
-using TouhouHeartstone;
-using TouhouCardEngine;
-using Controllers;
-using System.Linq;
 
 namespace UI
 {
-    public class CardEditorPanel : MonoBehaviour
+    public class CardEditorPanel : EditorPanelBase
     {
-        public void setTitleText(string title)
-        {
-            _editorTitle.text = title;
-        }
         public void setId(int id)
         {
             _idText.text = id.ToString();
@@ -223,7 +217,7 @@ namespace UI
             _nameInputField.transform.position = namePosition;
             _nameInputField.textComponent.alignment = TextAnchor.MiddleCenter;
         }
-        public void reset()
+        public override void reset()
         {
             displayPage(_cardPage, _cardPageIndicator);
             hideCopyHint();
@@ -355,8 +349,9 @@ namespace UI
         }
         #region 私有方法
         #region 生命周期
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             if (_typeDropdown == null)
                 _typeDropdown = transform.Find("DetailPanel/TypeDropdownField/DropdownLight").GetComponent<Dropdown>();
             _typeDropdown.onValueChanged.AddListener(onTypeDropdownValueChanged);
@@ -395,15 +390,11 @@ namespace UI
             _effectList.onClickItemRemoveButton += onClickEffectListItemRemoveButton;
             _effectList.onItemInputFieldEndEdit += onEffectListItemInputFieldEndEditCallback;
             _copyCardButton.onClick.AddListener(onClickCopyCardButtonCallback);
-            _deleteCardButton.onClick.AddListener(onClickDeleteCardButtonCallback);
-            _saveCardButton.onClick.AddListener(onClickSaveCardButtonCallback);
-            _closeCardButton.onClick.AddListener(onClickCloseCardButtonCallback);
 
 
             // Pages.
             _cardPageButton.onClick.AddListener(onClickCardPageButtonCallback);
             _propertyPageButton.onClick.AddListener(onClickPropertyPageButtonCallback);
-            _nodesPageButton.onClick.AddListener(onClickNodesPageButtonCallback);
 
             // Custom Properties.
             _addCustomPropertyButton.onClick.AddListener(() => displayCustomPropertyDialog(true));
@@ -638,18 +629,6 @@ namespace UI
         {
             onClickCopyCardButton?.Invoke();
         }
-        private void onClickDeleteCardButtonCallback()
-        {
-            onClickDeleteCardButton?.Invoke();
-        }
-        private void onClickSaveCardButtonCallback()
-        {
-            onClickSaveButton?.Invoke();
-        }
-        private void onClickCloseCardButtonCallback()
-        {
-            onClickCloseButton?.Invoke();
-        }
         private void onClickCardPageButtonCallback()
         {
             onClickCardPageButton?.Invoke();
@@ -723,22 +702,17 @@ namespace UI
         }
         public void displayNodesPage()
         {
-            displayPage(_nodesPage, _nodesPageIndicator);
+            displayPage(_propertyPage, _propertyPageIndicator);
         }
         #endregion
 
-        private void displayPage(GameObject toDisplay, GameObject indicator)
+        protected override IEnumerable<GameObject> getPages()
         {
-            _cardPage.SetActive(false);
-            _propertyPage.SetActive(false);
-            _nodesPage.SetActive(false);
-
-            _cardPageIndicator.SetActive(false);
-            _propertyPageIndicator.SetActive(false);
-            _nodesPageIndicator.SetActive(false);
-
-            toDisplay.SetActive(true);
-            indicator.SetActive(true);
+            return base.getPages().Append(_cardPage).Append(_propertyPage);
+        }
+        protected override IEnumerable<GameObject> getPageIndicators()
+        {
+            return base.getPageIndicators().Append(_cardPageIndicator).Append(_propertyPageIndicator);
         }
         #endregion
         #region 事件
@@ -821,21 +795,9 @@ namespace UI
         /// </summary>
         public event Action<int, string> onEffectListItemInputFieldEndEdit;
         /// <summary>
-        /// 当点击删除卡牌按钮
-        /// </summary>
-        public event Action onClickDeleteCardButton;
-        /// <summary>
         /// 当点击复制按钮
         /// </summary>
         public event Action onClickCopyCardButton;
-        /// <summary>
-        /// 当点击保存按钮
-        /// </summary>
-        public event Action onClickSaveButton;
-        /// <summary>
-        /// 当点击关闭按钮
-        /// </summary>
-        public event Action onClickCloseButton;
         /// <summary>
         /// 当点击卡牌页面按钮
         /// </summary>
@@ -870,8 +832,6 @@ namespace UI
 
         #endregion
         public Card card => _card;
-        [SerializeField]
-        Text _editorTitle;
         [Header("编辑内容")]
         [SerializeField]
         Card _card;
@@ -945,12 +905,6 @@ namespace UI
         [SerializeField]
         Button _copyCardButton;
         [SerializeField]
-        Button _deleteCardButton;
-        [SerializeField]
-        Button _saveCardButton;
-        [SerializeField]
-        Button _closeCardButton;
-        [SerializeField]
         InputField _tagInputField;
 
         [Header("Pages")]
@@ -959,19 +913,13 @@ namespace UI
         [SerializeField]
         Button _propertyPageButton;
         [SerializeField]
-        Button _nodesPageButton;
-        [SerializeField]
         GameObject _cardPage;
         [SerializeField]
         GameObject _propertyPage;
         [SerializeField]
-        GameObject _nodesPage;
-        [SerializeField]
         GameObject _cardPageIndicator;
         [SerializeField]
         GameObject _propertyPageIndicator;
-        [SerializeField]
-        GameObject _nodesPageIndicator;
 
         [Header("Custom Properties")]
         [SerializeField]

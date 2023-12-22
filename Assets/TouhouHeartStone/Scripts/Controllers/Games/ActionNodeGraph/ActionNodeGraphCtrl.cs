@@ -45,6 +45,8 @@ namespace Controllers
 
                 if (info.editObject is GeneratedActionDefine actionDefine)
                     return openGeneratedActionDefine(actionDefine);
+                if (info.editObject is GeneratedRuleLogic ruleLogic)
+                    return openGeneratedRuleLogic(ruleLogic);
                 else if (info.editObject is GeneratedEffect effect)
                     return openActionGraph(effect);
                 else
@@ -59,6 +61,8 @@ namespace Controllers
                 editObject = _effect;
             else if (_generatedActionDefine != null)
                 editObject = _generatedActionDefine;
+            else if (_generatedRuleLogic != null)
+                editObject = _generatedRuleLogic;
             else
                 editObject = null;
             return new DisplayInfo(_curCardPoolId, editObject);
@@ -169,7 +173,7 @@ namespace Controllers
             foreach (var node in clipGraph.nodes)
             {
                 fixTransCardPoolBuffRef(node);
-                await createNodeUI4Node(node);
+                await applyNode(node);
                 addOperationRecord(new CreateNodeOperation(this, node));
             }
             foreach (var connection in clipGraph.connections)
@@ -807,6 +811,7 @@ namespace Controllers
             //清理数据
             resetEditObjects();
             _effect = effect;
+            graph = effect.graph;
 
             _ui.clearGraph();
             await ApplyGraph(effect.graph);
@@ -814,7 +819,8 @@ namespace Controllers
             updateEffectProperties();
         }
         #endregion
-        #region 节点UI创建/删除/获取
+
+        #region 更新节点图
         /// <summary>
         /// 为动作节点以及其所有子节点创建动作节点图
         /// </summary>
@@ -823,25 +829,9 @@ namespace Controllers
         {
             foreach (var node in graph.nodes)
             {
-                // 先更新自定义动作节点和事件入口节点，因为自定义节点和自定义事件的输出输入值可能会变动。
-                if (node is ActionNode action)
-                {
-                    var define = getActionDefine(action.defineRef);
-                    if (define is GeneratedActionDefine gen)
-                    {
-                        action.define = gen;
-                        action.Define();
-                    }
-                }
-                else if (node is EventEntryNode eventEntryNode)
-                {
-                    var triggerTime = eventEntryNode.triggerTime;
-                    var eventDefineRef = triggerTime.defineRef;
-                    var eventDefine = game.card.getLocalEventDefine(eventDefineRef);
-                    eventEntryNode.setEventDefine(eventDefine, triggerTime.type);
-                    eventEntryNode.Define();
-                }
-                await createNodeUI4Node(node);
+                // 先更新端口可能会变动的节点。
+                updateNodeWithVariablePorts(node);
+                await applyNode(node);
             }
 
             disconnectAllInvalidConnections(graph);
@@ -860,7 +850,14 @@ namespace Controllers
                 checkEventVariableNodeItemVarNames(actionNodeItem, node);
             }
         }
+        #endregion
 
+        #region 创建节点UI
+        private Task<ActionNodeItem> applyNode(Node node)
+        {
+            _actionNodeList.Add(node);
+            return createNodeUI4Node(node);
+        }
         private async Task<ActionNodeItem> createNodeUI4Node(Node node)
         {
             if (node is ActionNode action)
@@ -869,23 +866,7 @@ namespace Controllers
             }
             else if (node is ActiveEntryNode activeEntry)
             {
-                string nodeName = game.lang._(EDITOR_NODE_NAME_ACTIVE_ENTRY_NODE);
-                var targetTypes = getTranslatedTargetCheckerTypes();
-                var checkers = getActiveEntryTargetCheckerViewData(activeEntry);
-                var inputViewData = getActiveEntryInputViewData(activeEntry);
-                var outputViewData = getNodeOutputViewData(activeEntry);
-
-                var actionNodeItem = _ui.createActiveEntryNode(activeEntry.posX, activeEntry.posY, nodeName,
-                    inputViewData,
-                    targetTypes, checkers,
-                    outputViewData);
-                actionNodeItem.initEffectTags(_activeEffectTagNames, _activeEffectTags);
-
-                _actionNodeItemList.Add(actionNodeItem);
-                _actionNodeList.Add(node);
-                updateNodeItemInputPorts(node);
-                updateNodePortModes(node, _connectingPort);
-                return actionNodeItem;
+                return createNodeUI4ActiveEntryNode(activeEntry);
             }
             else if (node is PassiveEntryNode passiveEntry)
             {
@@ -893,36 +874,26 @@ namespace Controllers
             }
             else if (node is GeneratedActionEntryNode genEntry)
             {
-                string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_INPUT);
-                var inputViewData = new InputPortInfo[0];
-                var outputViewData = getActionDefineEntryNodeOutputViewData(genEntry);
-
-                var actionNodeItem = _ui.createActionNode(genEntry.posX, genEntry.posY, nodeName, inputViewData, outputViewData);
-                _actionNodeItemList.Add(actionNodeItem);
-                _actionNodeList.Add(node);
-                updateNodePortModes(node, _connectingPort);
-                return actionNodeItem;
+                return createNodeUI4GeneratedActionEntryNode(genEntry);
             }
             else if (node is GeneratedActionReturnNode genReturn)
             {
-                string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_OUTPUT);
-                var inputViewData = getActionDefineReturnNodeInputViewData(genReturn);
-                var outputViewData = new PortItemInfo[0];
-
-                var actionNodeItem = _ui.createActionNode(genReturn.posX, genReturn.posY, nodeName, inputViewData, outputViewData);
-                _actionNodeItemList.Add(actionNodeItem);
-                _actionNodeList.Add(node);
-                updateNodePortModes(node, _connectingPort);
-                return actionNodeItem;
+                return createNodeUI4GeneratedActionReturnNode(genReturn);
             }
             else if (node is AuraEntryNode auraEntry)
             {
                 return createNodeUI4AuraEntryNode(auraEntry);
             }
+            else if (node is EventRuleEntryNode eventRuleEntry)
+            {
+                return createNodeUI4EventRuleEntryNode(eventRuleEntry);
+            }
+            else if (node is GameRuleEntryNode gameRuleEntryNode)
+            {
+                return createNodeUI4GameRuleEntryNode(gameRuleEntryNode);
+            }
             return null;
         }
-
-
         /// <summary>
         /// 在指定位置上为动作节点创建节点图UI，不包括它的子节点。
         /// </summary>
@@ -939,12 +910,13 @@ namespace Controllers
                 int nodeKey = CanNodeOpenDocument(actionNode) ? actionNode.defineRef.defineId : -1;
                 bool visualEffect = game.anims.canActionAddEffect(actionNode.defineRef);
                 var inputViewDatas = getNodeInputViewData(actionNode);
+                var outputViewDatas = getNodeOutputViewData(actionNode);
                 actionNodeItem = _ui.createActionNode(
                     actionNode.posX,
                     actionNode.posY,
                     getActionNodeName(actionNode),
                     inputViewDatas,
-                    getNodeOutputViewData(actionNode),
+                    outputViewDatas,
                     getActionNodeObsoleteMsg(actionNode),
                     nodeKey,
                     visualEffect);
@@ -977,35 +949,42 @@ namespace Controllers
                     inputViewDatas,
                     outputViewDatas);
             }
-            _actionNodeItemList.Add(actionNodeItem);
-            if (!_actionNodeList.Contains(actionNode))
-            {
-                _actionNodeList.Add(actionNode);
-            }
-            updateNodePortModes(actionNode, _connectingPort);
+            afterCreateNodeItem(actionNode, actionNodeItem);
+            return actionNodeItem;
+        }
+        private ActionNodeItem createNodeUI4ActiveEntryNode(ActiveEntryNode activeEntry)
+        {
+            string nodeName = game.lang._(EDITOR_NODE_NAME_ACTIVE_ENTRY_NODE);
+
+            var targetTypes = getTranslatedTargetCheckerTypes();
+            var checkers = getActiveEntryTargetCheckerViewData(activeEntry);
+
+            var inputViewData = getNodeInputViewData(activeEntry);
+            var outputViewData = getNodeOutputViewData(activeEntry);
+            var actionNodeItem = _ui.createActiveEntryNode(activeEntry.posX, activeEntry.posY, nodeName,
+                inputViewData,
+                targetTypes, checkers,
+                outputViewData);
+            actionNodeItem.initEffectTags(_activeEffectTagNames, _activeEffectTags);
+
+            afterCreateNodeItem(activeEntry, actionNodeItem);
             return actionNodeItem;
         }
         private ActionNodeItem createNodeUI4PassiveEntryNode(PassiveEntryNode passiveEntry)
         {
-            string nodeName = null;
-            var inputViewData = getNodeInputViewData(passiveEntry);
-            var outputViewData = getNodeOutputViewData(passiveEntry);
+            string nodeName;
             if (passiveEntry is EventEntryNode eventEntry)
             {
                 var triggerTime = eventEntry.triggerTime;
-                var typeIndex = _eventTriggerTimes.getEventTriggerTimeIndex(triggerTime);
-                var editorNames = _eventTriggerTimes.getEventTriggerTimeNamesForEditor(game);
-                if (typeIndex >= 0)
-                {
-                    nodeName = editorNames[typeIndex];
-                }
+                nodeName = game.eventManager.translateEventTriggerTimeNameForEditor(triggerTime);
             }
             else
             {
-                nodeName = EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE;
+                nodeName = game.lang._(EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE);
             }
-            nodeName = game.lang._(nodeName != null ? nodeName : EDITOR_NODE_NAME_UNKNOWN_EVENT);
 
+            var inputViewData = getNodeInputViewData(passiveEntry);
+            var outputViewData = getNodeOutputViewData(passiveEntry);
             var actionNodeItem = _ui.createActionNode(passiveEntry.posX, passiveEntry.posY,
                 nodeName,
                 inputViewData,
@@ -1014,19 +993,36 @@ namespace Controllers
             actionNodeItem.initEffectTags(_passiveEffectTagNames, _passiveEffectTags);
             actionNodeItem.switchToEventEntryNode();
 
-            _actionNodeItemList.Add(actionNodeItem);
-            _actionNodeList.Add(passiveEntry);
-            updateNodeItemInputPorts(passiveEntry);
-            updateNodePortModes(passiveEntry, _connectingPort);
+            afterCreateNodeItem(passiveEntry, actionNodeItem);
+            return actionNodeItem;
+        }
+        private ActionNodeItem createNodeUI4GeneratedActionEntryNode(GeneratedActionEntryNode genEntry)
+        {
+            string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_INPUT);
+
+            var inputViewData = getNodeInputViewData(genEntry);
+            var outputViewData = getNodeOutputViewData(genEntry);
+            var actionNodeItem = _ui.createActionNode(genEntry.posX, genEntry.posY, nodeName, inputViewData, outputViewData);
+            afterCreateNodeItem(genEntry, actionNodeItem);
+            return actionNodeItem;
+        }
+        private ActionNodeItem createNodeUI4GeneratedActionReturnNode(GeneratedActionReturnNode genReturn)
+        {
+            string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_OUTPUT);
+
+            var inputViewData = getNodeInputViewData(genReturn);
+            var outputViewData = getNodeOutputViewData(genReturn);
+            var actionNodeItem = _ui.createActionNode(genReturn.posX, genReturn.posY, nodeName, inputViewData, outputViewData);
+            afterCreateNodeItem(genReturn, actionNodeItem);
             return actionNodeItem;
         }
         private ActionNodeItem createNodeUI4AuraEntryNode(AuraEntryNode auraEntry)
         {
             string nodeName = EDITOR_NODE_NAME_AURA_ENTRY_NODE;
             nodeName = game.lang._(nodeName);
+
             var inputViewData = getNodeInputViewData(auraEntry);
             var outputViewData = getNodeOutputViewData(auraEntry);
-
             var actionNodeItem = _ui.createActionNode(auraEntry.posX, auraEntry.posY,
                 nodeName,
                 inputViewData,
@@ -1034,12 +1030,52 @@ namespace Controllers
                 visualEffect: false);
             actionNodeItem.switchToEventEntryNode();
 
-            _actionNodeItemList.Add(actionNodeItem);
-            _actionNodeList.Add(auraEntry);
-            updateNodeItemInputPorts(auraEntry);
-            updateNodePortModes(auraEntry, _connectingPort);
+            afterCreateNodeItem(auraEntry, actionNodeItem);
             return actionNodeItem;
         }
+        private ActionNodeItem createNodeUI4EventRuleEntryNode(EventRuleEntryNode eventEntry)
+        {
+            var triggerTime = eventEntry.triggerTime;
+            string nodeName = game.eventManager.translateEventTriggerTimeNameForEditor(triggerTime);
+
+            var inputViewData = getNodeInputViewData(eventEntry);
+            var outputViewData = getNodeOutputViewData(eventEntry);
+            var actionNodeItem = _ui.createActionNode(eventEntry.posX, eventEntry.posY,
+                nodeName,
+                inputViewData,
+                outputViewData,
+                visualEffect: false);
+            actionNodeItem.switchToActionNode();
+
+            afterCreateNodeItem(eventEntry, actionNodeItem);
+            return actionNodeItem;
+        }
+        private ActionNodeItem createNodeUI4GameRuleEntryNode(GameRuleEntryNode entry)
+        {
+            var logicType = entry.logicType;
+            string nodeName = game.editor.getRuleLogicTypeEditorName(logicType);
+
+            var inputViewData = getNodeInputViewData(entry);
+            var outputViewData = getNodeOutputViewData(entry);
+            var actionNodeItem = _ui.createActionNode(entry.posX, entry.posY,
+                nodeName,
+                inputViewData,
+                outputViewData,
+                visualEffect: false);
+            actionNodeItem.switchToActionNode();
+
+            afterCreateNodeItem(entry, actionNodeItem);
+            return actionNodeItem;
+        }
+        private void afterCreateNodeItem(Node node, ActionNodeItem actionNodeItem)
+        {
+            _actionNodeItemList.Add(actionNodeItem);
+            updateNodeItemInputPorts(node);
+            updateNodePortModes(node, _connectingPort);
+        }
+        #endregion
+
+        #region 移除节点UI
         private void removeActionNode(Node node)
         {
             int actionNodeIndex = _actionNodeList.IndexOf(node);
@@ -1054,6 +1090,9 @@ namespace Controllers
             //将节点从UI上移除
             _ui.removeNode(actionNodeItem);
         }
+        #endregion
+
+        #region 获取节点UI
         private ActionNodeItem getActionNodeItem(Node actionNode)
         {
             int index = _actionNodeList.IndexOf(actionNode);
@@ -1074,6 +1113,99 @@ namespace Controllers
             }
         }
         #endregion
+
+        #region 获取节点
+        private Node getActionNode(ActionNodeItem actionNodeItem)
+        {
+            int index = _actionNodeItemList.IndexOf(actionNodeItem);
+            return _actionNodeList[index];
+        }
+        private Node getActionNode(int actionNodeId)
+        {
+            return _actionNodeList.Find(a => a != null && a.id == actionNodeId);
+        }
+        private string getActionNodeName(ActionNode actionNode)
+        {
+            var define = getActionDefine(actionNode.defineRef);
+            if (define == null)
+            {
+                Debug.LogWarning($"没有找到动作{actionNode.defineRef}对应的名称");
+                return tryTranslateWithDict(StringTable.EDITOR_NODE_NAME_UNKNOW);
+            }
+            else
+            {
+                return tryTranslateWithDict(define.editorName);
+            }
+        }
+
+        private string getActionNodeObsoleteMsg(ActionNode actionNode)
+        {
+            ActionDefine actionDefine = getActionDefine(actionNode.defineRef);
+            if (actionDefine.obsoleteMsg == null) return null;
+            if (actionDefine.obsoleteMsg == "") return "";
+            return game.lang._(actionDefine.obsoleteMsg);
+        }
+        #endregion
+
+        #region 节点操作
+        private void selectCardForNodeInputDefaultValue(CardDefine cardDefine)
+        {
+            if (_curEditNode == null)
+            {
+                return;
+            }
+            var defineRef = cardDefine.getDefineRef();
+            var name = _curEditNodeInputDefaultValueName;
+            var paramIndex = _curEditNodeInputDefaultValueParamIndex;
+            var itemIndex = _curEditNodeInputDefaultValueItemIndex;
+            if (itemIndex < 0)
+            {
+                setNodeDefaultValue(_curEditNode, name, paramIndex, defineRef);
+            }
+            else
+            {
+                IList<DefineReference> collection = _curEditNode.getInputDefaultValue(name, paramIndex) as IList<DefineReference>;
+                collection[itemIndex] = defineRef;
+                setNodeDefaultValue(_curEditNode, name, paramIndex, collection);
+            }
+            // 更新UI.
+            updateNodeItemInputPorts(_curEditNode);
+            addRecordBreakpoint();
+        }
+        private void updateNodeWithVariablePorts(Node node)
+        {
+            if (node is ActionNode action)
+            {
+                var define = getActionDefine(action.defineRef);
+                if (define is GeneratedActionDefine gen)
+                {
+                    action.define = gen;
+                    action.Define();
+                }
+            }
+            else if (node is EventEntryNode eventEntryNode)
+            {
+                var triggerTime = eventEntryNode.triggerTime;
+                var eventDefineRef = triggerTime.defineRef;
+                var eventDefine = game.card.getLocalEventDefine(eventDefineRef);
+                eventEntryNode.setEventDefine(eventDefine, triggerTime.type);
+                eventEntryNode.Define();
+            }
+            else if (node is GameRuleEntryNode gameRuleEntryNode)
+            {
+                gameRuleEntryNode.Define();
+            }
+            else if (node is EventRuleEntryNode eventRuleEntryNode)
+            {
+                var triggerTime = eventRuleEntryNode.triggerTime;
+                var eventDefineRef = triggerTime.defineRef;
+                var eventDefine = game.card.getLocalEventDefine(eventDefineRef);
+                eventRuleEntryNode.setEventDefine(eventDefine, triggerTime.type);
+                eventRuleEntryNode.Define();
+            }
+        }
+        #endregion
+
         #region 节点连接
         private void connectValuePorts(ValueOutput outputPort, ValueInput inputPort)
         {
@@ -1502,62 +1634,8 @@ namespace Controllers
             }
         }
         #endregion
-        #region 节点操作
-        private Node getActionNode(ActionNodeItem actionNodeItem)
-        {
-            int index = _actionNodeItemList.IndexOf(actionNodeItem);
-            return _actionNodeList[index];
-        }
-        private Node getActionNode(int actionNodeId)
-        {
-            return _actionNodeList.Find(a => a != null && a.id == actionNodeId);
-        }
-        private string getActionNodeName(ActionNode actionNode)
-        {
-            var define = getActionDefine(actionNode.defineRef);
-            if (define == null)
-            {
-                Debug.LogWarning($"没有找到动作{actionNode.defineRef}对应的名称");
-                return tryTranslateWithDict(StringTable.EDITOR_NODE_NAME_UNKNOW);
-            }
-            else
-            {
-                return tryTranslateWithDict(define.editorName);
-            }
-        }
 
-        private string getActionNodeObsoleteMsg(ActionNode actionNode)
-        {
-            ActionDefine actionDefine = getActionDefine(actionNode.defineRef);
-            if (actionDefine.obsoleteMsg == null) return null;
-            if (actionDefine.obsoleteMsg == "") return "";
-            return game.lang._(actionDefine.obsoleteMsg);
-        }
-        private void selectCardForNodeInputDefaultValue(CardDefine cardDefine)
-        {
-            if (_curEditNode == null)
-            {
-                return;
-            }
-            var defineRef = cardDefine.getDefineRef();
-            var name = _curEditNodeInputDefaultValueName;
-            var paramIndex = _curEditNodeInputDefaultValueParamIndex;
-            var itemIndex = _curEditNodeInputDefaultValueItemIndex;
-            if (itemIndex < 0)
-            {
-                setNodeDefaultValue(_curEditNode, name, paramIndex, defineRef);
-            }
-            else
-            {
-                IList<DefineReference> collection = _curEditNode.getInputDefaultValue(name, paramIndex) as IList<DefineReference>;
-                collection[itemIndex] = defineRef;
-                setNodeDefaultValue(_curEditNode, name, paramIndex, collection);
-            }
-            // 更新UI.
-            updateNodeItemInputPorts(_curEditNode);
-            addRecordBreakpoint();
-        }
-        #endregion
+
         #region 节点信息
         private ActionNodeValueInfo getDefaultValueInfoFromInput(IPort port)
         {
@@ -1622,6 +1700,14 @@ namespace Controllers
             {
                 return getActiveEntryInputViewData(activeEntry);
             }
+            else if (node is GeneratedActionEntryNode)
+            {
+                return Array.Empty<InputPortInfo>();
+            }
+            else if (node is GeneratedActionReturnNode genReturn)
+            {
+                return getActionDefineReturnNodeInputViewData(genReturn);
+            }
             List<InputPortInfo> viewDataList = new List<InputPortInfo>();
             //值输入
             foreach (var inputPort in node.inputPorts)
@@ -1650,6 +1736,14 @@ namespace Controllers
         }
         private PortItemInfo[] getNodeOutputViewData(Node node)
         {
+            if (node is GeneratedActionEntryNode genEntry)
+            {
+                return getActionDefineEntryNodeOutputViewData(genEntry);
+            }
+            else if (node is GeneratedActionReturnNode)
+            {
+                return Array.Empty<PortItemInfo>();
+            }
             List<PortItemInfo> outputList = new List<PortItemInfo>();
             foreach (var output in node.outputPorts)
             {
@@ -1672,6 +1766,8 @@ namespace Controllers
             _ui.clearGraph();
             _effect = null;
             _generatedActionDefine = null;
+            _generatedRuleLogic = null;
+            graph = null;
         }
         private string[] getTranslatedTargetCheckerTypes()
         {
@@ -1955,8 +2051,6 @@ namespace Controllers
         public const string EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE = "被动效果入口";
         [TranslateMsg("编辑器-节点名称-光环效果入口节点")]
         public const string EDITOR_NODE_NAME_AURA_ENTRY_NODE = "光环效果入口";
-        [TranslateMsg("编辑器-节点名称-未知事件入口节点")]
-        public const string EDITOR_NODE_NAME_UNKNOWN_EVENT = "未知事件入口节点";
 
         [TranslateMsg("编辑器-错误提示")]
         public const string EDITOR_ERROR_CREATE_ENTRY_FOR_NON_EVENT_EFFECT = "非事件效果不能添加事件入口节点。";
@@ -1984,17 +2078,7 @@ namespace Controllers
         readonly List<Node> _actionNodeList = new List<Node>();
         readonly List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
         private Dictionary<ActionNodeItem, Vector2> _movingNodeDict = new Dictionary<ActionNodeItem, Vector2>();
-        ActionGraph graph
-        {
-            get
-            {
-                if (_generatedActionDefine != null)
-                    return _generatedActionDefine.graph;
-                if (_effect != null)
-                    return _effect.graph;
-                return null;
-            }
-        }
+        ActionGraph graph;
         long _curCardPoolId = 0;
         GeneratedEffect _effect;
         /// <summary>
