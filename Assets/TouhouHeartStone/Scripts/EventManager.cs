@@ -24,20 +24,37 @@ namespace Game
                 list = list.Where(e => !isEventHidden(e));
             return list.ToArray();
         }
-        public string translateEventDefineNameForEditor(EventDefine define)
+        public string translateBuiltinEventNameForEditor(string eventName)
         {
-            if (_eventNameTranslations.TryGetValue(define.eventName, out string editorName))
+            if (_eventNameTranslations.TryGetValue(eventName, out string editorName))
             {
                 return game.lang._(editorName);
             }
-            return game.lang._(define.eventName);
+            return game.lang._(EDITOR_NODE_NAME_UNKNOWN_EVENT);
+        }
+        public string translateEventDefineNameForEditor(EventDefine define)
+        {
+            if (define == null)
+                return game.lang._(EDITOR_NODE_NAME_UNKNOWN_EVENT);
+            if (define.cardPoolId == 0)
+                return translateBuiltinEventNameForEditor(define.eventName);
+            if (define is GeneratedEventDefine gen)
+            {
+                return game.card.getLocalActionDefine(gen.actionReference).editorName;
+            }
+            return game.lang._(EDITOR_NODE_NAME_UNKNOWN_EVENT);
+        }
+        public string translateEventReferenceNameForEditor(EventReference eventRef)
+        {
+            if (eventRef == null)
+                return game.lang._(EDITOR_NODE_NAME_UNKNOWN_EVENT);
+            var eventDefine = game.card.getLocalEventDefine(eventRef);
+            return translateEventDefineNameForEditor(eventDefine);
         }
         public string translateEventTriggerTimeNameForEditor(EventTriggerTime time)
         {
             var lang = game.lang;
-            var poolRef = game.card.getLocalCardPoolReference(time.defineRef.cardPoolId);
-            var define = game.card.getEventDefine(poolRef, time.defineRef.eventName);
-            var name = translateEventDefineNameForEditor(define);
+            var name = translateEventReferenceNameForEditor(time.defineRef);
             if (time.type == EventTriggerTimeType.Before)
             {
                 return lang._(StringTable.EDITOR_EVENT_NAME_BEFORE_TEMPLATE, name);
@@ -154,6 +171,8 @@ namespace Game
         }
         #endregion
         public MainManager game => _game;
+        [TranslateMsg("未知事件")]
+        public const string EDITOR_NODE_NAME_UNKNOWN_EVENT = "未知事件";
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_ADD_BUFF = "添加增益";
         [TranslateMsg("事件名称")]

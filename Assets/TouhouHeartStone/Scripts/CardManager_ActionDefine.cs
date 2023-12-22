@@ -82,6 +82,7 @@ namespace Game
                     {
                         removeEventDefine(actionDefine.cardPoolId, actionDefine.getEventName());
                     }
+                    return true;
                 }
             }
             return false;
