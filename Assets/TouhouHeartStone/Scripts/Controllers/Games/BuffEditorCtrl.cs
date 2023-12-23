@@ -43,8 +43,7 @@ namespace Controllers
             updateModifiers();
             // 持续限制
             var poolRef = game.card.getLocalCardPoolReference(cardPoolId);
-            _eventTriggerTimes = game.card.getAllEventDefines(includeHidden: false, poolRef).getEventTriggerTimes();
-            _ui.initExistLimits(_eventTriggerTimes.getEventTriggerTimeNamesForEditor(game));
+            _ui.initExistLimits(eventTriggerTimeEditorNames);
             updateExistLimits();
             // 皮肤
             await setCurSkinIndex(0);
@@ -55,7 +54,7 @@ namespace Controllers
             {
                 await _effectEditorCtrl.display(_cardPoolId, effects[0]);
             }
-            _effectEditorCtrl.updateEventTriggerTimes(cardPoolId);
+            _effectEditorCtrl.updateEventTriggerTimes();
             updateEffectList(effects);
             _graphEditor.display(_cardPoolId);
         }
@@ -394,7 +393,7 @@ namespace Controllers
         private void onAddExistLimitCallback()
         {
             BuffExistLimitDefine limit = new BuffExistLimitDefine();
-            limit.triggerTime = _eventTriggerTimes.FirstOrDefault();
+            limit.triggerTime = eventTriggerTimes.FirstOrDefault();
             _buffDefine.existLimitList.Add(limit);
             updateExistLimits();
             markUnsaved();
@@ -408,7 +407,7 @@ namespace Controllers
         private void onChangeExistLimitEventCallback(int existLimitIndex, int eventIndex)
         {
             var limit = _buffDefine.existLimitList[existLimitIndex];
-            limit.triggerTime = _eventTriggerTimes[eventIndex];
+            limit.triggerTime = eventTriggerTimes[eventIndex];
             updateExistLimits();
             markUnsaved();
         }
@@ -792,9 +791,9 @@ namespace Controllers
         {
             foreach (var limit in _buffDefine.existLimitList)
             {
-                if (!_eventTriggerTimes.Any(t => limit.triggerTime == t))
+                if (!eventTriggerTimes.Any(t => limit.triggerTime == t))
                 {
-                    limit.triggerTime = _eventTriggerTimes.FirstOrDefault();
+                    limit.triggerTime = eventTriggerTimes.FirstOrDefault();
                 }
             }
         }
@@ -802,8 +801,7 @@ namespace Controllers
         {
             if (existLimit == null)
                 return -1;
-            var triggerTimes = _eventTriggerTimes;
-            return Array.IndexOf(triggerTimes, existLimit.triggerTime);
+            return Array.IndexOf(eventTriggerTimes, existLimit.triggerTime);
         }
 
         private int getExistLimitCount(BuffExistLimitDefine existLimit)
@@ -912,7 +910,8 @@ namespace Controllers
         List<BuffSkin> _buffSkins = new List<BuffSkin>();
         string _curLanguage;
         DefineReference[] _persistentAnimRefs;
-        EventTriggerTime[] _eventTriggerTimes;
+        private EventTriggerTime[] eventTriggerTimes => scene.editor.eventTriggerTimes;
+        private string[] eventTriggerTimeEditorNames => scene.editor.eventTriggerTimeEditorNames;
         #endregion
     }
 }

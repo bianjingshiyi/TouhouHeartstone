@@ -31,15 +31,10 @@ namespace Controllers
                 quitGraph();
                 _curCardPoolId = info.cardPoolId;
                 // 获取事件定义列表
-                var poolRef = game.card.getLocalCardPoolReference(_curCardPoolId);
-                var mainEventDefines = game.card.getAllEventDefines(includeHidden: false, poolRef);
-                _eventTriggerTimes = mainEventDefines.getEventTriggerTimes();
-                _eventReferences = mainEventDefines.Select(d => d.getReference()).ToArray();
-                var eventEditorNames = mainEventDefines.Select(d => game.eventManager.translateEventDefineNameForEditor(d)).ToArray();
                 updateBuffReferences();
                 //更新UI
                 _ui.gameObject.SetActive(true);
-                _ui.initEventReferences(eventEditorNames, _eventReferences);
+                _ui.initEventReferences(eventEditorNames, eventReferences);
                 _ui.resetView();
 
 
@@ -1868,7 +1863,7 @@ namespace Controllers
                     value = getAllEffectTagValues()[0];
                     break;
                 case ActionNodeValueType.eventReference:
-                    value = _eventReferences[0];
+                    value = eventReferences[0];
                     break;
                 case ActionNodeValueType.pileName:
                     value = getAllPiles()[0].value;
@@ -2106,8 +2101,6 @@ namespace Controllers
             DEFINE.TARGET_TYPE_CHARACTER,
             DEFINE.TARGET_TYPE_SERVANT
         };
-        EventTriggerTime[] _eventTriggerTimes;
-        EventReference[] _eventReferences;
 
         [TranslateMsg("内置节点名称，用于通用效果设置属性")]
         const string EDITOR_NODE_NAME_GENERATED_EFFECT_DATA = "通用效果属性";
@@ -2278,6 +2271,8 @@ namespace Controllers
             StringTable.GAME_KEYWORD_DEATHRATTLE,
             StringTable.GAME_KEYWORD_SECRET,
         };
+        private EventReference[] eventReferences => scene.editor.eventReferences;
+        private string[] eventEditorNames => scene.editor.eventEditorNames;
         #endregion
         #region 内部类
         public class DisplayInfo : UIDisplayInfo

@@ -72,7 +72,7 @@ namespace Controllers
             {
                 await _effectEditorCtrl.display(_cardPoolId, effects[0]);
             }
-            _effectEditorCtrl.updateEventTriggerTimes(cardPoolId);
+            _effectEditorCtrl.updateEventTriggerTimes();
             updateEffectList(effects);
 
             _graphEditor.display(_cardPoolId);

@@ -141,6 +141,25 @@ namespace Game
         #endregion
 
         #region 私有方法
+
+        #region 添加事件定义
+        private void addEventDefine(long cardPoolId, EventDefine define)
+        {
+            var cardPoolRef = getLocalCardPoolReference(cardPoolId);
+            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
+            {
+                cardPool.eventDefineList.Add(define);
+            }
+        }
+        private void removeEventDefine(long cardPoolId, string eventName)
+        {
+            var cardPoolRef = getLocalCardPoolReference(cardPoolId);
+            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
+            {
+                cardPool.eventDefineList.RemoveAll(e => e.eventName == eventName);
+            }
+        }
+        #endregion
         private EventDefine[] getEventDefines(CardPool cardPool)
         {
             return cardPool.eventDefineList.ToArray();

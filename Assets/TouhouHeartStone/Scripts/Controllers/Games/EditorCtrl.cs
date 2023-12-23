@@ -76,11 +76,14 @@ namespace Controllers
                 //更新牌库信息
                 Sprite image = await game.card.loadCardPoolImage(poolInfo);
 
+                // 事件
+                updateAllEvents();
+                _ui.initEventNames(eventTriggerTimeEditorNames);
+
                 // 自定义规则
-                _eventTriggerTimes = game.card.getAllEventDefines(false, poolInfo).getEventTriggerTimes();
                 var ruleNames = _gameRuleLogicTypes
                     .Select(t => game.editor.getRuleLogicTypeEditorName(t))
-                    //.Concat(_eventTriggerTimes.getEventTriggerTimeNamesForEditor(game))
+                    .Append(game.lang._(RULE_NAME_EVENT_LOGIC))
                     .ToArray();
                 _ui.initRuleNames(ruleNames);
                 updateUIRuleList();
@@ -192,6 +195,16 @@ namespace Controllers
             _copyingCard = defineRef;
             updatePasteButton();
         }
+        public void updateAllEvents()
+        {
+            var poolRef = game.card.getLocalCardPoolReference(_curCardPoolId);
+            var mainEventDefines = game.card.getAllEventDefines(includeHidden: false, poolRef);
+            eventTriggerTimes = mainEventDefines.getEventTriggerTimes();
+            eventReferences = mainEventDefines.Select(d => d.getReference()).ToArray();
+            eventTriggerTimeEditorNames = eventTriggerTimes.Select(t => game.eventManager.translateEventTriggerTimeNameForEditor(t)).ToArray();
+            eventEditorNames = mainEventDefines.Select(d => game.eventManager.translateEventDefineNameForEditor(d)).ToArray();
+        }
+
         #region 保存状态
         public void markCardPoolUnsaved(long cardPoolId)
         {
@@ -251,6 +264,7 @@ namespace Controllers
             // 自定义规则
             _ui.onClickAddRuleItem += onClickAddRuleItemCallback;
             _ui.onClickRuleItem += onClickRuleItemCallback;
+            _ui.onConfrimCreateEventRule += onConfirmCreateEventRuleCallback;
 
             _cardPoolViewPanelCtrl.onClickCard += onClickCard;
             _cardPoolViewPanelCtrl.onUpdateCardListItem += onUpdateCardListItem;
@@ -489,17 +503,27 @@ namespace Controllers
             markCardPoolUnsaved(_curCardPoolId);
             GeneratedRuleLogic logic;
             if (index < _gameRuleLogicTypes.Length)
+            {
                 logic = game.card.createRuleGameLogic(_curCardPoolId, _gameRuleLogicTypes[index]);
+                game.card.addRuleLogic(_curCardPoolId, logic);
+                openRuleEditor(logic);
+            }
             else
-                logic = game.card.createRuleEventLogic(_curCardPoolId, _eventTriggerTimes[index - _gameRuleLogicTypes.Length]);
-            game.card.addRuleLogic(_curCardPoolId, logic);
-
-            openRuleEditor(logic);
+            {
+                _ui.openCreateEventRuleDialog();
+            }
         }
         private void onClickRuleItemCallback(int index)
         {
             var ruleLogics = game.card.getLocalRuleLogics(_curCardPoolId);
             GeneratedRuleLogic logic = ruleLogics[index];
+            openRuleEditor(logic);
+        }
+        private void onConfirmCreateEventRuleCallback(int index)
+        {
+            var logic = game.card.createRuleEventLogic(_curCardPoolId, eventTriggerTimes[index]);
+            game.card.addRuleLogic(_curCardPoolId, logic);
+            _ui.hideCreateEventRuleDialog();
             openRuleEditor(logic);
         }
         #endregion
@@ -1073,6 +1097,9 @@ namespace Controllers
         [TranslateMsg]
         const string IMPORT_SUCCESS = "卡池已导入";
 
+        [TranslateMsg("卡池编辑器界面的创建规则选项")]
+        public const string RULE_NAME_EVENT_LOGIC = "事件规则";
+
 
         public string nodeClipboard { get; set; }
         private EditorPanel _ui;
@@ -1090,7 +1117,6 @@ namespace Controllers
         /// </summary>
         private List<CardPoolDisplayPage> _displayPagePool = new List<CardPoolDisplayPage>();
         private CardPoolEditor _currentEditor;
-        private EventTriggerTime[] _eventTriggerTimes;
         private static GameRuleLogicType[] _gameRuleLogicTypes = new GameRuleLogicType[]
         {
             GameRuleLogicType.GameStart,
@@ -1102,6 +1128,14 @@ namespace Controllers
         private CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         [SerializeField]
         private bool _hasUnsavedChanges;
+
+        #region 事件
+        public EventTriggerTime[] eventTriggerTimes { get; private set; }
+        public EventReference[] eventReferences { get; private set; }
+        public string[] eventTriggerTimeEditorNames { get; private set; }
+        public string[] eventEditorNames { get; private set; }
+        #endregion
+
         #endregion
     }
 }

@@ -22,6 +22,18 @@ namespace UI
             _addRuleLogicDropdown.ClearOptions();
             _addRuleLogicDropdown.AddOptions(names.ToList());
         }
+        public void initEventNames(string[] names)
+        {
+            _createEventRuleDialog.setTypes(names);
+        }
+        public void openCreateEventRuleDialog()
+        {
+            _createEventRuleDialogObj.SetActive(true);
+        }
+        public void hideCreateEventRuleDialog()
+        {
+            _createEventRuleDialogObj.SetActive(false);
+        }
         public void updateRules(string[] names)
         {
             _ruleLogicElementList.updateList(names.Length, (i, rect) =>
@@ -54,6 +66,7 @@ namespace UI
             _exportCardPoolButton.onClick.AddListener(onClickExportCardPoolButtonCallback);
             _importCardPoolButton.onClick.AddListener(onClickImportCardPoolButtonCallback);
             _addRuleLogicDropdown.onClickItem.AddListener(onClickAddRuleItemCallback);
+            _createEventRuleDialog.onConfirm += onConfirmCreateEventRuleCallback;
         }
         #endregion
 
@@ -82,6 +95,10 @@ namespace UI
         {
             onClickRuleItem?.Invoke(_ruleLogicElementList.indexOf(ruleItem));
         }
+        private void onConfirmCreateEventRuleCallback(int index)
+        {
+            onConfrimCreateEventRule?.Invoke(index);
+        }
 
         #endregion
 
@@ -94,6 +111,7 @@ namespace UI
         public event Action onClickImportCardPoolButton;
         public event Action<int> onClickAddRuleItem;
         public event Action<int> onClickRuleItem;
+        public event Action<int> onConfrimCreateEventRule;
         #endregion
 
         #region 属性字段
@@ -115,6 +133,10 @@ namespace UI
         DropdownMenu _addRuleLogicDropdown;
         [SerializeField]
         ElementList _ruleLogicElementList;
+        [SerializeField]
+        GameObject _createEventRuleDialogObj;
+        [SerializeField]
+        CreateEventEffectDialog _createEventRuleDialog;
 
         #endregion
     }

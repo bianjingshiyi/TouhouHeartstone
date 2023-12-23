@@ -41,7 +41,7 @@ namespace TouhouHeartstone
                 {
                     { GameRuleEntryNode.playerPortName, player }
                 };
-                await logic.execute(game);
+                await logic.execute(game, arguments);
             }
         }
         public override async Task onPlayerExit(CardEngine game, Player player)
@@ -52,7 +52,7 @@ namespace TouhouHeartstone
                 {
                     { GameRuleEntryNode.playerPortName, player }
                 };
-                await logic.execute(game);
+                await logic.execute(game, arguments);
             }
         }
         public override Task onGameRun(CardEngine game)

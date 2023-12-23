@@ -22,7 +22,6 @@ namespace UI
             _nodesPanel.setSearchFilter(searchFilter);
             _createActionDefineDialog.setDefineTypeOptions(defineTypeNames.Select(n => game.lang._(n)).ToArray());
             var poolRef = game.card.getLocalCardPoolReference(_cardPoolId);
-            _eventTriggerTimes = game.card.getAllEventDefines(includeHidden: false, poolRef).getEventTriggerTimes();
             updatePasteButton();
             updateDeleteButton();
             updateUndoRedoButton();
@@ -40,7 +39,7 @@ namespace UI
         {
             var actionDefines = game.card.getAllLocalActionDefines(_cardPoolId);
             var nodeDefines = actionDefines.Select(a => new NodeDefine(a));
-            var eventNodeDefines = _eventTriggerTimes.Select(e => new NodeDefine(game.card.getLocalEventDefine(e.defineRef), e.type));
+            var eventNodeDefines = eventTriggerTimes.Select(e => new NodeDefine(game.card.getLocalEventDefine(e.defineRef), e.type));
             nodeDefines = nodeDefines.Union(eventNodeDefines);
 
             _nodeDefines = nodeDefines.ToArray();
@@ -234,6 +233,9 @@ namespace UI
             //新建自定义动作
             var type = defineTypes[typeIndex];
             GeneratedActionDefine generatedActionDefine = game.card.createActionDefine(_cardPoolId, name, type);
+            game.card.addActionDefine(_cardPoolId, generatedActionDefine);
+            scene.editor.updateAllEvents();
+
             generatedActionDefine.setCategory(category);
             displayCreateActionDefineDialog(false);
             await scene.editor.openActionEditor(generatedActionDefine);
@@ -874,7 +876,7 @@ namespace UI
             VISUAL_EFFECT_POSITION_THIS_CARD,
             VISUAL_EFFECT_POSITION_TARGET_CARD
         };
-        private EventTriggerTime[] _eventTriggerTimes;
+        private EventTriggerTime[] eventTriggerTimes => scene.editor.eventTriggerTimes;
     }
     public static class VisualEffectPosition
     {

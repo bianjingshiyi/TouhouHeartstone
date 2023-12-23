@@ -18,13 +18,11 @@ namespace Controllers
             _effect = effect;
             gameObject.SetActive(true);
             await _actionNodeGraphCtrl.display(new ActionNodeGraphCtrl.DisplayInfo(cardPoolId, effect));
-            updateEventTriggerTimes(_cardPoolId);
+            updateEventTriggerTimes();
         }
-        public void updateEventTriggerTimes(long cardPoolId)
+        public void updateEventTriggerTimes()
         {
-            var poolRef = game.card.getLocalCardPoolReference(cardPoolId);
-            _eventTriggerTimes = game.card.getAllEventDefines(includeHidden: false, poolRef).getEventTriggerTimes();
-            _ui.setEventTypeNames(_eventTriggerTimes.getEventTriggerTimeNamesForEditor(game));
+            _ui.setEventTypeNames(eventTriggerTimeEditorNames);
         }
         public GeneratedEffect getCurrentEffect()
         {
@@ -69,7 +67,7 @@ namespace Controllers
         private void onConfirmCreateEventEffectCallback(int index)
         {
             var effect = game.card.createEffectByIndex(_cardPoolId, CardManager.EVENT_EFFECT_IDX);
-            var triggerTime = _eventTriggerTimes[index];
+            var triggerTime = eventTriggerTimes[index];
             var eventDefine = game.card.getLocalEventDefine(triggerTime.defineRef);
             effect.graph.createEventEntryNode(eventDefine, triggerTime.type);
 
@@ -99,7 +97,8 @@ namespace Controllers
         ActionNodeGraphCtrl _actionNodeGraphCtrl;
         long _cardPoolId;
         GeneratedEffect _effect;
-        EventTriggerTime[] _eventTriggerTimes;
+        private EventTriggerTime[] eventTriggerTimes => scene.editor.eventTriggerTimes;
+        private string[] eventTriggerTimeEditorNames => scene.editor.eventTriggerTimeEditorNames;
         #endregion
 
         #region 内部类

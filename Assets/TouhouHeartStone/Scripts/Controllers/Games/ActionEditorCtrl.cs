@@ -160,6 +160,7 @@ namespace Controllers
                {
                    //删除动作定义
                    game.card.removeActionDefine(_cardPoolId, _actionDefine.defineId);
+                   scene.editor.updateAllEvents();
                    scene.editor.markCardPoolUnsaved(_cardPoolId);
                    //返回上个界面
                    await exit(true);
@@ -267,6 +268,7 @@ namespace Controllers
                 game.card.removeActionDefine(gen);
             }
             game.card.addActionDefine(_cardPoolId, _actionDefine);
+            scene.editor.updateAllEvents();
 
             scene.editor.markCardPoolUnsaved(_cardPoolId);
             clearUnsaved();

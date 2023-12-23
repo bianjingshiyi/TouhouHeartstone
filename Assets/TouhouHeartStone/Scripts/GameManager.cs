@@ -245,7 +245,8 @@ namespace Game
                     buffs.AddRange(buffDefines);
                     actions.AddRange(cardPool.actionDefineList);
                     animDict.Add(poolId, cardPool.animationDefineList.ToDictionary<AnimationDefine, int>(a => a.id));
-                    rules.Add(new GeneratedRule(cardPool.ruleLogicList));
+                    if (cardPool.ruleLogicList.Count > 0)
+                        rules.Add(new GeneratedRule(cardPool.ruleLogicList));
                 }
             }
         }

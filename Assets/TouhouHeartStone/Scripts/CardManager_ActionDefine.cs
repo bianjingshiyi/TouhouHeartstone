@@ -26,8 +26,6 @@ namespace Game
                 GeneratedActionDefine actionDefine = new GeneratedActionDefine(graph, id, type, null, name, null, null);
                 actionDefine.cardPoolId = cardPoolId;
                 actionDefine.InitNodes();
-                addActionDefine(cardPoolId, actionDefine);
-
                 return actionDefine;
             }
             return null;
@@ -64,7 +62,7 @@ namespace Game
                 cardPool.actionDefineList.Add(actionDefine);
                 if (actionDefine.type == NodeDefineType.Event)
                 {
-                    cardPool.eventDefineList.Add(game.eventManager.generateEventDefineForActionDefine(actionDefine));
+                    addEventDefine(cardPoolId, game.eventManager.generateEventDefineForActionDefine(actionDefine));
                 }
             }
         }
@@ -82,7 +80,7 @@ namespace Game
                 {
                     if (actionDefine.type == NodeDefineType.Event)
                     {
-                        cardPool.eventDefineList.RemoveAll(e => e.eventName == actionDefine.getEventName());
+                        removeEventDefine(actionDefine.cardPoolId, actionDefine.getEventName());
                     }
                 }
             }
