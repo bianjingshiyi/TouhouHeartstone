@@ -19,27 +19,20 @@ namespace Controllers
     {
         public static void init()
         {
+            // Execute Results.
             registerClass<ExecuteResult<string>>();
             registerClass<ExecuteResult<LobbyRoomData>>();
             registerClass<ExecuteResult<LobbyRoomData[]>>();
             registerClass<ExecuteResult<DeckDataItem[]>>(); 
             registerClass<ExecuteResult<ClientUpdateInfo>>();
             registerClass<ExecuteResult<PublicBasicUserInfo>>();
+
+            // References.
             registerClass<DefineReference>();
-            registerClass<CardReference>();
+            registerClass<BuffReference>();
             registerClass<EventReference>();
-            registerClass<EffectTag>();
             registerClass<EventArgReference>();
-            registerClass<EventVarName>();
-            registerClass<ObjectProxy>();
-            registerClass<ActionValueRef>();
-            registerClass<SerializableActionValueRef>();
-            registerClass<SerializableFunctionNode>();
-            registerClass<GeneratedEffect>();
-            registerClass<GeneratedAura>();
-            registerClass<CompareOperator>();
-            registerClass<IntegerOperator>();
-            registerClass<LogicOperator>();
+            registerClass<CardReference>();
 
             // Prop Modifiers.
             registerClass<SerializableAttackModifier>();
@@ -52,14 +45,27 @@ namespace Controllers
 
             // Nodes.
             registerClass<SerializableActionNode>();
-
             registerClass<SerializableActiveEntryNode>();
             registerClass<SerializablePassiveEntryNode>();
             registerClass<SerializableEventEntryNode>();
             registerClass<SerializableAuraEntryNode>();
-
             registerClass<SerializableGeneratedEntryNode>();
             registerClass<SerializableGeneratedReturnNode>();
+
+            // Node Consts.
+            registerClass<EffectTag>();
+            registerClass<EventVarName>();
+            registerClass<ObjectProxy>();
+            registerClass<GeneratedEffect>();
+            registerClass<CompareOperator>();
+            registerClass<IntegerOperator>();
+            registerClass<LogicOperator>();
+
+            // Obsolete.
+            registerClass<ActionValueRef>();
+            registerClass<SerializableActionValueRef>();
+            registerClass<SerializableFunctionNode>();
+            registerClass<GeneratedAura>();
 
             // Effects.
             registerClass<SerializableActiveEffect>();
