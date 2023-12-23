@@ -284,7 +284,7 @@ namespace Controllers
         private List<NodeSnapTarget> findNodeSnapTargets(Rect previewRect, NodeDefine nodeDefine)
         {
             // 获取此节点的输入和输出。
-            PortDefine[] inputDefines = nodeDefine.getInputDefines().Where(d => !d.isConst).ToArray();
+            PortDefine[] inputDefines = nodeDefine.getInputDefines().ToArray();
             PortDefine[] outputDefines = nodeDefine.getOutputDefines();
             return findNodeSnapTargets(previewRect, inputDefines, outputDefines);
         }
@@ -292,7 +292,7 @@ namespace Controllers
         {
             var item = getActionNodeItem(node);
             var nodeRect = item.getNodeItemRect();
-            var inputDefines = node.inputPorts.Select(p => p.define).Where(d => !d.isConst).ToArray();
+            var inputDefines = node.inputPorts.Select(p => p.define).ToArray();
             var outputDefines = node.outputPorts.Select(p => p.define).ToArray();
             var connectedInputs = node.inputPorts.Select(p => p.connections.Any()).ToArray();
             var connectedOutputs = node.outputPorts.Select(p => p.connections.Any()).ToArray();
@@ -415,21 +415,19 @@ namespace Controllers
         }
         private NodeSnapConnection[] getSnapValidConnections(IEnumerable<IPort> targets, PortDefine[] portDefines, bool toOutput, bool[] excludedPorts = null)
         {
-            return portDefines.Select((i, index) =>
+            return portDefines.Select((def, index) =>
             {
-                if (excludedPorts != null && excludedPorts[index])
+                if (def != null && !def.isConst && (excludedPorts == null || !excludedPorts[index]))
                 {
-                    return new NodeSnapConnection(-1, -1, toOutput, false, false);
-                }
-
-                var target = targets.FirstOrDefault(o =>
-                {
-                    return o.connections.Count() <= 0 && PortDefine.CanTypeConvert(i.type, o.define.type) && i.GetPortType() == o.GetPortType();
-                });
-                if (i != null && target != null)
-                {
-                    bool needConversion = i.type != target.define.type;
-                    return new NodeSnapConnection(target.GetPortIndex(), index, toOutput, target.GetPortType() == PortType.Control, needConversion);
+                    var target = targets.FirstOrDefault(o =>
+                    {
+                        return o.connections.Count() <= 0 && PortDefine.CanTypeConvert(def.type, o.define.type) && def.GetPortType() == o.GetPortType();
+                    });
+                    if (target != null)
+                    {
+                        bool needConversion = def.type != target.define.type;
+                        return new NodeSnapConnection(target.GetPortIndex(), index, toOutput, target.GetPortType() == PortType.Control, needConversion);
+                    }
                 }
                 return new NodeSnapConnection(-1, -1, toOutput, false, false);
             }).Where(c => c.targetIndex >= 0 && c.sourceIndex >= 0).ToArray();
