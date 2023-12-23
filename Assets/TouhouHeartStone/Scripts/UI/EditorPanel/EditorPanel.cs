@@ -46,11 +46,13 @@ namespace UI
             {
                 var effectListItem = rect.GetComponent<EffectListItem>();
                 effectListItem.onEditButtonClick += onClickRuleItemCallback;
+                effectListItem.onRemoveButtonClick += onClickRemoveRuleItemCallback;
             },
             rect =>
             {
                 var effectListItem = rect.GetComponent<EffectListItem>();
                 effectListItem.onEditButtonClick -= onClickRuleItemCallback;
+                effectListItem.onRemoveButtonClick -= onClickRemoveRuleItemCallback;
             });
         }
         #endregion
@@ -95,6 +97,10 @@ namespace UI
         {
             onClickRuleItem?.Invoke(_ruleLogicElementList.indexOf(ruleItem));
         }
+        private void onClickRemoveRuleItemCallback(EffectListItem ruleItem)
+        {
+            onClickRemoveRuleItem?.Invoke(_ruleLogicElementList.indexOf(ruleItem));
+        }
         private void onConfirmCreateEventRuleCallback(int index)
         {
             onConfrimCreateEventRule?.Invoke(index);
@@ -111,6 +117,7 @@ namespace UI
         public event Action onClickImportCardPoolButton;
         public event Action<int> onClickAddRuleItem;
         public event Action<int> onClickRuleItem;
+        public event Action<int> onClickRemoveRuleItem;
         public event Action<int> onConfrimCreateEventRule;
         #endregion
 

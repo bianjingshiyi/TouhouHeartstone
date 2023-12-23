@@ -20,6 +20,7 @@ namespace Controllers
         {
             gameObject.SetActive(true);
             _ui.reset();
+            _ui.setName(ruleLogic.name);
             _cardPoolId = cardPoolId;
             _ruleLogic = ruleLogic;
 
@@ -62,6 +63,7 @@ namespace Controllers
             _ui.onClickDeleteButton += onClickDeleteRuleButtonCallback;
             _ui.onClickSaveButton += onClickSaveButton;
             _ui.onClickCloseButton += onClickCloseButton;
+            _ui.onNameChanged += onNameChangedCallback;
 
             _actionNodeGraphCtrl.OnGraphEdited += onGraphEdited;
         }
@@ -121,6 +123,12 @@ namespace Controllers
             {
                 await exit();
             }
+        }
+        private void onNameChangedCallback(string name)
+        {
+            markUnsaved();
+            _ruleLogic.name = name;
+            _ui.setName(name);
         }
         #endregion
         protected override void setUIEffects(string[] names, int activeIndex)

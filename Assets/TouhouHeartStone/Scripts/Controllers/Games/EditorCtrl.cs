@@ -264,6 +264,7 @@ namespace Controllers
             // 自定义规则
             _ui.onClickAddRuleItem += onClickAddRuleItemCallback;
             _ui.onClickRuleItem += onClickRuleItemCallback;
+            _ui.onClickRemoveRuleItem += onClickRemoveRuleItemCallback;
             _ui.onConfrimCreateEventRule += onConfirmCreateEventRuleCallback;
 
             _cardPoolViewPanelCtrl.onClickCard += onClickCard;
@@ -500,11 +501,12 @@ namespace Controllers
         #region 自定义规则
         private void onClickAddRuleItemCallback(int index)
         {
-            markCardPoolUnsaved(_curCardPoolId);
-            GeneratedRuleLogic logic;
             if (index < _gameRuleLogicTypes.Length)
             {
-                logic = game.card.createRuleGameLogic(_curCardPoolId, _gameRuleLogicTypes[index]);
+                markCardPoolUnsaved(_curCardPoolId);
+                var logicType = _gameRuleLogicTypes[index];
+                GeneratedRuleLogic logic = game.card.createRuleGameLogic(_curCardPoolId, logicType);
+                logic.name = game.editor.getRuleLogicTypeEditorName(logicType);
                 game.card.addRuleLogic(_curCardPoolId, logic);
                 openRuleEditor(logic);
             }
@@ -519,9 +521,26 @@ namespace Controllers
             GeneratedRuleLogic logic = ruleLogics[index];
             openRuleEditor(logic);
         }
+        private void onClickRemoveRuleItemCallback(int index)
+        {
+            var ruleLogics = game.card.getLocalRuleLogics(_curCardPoolId);
+            var logic = ruleLogics[index];
+            var logicName = logic.name;
+            var title = game.lang._(StringTable.WARNING);
+            var content = game.lang._(EDITOR_WARNING_DELETE_RULE, logicName);
+            game.ui.dialog.ShowQuestion(title, content, () =>
+            {
+                markCardPoolUnsaved(_curCardPoolId);
+                game.card.removeRuleLogic(logic);
+                updateUIRuleList();
+            });
+        }
         private void onConfirmCreateEventRuleCallback(int index)
         {
-            var logic = game.card.createRuleEventLogic(_curCardPoolId, eventTriggerTimes[index]);
+            markCardPoolUnsaved(_curCardPoolId);
+            var triggerTime = eventTriggerTimes[index];
+            var logic = game.card.createRuleEventLogic(_curCardPoolId, triggerTime);
+            logic.name = game.eventManager.translateEventTriggerTimeNameForEditor(triggerTime);
             game.card.addRuleLogic(_curCardPoolId, logic);
             _ui.hideCreateEventRuleDialog();
             openRuleEditor(logic);
@@ -538,18 +557,7 @@ namespace Controllers
             for (int i = 0; i < names.Length; i++)
             {
                 var logic = ruleLogics[i];
-                if (logic is GeneratedRuleGameLogic gameLogic)
-                {
-                    names[i] = game.editor.getRuleLogicTypeEditorName(gameLogic.type);
-                }
-                else if (logic is GeneratedRuleEventLogic eventLogic)
-                {
-                    names[i] = game.eventManager.translateEventTriggerTimeNameForEditor(eventLogic.triggerTime);
-                }
-                else
-                {
-                    names[i] = game.lang._(EditorManager.RULE_NAME_UNKNOWN);
-                }
+                names[i] = logic.name;
             }
             _ui.updateRules(names);
         }
@@ -1097,8 +1105,10 @@ namespace Controllers
         [TranslateMsg]
         const string IMPORT_SUCCESS = "卡池已导入";
 
-        [TranslateMsg("卡池编辑器界面的创建规则选项")]
+        [TranslateMsg("卡池编辑器-创建规则选项")]
         public const string RULE_NAME_EVENT_LOGIC = "事件规则";
+        [TranslateMsg("卡池编辑器-删除规则警告，{0}为规则的名字")]
+        public const string EDITOR_WARNING_DELETE_RULE = "确定要删除自定义规则“{0}”？";
 
 
         public string nodeClipboard { get; set; }

@@ -631,15 +631,11 @@ namespace UI
         }
         private void onClickCardPageButtonCallback()
         {
-            onClickCardPageButton?.Invoke();
+            displayPage(_cardPage, _cardPageIndicator);
         }
         private void onClickPropertyPageButtonCallback()
         {
-            onClickPropertyPageButton?.Invoke();
-        }
-        private void onClickNodesPageButtonCallback()
-        {
-            onClickNodesPageButton?.Invoke();
+            displayPage(_propertyPage, _propertyPageIndicator);
         }
         private void onTagInputFieldEndEdit(string text)
         {
@@ -692,18 +688,7 @@ namespace UI
             onDeleteCustomProperty?.Invoke(name);
         }
         #endregion
-        public void displayCardPage()
-        {
-            displayPage(_cardPage, _cardPageIndicator);
-        }
-        public void displayPropertyPage()
-        {
-            displayPage(_propertyPage, _propertyPageIndicator);
-        }
-        public void displayNodesPage()
-        {
-            displayPage(_propertyPage, _propertyPageIndicator);
-        }
+
         #endregion
 
         protected override IEnumerable<GameObject> getPages()
@@ -798,18 +783,6 @@ namespace UI
         /// 当点击复制按钮
         /// </summary>
         public event Action onClickCopyCardButton;
-        /// <summary>
-        /// 当点击卡牌页面按钮
-        /// </summary>
-        public event Action onClickCardPageButton;
-        /// <summary>
-        /// 当点击属性页面按钮
-        /// </summary>
-        public event Action onClickPropertyPageButton;
-        /// <summary>
-        /// 当点击节点页面按钮
-        /// </summary>
-        public event Action onClickNodesPageButton;
         /// <summary>
         /// 当点击选择技能按钮
         /// </summary>
