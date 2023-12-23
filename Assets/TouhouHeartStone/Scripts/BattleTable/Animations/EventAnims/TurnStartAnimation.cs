@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
@@ -10,37 +9,6 @@ namespace Game.BattleTable
     using Arg = TurnStartEventDefine;
     class TurnStartAnimation : EventAnimation<Arg>
     {
-        CardSnapshot lastMasterSnapshot;
-        CardSnapshot lastItemSnapshot;
-        CardSnapshot masterSnapshot;
-        CardSnapshot itemSnapshot;
-        List<CardSnapshot> secretSnapshots = new List<CardSnapshot>();
-        public override void init(BattleTableManager table)
-        {
-            base.init(table);
-
-            var player = eventArg.getVar<Player>(Arg.VAR_PLAYER);
-            masterSnapshot = table.game.snapshotCard(player.getMaster());
-            var item = player.getItem();
-            if (item != null)
-                itemSnapshot = table.game.snapshotCard(item);
-
-
-            var lastPlayer = table.game.getOpponent(player);
-            lastMasterSnapshot = table.game.snapshotCard(lastPlayer.getMaster());
-            var lastItem = lastPlayer.getItem();
-            if (lastItem != null)
-                lastItemSnapshot = table.game.snapshotCard(lastItem);
-
-            foreach (var p in table.game.players)
-            {
-                var head = p.getHead();
-                foreach (var card in head)
-                {
-                    secretSnapshots.Add(table.game.snapshotCard(card));
-                }
-            }
-        }
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
             var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
@@ -64,30 +32,24 @@ namespace Game.BattleTable
 
         private void updateCards(BattleTableManager table)
         {
-            if (masterSnapshot != null && table.tryGetMaster(masterSnapshot, out Master master))
+            // 更新道具的闭合。
+            foreach (var itemUI in table.getAllItems())
             {
-                table.setMaster(master, masterSnapshot);
-            }
-            if (itemSnapshot != null && table.tryGetItem(itemSnapshot, out Item item))
-            {
-                table.setItem(item, itemSnapshot);
-            }
-
-            if (lastMasterSnapshot != null && table.tryGetMaster(lastMasterSnapshot, out Master lastMaster))
-            {
-                table.setMaster(lastMaster, lastMasterSnapshot);
-            }
-            if (lastItemSnapshot != null && table.tryGetItem(lastItemSnapshot, out Item lastItem))
-            {
-                table.setItem(lastItem, lastItemSnapshot);
+                var item = table.getCardByItem(itemUI);
+                if (item == null)
+                    continue;
+                var snapshot = table.game.getCardSnapshotBeforeEvent(item, eventArg);
+                table.setItem(itemUI, snapshot);
             }
 
-            foreach (var secret in secretSnapshots)
+            // 更新陷阱的明暗变化。
+            foreach (var secretUI in table.getAllSecrets())
             {
-                if (table.tryGetSecret(secret, out var secretUI))
-                {
-                    table.setSecret(secretUI, secret);
-                }
+                var secret = table.getCardBySecret(secretUI);
+                if (secret == null)
+                    continue;
+                var snapshot = table.game.getCardSnapshotBeforeEvent(secret, eventArg);
+                table.setSecret(secretUI, snapshot);
             }
         }
         public override bool continueNextGroup(AnimationGroup nextGroup)

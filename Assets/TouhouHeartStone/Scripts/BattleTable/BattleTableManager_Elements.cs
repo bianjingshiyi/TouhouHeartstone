@@ -351,6 +351,28 @@ namespace Game.BattleTable
         {
             return pile?.owner == player ? table.SelfItem : table.EnemyItem;
         }
+        public Item[] getAllItems()
+        {
+            return new Item[]
+            {
+                table.SelfItem,
+                table.EnemyItem,
+            };
+        }
+        public Card getCardByItem(Item item)
+        {
+            if (item == table.SelfItem)
+            {
+                if (_selfItemDesc != null)
+                    return game.getCard(_selfItemDesc.id);
+            }
+            else if (item == table.EnemyItem)
+            {
+                if (_enemyItemDesc != null)
+                    return game.getCard(_enemyItemDesc.id);
+            }
+            return null;
+        }
         #endregion 道具
 
         #region 手牌
@@ -1030,6 +1052,7 @@ namespace Game.BattleTable
             Secret secret = headSlots.createItem();
             headSlots.addItem(secret);
             cardSecretDic.Add(desc.id, secret);
+            setSecret(secret, desc);
             return secret;
         }
         public bool tryGetSecret(ICardData card, out Secret secret) => tryGetSecret(card?.id ?? 0, out secret);
@@ -1072,7 +1095,7 @@ namespace Game.BattleTable
         /// </summary>
         /// <param name="secret"></param>
         /// <returns></returns>
-        public Card getCard(Secret secret)
+        public Card getCardBySecret(Secret secret)
         {
             foreach (var pair in cardSecretDic)
             {
@@ -1080,6 +1103,10 @@ namespace Game.BattleTable
                     return game.getCard(pair.Key);
             }
             return null;
+        }
+        public Secret[] getAllSecrets()
+        {
+            return cardSecretDic.Values.ToArray();
         }
         public HeadSlots getHeadSlots(Pile pile)
         {
@@ -2279,7 +2306,7 @@ namespace Game.BattleTable
             }
             else if (_hoveredHeadItem != null)
             {
-                var headCard = getCard(_hoveredHeadItem);
+                var headCard = getCardBySecret(_hoveredHeadItem);
                 if (!headCard.isTrap(game) || canSeeCardOfOwner(headCard.getOwner()))
                 {
                     hoveringCard = headCard;
