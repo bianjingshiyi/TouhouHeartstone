@@ -41,6 +41,7 @@ namespace Game.BattleTable.UI
         public GameResultDialog GameResultDialog => _gameResultDialog;
         public TipBox TipBox => _tipBox;
         public Text ErrorTipText => _errorText;
+        public CardPopUp CardPopUp => _cardPopUp;
         public GameLogCtrl LogCtrl => _logCtrl;
         [SerializeField]
         private GameObject _cardDisplayerObj;
@@ -66,6 +67,8 @@ namespace Game.BattleTable.UI
         private Text _errorText;
         [SerializeField]
         private GameLogCtrl _logCtrl;
+        [SerializeField]
+        private CardPopUp _cardPopUp;
         #endregion
     }
 }
