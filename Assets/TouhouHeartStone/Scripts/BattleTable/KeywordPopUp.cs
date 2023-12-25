@@ -34,12 +34,14 @@ namespace Game.BattleTable.UI
                     currentGroup.Clear();
                 }
             }
+            groups.Add(currentGroup.ToArray());
+            currentGroup.Clear();
             UIHelper.updateList(_rootTransform, _groupTemplate, _groupTransforms, groups.Count, (i, rect) =>
             {
                 var group = groups[i];
                 foreach (var item in group)
                 {
-                    item.parent = rect;
+                    item.SetParent(rect, false);
                 }
             });
         }

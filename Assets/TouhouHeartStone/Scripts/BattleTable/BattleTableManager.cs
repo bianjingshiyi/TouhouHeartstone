@@ -280,28 +280,56 @@ namespace Game.BattleTable
             table.update(Time.deltaTime);
 
 
+            // 鼠标悬浮到仆从/道具/陷阱上查看
             if (_showCardTimer.isExpired())
             {
                 // 显示卡面
-                var hoveringCard = getHoveringCard(out Vector3 targetPosition);
-
+                var hoveringCard = getHoveringCard();
                 if (hoveringCard != null)
                 {
+                    var hoveringTrans = getHoveringTransform();
+                    Vector3 targetPosition = getTransformHoveringPosition(hoveringTrans);
                     var worldPosition = TableToWorldPosition(targetPosition);
                     showCardDisplayer(worldPosition, getCardDescriptor(hoveringCard));
                 }
                 _showCardTimer.reset();
             }
-
             if (_isDisplayingCard)
             {
-                var hoveringCard = getHoveringCard(out _);
+                var hoveringCard = getHoveringCard();
                 if (hoveringCard == null)
                 {
                     hideCardDisplayer();
                 }
             }
 
+            // 查看仆从/道具/陷阱/手牌/检视选项/牌堆卡牌的衍生卡和关键词。
+            if (_isPopingUpCard || _popupCardTimer.isExpired())
+            {
+                var tokenDefine = getPopupHoveringCardToken();
+                var keywords = getPopupHoveringCardKeywords();
+
+                var hoveringCard = getPopupHoveringCard();
+
+                bool shouldShow = tokenDefine != null || (keywords != null && keywords.Length > 0);
+                if (shouldShow != _isPopingUpCard)
+                {
+                    if (shouldShow)
+                    {
+                        var hoveringTrans = getPopupHoveringTransform();
+                        Vector3 targetPosition = getTransformHoveringPosition(hoveringTrans);
+                        showCardPopUp(targetPosition, tokenDefine, keywords);
+                        if (_popupCardTimer.isStarted)
+                            _popupCardTimer.reset();
+                    }
+                    else
+                    {
+                        hideCardPopUp();
+                    }
+                }
+            }
+
+            // 错误提示
             if (_tipTimer.isExpired())
             {
                 _tipTimer.reset();

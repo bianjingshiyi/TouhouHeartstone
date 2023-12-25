@@ -11,7 +11,7 @@ namespace Game.BattleTable.UI
         {
             var parent = atRight ? _keywordsPopUpRightRegionTrans : _keywordsPopUpLeftRegionTrans;
             var pivotX = atRight ? rightKeywordsPopUpPivotX : leftKeywordsPopUpPivotX;
-            _keywordsPopUpTrans.parent = parent;
+            _keywordsPopUpTrans.SetParent(parent, false);
             var pivot = _keywordsPopUpTrans.pivot;
             pivot.x = pivotX;
             _keywordsPopUpTrans.pivot = pivot;
@@ -24,7 +24,7 @@ namespace Game.BattleTable.UI
         }
         public void setTokenCardVisible(bool value)
         {
-            tokenCard.gameObject.SetActive(value);
+            _tokenCardRegionTrans.gameObject.SetActive(value);
         }
 
 
@@ -34,6 +34,8 @@ namespace Game.BattleTable.UI
         public TableCard tokenCard => _tokenCard;
         [SerializeField]
         private TableCard _tokenCard;
+        [SerializeField]
+        private RectTransform _tokenCardRegionTrans;
         [SerializeField]
         private RectTransform _keywordsPopUpLeftRegionTrans;
         [SerializeField]

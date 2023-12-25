@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BJSYGameCore;
 using Game.Animations;
 using MukioI18n;
 using TouhouCardEngine;
@@ -9,9 +10,9 @@ using TouhouHeartstone;
 using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
 using Card = TouhouCardEngine.Card;
 using UICard = Game.BattleTable.TableCard;
+using Timer = BJSYGameCore.Timer;
 
 namespace Game.BattleTable
 {
@@ -205,7 +206,7 @@ namespace Game.BattleTable
 
             var attack = desc.getAttack();
             master.setAttackDisplay(attack > 0);
-            master.setAttack(attack); 
+            master.setAttack(attack);
             var atkColor = attack > desc.define.getAttack() + getMasterItemAttack(desc) ? PropertyNumberColor.Green : PropertyNumberColor.White;
             master.setAttackColor(atkColor);
 
@@ -599,7 +600,7 @@ namespace Game.BattleTable
         {
             servant.setAttack(desc.getAttack());
             servant.setLife(desc.getCurrentLife());
-            var atkColor = desc.getAttack() > desc.define.getAttack() ? PropertyNumberColor.Green : PropertyNumberColor.White; 
+            var atkColor = desc.getAttack() > desc.define.getAttack() ? PropertyNumberColor.Green : PropertyNumberColor.White;
             var lifeColor = desc.getCurrentLife() < desc.getLife() ? PropertyNumberColor.Red : desc.getLife() > desc.define.getLife() ? PropertyNumberColor.Green : PropertyNumberColor.White;
             servant.attackNumber.setTextColor(atkColor);
             servant.lifeNumber.setTextColor(lifeColor);
@@ -719,7 +720,7 @@ namespace Game.BattleTable
             if (cardServantDic.ContainsKey(id))
             {
                 var item = cardServantDic[id];
-                UberDebug.LogChannel(item, "UI", $"移除ID为{id}的仆从{item}"); 
+                UberDebug.LogChannel(item, "UI", $"移除ID为{id}的仆从{item}");
                 cardServantDic.Remove(id);
                 table.SelfField.removeServant(item);
                 table.EnemyField.removeServant(item);
@@ -1283,28 +1284,6 @@ namespace Game.BattleTable
             ui.ErrorTipText.color = Color.white;
             _tipTimer.start();
         }
-        public async void showCardDisplayer(Vector3 targetPosition, CardDescriptor desc)
-        {
-            var pos = ui.CardDisplayerObj.transform.localPosition;
-            pos.x = ui.CardDisplayerObj.transform.parent.InverseTransformPoint(targetPosition).x;
-            ui.CardDisplayerObj.transform.localPosition = pos;
-
-            ui.CardDisplayer.setVisible(true);
-            setCardDesc(ui.CardDisplayer.card, desc);
-            ui.CardDisplayer.card.setFaceup(true);
-
-            var buffs = desc.getBuffs().Where(b => b is not IInnateBuff);
-            var buffViewDatas = await getCardBuffViewDatas(buffs);
-            ui.CardDisplayer.setBuffs(buffViewDatas);
-
-            _isDisplayingCard = true;
-        }
-        public void hideCardDisplayer()
-        {
-            ui.CardDisplayer.setVisible(false);
-            _isDisplayingCard = false;
-        }
-
 
         /// <summary>
         /// 高亮所有指定的目标（标记为可选择）
@@ -1427,15 +1406,12 @@ namespace Game.BattleTable
         #region 道具
         private void onItemPointerEnterCallback(Item item, PointerEventData pointer)
         {
-            _showCardTimer.start();
-            _hoveredItem = item;
+            startHover(item);
         }
 
         private void onItemPointerExitCallback(Item item, PointerEventData pointer)
         {
-            _showCardTimer.reset();
-            _hoveredItem = null;
-            hideCardDisplayer();
+            stopHover();
         }
         #endregion 道具
 
@@ -1851,14 +1827,11 @@ namespace Game.BattleTable
 
         private void onServantPointerEnterCallback(Servant servant, Field field, PointerEventData pointer)
         {
-            _showCardTimer.start();
-            _hoveredServant = servant;
+            startHover(servant);
         }
         private void onServantPointerExitCallback(Servant servant, Field field, PointerEventData pointer)
         {
-            _showCardTimer.reset();
-            _hoveredServant = null;
-            hideCardDisplayer();
+            stopHover();
         }
         /// <summary>
         /// 随从拖拽处理
@@ -1929,9 +1902,7 @@ namespace Game.BattleTable
                 return;
             var isSelf = owner == player;
             var title = lang._(isSelf ? TAB_YOUR_BOX : TAB_OPPO_DECK);
-            var deckList = isSelf ? _selfDeckList : _enemyDeckList;
-            bool orderByCost = !canSeeAllCards; // 可以看到所有卡牌
-            viewDeckPanel(title, owner, PILE.DECK, deckList, orderByCost);
+            viewDeckPanel(title, owner, PILE.DECK);
         }
         private void onDeckPointerEnterCallback(Deck deck, PointerEventData pointer)
         {
@@ -1955,8 +1926,7 @@ namespace Game.BattleTable
                 return;
             var isSelf = owner == player;
             var title = lang._(isSelf ? TAB_YOUR_GRAVEYARD : TAB_OPPO_GRAVEYARD);
-            var deckList = isSelf ? _selfGraveList : _enemyGraveList;
-            viewDeckPanel(title, owner, PILE.GRAVE, deckList);
+            viewDeckPanel(title, owner, PILE.GRAVE);
         }
         private void onGravePointerEnterCallback(Deck deck, PointerEventData pointer)
         {
@@ -1971,19 +1941,228 @@ namespace Game.BattleTable
         #region 陷阱
         private void onHeadItemPointerEnterCallback(Secret headItem, HeadSlots headSlots)
         {
-            _showCardTimer.start();
-            _hoveredHeadItem = headItem;
+            startHover(headItem);
         }
 
         private void onHeadItemPointerExitCallback(Secret headItem, HeadSlots headSlots)
         {
-            _showCardTimer.reset();
-            _hoveredHeadItem = null;
-            hideCardDisplayer();
+            stopHover();
         }
         #endregion 道具
 
         #endregion
+
+        #region 指针悬浮
+        private void startHoverTimer()
+        {
+            _showCardTimer.start();
+            _popupCardTimer.start();
+        }
+        private void startHover(Secret headItem)
+        {
+            startHoverTimer();
+            _hoveredHeadItem = headItem;
+        }
+        private void startHover(Servant servant)
+        {
+            startHoverTimer();
+            _hoveredServant = servant;
+        }
+        private void startHover(Item item)
+        {
+            startHoverTimer();
+            _hoveredItem = item;
+        }
+        private void stopHover()
+        {
+            _hoveredServant = null;
+            _hoveredItem = null;
+            _hoveredHeadItem = null;
+            _hoveredHand = null;
+            _hoveredPileCard = null;
+            _hoveredDiscoverCard = null;
+            clearCardDisplayerData();
+            clearPopUpData();
+        }
+        private Vector3 getTransformHoveringPosition(Transform transform)
+        {
+            Vector3 centerPosition = WorldToTablePosition(table.CenterDisplayTransform.position);
+            var targetPosition = WorldToTablePosition(transform.position);
+            if (Mathf.Abs(targetPosition.z - centerPosition.z) > centerPosition.z - WorldToTableDistance(_verticalExtents)) // 位于屏幕上下边缘
+            {
+                targetPosition.z += targetPosition.z < centerPosition.z ? 250 : -250;
+            }
+            else // 位于屏幕中间部分
+            {
+                targetPosition.x += targetPosition.x < centerPosition.x ? 250 : -250;
+            }
+            return targetPosition;
+        }
+        #endregion
+
+        #region 卡牌显示器
+        private async void showCardDisplayer(Vector3 targetPosition, CardDescriptor desc)
+        {
+            var pos = ui.CardDisplayerObj.transform.localPosition;
+            pos.x = ui.CardDisplayerObj.transform.parent.InverseTransformPoint(targetPosition).x;
+            ui.CardDisplayerObj.transform.localPosition = pos;
+
+            ui.CardDisplayer.setVisible(true);
+            setCardDesc(ui.CardDisplayer.card, desc);
+            ui.CardDisplayer.card.setFaceup(true);
+
+            var buffs = desc.getBuffs().Where(b => b is not IInnateBuff);
+            var buffViewDatas = await getCardBuffViewDatas(buffs);
+            ui.CardDisplayer.setBuffs(buffViewDatas);
+
+            _isDisplayingCard = true;
+        }
+        private void hideCardDisplayer()
+        {
+            ui.CardDisplayer.setVisible(false);
+            _isDisplayingCard = false;
+        }
+        private void clearCardDisplayerData()
+        {
+            _showCardTimer.reset();
+            hideCardDisplayer();
+        }
+        private Transform getHoveringTransform()
+        {
+            if (_hoveredServant != null)
+                return _hoveredServant.transform;
+            else if (_hoveredItem != null)
+                return _hoveredItem.transform;
+            else if (_hoveredHeadItem != null)
+                return _hoveredHeadItem.transform;
+            return null;
+        }
+        private Card getHoveringCard()
+        {
+            if (_hoveredServant != null)
+                return getCard(_hoveredServant);
+            else if (_hoveredItem != null)
+                return getCardByItem(_hoveredItem);
+            else if (_hoveredHeadItem != null)
+            {
+                var headCard = getCardBySecret(_hoveredHeadItem);
+                if (!headCard.isTrap(game) || canSeeCardOfOwner(headCard.getOwner()))
+                {
+                    return headCard;
+                }
+            }
+            return null;
+        }
+        #endregion
+
+        #region 涌现式衍生物&关键词提示
+        private async void showCardPopUp(Vector3 targetPosition, CardDefine tokenDefine, string[] keywords)
+        {
+
+            var worldPosition = TableToWorldPosition(targetPosition);
+
+            var pos = ui.CardPopUp.transform.localPosition;
+            pos.x = ui.CardPopUp.transform.parent.InverseTransformPoint(worldPosition).x;
+            ui.CardPopUp.transform.localPosition = pos;
+
+            await ui.CardPopUp.tokenCard.setCardDefine(tokenDefine, this);
+            ui.CardPopUp.gameObject.SetActive(true);
+            ui.CardPopUp.setTokenCardVisible(true);
+
+            Vector3 centerPosition = WorldToTablePosition(table.CenterDisplayTransform.position);
+            bool atRight = targetPosition.x - 150 < centerPosition.x;
+            ui.CardPopUp.setKeywordPopUpPositions(atRight);
+            ui.CardPopUp.updateKeywordPopUps(new string[]
+            {
+                "宣言",
+                "遗言"
+            }, new string[]
+            {
+                "在你使用这张牌后，产生某些效果。",
+                "在仆从死亡，或者道具被摧毁后，产生某些效果。"
+            });
+
+            _isPopingUpCard = true;
+        }
+        private void hideCardPopUp()
+        {
+            ui.CardPopUp.gameObject.SetActive(false);
+            _isPopingUpCard = false;
+        }
+        private void clearPopUpData()
+        {
+            _popupCardTimer.reset();
+            hideCardPopUp();
+        }
+        private Transform getPopupHoveringTransform()
+        {
+            var cardDisplayerTrans = getHoveringTransform();
+            if (cardDisplayerTrans)
+                return cardDisplayerTrans;
+
+            if (_hoveredHand != null)
+                return _hoveredHand.transform;
+            else if (_hoveredPileCard != null)
+                return _hoveredPileCard.transform;
+            else if (_hoveredDiscoverCard != null)
+                return _hoveredDiscoverCard.transform;
+            return null;
+        }
+        private Card getPopupHoveringCard()
+        {
+            var cardDisplayerCard = getHoveringCard();
+            if (cardDisplayerCard != null)
+                return cardDisplayerCard;
+
+            if (_hoveredHand != null)
+                return getCard(_hoveredHand);
+            else if (_hoveredPileCard != null)
+            {
+                var index = ui.PilePanel.indexOf(_hoveredPileCard);
+                var cardIds = getDeckCardIds(_viewingDeckPlayer, _viewingDeckName);
+                var cardId = cardIds.ElementAt(index);
+                return game.getCard(cardId);
+            }
+            else if (_hoveredDiscoverCard != null && _cardChooseMode == CardChooseMode.Card)
+            {
+                var index = table.Discover.indexOf(_hoveredDiscoverCard);
+                var cardId = _choosingCards.ElementAt(index);
+                return game.getCard(cardId);
+            }
+            return null;
+        }
+        private CardDefine getPopupHoveringCardToken()
+        {
+            Card card = getPopupHoveringCard();
+            CardDefine cardDefine = null;
+            if (card != null)
+                cardDefine = card.define;
+            else if (_hoveredDiscoverCard != null && _cardChooseMode == CardChooseMode.CardDefine)
+            {
+                var index = table.Discover.indexOf(_hoveredDiscoverCard);
+                var defRef = _choosingCardDefineRefs.ElementAt(index);
+                cardDefine = game.getDefine(defRef);
+            }
+            //return cardDefine.getTokens().FirstOrDefault();
+            return cardDefine;
+        }
+        private string[] getPopupHoveringCardKeywords()
+        {
+            Card card = getPopupHoveringCard();
+            string[] keywords = null;
+            if (card != null)
+                keywords = card.getKeywords(game);
+            else if (_hoveredDiscoverCard != null && _cardChooseMode == CardChooseMode.CardDefine)
+            {
+                var index = table.Discover.indexOf(_hoveredDiscoverCard);
+                var defRef = _choosingCardDefineRefs.ElementAt(index);
+                var cardDefine = game.getDefine(defRef);
+                keywords = cardDefine.getKeywords();
+            }
+            return keywords;
+        }
+        #endregion
+
         /// <summary>
         /// 显示箭头
         /// </summary>
@@ -2234,7 +2413,9 @@ namespace Game.BattleTable
             DefineReference curBuffRef = null;
             foreach (var buff in buffs)
             {
-                var defineRef = buff is GeneratedBuff genBuff ? genBuff.defineRef : new DefineReference(0, buff.id);
+                if (buff is not GeneratedBuff genBuff)
+                    continue;
+                var defineRef = genBuff.defineRef;
                 if (curBuffRef == defineRef && buffCountList.Count > 0)
                 {
                     var lastTuple = buffCountList[buffCountList.Count - 1];
@@ -2286,35 +2467,6 @@ namespace Game.BattleTable
                 viewDatas[i] = viewData;
             }
             return viewDatas;
-        }
-        private Card getHoveringCard(out Vector3 targetPosition)
-        {
-            Card hoveringCard = null;
-            Vector3 centerPosition = WorldToTablePosition(table.CenterDisplayTransform.position);
-            targetPosition = centerPosition;
-            if (_hoveredServant != null)
-            {
-                hoveringCard = getCard(_hoveredServant);
-                targetPosition = WorldToTablePosition(_hoveredServant.transform.position);
-                targetPosition.x += targetPosition.x < centerPosition.x ? 250 : -250;
-            }
-            else if (_hoveredItem != null)
-            {
-                hoveringCard = _hoveredItem == table.SelfItem ? player.getItem() : game.getOpponent(player).getItem();
-                targetPosition = WorldToTablePosition(_hoveredItem.transform.position);
-                targetPosition.z = targetPosition.z < centerPosition.z ? 250 : -250;
-            }
-            else if (_hoveredHeadItem != null)
-            {
-                var headCard = getCardBySecret(_hoveredHeadItem);
-                if (!headCard.isTrap(game) || canSeeCardOfOwner(headCard.getOwner()))
-                {
-                    hoveringCard = headCard;
-                    targetPosition = WorldToTablePosition(_hoveredHeadItem.transform.position);
-                    targetPosition.z = targetPosition.z < centerPosition.z ? 250 : -250;
-                }
-            }
-            return hoveringCard;
         }
 
         private void initDecksAndGraves()
@@ -2376,22 +2528,19 @@ namespace Game.BattleTable
             else if (_tipboxSource == table.EnemyGrave.gameObject)
                 showDeckTipbox(table.EnemyGrave);
         }
-        private void viewDeckPanel(string title, Player player, string pileName, IEnumerable<int> idList, bool orderByCost = false)
+        private void viewDeckPanel(string title, Player player, string pileName)
         {
             ui.PilePanel.setActive(true);
             ui.PilePanel.setTitleText(title);
             _viewingDeckPlayer = player;
             _viewingDeckName = pileName;
-            viewDeckPanelCards(idList, orderByCost);
+            var idList = getDeckCardIds(player, pileName);
+            viewDeckPanelCards(idList);
         }
-        private void viewDeckPanelCards(IEnumerable<int> idList, bool orderByCost = false)
+        private void viewDeckPanelCards(IEnumerable<int> idList)
         {
             ui.PilePanel.clearCards();
             var cardList = idList.Select(id => game.getCard(id));
-            if (orderByCost)
-            {
-                cardList = cardList.OrderBy(c => c.define.getCost());
-            }
             foreach (var card in cardList)
             {
                 var item = ui.PilePanel.addCard();
@@ -2420,13 +2569,27 @@ namespace Game.BattleTable
         {
             if (_viewingDeckPlayer == player && _viewingDeckName == pileName)
             {
-                IEnumerable<int> idList;
-                bool orderByCost = pileName != PILE.GRAVE && !canSeeAllCards; // 是牌库，或者可以看到所有卡牌
-                idList = player == this.player
+                IEnumerable<int> idList = getDeckCardIds(player, pileName);
+                viewDeckPanelCards(idList);
+            }
+        }
+        private bool shouldDeckOrderByCost(string pileName)
+        {
+            return pileName != PILE.GRAVE && !canSeeAllCards; // 是牌库，或者可以看到所有卡牌
+        }
+        private IEnumerable<int> getDeckCardIds(Player player, string pileName)
+        {
+            var orderByCost = shouldDeckOrderByCost(pileName);
+            return getDeckCardIds(player, pileName, orderByCost);
+        }
+        private IEnumerable<int> getDeckCardIds(Player player, string pileName, bool orderByCost)
+        {
+            IEnumerable<int> cards = player == this.player
                     ? (pileName == PILE.GRAVE ? _selfGraveList : _selfDeckList)
                     : (pileName != PILE.GRAVE ? _enemyDeckList : _enemyGraveList);
-                viewDeckPanelCards(idList, orderByCost);
-            }
+            if (orderByCost)
+                cards = cards.OrderBy(c => game.getCard(c).define.getCost());
+            return cards;
         }
         #region 更新可控制高光
         private void updateAllControlable()
@@ -2587,6 +2750,8 @@ namespace Game.BattleTable
         [SerializeField]
         float _cardHeight = 3;
         [SerializeField]
+        float _verticalExtents = 2.4f;
+        [SerializeField]
         int _maxBuffDisplayCount = 15;
         [SerializeField]
         int _maxBuffNameLength = 10;
@@ -2595,13 +2760,25 @@ namespace Game.BattleTable
         [SerializeField]
         List<Projectile> _projectileList = new List<Projectile>();
         [SerializeField]
-        BJSYGameCore.Timer _tipTimer = new BJSYGameCore.Timer() { duration = 2 };
+        Timer _tipTimer = new Timer() { duration = 2 };
+
+        #region 查看卡牌大图
         [SerializeField]
-        BJSYGameCore.Timer _showCardTimer = new BJSYGameCore.Timer() { duration = 0.25f };
+        Timer _showCardTimer = new Timer() { duration = 0.25f };
         Servant _hoveredServant;
         Item _hoveredItem;
         Secret _hoveredHeadItem;
+        HandItem _hoveredHand;
+        UICard _hoveredPileCard;
+        UICard _hoveredDiscoverCard;
         bool _isDisplayingCard;
+        #endregion
+
+        #region 衍生物&关键词弹出
+        [SerializeField]
+        Timer _popupCardTimer = new Timer() { duration = 0.5f };
+        bool _isPopingUpCard;
+        #endregion
         /// <summary>
         /// 需要更新所有卡牌的可控绿光。
         /// </summary>

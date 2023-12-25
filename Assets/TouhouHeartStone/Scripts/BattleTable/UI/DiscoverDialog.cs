@@ -36,6 +36,10 @@ namespace Game.BattleTable
             choice.onClick += onItemClickCallback;
             return choice;
         }
+        public int indexOf(TableCard card)
+        {
+            return _choices.FindIndex(c => c.card == card);
+        }
         public void clearChoices()
         {
             foreach (var choice in _choices)

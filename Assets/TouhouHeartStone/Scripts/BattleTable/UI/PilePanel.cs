@@ -26,6 +26,10 @@ namespace Game.BattleTable
             _cards.Add(choice);
             return choice;
         }
+        public int indexOf(TableCard card)
+        {
+            return _cards.FindIndex(i => i.card == card);
+        }
         public void clearCards()
         {
             foreach (var choice in _cards)
