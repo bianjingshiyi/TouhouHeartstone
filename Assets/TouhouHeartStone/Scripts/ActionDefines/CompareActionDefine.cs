@@ -37,40 +37,39 @@ namespace TouhouCardEngine
 
             var arg0 = await flow.getValue(node.getInputPort<ValueInput>("A"));
             var arg1 = await flow.getValue(node.getInputPort<ValueInput>("B"));
-            object[] args = new object[] { arg0, arg1 };
             bool result;
             switch (op)
             {
                 case CompareOperator.equals:
-                    result = args[0] != null ? args[0].Equals(args[1]) : args[1] == null;
+                    result = equals(arg0, arg1);
                     break;
                 case CompareOperator.unequals:
-                    result = args[0] != null ? !args[0].Equals(args[1]) : args[1] != null;
+                    result = !equals(arg0, arg1);
                     break;
                 case CompareOperator.greater:
                     {
-                        result = args[0] is IComparable cmp1 && args[1] is IComparable cmp2 ?
+                        result = arg0 is IComparable cmp1 && arg1 is IComparable cmp2 ?
                                 cmp1.CompareTo(cmp2) > 0 :
                                 false;
                     }
                     break;
                 case CompareOperator.greaterEquals:
                     {
-                        result = args[0] is IComparable cmp1 && args[1] is IComparable cmp2 ?
+                        result = arg0 is IComparable cmp1 && arg1 is IComparable cmp2 ?
                                 cmp1.CompareTo(cmp2) >= 0 :
                                 false;
                     }
                     break;
                 case CompareOperator.less:
                     {
-                        result = args[0] is IComparable cmp1 && args[1] is IComparable cmp2 ?
+                        result = arg0 is IComparable cmp1 && arg1 is IComparable cmp2 ?
                                 cmp1.CompareTo(cmp2) < 0 :
                                 false;
                     }
                     break;
                 case CompareOperator.lessEquals:
                     {
-                        result = args[0] is IComparable cmp1 && args[1] is IComparable cmp2 ?
+                        result = arg0 is IComparable cmp1 && arg1 is IComparable cmp2 ?
                                 cmp1.CompareTo(cmp2) <= 0 :
                                 false;
                     }
@@ -81,6 +80,32 @@ namespace TouhouCardEngine
 
             flow.setValue(node.getOutputPort<ValueOutput>("result"), result);
             return node.getOutputPort<ControlOutput>(exitPortName);
+        }
+        private bool equals(object obj1, object obj2)
+        {
+            if (obj1 == null)
+                return obj2 == null;
+            if (oneWayEquals(obj1, obj2) || oneWayEquals(obj2, obj1))
+                return true;
+            return obj1.Equals(obj2);
+        }
+        private bool oneWayEquals(object obj1, object obj2)
+        {
+            if (obj1 is BuffReference buffRef1)
+            {
+                if (obj2 is BuffDefine buffDef2)
+                    return buffRef1.cardPoolId == buffDef2.cardPoolId && buffRef1.defineId == buffDef2.id;
+                else if (obj2 is BuffReference defRef2)
+                    return buffRef1 == defRef2;
+            }
+            else if (obj1 is DefineReference defRef1)
+            {
+                if (obj2 is CardDefine cardDef2)
+                    return defRef1.cardPoolId == cardDef2.cardPoolId && defRef1.defineId == cardDef2.id;
+                else if (obj2 is DefineReference defRef2)
+                    return defRef1 == defRef2;
+            }
+            return false;
         }
         public const string defName = "Compare";
         public PortDefine[] inputs { get; }
