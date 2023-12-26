@@ -1463,7 +1463,6 @@ namespace Game.BattleTable
                 resetUse();
                 return;
             }
-
             bool setPosition = true;
             // 拖回手牌
             var screenPos = pointer.position;
@@ -1477,28 +1476,33 @@ namespace Game.BattleTable
                     table.SelfField.setPreviewPosition(-1);
             }
             // 卡牌不可用
-            else if (!canCardBeControlled(card, out string info))
-            {
-                //停止拖拽并提示
-                showErrorTip(info);
-                resetUse();
-                return;
-            }
             else
             {
-                //移动到手牌区以外的地方视作打算使用
-                // 仆从牌。
-                if (card.isServant())
+                // 停止衍生物和关键词显示。
+                stopHover();
+                if (!canCardBeControlled(card, out string info))
                 {
-                    //如果手牌是随从，那么在场上的时候会有一个占位符，预览这个随从放下去的位置。
-                    table.SelfField.setPreviewPosition(calcIndexInField(pos.x));
+                    //停止拖拽并提示
+                    showErrorTip(info);
+                    resetUse();
+                    return;
                 }
-                else if (card.isSpell())
+                else
                 {
-                    if (card.isNeedTarget(game))
+                    //移动到手牌区以外的地方视作打算使用
+                    // 仆从牌。
+                    if (card.isServant())
                     {
-                        startSelectingTargetForSpell(card);
-                        setPosition = false;
+                        //如果手牌是随从，那么在场上的时候会有一个占位符，预览这个随从放下去的位置。
+                        table.SelfField.setPreviewPosition(calcIndexInField(pos.x));
+                    }
+                    else if (card.isSpell())
+                    {
+                        if (card.isNeedTarget(game))
+                        {
+                            startSelectingTargetForSpell(card);
+                            setPosition = false;
+                        }
                     }
                 }
             }
@@ -2062,7 +2066,13 @@ namespace Game.BattleTable
             else if (_hoveredItem != null)
                 transform = _hoveredItem.transform;
             else if (_hoveredHeadItem != null)
-                transform = _hoveredHeadItem.transform;
+            {
+                var headCard = getCardBySecret(_hoveredHeadItem);
+                if (!headCard.isTrap(game) || canSeeCardOfOwner(headCard.getOwner()))
+                {
+                    transform = _hoveredHeadItem.transform;
+                }
+            }
 
             if (transform && transform.gameObject.activeInHierarchy)
             {
@@ -2107,7 +2117,7 @@ namespace Game.BattleTable
                 await ui.CardPopUp.tokenCard.setCardDefine(tokenDefine, this);
             }
             ui.CardPopUp.gameObject.SetActive(true);
-            ui.CardPopUp.setTokenCardVisible(tokenDefine != null);
+            ui.CardPopUp.setTokenCardVisible(tokenDefine != null, targetPosition.x < WorldToTableDistance(_popupCardMinLeftSpace));
             setCardPopUpPosition(targetPosition);
 
             Vector3 centerPosition = WorldToTablePosition(table.CenterDisplayTransform.position);
@@ -2787,6 +2797,8 @@ namespace Game.BattleTable
         float _servantAttackThreshold = 0.7f;
         [SerializeField]
         float _masterAttackThreshold = 0.7f;
+        [SerializeField]
+        float _popupCardMinLeftSpace = 4.5f;
         [SerializeField]
         float _cardHeight = 3;
         [SerializeField]

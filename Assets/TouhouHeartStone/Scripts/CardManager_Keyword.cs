@@ -97,6 +97,7 @@ namespace Game
 
         private void loadBuiltinKeywords()
         {
+            // 属性关键词
             addKeywordInfo(KEYWORD.TAUNT, StringTable.GAME_KEYWORD_TAUNT, KEYWORD_DESC_TAUNT);
             addKeywordInfo(KEYWORD.CHARGE, StringTable.GAME_KEYWORD_CHARGE, KEYWORD_DESC_CHARGE);
             addKeywordInfo(KEYWORD.RUSH, StringTable.GAME_KEYWORD_RUSH, KEYWORD_DESC_RUSH);
@@ -106,20 +107,26 @@ namespace Game
             addKeywordInfo(KEYWORD.DRAIN, StringTable.GAME_KEYWORD_DRAIN, KEYWORD_DESC_DRAIN);
             addKeywordInfo(KEYWORD.POISONOUS, StringTable.GAME_KEYWORD_POISONOUS, KEYWORD_DESC_POISONOUS);
             addKeywordInfo(KEYWORD.ELUSIVE, StringTable.GAME_KEYWORD_ELUSIVE, KEYWORD_DESC_ELUSIVE);
-            addKeywordInfo(KEYWORD.FROZEN, StringTable.GAME_KEYWORD_FREEZE, KEYWORD_DESC_FROZEN);
             addKeywordInfo(KEYWORD.UNIQUE, StringTable.GAME_KEYWORD_UNIQUE, KEYWORD_DESC_UNIQUE);
             addKeywordInfo(KEYWORD.AUTOCAST, StringTable.GAME_KEYWORD_AUTOCAST, KEYWORD_DESC_AUTOCAST);
             addKeywordInfo(KEYWORD.CANTATTACK, StringTable.GAME_KEYWORD_CANTATTACK, KEYWORD_DESC_CANTATTACK);
             addKeywordInfo(KEYWORD.WINDFURY, StringTable.GAME_KEYWORD_WINDFURY, KEYWORD_DESC_WINDFURY);
             addKeywordInfo(KEYWORD.IMMUNITY, StringTable.GAME_KEYWORD_IMMUNITY, KEYWORD_DESC_IMMUNITY);
-            addKeywordInfo(KEYWORD.TRAP, StringTable.GAME_KEYWORD_SECRET, KEYWORD_DESC_TRAP);
             addKeywordInfo(KEYWORD.MISSION, StringTable.GAME_KEYWORD_MISSION, KEYWORD_DESC_MISSION);
-            addKeywordInfo(KEYWORD.BATTLECRY, StringTable.GAME_KEYWORD_BATTLECRY, KEYWORD_DESC_BATTLECRY);
-            addKeywordInfo(KEYWORD.DEATHRATTLE, StringTable.GAME_KEYWORD_DEATHRATTLE, KEYWORD_DESC_DEATHRATTLE);
             addKeywordInfo(KEYWORD.PERMANENT_FROZEN, StringTable.GAME_KEYWORD_PERMANENT_FROZEN, KEYWORD_DESC_PERMANENT_FROZEN);
-            addKeywordInfo(KEYWORD.CAN_BE_CHARGED, StringTable.GAME_KEYWORD_CAN_BE_CHARGED, KEYWORD_DESC_CAN_BE_CHARGED);
             addKeywordInfo(DEFINE.SPELL_DAMAGE, StringTable.GAME_CARD_PROP_NAME_SPELL_DAMAGE, KEYWORD_DESC_SPELL_DAMAGE, typeof(int));
             addKeywordInfo(DEFINE.DAMAGE_REDUCE, StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE, KEYWORD_DESC_DAMAGE_REDUCE, typeof(int));
+
+            // 效果关键词
+            addKeywordInfo(KEYWORD.BATTLECRY, StringTable.GAME_KEYWORD_BATTLECRY, KEYWORD_DESC_BATTLECRY);
+            addKeywordInfo(KEYWORD.DEATHRATTLE, StringTable.GAME_KEYWORD_DEATHRATTLE, KEYWORD_DESC_DEATHRATTLE);
+            addKeywordInfo(KEYWORD.TRAP, StringTable.GAME_KEYWORD_SECRET, KEYWORD_DESC_TRAP);
+            addKeywordInfo(KEYWORD.CHARGED, KEYWORD_NAME_CHARGED, KEYWORD_DESC_CAN_BE_CHARGED);
+
+            // 动作关键词
+            addKeywordInfo(KEYWORD.SHACKLE, KEYWORD_NAME_SHACKLE, KEYWORD_DESC_FROZEN);
+            addKeywordInfo(KEYWORD.SEAL, KEYWORD_NAME_SEAL, KEYWORD_DESC_SEAL);
+            addKeywordInfo(KEYWORD.FAITHDUEL, KEYWORD_NAME_FAITHDUEL, KEYWORD_DESC_FAITHDUEL);
         }
 
         #endregion
@@ -132,14 +139,23 @@ namespace Game
         [TranslateMsg("关键词描述-未知")]
         public const string KEYWORD_DESC_UNKNOWN = "不知道这是干什么的……";
 
+        [TranslateMsg("关键词名称-蓄力")]
+        public const string KEYWORD_NAME_CHARGED = "蓄力";
+        [TranslateMsg("关键词名称-禁锢")]
+        public const string KEYWORD_NAME_SHACKLE = "禁锢";
+        [TranslateMsg("关键词名称-封印")]
+        public const string KEYWORD_NAME_SEAL = "封印";
+        [TranslateMsg("关键词名称-信仰对决")]
+        public const string KEYWORD_NAME_FAITHDUEL = "信仰对决";
+
         [TranslateMsg("关键词描述-守卫")]
-        public const string KEYWORD_DESC_TAUNT = "敌人必须优先攻击具有守卫的角色。";
+        public const string KEYWORD_DESC_TAUNT = "敌人必须优先攻击具有<b>守卫</b>的角色。";
         [TranslateMsg("关键词描述-先攻")]
         public const string KEYWORD_DESC_CHARGE = "可以立即发起攻击。";
         [TranslateMsg("关键词描述-速攻")]
         public const string KEYWORD_DESC_RUSH = "可以立即对仆从发起攻击。";
         [TranslateMsg("关键词描述-护盾")]
-        public const string KEYWORD_DESC_SHIELD = "阻挡受到的一次伤害。";
+        public const string KEYWORD_DESC_SHIELD = "阻挡一次受到的伤害。";
         [TranslateMsg("关键词描述-隐匿")]
         public const string KEYWORD_DESC_STEALTH = "直到发起一次攻击，无法成为敌人的目标。";
         [TranslateMsg("关键词描述-永久隐匿")]
@@ -151,9 +167,9 @@ namespace Game
         [TranslateMsg("关键词描述-魔免")]
         public const string KEYWORD_DESC_ELUSIVE = "无法成为法术或英雄技能的目标。";
         [TranslateMsg("关键词描述-禁锢")]
-        public const string KEYWORD_DESC_FROZEN = "被禁锢的角色失去下一次攻击机会。";
+        public const string KEYWORD_DESC_FROZEN = "被<b>禁锢</b>的角色失去下一次攻击机会。";
         [TranslateMsg("关键词描述-唯一")]
-        public const string KEYWORD_DESC_UNIQUE = "只能在套牌中携带一张该卡牌。";
+        public const string KEYWORD_DESC_UNIQUE = "只能在套牌中携带一张<b>唯一</b>卡牌。";
         [TranslateMsg("关键词描述-自动施放")]
         public const string KEYWORD_DESC_AUTOCAST = "抽到该牌后立即施放，并抽一张牌。";
         [TranslateMsg("关键词描述-无法攻击")]
@@ -169,15 +185,19 @@ namespace Game
         [TranslateMsg("关键词描述-宣言")]
         public const string KEYWORD_DESC_BATTLECRY = "使用该牌后，产生某些效果。";
         [TranslateMsg("关键词描述-遗言")]
-        public const string KEYWORD_DESC_DEATHRATTLE = "在仆从死亡，或者道具被摧毁后，产生某些效果。";
+        public const string KEYWORD_DESC_DEATHRATTLE = "在仆从死亡或道具被摧毁后，产生某些效果。";
         [TranslateMsg("关键词描述-永久禁锢")]
         public const string KEYWORD_DESC_PERMANENT_FROZEN = "失去所有攻击机会。";
         [TranslateMsg("关键词描述-蓄力")]
-        public const string KEYWORD_DESC_CAN_BE_CHARGED = "你的回合结束后，为手牌中所有灵力值消耗小于或等于你灵力珠数量的蓄力牌进行蓄力。";
+        public const string KEYWORD_DESC_CAN_BE_CHARGED = "你的回合结束后，为手牌中所有灵力值消耗小于或等于你灵力珠数量的<b>蓄力</b>牌进行蓄力。";
         [TranslateMsg("关键词描述-法术伤害")]
         public const string KEYWORD_DESC_SPELL_DAMAGE = "你的法术额外造成伤害。";
         [TranslateMsg("关键词描述-减伤")]
         public const string KEYWORD_DESC_DAMAGE_REDUCE = "受到的伤害减少。";
+        [TranslateMsg("关键词描述-封印")]
+        public const string KEYWORD_DESC_SEAL = "被<b>封印</b>的角色失去所有强化效果。";
+        [TranslateMsg("关键词描述-信仰对决")]
+        public const string KEYWORD_DESC_FAITHDUEL = "揭示双方牌库里的一张牌，灵力值消耗更高的一方赢得<b>信仰对决</b>。";
         #endregion
 
         private Dictionary<string, KeywordInfo> keywordInfos = new Dictionary<string, KeywordInfo>();

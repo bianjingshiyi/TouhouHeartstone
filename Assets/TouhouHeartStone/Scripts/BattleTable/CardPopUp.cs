@@ -22,9 +22,31 @@ namespace Game.BattleTable.UI
         {
             _keywordsPopUp.update(titles, descs);
         }
-        public void setTokenCardVisible(bool value)
+        public void setTokenCardVisible(bool value, bool atRight)
         {
-            _tokenCardRegionTrans.gameObject.SetActive(value);
+            _leftTokenCardRegionTrans.gameObject.SetActive(value && !atRight);
+            _rightTokenCardRegionTrans.gameObject.SetActive(value && atRight);
+
+            if (!value)
+                return;
+            var parent = atRight ? _rightTokenCardRegionTrans : _leftTokenCardRegionTrans;
+            var pivotX = atRight ? rightTokenPopUpPivotX : leftTokenPopUpPivotX;
+            var anchorX = atRight ? rightTokenPopUpAnchorX : leftTokenPopUpAnchorX;
+            _tokenCardTransform.SetParent(parent, false);
+
+            var pivot = _popupRootTransform.pivot;
+            pivot.x = pivotX;
+            _popupRootTransform.pivot = pivot;
+
+            var anchorMin = _popupRootTransform.anchorMin;
+            anchorMin.x = anchorX;
+            _popupRootTransform.anchorMin = anchorMin;
+
+            var anchorMax = _popupRootTransform.anchorMax;
+            anchorMax.x = anchorX;
+            _popupRootTransform.anchorMax = anchorMax;
+
+            _popupRootTransform.anchoredPosition = Vector2.zero;
         }
 
 
@@ -36,7 +58,13 @@ namespace Game.BattleTable.UI
         [SerializeField]
         private TableCard _tokenCard;
         [SerializeField]
-        private RectTransform _tokenCardRegionTrans;
+        private RectTransform _popupRootTransform;
+        [SerializeField]
+        private Transform _tokenCardTransform;
+        [SerializeField]
+        private RectTransform _leftTokenCardRegionTrans;
+        [SerializeField]
+        private RectTransform _rightTokenCardRegionTrans;
         [SerializeField]
         private RectTransform _keywordsPopUpLeftRegionTrans;
         [SerializeField]
@@ -50,6 +78,10 @@ namespace Game.BattleTable.UI
 
         private const float leftKeywordsPopUpPivotX = 1;
         private const float rightKeywordsPopUpPivotX = 0;
+        private const float leftTokenPopUpPivotX = 1;
+        private const float rightTokenPopUpPivotX = 0;
+        private const float leftTokenPopUpAnchorX = 1;
+        private const float rightTokenPopUpAnchorX = 0;
         #endregion
     }
 }

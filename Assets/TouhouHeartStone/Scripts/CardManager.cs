@@ -212,9 +212,12 @@ namespace Game
             List<ActionGraph> checkedGraphs = new List<ActionGraph>();
             foreach (var effect in define.getGeneratedEffects())
             {
-                if (effect is null)
-                    continue;
-                addGraphDefRef(effect.graph);
+                addEffectDefRef(effect);
+            }
+            foreach (var propName in define.getPropNames())
+            {
+                if (define.getProp<DefineReference>(propName) is DefineReference defRef)
+                    addDefRef(defRef);
             }
             return cardDefines.ToArray();
 
@@ -230,7 +233,17 @@ namespace Game
                     return;
                 cardDefines.Add(cardDefine);
             }
-
+            void addEffectDefRef(GeneratedEffect effect)
+            {
+                if (effect == null)
+                    return;
+                addGraphDefRef(effect.graph);
+                foreach (var prop in effect.propDict)
+                {
+                    if (prop.Value is DefineReference defRef)
+                        addDefRef(defRef);
+                }
+            }
             void addGraphDefRef(ActionGraph actionGraph)
             {
                 if (checkedGraphs.Contains(actionGraph))
@@ -286,9 +299,7 @@ namespace Game
                 {
                     foreach (var effect in buffDefine.effectList)
                     {
-                        if (effect is null)
-                            continue;
-                        addGraphDefRef(effect.graph);
+                        addEffectDefRef(effect);
                     }
                 }
             }

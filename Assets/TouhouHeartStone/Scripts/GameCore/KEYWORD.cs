@@ -107,6 +107,16 @@ namespace TouhouHeartstone
         /// 陷阱
         /// </summary>
         public const string TRAP = "trap";
+        /// <summary>
+        /// 蓄力
+        /// </summary>
+        public const string CHARGED = "charged";
+        #endregion
+
+        #region 动作关键词
+        public const string SHACKLE = "shackle";
+        public const string SEAL = "seal";
+        public const string FAITHDUEL = "faithduel";
         #endregion
     }
 }
