@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Game.BattleTable
@@ -24,7 +25,13 @@ namespace Game.BattleTable
             var choice = Instantiate(_itemTemplate, _itemRoot).GetComponent<PilePanelItem>();
             choice.gameObject.SetActive(true);
             _cards.Add(choice);
+            choice.onPointerEnter += onItemPointerEnterCallback;
+            choice.onPointerExit += onItemPointerExitCallback;
             return choice;
+        }
+        public TableCard getCard(int index)
+        {
+            return _cards[index].card;
         }
         public int indexOf(TableCard card)
         {
@@ -34,6 +41,8 @@ namespace Game.BattleTable
         {
             foreach (var choice in _cards)
             {
+                choice.onPointerEnter -= onItemPointerEnterCallback;
+                choice.onPointerExit -= onItemPointerExitCallback;
                 choice.destroy();
             }
             _cards.Clear();
@@ -50,10 +59,20 @@ namespace Game.BattleTable
         {
             onCloseButtonClicked?.Invoke();
         }
+        private void onItemPointerEnterCallback(PilePanelItem item, PointerEventData pointerData)
+        {
+            onItemPointerEnter?.Invoke(_cards.IndexOf(item));
+        }
+        private void onItemPointerExitCallback(PilePanelItem item, PointerEventData pointerData)
+        {
+            onItemPointerExit?.Invoke(_cards.IndexOf(item));
+        }
         #endregion
 
         #region 事件
         public Action onCloseButtonClicked;
+        public Action<int> onItemPointerEnter;
+        public Action<int> onItemPointerExit;
         #endregion
 
         #region 属性字段

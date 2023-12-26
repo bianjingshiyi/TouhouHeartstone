@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using MukioI18n;
 using TouhouHeartstone;
 
@@ -68,6 +69,20 @@ namespace Game
                 return game.lang._(info.desc);
             }
             return game.lang._(KEYWORD_DESC_UNKNOWN);
+        }
+        public string[] getKeywordsInDescription(string desc)
+        {
+            List<string> keywords = new List<string>();
+            foreach (var keyword in keywordInfos.Keys)
+            {
+                var name = getKeywordName(keyword);
+                var pattern = $"<b>.*{name}.*</b>";
+                if (Regex.IsMatch(desc, pattern))
+                {
+                    keywords.Add(keyword);
+                }
+            }
+            return keywords.ToArray();
         }
         #endregion
 

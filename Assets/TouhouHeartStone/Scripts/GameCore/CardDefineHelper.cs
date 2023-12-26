@@ -72,48 +72,6 @@ namespace TouhouHeartstone
         {
             return define.getProp<string[]>(DEFINE.KEYWORDS);
         }
-        /// <summary>
-        /// 获取效果关键词数组。
-        /// </summary>
-        /// <param name="card">卡牌。</param>
-        /// <returns>关键词列表。</returns>
-        public static string[] getEffectKeywords(this CardDefine card)
-        {
-            List<string> keywords = new List<string>();
-            if (card.hasBattlecry())
-                keywords.Add(KEYWORD.BATTLECRY);
-            if (card.hasDeathRattles())
-                keywords.Add(KEYWORD.DEATHRATTLE);
-            if (card.isTrap())
-                keywords.Add(KEYWORD.TRAP);
-            return keywords.ToArray();
-        }
-        /// <summary>
-        /// 获取整数关键词数组。
-        /// </summary>
-        /// <param name="card">卡牌。</param>
-        /// <returns>关键词列表。</returns>
-        public static string[] getIntKeywords(this CardDefine card)
-        {
-            List<string> keywords = new List<string>();
-            if (card.getSpellDamage() > 0)
-                keywords.Add(DEFINE.SPELL_DAMAGE);
-            if (card.getDamageReduce() > 0)
-                keywords.Add(DEFINE.DAMAGE_REDUCE);
-            return keywords.ToArray();
-        }
-        /// <summary>
-        /// 获取关键词数组，并包括效果关键词。
-        /// </summary>
-        /// <param name="card">卡牌。</param>
-        /// <returns>关键词列表。</returns>
-        public static string[] getReferedKeywords(this CardDefine card)
-        {
-            var keywords = getKeywords(card) ?? Array.Empty<string>();
-            var intKeywords = getIntKeywords(card);
-            var effectKeywords = getEffectKeywords(card);
-            return keywords.Concat(intKeywords).Concat(effectKeywords).ToArray();
-        }
         public static void setKeywords(this CardDefine define, string[] keywords)
         {
             define.setProp(DEFINE.KEYWORDS, keywords);
@@ -144,14 +102,6 @@ namespace TouhouHeartstone
         public static void setIsToken(this CardDefine cardDefine, bool value)
         {
             cardDefine.setProp(DEFINE.ISTOKEN, value);
-        }
-        public static DefineReference[] getTokens(this CardDefine define)
-        {
-            return define.getProp<DefineReference[]>(DEFINE.TOKENS);
-        }
-        public static void setTokens(this CardDefine cardDefine, DefineReference[] value)
-        {
-            cardDefine.setProp(DEFINE.TOKENS, value);
         }
         /// <summary>
         /// 通过位运算获取卡牌Id中的卡池Id。卡池Id的掩码为0x7FFF0000

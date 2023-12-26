@@ -353,51 +353,6 @@ namespace TouhouHeartstone
         {
             return card.getProp<string[]>(game, DEFINE.KEYWORDS) ?? Array.Empty<string>();
         }
-        /// <summary>
-        /// 获取整数关键词数组。
-        /// </summary>
-        /// <param name="card">卡牌。</param>
-        /// <param name="game">游戏。</param>
-        /// <returns>关键词列表。</returns>
-        public static string[] getIntKeywords(this ICardData card, IGame game)
-        {
-            List<string> keywords = new List<string>();
-            if (card.getSpellDamage(game) > 0)
-                keywords.Add(DEFINE.SPELL_DAMAGE);
-            if (card.getDamageReduce(game) > 0)
-                keywords.Add(DEFINE.DAMAGE_REDUCE);
-            return keywords.ToArray();
-        }
-        /// <summary>
-        /// 获取效果关键词数组。
-        /// </summary>
-        /// <param name="card">卡牌。</param>
-        /// <param name="game">游戏。</param>
-        /// <returns>关键词列表。</returns>
-        public static string[] getEffectKeywords(this ICardData card, IGame game)
-        {
-            List<string> keywords = new List<string>();
-            if (card.hasBattlecry(game))
-                keywords.Add(KEYWORD.BATTLECRY);
-            if (card.hasDeathRattle(game))
-                keywords.Add(KEYWORD.DEATHRATTLE);
-            if (card.isTrap(game))
-                keywords.Add(KEYWORD.TRAP);
-            return keywords.ToArray();
-        }
-        /// <summary>
-        /// 获取所有引用的关键词。
-        /// </summary>
-        /// <param name="card">卡牌。</param>
-        /// <param name="game">游戏。</param>
-        /// <returns>关键词列表。</returns>
-        public static string[] getReferedKeywords(this ICardData card, IGame game)
-        {
-            var keywords = getKeywords(card, game);
-            var intKeywords = getIntKeywords(card, game);
-            var effectKeywords = getEffectKeywords(card, game);
-            return keywords.Concat(intKeywords).Concat(effectKeywords).ToArray();
-        }
         public static Task<EventArg> addKeywords(this Card card, IGame game, params string[] keywords)
         {
             string[] oldKeywords = card.getKeywords(game, true);

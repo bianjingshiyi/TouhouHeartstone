@@ -1599,9 +1599,11 @@ namespace Game.BattleTable
         /// <param name="pointer"></param>
         private void onHandItemPointerEnterCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
+            if (list.count <= 0)
+                return;
             if (list == table.SelfHandList)
                 hand.setHovered(true);
-            if (!table.SelfHandList.isZoomIn && list.count > 0)
+            if (!table.SelfHandList.isZoomIn)
             {
                 int count = list.count;
                 showTipBox(lang._(TAB_CARD_NUMBER, count), hand.gameObject);
@@ -1609,11 +1611,16 @@ namespace Game.BattleTable
                 tablePos.y = 0;
                 setTipboxPosition(tablePos);
             }
+            else
+            {
+                startHover(hand);
+            }
         }
         private void onHandItemPointerExitCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
             hand.setHovered(false);
             hideTipBoxFromObject(hand.gameObject);
+            stopHover();
         }
         #endregion
 
@@ -1973,6 +1980,21 @@ namespace Game.BattleTable
             startHoverTimer();
             _hoveredItem = item;
         }
+        private void startHover(HandItem hand)
+        {
+            startHoverTimer();
+            _hoveredHand = hand;
+        }
+        private void startHoverPilePanelItem(UICard card)
+        {
+            startHoverTimer();
+            _hoveredPileCard = card;
+        }
+        private void startHoverDiscoverItem(UICard card)
+        {
+            startHoverTimer();
+            _hoveredDiscoverCard = card;
+        }
         private void stopHover()
         {
             _hoveredServant = null;
@@ -1984,17 +2006,20 @@ namespace Game.BattleTable
             clearCardDisplayerData();
             clearPopUpData();
         }
-        private Vector3 getTransformHoveringPosition(Transform transform)
+        private Vector3 getTransformHoveringPosition(Transform transform, bool autoOffset = true)
         {
-            Vector3 centerPosition = WorldToTablePosition(table.CenterDisplayTransform.position);
             var targetPosition = WorldToTablePosition(transform.position);
-            if (Mathf.Abs(targetPosition.z - centerPosition.z) > centerPosition.z - WorldToTableDistance(_verticalExtents)) // 位于屏幕上下边缘
+            if (autoOffset)
             {
-                targetPosition.z += targetPosition.z < centerPosition.z ? 250 : -250;
-            }
-            else // 位于屏幕中间部分
-            {
-                targetPosition.x += targetPosition.x < centerPosition.x ? 250 : -250;
+                Vector3 centerPosition = WorldToTablePosition(table.CenterDisplayTransform.position);
+                if (Mathf.Abs(targetPosition.z - centerPosition.z) > centerPosition.z - WorldToTableDistance(_verticalExtents)) // 位于屏幕上下边缘
+                {
+                    targetPosition.z += targetPosition.z < centerPosition.z ? 250 : -250;
+                }
+                else // 位于屏幕中间部分
+                {
+                    targetPosition.x += targetPosition.x < centerPosition.x ? 250 : -250;
+                }
             }
             return targetPosition;
         }
@@ -2003,8 +2028,10 @@ namespace Game.BattleTable
         #region 卡牌显示器
         private async void showCardDisplayer(Vector3 targetPosition, CardDescriptor desc)
         {
+            var inversePos = ui.CardDisplayerObj.transform.parent.InverseTransformPoint(targetPosition);
             var pos = ui.CardDisplayerObj.transform.localPosition;
-            pos.x = ui.CardDisplayerObj.transform.parent.InverseTransformPoint(targetPosition).x;
+            pos.x = inversePos.x;
+            pos.y = inversePos.y;
             ui.CardDisplayerObj.transform.localPosition = pos;
 
             ui.CardDisplayer.setVisible(true);
@@ -2027,15 +2054,23 @@ namespace Game.BattleTable
             _showCardTimer.reset();
             hideCardDisplayer();
         }
-        private Transform getHoveringTransform()
+        private bool tryGetHoveringPosition(out Vector3 position)
         {
+            Transform transform = null;
             if (_hoveredServant != null)
-                return _hoveredServant.transform;
+                transform = _hoveredServant.transform;
             else if (_hoveredItem != null)
-                return _hoveredItem.transform;
+                transform = _hoveredItem.transform;
             else if (_hoveredHeadItem != null)
-                return _hoveredHeadItem.transform;
-            return null;
+                transform = _hoveredHeadItem.transform;
+
+            if (transform && transform.gameObject.activeInHierarchy)
+            {
+                position = getTransformHoveringPosition(transform);
+                return true;
+            }
+            position = Vector3.zero;
+            return false;
         }
         private Card getHoveringCard()
         {
@@ -2056,21 +2091,24 @@ namespace Game.BattleTable
         #endregion
 
         #region 涌现式衍生物&关键词提示
+        private void setCardPopUpPosition(Vector3 targetPosition)
+        {
+            var worldPosition = TableToWorldPosition(targetPosition);
+            var inversePos = ui.CardPopUp.transform.parent.InverseTransformPoint(worldPosition);
+            var pos = ui.CardPopUp.transform.localPosition;
+            pos.x = inversePos.x;
+            pos.y = inversePos.y;
+            ui.CardPopUp.transform.localPosition = pos;
+        }
         private async void showCardPopUp(Vector3 targetPosition, CardDefine tokenDefine, string[] keywords)
         {
-
-            var worldPosition = TableToWorldPosition(targetPosition);
-
-            var pos = ui.CardPopUp.transform.localPosition;
-            pos.x = ui.CardPopUp.transform.parent.InverseTransformPoint(worldPosition).x;
-            ui.CardPopUp.transform.localPosition = pos;
-
             if (tokenDefine != null)
             {
                 await ui.CardPopUp.tokenCard.setCardDefine(tokenDefine, this);
             }
             ui.CardPopUp.gameObject.SetActive(true);
             ui.CardPopUp.setTokenCardVisible(tokenDefine != null);
+            setCardPopUpPosition(targetPosition);
 
             Vector3 centerPosition = WorldToTablePosition(table.CenterDisplayTransform.position);
             Vector3 popupCenter = WorldToTablePosition(ui.CardPopUp.centerPosition);
@@ -2078,8 +2116,6 @@ namespace Game.BattleTable
             ui.CardPopUp.setKeywordPopUpPositions(atRight);
             cardManager.getKeywordTexts(keywords, out var titles, out var descs);
             ui.CardPopUp.updateKeywordPopUps(titles, descs);
-
-            _isPopingUpCard = true;
         }
         private void hideCardPopUp()
         {
@@ -2091,19 +2127,25 @@ namespace Game.BattleTable
             _popupCardTimer.reset();
             hideCardPopUp();
         }
-        private Transform getPopupHoveringTransform()
+        private bool tryGetPopupHoveringPosition(out Vector3 position)
         {
-            var cardDisplayerTrans = getHoveringTransform();
-            if (cardDisplayerTrans)
-                return cardDisplayerTrans;
+            if (tryGetHoveringPosition(out position))
+                return true;
 
+            Transform transform = null;
             if (_hoveredHand != null)
-                return _hoveredHand.transform;
+                transform = _hoveredHand.card.positionLerp.transform;
             else if (_hoveredPileCard != null)
-                return _hoveredPileCard.transform;
+                transform = _hoveredPileCard.transform;
             else if (_hoveredDiscoverCard != null)
-                return _hoveredDiscoverCard.transform;
-            return null;
+                transform = _hoveredDiscoverCard.transform;
+            if (transform && transform.gameObject.activeInHierarchy)
+            {
+                position = getTransformHoveringPosition(transform, false);
+                return true;
+            }
+            position = Vector3.zero;
+            return false;
         }
         private Card getPopupHoveringCard()
         {
@@ -2140,23 +2182,22 @@ namespace Game.BattleTable
                 var defRef = _choosingCardDefineRefs.ElementAt(index);
                 cardDefine = game.getDefine(defRef);
             }
-            var tokenRef = cardDefine.getTokens()?.FirstOrDefault();
-            if (tokenRef != null)
-                return game.getDefine(tokenRef);
-            return null;
+            if (cardDefine == null)
+                return null;
+            return getCardTokens(cardDefine)?.FirstOrDefault();
         }
         private string[] getPopupHoveringCardKeywords()
         {
             Card card = getPopupHoveringCard();
             string[] keywords = null;
             if (card != null)
-                keywords = card.getReferedKeywords(game);
+                keywords = getCardDefineReferedKeywords(card.define);
             else if (_hoveredDiscoverCard != null && _cardChooseMode == CardChooseMode.CardDefine)
             {
                 var index = table.Discover.indexOf(_hoveredDiscoverCard);
                 var defRef = _choosingCardDefineRefs.ElementAt(index);
                 var cardDefine = game.getDefine(defRef);
-                keywords = cardDefine.getReferedKeywords();
+                keywords = getCardDefineReferedKeywords(cardDefine);
             }
             return keywords;
         }

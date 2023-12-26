@@ -34,7 +34,13 @@ namespace Game.BattleTable
             choice.transform.localPosition = localPos;
             _choices.Add(choice);
             choice.onClick += onItemClickCallback;
+            choice.onPointerEnter += onItemPointerEnterCallback;
+            choice.onPointerExit += onItemPointerExitCallback;
             return choice;
+        }
+        public TableCard getCard(int index)
+        {
+            return _choices[index].card;
         }
         public int indexOf(TableCard card)
         {
@@ -45,6 +51,8 @@ namespace Game.BattleTable
             foreach (var choice in _choices)
             {
                 choice.onClick -= onItemClickCallback;
+                choice.onPointerEnter -= onItemPointerEnterCallback;
+                choice.onPointerExit -= onItemPointerExitCallback;
                 choice.destroy();
             }
             _choices.Clear();
@@ -61,6 +69,14 @@ namespace Game.BattleTable
         {
             onItemClicked?.Invoke(_choices.IndexOf(card));
         }
+        private void onItemPointerEnterCallback(DiscoverItem card, PointerEventData pointer)
+        {
+            onItemPointerEnter?.Invoke(_choices.IndexOf(card));
+        }
+        private void onItemPointerExitCallback(DiscoverItem card, PointerEventData pointer)
+        {
+            onItemPointerExit?.Invoke(_choices.IndexOf(card));
+        }
         private void onHideButtonClickCallback()
         {
             onHideButtonClicked?.Invoke();
@@ -69,6 +85,8 @@ namespace Game.BattleTable
 
         #region 事件
         public Action<int> onItemClicked;
+        public Action<int> onItemPointerEnter;
+        public Action<int> onItemPointerExit;
         public Action onHideButtonClicked;
         #endregion
 

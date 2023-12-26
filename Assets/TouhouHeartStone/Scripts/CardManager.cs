@@ -206,6 +206,93 @@ namespace Game
         {
             return new DefineReference(STANDARD_POOL_ID, id);
         }
+        public CardDefine[] evaluateCardTokens(CardDefine define, IEnumerable<ICardPoolReference> cardPoolSet)
+        {
+            List<CardDefine> cardDefines = new List<CardDefine>();
+            List<ActionGraph> checkedGraphs = new List<ActionGraph>();
+            foreach (var effect in define.getGeneratedEffects())
+            {
+                if (effect is null)
+                    continue;
+                addGraphDefRef(effect.graph);
+            }
+            return cardDefines.ToArray();
+
+            void addDefRef(DefineReference defRef)
+            {
+                if (defRef is BuffReference)
+                    return;
+                var poolRef = getCardPoolReferenceInSet(defRef.cardPoolId, cardPoolSet);
+                var cardDefine = getCardDefine(poolRef, defRef.defineId);
+                if (cardDefines.Contains(cardDefine))
+                    return;
+                if (cardDefine.isMaster() || cardDefine == define)
+                    return;
+                cardDefines.Add(cardDefine);
+            }
+
+            void addGraphDefRef(ActionGraph actionGraph)
+            {
+                if (checkedGraphs.Contains(actionGraph))
+                    return;
+                checkedGraphs.Add(actionGraph);
+                foreach (var node in actionGraph.nodes)
+                {
+                    if (node is not ActionNode action || action.defineRef == null)
+                        continue;
+                    foreach (var inputPort in action.inputPorts)
+                    {
+                        var name = inputPort.name;
+                        var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
+                        var inputDefaultValue = action.getInputDefaultValue(name, paramIndex);
+                        if (inputDefaultValue == null)
+                            continue;
+                        var inputValueType = inputPort.define.type.getNodeValueType();
+                        if (inputValueType.type == ActionNodeValueType.buffReference)
+                        {
+                            if (inputDefaultValue is DefineReference buffRef)
+                            {
+                                addBuffDefRef(buffRef);
+                            }
+                            else if (inputDefaultValue is IEnumerable<DefineReference> defRefs)
+                            {
+                                foreach (var dr in defRefs)
+                                {
+                                    addBuffDefRef(dr);
+                                }
+                            }
+                        }
+                        else if (inputValueType.type == ActionNodeValueType.cardReference)
+                        {
+                            if (inputDefaultValue is DefineReference defRef)
+                            {
+                                addDefRef(defRef);
+                            }
+                            else if (inputDefaultValue is IEnumerable<DefineReference> defRefs)
+                            {
+                                foreach (var dr in defRefs)
+                                {
+                                    addDefRef(dr);
+                                }
+                            }
+                        } 
+                    }
+                }
+            }
+            void addBuffDefRef(DefineReference buffRef)
+            {
+                var poolRef = getCardPoolReferenceInSet(buffRef.cardPoolId, cardPoolSet);
+                if (tryGetBuffDefine(poolRef, buffRef.defineId, out var buffDefine))
+                {
+                    foreach (var effect in buffDefine.effectList)
+                    {
+                        if (effect is null)
+                            continue;
+                        addGraphDefRef(effect.graph);
+                    }
+                }
+            }
+        }
         #endregion
 
         #region 私有方法

@@ -73,7 +73,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: _color.a
-    path: PopUpRoot/TokenCardRegion/TokenCard
+    path: PopUpRoot/TokenCardRegion
     classID: 114
     script: {fileID: 11500000, guid: 3310da465587e944ab7ea76b2c9eec41, type: 3}
     flags: 0
@@ -95,7 +95,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 1931866198
+      path: 212130078
       attribute: 4086844465
       script: {fileID: 11500000, guid: 3310da465587e944ab7ea76b2c9eec41, type: 3}
       typeID: 114
@@ -181,7 +181,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: _color.a
-    path: PopUpRoot/TokenCardRegion/TokenCard
+    path: PopUpRoot/TokenCardRegion
     classID: 114
     script: {fileID: 11500000, guid: 3310da465587e944ab7ea76b2c9eec41, type: 3}
     flags: 0

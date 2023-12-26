@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore;
 using Game.BattleTable.UI;
+using NGettext.Plural.Ast;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouCardEngine.Shared;
@@ -113,6 +114,7 @@ namespace Game.BattleTable
         public Vector3 ScreenToWorldPosition(Vector3 screenPos) => table.Camera.ScreenToWorldPoint(screenPos);
         public Vector3 ScreenToTablePosition(Vector3 screenPos) => WorldToTablePosition(ScreenToWorldPosition(screenPos));
         #endregion
+
         #region 皮肤
         public IEnumerable<ICardPoolReference> getCardPoolSet()
         {
@@ -182,6 +184,32 @@ namespace Game.BattleTable
             return cardManager.loadBuffImage(poolRef, define.id);
         }
         #endregion
+
+        #region 衍生物&关键词
+        public CardDefine[] getCardTokens(CardDefine card)
+        {
+            if (_cardTokenDict.TryGetValue(card, out var tokens))
+            {
+                return tokens;
+            }
+            tokens = cardManager.evaluateCardTokens(card, getCardPoolSet());
+            _cardTokenDict.Add(card, tokens);
+            return tokens;
+        }
+        public string[] getCardDefineReferedKeywords(CardDefine card)
+        {
+            if (_cardKeywordsDict.TryGetValue(card, out var keywords))
+                return keywords;
+
+            var skin = getCardSkin(card);
+            if (skin == null)
+                return null;
+            keywords = cardManager.getKeywordsInDescription(skin.desc);
+            _cardKeywordsDict.Add(card, keywords);
+            return keywords;
+        }
+        #endregion
+
         #region 私有方法
         #region 生命周期
         private void Awake()
@@ -267,11 +295,15 @@ namespace Game.BattleTable
 
             table.Discover.onHideButtonClicked += onDiscoverHideButtonClick;
             table.Discover.onItemClicked += onCardChooseCallback;
+            table.Discover.onItemPointerEnter += onCardChooseItemPointerEnterCallback;
+            table.Discover.onItemPointerExit += onCardChooseItemPointerExitCallback;
 
             ui.InitReplaceDialog.onItemClicked += onMulliganItemClickCallback;
             ui.InitReplaceDialog.onAccept += onMulliganAcceptCallback;
 
             ui.PilePanel.onCloseButtonClicked += onClosePilePanelClickCallback;
+            ui.PilePanel.onItemPointerEnter += onPilePanelItemPointerEnterCallback;
+            ui.PilePanel.onItemPointerExit += onPilePanelItemPointerExitCallback;
 
             loadAnim(GetType().Assembly);
         }
@@ -284,11 +316,9 @@ namespace Game.BattleTable
             if (_showCardTimer.isExpired())
             {
                 // 显示卡面
-                var hoveringCard = getHoveringCard();
-                if (hoveringCard != null)
+                if (tryGetHoveringPosition(out var targetPosition))
                 {
-                    var hoveringTrans = getHoveringTransform();
-                    Vector3 targetPosition = getTransformHoveringPosition(hoveringTrans);
+                    var hoveringCard = getHoveringCard();
                     var worldPosition = TableToWorldPosition(targetPosition);
                     showCardDisplayer(worldPosition, getCardDescriptor(hoveringCard));
                 }
@@ -304,28 +334,34 @@ namespace Game.BattleTable
             }
 
             // 查看仆从/道具/陷阱/手牌/检视选项/牌堆卡牌的衍生卡和关键词。
-            if (_isPopingUpCard || _popupCardTimer.isExpired())
+            if (!_isPopingUpCard)
             {
-                var tokenDefine = getPopupHoveringCardToken();
-                var keywords = getPopupHoveringCardKeywords();
-
-                var hoveringCard = getPopupHoveringCard();
-
-                bool shouldShow = tokenDefine != null || (keywords != null && keywords.Length > 0);
-                if (shouldShow != _isPopingUpCard)
+                if (_popupCardTimer.isExpired() && tryGetPopupHoveringPosition(out var popupPosition))
                 {
+                    _isPopingUpCard = true;
+                    var tokenDefine = getPopupHoveringCardToken();
+                    var keywords = getPopupHoveringCardKeywords();
+
+                    var hoveringCard = getPopupHoveringCard();
+
+                    bool shouldShow = tokenDefine != null || (keywords != null && keywords.Length > 0);
                     if (shouldShow)
                     {
-                        var hoveringTrans = getPopupHoveringTransform();
-                        Vector3 targetPosition = getTransformHoveringPosition(hoveringTrans);
-                        showCardPopUp(targetPosition, tokenDefine, keywords);
-                        if (_popupCardTimer.isStarted)
-                            _popupCardTimer.reset();
+                        showCardPopUp(popupPosition, tokenDefine, keywords);
                     }
-                    else
-                    {
-                        hideCardPopUp();
-                    }
+                    if (_popupCardTimer.isStarted)
+                        _popupCardTimer.reset();
+                }
+            }
+            else
+            {
+                if (tryGetPopupHoveringPosition(out var popupPosition))
+                {
+                    setCardPopUpPosition(popupPosition);
+                }
+                else
+                {
+                    hideCardPopUp();
                 }
             }
 
@@ -450,6 +486,14 @@ namespace Game.BattleTable
                 _choosingCardDefineRefs = null;
             }
         }
+        private void onCardChooseItemPointerEnterCallback(int index)
+        {
+            startHoverDiscoverItem(table.Discover.getCard(index));
+        }
+        private void onCardChooseItemPointerExitCallback(int index)
+        {
+            stopHover();
+        }
         private void onDiscoverHideButtonClick()
         {
             table.Discover.isShowing = !table.Discover.isShowing;
@@ -462,6 +506,14 @@ namespace Game.BattleTable
             ui.PilePanel.setActive(false);
             _viewingDeckName = null;
             _viewingDeckPlayer = null;
+        }
+        private void onPilePanelItemPointerEnterCallback(int index)
+        {
+            startHoverPilePanelItem(ui.PilePanel.getCard(index));
+        }
+        private void onPilePanelItemPointerExitCallback(int index)
+        {
+            stopHover();
         }
         #endregion
         void onRequestHandler(IRequest request)
@@ -597,6 +649,7 @@ namespace Game.BattleTable
                 pair.Value.destroy();
             }
             cardHandDic.Clear();
+            _cardTokenDict.Clear();
             clearDeadCardAnchors();
             clearCardBuffEffects();
             DestroyInvokeCard();
@@ -615,6 +668,8 @@ namespace Game.BattleTable
         public THHResourceManager resources => _main.getManager<THHResourceManager>();
         private ActionEventCache eventCache = new ActionEventCache();
         private List<Card> _mulliganedCards = new List<Card>();
+        private Dictionary<CardDefine, CardDefine[]> _cardTokenDict = new Dictionary<CardDefine, CardDefine[]>();
+        private Dictionary<CardDefine, string[]> _cardKeywordsDict = new Dictionary<CardDefine, string[]>();
         private MainManager _main;
         private GameObject _tipboxSource;
         /// <summary>
