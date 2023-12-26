@@ -86,6 +86,16 @@ namespace TouhouHeartstone
         /// </summary>
         public const string MISSION = "mission";
         /// <summary>
+        /// 永久禁锢
+        /// </summary>
+        public const string PERMANENT_FROZEN = "permanentFrozen";
+        /// <summary>
+        /// 可蓄力
+        /// </summary>
+        public const string CAN_BE_CHARGED = "preheat";
+
+        #region 效果关键词
+        /// <summary>
         /// 宣言
         /// </summary>
         public const string BATTLECRY = "battleCry";
@@ -94,12 +104,9 @@ namespace TouhouHeartstone
         /// </summary>
         public const string DEATHRATTLE = "deathRattle";
         /// <summary>
-        /// 永久禁锢
+        /// 陷阱
         /// </summary>
-        public const string PERMANENT_FROZEN = "permanentFrozen";
-        /// <summary>
-        /// 可蓄力
-        /// </summary>
-        public const string CAN_BE_CHARGED = "preheat";
+        public const string TRAP = "trap";
+        #endregion
     }
 }

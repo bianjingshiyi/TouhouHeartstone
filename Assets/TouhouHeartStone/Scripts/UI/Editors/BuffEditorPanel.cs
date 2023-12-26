@@ -57,11 +57,11 @@ namespace UI
             }
             );
         }
-        public void init(string[] properties, (string name, string value)[] keywords)
+        public void init(string[] properties, string[] keywordNames, string[] keywordValues)
         {
             var item = _propertyModifierItemTemplate.GetComponent<PropertyModifierListItem>();
             item.updateSelectableValues(properties);
-            item.init(keywords);
+            item.init(keywordNames, keywordValues);
         }
         #endregion
 

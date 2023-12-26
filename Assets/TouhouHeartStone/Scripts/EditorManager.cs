@@ -222,6 +222,30 @@ namespace Game
             #endregion
 
         };
+
+        public static readonly List<string> editorKeywords = new List<string>
+        {
+            KEYWORD.TAUNT,
+            KEYWORD.CHARGE,
+            KEYWORD.RUSH,
+            KEYWORD.SHIELD,
+            KEYWORD.STEALTH,
+            KEYWORD.PERMANENTSTEALTH,
+            KEYWORD.DRAIN,
+            KEYWORD.POISONOUS,
+            KEYWORD.ELUSIVE,
+            KEYWORD.FROZEN,
+            KEYWORD.UNIQUE,
+            KEYWORD.AUTOCAST,
+            KEYWORD.CANTATTACK,
+            KEYWORD.WINDFURY,
+            KEYWORD.IMMUNITY,
+            KEYWORD.MISSION,
+            KEYWORD.PERMANENT_FROZEN,
+            KEYWORD.CAN_BE_CHARGED,
+            DEFINE.SPELL_DAMAGE,
+            DEFINE.DAMAGE_REDUCE,
+        };
         #endregion
         #region 内部类
         [Serializable]

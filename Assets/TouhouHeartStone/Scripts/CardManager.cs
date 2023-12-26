@@ -217,6 +217,7 @@ namespace Game
             onAwake_Sprite();
             onAwake_CardPool();
             onAwake_Actions();
+            onAwake_Keywords();
         }
         protected void Reset()
         {

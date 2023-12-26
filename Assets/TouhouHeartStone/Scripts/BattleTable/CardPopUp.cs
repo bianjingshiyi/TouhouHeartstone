@@ -32,6 +32,7 @@ namespace Game.BattleTable.UI
 
         #region 属性字段
         public TableCard tokenCard => _tokenCard;
+        public Vector3 centerPosition => _centerTransform.position;
         [SerializeField]
         private TableCard _tokenCard;
         [SerializeField]
@@ -42,6 +43,8 @@ namespace Game.BattleTable.UI
         private RectTransform _keywordsPopUpRightRegionTrans;
         [SerializeField]
         private RectTransform _keywordsPopUpTrans;
+        [SerializeField]
+        private RectTransform _centerTransform;
         [SerializeField]
         private KeywordPopUp _keywordsPopUp;
 

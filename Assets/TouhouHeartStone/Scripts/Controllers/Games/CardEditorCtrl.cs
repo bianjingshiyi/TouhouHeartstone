@@ -1010,10 +1010,6 @@ namespace Controllers
             _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(CARD_EDITOR_TITLE)));
         }
 
-        public static (string name, string value)[] getKeywords()
-        {
-            return keywordInfos.Select(p => (p.Value.displayName, p.Key)).ToArray();
-        }
         #region 自定义属性
         /// <summary>
         /// 更新所有关键词。
@@ -1022,6 +1018,10 @@ namespace Controllers
         {
             var item = GetCardDefineKeywordItems();
             _ui.updateKeywords(item, game.card);
+
+            var keywords = EditorManager.editorKeywords;
+            var keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray();
+            _ui.initKeywords(keywordNames, keywords.ToArray());
         }
         /// <summary>
         /// 更新所有自定义属性。
@@ -1088,9 +1088,10 @@ namespace Controllers
         private PropertyItemInfo[] GetCardDefineKeywordItems()
         {
             List<PropertyItemInfo> items = new List<PropertyItemInfo>();
-            foreach (var pair in keywordInfos)
+            var keywords = EditorManager.editorKeywords;
+            foreach (var pair in keywords)
             {
-                var item = GetCardDefineKeywordItem(pair.Key);
+                var item = GetCardDefineKeywordItem(pair);
                 if (item == null)
                     continue;
                 items.Add(item);
@@ -1099,7 +1100,7 @@ namespace Controllers
         }
         private PropertyItemInfo GetCardDefineKeywordItem(string name)
         {
-            if (!keywordInfos.TryGetValue(name, out var info))
+            if (!game.card.tryGetKeywordInfo(name, out var info))
                 return null;
             var type = info.type;
             NodeValueType valueType = new NodeValueType(ActionNodeValueType.boolean);
@@ -1112,7 +1113,7 @@ namespace Controllers
                 valueAction.Item2(_cardDefine) :
                 _cardDefine.hasKeyword(name);
 
-            var item = new PropertyItemInfo(name, game.lang._(info.displayName), valueType)
+            var item = new PropertyItemInfo(name, game.card.getKeywordName(name), valueType)
             {
                 value = value
             };
@@ -1182,30 +1183,6 @@ namespace Controllers
         public const string ANIM_REF_KEY_EMPTY = "请输入特效引用名！";
 
         private CardSelectTarget _cardSelectTarget;
-
-        private static readonly Dictionary<string, (string displayName, Type type)> keywordInfos = new Dictionary<string, (string displayName, Type type)>
-        {
-            { KEYWORD.TAUNT, (StringTable.GAME_KEYWORD_TAUNT, typeof(bool)) },
-            { KEYWORD.CHARGE, (StringTable.GAME_KEYWORD_CHARGE, typeof(bool)) },
-            { KEYWORD.RUSH, (StringTable.GAME_KEYWORD_RUSH, typeof(bool)) },
-            { KEYWORD.SHIELD, (StringTable.GAME_KEYWORD_SHIELD, typeof(bool)) },
-            { KEYWORD.STEALTH, (StringTable.GAME_KEYWORD_STEALTH, typeof(bool)) },
-            { KEYWORD.PERMANENTSTEALTH, (StringTable.GAME_KEYWORD_PERMANENT_STEALTH, typeof(bool)) },
-            { KEYWORD.DRAIN, (StringTable.GAME_KEYWORD_DRAIN, typeof(bool)) },
-            { KEYWORD.POISONOUS, (StringTable.GAME_KEYWORD_POISONOUS, typeof(bool)) },
-            { KEYWORD.ELUSIVE, (StringTable.GAME_KEYWORD_ELUSIVE, typeof(bool)) },
-            { KEYWORD.FROZEN, (StringTable.GAME_KEYWORD_FREEZE, typeof(bool)) },
-            { KEYWORD.UNIQUE, (StringTable.GAME_KEYWORD_UNIQUE, typeof(bool)) },
-            { KEYWORD.AUTOCAST, (StringTable.GAME_KEYWORD_AUTOCAST, typeof(bool)) },
-            { KEYWORD.CANTATTACK, (StringTable.GAME_KEYWORD_CANTATTACK, typeof(bool)) },
-            { KEYWORD.WINDFURY, (StringTable.GAME_KEYWORD_WINDFURY, typeof(bool)) },
-            { KEYWORD.IMMUNITY, (StringTable.GAME_KEYWORD_IMMUNITY, typeof(bool)) },
-            { KEYWORD.MISSION, (StringTable.GAME_KEYWORD_MISSION, typeof(bool)) },
-            { KEYWORD.PERMANENT_FROZEN, (StringTable.GAME_KEYWORD_PERMANENT_FROZEN, typeof(bool)) },
-            { KEYWORD.CAN_BE_CHARGED, (StringTable.GAME_KEYWORD_CAN_BE_CHARGED, typeof(bool)) },
-            { DEFINE.SPELL_DAMAGE, (StringTable.GAME_CARD_PROP_NAME_SPELL_DAMAGE, typeof(int)) },
-            { DEFINE.DAMAGE_REDUCE, (StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE, typeof(int)) }
-        };
         private static readonly Dictionary<string, (Action<CardDefine, object> setter, Func<CardDefine, object> getter)> keywordActions =
             new Dictionary<string, (Action<CardDefine, object> setter, Func<CardDefine, object> getter)>()
         {

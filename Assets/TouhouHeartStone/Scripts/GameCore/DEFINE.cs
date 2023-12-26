@@ -13,6 +13,7 @@
         public const string CHARACTER_ID = "characterId";
         public const string LIFE = "life";
         public const string ISTOKEN = "isToken";
+        public const string TOKENS = "tokens";
         public const string COST = "cost";
         public const string ATTACK = "attack";
         public const string SPELL_DAMAGE = "spellDamage";

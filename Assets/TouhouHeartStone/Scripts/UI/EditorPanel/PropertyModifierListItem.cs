@@ -23,9 +23,9 @@ namespace UI
             _modifyTypeDropdown.SetValueWithoutNotify(modifyTypeIndex);
             _valueField.setValueInfo(valueInfo);
         }
-        public void init((string name, string value)[] keywords)
+        public void init(string[] names, string[] keywords)
         {
-            _valueField.initKeywords(keywords.Select(k => k.name).ToArray(), keywords.Select(k => k.value).ToArray());
+            _valueField.initKeywords(names, keywords);
         }
         public void setCustomPropertyFieldVisible(bool visible)
         {

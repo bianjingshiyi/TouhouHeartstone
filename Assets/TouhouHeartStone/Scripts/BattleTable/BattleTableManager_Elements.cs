@@ -2065,22 +2065,19 @@ namespace Game.BattleTable
             pos.x = ui.CardPopUp.transform.parent.InverseTransformPoint(worldPosition).x;
             ui.CardPopUp.transform.localPosition = pos;
 
-            await ui.CardPopUp.tokenCard.setCardDefine(tokenDefine, this);
+            if (tokenDefine != null)
+            {
+                await ui.CardPopUp.tokenCard.setCardDefine(tokenDefine, this);
+            }
             ui.CardPopUp.gameObject.SetActive(true);
-            ui.CardPopUp.setTokenCardVisible(true);
+            ui.CardPopUp.setTokenCardVisible(tokenDefine != null);
 
             Vector3 centerPosition = WorldToTablePosition(table.CenterDisplayTransform.position);
-            bool atRight = targetPosition.x - 150 < centerPosition.x;
+            Vector3 popupCenter = WorldToTablePosition(ui.CardPopUp.centerPosition);
+            bool atRight = popupCenter.x <= centerPosition.x;
             ui.CardPopUp.setKeywordPopUpPositions(atRight);
-            ui.CardPopUp.updateKeywordPopUps(new string[]
-            {
-                "宣言",
-                "遗言"
-            }, new string[]
-            {
-                "在你使用这张牌后，产生某些效果。",
-                "在仆从死亡，或者道具被摧毁后，产生某些效果。"
-            });
+            cardManager.getKeywordTexts(keywords, out var titles, out var descs);
+            ui.CardPopUp.updateKeywordPopUps(titles, descs);
 
             _isPopingUpCard = true;
         }
@@ -2143,21 +2140,23 @@ namespace Game.BattleTable
                 var defRef = _choosingCardDefineRefs.ElementAt(index);
                 cardDefine = game.getDefine(defRef);
             }
-            //return cardDefine.getTokens().FirstOrDefault();
-            return cardDefine;
+            var tokenRef = cardDefine.getTokens()?.FirstOrDefault();
+            if (tokenRef != null)
+                return game.getDefine(tokenRef);
+            return null;
         }
         private string[] getPopupHoveringCardKeywords()
         {
             Card card = getPopupHoveringCard();
             string[] keywords = null;
             if (card != null)
-                keywords = card.getKeywords(game);
+                keywords = card.getReferedKeywords(game);
             else if (_hoveredDiscoverCard != null && _cardChooseMode == CardChooseMode.CardDefine)
             {
                 var index = table.Discover.indexOf(_hoveredDiscoverCard);
                 var defRef = _choosingCardDefineRefs.ElementAt(index);
                 var cardDefine = game.getDefine(defRef);
-                keywords = cardDefine.getKeywords();
+                keywords = cardDefine.getReferedKeywords();
             }
             return keywords;
         }

@@ -87,7 +87,9 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<BuffEditorPanel>();
             }
-            _ui.init(getBuffDefinePropertyTypes(), CardEditorCtrl.getKeywords());
+            var keywords = EditorManager.editorKeywords;
+            var keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray();
+            _ui.init(getBuffDefinePropertyTypes(), keywordNames, keywords.ToArray());
             _ui.onChangeSkin += onChangeSkin;
             _ui.onChangeSkinName += onChangeSkinName;
             _ui.onClickDeleteSkinButton += onDeleteSkin;

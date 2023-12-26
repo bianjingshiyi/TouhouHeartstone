@@ -414,8 +414,8 @@ namespace Controllers
 
             _ui.initPiles(getAllPiles());
             _ui.initCardProperties(CardEditorCtrl.cardProps.ToArray());
-            var keywords = CardEditorCtrl.getKeywords();
-            _ui.initKeywords(keywords.Select(k => k.name).ToArray(), keywords.Select(k => k.value).ToArray());
+            var keywords = EditorManager.editorKeywords;
+            _ui.initKeywords(keywords.Select(k => game.card.getKeywordName(k)).ToArray(), keywords.ToArray());
             var effectTagNames = _activeEffectTagNames.Union(_passiveEffectTagNames).ToArray();
             var effectTagValues = getAllEffectTagValues();
             _ui.initEffectTags(effectTagNames, effectTagValues);
