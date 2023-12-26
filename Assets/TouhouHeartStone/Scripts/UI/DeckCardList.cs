@@ -26,6 +26,10 @@ namespace UI
             pos.y = item.position.y;
             _previewCardTransform.position = pos;
         }
+        public int indexOf(CardViewDeckCardListItem item)
+        {
+            return _cardElementList.indexOf(item);
+        }
         public void update(DeckCardViewData[] viewDatas)
         {
             _cardElementList.updateList(viewDatas.Length,
@@ -38,12 +42,18 @@ namespace UI
                 rect =>
                 {
                     var listItem = rect.GetComponent<CardViewDeckCardListItem>();
+                    listItem.onBeginDrag += onDeckItemBeginDragCallback;
+                    listItem.onDrag += onDeckItemDragCallback;
+                    listItem.onEndDrag += onDeckItemEndDragCallback;
                     listItem.onPointerEnter += onDeckItemPointerEnterCallback;
                     listItem.onPointerExit += onDeckItemPointerExitCallback;
                 },
                 rect =>
                 {
                     var listItem = rect.GetComponent<CardViewDeckCardListItem>();
+                    listItem.onBeginDrag -= onDeckItemBeginDragCallback;
+                    listItem.onDrag -= onDeckItemDragCallback;
+                    listItem.onEndDrag -= onDeckItemEndDragCallback;
                     listItem.onPointerEnter -= onDeckItemPointerEnterCallback;
                     listItem.onPointerExit -= onDeckItemPointerExitCallback;
                 });
@@ -54,6 +64,18 @@ namespace UI
         #region 私有方法
 
         #region 事件回调
+        private void onDeckItemBeginDragCallback(CardViewDeckCardListItem item, PointerEventData pointer)
+        {
+            onDeckItemBeginDrag?.Invoke(_cardElementList.indexOf(item), pointer);
+        }
+        private void onDeckItemDragCallback(CardViewDeckCardListItem item, PointerEventData pointer)
+        {
+            onDeckItemDrag?.Invoke(_cardElementList.indexOf(item), pointer);
+        }
+        private void onDeckItemEndDragCallback(CardViewDeckCardListItem item, PointerEventData pointer)
+        {
+            onDeckItemEndDrag?.Invoke(_cardElementList.indexOf(item), pointer);
+        }
         private void onDeckItemPointerEnterCallback(CardViewDeckCardListItem item, PointerEventData pointer)
         {
             onDeckItemPointerEnter?.Invoke(_cardElementList.indexOf(item), pointer);
@@ -67,6 +89,9 @@ namespace UI
         #endregion
 
         #region 事件
+        public event Action<int, PointerEventData> onDeckItemBeginDrag;
+        public event Action<int, PointerEventData> onDeckItemDrag;
+        public event Action<int, PointerEventData> onDeckItemEndDrag;
         public event Action<int, PointerEventData> onDeckItemPointerEnter;
         public event Action<int, PointerEventData> onDeckItemPointerExit;
         #endregion

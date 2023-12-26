@@ -7,7 +7,7 @@ using System;
 
 namespace UI
 {
-    partial class BuildDeckListItem : IBeginDragHandler, IDragHandler, IEndDragHandler, ISelectHandler, IDeselectHandler, IPointerClickHandler
+    partial class BuildDeckListItem : IBeginDragHandler, IDragHandler, IEndDragHandler, IDeselectHandler, IPointerClickHandler
     {
         public void update(CardDefine card, Sprite spr, string name, int count)
         {
@@ -104,15 +104,6 @@ namespace UI
                 }
                 //gameObject.SetActive(true);
                 GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
-            }
-        }
-
-        void ISelectHandler.OnSelect(BaseEventData eventData)
-        {
-            if (DraggingAble)
-            {
-                BuildCardPanel build = GetComponentInParent<BuildCardPanel>();
-                build.DeckItemSelect(this);
             }
         }
 

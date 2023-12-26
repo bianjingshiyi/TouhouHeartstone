@@ -43,7 +43,7 @@ namespace Controllers
             //UI更新
             _ui.gameObject.SetActive(true);
             _ui.showErrorTip(false);
-            _ui.setEnableDrag(false);
+            _ui.setEnableDragDeckCard(false);
             _ui.setDeckListActive(true);
             _ui.setEditDeckPanelActive(false);
             await updateDeckListUI();
@@ -72,7 +72,7 @@ namespace Controllers
             _ui.setCharacterName(masterName);
             _ui.setDeckListActive(false);
             _ui.setEditCardListActive(true);
-            _ui.setEnableDrag(true);
+            _ui.setEnableDragDeckCard(true);
             _ui.hideDragCard();
             //右侧栏
             _ui.setDeckListActive(false);
@@ -92,6 +92,8 @@ namespace Controllers
             _ui.onStartDragDeckCardListItem += onStartDragDeckCardListItem;
             _ui.onDragDeckCardListItem += onDragDeckCardListItem;
             _ui.onEndDragDeckCardListItem += onEndDragDeckCardListItem;
+            _ui.onDeckCardPointerEnter += onDeckCardPointerEnterCallback;
+            _ui.onDeckCardPointerExit += onDeckCardPointerExitCallback;
             _ui.onClickDeckListItem += onClickDeckListItem;
             _ui.onClickDeckListItemDeleteButton += onClickDeckListItemDeleteButton;
             _ui.onDeckListItemNameValueChanged += onDeckListItemNameValueChanged;
@@ -188,6 +190,26 @@ namespace Controllers
         private async void onEndDragDeckCardListItem(int index, PointerEventData eventData)
         {
             await endDragDeckItem(eventData);
+        }
+        private async void onDeckCardPointerEnterCallback(int index, PointerEventData eventData)
+        {
+            _ui.showViewDeckPreviewCard(index);
+            var deckItem = _deck.cardList[index];
+            var defRef = deckItem.cardRef;
+            if (defRef == null)
+            {
+                _ui.deckListPreviewCard.setUnknownCard(true);
+            }
+            else
+            {
+                var poolRef = game.card.getLocalCardPoolReference(defRef.cardPoolId);
+                var cardDef = game.card.getCardDefine(poolRef, defRef.defineId);
+                await _ui.deckListPreviewCard.setCardDefine(cardDef, game.card, true);
+            }
+        }
+        private void onDeckCardPointerExitCallback(int index, PointerEventData eventData)
+        {
+            _ui.hideViewDeckPreviewCard();
         }
         private void onClickDeckListItem(int index)
         {
@@ -619,28 +641,7 @@ namespace Controllers
         {
             _ui.setDeckCardCount(_deck.cardList.Sum(e => e.count), game.deck.deckValidSize);
             var cards = _deck.cardList.OrderBy(e => game.card.getLocalCardDefine(e.cardRef) is CardDefine cardDefine ? cardDefine.getCost() : 0).ToArray();
-            (string name, Sprite image, int count)[] deckCardsViewData = new (string name, Sprite image, int count)[cards.Length];
-            for (int i = 0; i < cards.Length; i++)
-            {
-                CardDefine cardDefine = game.card.getLocalCardDefine(cards[i].cardRef);
-                CardSkinData skin = cardDefine != null ? game.card.getCardSkin(cardDefine) : null;
-
-                string name;
-                Sprite image;
-                if (skin != null)
-                {
-                    name = skin.name;
-                    image = await game.card.loadCardImage(cardDefine);
-                }
-                else
-                {
-                    name = game.langManager.getString(StringTable.BUILD_UNKNOW_CARD_NAME);
-                    image = game.card.getDefaultSprite();
-                }
-                deckCardsViewData[i].name = name;
-                deckCardsViewData[i].image = image;
-                deckCardsViewData[i].count = cards[i].count;
-            }
+            DeckCardViewData[] deckCardsViewData = await DeckCardViewData.fromDeckItems(cards, game.card, game.lang);
             _ui.updateDeckCardList(deckCardsViewData);
         }
         private async Task showDragCard(bool isDeckListItem, bool force = false)
@@ -745,6 +746,7 @@ namespace Controllers
             if (_isDraggingHorizontal)
             {
                 await showDragCard(_ui.isPositionOverDeckCardList(eventData.position));
+                _ui.hideViewDeckPreviewCard();
                 _ui.moveDragCard(eventData.position);
                 eventData.Use();
                 return true;

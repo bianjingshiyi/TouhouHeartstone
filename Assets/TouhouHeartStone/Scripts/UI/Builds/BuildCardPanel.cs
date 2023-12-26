@@ -14,10 +14,6 @@ namespace UI
     partial class BuildCardPanel : CardViewPanel
     {
         #region 公有方法
-        public void setEnableDrag(bool value)
-        {
-            _enableDrag = value;
-        }
         public void setCharacterName(string name)
         {
             _characterNameText.text = name;
@@ -98,40 +94,6 @@ namespace UI
         }
         #endregion
         #region 事件回调
-        protected override void onDeckCardListItemEnable(RectTransform itemRect)
-        {
-            base.onDeckCardListItemEnable(itemRect);
-            CardViewDeckCardListItem item = itemRect.GetComponent<CardViewDeckCardListItem>();
-            item.onBeginDrag += onBeginDragDeckCardListItemCallback;
-            item.onDrag += onDragDeckCardListItemCallback;
-            item.onEndDrag += onEndDragDeckCardListItemCallback;
-        }
-        protected override void onDeckCardListItemDisable(RectTransform itemRect)
-        {
-            base.onDeckCardListItemDisable(itemRect);
-            CardViewDeckCardListItem item = itemRect.GetComponent<CardViewDeckCardListItem>();
-            item.onBeginDrag -= onBeginDragDeckCardListItemCallback;
-            item.onDrag -= onDragDeckCardListItemCallback;
-            item.onEndDrag -= onEndDragDeckCardListItemCallback;
-        }
-        private void onBeginDragDeckCardListItemCallback(CardViewDeckCardListItem item, PointerEventData eventData)
-        {
-            if (!_enableDrag)
-                return;
-            onStartDragDeckCardListItem?.Invoke(deckCardItemList.IndexOf(item.transform as RectTransform), eventData);
-        }
-        private void onDragDeckCardListItemCallback(CardViewDeckCardListItem item, PointerEventData eventData)
-        {
-            if (!_enableDrag)
-                return;
-            onDragDeckCardListItem?.Invoke(deckCardItemList.IndexOf(item.transform as RectTransform), eventData);
-        }
-        private void onEndDragDeckCardListItemCallback(CardViewDeckCardListItem item, PointerEventData eventData)
-        {
-            if (!_enableDrag)
-                return;
-            onEndDragDeckCardListItem?.Invoke(deckCardItemList.IndexOf(item.transform as RectTransform), eventData);
-        }
         private void onClickExportDeckButtonCallback()
         {
             onClickExportDeckButton?.Invoke();
@@ -155,12 +117,6 @@ namespace UI
         #endregion
         #endregion
         #region 事件
-        public event Action<int, PointerEventData> onStartDragDeckCardListItem;
-        public event Action<int, PointerEventData> onDragDeckCardListItem;
-        /// <summary>
-        /// 当拖拽卡组卡牌列表中的项目结束时调用，参数为是否位于卡组卡牌列表区域当中
-        /// </summary>
-        public event Action<int, PointerEventData> onEndDragDeckCardListItem;
         public event Action<int> onClickMasterSelectPanelItem
         {
             add { _masterSelectionDeckViewPanel.onClickDeckListItem += value; }
@@ -205,29 +161,6 @@ namespace UI
                 //onDeckCardChange();
             }
         }
-        public void onClickHandCard()
-        {
-            //if (_enableDrag)
-            //    showMessage(lang._(DRAG_INSTEAD_CLICK));
-        }
-
-        public void DeckItemSelect(BuildDeckListItem item)
-        {
-            //DragCard.display();
-            //DragCard.Card.display();
-            //DragCard.BuildDeckListItem.hide();
-
-            //DragCard.Card.setCard(item.card, ui.getManager<CardManager>().getSkin(item.card.id));
-
-            //var rt = DragCard.rectTransform;
-            //var rt2 = item.GetComponent<RectTransform>();
-
-            //Vector2 point = new Vector2(rt2.position.x - (rt2.rect.width + rt.rect.width) / 2, rt2.position.y);
-            //point.y = Math.Max(point.y, rt.rect.height / 2 + 10);
-
-            //rt.position = point;
-        }
-
         public void DeckItemDeselect(BuildDeckListItem item)
         {
             DragCard.hide();
@@ -241,11 +174,6 @@ namespace UI
         Text _characterNameText;
         [SerializeField]
         Text _deckCardCountText;
-        /// <summary>
-        /// 当前能否拖拽卡牌
-        /// </summary>
-        [SerializeField]
-        bool _enableDrag;
         [SerializeField]
         Card _dragCard;
         [SerializeField]

@@ -1135,8 +1135,8 @@ RectTransform:
   - {fileID: 3879115452046633857}
   - {fileID: 7989643840905976076}
   - {fileID: 7607861817935593894}
-  - {fileID: 3879115452516319067}
   - {fileID: 5506443023862532095}
+  - {fileID: 3879115452516319067}
   - {fileID: 3858491836441194795}
   - {fileID: 7443295466035688317}
   - {fileID: 823688101621719921}
@@ -1161,10 +1161,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a700aa174d747f54086c0327b0d36c12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _enableDragDeckCard: 0
   _returnButton: {fileID: 2598049840070068457}
-  _cardPoolCardListRoot: {fileID: 3879115453308812516}
-  _cardPoolCardListItemTemplate: {fileID: 3879115453290003199}
-  _cardPoolCardItemList: []
+  _deckCardList: {fileID: 5923547121356663433}
   _cardPoolViewPanel: {fileID: 2837237032275570948}
   _deckList: {fileID: 364963207483395320}
   _deckListRoot: {fileID: 3879115453290248445}
@@ -1207,7 +1206,6 @@ MonoBehaviour:
   _deckListViewportRect: {fileID: 3879115452320181790}
   _characterNameText: {fileID: 3879115452620824822}
   _deckCardCountText: {fileID: 3879115452059935636}
-  _enableDrag: 0
   _dragCard: {fileID: 2687843559556911165}
   _dragDeckListItem: {fileID: 1445402813763428810}
   _editCardListRightPanel: {fileID: 3879115452516319064}
@@ -3930,6 +3928,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8605357779530813616, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8786675441958387207, guid: 92b5566bce81a774fb9bb22f1b342b2e,
         type: 3}
       propertyPath: m_FontData.m_FontSize
@@ -4124,6 +4127,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3879115452516319067}
     m_Modifications:
+    - target: {fileID: 400721213861424025, guid: 55b714b65f0b90142af80804c7252981,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1047240027597817993, guid: 55b714b65f0b90142af80804c7252981,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -4324,18 +4332,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 55b714b65f0b90142af80804c7252981, type: 3}
---- !u!224 &3879115453290003199 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1047240028934338735, guid: 55b714b65f0b90142af80804c7252981,
-    type: 3}
-  m_PrefabInstance: {fileID: 4277832172643500624}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &3879115453308812516 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1047240028915531444, guid: 55b714b65f0b90142af80804c7252981,
-    type: 3}
-  m_PrefabInstance: {fileID: 4277832172643500624}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &3879115453495238182 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1047240028602276982, guid: 55b714b65f0b90142af80804c7252981,
@@ -4352,6 +4348,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5923547121356663433 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7595675960153155801, guid: 55b714b65f0b90142af80804c7252981,
+    type: 3}
+  m_PrefabInstance: {fileID: 4277832172643500624}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1989936893bad8448f84b9e8bcd6928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &4840653235151498197
@@ -4669,6 +4677,11 @@ PrefabInstance:
     - target: {fileID: 2881045213259305301, guid: e8dfcd74d2422aa49a0419c8bab639a0,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3079843171086968734, guid: e8dfcd74d2422aa49a0419c8bab639a0,
+        type: 3}
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3398069715428185364, guid: e8dfcd74d2422aa49a0419c8bab639a0,

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using BJSYGameCore.UI;
+using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
+
 namespace UI
 {
     /// <summary>
@@ -11,6 +13,10 @@ namespace UI
     class CardViewPanel : MonoBehaviour
     {
         #region 公有方法
+        public void setEnableDragDeckCard(bool value)
+        {
+            _enableDragDeckCard = value;
+        }
         public void setCardPoolOptions(string[] cardPoolNames)
         {
             _cardPoolViewPanel.setCardPoolOptions(cardPoolNames);
@@ -70,13 +76,9 @@ namespace UI
         /// <summary>
         /// 更新自定义卡池卡牌编辑栏卡牌列表
         /// </summary>
-        public void updateDeckCardList((string name, Sprite image, int count)[] viewData)
+        public void updateDeckCardList(DeckCardViewData[] viewData)
         {
-            UIHelper.updateList(_cardPoolCardListRoot, _cardPoolCardListItemTemplate, _cardPoolCardItemList, viewData.Length,
-                (i, item) =>
-                {
-                    item.GetComponent<CardViewDeckCardListItem>().updateView(viewData[i].name, viewData[i].image, viewData[i].count);
-                }, onDeckCardListItemEnable, onDeckCardListItemDisable, dontDestroy: true);
+            _deckCardList.update(viewData);
         }
         /// <summary>
         /// 设置卡牌列表数量（会引发卡牌列表刷新事件）
@@ -135,6 +137,19 @@ namespace UI
             _curCardPoolImage.sprite = image;
             _deckNameInputField.SetTextWithoutNotify(name);
         }
+        public int indexOfCardListItem(CardViewDeckCardListItem item)
+        {
+            return _deckCardList.indexOf(item);
+        }
+        public void showViewDeckPreviewCard(int cardIndex)
+        {
+            _deckCardList.setPreviewCardVisible(true);
+            _deckCardList.setPreviewCardPosition(cardIndex);
+        }
+        public void hideViewDeckPreviewCard()
+        {
+            _deckCardList.setPreviewCardVisible(false);
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -149,10 +164,6 @@ namespace UI
             _saveCardPoolButton.onClick.AddListener(onClickSaveCardPoolButtonCallback);
             _returnToCardPoolViewButton.onClick.AddListener(onClickReturnToCardPoolViewButtonCallback);
             _deleteCurCardPoolButton.onClick.AddListener(onClickDeleteCurCardPoolButtonCallback);
-            if (_cardPoolCardListItemTemplate && _cardPoolCardListItemTemplate.transform.parent == _cardPoolCardListRoot)
-            {
-                _cardPoolCardListItemTemplate.gameObject.SetActive(false);
-            }
             if (_editDeckImageButton)
                 _editDeckImageButton.onClick.AddListener(onClickEditDeckImageButtonCallback);
             _editDeckNameButton.onClick.AddListener(onClickEditDeckNameButtonCallback);
@@ -160,12 +171,26 @@ namespace UI
             _cardPoolViewPanel.onEnableCardListItem += onEnableCardListItem;
             _cardPoolViewPanel.onDisableCardListItem += onDisableCardListItem;
             //_deckList.GetComponent<DeckViewPanel>()?.showAddButton();
+
+            if (_deckCardList)
+            {
+                _deckCardList.onDeckItemBeginDrag += onBeginDragDeckCardListItemCallback;
+                _deckCardList.onDeckItemDrag += onDragDeckCardListItemCallback;
+                _deckCardList.onDeckItemEndDrag += onEndDragDeckCardListItemCallback;
+                _deckCardList.onDeckItemPointerEnter += onDeckCardPointerEnterCallback;
+                _deckCardList.onDeckItemPointerExit += onDeckCardPointerExitCallback;
+            }
         }
         #endregion
         #region 事件回调
         private void onClickReturnButtonCallback()
         {
             onClickReturnButton?.Invoke();
+        }
+        private void onClickCardListItemCallback(EditorCardListItem item)
+        {
+            int index = _cardPoolViewPanel.getCardItemIndex(item.transform as RectTransform);
+            onClickCardListItem?.Invoke(index);
         }
         protected virtual void onEnableCardListItem(int index, RectTransform itemRect)
         {
@@ -177,11 +202,6 @@ namespace UI
             EditorCardListItem editorCardListItem = itemRect.GetComponent<EditorCardListItem>();
             editorCardListItem.onClick -= onClickCardListItemCallback;
         }
-        private void onClickCardListItemCallback(EditorCardListItem item)
-        {
-            int index = _cardPoolViewPanel.getCardItemIndex(item.transform as RectTransform);
-            onClickCardListItem?.Invoke(index);
-        }
         private void onClickDeckListItemCallback(DeckListItem item)
         {
             onClickDeckListItem?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform));
@@ -190,15 +210,35 @@ namespace UI
         {
             onClickDeckListItemDeleteButton?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform));
         }
+        private void onBeginDragDeckCardListItemCallback(int index, PointerEventData eventData)
+        {
+            if (!_enableDragDeckCard)
+                return;
+            onStartDragDeckCardListItem?.Invoke(index, eventData);
+        }
+        private void onDragDeckCardListItemCallback(int index, PointerEventData eventData)
+        {
+            if (!_enableDragDeckCard)
+                return;
+            onDragDeckCardListItem?.Invoke(index, eventData);
+        }
+        private void onEndDragDeckCardListItemCallback(int index, PointerEventData eventData)
+        {
+            if (!_enableDragDeckCard)
+                return;
+            onEndDragDeckCardListItem?.Invoke(index, eventData);
+        }
+        private void onDeckCardPointerEnterCallback(int index, PointerEventData eventData)
+        {
+            onDeckCardPointerEnter?.Invoke(index, eventData);
+        }
+        private void onDeckCardPointerExitCallback(int index, PointerEventData eventData)
+        {
+            onDeckCardPointerExit?.Invoke(index, eventData);
+        }
         private void onDeckListItemNameInputFieldValueChanged(DeckListItem item, string value)
         {
             onDeckListItemNameValueChanged?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform), value);
-        }
-        protected virtual void onDeckCardListItemEnable(RectTransform itemRect)
-        {
-        }
-        protected virtual void onDeckCardListItemDisable(RectTransform itemRect)
-        {
         }
         private void onClickAddCardPoolButtonCallback()
         {
@@ -307,18 +347,30 @@ namespace UI
         /// 当点击修改卡池图片按钮。
         /// </summary>
         public event Action onClickEditCardPoolImageButton;
+
+
+        public event Action<int, PointerEventData> onStartDragDeckCardListItem;
+        public event Action<int, PointerEventData> onDragDeckCardListItem;
+        /// <summary>
+        /// 当拖拽卡组卡牌列表中的项目结束时调用，参数为是否位于卡组卡牌列表区域当中
+        /// </summary>
+        public event Action<int, PointerEventData> onEndDragDeckCardListItem;
+        public event Action<int, PointerEventData> onDeckCardPointerEnter;
+        public event Action<int, PointerEventData> onDeckCardPointerExit;
+
         #endregion
         #region 属性字段
         public CardPoolViewPanel cardPoolViewPanel => _cardPoolViewPanel;
-        public List<RectTransform> deckCardItemList => _cardPoolCardItemList;
+        public Card deckListPreviewCard => _deckCardList.previewCard;
+        /// <summary>
+        /// 当前能否拖拽卡牌
+        /// </summary>
+        [SerializeField]
+        bool _enableDragDeckCard;
         [SerializeField]
         Button _returnButton;
         [SerializeField]
-        RectTransform _cardPoolCardListRoot;
-        [SerializeField]
-        RectTransform _cardPoolCardListItemTemplate;
-        [SerializeField]
-        List<RectTransform> _cardPoolCardItemList = new List<RectTransform>();
+        DeckCardList _deckCardList;
         [SerializeField]
         CardPoolViewPanel _cardPoolViewPanel;
         [SerializeField]
