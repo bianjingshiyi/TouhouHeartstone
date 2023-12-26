@@ -28,7 +28,7 @@ namespace UI
         {
             _playerInfoPanel.update(playerName, playerSprite, desc);
         }
-        public void updatePlayerInfoPanelDeck((string name, Sprite image, int count)[] viewDatas)
+        public void updatePlayerInfoPanelDeck(DeckCardViewData[] viewDatas)
         {
             _playerInfoPanel.updateDeck(viewDatas);
         }
@@ -51,7 +51,7 @@ namespace UI
         {
             _enemyInfoPanel.update(name, sprite, desc);
         }
-        public void updateEnemyInfoPanelDeck((string name, Sprite image, int count)[] viewDatas)
+        public void updateEnemyInfoPanelDeck(DeckCardViewData[] viewDatas)
         {
             _enemyInfoPanel.updateDeck(viewDatas);
         }
@@ -72,7 +72,7 @@ namespace UI
             switchInRunPage(_cardEditorPageObj);
         }
         #endregion
-        public void updateYourDeck((string name, Sprite image, int count)[] viewDatas)
+        public void updateYourDeck(DeckCardViewData[] viewDatas)
         {
             _yourDeckView.update(viewDatas);
         }

@@ -15,7 +15,7 @@ namespace UI
             _masterImage.sprite = sprite;
             _descText.text = desc;
         }
-        public void updateDeck((string name, Sprite image, int count)[] viewDatas)
+        public void updateDeck(DeckCardViewData[] viewDatas)
         {
             _deckView.update(viewDatas);
         }

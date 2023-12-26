@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    class CardViewDeckCardListItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+    class CardViewDeckCardListItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
     {
         #region 公有方法
         public void updateView(string name, Sprite sprite)
@@ -31,12 +31,6 @@ namespace UI
         }
         #endregion
         #region 私有方法
-        #region 生命周期
-        protected void Awake()
-        {
-
-        }
-        #endregion
         #region 事件回调
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
@@ -62,12 +56,17 @@ namespace UI
                 GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
             }
         }
+        void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
+        {
+            onClick?.Invoke(this, eventData);
+        }
         #endregion
         #endregion
         #region 事件
         public event Action<CardViewDeckCardListItem, PointerEventData> onBeginDrag;
         public event Action<CardViewDeckCardListItem, PointerEventData> onDrag;
         public event Action<CardViewDeckCardListItem, PointerEventData> onEndDrag;
+        public event Action<CardViewDeckCardListItem, PointerEventData> onClick;
         #endregion
         [SerializeField]
         Text _nameText;

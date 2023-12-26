@@ -320,30 +320,11 @@ namespace Controllers
             _currentRoomData.setProp(RoomData.PROP_ROOM_NAME, name);
             game.network.roomClient.SetRoomProp(RoomData.PROP_ROOM_NAME, name);
         }
-        private async void onViewDeckClick(DefineReference[] cards)
+        private async void onViewDeckClick(Deck deck)
         {
-            var cardManager = game.card;
-            //_cardViewPanel.setItems(cardManager,cards);
-            async Task<(string name, Sprite image)> getCardData(DefineReference cardRef)
-            {
-                var cardPoolRef = cardManager.getCardPoolReferenceInSet(cardRef.cardPoolId, _currentRoomData.getCardPools());
-                await cardManager.getOrLoadCardPool(cardPoolRef, true);
-                var card = cardManager.getCardDefine(cardPoolRef, cardRef.defineId);
-                var skin = cardManager.getCardSkin(cardPoolRef, cardRef.defineId);
-                Sprite image = null;
-                if (card != null)
-                {
-                    var path = skin?.imagePath;
-                    image = await cardManager.loadCardImage(cardPoolRef, cardRef.defineId);
-                }
-                return (skin?.name, image);
-            }
-            List<(string name, Sprite image)> list = new List<(string name, Sprite image)>();
-            foreach (var cardRef in cards)
-            {
-                list.Add(await getCardData(cardRef));
-            }
-            _ui.updateViewCardPanel(list.ToArray());
+            var viewDatas = await DeckCardViewData.fromDeck(deck, game.card, game.lang);
+            _ui.setViewingCard(true);
+            _ui.updateViewingDeckCards(viewDatas);
         }
         private async void onViewCardPoolsClick()
         {

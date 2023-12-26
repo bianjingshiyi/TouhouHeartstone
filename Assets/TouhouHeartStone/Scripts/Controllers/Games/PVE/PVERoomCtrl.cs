@@ -332,7 +332,7 @@ namespace Controllers
             _ui.openInRunGamePage();
 
             var deck = _saveData.deck;
-            var yourDeckCardsViewData = await getDeckCardViewData(deck);
+            var yourDeckCardsViewData = await DeckCardViewData.fromDeck(deck, game.card, game.lang);
             _ui.updateYourDeck(yourDeckCardsViewData);
 
             if (_saveData.stageState == PVEStageState.SelectCard)
@@ -369,45 +369,10 @@ namespace Controllers
             }
             _ui.updatePlayerSelectPanel(viewData);
         }
-        private Task<(string name, Sprite image, int count)[]> getCharacterDeckCardViewData(PVECharacter character)
+        private Task<DeckCardViewData[]> getCharacterDeckCardViewData(PVECharacter character)
         {
             var deck = character?.deck;
-            return getDeckCardViewData(deck);
-        }
-        private async Task<(string name, Sprite image, int count)[]> getDeckCardViewData(Deck deck)
-        {
-            (string name, Sprite image, int count)[] deckCardsViewData;
-            if (deck != null)
-            {
-                var cards = deck.cardList.OrderBy(e => game.card.getLocalCardDefine(e.cardRef) is CardDefine cardDefine ? cardDefine.getCost() : 0).ToArray();
-                deckCardsViewData = new (string name, Sprite image, int count)[cards.Length];
-                for (int i = 0; i < cards.Length; i++)
-                {
-                    CardDefine cardDefine = game.card.getLocalCardDefine(cards[i].cardRef);
-                    CardSkinData skin = cardDefine != null ? game.card.getCardSkin(cardDefine) : null;
-
-                    string name;
-                    Sprite image;
-                    if (skin != null)
-                    {
-                        name = skin.name;
-                        image = await game.card.loadCardImage(cardDefine);
-                    }
-                    else
-                    {
-                        name = game.langManager.getString(StringTable.BUILD_UNKNOW_CARD_NAME);
-                        image = game.card.getDefaultSprite();
-                    }
-                    deckCardsViewData[i].name = name;
-                    deckCardsViewData[i].image = image;
-                    deckCardsViewData[i].count = cards[i].count;
-                }
-            }
-            else
-            {
-                deckCardsViewData = new (string name, Sprite image, int count)[0];
-            }
-            return deckCardsViewData;
+            return DeckCardViewData.fromDeck(deck, game.card, game.lang);
         }
         private async Task<(string name, Sprite image)> getCharacterViewData(PVECharacter character)
         {

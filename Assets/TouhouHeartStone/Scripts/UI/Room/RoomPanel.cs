@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    partial class RoomPanel
+    public class RoomPanel : UIObject
     {
         #region 常量
         [TranslateMsg]
@@ -41,12 +41,12 @@ namespace UI
             bool isRoomOwner = mode == RoomMode.Local || room?.ownerId == selfPlayerID;
             // 如果不修改_playerList的元素，会导致_playerList在调用updatePlayerList时包含已经被销毁的游戏对象，然后报错
             _playerList.Clear();
-            RoomPlayerList.clearItems();
+            _roomPlayerList.clearItems();
             foreach (var player in room.playerDataList)
             {
 
 
-                var item = RoomPlayerList.addItem();
+                var item = _roomPlayerList.addItem();
                 _playerList.Add(item.rectTransform);
 
                 // 设置套牌的英雄名称。
@@ -113,11 +113,11 @@ namespace UI
                 var seed = room.getRandomSeed();
                 _title.text = room.getRoomName();
                 _passwordInputField.text = string.IsNullOrEmpty(room.getRoomPassword()) ? "" : "******";
-                RandomSeedContainerGameOptionItemText.InputField.text = seed == 0 ? "" : seed.ToString();
-                ShuffleContainerGameOptionItemToggle.Toggle.isOn = room.getShuffle();
-                InitReplacementContainerGameOptionItemText.InputField.text = room.getTimeoutForInitReplace().ToString();
-                TurnTimeContainerGameOptionItemText.InputField.text = room.getTimeoutForTurn().ToString();
-                IsSortedToggleGameOptionItemToggle.Toggle.isOn = room.getSortedPlayers() != null;
+                _randomSeedInputField.text = seed == 0 ? "" : seed.ToString();
+                _shuffleToggle.isOn = room.getShuffle();
+                _initReplaceTimeInputField.text = room.getTimeoutForInitReplace().ToString();
+                _turnTimeInputField.text = room.getTimeoutForTurn().ToString();
+                _disableRandomPlayerActOrderToggle.isOn = room.getSortedPlayers() != null;
             }
             catch (Exception e)
             {
@@ -131,7 +131,7 @@ namespace UI
         /// <param name="mode"></param>
         public void SetMode(RoomMode mode)
         {
-            IPText.gameObject.SetActive(mode == RoomMode.NetworkingHost);
+            _ipText.gameObject.SetActive(mode == RoomMode.NetworkingHost);
         }
         /// <summary>
         /// 设置右上角的（IP地址）文本
@@ -139,9 +139,8 @@ namespace UI
         /// <param name="text"></param>
         public void SetIPText(string text)
         {
-            IPText.text = text;
+            _ipText.text = text;
         }
-
         public void ResetEvents()
         {
             aiPlayerData = null;
@@ -300,12 +299,6 @@ namespace UI
         {
             _cancleReadyButton.gameObject.SetActive(value);
         }
-
-        public void updateViewCardPanel((string name, Sprite image)[] viewData)
-        {
-            _cardViewPanel.update(viewData);
-            _cardPanel.SetActive(true);
-        }
         /// <summary>
         /// 查看房间卡池
         /// </summary>
@@ -336,16 +329,26 @@ namespace UI
             _confirmEditCardPoolButtonObj.SetActive(true);
             _cardPoolsPanelTitle.text = lang._(ROOM_TITLE_EDIT_CARD_POOLS);
         }
+        public void setViewingCard(bool viewingCard)
+        {
+            _rightRegionObj.SetActive(!viewingCard);
+            _cardViewRegionObj.SetActive(viewingCard);
+        }
+        public void updateViewingDeckCards(DeckCardViewData[] viewDatas)
+        {
+            _deckViewCardList.update(viewDatas);
+        }
         #endregion
         #region 私有方法
         #region 生命周期
-        partial void onAwake()
+        protected override void Awake()
         {
-            StartButtonButtonBlack.asButton.setSelectable(false);
-            DeckSelectionDeckListItem.SetMode(DeckListItem.Mode.DeckSelect);
+            base.Awake();
+            _startButton.setSelectable(false);
+            _deckSelectionItem.SetMode(DeckListItem.Mode.DeckSelect);
 
             _closeDeckPanelButton.asButton.onClick.AddListener(onClickCloseDeckPanelButtonCallback);
-            _closeCardPanelButton.asButton.onClick.AddListener(onClickCloseCardPanelButtonCallback);
+            _closeViewDeckCardsButton.onClick.AddListener(onClickCloseCardPanelButtonCallback);
             _closeCardPoolsPanelButton.onClick.AddListener(onClickCloseCardPoolsPanelButtonCallback);
 
             // 房间名编辑
@@ -353,7 +356,8 @@ namespace UI
             _confirmTitleEditButton.onClick.AddListener(onClickConfirmTitleEditButton);
 
             _deckPanel.SetActive(false);
-            _cardPanel.SetActive(false);
+            _rightRegionObj.SetActive(true);
+            _cardViewRegionObj.SetActive(false);
             _cardPoolsPanel.SetActive(false);
             if (_playerTemplate.transform.parent == _playerRoot)
             {
@@ -384,7 +388,7 @@ namespace UI
         }
         private void OnEnable()
         {
-            DeckSelectionDeckListItem.SetContent(0, lang._(Cards_Name), null);
+            _deckSelectionItem.SetContent(0, lang._(Cards_Name), null);
         }
         #endregion
         #region 事件回调
@@ -492,7 +496,7 @@ namespace UI
 
         private void onClickCloseCardPanelButtonCallback()
         {
-            _cardPanel.SetActive(false);
+            setViewingCard(false);
         }
         private void onClickCloseCardPoolsPanelButtonCallback()
         {
@@ -508,9 +512,9 @@ namespace UI
         /// 查看卡组
         /// </summary>
         /// <param name="cards"></param>
-        private void onViewDeck(DefineReference[] cards)
+        private void onViewDeck(Deck deck)
         {
-            onViewDeckClick?.Invoke(cards);
+            onViewDeckClick?.Invoke(deck);
         }
         #endregion
 
@@ -561,7 +565,7 @@ namespace UI
         public event Action<string> onTurnTimeInputFieldValueChanged;
         public event Action<bool> onDisableRandomPlayerActOrderToggleValueChanged;
         public event Action onViewCardPoolsClick;
-        public event Action<DefineReference[]> onViewDeckClick;
+        public event Action<Deck> onViewDeckClick;
         public event Action onAddCardPoolsClick;
         public event Action onConfirmAddCardPools;
         public event Action onCloseCardPoolsPanel;
@@ -576,7 +580,16 @@ namespace UI
         #endregion
         #region 属性字段
         RoomPlayerData aiPlayerData;
+        [SerializeField]
+        private GameObject _rightRegionObj;
+        [SerializeField]
+        private GameObject _cardViewRegionObj;
+        [SerializeField]
+        Text _ipText;
+        [SerializeField]
+        DeckListItem _deckSelectionItem;
 
+        [Header("玩家列表")]
         [SerializeField]
         RectTransform _playerRoot;
         [SerializeField]
@@ -586,7 +599,7 @@ namespace UI
         [SerializeField]
         Button _addAIPlayerButton;
         [SerializeField]
-        Text _ipText;
+        RoomPlayerList _roomPlayerList;
 
         [Header("房间名编辑")]
         [SerializeField]
@@ -602,24 +615,14 @@ namespace UI
         [SerializeField]
         Button _confirmTitleEditButton;
 
+        [Header("查看卡组")]
+        [SerializeField]
+        private DeckCardList _deckViewCardList;
+        [SerializeField]
+        private Button _closeViewDeckCardsButton;
 
         private RoomPlayerListItem _selfPlayerItem;
 
-        [Header("选项")]
-        [SerializeField]
-        InputField _passwordInputField;
-        [SerializeField]
-        InputField _randomSeedInputField;
-        [SerializeField]
-        Toggle _shuffleToggle;
-        [SerializeField]
-        InputField _initReplaceTimeInputField;
-        [SerializeField]
-        InputField _turnTimeInputField;
-        [SerializeField]
-        Toggle _disableRandomPlayerActOrderToggle;
-        [SerializeField]
-        Button _viewCardPoolsButton;
 
         [Header("卡组")]
         [SerializeField]
@@ -639,6 +642,22 @@ namespace UI
         [SerializeField]
         Button _quitButton;
 
+        [Header("房间设置")]
+        [SerializeField]
+        InputField _passwordInputField;
+        [SerializeField]
+        InputField _randomSeedInputField;
+        [SerializeField]
+        Toggle _shuffleToggle;
+        [SerializeField]
+        InputField _initReplaceTimeInputField;
+        [SerializeField]
+        InputField _turnTimeInputField;
+        [SerializeField]
+        Toggle _disableRandomPlayerActOrderToggle;
+        [SerializeField]
+        Button _viewCardPoolsButton;
+
 
         [Header("ViewPanels")]
         [Header("Deck Selection")]
@@ -648,14 +667,6 @@ namespace UI
         private DeckViewPanel _deckViewPanel;
         [SerializeField]
         private ButtonBlack _closeDeckPanelButton;
-
-        [Header("View Cards")]
-        [SerializeField]
-        private GameObject _cardPanel;
-        [SerializeField]
-        private DeckViewPanel _cardViewPanel;
-        [SerializeField]
-        private ButtonBlack _closeCardPanelButton;
 
         [Header("Card Pools")]
         [SerializeField]
@@ -770,9 +781,7 @@ namespace UI
             var deck = playerData.getDeck();
             if (deck != null)
             {
-                DefineReference[] idArray = playerData.getDeck().toDefRefArray(true);
-                if (idArray != null)
-                    OnPlayerViewDeck?.Invoke(idArray);
+                OnPlayerViewDeck?.Invoke(playerData.getDeck());
             }
         }
         private void onClickSetDeckButtonCallback()
@@ -799,7 +808,7 @@ namespace UI
         /// <summary>
         /// 点击查看玩家牌组后的事件
         /// </summary>
-        public event Action<DefineReference[]> OnPlayerViewDeck;
+        public event Action<Deck> OnPlayerViewDeck;
         /// <summary>
         /// 点击添加AI玩家的事件
         /// </summary>
