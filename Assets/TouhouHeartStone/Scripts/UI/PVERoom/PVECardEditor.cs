@@ -15,7 +15,7 @@ namespace UI
         #region 公有方法
         public async Task setCard(CardDefine define, CardManager cardManager)
         {
-            await _card.setLocalCardDefine(define, cardManager);
+            await _card.setCardDefine(define, cardManager);
         }
         public void updateGemInventory(CardGemViewData[] viewDatas)
         {

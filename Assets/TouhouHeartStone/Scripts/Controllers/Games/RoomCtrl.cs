@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BJSYGameCore.UI;
-using ExcelDataReader.Log;
 using Game;
 using MukioI18n;
 using TouhouCardEngine;
@@ -32,7 +30,7 @@ namespace Controllers
         public const string ROOM_CARD_POOL_WARNING_FOR_OWNER = "是否使用这些卡池？";
         [TranslateMsg("房间-玩家-尝试添加未共享的卡池警告")]
         public const string ROOM_CARD_POOL_WARNING_FOR_CUSTOMER = "是否向房主提议使用这些卡池？";
-        
+
 
         [TranslateMsg("房间-房主-收到来自玩家的上传卡池提议（{0}：玩家名；{1}：卡池名称列表）")]
         public const string ROOM_CARD_POOLS_SUGGESTED = "玩家{0}提议使用卡池：\n{1}\n是否使用？";
@@ -215,7 +213,6 @@ namespace Controllers
             _ui.onTurnTimeInputFieldValueChanged += onTurnTimeInputFieldValueChanged;
             _ui.onDisableRandomPlayerActOrderToggleValueChanged += onDisableRandomPlayerActOrderToggleValueChanged;
             _ui.OnRoomNameEdited += OnRoomNameEditedCallback;
-            _ui.onViewDeckClick += onViewDeckClick;
             _ui.onViewCardPoolsClick += onViewCardPoolsClick;
             _ui.onAddCardPoolsClick += onAddCardPoolsClick;
             _ui.onClickPlayerItemViewDeckButton += onClickPlayerListItemViewDeckButton;
@@ -227,6 +224,11 @@ namespace Controllers
             _ui.onClickDeckSelectPanelItem += onClickDeckSelectPanelItem;
             _ui.onClickCardPoolsSelectPanelItem += onClickCardPoolSelectPanelItem;
             _ui.onAddCardPoolsSelectItemToggle += onAddCardPoolSelectPanelItemToggle;
+
+            _ui.onViewDeckClick += onViewDeckClickCallback;
+            _ui.onCloseViewDeckButtonClick += onCloseViewDeckButtonClickCallback;
+            _ui.onViewDeckItemPointerEnter += onViewDeckItemPointerEnterCallback;
+            _ui.onViewDeckItemPointerExit += onViewDeckItemPointerExitCallback;
 
             _ui.onConfirmAddCardPools += onConfirmAddCardPools;
             _ui.onCloseCardPoolsPanel += onCloseCardPoolsPanel;
@@ -320,12 +322,40 @@ namespace Controllers
             _currentRoomData.setProp(RoomData.PROP_ROOM_NAME, name);
             game.network.roomClient.SetRoomProp(RoomData.PROP_ROOM_NAME, name);
         }
-        private async void onViewDeckClick(Deck deck)
+        #region 查看卡组
+        private async void onViewDeckClickCallback(Deck deck)
         {
+            _viewingDeck = deck;
             var viewDatas = await DeckCardViewData.fromDeck(deck, game.card, game.lang);
             _ui.setViewingCard(true);
             _ui.updateViewingDeckCards(viewDatas);
         }
+        private void onCloseViewDeckButtonClickCallback()
+        {
+            _viewingDeck = null;
+            _ui.setViewingCard(false);
+        }
+        private async void onViewDeckItemPointerEnterCallback(int index)
+        {
+            _ui.showViewDeckPreviewCard(index);
+            var deckItem = _viewingDeck.cardList[index];
+            var defRef = deckItem.cardRef;
+            if (defRef == null)
+            {
+                _ui.viewDeckPreviewCard.setUnknownCard(true);
+            }
+            else
+            {
+                var poolRef = getCardPoolReference(defRef.cardPoolId);
+                var cardDef = game.card.getCardDefine(poolRef, defRef.defineId);
+                await _ui.viewDeckPreviewCard.setCardDefine(cardDef, game.card, true);
+            }
+        }
+        private void onViewDeckItemPointerExitCallback(int index)
+        {
+            _ui.hideViewDeckPreviewCard();
+        }
+        #endregion
         private async void onViewCardPoolsClick()
         {
             await viewRoomCardPools();
@@ -771,7 +801,7 @@ namespace Controllers
                 if (playerId == game.network.logic.localPlayer.id)
                 {
                     setLocalPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, deck.toDefRefArray(true));
-                    var cardPoolRef = game.card.getCardPoolReferenceInSet(deck.masterCardRef.cardPoolId, _currentRoomData.getCardPools());
+                    var cardPoolRef = getCardPoolReference(deck.masterCardRef.cardPoolId);
                     _ui.updateLocalPlayerDeck(deck.name, await game.card.loadCardImage(cardPoolRef, deck.masterCardRef.defineId));
                 }
             }
@@ -877,9 +907,9 @@ namespace Controllers
             }
             return conflictPools;
         }
-        private void ShowRoomConflictDialogs(List<(CardPoolInfoPack roomPool, CardPoolInfoPack comingPool)> conflictPools, 
-            List<CardPoolInfoPack> addingPools, 
-            Action confirmAction = null, 
+        private void ShowRoomConflictDialogs(List<(CardPoolInfoPack roomPool, CardPoolInfoPack comingPool)> conflictPools,
+            List<CardPoolInfoPack> addingPools,
+            Action confirmAction = null,
             Action cancelAction = null)
         {
             if (conflictPools.Count > 0)
@@ -922,7 +952,7 @@ namespace Controllers
         private string PoolsToString(CardPoolInfoPack[] packs, bool showVersion = false, int maxCount = 10)
         {
             int count = Mathf.Min(packs.Length, maxCount);
-            string poolsString = string.Join(", ", packs.Select(p => 
+            string poolsString = string.Join(", ", packs.Select(p =>
             {
                 string str = p == null ? game.lang._(ROOM_UNKNOWN_DECK) : p.cardPoolName;
                 if (showVersion)
@@ -1110,7 +1140,7 @@ namespace Controllers
                 finalPools = finalPools.Union(addCardPools);
             CardPoolInfoPack[] dependencies = finalPools.GetDependencies(game.card);
             List<CardPoolInfoPack> missing = new List<CardPoolInfoPack>();
-            foreach (var dep in dependencies) 
+            foreach (var dep in dependencies)
             {
                 if (!finalPools.Contains(dep))
                 {
@@ -1294,7 +1324,7 @@ namespace Controllers
                 }
                 else
                 {
-                    var cardPoolRef = game.card.getCardPoolReferenceInSet(deck.masterCardRef.cardPoolId, _currentRoomData.getCardPools());
+                    var cardPoolRef = getCardPoolReference(deck.masterCardRef.cardPoolId);
                     if (game.card.tryGetCardSkin(cardPoolRef, deck.masterCardRef.defineId, out CardSkinData skin))
                     {
                         viewData[i].characterName = skin.name;
@@ -1375,6 +1405,10 @@ namespace Controllers
             var roomClient = game.network.logic.roomClient;
             roomClient.SetPlayerProp(name, value);
         }
+        private ICardPoolReference getCardPoolReference(long cardPoolId)
+        {
+            return game.card.getCardPoolReferenceInSet(cardPoolId, _currentRoomData.getCardPools());
+        }
         #endregion
         #region 事件
         /// <summary>
@@ -1396,6 +1430,7 @@ namespace Controllers
         [SerializeField]
         int _selectDeckPlayerId = 0;
 
+        private Deck _viewingDeck;
         private RoomCardPoolManager cardPoolManager;
         /// <summary>
         /// 正在查看的卡池列表。

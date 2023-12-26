@@ -8,15 +8,27 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UIHelper = BJSYGameCore.UI.UIHelper;
 
 namespace UI
 {
     public class DeckCardList : MonoBehaviour
     {
+        #region 公有方法
+
+        public void setPreviewCardVisible(bool value)
+        {
+            _previewCardTransform.gameObject.SetActive(value);
+        }
+        public void setPreviewCardPosition(int itemIndex)
+        {
+            var item = _cardElementList.getElement(itemIndex);
+            var pos = _previewCardTransform.position;
+            pos.y = item.position.y;
+            _previewCardTransform.position = pos;
+        }
         public void update(DeckCardViewData[] viewDatas)
         {
-            UIHelper.updateList(_deckCardListRoot, _deckCardItemTemplate, _deckCardList, viewDatas.Length,
+            _cardElementList.updateList(viewDatas.Length,
                 (i, item) =>
                 {
                     var listItem = item.GetComponent<CardViewDeckCardListItem>();
@@ -26,20 +38,48 @@ namespace UI
                 rect =>
                 {
                     var listItem = rect.GetComponent<CardViewDeckCardListItem>();
-                    listItem.onClick += onDeckItemClickedCallback;
+                    listItem.onPointerEnter += onDeckItemPointerEnterCallback;
+                    listItem.onPointerExit += onDeckItemPointerExitCallback;
+                },
+                rect =>
+                {
+                    var listItem = rect.GetComponent<CardViewDeckCardListItem>();
+                    listItem.onPointerEnter -= onDeckItemPointerEnterCallback;
+                    listItem.onPointerExit -= onDeckItemPointerExitCallback;
                 });
         }
-        private void onDeckItemClickedCallback(CardViewDeckCardListItem item, PointerEventData pointer)
+
+        #endregion
+
+        #region 私有方法
+
+        #region 事件回调
+        private void onDeckItemPointerEnterCallback(CardViewDeckCardListItem item, PointerEventData pointer)
         {
-            onDeckItemClicked?.Invoke(_deckCardList.IndexOf(item.transform as RectTransform), pointer);
+            onDeckItemPointerEnter?.Invoke(_cardElementList.indexOf(item), pointer);
         }
-        public event Action<int, PointerEventData> onDeckItemClicked;
+        private void onDeckItemPointerExitCallback(CardViewDeckCardListItem item, PointerEventData pointer)
+        {
+            onDeckItemPointerExit?.Invoke(_cardElementList.indexOf(item), pointer);
+        }
+        #endregion
+
+        #endregion
+
+        #region 事件
+        public event Action<int, PointerEventData> onDeckItemPointerEnter;
+        public event Action<int, PointerEventData> onDeckItemPointerExit;
+        #endregion
+
+        #region 属性字段
+        public Card previewCard => _previewCard;
         [SerializeField]
-        RectTransform _deckCardListRoot;
+        Transform _previewCardTransform;
         [SerializeField]
-        RectTransform _deckCardItemTemplate;
+        Card _previewCard;
         [SerializeField]
-        List<RectTransform> _deckCardList = new List<RectTransform>();
+        ElementList _cardElementList;
+        #endregion
     }
     public struct DeckCardViewData
     {

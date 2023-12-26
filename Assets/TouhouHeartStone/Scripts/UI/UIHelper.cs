@@ -55,7 +55,7 @@ namespace Game
             ui.setLife(card.getLife().ToString());
             ui.setTag(card.getTags().FirstOrDefault());
         }
-        public static async Task setLocalCardDefine(this UICard ui, CardDefine card, CardManager cardManager, bool isFaceUp = true)
+        public static async Task setCardDefine(this UICard ui, CardDefine card, CardManager cardManager, bool isFaceUp = true)
         {
             var skin = cardManager.getCardSkin(card);
             ui.setCardDefine(card, skin, isFaceUp);

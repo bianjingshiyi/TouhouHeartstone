@@ -8,6 +8,7 @@ using MukioI18n;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace UI
@@ -70,7 +71,7 @@ namespace UI
                 item.SetPlayerInfo(player, characterText);
 
 
-                item.OnPlayerViewDeck += onViewDeck;
+                item.OnPlayerViewDeck += onViewDeckCallback;
 
                 // 顺便获取自己的引用
                 if (player.id == selfPlayerID)
@@ -329,6 +330,8 @@ namespace UI
             _confirmEditCardPoolButtonObj.SetActive(true);
             _cardPoolsPanelTitle.text = lang._(ROOM_TITLE_EDIT_CARD_POOLS);
         }
+
+        #region 查看卡组
         public void setViewingCard(bool viewingCard)
         {
             _rightRegionObj.SetActive(!viewingCard);
@@ -338,6 +341,17 @@ namespace UI
         {
             _deckViewCardList.update(viewDatas);
         }
+        public void showViewDeckPreviewCard(int cardIndex)
+        {
+            _deckViewCardList.setPreviewCardVisible(true);
+            _deckViewCardList.setPreviewCardPosition(cardIndex);
+        }
+        public void hideViewDeckPreviewCard()
+        {
+            _deckViewCardList.setPreviewCardVisible(false);
+        }
+        #endregion
+
         #endregion
         #region 私有方法
         #region 生命周期
@@ -369,6 +383,9 @@ namespace UI
             _cardPoolsViewPanel.onClickDeckListItem += onClickCardPoolsSelectItemCallback;
             _cardPoolsViewPanel.onClickEditCardPools += onClickEditCardPoolsCallback;
             _cardPoolsViewPanel.onDeckListItemToggleValueChanged += onAddCardPoolsSelectItemToggleCallback;
+
+            _deckViewCardList.onDeckItemPointerEnter += onDeckItemPointerEnterCallback;
+            _deckViewCardList.onDeckItemPointerExit += onDeckItemPointerExitCallback;
 
             // 选项
             _passwordInputField.onEndEdit.AddListener(onPasswordInputFieldValueChangedCallback);
@@ -494,10 +511,6 @@ namespace UI
             _deckPanel.SetActive(false);
         }
 
-        private void onClickCloseCardPanelButtonCallback()
-        {
-            setViewingCard(false);
-        }
         private void onClickCloseCardPoolsPanelButtonCallback()
         {
             onCloseCardPoolsPanel?.Invoke();
@@ -507,15 +520,25 @@ namespace UI
             onConfirmAddCardPools?.Invoke();
         }
 
-
-        /// <summary>
-        /// 查看卡组
-        /// </summary>
-        /// <param name="cards"></param>
-        private void onViewDeck(Deck deck)
+        #region 查看卡组
+        private void onViewDeckCallback(Deck deck)
         {
             onViewDeckClick?.Invoke(deck);
         }
+        private void onClickCloseCardPanelButtonCallback()
+        {
+            onCloseViewDeckButtonClick?.Invoke();
+        }
+        private void onDeckItemPointerEnterCallback(int index, PointerEventData pointerData)
+        {
+            onViewDeckItemPointerEnter?.Invoke(index);
+        }
+        private void onDeckItemPointerExitCallback(int index, PointerEventData pointerData)
+        {
+            onViewDeckItemPointerExit?.Invoke(index);
+        }
+        #endregion
+
         #endregion
 
         protected override void onDisplay()
@@ -565,7 +588,12 @@ namespace UI
         public event Action<string> onTurnTimeInputFieldValueChanged;
         public event Action<bool> onDisableRandomPlayerActOrderToggleValueChanged;
         public event Action onViewCardPoolsClick;
+        #region 查看卡组
         public event Action<Deck> onViewDeckClick;
+        public event Action onCloseViewDeckButtonClick;
+        public event Action<int> onViewDeckItemPointerEnter;
+        public event Action<int> onViewDeckItemPointerExit;
+        #endregion
         public event Action onAddCardPoolsClick;
         public event Action onConfirmAddCardPools;
         public event Action onCloseCardPoolsPanel;
@@ -579,6 +607,7 @@ namespace UI
         public event Action<int> onPlayerRemove;
         #endregion
         #region 属性字段
+        public Card viewDeckPreviewCard => _deckViewCardList.previewCard;
         RoomPlayerData aiPlayerData;
         [SerializeField]
         private GameObject _rightRegionObj;

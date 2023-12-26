@@ -658,7 +658,7 @@ namespace Controllers
                     if (isDeckListItem)
                         _ui.dragDeckListItem.updateView(skin.name, image);
                     else
-                        await _ui.dragCard.setLocalCardDefine(_dragCard, game.card, true);
+                        await _ui.dragCard.setCardDefine(_dragCard, game.card, true);
                 }
                 else
                 {
