@@ -254,15 +254,15 @@ namespace Controllers
         {
             var logic = network.logic;
             var roomCtrl = scene.room;
-            roomCtrl.ResetEvents();
+            roomCtrl.resetEvents();
             setRoomDelegates();
 
             hide();
             var addresses = network.getAddresses();
             RoomData roomData = logic.CurrentRoom;
-            roomCtrl.SetMode(isServerMode ? RoomMode.NetworkingClient : RoomMode.NetworkingHost);
-            roomCtrl.SetIPText("IP：" + string.Join(", ", addresses));
-            roomCtrl.display(roomData, false);
+            var roomMode = isServerMode ? RoomMode.NetworkingClient : RoomMode.NetworkingHost;
+            var ipText = "IP：" + string.Join(", ", addresses);
+            roomCtrl.display(roomData, ipText, roomMode);
             //  加载聊天框
             scene.chatCtrl.display(roomData);
         }

@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BJSYGameCore;
 using BJSYGameCore.UI;
-using Game;
 using MukioI18n;
-using TouhouCardEngine;
-using TouhouHeartstone;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,157 +9,36 @@ namespace UI
 {
     public class RoomPanel : UIObject
     {
-        #region 常量
-        [TranslateMsg]
-        private const string Cards_Name = "选择你的卡组";
-        [TranslateMsg("在房间页面中，当玩家角色获取失败时显示的角色名称")]
-        private const string ROOM_UNKNOWN_CHARACTER_NAME = "未知角色";
-        [TranslateMsg("房间-查看卡池面板的标题")]
-        private const string ROOM_TITLE_VIEW_CARD_POOLS = "查看本房间卡池";
-        [TranslateMsg("房间-编辑可用卡池面板的标题")]
-        private const string ROOM_TITLE_EDIT_CARD_POOLS = "编辑可用卡池";
-        #endregion
         #region 公有方法
-        public void SetCardPoolLoadProgress(float progress)
+
+        #region IP地址
+        public void setIPTextVisible(bool value)
         {
-            _selfPlayerItem?.SetProgress(progress);
-        }
-        public void UpdateRoomData(RoomData room, RoomMode mode, int selfPlayerID, bool clearAIPlayerData = false)
-        {
-            if (clearAIPlayerData)
-            {
-                aiPlayerData = null;
-            }
-
-            RoomPlayerData selfPlayer = null;
-
-            bool isRoomOwner = mode == RoomMode.Local || room?.ownerId == selfPlayerID;
-            // 如果不修改_playerList的元素，会导致_playerList在调用updatePlayerList时包含已经被销毁的游戏对象，然后报错
-            _playerList.Clear();
-            _roomPlayerList.clearItems();
-            foreach (var player in room.playerDataList)
-            {
-
-
-                var item = _roomPlayerList.addItem();
-                _playerList.Add(item.rectTransform);
-
-                // 设置套牌的英雄名称。
-                string characterText = string.Empty;
-                DefineReference[] deck = player.getDeck()?.toDefRefArray(true);
-                if (deck != null)
-                {
-                    var cardManager = this.findInstance<CardManager>();
-                    DefineReference masterRef = deck[0];
-                    var cardPoolRef = cardManager.getCardPoolReferenceInSet(masterRef.cardPoolId, room.getCardPools());
-                    var skin = cardManager.getCardSkin(cardPoolRef, masterRef.defineId);
-                    if (skin != null)
-                    {
-                        characterText = skin.name;
-                    }
-                    else
-                    {
-                        characterText = ROOM_UNKNOWN_CHARACTER_NAME;
-                    }
-                }
-                item.SetPlayerInfo(player, characterText);
-
-
-                item.OnPlayerViewDeck += onViewDeckCallback;
-
-                // 顺便获取自己的引用
-                if (player.id == selfPlayerID)
-                {
-                    selfPlayer = player;
-                    _selfPlayerItem = item;
-                }
-                // 仅当自己是主机且此玩家不是自己时，设置为可以移除
-                item.SetRemoveable(isRoomOwner && selfPlayerID != player.id);
-                item.ViewButtonBlack.asButton.interactable = player.getDeck() != null;
-                item.OnPlayerRemove += (id) =>
-                {
-                    if (id == aiPlayerData?.id)
-                        aiPlayerData = null;
-                    onPlayerRemove?.Invoke(id);
-                };
-
-                if (player.type == RoomPlayerType.ai)
-                {
-                    aiPlayerData = player;
-
-                    item.SetMode(RoomPlayerListItem.PlayerListMode.AIPlayer);
-                }
-                else
-                {
-                    item.SetMode(RoomPlayerListItem.PlayerListMode.Player);
-                }
-            }
-
-
-            if (selfPlayer == null)
-            {
-                Debug.LogWarning($"SelfPlayer是空的。PlayerID：{selfPlayerID}, players: {room.playerDataList.Select(e => e.id.ToString())}");
-            }
-
-
-            //设置房间选项
-            try
-            {
-                var seed = room.getRandomSeed();
-                _title.text = room.getRoomName();
-                _passwordInputField.text = string.IsNullOrEmpty(room.getRoomPassword()) ? "" : "******";
-                _randomSeedInputField.text = seed == 0 ? "" : seed.ToString();
-                _shuffleToggle.isOn = room.getShuffle();
-                _initReplaceTimeInputField.text = room.getTimeoutForInitReplace().ToString();
-                _turnTimeInputField.text = room.getTimeoutForTurn().ToString();
-                _disableRandomPlayerActOrderToggle.isOn = room.getSortedPlayers() != null;
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
-
-        }
-        /// <summary>
-        /// 设置房间模式，是本地、客户端还是远程
-        /// </summary>
-        /// <param name="mode"></param>
-        public void SetMode(RoomMode mode)
-        {
-            _ipText.gameObject.SetActive(mode == RoomMode.NetworkingHost);
+            _ipText.gameObject.SetActive(value);
         }
         /// <summary>
         /// 设置右上角的（IP地址）文本
         /// </summary>
         /// <param name="text"></param>
-        public void SetIPText(string text)
+        public void setIPText(string text)
         {
             _ipText.text = text;
         }
-        public void ResetEvents()
-        {
-            aiPlayerData = null;
+        #endregion
 
-            onPlayerRemove = null;
-        }
-        public void updatePlayerList((string playerName, string characterName, bool canViewDeck, bool canSetDeck, bool canRemove)[] viewData)
+        #region 玩家列表
+        public void setCardPoolLoadProgress(int playerIndex, float progress)
         {
-            BJSYGameCore.UI.UIHelper.updateList(_playerRoot, _playerTemplate, _playerList, viewData.Length, (i, itemRect) =>
+            var item = _playerElementList.getElement<RoomPlayerListItem>(playerIndex);
+            item?.SetProgress(progress);
+        }
+        public void updatePlayerList(RoomPlayerItemViewData[] viewDatas)
+        {
+            _playerElementList.updateList(viewDatas.Length, (i, itemRect) =>
             {
                 RoomPlayerListItem item = itemRect.GetComponent<RoomPlayerListItem>();
-                item.NameText.text = viewData[i].playerName;
-                item.CharacterText.text = viewData[i].characterName;
-                if (viewData[i].canSetDeck)
-                {
-                    item.ViewButtonBlack.gameObject.SetActive(false);
-                    item.SetButtonBlack.gameObject.SetActive(true);
-                }
-                else if (viewData[i].canViewDeck)
-                {
-                    item.ViewButtonBlack.gameObject.SetActive(true);
-                    item.SetButtonBlack.gameObject.SetActive(false);
-                }
-                item.RemoveButtonBlack.asButton.interactable = viewData[i].canRemove;
+                var viewData = viewDatas[i];
+                item.update(viewData);
             }, itemRect =>
             {
                 RoomPlayerListItem item = itemRect.GetComponent<RoomPlayerListItem>();
@@ -184,96 +57,9 @@ namespace UI
         {
             _addAIPlayerButton.gameObject.SetActive(value);
         }
-        public void displayIPText(bool value)
-        {
-            _ipText.gameObject.SetActive(value);
-        }
+        #endregion
 
-
-        // 房间名编辑
-        public void setRoomName(string value)
-        {
-            _title.text = value;
-        }
-        public void enableRoomNameEdit(bool value)
-        {
-            _titleEditButton.interactable = value;
-            _confirmTitleEditButton.interactable = value;
-            _titleEditInputField.interactable = value;
-            if (!value)
-            {
-                _titleObj.SetActive(true);
-                _editRoomNameObj.SetActive(false);
-            }
-        }
-
-
-        public void setIPText(string text)
-        {
-            _ipText.text = text;
-        }
-
-        public void setRoomPassword(string value)
-        {
-            if (_passwordInputField.isFocused)
-                return;
-            _passwordInputField.SetTextWithoutNotify(string.IsNullOrEmpty(value) ? string.Empty : "******");
-        }
-        public void enableRoomPassword(bool value)
-        {
-            _passwordInputField.interactable = value;
-        }
-        public void setRandomSeed(int value)
-        {
-            if (_randomSeedInputField.isFocused)
-                return;
-            _randomSeedInputField.SetTextWithoutNotify(value.ToString());
-        }
-        public void enableRandomSeed(bool value)
-        {
-            _randomSeedInputField.interactable = value;
-        }
-        public void setShuffle(bool value)
-        {
-            _shuffleToggle.SetIsOnWithoutNotify(value);
-        }
-        public void enableShuffle(bool value)
-        {
-            _shuffleToggle.interactable = value;
-        }
-        public void setInitReplaceTime(float value)
-        {
-            if (_initReplaceTimeInputField.isFocused)
-                return;
-            _initReplaceTimeInputField.SetTextWithoutNotify(value.ToString());
-        }
-        public void enableInitReplaceTime(bool value)
-        {
-            _initReplaceTimeInputField.interactable = value;
-        }
-        public void setTurnTime(float value)
-        {
-            if (_turnTimeInputField.isFocused)
-                return;
-            _turnTimeInputField.SetTextWithoutNotify(value.ToString());
-        }
-        public void enableTurnTime(bool value)
-        {
-            _turnTimeInputField.interactable = value;
-        }
-        public void setDisableRandomPlayerActOrder(bool value)
-        {
-            _disableRandomPlayerActOrderToggle.SetIsOnWithoutNotify(value);
-        }
-        public void enableDisableRandomPlayerActOrder(bool value)
-        {
-            _disableRandomPlayerActOrderToggle.interactable = value;
-        }
-        public void updateLocalPlayerDeck(string deckName, Sprite deckImage)
-        {
-            _localPlayerDeckNameText.text = deckName;
-            _localPlayerDeckImage.sprite = deckImage;
-        }
+        #region 选择卡组界面
         public void displayDeckSelectPanel((string name, Sprite image, bool isWarning, bool hasPrivatePools)[] viewData)
         {
             _deckViewPanel.update(viewData);
@@ -284,6 +70,9 @@ namespace UI
         {
             _deckPanel.SetActive(false);
         }
+        #endregion
+
+        #region 底部按钮
         public void displayStartButton(bool value)
         {
             _startButton.gameObject.SetActive(value);
@@ -296,20 +85,23 @@ namespace UI
         {
             _readyButton.gameObject.SetActive(value);
         }
-        public void displayCancleReadyButton(bool value)
+        public void displayCancelReadyButton(bool value)
         {
-            _cancleReadyButton.gameObject.SetActive(value);
+            _cancelReadyButton.gameObject.SetActive(value);
         }
+        #endregion
+
+        #region 房间卡池
         /// <summary>
         /// 查看房间卡池
         /// </summary>
         /// <param name="cards"></param>
-        public void viewCardPools((string name, Sprite image)[] viewDatas, bool showEditButton)
+        public void viewCardPools((string name, Sprite image)[] viewDatas, bool showEditButton, string title)
         {
             _cardPoolsViewPanel.updateCardPools(viewDatas, showEditButton);
             _cardPoolsPanel.SetActive(true);
             _confirmEditCardPoolButtonObj.SetActive(false);
-            _cardPoolsPanelTitle.text = lang._(ROOM_TITLE_VIEW_CARD_POOLS);
+            _cardPoolsPanelTitle.text = title;
         }
         public bool isViewingCardPools()
         {
@@ -323,13 +115,14 @@ namespace UI
         /// 打开添加房间卡池界面
         /// </summary>
         /// <param name="cards"></param>
-        public void openAddCardPoolsPanel((string name, Sprite image, bool selected)[] viewDatas)
+        public void openAddCardPoolsPanel((string name, Sprite image, bool selected)[] viewDatas, string title)
         {
             _cardPoolsViewPanel.updateAddCardPools(viewDatas);
             _cardPoolsPanel.SetActive(true);
             _confirmEditCardPoolButtonObj.SetActive(true);
-            _cardPoolsPanelTitle.text = lang._(ROOM_TITLE_EDIT_CARD_POOLS);
+            _cardPoolsPanelTitle.text = title;
         }
+        #endregion
 
         #region 查看卡组
         public void setViewingCard(bool viewingCard)
@@ -343,8 +136,60 @@ namespace UI
         }
         #endregion
 
+        public void updateRoomOptions(RoomOptionsViewData viewData)
+        {
+            //设置房间选项
+            try
+            {
+                _titleEditButton.interactable = viewData.roomNameEditable;
+                _confirmTitleEditButton.interactable = viewData.roomNameEditable;
+                _titleEditInputField.interactable = viewData.roomNameEditable;
+                if (!viewData.roomNameEditable)
+                {
+                    _titleObj.SetActive(true);
+                    _editRoomNameObj.SetActive(false);
+                }
+
+                _passwordInputField.interactable = viewData.passwordEditable;
+                _randomSeedInputField.interactable = viewData.seedEditable;
+                _shuffleToggle.interactable = viewData.shuffleEditable;
+                _initReplaceTimeInputField.interactable = viewData.initReplaceTimeEditable;
+                _turnTimeInputField.interactable = viewData.turnTimeEditable;
+                _disableRandomPlayerActOrderToggle.interactable = viewData.disableRandomPlayerOrderEditable;
+
+                _title.text = viewData.roomName;
+                _passwordInputField.text = viewData.password;
+                _randomSeedInputField.text = viewData.seed;
+                _shuffleToggle.isOn = viewData.shuffle;
+                _initReplaceTimeInputField.text = viewData.initReplaceTime;
+                _turnTimeInputField.text = viewData.turnTime;
+                _disableRandomPlayerActOrderToggle.isOn = viewData.disableRandomPlayerOrder;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+        }
+        public void setEditingRoomName(bool editing)
+        {
+            _titleObj.SetActive(!editing);
+            _editRoomNameObj.SetActive(editing);
+        }
+        public void setRoomNameInputFieldText(string text)
+        {
+            _titleEditInputField.text = text;
+        }
+        public void setLocalPlayerDeck(string deckName, Sprite deckImage)
+        {
+            _localPlayerDeckNameText.text = deckName;
+            _localPlayerDeckImage.sprite = deckImage;
+        }
+
         #endregion
+
         #region 私有方法
+
         #region 生命周期
         protected override void Awake()
         {
@@ -357,17 +202,13 @@ namespace UI
             _closeCardPoolsPanelButton.onClick.AddListener(onClickCloseCardPoolsPanelButtonCallback);
 
             // 房间名编辑
-            _titleEditButton.onClick.AddListener(onClickTitleEditButton);
-            _confirmTitleEditButton.onClick.AddListener(onClickConfirmTitleEditButton);
+            _titleEditButton.onClick.AddListener(onClickTitleEditButtonCallback);
+            _confirmTitleEditButton.onClick.AddListener(onClickConfirmTitleEditButtonCallback);
 
             _deckPanel.SetActive(false);
             _rightRegionObj.SetActive(true);
             _cardViewRegionObj.SetActive(false);
             _cardPoolsPanel.SetActive(false);
-            if (_playerTemplate.transform.parent == _playerRoot)
-            {
-                _playerTemplate.gameObject.SetActive(false);
-            }
             _addAIPlayerButton.onClick.AddListener(onClickAddAIPlayerButtonCallback);
             _selectDeckButton.onClick.AddListener(onClickSelectDeckButtonCallback);
             _deckViewPanel.onClickDeckListItem += onClickDeckSelectItemCallback;
@@ -391,61 +232,21 @@ namespace UI
             // 按钮
             _startButton.onClick.AddListener(onClickStartButtonCallback);
             _readyButton.onClick.AddListener(onClickReadyButtonCallback);
-            _cancleReadyButton.onClick.AddListener(onClickCancleReadyButtonCallback);
+            _cancelReadyButton.onClick.AddListener(onClickCancelReadyButtonCallback);
             _quitButton.onClick.AddListener(onClickQuitButtonCallback);
         }
-        private void OnEnable()
-        {
-            _deckSelectionItem.SetContent(0, lang._(Cards_Name), null);
-        }
         #endregion
+
         #region 事件回调
 
-        // 房间名编辑
-        private void onClickTitleEditButton()
+        #region 房间设置
+        private void onClickTitleEditButtonCallback()
         {
-            _titleEditInputField.text = _title.text;
-            _titleObj.SetActive(false);
-            _editRoomNameObj.SetActive(true);
+            onClickTitleEditButton?.Invoke();
         }
-        private void onClickConfirmTitleEditButton()
+        private void onClickConfirmTitleEditButtonCallback()
         {
-            _titleObj.SetActive(true);
-            _editRoomNameObj.SetActive(false);
-            var value = _titleEditInputField.text;
-            OnRoomNameEdited?.Invoke(value);
-        }
-        private void onClickPlayerListItemViewDeckButtonCallback(RoomPlayerListItem item)
-        {
-            onClickPlayerItemViewDeckButton?.Invoke(_playerList.IndexOf(item.transform as RectTransform));
-        }
-        private void onClickPlayerListItemSetDeckButtonCallback(RoomPlayerListItem item)
-        {
-            onClickPlayerItemSetDeckButton?.Invoke(_playerList.IndexOf(item.transform as RectTransform));
-        }
-        private void onClickPlayerListItemRemoveButtonCallback(RoomPlayerListItem item)
-        {
-            onClickPlayerItemRemoveButton?.Invoke(_playerList.IndexOf(item.transform as RectTransform));
-        }
-        private void onClickAddAIPlayerButtonCallback()
-        {
-            onClickAddAIPlayerButton?.Invoke();
-        }
-        private void onClickSelectDeckButtonCallback()
-        {
-            onClickSelectDeckButton?.Invoke();
-        }
-        private void onClickDeckSelectItemCallback(int index)
-        {
-            onClickDeckSelectPanelItem?.Invoke(index);
-        }
-        private void onClickCardPoolsSelectItemCallback(int index)
-        {
-            onClickCardPoolsSelectPanelItem?.Invoke(index);
-        }
-        private void onAddCardPoolsSelectItemToggleCallback(int index, bool value)
-        {
-            onAddCardPoolsSelectItemToggle?.Invoke(index, value);
+            onClickTitleConfirmEditButton?.Invoke(_titleEditInputField.text);
         }
         private void onPasswordInputFieldValueChangedCallback(string value)
         {
@@ -471,6 +272,51 @@ namespace UI
         {
             onDisableRandomPlayerActOrderToggleValueChanged?.Invoke(value);
         }
+        #endregion
+
+        #region 玩家列表
+        private void onClickPlayerListItemViewDeckButtonCallback(RoomPlayerListItem item)
+        {
+            onClickPlayerItemViewDeckButton?.Invoke(_playerElementList.indexOf(item));
+        }
+        private void onClickPlayerListItemSetDeckButtonCallback(RoomPlayerListItem item)
+        {
+            onClickPlayerItemSetDeckButton?.Invoke(_playerElementList.indexOf(item));
+        }
+        private void onClickPlayerListItemRemoveButtonCallback(RoomPlayerListItem item)
+        {
+            onClickPlayerItemRemoveButton?.Invoke(_playerElementList.indexOf(item));
+        }
+        private void onClickAddAIPlayerButtonCallback()
+        {
+            onClickAddAIPlayerButton?.Invoke();
+        }
+        #endregion
+
+        #region 选择卡组
+        private void onClickSelectDeckButtonCallback()
+        {
+            onClickSelectDeckButton?.Invoke();
+        }
+        private void onClickDeckSelectItemCallback(int index)
+        {
+            onClickDeckSelectPanelItem?.Invoke(index);
+        }
+        private void onClickCloseDeckPanelButtonCallback()
+        {
+            _deckPanel.SetActive(false);
+        }
+        #endregion
+
+        #region 卡池查看
+        private void onClickCardPoolsSelectItemCallback(int index)
+        {
+            onClickCardPoolsSelectPanelItem?.Invoke(index);
+        }
+        private void onAddCardPoolsSelectItemToggleCallback(int index, bool value)
+        {
+            onAddCardPoolsSelectItemToggle?.Invoke(index, value);
+        }
         private void onViewCardPoolsClickCallback()
         {
             onViewCardPoolsClick?.Invoke();
@@ -479,29 +325,6 @@ namespace UI
         {
             onAddCardPoolsClick?.Invoke();
         }
-        private void onClickStartButtonCallback()
-        {
-            onClickStartButton?.Invoke();
-        }
-        private void onClickReadyButtonCallback()
-        {
-            onClickReadyButton?.Invoke();
-        }
-        private void onClickCancleReadyButtonCallback()
-        {
-            onClickCancleReadyButton?.Invoke();
-        }
-
-        private void onClickQuitButtonCallback()
-        {
-            onClickQuitButton?.Invoke();
-        }
-
-        private void onClickCloseDeckPanelButtonCallback()
-        {
-            _deckPanel.SetActive(false);
-        }
-
         private void onClickCloseCardPoolsPanelButtonCallback()
         {
             onCloseCardPoolsPanel?.Invoke();
@@ -510,12 +333,28 @@ namespace UI
         {
             onConfirmAddCardPools?.Invoke();
         }
+        #endregion
+
+        #region 底部按钮
+        private void onClickStartButtonCallback()
+        {
+            onClickStartButton?.Invoke();
+        }
+        private void onClickReadyButtonCallback()
+        {
+            onClickReadyButton?.Invoke();
+        }
+        private void onClickCancelReadyButtonCallback()
+        {
+            onClickCancelReadyButton?.Invoke();
+        }
+        private void onClickQuitButtonCallback()
+        {
+            onClickQuitButton?.Invoke();
+        }
+        #endregion
 
         #region 查看卡组
-        private void onViewDeckCallback(Deck deck)
-        {
-            onViewDeckClick?.Invoke(deck);
-        }
         private void onClickCloseCardPanelButtonCallback()
         {
             onCloseViewDeckButtonClick?.Invoke();
@@ -541,11 +380,10 @@ namespace UI
             _editRoomNameObj.SetActive(false);
         }
         #endregion
+
         #region 事件
-        /// <summary>
-        /// 在房间名被编辑后触发的事件。
-        /// </summary>
-        public event Action<string> OnRoomNameEdited;
+
+        #region 玩家列表
         /// <summary>
         /// 当点击玩家查看卡组按钮，参数为玩家索引
         /// </summary>
@@ -562,14 +400,24 @@ namespace UI
         /// 当点击添加AI玩家按钮
         /// </summary>
         public event Action onClickAddAIPlayerButton;
+        #endregion
+
+        #region 选择卡组
         public event Action onClickSelectDeckButton;
         public event Action<int> onClickDeckSelectPanelItem;
-        public event Action<int> onClickCardPoolsSelectPanelItem;
-        public event Action<int, bool> onAddCardPoolsSelectItemToggle;
+        #endregion
+
+        #region 房间设置
+        /// <summary>
+        /// 在房间名被编辑后触发的事件。
+        /// </summary>
+        public event Action<string> OnRoomNameEdited;
         /// <summary>
         /// 当房主更改房间的密码
         /// </summary>
         public event Action<string> onPasswordInputFieldValueChanged;
+        public event Action onClickTitleEditButton;
+        public event Action<string> onClickTitleConfirmEditButton;
         /// <summary>
         /// 当房主更改房间随机种子，参数为更改后的随机种子值
         /// </summary>
@@ -578,28 +426,35 @@ namespace UI
         public event Action<string> onInitReplaceTimeInputFieldValueChanged;
         public event Action<string> onTurnTimeInputFieldValueChanged;
         public event Action<bool> onDisableRandomPlayerActOrderToggleValueChanged;
-        public event Action onViewCardPoolsClick;
+        #endregion
+
         #region 查看卡组
-        public event Action<Deck> onViewDeckClick;
         public event Action onCloseViewDeckButtonClick;
         public event Action<int> onViewDeckItemPointerEnter;
         public event Action<int> onViewDeckItemPointerExit;
         #endregion
+
+        #region 查看/添加卡池
+        public event Action onViewCardPoolsClick;
         public event Action onAddCardPoolsClick;
         public event Action onConfirmAddCardPools;
         public event Action onCloseCardPoolsPanel;
+        public event Action<int> onClickCardPoolsSelectPanelItem;
+        public event Action<int, bool> onAddCardPoolsSelectItemToggle;
+        #endregion
+
+        #region 底部按钮
         public event Action onClickStartButton;
         public event Action onClickReadyButton;
-        public event Action onClickCancleReadyButton;
+        public event Action onClickCancelReadyButton;
         public event Action onClickQuitButton;
-        /// <summary>
-        /// 点击删除玩家按钮后触发
-        /// </summary>
-        public event Action<int> onPlayerRemove;
         #endregion
+
+        #endregion
+
         #region 属性字段
         public DeckCardList deckCardList => _deckViewCardList;
-        RoomPlayerData aiPlayerData;
+
         [SerializeField]
         private GameObject _rightRegionObj;
         [SerializeField]
@@ -611,15 +466,9 @@ namespace UI
 
         [Header("玩家列表")]
         [SerializeField]
-        RectTransform _playerRoot;
-        [SerializeField]
-        RectTransform _playerTemplate;
-        [SerializeField]
-        List<RectTransform> _playerList = new List<RectTransform>();
+        ElementList _playerElementList;
         [SerializeField]
         Button _addAIPlayerButton;
-        [SerializeField]
-        RoomPlayerList _roomPlayerList;
 
         [Header("房间名编辑")]
         [SerializeField]
@@ -641,8 +490,6 @@ namespace UI
         [SerializeField]
         private Button _closeViewDeckCardsButton;
 
-        private RoomPlayerListItem _selfPlayerItem;
-
 
         [Header("卡组")]
         [SerializeField]
@@ -658,7 +505,7 @@ namespace UI
         [SerializeField]
         Button _readyButton;
         [SerializeField]
-        Button _cancleReadyButton;
+        Button _cancelReadyButton;
         [SerializeField]
         Button _quitButton;
 
@@ -701,156 +548,8 @@ namespace UI
         private GameObject _confirmEditCardPoolButtonObj;
         [SerializeField]
         private Button _confirmEditCardPoolsPanelButton;
-
-        DeckManager deckManager => this.findInstance<DeckManager>();
-        CardManager cardManager => this.findInstance<CardManager>();
-
-        LangManager lang => this.findInstance<LangManager>();
         #endregion
     }
-    partial class RoomPlayerListItem
-    {
-        partial void onAwake()
-        {
-            asButton.onClick.AddListener(() =>
-            {
-                if (currentMode == PlayerListMode.AddAI)
-                    OnAddAIPlayer?.Invoke();
-            });
-            ViewButtonBlack.asButton.onClick.AddListener(onClickViewDeckButtonCallback);
-            SetButtonBlack.asButton.onClick.AddListener(onClickSetDeckButtonCallback);
-            RemoveButtonBlack.asButton.onClick.AddListener(onClickRemoveButtonCallback);
-        }
-
-        RoomPlayerData playerData;
-        /// <summary>
-        /// 设置当前的玩家信息
-        /// </summary>
-        /// <param name="data"></param>
-        public void SetPlayerInfo(RoomPlayerData data, string characterText)
-        {
-            playerData = data;
-            NameText.text = data.name;
-
-
-            _uploadIconImage.gameObject.SetActive(false);
-            _downloadIconImage.gameObject.SetActive(false);
-            _readyIconImage.gameObject.SetActive(false);
-            _checkingIconImage.gameObject.SetActive(false);
-            PlayerLoadState loadState = data.getLoadState();
-            switch (loadState)
-            {
-                case PlayerLoadState.Upload:
-                    _uploadIconImage.gameObject.SetActive(true);
-                    break;
-                case PlayerLoadState.Download:
-                    _downloadIconImage.gameObject.SetActive(true);
-                    break;
-                case PlayerLoadState.Checking:
-                    _checkingIconImage.gameObject.SetActive(true);
-                    break;
-                default:
-                    _readyIconImage.gameObject.SetActive(data.getReady());
-                    break;
-            }
-            _progressBar.gameObject.SetActive(loadState != PlayerLoadState.None);
-            CharacterText.text = characterText;
-        }
-
-        /// <summary>
-        /// 设置此玩家是否可以移除
-        /// </summary>
-        /// <param name="val"></param>
-        public void SetRemoveable(bool val)
-        {
-            RemoveButtonBlack.asButton.interactable = val;
-        }
-
-        public enum PlayerListMode
-        {
-            Player,
-            AIPlayer,
-            AddAI
-        }
-        PlayerListMode currentMode;
-
-        /// <summary>
-        /// 设置显示模式
-        /// </summary>
-        /// <param name="mode"></param>
-        public void SetMode(PlayerListMode mode)
-        {
-            currentMode = mode;
-
-            PlayerImage.gameObject.SetActive(mode != PlayerListMode.AddAI);
-            ViewButtonBlack.gameObject.SetActive(mode == PlayerListMode.Player);
-            SetButtonBlack.gameObject.SetActive(mode == PlayerListMode.AIPlayer);
-            AddImage.gameObject.SetActive(mode == PlayerListMode.AddAI);
-        }
-        public void SetProgress(float progress)
-        {
-            _progressBar.transform.localScale = new Vector3(Mathf.Clamp01(progress), 1, 1);
-        }
-        #region 私有方法
-        #region 事件回调
-        private void onClickViewDeckButtonCallback()
-        {
-            onClickViewDeckButton?.Invoke(this);
-            if (playerData == null)
-                return;
-            var deck = playerData.getDeck();
-            if (deck != null)
-            {
-                OnPlayerViewDeck?.Invoke(playerData.getDeck());
-            }
-        }
-        private void onClickSetDeckButtonCallback()
-        {
-            OnSetAIDeck?.Invoke();
-            onClickSetDeckButton?.Invoke(this);
-        }
-        private void onClickRemoveButtonCallback()
-        {
-            OnPlayerRemove?.Invoke(playerData.id);
-            onClickRemoveButton?.Invoke(this);
-        }
-        #endregion
-        #endregion
-        #region 事件
-        /// <summary>
-        /// 点击移除玩家后的事件
-        /// </summary>
-        public event Action<int> OnPlayerRemove;
-        /// <summary>
-        /// 点击设置AI牌组后的事件
-        /// </summary>
-        public event Action OnSetAIDeck;
-        /// <summary>
-        /// 点击查看玩家牌组后的事件
-        /// </summary>
-        public event Action<Deck> OnPlayerViewDeck;
-        /// <summary>
-        /// 点击添加AI玩家的事件
-        /// </summary>
-        public event Action OnAddAIPlayer;
-        public event Action<RoomPlayerListItem> onClickViewDeckButton;
-        public event Action<RoomPlayerListItem> onClickSetDeckButton;
-        public event Action<RoomPlayerListItem> onClickRemoveButton;
-        #endregion
-        #region 属性字段
-        [SerializeField]
-        private Image _readyIconImage;
-        [SerializeField]
-        private Image _uploadIconImage;
-        [SerializeField]
-        private Image _downloadIconImage;
-        [SerializeField]
-        private Image _checkingIconImage;
-        [SerializeField]
-        private Image _progressBar;
-        #endregion
-    }
-
     public enum RoomMode
     {
         /// <summary>
@@ -865,5 +564,23 @@ namespace UI
         /// 局域网客户端或大厅客户端
         /// </summary>
         NetworkingClient
+    }
+    public struct RoomOptionsViewData
+    {
+        public string roomName;
+        public string password;
+        public string seed;
+        public bool shuffle;
+        public string initReplaceTime;
+        public string turnTime;
+        public bool disableRandomPlayerOrder;
+
+        public bool roomNameEditable;
+        public bool passwordEditable;
+        public bool seedEditable;
+        public bool shuffleEditable;
+        public bool initReplaceTimeEditable;
+        public bool turnTimeEditable;
+        public bool disableRandomPlayerOrderEditable;
     }
 }

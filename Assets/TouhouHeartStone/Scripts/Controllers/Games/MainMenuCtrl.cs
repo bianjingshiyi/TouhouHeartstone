@@ -89,7 +89,7 @@ namespace Controllers
             currentRoomData.setOption(option);
 
             hide();
-            await scene.room.display(currentRoomData, true);
+            await scene.room.display(currentRoomData, string.Empty, RoomMode.Local);
         }
         private void onBuildButtonClick()
         {
