@@ -319,8 +319,11 @@ namespace Game.BattleTable
                 if (tryGetHoveringPosition(out var targetPosition))
                 {
                     var hoveringCard = getHoveringCard();
-                    var worldPosition = TableToWorldPosition(targetPosition);
-                    showCardDisplayer(worldPosition, getCardDescriptor(hoveringCard));
+                    if (hoveringCard != null)
+                    {
+                        var worldPosition = TableToWorldPosition(targetPosition);
+                        showCardDisplayer(worldPosition, getCardDescriptor(hoveringCard));
+                    }
                 }
                 _showCardTimer.reset();
             }
@@ -341,9 +344,6 @@ namespace Game.BattleTable
                     _isPopingUpCard = true;
                     var tokenDefine = getPopupHoveringCardToken();
                     var keywords = getPopupHoveringCardKeywords();
-
-                    var hoveringCard = getPopupHoveringCard();
-
                     bool shouldShow = tokenDefine != null || (keywords != null && keywords.Length > 0);
                     if (shouldShow)
                     {

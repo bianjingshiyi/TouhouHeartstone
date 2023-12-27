@@ -76,7 +76,7 @@ namespace Game
             foreach (var keyword in keywordInfos.Keys)
             {
                 var name = getKeywordName(keyword);
-                var pattern = $"<b>.*{name}.*</b>";
+                var pattern = game.lang._(KEYWORD_MATCH_PATTERN, name);
                 if (Regex.IsMatch(desc, pattern))
                 {
                     keywords.Add(keyword);
@@ -134,6 +134,10 @@ namespace Game
         #region 属性字段
 
         #region 关键词描述
+
+        [TranslateMsg("用于捕获描述内关键字的正则表达式，{0}为关键词名称。")]
+        public const string KEYWORD_MATCH_PATTERN = @"<b>{0}((：.*)?|（.*）?|\+[0-9]+)<\/b>";
+
         [TranslateMsg("关键词名称-未知")]
         public const string KEYWORD_NAME_UNKNOWN = "未知关键词";
         [TranslateMsg("关键词描述-未知")]
