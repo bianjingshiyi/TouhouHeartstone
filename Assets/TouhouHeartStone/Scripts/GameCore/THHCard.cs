@@ -1383,7 +1383,7 @@ namespace TouhouHeartstone
                     continue;
                 foreach (var player in invisiblePlayers)
                 {
-                    clone.setPropInvisibleTo(invisiblePropName, player, true);
+                    clone.setPropInvisibleTo(game, invisiblePropName, player, true);
                 }
             }
 

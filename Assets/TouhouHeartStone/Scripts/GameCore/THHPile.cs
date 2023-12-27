@@ -50,11 +50,18 @@ namespace TouhouHeartstone
         {
             return MassMoveCardEventDefine.doEvent(game, cards.Reverse().ToArray(), pile, targetPile, position);
         }
-        public static Task<EventArg> moveTo(CardEngine game, Card card, Pile from, Pile to, int position)
+        public static async Task<EventArg> moveTo(CardEngine game, Card card, Pile from, Pile to, int position)
         {
             if (!Pile.canMove(card, from, to))
-                return Task.FromResult<EventArg>(null);
-            return MoveCardEventDefine.doEvent(game, from, to, card, position, true);
+                return null;
+            if (from != to && !(card.isTrap(game) && (to?.name == PILE.WARP || to?.name == PILE.HEAD)))
+            {
+                foreach (var player in game.players)
+                {
+                    await card.setCardVisibleTo(game, player, to.isVisiblePileTo(player));
+                }
+            }
+            return await MoveCardEventDefine.doEvent(game, from, to, card, position, true);
         }
         public static async Task replace(this Pile pile, CardEngine game, Card origin, Card target)
         {
@@ -165,6 +172,25 @@ namespace TouhouHeartstone
             }
         }
         #endregion
+
+        /// <summary>
+        /// 牌堆内的卡牌是否应当对某玩家可见。
+        /// </summary>
+        /// <param name="pile"></param>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        public static bool isVisiblePileTo(this Pile pile, Player player)
+        {
+            if (pile.isGeneralizedBattlefield() || pile?.name == PILE.GRAVE || pile?.name == PILE.WARP)
+            {
+                return true;
+            }
+            else if (pile?.name == PILE.HAND || pile?.name == PILE.INIT)
+            {
+                return player == pile.owner;
+            }
+            return false;
+        }
 
         #endregion
 

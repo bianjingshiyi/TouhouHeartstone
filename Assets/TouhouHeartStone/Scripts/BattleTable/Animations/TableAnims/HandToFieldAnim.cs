@@ -6,10 +6,10 @@ namespace Game.BattleTable
 {
     class HandToFieldAnim : TableAnimation
     {
-        public HandToFieldAnim(CardDescriptor servantDesc, Vector3 startPosition, Pile fromPile, Pile toPile, int index)
+        public HandToFieldAnim(CardDescriptor servantDesc, Vector3 startPosition, Pile fromPile, Pile toPile, int index, bool startVisible)
         {
             _cardDesc = servantDesc;
-            _anim = new MoveToFieldAnim(servantDesc, startPosition, fromPile, toPile, index, -1);
+            _anim = new MoveToFieldAnim(servantDesc, startPosition, fromPile, toPile, index, -1, startVisible);
         }
         public override IEnumerator update(BattleTableManager table)
         {

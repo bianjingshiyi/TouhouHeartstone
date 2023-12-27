@@ -126,7 +126,7 @@ namespace Game.BattleTable
     {
         public static bool isInstantAnimation(this TableAnimation anim)
         {
-            return anim is PropChangeAnim || anim is AddBuffAnim || anim is RemoveBuffAnim;
+            return anim is PropChangeAnim || anim is AddBuffAnim || anim is RemoveBuffAnim || anim is ChangeCardVisibilityAnim;
         }
     }
     public enum EventAnimState

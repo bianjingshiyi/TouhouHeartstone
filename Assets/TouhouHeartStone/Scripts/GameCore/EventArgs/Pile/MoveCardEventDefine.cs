@@ -6,7 +6,7 @@ using TouhouCardEngine.Interfaces;
 namespace TouhouHeartstone
 {
 
-    [EventChildren(typeof(SetCardPropEventDefine))]
+    [EventChildren(typeof(SetCardPropEventDefine), typeof(ChangeCardVisibilityEventDefine))]
     public class MoveCardEventDefine : EventDefine, ICardEventDefine
     {
         public MoveCardEventDefine()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
@@ -21,6 +22,7 @@ namespace Game
         private int armor;
         private string[] tags;
         private Buff[] buffs;
+        private Player[] visiblePlayers;
         public bool isFrozen { get; private set; }
         public bool isTaunt { get; private set; }
         public bool isSilenced { get; private set; }
@@ -49,6 +51,7 @@ namespace Game
             armor = card.getArmor(game);
             tags = card.getTags(game);
             buffs = card.getBuffs();
+            visiblePlayers = card.getCardVisiblePlayers();
 
             isFrozen = card.isFreeze(game);
             isTaunt = card.isTaunt(game);
@@ -73,5 +76,6 @@ namespace Game
         public string[] getTags() => tags ?? Array.Empty<string>();
         public Buff[] getBuffs() => buffs ?? Array.Empty<Buff>();
         public int getArmor() => Math.Max(0, armor);
+        public bool isVisibleTo(Player player) => visiblePlayers.Contains(player);
     }
 }

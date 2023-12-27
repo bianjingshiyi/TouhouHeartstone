@@ -6,7 +6,7 @@ namespace Game.BattleTable
 {
     class MoveToItemAnim : CardMoveAnim
     {
-        public MoveToItemAnim(CardDescriptor cardDesc, Vector3 startTablePos, Pile fromPile, Pile toPile) : base(cardDesc, startTablePos, fromPile, toPile)
+        public MoveToItemAnim(CardDescriptor cardDesc, Vector3 startTablePos, Pile fromPile, Pile toPile, bool startVisible) : base(cardDesc, startTablePos, fromPile, toPile, startVisible)
         {
         }
         public override IEnumerator startUpdate(BattleTableManager table, float deltaTime)

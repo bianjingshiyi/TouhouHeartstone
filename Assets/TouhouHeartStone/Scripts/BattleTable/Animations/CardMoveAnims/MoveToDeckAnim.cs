@@ -6,7 +6,7 @@ namespace Game.BattleTable
 {
     class MoveToDeckAnim : CardMoveAnim
     {
-        public MoveToDeckAnim(CardDescriptor cardDesc, Vector3 startPos, Pile fromPile, Pile toPile, float cardHeight) : base(cardDesc, startPos, fromPile, toPile)
+        public MoveToDeckAnim(CardDescriptor cardDesc, Vector3 startPos, Pile fromPile, Pile toPile, float cardHeight, bool startVisible) : base(cardDesc, startPos, fromPile, toPile, startVisible)
         {
             _cardHeight = cardHeight;
         }

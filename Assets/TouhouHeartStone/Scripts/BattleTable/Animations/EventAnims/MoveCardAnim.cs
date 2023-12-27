@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
-using TouhouCardEngine.Histories;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UnityEngine;
@@ -27,9 +26,11 @@ namespace Game.BattleTable
             var to = startData.getVar<Pile>(Arg.VAR_TO_PILE);
             var position = startData.getVar<int>(Arg.VAR_POSITION);
 
+            var startVisible = table.canSeeCard(cardSnapshot.id);
             var cardDesc = table.updateCardDescriptor(cardSnapshot);
             EventData data = new EventData
             {
+                startVisible = startVisible,
                 card = cardDesc,
                 from = from,
                 to = to,
@@ -48,9 +49,13 @@ namespace Game.BattleTable
             var from = eventArg.getVar<Pile>(Arg.VAR_FROM_PILE);
             var to = eventArg.getVar<Pile>(Arg.VAR_TO_PILE);
             var position = eventArg.getVar<int>(Arg.VAR_POSITION);
+
+            var startVisible = table.canSeeCard(card.id);
+            var cardDesc = table.updateCardDescriptor(card);
             EventData data = new EventData
             {
-                card = table.updateCardDescriptor(card),
+                startVisible = startVisible,
+                card = cardDesc,
                 from = from,
                 to = to,
                 position = position
@@ -73,9 +78,12 @@ namespace Game.BattleTable
                 yield break;
             var from = eventArg.getVar<Pile>(Arg.VAR_FROM_PILE);
             var to = eventArg.getVar<Pile>(Arg.VAR_TO_PILE);
+            var startVisible = table.canSeeCard(card);
+            var cardDesc = table.updateCardDescriptor(card);
             EventData data = new EventData
             {
-                card = table.updateCardDescriptor(card),
+                startVisible = startVisible,
+                card = cardDesc,
                 from = to, // 反过来
                 to = from,
                 position = card.position
@@ -104,6 +112,7 @@ namespace Game.BattleTable
             var card = data.card;
             var from = data.from;
             var to = data.to;
+            var startVisible = data.startVisible;
             string toName = to?.name;
 
             // 不应该播放移动动画。
@@ -121,22 +130,22 @@ namespace Game.BattleTable
             {
                 case PILE.DECK: // 任意牌堆-->牌库
                 case PILE.GRAVE: // 任意牌堆-->墓地
-                    anim = new MoveToDeckAnim(card, startPos, from, to, info.cardHeight);
+                    anim = new MoveToDeckAnim(card, startPos, from, to, info.cardHeight, startVisible);
                     break;
                 case PILE.HAND: // 任意牌堆-->手牌
-                    anim = new MoveToHandAnim(card, startPos, from, to, data.position);
+                    anim = new MoveToHandAnim(card, startPos, from, to, data.position, startVisible);
                     break;
                 case PILE.FIELD: // 任意牌堆-->战场
-                    anim = new MoveToFieldAnim(card, startPos, from, to, data.position, info.cardHeight);
+                    anim = new MoveToFieldAnim(card, startPos, from, to, data.position, info.cardHeight, startVisible);
                     break;
                 case PILE.HEAD: // 任意牌堆-->延迟
-                    anim = new MoveToHeadAnim(card, startPos, from, to, data.position);
+                    anim = new MoveToHeadAnim(card, startPos, from, to, data.position, startVisible);
                     break;
                 case PILE.ITEM: // 任意牌堆-->道具
-                    anim = new MoveToItemAnim(card, startPos, from, to);
+                    anim = new MoveToItemAnim(card, startPos, from, to, startVisible);
                     break;
                 default: // 任意牌堆-->无牌堆
-                    anim = new MoveToNullAnim(card, startPos, from, to);
+                    anim = new MoveToNullAnim(card, startPos, from, to, startVisible);
                     break;
             }
             if (anim != null)
@@ -150,6 +159,7 @@ namespace Game.BattleTable
             var card = data.card;
             var from = data.from;
             var to = data.to;
+            var startVisible = data.startVisible;
             string toName = to?.name;
 
             Vector3 startPos = info.startPos;
@@ -169,37 +179,37 @@ namespace Game.BattleTable
                 case PILE.GRAVE: // 任意牌堆-->墓地
                     if (_moveAnim is not MoveToDeckAnim)
                     {
-                        anim = new MoveToDeckAnim(card, startPos, from, to, info.cardHeight);
+                        anim = new MoveToDeckAnim(card, startPos, from, to, info.cardHeight, startVisible);
                     }
                     break;
                 case PILE.HAND: // 任意牌堆-->手牌
                     if (_moveAnim is not MoveToHandAnim)
                     {
-                        anim = new MoveToHandAnim(card, startPos, from, to, data.position);
+                        anim = new MoveToHandAnim(card, startPos, from, to, data.position, startVisible);
                     }
                     break;
                 case PILE.FIELD: // 任意牌堆-->战场
                     if (_moveAnim is not MoveToFieldAnim)
                     {
-                        anim = new MoveToFieldAnim(card, startPos, from, to, data.position, info.cardHeight);
+                        anim = new MoveToFieldAnim(card, startPos, from, to, data.position, info.cardHeight, startVisible);
                     }
                     break;
                 case PILE.HEAD: // 任意牌堆-->延迟
                     if (_moveAnim is not MoveToHeadAnim)
                     {
-                        anim = new MoveToHeadAnim(card, startPos, from, to, data.position);
+                        anim = new MoveToHeadAnim(card, startPos, from, to, data.position, startVisible);
                     }
                     break;
                 case PILE.ITEM: // 任意牌堆-->道具
                     if (_moveAnim is not MoveToItemAnim)
                     {
-                        anim = new MoveToItemAnim(card, startPos, from, to);
+                        anim = new MoveToItemAnim(card, startPos, from, to, startVisible);
                     }
                     break;
                 default: // 任意牌堆-->无牌堆
                     if (_moveAnim is not MoveToNullAnim)
                     {
-                        anim = new MoveToNullAnim(card, startPos, from, to);
+                        anim = new MoveToNullAnim(card, startPos, from, to, startVisible);
                     }
                     break;
             }
@@ -217,6 +227,7 @@ namespace Game.BattleTable
             var card = data.card;
             var from = data.from;
             var to = data.to;
+            var startVisible = data.startVisible;
             string toName = to?.name;
 
             // 不应该播放移动动画。
@@ -234,22 +245,22 @@ namespace Game.BattleTable
             {
                 case PILE.DECK: // 牌库-->任意牌堆
                 case PILE.GRAVE: // 墓地-->任意牌堆
-                    anim = new MoveToDeckAnim(card, startPos, from, to, info.cardHeight);
+                    anim = new MoveToDeckAnim(card, startPos, from, to, info.cardHeight, startVisible);
                     break;
                 case PILE.HAND: // 手牌-->任意牌堆
-                    anim = new MoveToHandAnim(card, startPos, from, to, data.position);
+                    anim = new MoveToHandAnim(card, startPos, from, to, data.position, startVisible);
                     break;
                 case PILE.FIELD: // 战场-->任意牌堆
-                    anim = new MoveToFieldAnim(card, startPos, from, to, data.position, info.cardHeight);
+                    anim = new MoveToFieldAnim(card, startPos, from, to, data.position, info.cardHeight, startVisible);
                     break;
                 case PILE.HEAD: // 延迟-->任意牌堆
-                    anim = new MoveToHeadAnim(card, startPos, from, to, data.position);
+                    anim = new MoveToHeadAnim(card, startPos, from, to, data.position, startVisible);
                     break;
                 case PILE.ITEM: // 道具-->任意牌堆
-                    anim = new MoveToItemAnim(card, startPos, from, to);
+                    anim = new MoveToItemAnim(card, startPos, from, to, startVisible);
                     break;
                 default: // 无牌堆-->任意牌堆
-                    anim = new MoveToNullAnim(card, startPos, from, to);
+                    anim = new MoveToNullAnim(card, startPos, from, to, startVisible);
                     break;
             }
             if (anim != null)
@@ -408,6 +419,7 @@ namespace Game.BattleTable
         #region 内嵌类
         private struct EventData
         {
+            public bool startVisible;
             public CardDescriptor card;
             public Pile from;
             public Pile to;

@@ -33,7 +33,7 @@ namespace Game.BattleTable
                 var fromField = table.getFieldOfServant(servant);
                 var fromPile = table.getFieldPile(fromField);
                 var startPos = table.WorldToTablePosition(servant.transform.position);
-                var moveAnim = new MoveToHandAnim(desc, startPos, fromPile, startCardSnapshot.pile, startCardSnapshot.position);
+                var moveAnim = new MoveToHandAnim(desc, startPos, fromPile, startCardSnapshot.pile, startCardSnapshot.position, table.canSeeCard(cardId));
                 while (!moveAnim.update(table, _deltaTime))
                     yield return null;
             }

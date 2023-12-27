@@ -8,8 +8,9 @@ namespace Game.BattleTable
 {
     class MoveToHeadAnim : CardMoveAnim
     {
-        public MoveToHeadAnim(CardDescriptor cardDesc, Vector3 startTablePos, Pile fromPile, Pile toPile, int position) : base(cardDesc, startTablePos, fromPile, toPile)
+        public MoveToHeadAnim(CardDescriptor cardDesc, Vector3 startTablePos, Pile fromPile, Pile toPile, int position, bool startVisible) : base(cardDesc, startTablePos, fromPile, toPile, startVisible)
         {
+            _position = position;
         }
         public override IEnumerator startUpdate(BattleTableManager table, float deltaTime)
         {

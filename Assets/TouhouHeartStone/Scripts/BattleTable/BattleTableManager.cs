@@ -64,6 +64,10 @@ namespace Game.BattleTable
         {
             ui.TurnTipImage.setActive(false);
         }
+        public bool isTurnTipImageActive()
+        {
+            return ui.TurnTipImage.gameObject.activeSelf;
+        }
         public void showTipBox(string tip, GameObject source)
         {
             ui.TipBox.display(tip);
@@ -94,9 +98,24 @@ namespace Game.BattleTable
         {
             canControl = value;
         }
-        public bool canSeeCardOfOwner(Player owner)
+        public bool canSeeCard(ICardData cardData)
         {
-            return owner == player || canSeeAllCards;
+            if (cardData == null)
+                return false;
+            return canSeeCard(cardData.id);
+        }
+        public bool canSeeCard(int cardId)
+        {
+            var cardDesc = getCardDescriptor(cardId);
+            return canSeeCard(cardDesc);
+        }
+        public bool canSeeCard(CardDescriptor cardDesc)
+        {
+            if (cardDesc == null)
+                return false;
+            if (canSeeAllCards)
+                return true;
+            return cardDesc.isVisibleTo(player);
         }
         #region 坐标转换
         // 为了防止Table的Transform被随便旋转缩放后造成的坐标错乱问题，现分为世界坐标和桌面坐标两个坐标系。

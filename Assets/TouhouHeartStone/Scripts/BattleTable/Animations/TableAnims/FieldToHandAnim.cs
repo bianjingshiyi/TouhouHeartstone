@@ -29,7 +29,7 @@ namespace Game.BattleTable
                 sourcePosition = table.WorldToTablePosition(servant.transform.position);
                 table.removeServant(_cardId);
             }
-            var anim = new MoveToHandAnim(table.getCardDescriptor(_cardId), sourcePosition, _fromPile, _toPile, _position);
+            var anim = new MoveToHandAnim(table.getCardDescriptor(_cardId), sourcePosition, _fromPile, _toPile, _position, table.canSeeCard(_cardId));
             while (!anim.update(table, _deltaTime))
             {
                 yield return null;

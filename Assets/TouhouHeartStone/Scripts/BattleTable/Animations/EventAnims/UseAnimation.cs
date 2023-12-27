@@ -106,7 +106,7 @@ namespace Game.BattleTable
                 var player = startData.getVar<Player>(EVENTVAR.PLAYER);
                 var fieldIndex = startData.getVar<int>(EVENTVAR.POSITION);
                 var pos = table.WorldToTablePosition(hand.transform.position);
-                var moveAnim = new HandToFieldAnim(table.getCardDescriptor(_card.id), pos, player.getHand(), player.getField(), fieldIndex);
+                var moveAnim = new HandToFieldAnim(table.getCardDescriptor(_card.id), pos, player.getHand(), player.getField(), fieldIndex, table.canSeeCard(_card));
                 while (!moveAnim.update(table, _deltaTime))
                     yield return null;
             }
@@ -156,7 +156,7 @@ namespace Game.BattleTable
             if (table.tryGetHand(_card, out var hand))
             {
                 table.setCard(hand.card, _card);
-                hand.card.setFaceup(!_card.isTrap(table.game) || table.canSeeCardOfOwner(_card.owner));
+                hand.card.setFaceup(!_card.isTrap(table.game) || table.canSeeCard(_card));
                 hand.positionLerp.setStartPositionToCurrent();
                 hand.positionLerp.setTargetTransform(table.table.SpellDisplayTransform);
                 AnimAnim useAnim = null;

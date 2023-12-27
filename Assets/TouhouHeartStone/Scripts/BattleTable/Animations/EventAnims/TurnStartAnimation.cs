@@ -54,9 +54,7 @@ namespace Game.BattleTable
         }
         public override bool continueNextGroup(AnimationGroup nextGroup)
         {
-            if (nextGroup.Any(a => a is TurnStartAnimation))
-                return false;
-            if (nextGroup.Any(a => a is UseAnimation))
+            if (nextGroup.Any(a => a is TurnStartAnimation || a is UseAnimation))
                 return false;
             return true;
         }

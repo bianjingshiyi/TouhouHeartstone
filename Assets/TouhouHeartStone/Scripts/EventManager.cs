@@ -184,6 +184,8 @@ namespace Game
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_CARD_PROP_CHANGE = "卡牌属性变动";
         [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_CHANGE_CARD_VISIBILITY = "卡牌可见性变动";
+        [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_SET_CARD_PROP = "修改卡牌属性";
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_BE_CHARGED = "蓄力";
@@ -254,6 +256,7 @@ namespace Game
             "MassSetCardDefineEvent",
             "MassShuffleToDeckEvent",
             "SplitDamageEvent",
+            "ChangeCardVisibilityEvent",
         };
         static Dictionary<string, string> _eventNameTranslations = new Dictionary<string, string>()
         {
@@ -319,6 +322,7 @@ namespace Game
             { "MassSetCardDefineEvent", EDITOR_EVENT_NAME_MASS_SET_CARD_DEFINE },
             { "MassShuffleToDeckEvent", EDITOR_EVENT_NAME_MASS_SHUFFLE_TO_DECK },
             { "SplitDamageEvent", EDITOR_EVENT_NAME_MASS_SPLIT_DAMAGE },
+            { "ChangeCardVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_CARD_VISIBILITY }
         };
         List<EventDefine> _builtinEventDefineList = null;
         [SerializeField]

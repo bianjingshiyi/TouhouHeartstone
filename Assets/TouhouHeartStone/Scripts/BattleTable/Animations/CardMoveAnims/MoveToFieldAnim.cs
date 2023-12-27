@@ -7,7 +7,7 @@ namespace Game.BattleTable
 {
     class MoveToFieldAnim : CardMoveAnim
     {
-        public MoveToFieldAnim(CardDescriptor cardDesc, Vector3 startPos, Pile fromPile, Pile toPile, int index, float cardHeight) : base(cardDesc, startPos, fromPile, toPile)
+        public MoveToFieldAnim(CardDescriptor cardDesc, Vector3 startPos, Pile fromPile, Pile toPile, int index, float cardHeight, bool startVisible) : base(cardDesc, startPos, fromPile, toPile, startVisible)
         {
             _position = index;
             _cardHeight = cardHeight;

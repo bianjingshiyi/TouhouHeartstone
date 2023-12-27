@@ -1300,7 +1300,7 @@ namespace Game
 
         [THHActionMethod(BuiltinActionDefineID.SetBuffPropVisibility, StringTable.EDITOR_NODE_CATEGORY_BUFF, EDITOR_NODE_NAME_SET_BUFF_PROP_VISIBILITY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
-        public static void setBuffPropVisibility(
+        public static void setBuffPropVisibility(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff[] buffs,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -1312,7 +1312,7 @@ namespace Game
             {
                 if (buff == null)
                     continue;
-                buff.setPropInvisibleTo(propName, player, invisible);
+                buff.setPropInvisibleTo(game, propName, player, invisible);
             }
         }
 

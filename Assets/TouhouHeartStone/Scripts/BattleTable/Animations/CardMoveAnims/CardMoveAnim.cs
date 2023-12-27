@@ -7,12 +7,13 @@ namespace Game.BattleTable
 {
     public abstract class CardMoveAnim : TableAnimation
     {
-        public CardMoveAnim(CardDescriptor cardDesc, Vector3 startTablePos, Pile from, Pile to)
+        public CardMoveAnim(CardDescriptor cardDesc, Vector3 startTablePos, Pile from, Pile to, bool startVisible)
         {
             _cardDesc = cardDesc;
             _startTablePos = startTablePos;
             _from = from;
             _to = to;
+            _startVisible = startVisible;
         }
         public virtual IEnumerator startUpdate(BattleTableManager table, float deltaTime)
         {
@@ -42,18 +43,18 @@ namespace Game.BattleTable
         }
         protected void updateStartFaceup(BattleTableManager table, TableCard card)
         {
-            bool startFaceup = getPileFaceup(table, _from);
-            bool endFaceup = table.canSeeCardOfOwner(_from?.owner) || table.canSeeCardOfOwner(_to?.owner) || _from.isGeneralizedBattlefield() || _to.isGeneralizedBattlefield();
+            bool startFaceup = isPileOnTable(_from) && table.canSeeCard(_cardDesc);
+            bool midFaceup = startFaceup || willThisMoveShowTheCard(table);
 
             card.setFaceup(startFaceup);
-            if (startFaceup != endFaceup)
+            if (startFaceup != midFaceup)
             {
-                card.animateFaceup(endFaceup);
+                card.animateFaceup(midFaceup);
             }
         }
         protected void updateEndFaceup(BattleTableManager table, TableCard card)
         {
-            var endFaceup = getPileFaceup(table, _to);
+            var endFaceup = willThisMoveShowTheCard(table) && isPileOnTable(_to);
             if (card.isFaceup != endFaceup)
             {
                 card.animateFaceup(endFaceup);
@@ -93,19 +94,20 @@ namespace Game.BattleTable
             }
             return removed;
         }
-        private static bool getPileFaceup(BattleTableManager table, Pile pile)
+        private bool willThisMoveShowTheCard(BattleTableManager table)
         {
-            var faceUp = false;
-            if (pile.isGeneralizedBattlefield())
-            {
-                faceUp = true;
-            }
-            else if (pile?.name == PILE.HAND)
-            {
-                faceUp = table.canSeeCardOfOwner(pile.owner);
-            }
-            return faceUp;
+            return _to.isVisiblePileTo(table.player) || table.canSeeCard(_cardDesc);
         }
+        /// <summary>
+        /// 牌堆是否位于桌面上，并且有卡牌可以显示（牌库和墓地不算）
+        /// </summary>
+        /// <param name="pile"></param>
+        /// <returns></returns>
+        private static bool isPileOnTable(Pile pile)
+        {
+            return pile.isGeneralizedBattlefield() || pile?.name == PILE.HAND;
+        }
+        protected bool _startVisible;
         protected CardDescriptor _cardDesc;
         protected Vector3 _startTablePos;
         protected Pile _from;

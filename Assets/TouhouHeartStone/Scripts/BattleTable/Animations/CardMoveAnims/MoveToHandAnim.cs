@@ -8,7 +8,7 @@ namespace Game.BattleTable
 {
     class MoveToHandAnim : CardMoveAnim
     {
-        public MoveToHandAnim(CardDescriptor cardDesc, Vector3 startPos, Pile fromPile, Pile toPile, int position) : base(cardDesc, startPos, fromPile, toPile)
+        public MoveToHandAnim(CardDescriptor cardDesc, Vector3 startPos, Pile fromPile, Pile toPile, int position, bool startVisible) : base(cardDesc, startPos, fromPile, toPile, startVisible)
         {
             _position = position;
         }

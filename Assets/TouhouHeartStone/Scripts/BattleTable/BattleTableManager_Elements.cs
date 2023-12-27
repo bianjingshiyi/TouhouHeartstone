@@ -377,11 +377,6 @@ namespace Game.BattleTable
         #endregion 道具
 
         #region 手牌
-        public bool isHandVisible(HandItem hand)
-        {
-            return table.SelfHandList.contains(hand) || canSeeAllCards;
-        }
-
         /// <summary>
         /// 创建一张手牌
         /// </summary>
@@ -426,7 +421,7 @@ namespace Game.BattleTable
             }
             item.isDraggable = selfHand;
             setCardDesc(item.card, desc);
-            item.card.setFaceup(canSeeCardOfOwner(owner));
+            item.card.setFaceup(canSeeCard(desc));
 
             var skin = getCardSkin(desc.define);
             item.gameObject.name = $"{skin?.name ?? "Hand"}<{desc.id}>";
@@ -1909,7 +1904,7 @@ namespace Game.BattleTable
             if (isSelectingTarget())
                 return;
             var owner = deck == table.SelfDeck ? player : game.getOpponent(player);
-            if (owner != player && !canSeeCardOfOwner(owner))
+            if (owner != player && !canSeeAllCards)
                 return;
             var isSelf = owner == player;
             var title = lang._(isSelf ? TAB_YOUR_BOX : TAB_OPPO_DECK);
@@ -1933,7 +1928,7 @@ namespace Game.BattleTable
             if (isSelectingTarget())
                 return;
             var owner = grave == table.SelfGrave ? player : game.getOpponent(player);
-            if (owner != player && !canSeeCardOfOwner(owner))
+            if (owner != player && !canSeeAllCards)
                 return;
             var isSelf = owner == player;
             var title = lang._(isSelf ? TAB_YOUR_GRAVEYARD : TAB_OPPO_GRAVEYARD);
@@ -2068,7 +2063,7 @@ namespace Game.BattleTable
             else if (_hoveredHeadItem != null)
             {
                 var headCard = getCardBySecret(_hoveredHeadItem);
-                if (!headCard.isTrap(game) || canSeeCardOfOwner(headCard.getOwner()))
+                if (!headCard.isTrap(game) || canSeeCard(headCard))
                 {
                     transform = _hoveredHeadItem.transform;
                 }
@@ -2091,7 +2086,7 @@ namespace Game.BattleTable
             else if (_hoveredHeadItem != null)
             {
                 var headCard = getCardBySecret(_hoveredHeadItem);
-                if (!headCard.isTrap(game) || canSeeCardOfOwner(headCard.getOwner()))
+                if (!headCard.isTrap(game) || canSeeCard(headCard))
                 {
                     return headCard;
                 }
@@ -2408,7 +2403,7 @@ namespace Game.BattleTable
         {
             cancelServantPreviewAnim(card);
             _servantUsingPosition = index;
-            var fieldAnim = new HandToFieldAnim(getCardDescriptor(card), pos, player.getHand(), player.getField(), index);
+            var fieldAnim = new HandToFieldAnim(getCardDescriptor(card), pos, player.getHand(), player.getField(), index, canSeeCard(card));
             addAnim(fieldAnim);
             _servantPreviewAnimDict.Add(card.id, fieldAnim);
             return fieldAnim;
