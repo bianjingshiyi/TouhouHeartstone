@@ -304,6 +304,24 @@ namespace Game
                 }
             }
         }
+        public DeckItem[] orderDeckItemsByLocalPools(IEnumerable<DeckItem> deckItems)
+        {
+            return deckItems.OrderBy(item =>
+            {
+                var cardRef = item.cardRef;
+                var poolRef = getLocalCardPoolReference(cardRef.cardPoolId);
+                return getCardDefine(poolRef, cardRef.defineId) is CardDefine cardDefine ? cardDefine.getCost() : 0;
+            }).ToArray();
+        }
+        public DeckItem[] orderDeckItemsByPoolsInSet(IEnumerable<DeckItem> deckItems, IEnumerable<ICardPoolReference> poolSet)
+        {
+            return deckItems.OrderBy(item =>
+            {
+                var cardRef = item.cardRef;
+                var poolRef = getCardPoolReferenceInSet(cardRef.cardPoolId, poolSet);
+                return getCardDefine(poolRef, cardRef.defineId) is CardDefine cardDefine ? cardDefine.getCost() : 0;
+            }).ToArray();
+        }
         #endregion
 
         #region 私有方法

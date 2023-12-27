@@ -77,6 +77,23 @@ namespace UI
             _yourDeckView.update(viewDatas);
         }
         #endregion
+
+        #region 卡组
+        public DeckCardList getDeckCardList(DeckList deck)
+        {
+            switch (deck)
+            {
+                case DeckList.PlayerInfoPanel:
+                    return _playerInfoPanel.deckCardList;
+                case DeckList.EnemyInfoPanel:
+                    return _enemyInfoPanel.deckCardList;
+                case DeckList.YourDeck:
+                    return _yourDeckView;
+            }
+            return null;
+        }
+        #endregion
+
         #endregion
         #region 私有方法
         #region 生命周期
@@ -84,15 +101,25 @@ namespace UI
         {
             _playerSelectPanel.onItemClicked += onPlayerSelectedCallback;
             _playerInfoPanel.onConfirmClicked += onGameStartClickedCallback;
+            _playerInfoPanel.onDeckItemPointerEnter += (i, data) => onDeckItemPointerEnter?.Invoke(i, DeckList.PlayerInfoPanel);
+            _playerInfoPanel.onDeckItemPointerExit += (i, data) => onDeckItemPointerExit?.Invoke(i, DeckList.PlayerInfoPanel);
             _cancelPlayerSelectButton.onClick.AddListener(onCancelSelectPlayerCallback);
+
             _enemyInfoPanel.onConfirmClicked += onFightClickedCallback;
             _enemyInfoPanel.onGiveUpClicked += onGiveUpClickedCallback;
             _enemyInfoPanel.onQuitClicked += onInRunQuitButtonClickedCallback;
             _enemyInfoPanel.onInventoryClicked += onInRunInventoryButtonClickedCallback;
+            _enemyInfoPanel.onDeckItemPointerEnter += (i, data) => onDeckItemPointerEnter?.Invoke(i, DeckList.EnemyInfoPanel);
+            _enemyInfoPanel.onDeckItemPointerExit += (i, data) => onDeckItemPointerExit?.Invoke(i, DeckList.EnemyInfoPanel);
+
             _cardSelectPanel.onChoiceClicked += onSelectCardChoiceClickedCallback;
             _cardSelectPanel.onConfirmClicked += onConfirmSelectCardClickedCallback;
             _cardSelectPanel.onSkipClicked += onSkipSelectCardClickedCallback;
             _cardSelectPanel.onQuitClicked += onInRunQuitButtonClickedCallback;
+
+            _yourDeckView.onDeckItemPointerEnter += (i, data) => onDeckItemPointerEnter?.Invoke(i, DeckList.YourDeck);
+            _yourDeckView.onDeckItemPointerExit += (i, data) => onDeckItemPointerExit?.Invoke(i, DeckList.YourDeck);
+
             _quitButton.onClick.AddListener(onClickQuitButtonCallback);
         }
         #endregion
@@ -206,6 +233,11 @@ namespace UI
         /// 跳过选择选卡选项后触发
         /// </summary>
         public event Action onSkipSelectCardClicked;
+
+
+        public event Action<int, DeckList> onDeckItemPointerEnter;
+
+        public event Action<int, DeckList> onDeckItemPointerExit;
         #endregion
         #region 属性字段
         [Header("选择玩家页面")]
@@ -239,6 +271,15 @@ namespace UI
         PVESelectCardPanel _cardSelectPanel;
         [SerializeField]
         DeckCardList _yourDeckView;
+        #endregion
+
+        #region 内嵌类
+        public enum DeckList
+        {
+            PlayerInfoPanel,
+            EnemyInfoPanel,
+            YourDeck
+        }
         #endregion
     }
 }

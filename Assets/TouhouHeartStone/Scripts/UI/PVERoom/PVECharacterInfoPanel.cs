@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using BJSYGameCore.UI;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace UI
@@ -29,11 +28,16 @@ namespace UI
                 _quitButton.onClick.AddListener(() => onQuitClicked?.Invoke());
             if (_inventoryButton)
                 _inventoryButton.onClick.AddListener(() => onInventoryClicked?.Invoke());
+            _deckView.onDeckItemPointerEnter += (i, data) => onDeckItemPointerEnter?.Invoke(i, data);
+            _deckView.onDeckItemPointerExit += (i, data) => onDeckItemPointerExit?.Invoke(i, data);
         }
         public event Action onConfirmClicked;
         public event Action onGiveUpClicked;
         public event Action onQuitClicked;
         public event Action onInventoryClicked;
+        public event Action<int, PointerEventData> onDeckItemPointerEnter;
+        public event Action<int, PointerEventData> onDeckItemPointerExit;
+        public DeckCardList deckCardList => _deckView;
         [SerializeField]
         TextMeshProUGUI _masterName;
         [SerializeField]

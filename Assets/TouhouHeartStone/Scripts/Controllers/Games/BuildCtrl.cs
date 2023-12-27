@@ -193,23 +193,11 @@ namespace Controllers
         }
         private async void onDeckCardPointerEnterCallback(int index, PointerEventData eventData)
         {
-            _ui.showViewDeckPreviewCard(index);
-            var deckItem = _deck.cardList[index];
-            var defRef = deckItem.cardRef;
-            if (defRef == null)
-            {
-                _ui.deckListPreviewCard.setUnknownCard(true);
-            }
-            else
-            {
-                var poolRef = game.card.getLocalCardPoolReference(defRef.cardPoolId);
-                var cardDef = game.card.getCardDefine(poolRef, defRef.defineId);
-                await _ui.deckListPreviewCard.setCardDefine(cardDef, game.card, true);
-            }
+            await _ui.deckCardList.showPreviewCardByLocalPool(_deck, index, game.card);
         }
         private void onDeckCardPointerExitCallback(int index, PointerEventData eventData)
         {
-            _ui.hideViewDeckPreviewCard();
+            _ui.deckCardList.hidePreviewCard();
         }
         private void onClickDeckListItem(int index)
         {
@@ -746,7 +734,7 @@ namespace Controllers
             if (_isDraggingHorizontal)
             {
                 await showDragCard(_ui.isPositionOverDeckCardList(eventData.position));
-                _ui.hideViewDeckPreviewCard();
+                _ui.deckCardList.hidePreviewCard();
                 _ui.moveDragCard(eventData.position);
                 eventData.Use();
                 return true;

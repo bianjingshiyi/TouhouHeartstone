@@ -341,15 +341,6 @@ namespace UI
         {
             _deckViewCardList.update(viewDatas);
         }
-        public void showViewDeckPreviewCard(int cardIndex)
-        {
-            _deckViewCardList.setPreviewCardVisible(true);
-            _deckViewCardList.setPreviewCardPosition(cardIndex);
-        }
-        public void hideViewDeckPreviewCard()
-        {
-            _deckViewCardList.setPreviewCardVisible(false);
-        }
         #endregion
 
         #endregion
@@ -607,7 +598,7 @@ namespace UI
         public event Action<int> onPlayerRemove;
         #endregion
         #region 属性字段
-        public Card viewDeckPreviewCard => _deckViewCardList.previewCard;
+        public DeckCardList deckCardList => _deckViewCardList;
         RoomPlayerData aiPlayerData;
         [SerializeField]
         private GameObject _rightRegionObj;

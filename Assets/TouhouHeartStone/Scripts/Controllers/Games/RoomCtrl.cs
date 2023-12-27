@@ -337,23 +337,11 @@ namespace Controllers
         }
         private async void onViewDeckItemPointerEnterCallback(int index)
         {
-            _ui.showViewDeckPreviewCard(index);
-            var deckItem = _viewingDeck.cardList[index];
-            var defRef = deckItem.cardRef;
-            if (defRef == null)
-            {
-                _ui.viewDeckPreviewCard.setUnknownCard(true);
-            }
-            else
-            {
-                var poolRef = getCardPoolReference(defRef.cardPoolId);
-                var cardDef = game.card.getCardDefine(poolRef, defRef.defineId);
-                await _ui.viewDeckPreviewCard.setCardDefine(cardDef, game.card, true);
-            }
+            await _ui.deckCardList.showPreviewCardByPoolSet(_viewingDeck, index, game.card, getCardPoolReferenceSet());
         }
         private void onViewDeckItemPointerExitCallback(int index)
         {
-            _ui.hideViewDeckPreviewCard();
+            _ui.deckCardList.hidePreviewCard();
         }
         #endregion
         private async void onViewCardPoolsClick()
@@ -1407,7 +1395,11 @@ namespace Controllers
         }
         private ICardPoolReference getCardPoolReference(long cardPoolId)
         {
-            return game.card.getCardPoolReferenceInSet(cardPoolId, _currentRoomData.getCardPools());
+            return game.card.getCardPoolReferenceInSet(cardPoolId, getCardPoolReferenceSet());
+        }
+        private IEnumerable<ICardPoolReference> getCardPoolReferenceSet()
+        {
+            return _currentRoomData.getCardPools();
         }
         #endregion
         #region 事件

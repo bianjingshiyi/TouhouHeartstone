@@ -57,6 +57,10 @@ namespace Controllers
             _ui.onSelectCardChoiceClicked += onSelectCardChoiceClickedCallback;
             _ui.onConfirmSelectCardClicked += onConfirmSelectCardClickedCallback;
             _ui.onSkipSelectCardClicked += onSkipSelectCardClickedCallback;
+
+            _ui.onDeckItemPointerEnter += onDeckItemPointerEnterCallback;
+            _ui.onDeckItemPointerExit += onDeckItemPointerExitCallback;
+
             gameManager.onGameFinished += onGameFinishedCallback;
             gameManager.onGameQuit += onGameQuitCallback;
         }
@@ -150,6 +154,29 @@ namespace Controllers
         private async void onSkipSelectCardClickedCallback()
         {
             await nextStage();
+        }
+        private async void onDeckItemPointerEnterCallback(int index, PVERoomPanel.DeckList deckType)
+        {
+            Deck deck = null;
+            switch (deckType)
+            {
+                case PVERoomPanel.DeckList.PlayerInfoPanel:
+                    deck = _selectedCharacter.deck;
+                    break;
+                case PVERoomPanel.DeckList.EnemyInfoPanel:
+                    deck = getNextEnemyCharacter().deck;
+                    break;
+                case PVERoomPanel.DeckList.YourDeck:
+                    deck = _saveData.deck;
+                    break;
+            }
+            var deckView = _ui.getDeckCardList(deckType);
+            await deckView.showPreviewCardByLocalPool(deck, index, game.card);
+        }
+        private void onDeckItemPointerExitCallback(int index, PVERoomPanel.DeckList deck)
+        {
+            var deckView = _ui.getDeckCardList(deck);
+            deckView.hidePreviewCard();
         }
         private async void onGameFinishedCallback(Player[] winners)
         {

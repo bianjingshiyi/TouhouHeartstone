@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BJSYGameCore;
 using Game;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -14,7 +15,10 @@ namespace UI
     public class DeckCardList : MonoBehaviour
     {
         #region 公有方法
-
+        public void hidePreviewCard()
+        {
+            setPreviewCardVisible(false);
+        }
         public void setPreviewCardVisible(bool value)
         {
             _previewCardTransform.gameObject.SetActive(value);
@@ -106,6 +110,48 @@ namespace UI
         ElementList _cardElementList;
         #endregion
     }
+    public static class DeckCardListHelper
+    {
+        public static Task showPreviewCardByLocalPool(this DeckCardList deckView, Deck deck, int index, CardManager cardManager)
+        {
+            if (deck == null)
+                return Task.CompletedTask;
+            var deckItems = cardManager.orderDeckItemsByLocalPools(deck.cardList);
+            var deckItem = deckItems[index];
+            var defRef = deckItem.cardRef;
+            if (defRef == null)
+                return Task.CompletedTask;
+            var poolRef = cardManager.getLocalCardPoolReference(defRef.cardPoolId);
+            var cardDef = cardManager.getCardDefine(poolRef, defRef.defineId);
+            return deckView.showPreviewCard(cardDef, index, cardManager);
+        }
+        public static Task showPreviewCardByPoolSet(this DeckCardList deckView, Deck deck, int index, CardManager cardManager, IEnumerable<ICardPoolReference> poolSet)
+        {
+            if (deck == null)
+                return Task.CompletedTask;
+            var deckItems = cardManager.orderDeckItemsByPoolsInSet(deck.cardList, poolSet);
+            var deckItem = deckItems[index];
+            var defRef = deckItem.cardRef;
+            if (defRef == null)
+                return Task.CompletedTask;
+            var poolRef = cardManager.getCardPoolReferenceInSet(defRef.cardPoolId, poolSet);
+            var cardDef = cardManager.getCardDefine(poolRef, defRef.defineId);
+            return deckView.showPreviewCard(cardDef, index, cardManager);
+        }
+        public static async Task showPreviewCard(this DeckCardList deckView, CardDefine define, int index, CardManager cardManager)
+        {
+            deckView.setPreviewCardVisible(true);
+            deckView.setPreviewCardPosition(index);
+            if (define == null)
+            {
+                deckView.previewCard.setUnknownCard(true);
+            }
+            else
+            {
+                await deckView.previewCard.setCardDefine(define, cardManager, true);
+            }
+        }
+    }
     public struct DeckCardViewData
     {
         public string name;
@@ -122,7 +168,7 @@ namespace UI
         {
             if (deckItems == null)
                 return Array.Empty<DeckCardViewData>();
-            var cards = deckItems.OrderBy(e => cardManager.getLocalCardDefine(e.cardRef) is CardDefine cardDefine ? cardDefine.getCost() : 0).ToArray();
+            var cards = cardManager.orderDeckItemsByLocalPools(deckItems).ToArray();
             var deckCardsViewData = new DeckCardViewData[cards.Length];
             for (int i = 0; i < cards.Length; i++)
             {

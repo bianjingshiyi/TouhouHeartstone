@@ -137,19 +137,6 @@ namespace UI
             _curCardPoolImage.sprite = image;
             _deckNameInputField.SetTextWithoutNotify(name);
         }
-        public int indexOfCardListItem(CardViewDeckCardListItem item)
-        {
-            return _deckCardList.indexOf(item);
-        }
-        public void showViewDeckPreviewCard(int cardIndex)
-        {
-            _deckCardList.setPreviewCardVisible(true);
-            _deckCardList.setPreviewCardPosition(cardIndex);
-        }
-        public void hideViewDeckPreviewCard()
-        {
-            _deckCardList.setPreviewCardVisible(false);
-        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -361,7 +348,7 @@ namespace UI
         #endregion
         #region 属性字段
         public CardPoolViewPanel cardPoolViewPanel => _cardPoolViewPanel;
-        public Card deckListPreviewCard => _deckCardList.previewCard;
+        public DeckCardList deckCardList => _deckCardList;
         /// <summary>
         /// 当前能否拖拽卡牌
         /// </summary>
