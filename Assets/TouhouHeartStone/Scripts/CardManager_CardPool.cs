@@ -43,6 +43,17 @@ namespace Game
         /// <summary>
         /// 是否正在创建卡池。正在创建的卡池无法通过ID或引用获取CardPoolInfo。
         /// </summary>
+        /// <param name="cardPoolRef"></param>
+        /// <returns></returns>
+        public bool isCreatingCardPool(ICardPoolReference cardPoolRef)
+        {
+            if (_creatingCardPoolInfo == null || cardPoolRef == null)
+                return false;
+            return _creatingCardPoolInfo.CompareCardPool(cardPoolRef);
+        }
+        /// <summary>
+        /// 是否正在创建卡池。正在创建的卡池无法通过ID或引用获取CardPoolInfo。
+        /// </summary>
         /// <param name="cardPoolId"></param>
         /// <returns></returns>
         public bool isCreatingCardPool(long cardPoolId)
@@ -330,9 +341,11 @@ namespace Game
         /// </summary>
         /// <param name="poolRef">卡池引用。</param>
         /// <returns></returns>
-        public Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPoolAsync(ICardPoolReference poolRef)
+        public async Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPoolAsync(ICardPoolReference poolRef)
         {
-            return loadCachedCardPoolAsync(poolRef.CardPoolID, poolRef.CardPoolVersion);
+            if (poolRef == null)
+                return (null, null);
+            return await loadCachedCardPoolAsync(poolRef.CardPoolID, poolRef.CardPoolVersion);
         }
         /// <summary>
         /// 从缓存文件夹中读取从网络上下载的卡池。
@@ -539,7 +552,9 @@ namespace Game
         /// <returns></returns>
         public bool isCardPoolLoaded(ICardPoolReference poolRef, bool includingCache = false)
         {
-            if (isBuiltinCardPool(poolRef.CardPoolID) || isInnateCardPool(poolRef.CardPoolID))
+            if (poolRef == null)
+                return false;
+            if (isBuiltinCardPool(poolRef) || isInnateCardPool(poolRef))
                 return true;
             if (!includingCache && !isLocalCardPool(poolRef))
             {
@@ -723,6 +738,8 @@ namespace Game
         #region 卡池属性检测
         public bool isBuiltinCardPool(ICardPoolReference cardPoolRef)
         {
+            if (cardPoolRef == null)
+                return false;
             return isBuiltinCardPool(cardPoolRef.CardPoolID);
         }
         public bool isBuiltinCardPool(long cardPoolId)
@@ -736,6 +753,8 @@ namespace Game
         /// <returns></returns>
         public bool isInnateCardPool(ICardPoolReference cardPoolRef)
         {
+            if (cardPoolRef == null)
+                return false;
             return isInnateCardPool(cardPoolRef.CardPoolID);
         }
         /// <summary>
@@ -788,10 +807,12 @@ namespace Game
         /// <returns>是否是本地卡池？</returns>
         public bool isLocalCardPool(ICardPoolReference cardPoolRef)
         {
+            if (cardPoolRef == null)
+                return false;
             // 内置和经典卡池肯定是本人拥有的。
-            if (isBuiltinCardPool(cardPoolRef.CardPoolID) || isInnateCardPool(cardPoolRef.CardPoolID))
+            if (isBuiltinCardPool(cardPoolRef) || isInnateCardPool(cardPoolRef))
                 return true;
-            if (isCreatingCardPool(cardPoolRef.CardPoolID))
+            if (isCreatingCardPool(cardPoolRef))
                 return true;
             string path = getCardPoolPath(cardPoolRef);
             return isLocalCardPoolPath(path);
@@ -1493,14 +1514,20 @@ namespace Game
             {
                 // 将内置卡池的卡牌引用改为经典卡池的引用。
                 var characterRef = define.getCharacterRef();
-                if (isBuiltinCardPool(characterRef.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(characterRef.defineId, out var charClassicId))
+                if (characterRef != null)
                 {
-                    define.setCharacterRef(new DefineReference(STANDARD_POOL_ID, charClassicId));
+                    if (isBuiltinCardPool(characterRef.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(characterRef.defineId, out var charClassicId))
+                    {
+                        define.setCharacterRef(new DefineReference(STANDARD_POOL_ID, charClassicId));
+                    }
                 }
                 var skillRef = define.getSkillRef();
-                if (isBuiltinCardPool(skillRef.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(skillRef.defineId, out var skillClassicId))
+                if (skillRef != null)
                 {
-                    define.setSkillRef(new DefineReference(STANDARD_POOL_ID, skillClassicId));
+                    if (isBuiltinCardPool(skillRef.cardPoolId) && ClassicCardID.tryGetClassicAlternateOfBuiltin(skillRef.defineId, out var skillClassicId))
+                    {
+                        define.setSkillRef(new DefineReference(STANDARD_POOL_ID, skillClassicId));
+                    }
                 }
                 foreach (var propName in define.getPropNames())
                 {

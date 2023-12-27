@@ -34,7 +34,9 @@ namespace Game
         }
         public AnimationDefine getAnimationDefine(ICardPoolReference poolRef, int id)
         {
-            if (poolRef.CardPoolID == 0)
+            if (poolRef == null)
+                return null;
+            if (main.card.isBuiltinCardPool(poolRef))
             {
                 if (builtinAnimationDic.TryGetValue(id, out AnimationDefine define))
                 {

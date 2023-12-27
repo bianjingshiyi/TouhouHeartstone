@@ -33,7 +33,7 @@ namespace Game
         {
             if (cardPoolRef == null)
                 return null;
-            if (isBuiltinCardPool(cardPoolRef.CardPoolID))
+            if (isBuiltinCardPool(cardPoolRef))
             {
                 return game.eventManager.getOrLoadBuiltinEventDefines(includeHidden).FindEventDefine(name);
             }

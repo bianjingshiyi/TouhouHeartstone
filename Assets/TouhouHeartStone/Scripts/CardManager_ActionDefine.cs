@@ -97,12 +97,14 @@ namespace Game
         #region 获取
         public ActionDefine getActionDefine(ICardPoolReference poolRef, int id)
         {
+            if (poolRef == null)
+                return null;
             if (tryGetCardPool(poolRef, out CardPool cardPool))
             {
                 //自定义
                 return cardPool.actionDefineList.Find(g => g.defineId == id);
             }
-            else if (isBuiltinCardPool(poolRef.CardPoolID))
+            else if (isBuiltinCardPool(poolRef))
             {
                 //内置
                 var actionDefine = builtinActionDefines.FirstOrDefault(a => a.defineId == id);
