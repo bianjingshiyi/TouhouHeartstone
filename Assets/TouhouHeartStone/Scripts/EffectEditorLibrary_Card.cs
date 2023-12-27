@@ -61,6 +61,14 @@ namespace Game
         private const string EDITOR_NODE_NAME_SEAL = "封印";
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_CLONE_CARD = "复制卡牌";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_SET_CARD_PROP_VISIBILITY = "设置卡牌属性可见性";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_IS_CARD_PROP_VISIBLE_TO = "卡牌属性是否可见";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_SET_CARD_VISIBILITY = "设置卡牌可见性";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_IS_CARD_VISIBLE_TO = "卡牌是否可见";
 
         [TranslateMsg("是否濒死节点-常量")]
         private const string EDITOR_PARAM_NAME_CHECK_HEALTH_ZERO = "检查生命值<=0";
@@ -79,13 +87,15 @@ namespace Game
         [TranslateMsg("节点参数")]
         const string EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT = "卡牌属性更改事件";
         [TranslateMsg("节点参数")]
-        const string EDITOR_PARAM_NAME_BUFF_PROP_CHANGED_EVENT = "增益属性更改事件";
-        [TranslateMsg("节点参数")]
         const string EDITOR_PARAM_NAME_SET_CARD_DEFINE_EVENT = "设置卡牌定义事件";
         [TranslateMsg("节点参数")]
         const string EDITOR_PARAM_NAME_BE_CHARGED_EVENT = "蓄力事件";
         [TranslateMsg("节点参数")]
         private const string EDITOR_PARAM_NAME_POSITION = "位置";
+        [TranslateMsg("节点参数")]
+        const string EDITOR_PARAM_NAME_CARD_PROP_VISIBILITY_CHANGED_EVENT = "卡牌属性可见性更改事件";
+        [TranslateMsg("节点参数")]
+        const string EDITOR_PARAM_NAME_CARD_VISIBILITY_CHANGED_EVENT = "卡牌可见性更改事件";
 
         [TranslateMsg("编辑器-卡牌-参数名称")]
         public const string EDITOR_PARAM_NAME_MASS_DISCARD_EVENT = "群体弃牌事件";
@@ -1450,6 +1460,76 @@ namespace Game
             outEvent = await card.setChargeLevel(game, level);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
+
+
+        [EventNode(typeof(ChangeCardPropVisibilityEventDefine))]
+        [THHActionMethod(BuiltinActionDefineID.SetCardPropVisibility, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_SET_CARD_PROP_VISIBILITY)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static async Task setCardPropVisibility(Flow flow, ActionNode node, CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VISIBLE)] bool visible,
+            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_VISIBILITY_CHANGED_EVENT, isOut: true)][NodeParamEventType(typeof(ChangeCardPropVisibilityEventDefine))] EventArg[] outEvent)
+        {
+            if (cards == null || player == null || propName == null)
+                return;
+            var list = new List<EventArg>();
+            foreach (var card in cards)
+            {
+                if (card == null)
+                    continue;
+                list.Add(await card.setPropInvisibleTo(game, propName, player, !visible));
+            }
+            outEvent = list.ToArray();
+            setOutParam(flow, node, nameof(outEvent), outEvent);
+        }
+
+        [THHActionMethod(BuiltinActionDefineID.IsCardPropVisibleTo, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_IS_CARD_PROP_VISIBLE_TO)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_VISIBLE)]
+        public static bool isCardPropVisibleTo(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            if (card == null || player == null || propName == null)
+                return false;
+            return !card.isPropInvisibleTo(propName, player);
+        }
+
+        [EventNode(typeof(ChangeCardVisibilityEventDefine))]
+        [THHActionMethod(BuiltinActionDefineID.SetCardVisibility, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_SET_CARD_VISIBILITY)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static async Task setCardVisibility(Flow flow, ActionNode node, CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VISIBLE)] bool visible,
+            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_VISIBILITY_CHANGED_EVENT, isOut: true)][NodeParamEventType(typeof(ChangeCardVisibilityEventDefine))] EventArg[] outEvent)
+        {
+            if (cards == null || player == null)
+                return;
+            var list = new List<EventArg>();
+            foreach (var card in cards)
+            {
+                if (card == null)
+                    continue;
+                list.Add(await card.setCardVisibleTo(game, player, visible));
+            }
+            outEvent = list.ToArray();
+            setOutParam(flow, node, nameof(outEvent), outEvent);
+        }
+
+        [THHActionMethod(BuiltinActionDefineID.IsCardVisibleTo, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_IS_CARD_VISIBLE_TO)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_VISIBLE)]
+        public static bool isCardVisibleTo(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            if (card == null || player == null)
+                return false;
+            return card.isCardVisibleTo(player);
+        }
+
         [Obsolete]
         public static readonly Dictionary<int, string> obsoleteConstNodeDict = new Dictionary<int, string>()
         {

@@ -90,6 +90,8 @@ namespace Game
         public const int GetCardProp = Type_Function + Category_Card + 27;    // 获取卡牌属性
         public const int CardIsTrap = Type_Function + Category_Card + 28;    // 卡牌是否是陷阱
         public const int GetCardPile = Type_Function + Category_Card + 29;    // 获取卡牌所在牌堆
+        public const int IsCardPropVisibleTo = Type_Function + Category_Buff + 30; // 卡牌属性是否可见
+        public const int IsCardVisibleTo = Type_Function + Category_Buff + 31; // 卡牌是否可见
 
 
         // 卡牌定义
@@ -150,6 +152,7 @@ namespace Game
         public const int GetBuffProp = Type_Function + Category_Buff + 4;    // 获取增益属性
         public const int GetBuffDefineOfBuff = Type_Function + Category_Buff + 5;    // 获取单个增益的定义
         public const int GetAllBuffsOnCard = Type_Function + Category_Buff + 6;    // 获取卡牌上的所有增益
+        public const int IsBuffPropVisibleTo = Type_Function + Category_Buff + 7; // 增益属性是否可见
 
         // 效果
         public const int ThisEffect = Type_Function + Category_Effect + 1; // 该效果
@@ -298,14 +301,16 @@ namespace Game
         public const int SetCardProp = Type_Action + Category_Card + 37;    // 设置卡牌属性
         public const int Discard = Type_Action + Category_Card + 38;    // 丢弃卡牌
         public const int HealTargets_Obs_Rule = Type_Action + Category_Card + 39;    // 治疗目标卡牌（自定义规则过时）
-        public const int Seal = Type_Action + Category_Card + 40;    // 沉默
+        public const int Seal = Type_Action + Category_Card + 40;    // 封印
         public const int DealDamageOrSpellDamage = Type_Action + Category_Card + 41;    // 造成伤害或法伤
-        public const int DealDamageSplitAmong = Type_Action + Category_Card + 42;    // 造成伤害或法伤兵分配给目标
+        public const int DealDamageSplitAmong = Type_Action + Category_Card + 42;    // 造成伤害或法伤并分配给目标
         public const int DealDamageToRandomTargets = Type_Action + Category_Card + 43;    // 对固定数量的随机目标造成伤害或法伤
         public const int CloneCard = Type_Action + Category_Card + 44;    // 复制卡牌
         public const int CreateTokenToHead = Type_Action + Category_Card + 45;    // 创建衍生卡并置入延迟区
         public const int CreateTokenToPile = Type_Action + Category_Card + 46;    // 创建衍生卡并置入牌堆
         public const int HealTargets = Type_Action + Category_Card + 47;    // 治疗目标卡牌
+        public const int SetCardPropVisibility = Type_Action + Category_Buff + 48; // 设置卡牌属性可见性
+        public const int SetCardVisibility = Type_Action + Category_Buff + 49; // 设置卡牌可见性
 
         // 增益
         public const int AddBuff = Type_Action + Category_Buff + 1;    // 添加增益

@@ -1172,6 +1172,8 @@ namespace Game
         private const string EDITOR_NODE_NAME_GET_ALL_BUFFS_ON_CARD = "获取卡牌上的所有增益";
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_SET_BUFF_PROP_VISIBILITY = "设置增益属性可见性";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_IS_BUFF_PROP_VISIBLE_TO = "增益属性是否可见";
 
         [TranslateMsg("节点参数")]
         private const string EDITOR_PARAM_NAME_REMOVE_BUFF_EVENT = "移除增益事件";
@@ -1190,7 +1192,11 @@ namespace Game
         [TranslateMsg("节点参数")]
         private const string EDITOR_PARAM_NAME_MASS_MOVE_CARD_EVENT = "群体移动卡牌事件";
         [TranslateMsg("节点参数")]
-        private const string EDITOR_PARAM_NAME_INVISIBLE = "不可见"; 
+        private const string EDITOR_PARAM_NAME_VISIBLE = "可见";
+        [TranslateMsg("节点参数")]
+        const string EDITOR_PARAM_NAME_BUFF_PROP_CHANGED_EVENT = "增益属性更改事件";
+        [TranslateMsg("节点参数")]
+        const string EDITOR_PARAM_NAME_BUFF_PROP_VISIBILITY_CHANGED_EVENT = "增益属性可见性更改事件";
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.ThisBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_THIS_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
@@ -1298,23 +1304,42 @@ namespace Game
             return card.getBuffs();
         }
 
+        [EventNode(typeof(ChangeBuffPropVisibilityEventDefine))]
         [THHActionMethod(BuiltinActionDefineID.SetBuffPropVisibility, StringTable.EDITOR_NODE_CATEGORY_BUFF, EDITOR_NODE_NAME_SET_BUFF_PROP_VISIBILITY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
-        public static void setBuffPropVisibility(CardEngine game,
+        public static async Task setBuffPropVisibility(Flow flow, ActionNode node, CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff[] buffs,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(EDITOR_PARAM_NAME_INVISIBLE)] bool invisible)
+            [ActionNodeParam(EDITOR_PARAM_NAME_VISIBLE)] bool visible,
+            [ActionNodeParam(EDITOR_PARAM_NAME_BUFF_PROP_VISIBILITY_CHANGED_EVENT, isOut: true)][NodeParamEventType(typeof(ChangeBuffPropVisibilityEventDefine))] EventArg[] outEvent)
         {
             if (buffs == null || player == null || propName == null)
                 return;
+            var list = new List<EventArg>();
             foreach (var buff in buffs)
             {
                 if (buff == null)
                     continue;
-                buff.setPropInvisibleTo(game, propName, player, invisible);
+                list.Add(await buff.setPropInvisibleTo(game, propName, player, !visible));
             }
+            outEvent = list.ToArray();
+            setOutParam(flow, node, nameof(outEvent), outEvent);
         }
+
+        [THHActionMethod(BuiltinActionDefineID.IsBuffPropVisibleTo, StringTable.EDITOR_NODE_CATEGORY_BUFF, EDITOR_NODE_NAME_IS_BUFF_PROP_VISIBLE_TO)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_VISIBLE)]
+        public static bool isBuffPropVisibleTo(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            if (buff == null || player == null || propName == null)
+                return false;
+            return !buff.isPropInvisibleTo(propName, player);
+        }
+        
+        
 
 
         #endregion
