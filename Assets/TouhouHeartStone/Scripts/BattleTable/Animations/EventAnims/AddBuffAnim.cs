@@ -29,9 +29,13 @@ namespace Game.BattleTable
                         srcTransform = srcTransform,
                         destTransform = srcTransform,
                     };
-                    bool invisible = !buff.isIllusive() && !buff.isPropInvisibleTo(BUFF.ILLUSIVE, table.player);
+                    bool visible = true;
+                    if (buff.isHiddenToVisible() && !buff.isPropInvisibleTo(BUFF.HIDDEN_TO_VISIBLE, table.player))
+                    {
+                        visible = false;
+                    }
                     var effect = table.createEffect(animRef, info);
-                    effect.setVisible(!invisible);
+                    effect.setVisible(visible);
                     table.addCardBuffEffect(card.id, buff.instanceID, effect);
                 }
             }

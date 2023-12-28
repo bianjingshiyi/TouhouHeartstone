@@ -2,6 +2,6 @@
 {
     public static class BUFF
     {
-        public const string ILLUSIVE = "illusive";
+        public const string HIDDEN_TO_VISIBLE = "hiddenToVisible";
     }
 }

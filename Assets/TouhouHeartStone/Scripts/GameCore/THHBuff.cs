@@ -19,9 +19,9 @@ namespace TouhouHeartstone
         }
         #endregion
 
-        public static bool isIllusive(this Buff buff)
+        public static bool isHiddenToVisible(this Buff buff)
         {
-            return buff.getProp<bool>(BUFF.ILLUSIVE);
+            return buff.getProp<bool>(BUFF.HIDDEN_TO_VISIBLE);
         }
 
         #endregion

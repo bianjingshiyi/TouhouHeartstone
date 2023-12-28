@@ -2717,7 +2717,7 @@
         <summary><![CDATA[修改增益可见性所产生的事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <summary><![CDATA[设置一个增益属性的对某个玩家的可见性。<br/>特别地，如果一个增益的illusive属性是false，并且对<b>对手</b>不可见，则<b>你</b>不会看到该增益的特效。用于制作幻象等效果。]]></summary>
+    <summary><![CDATA[设置一个增益属性的对某个玩家的可见性。<br/>特别地，如果一个增益的某个属性名为hiddenToVisible，值是true，并且该属性对<b>对手</b>不可见，则<b>你</b>不会看到该增益的特效。用于制作幻象等效果。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
