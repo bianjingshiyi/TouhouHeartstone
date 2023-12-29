@@ -125,7 +125,7 @@ namespace UI
                 _dropdown.interactable = value;
             }
         }
-        private bool _interactable;
+        private bool _interactable = true;
         [SerializeField]
         private bool _showingDropdownList;
         [SerializeField]
