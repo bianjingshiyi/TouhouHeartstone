@@ -31,11 +31,11 @@ namespace TouhouHeartstone
         {
             return player[PILE.ITEM].Any() ? player[PILE.ITEM][0] : null;
         }
-        public static bool removePile(this Player player, Pile pile)
+        public static bool removePlayerPile(this Player player, CardEngine game, Pile pile)
         {
             if (pile?.name == null || THHPile.vanillaPileNames.Contains(pile?.name))
                 return false;
-            return player.removePile(pile);
+            return player.removePile(game, pile);
         }
         #endregion
 

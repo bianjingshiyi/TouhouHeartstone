@@ -360,13 +360,13 @@ namespace Game
         /// </summary>
         [THHActionMethod(BuiltinActionDefineID.RemovePile, StringTable.EDITOR_NODE_CATEGORY_GAME, EDITOR_NODE_REMOVE_PILE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_PILE_REMOVED)]
-        public static bool removePile(
+        public static bool removePile(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)] Pile pile)
         {
             if (player == null || pile == null)
                 return false;
-            return player.removePile(pile);
+            return player.removePlayerPile(game, pile);
         }
         /// <summary>
         /// 从牌堆将卡牌移动到目标牌堆
