@@ -428,7 +428,7 @@ namespace UI
             {
                 _valueInfo.value = _valueInfo.type.getDefaultValue();
             }
-            if (_valueInfo.value is Array array)
+            if (_valueInfo.value is IList list)
             {
                 _inputField.gameObject.SetActive(false);
                 _toggle.gameObject.SetActive(false);
@@ -442,14 +442,14 @@ namespace UI
 
                 _listRoot.gameObject.SetActive(true);
                 var childValueType = new NodeValueType(_valueInfo.type.type, false);
-                UIHelper.updateList(_listContentRoot, GetListTemplate(), _list, array.Length, (i, itemRect) =>
+                UIHelper.updateList(_listContentRoot, GetListTemplate(), _list, list.Count, (i, itemRect) =>
                 {
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.setReadonly(_isReadonly);
                     item.setValueInfo(null, new ActionNodeValueInfo()
                     {
                         type = childValueType,
-                        value = array.GetValue(i)
+                        value = list[i]
                     }, true);
                 }, itemRect =>
                 {
