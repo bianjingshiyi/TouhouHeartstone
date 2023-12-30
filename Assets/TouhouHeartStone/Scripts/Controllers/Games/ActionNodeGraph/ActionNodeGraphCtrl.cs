@@ -521,6 +521,7 @@ namespace Controllers
                         defaultValue = valueType.getDefaultValue();
                     }
                     setNodeDefaultValue(node, name, paramIndex, defaultValue);
+                    checkEventVariableNodeItemVarNames(item, node);
                     updateNodeItemInputPorts(node);
                     addRecordBreakpoint();
                 }
@@ -1237,10 +1238,10 @@ namespace Controllers
             updateInputParamsPort(inputPort);
             // 移除端口的输入默认值。
             removeInputPortDefaultValue(inputPort);
-            // 更新节点的输入端口列表
-            updateNodeItemInputPorts(inputPort.node);
             // 更新事件变量节点的事件变量名。
             checkEventVariableNodeItemVarNames(inputNodeItem, inputPort.node);
+            // 更新节点的输入端口列表
+            updateNodeItemInputPorts(inputPort.node);
         }
 
         private void connectControlPorts(ControlOutput outputPort, ControlInput inputPort)
@@ -1532,9 +1533,9 @@ namespace Controllers
                 updatePortMode(_connectingPort, inputPort);
                 //更新变长参数。
                 updateInputParamsPort(inputPort);
-                updateNodeItemInputPorts(inputPort.node);
                 // 更新事件变量节点的事件变量名。
                 checkEventVariableNodeItemVarNames(inputNodeItem, inputPort.node);
+                updateNodeItemInputPorts(inputPort.node);
             }
 
             if (outputPort != null && inputPort != null)
@@ -1930,7 +1931,8 @@ namespace Controllers
             item.setInputs(inputViewDatas);
 
             // 如果该节点的该常量的值是null，则设置为名称列表的第一个值。
-            if (node.getInputDefaultValue(EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY) == null && eventVarNames != null && eventVarNames.Count() > 0)
+            var defaultValue = node.getInputDefaultValue<string>(EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY);
+            if (string.IsNullOrEmpty(defaultValue) && eventVarNames != null && eventVarNames.Count() > 0)
             {
                 setNodeDefaultValue(node, EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY, -1, eventVarNames.FirstOrDefault());
             }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Game;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
@@ -30,7 +29,7 @@ namespace Controllers
                         var portInfo = new PortItemInfo(name, color, portDefine?.GetPortType() == PortType.Control);
                         var defaultValue = getValueInfoFromPortDefine(portDefine, null);
                         var showPort = !portDefine.isConst;
-                        var showDefaultValue = false;
+                        var showDefaultValue = portDefine.isConst;
                         inputInfos[i] = new InputPortInfo(portInfo, defaultValue, showPort, showDefaultValue);
                     }
 
