@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BJSYGameCore.UI;
 using Game;
+using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -120,6 +123,7 @@ namespace Controllers
             _ui.onCharacterFilterValueChanged += onCharacterFiltersValueChanged;
             _ui.onCostFilterValueChanged += onCostFiltersValueChanged;
             _ui.onTypeFilterValueChanged += onTypeFilterValueChanged;
+            _ui.onSearchInputFieldValueChanged += onSearchFilterValueChanged;
         }
         #endregion
         #region 事件回调
@@ -146,6 +150,11 @@ namespace Controllers
         private void onTypeFilterValueChanged(bool[] value)
         {
             _typeFiltersValue = value;
+            updateContents();
+        }
+        private void onSearchFilterValueChanged(string value)
+        {
+            _searchFilterString = value;
             updateContents();
         }
         private void onEnableCardListItemCallback(int index, RectTransform itemRect)
@@ -245,7 +254,7 @@ namespace Controllers
             foreach (var cardPoolId in cardPools)
             {
                 //卡池卡牌
-                var localRef = game.card.getLocalCardPoolReference(cardPoolId);
+                var localRef = getCardPoolReference(cardPoolId);
                 CardDefine[] cardDefines = await game.card.getOrLoadCardDefines(localRef);
                 defines.AddRange(cardDefines);
             }
@@ -407,7 +416,121 @@ namespace Controllers
                 if (index < 0 || !_typeFiltersValue[index])
                     return false;
             }
+
+            // 搜索筛选
+            if (!string.IsNullOrEmpty(_searchFilterString))
+            {
+                var poolRef = getCardPoolReference(define.cardPoolId);
+                if (game.card.tryGetCardSkin(poolRef, define.id, out var skin))
+                {
+                    if (!isCardFitsSearchString(define, skin, _searchFilterString))
+                    {
+                        return false;
+                    }
+                }
+            }
             return true;
+        }
+        private bool isCardFitsSearchString(CardDefine define, CardSkinData skin, string str)
+        {
+            // 名称
+            if (!string.IsNullOrEmpty(skin.name) && skin.name.Contains(str))
+                return true;
+            // 描述
+            if (!string.IsNullOrEmpty(skin.desc) && skin.desc.Contains(str))
+                return true;
+
+            // 种族
+            var tags = define.getTags();
+            var tagTexts = tags
+                .Select(t => game.card.tryGetTranslatedTag(t, out string text) ? text : t)
+                .Where(t => !string.IsNullOrEmpty(t));
+            if (tagTexts.Contains(_searchFilterString))
+                return true;
+
+            // 搜索关键词
+            foreach (var keyword in _searchKeywords)
+            {
+                var keywordText = game.lang._(keyword);
+                var keywordPattern = $"({keywordText})[:：]([^ ]+)";
+                var keywordMatches = Regex.Matches(str, keywordPattern);
+                for (int i = 0; i < keywordMatches.Count; i++)
+                {
+                    var match = keywordMatches[i];
+                    if (match.Groups.Count >= 3)
+                    {
+                        var value = match.Groups[2].Value;
+                        if (isCardFitsKeyword(define, keyword, value))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        private bool isCardFitsKeyword(CardDefine define, string keyword, string value)
+        {
+            switch (keyword)
+            {
+                case SEARCH_KEYWORD_ATTACK:
+                    if (!define.isServant() && !define.isItem() && !define.isMaster())
+                        return false;
+                    var cardAttack = define.getAttack();
+                    if (fitsInt(value, cardAttack))
+                        return true;
+                    break;
+                case SEARCH_KEYWORD_HEALTH:
+                    if (!define.isServant() && !define.isItem() && !define.isMaster())
+                        return false;
+                    var cardLife = define.getLife();
+                    if (fitsInt(value, cardLife))
+                        return true;
+                    break;
+                case SEARCH_KEYWORD_COST:
+                    var cardCost = define.getCost();
+                    if (fitsInt(value, cardCost))
+                        return true;
+                    break;
+            }
+            return false;
+        }
+        private bool fitsInt(string str, int value)
+        {
+            if (int.TryParse(str, out var v))
+            {
+                if (value == v)
+                    return true;
+            }
+            var rangeMatch = Regex.Match(str, rangePattern);
+            if (rangeMatch.Success && rangeMatch.Groups.Count >= 3)
+            {
+                var minStr = rangeMatch.Groups[1].Value;
+                var maxStr = rangeMatch.Groups[2].Value;
+                if (int.TryParse(minStr, out var min) && int.TryParse(maxStr, out var max))
+                {
+                    return value >= min && value <= max;
+                }
+            }
+            var lesserMatch = Regex.Match(str, lesserPattern);
+            if (lesserMatch.Success && lesserMatch.Groups.Count >= 2)
+            {
+                var maxStr = lesserMatch.Groups[1].Value;
+                if (int.TryParse(maxStr, out var max))
+                {
+                    return value <= max;
+                }
+            }
+            var greaterMatch = Regex.Match(str, greaterPattern);
+            if (greaterMatch.Success && greaterMatch.Groups.Count >= 2)
+            {
+                var minStr = greaterMatch.Groups[1].Value;
+                if (int.TryParse(minStr, out var min))
+                {
+                    return value >= min;
+                }
+            }
+            return false;
         }
         /// <summary>
         /// 筛选所有卡牌。
@@ -464,7 +587,7 @@ namespace Controllers
             for (int i = 0; i < cardPools.Length; i++)
             {
                 var cardPoolId = cardPools[i];
-                var localPoolRef = game.card.getLocalCardPoolReference(cardPoolId);
+                var localPoolRef = getCardPoolReference(cardPoolId);
                 var poolInfo = game.card.getCardPoolInfo(localPoolRef);
                 cardPoolNames[i] = poolInfo.cardPoolName;
             }
@@ -483,13 +606,17 @@ namespace Controllers
             for (int i = 1; i < _characterFilters.Length; i++)
             {
                 var characterRef = _characterFilters[i];
-                var localPoolRef = game.card.getLocalCardPoolReference(characterRef.cardPoolId);
+                var localPoolRef = getCardPoolReference(characterRef.cardPoolId);
                 var character = game.card.getCardDefine(localPoolRef, characterRef.defineId);
                 if (character == null)
                     continue;
                 characterNameList.Add(game.card.getCardSkin(character).name);
             }
             return characterNameList.ToArray();
+        }
+        private ICardPoolReference getCardPoolReference(long cardPoolId)
+        {
+            return game.card.getLocalCardPoolReference(cardPoolId);
         }
         #endregion
         #region 事件
@@ -509,6 +636,17 @@ namespace Controllers
         public event Func<CardDefine, PointerEventData, Task<bool>> onEndDragCard;
         #endregion
         #region 属性字段
+        [TranslateMsg("卡牌搜索栏所使用的关键词")]
+        public const string SEARCH_KEYWORD_ATTACK = "攻击力";
+        [TranslateMsg("卡牌搜索栏所使用的关键词")]
+        public const string SEARCH_KEYWORD_HEALTH = "生命值";
+        [TranslateMsg("卡牌搜索栏所使用的关键词")]
+        public const string SEARCH_KEYWORD_COST = "灵力值";
+
+        public const string rangePattern = "([0-9]+)-([0-9]+)";
+        public const string lesserPattern = "([0-9]+)-";
+        public const string greaterPattern = "([0-9]+)\\+";
+
         [SerializeField]
         CardPoolViewPanel _ui;
         List<CardDefine> _cardDefineList = new List<CardDefine>();
@@ -561,6 +699,12 @@ namespace Controllers
             StringTable.GAME_CARD_TYPE_SERVANT,
             StringTable.GAME_CARD_TYPE_SPELL,
             StringTable.GAME_CARD_TYPE_ITEM
+        };
+        readonly static string[] _searchKeywords =
+        {
+            SEARCH_KEYWORD_ATTACK,
+            SEARCH_KEYWORD_HEALTH,
+            SEARCH_KEYWORD_COST,
         };
         #endregion
         #region 内部类

@@ -235,12 +235,7 @@ namespace Game
         {
             CardManager card = ui.ui.getManager<CardManager>();
 
-            if (card.tryGetTranslatedTag(tag, out string text))
-            {
-                ui.servantCardFace.raceNameText.text = text;
-            }
-            else
-                ui.servantCardFace.raceNameText.text = null;
+            ui.servantCardFace.raceNameText.text = card.tryGetTranslatedTag(tag, out string text) ? text : tag;
         }
         public static string getTag(this UICard ui)
         {
