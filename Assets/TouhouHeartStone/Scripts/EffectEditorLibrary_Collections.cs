@@ -79,7 +79,7 @@ namespace Game
         [Obsolete]
         [THHActionMethod(BuiltinActionDefineID.Where_Obsolete, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, "筛选（过时）", StringTable.EDITOR_NODE_NAME_WHERE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_ARRAY_MATCHED)]
-        public static async Task<object[]> where(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+        public static async Task<object[]> where(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] ControlInput condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
@@ -124,7 +124,7 @@ namespace Game
         /// </summary>
         [THHActionMethod(BuiltinActionDefineID.Where, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, StringTable.EDITOR_NODE_NAME_WHERE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_ARRAY_MATCHED)]
-        public static async Task<object[]> where(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+        public static async Task<object[]> where(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] NodeValueRef<bool> condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
@@ -188,7 +188,7 @@ namespace Game
         [Obsolete]
         [THHActionMethod(BuiltinActionDefineID.OrderBy_Obsolete, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, "排序（过时）", EDITOR_NODE_NAME_ORDER_BY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
-        public static Array orderBy(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+        public static Array orderBy(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(EDITOR_PARAM_NAME_DESCENDING)] bool descending,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
             [ActionNodeParam(EDITOR_PARAM_NAME_ORDER_KEY)] ControlInput condition,
@@ -229,7 +229,7 @@ namespace Game
         /// </summary>
         [ObsoletedKeyMethod(BuiltinActionDefineID.OrderBy, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_ORDER_BY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
-        public static Array orderBy(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+        public static Array orderBy(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(EDITOR_PARAM_NAME_DESCENDING)] bool descending,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
             [ActionNodeParam(EDITOR_PARAM_NAME_ORDER_KEY)] NodeValueRef<object> condition,
@@ -281,7 +281,7 @@ namespace Game
         /// 遍历集合
         /// </summary>
         [ObsoletedKeyMethod(BuiltinActionDefineID.ForeachAction, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_FOREACH)]
-        public static async Task foreachAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+        public static async Task foreachAction(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION)] ControlInput action,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)

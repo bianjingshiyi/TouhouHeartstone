@@ -193,14 +193,23 @@ namespace TouhouHeartstone
             if (count > 0)
                 cards = cards.randomTake(game, count).ToArray();
             game.logger.logTrace($"{player}要从卡牌{string.Join("，", cards)}中选择一个");
-            DefineReference[] cardArray = cards.Select(c => c.define.getDefineRef()).ToArray();
-            var res = await game.answers.ask(player.id, new DiscoverRequest(cardArray, title), float.MaxValue);
-            Card selectedCard = cards.First(c =>
+            Card selectedCard;
+            if (game.getCurrentPlayer() == player)
             {
-                var defRef = (res as DiscoverResponse).cardDefRef;
-                return c.define.cardPoolId == defRef.cardPoolId && c.define.id == defRef.defineId;
-            });
-            game.logger.logTrace($"{player}选择{selectedCard}");
+                int[] cardIdArray = cards.Select(c => c.id).ToArray();
+                var res = await game.answers.ask(player.id, new DiscoverRequest(cardIdArray, title), float.MaxValue);
+                selectedCard = cards.First(c =>
+                {
+                    var cardId = (res as DiscoverResponse).cardId;
+                    return c.id == cardId;
+                });
+                game.logger.logTrace($"{player}选择{selectedCard}");
+            }
+            else
+            {
+                selectedCard = cards.random(game);
+                game.logger.logTrace($"目前不是{player}的回合，{player}自动选择{selectedCard}");
+            }
             return selectedCard;
         }
         /// <summary>
@@ -221,14 +230,23 @@ namespace TouhouHeartstone
             if (count > 0)
                 cards = cards.randomTake(game, count).ToArray();
             game.logger.logTrace($"{player}要从卡牌{string.Join("，", cards)}中选择一个");
-            DefineReference[] cardArray = cards.Select(c => c.getDefineRef()).ToArray();
-            var res = await game.answers.ask(player.id, new DiscoverRequest(cardArray, title), float.MaxValue);
-            CardDefine selectedCard = cards.First(c =>
+            CardDefine selectedCard;
+            if (game.getCurrentPlayer() == player)
             {
-                var defRef = (res as DiscoverResponse).cardDefRef;
-                return c.cardPoolId == defRef.cardPoolId && c.id == defRef.defineId;
-            });
-            game.logger.logTrace($"{player}选择{selectedCard}");
+                DefineReference[] cardArray = cards.Select(c => c.getDefineRef()).ToArray();
+                var res = await game.answers.ask(player.id, new DiscoverRequest(cardArray, title), float.MaxValue);
+                selectedCard = cards.First(c =>
+                {
+                    var defRef = (res as DiscoverResponse).cardDefRef;
+                    return c.cardPoolId == defRef.cardPoolId && c.id == defRef.defineId;
+                });
+                game.logger.logTrace($"{player}选择{selectedCard}");
+            }
+            else
+            {
+                selectedCard = cards.random(game);
+                game.logger.logTrace($"目前不是{player}的回合，{player}自动选择{selectedCard}");
+            }
             return selectedCard;
         }
 

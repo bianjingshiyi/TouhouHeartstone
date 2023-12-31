@@ -243,8 +243,8 @@ namespace Game
         public const int SetPlayerGem = Type_Action + Category_Player + 1;    // 设置当前灵力值
         public const int SetPlayerProp = Type_Action + Category_Player + 2;    // 设置玩家属性
         public const int DrawTargetCard = Type_Action + Category_Player + 3;    // 抽目标卡牌
-        public const int SelectOneFromCards = Type_Action + Category_Player + 4;    // 从一定数量的卡牌中选择一张
-        public const int SelectOneFromCardDefines = Type_Action + Category_Player + 5;    // 从一定数量的卡牌定义中选择一张
+        public const int SelectOneFromCards_Obs_Rule = Type_Action + Category_Player + 4;    // 从一定数量的卡牌中选择一张（自定义规则过时）
+        public const int SelectOneFromCardDefines_Obs_Rule = Type_Action + Category_Player + 5;    // 从一定数量的卡牌定义中选择一张（自定义规则过时）
         public const int ResetSkill = Type_Action + Category_Player + 6;    // 复原技能
         public const int DestroyItem = Type_Action + Category_Player + 7;    // 摧毁道具
         public const int AddPlayerGem = Type_Action + Category_Player + 8;    // 增加当前灵力值
@@ -255,6 +255,8 @@ namespace Game
         public const int SetFatigue = Type_Action + Category_Player + 13; // 设置疲劳层数
         public const int AddFatigue = Type_Action + Category_Player + 14; // 增加疲劳层数
         public const int TakeFatigueDamage = Type_Action + Category_Player + 15; // 受到疲劳伤害
+        public const int SelectOneFromCards = Type_Action + Category_Player + 16;    // 从一定数量的卡牌中选择一张
+        public const int SelectOneFromCardDefines = Type_Action + Category_Player + 17;    // 从一定数量的卡牌定义中选择一张
 
         // 卡牌
         public const int Damage = Type_Action + Category_Card + 1;    // 造成伤害
@@ -295,7 +297,7 @@ namespace Game
         public const int DealDamageToRandomTargets_Obs_Mass = Type_Action + Category_Card + 36;    // 对固定数量的随机目标造成伤害或法伤（群体事件过时）
         public const int SetCardProp = Type_Action + Category_Card + 37;    // 设置卡牌属性
         public const int Discard = Type_Action + Category_Card + 38;    // 丢弃卡牌
-        public const int HealTargets = Type_Action + Category_Card + 39;    // 治疗目标卡牌
+        public const int HealTargets_Obs_Rule = Type_Action + Category_Card + 39;    // 治疗目标卡牌（自定义规则过时）
         public const int Seal = Type_Action + Category_Card + 40;    // 沉默
         public const int DealDamageOrSpellDamage = Type_Action + Category_Card + 41;    // 造成伤害或法伤
         public const int DealDamageSplitAmong = Type_Action + Category_Card + 42;    // 造成伤害或法伤兵分配给目标
@@ -303,6 +305,7 @@ namespace Game
         public const int CloneCard = Type_Action + Category_Card + 44;    // 复制卡牌
         public const int CreateTokenToHead = Type_Action + Category_Card + 45;    // 创建衍生卡并置入延迟区
         public const int CreateTokenToPile = Type_Action + Category_Card + 46;    // 创建衍生卡并置入牌堆
+        public const int HealTargets = Type_Action + Category_Card + 47;    // 治疗目标卡牌
 
         // 增益
         public const int AddBuff = Type_Action + Category_Buff + 1;    // 添加增益

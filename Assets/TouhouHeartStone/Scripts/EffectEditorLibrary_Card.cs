@@ -567,6 +567,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_DEAL_SPELL_DAMAGE = "造成法术伤害";
         [TranslateMsg("编辑器/伤害分类/节点名称")]
         public const string EDITOR_PARAM_NAME_DAMAGE_SOURCE = "伤害源";
+        [TranslateMsg("编辑器/伤害分类/节点名称")]
+        public const string EDITOR_PARAM_NAME_HEAL_SOURCE = "治疗源";
 
         [TranslateMsg("编辑器-伤害-参数名称")]
         public const string EDITOR_PARAM_NAME_MASS_DAMAGE_EVENT = "群体伤害事件";
@@ -743,7 +745,7 @@ namespace Game
         [EventNode(typeof(SplitDamageEventDefine))]
         [THHActionMethod(BuiltinActionDefineID.DealDamageSplitAmong, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_SPLIT_DAMAGE_EVENT)][return: NodeParamEventType(typeof(SplitDamageEventDefine))]
-        public static Task<EventArg> dealDamageOrSpellDamageSplitToTargets(CardEngine game, Card card,
+        public static Task<EventArg> dealDamageOrSpellDamageSplitToTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)] int damage,
             [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION)] int damage2,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
@@ -792,7 +794,7 @@ namespace Game
         [EventNode(typeof(MassDamageEventDefine))]
         [THHActionMethod(BuiltinActionDefineID.DealDamageToRandomTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_MASS_DAMAGE_EVENT)][return: NodeParamEventType(typeof(MassDamageEventDefine))]
-        public static Task<EventArg> dealDamageOrSpellDamageToSpecificNumberOfTargets(CardEngine game, Card card,
+        public static Task<EventArg> dealDamageOrSpellDamageToSpecificNumberOfTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count,
             [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION)] int count2,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)] int damage,
@@ -926,18 +928,35 @@ namespace Game
             return targets.healObsolete(game, card, value);
         }
         /// <summary>
-        /// 治疗
+        /// 治疗（自定义规则过时）
         /// </summary>
+        [Obsolete]
         [EventNode(typeof(MassHealEventDefine))]
-        [THHActionMethod(BuiltinActionDefineID.HealTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_HEAL_TARGETS)]
+        [THHActionMethod(BuiltinActionDefineID.HealTargets_Obs_Rule, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_HEAL_TARGETS)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_MASS_HEAL_EVENT)][return: NodeParamEventType(typeof(MassHealEventDefine))]
-        public static Task<EventArg> healTargets(CardEngine game, Card card,
+        public static Task<EventArg> healTargetsRuleObsolete(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
         {
             if (targets == null)
                 return Task.FromResult<EventArg>(null);
             return targets.heal(game, card, value);
+        }
+        /// <summary>
+        /// 治疗
+        /// </summary>
+        [EventNode(typeof(MassHealEventDefine))]
+        [THHActionMethod(BuiltinActionDefineID.HealTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_HEAL_TARGETS)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_MASS_HEAL_EVENT)]
+        [return: NodeParamEventType(typeof(MassHealEventDefine))]
+        public static Task<EventArg> healTargets(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
+            [ActionNodeParam(EDITOR_PARAM_NAME_HEAL_SOURCE)] Card source,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
+        {
+            if (targets == null)
+                return Task.FromResult<EventArg>(null);
+            return targets.heal(game, source, value);
         }
         [ObsoletedKeyMethod(ObsoletedActionDefineID.HealSpecificAmountToTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_HEAL_SPECIFIC_AMOUNT_TO_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HEAL_EVENT)][return: NodeParamEventType(typeof(HealEventDefine))]

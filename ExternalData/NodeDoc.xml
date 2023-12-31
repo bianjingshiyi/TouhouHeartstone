@@ -4,6 +4,7 @@
     <defineId>112001</defineId>
     <obsoleteNames />
     <editorName>BooleanConst</editorName>
+    <obsoleteMsg />
     <category>其他</category>
     <inputs>
       <ActionParameterComment>
@@ -81,6 +82,7 @@
       <string>GetBuffDefine</string>
     </obsoleteNames>
     <editorName>获取增益定义</editorName>
+    <obsoleteMsg />
     <category>Buff</category>
     <inputs>
       <ActionParameterComment>
@@ -112,6 +114,7 @@
     <defineId>112003</defineId>
     <obsoleteNames />
     <editorName>IntegerConst</editorName>
+    <obsoleteMsg />
     <category>其他</category>
     <inputs>
       <ActionParameterComment>
@@ -220,6 +223,7 @@
     <defineId>112006</defineId>
     <obsoleteNames />
     <editorName>StringConst</editorName>
+    <obsoleteMsg />
     <category>其他</category>
     <inputs>
       <ActionParameterComment>
@@ -1031,6 +1035,7 @@
     <defineId>201004</defineId>
     <obsoleteNames />
     <editorName>从一定数量的卡牌中选择一张</editorName>
+    <obsoleteMsg />
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
@@ -1070,6 +1075,7 @@
     <defineId>201005</defineId>
     <obsoleteNames />
     <editorName>从一定数量的卡牌定义中选择一张</editorName>
+    <obsoleteMsg />
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
@@ -1104,6 +1110,94 @@
       <li>八意永琳</li>
       <li>蓬莱山辉夜</li>
     </ul>]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>201016</defineId>
+    <obsoleteNames />
+    <editorName>从一定数量的卡牌中选择一张</editorName>
+    <category>玩家</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要进行检视的玩家。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[要检视的卡牌列表。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[一次最多检视的卡牌数量。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[选择的卡牌。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[使回合的玩家检视一定数量的卡牌，并从中选择一张。<br/>如果当前回合不是该玩家的回合，则随机选择一张。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>201017</defineId>
+    <obsoleteNames />
+    <editorName>从一定数量的卡牌定义中选择一张</editorName>
+    <category>玩家</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要进行检视的玩家。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>defines</name>
+        <displayName>卡牌定义</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[要检视的卡牌定义列表。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[一次最多检视的卡牌定义数量。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>return</name>
+        <displayName>卡牌定义</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[选择的卡牌定义。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[使玩家检视一定数量的卡牌定义，并从中选择一张。<br/>如果当前回合不是该玩家的回合，则随机选择一张。]]></summary>
+    <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
     <defineId>101016</defineId>
@@ -1882,7 +1976,6 @@
         <summary><![CDATA[获取到的疲劳层数。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[获取一个玩家的当前疲劳层数。未受到疲劳伤害时为0，受到一次疲劳伤害后为1。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1910,7 +2003,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[设置一个玩家的当前疲劳层数。未受到疲劳伤害时为0，受到一次疲劳伤害后为1。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1938,7 +2030,6 @@
       </ActionParameterComment>
     </inputs>
     <outputs />
-    <consts />
     <summary><![CDATA[增加一个玩家的当前疲劳层数。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1967,7 +2058,6 @@
         <summary><![CDATA[疲劳产生的事件。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
     <summary><![CDATA[使一个玩家的英雄受到一次疲劳伤害。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -4862,6 +4952,7 @@
     <defineId>202039</defineId>
     <obsoleteNames />
     <editorName>治疗目标卡牌</editorName>
+    <obsoleteMsg />
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
@@ -4871,6 +4962,50 @@
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要治疗的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>value</name>
+        <displayName>值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要治疗的数值。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>return</name>
+        <displayName>群体治疗事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[治疗一个或多个目标产生的群体治疗事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[治疗一个或多个目标。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>202047</defineId>
+    <obsoleteNames />
+    <editorName>治疗目标卡牌</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[要治疗的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>source</name>
+        <displayName>治疗源</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[进行治疗的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>Int32</type>
@@ -5775,6 +5910,7 @@
     <defineId>103002</defineId>
     <obsoleteNames />
     <editorName>获取卡牌定义</editorName>
+    <obsoleteMsg />
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
@@ -8614,7 +8750,7 @@
         <summary><![CDATA[要转换类型的事件记录。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>EventReferenceProxy</type>
+        <type>EventReference</type>
         <name>eventReference</name>
         <displayName>事件类型</displayName>
         <isParams>false</isParams>
@@ -8651,7 +8787,7 @@
         <summary><![CDATA[要判断类型的事件记录。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>EventReferenceProxy</type>
+        <type>EventReference</type>
         <name>argRef</name>
         <displayName>事件类型</displayName>
         <isParams>false</isParams>
@@ -8870,7 +9006,7 @@
         <summary><![CDATA[要转换类型的事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>EventReferenceProxy</type>
+        <type>EventReference</type>
         <name>eventReference</name>
         <displayName>事件类型</displayName>
         <isParams>false</isParams>
@@ -9133,7 +9269,7 @@
         <summary><![CDATA[要判断类型的事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>EventReferenceProxy</type>
+        <type>EventReference</type>
         <name>argRef</name>
         <displayName>事件类型</displayName>
         <isParams>false</isParams>

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using MukioI18n;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 
 namespace Game
@@ -115,7 +114,7 @@ namespace Game
 
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.ForAction, EDITOR_CATEGORY_NAME_OTHER, StringTable.EDIOTR_NODE_NAME_FOR_ACTION)]
-        public static async Task forAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+        public static async Task forAction(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ControlInput action,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_REPEAT_TIME, isOut: true)] int repeatTime)
@@ -141,7 +140,7 @@ namespace Game
 
         [Obsolete]
         [THHActionMethod(BuiltinActionDefineID.DoUntilAction_Obsolete, EDITOR_CATEGORY_NAME_OTHER, "重复动作直到（过时）", EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
-        public static async Task doUntilAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+        public static async Task doUntilAction(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(EDIOTR_PARAM_NAME_STOP_CONDITION, isOut: false)] ControlInput condition,
             [ActionNodeParam(EDIOTR_PARAM_NAME_MAX_REPEAT_TIME)] int maxRepeatTime,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ControlInput action,
@@ -174,7 +173,7 @@ namespace Game
         }
 
         [THHActionMethod(BuiltinActionDefineID.DoUntilAction, null, EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
-        public static async Task doUntilAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+        public static async Task doUntilAction(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(EDIOTR_PARAM_NAME_STOP_CONDITION, isOut: false)] NodeValueRef<bool> condition,
             [ActionNodeParam(EDIOTR_PARAM_NAME_MAX_REPEAT_TIME)] int maxRepeatTime,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ControlInput action,
@@ -573,10 +572,11 @@ namespace Game
             return targetCard.owner.draw(game, targetCard, out outEventDraw, out outEventBurn);
         }
 
-        ///从一定数量卡牌中选一张
-        [ObsoletedKeyMethod(BuiltinActionDefineID.SelectOneFromCards, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_CARDS)]
+        ///从一定数量卡牌中选一张（自定义规则过时）
+        [Obsolete]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.SelectOneFromCards_Obs_Rule, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_CARDS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static Task<Card> selectOneFromManyCards(CardEngine game, Card card,
+        public static Task<Card> selectOneFromManyCardsRuleObsolete(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count)
         {
@@ -584,16 +584,41 @@ namespace Game
                 return null;
             return game.askSelect(card.owner, cards, count);
         }
-        ///从一定数量卡牌定义中选一张
-        [ObsoletedKeyMethod(BuiltinActionDefineID.SelectOneFromCardDefines, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_DEFINES)]
+        ///从一定数量卡牌定义中选一张（自定义规则过时）
+        [Obsolete]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.SelectOneFromCardDefines_Obs_Rule, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_DEFINES)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
-        public static Task<CardDefine> selectOneFromManyDefines(CardEngine game, Card card,
+        public static Task<CardDefine> selectOneFromManyDefinesRuleObsolete(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine[] defines,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count)
         {
             if (defines == null)
                 return null;
             return game.askSelect(card.owner, defines, count);
+        }
+        ///从一定数量卡牌中选一张（自定义规则过时）
+        [THHActionMethod(BuiltinActionDefineID.SelectOneFromCards, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_CARDS)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Task<Card> selectOneFromManyCards(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count)
+        {
+            if (cards == null)
+                return null;
+            return game.askSelect(player, cards, count);
+        }
+        ///从一定数量卡牌定义中选一张
+        [THHActionMethod(BuiltinActionDefineID.SelectOneFromCardDefines, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_DEFINES)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
+        public static Task<CardDefine> selectOneFromManyDefines(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine[] defines,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count)
+        {
+            if (defines == null)
+                return null;
+            return game.askSelect(player, defines, count);
         }
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetPlayerSpellDamage, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_SPELL_DAMAGE, "GetSpellDamage")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)]
@@ -793,7 +818,7 @@ namespace Game
         [Obsolete]
         [THHActionMethod(BuiltinActionDefineID.FaithDuel_Obsolete, StringTable.EDITOR_NODE_CATEGORY_PLAYER, "信仰对决（过时）", EDITOR_NODE_FAITHDUEL)]
         [return: ActionNodeParam(EDITOR_NODE_FAITHDUEL_WIN)]
-        public static bool faithduel(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+        public static bool faithduel(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER)] ControlInput filter,
             [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER_CARD, isOut: true)] Card element,
@@ -1002,7 +1027,7 @@ namespace Game
         [ObsoletedKeyMethod(ObsoletedActionDefineID.GetCardsInDeckWithCondition, StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_GET_CARDS_IN_DECK_WITH_CONDITION)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         [Obsolete]
-        public static async Task<Card[]> getCardsInDeckWithCondition(CardEngine game, Card card, IBuff buff, IEventArg eventArg, Flow flow, ActionNode node,
+        public static async Task<Card[]> getCardsInDeckWithCondition(CardEngine game, Card card, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] ControlInput condition)
         {
             Pile deck = card.owner.getDeck();
@@ -1028,7 +1053,7 @@ namespace Game
         [ObsoletedKeyMethod(ObsoletedActionDefineID.GetCardsWithCondition, StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_FILTER_CARDS_WITH_CONDITION)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         [Obsolete]
-        public static async Task<Card[]> getCardsWithCondition(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+        public static async Task<Card[]> getCardsWithCondition(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] ControlInput condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_FILTERING_CARD, isOut: true)] Card filteringCard)
