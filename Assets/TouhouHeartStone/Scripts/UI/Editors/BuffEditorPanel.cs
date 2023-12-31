@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore.UI;
 using UnityEngine;
@@ -404,6 +405,16 @@ namespace UI
         #endregion
 
         #endregion
+
+        protected override IEnumerable<GameObject> getPages()
+        {
+            return base.getPages().Prepend(_propertyPage).Prepend(_buffPage);
+        }
+        protected override IEnumerable<GameObject> getPageIndicators()
+        {
+            return base.getPageIndicators().Prepend(_propertyPageIndicator).Prepend(_buffPageIndicator);
+        }
+
         #endregion
 
         #region 事件

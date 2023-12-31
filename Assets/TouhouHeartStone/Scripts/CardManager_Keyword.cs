@@ -128,6 +128,10 @@ namespace Game
             addKeywordInfo(KEYWORD.SHACKLE, KEYWORD_NAME_SHACKLE, KEYWORD_DESC_FROZEN);
             addKeywordInfo(KEYWORD.SEAL, KEYWORD_NAME_SEAL, KEYWORD_DESC_SEAL);
             addKeywordInfo(KEYWORD.FAITHDUEL, KEYWORD_NAME_FAITHDUEL, KEYWORD_DESC_FAITHDUEL);
+
+            // 特殊
+            addKeywordInfo(KEYWORD.FROZEN, StringTable.GAME_KEYWORD_FREEZE, KEYWORD_DESC_FROZEN);
+            addKeywordInfo(KEYWORD.CAN_BE_CHARGED, StringTable.GAME_KEYWORD_CAN_BE_CHARGED, KEYWORD_DESC_CAN_BE_CHARGED);
         }
 
         #endregion
