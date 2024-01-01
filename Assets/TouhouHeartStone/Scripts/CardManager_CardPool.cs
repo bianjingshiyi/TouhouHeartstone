@@ -1225,6 +1225,7 @@ namespace Game
                 fixConditionalNode(actionNode);
                 fixBuiltinCardRefs(actionNode);
                 fixConstsToDefaultValues(actionNode);
+                fixRuleObsoleteNode(actionNode);
             }
             // 修复未知或过时的节点。
             async Task fixUnknownOrObsoleteNode(ActionNode actionNode)
@@ -1478,6 +1479,65 @@ namespace Game
                 {
                     action.removeInputDefaultValue(SkinAnimationRef.NODE_CONST_KEY);
                     action.setProp(SkinAnimationRef.NODE_CONST_KEY, animRefName);
+                }
+            }
+            // 修复因加入自定义规则而过时的节点。
+            void fixRuleObsoleteNode(ActionNode actionNode)
+            {
+                if (actionNode.defineRef == null)
+                    return;
+                var graph = actionNode.graph;
+                var posX = actionNode.posX;
+                var posY = actionNode.posY;
+                if (actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.SelectOneFromCardDefines_Obs_Rule))
+                {
+                    actionNode.defineRef = new ActionReference(0, BuiltinActionDefineID.SelectOneFromCardDefines);
+                    actionNode.define = getActionDefine(builtinCardPoolReference, actionNode.defineRef.defineId);
+                    actionNode.Define();
+
+                    connectThisCardOwner("player");
+                }
+                else if (actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.SelectOneFromCards_Obs_Rule))
+                {
+                    actionNode.defineRef = new ActionReference(0, BuiltinActionDefineID.SelectOneFromCards);
+                    actionNode.define = getActionDefine(builtinCardPoolReference, actionNode.defineRef.defineId);
+                    actionNode.Define();
+
+                    connectThisCardOwner("player");
+                }
+                else if (actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.HealTargets_Obs_Rule))
+                {
+                    actionNode.defineRef = new ActionReference(0, BuiltinActionDefineID.HealTargets);
+                    actionNode.define = getActionDefine(builtinCardPoolReference, actionNode.defineRef.defineId);
+                    actionNode.Define();
+
+                    connectSource("source");
+                }
+
+                void connectThisCardOwner(string inputName)
+                {
+                    var thisCardDefine = getActionDefine(builtinCardPoolReference, BuiltinActionDefineID.ThisCard);
+                    var getCardOwnerDefine = getActionDefine(builtinCardPoolReference, BuiltinActionDefineID.GetCardOwner);
+                    var thisCardNode = graph.createActionNode(thisCardDefine, posX - 800, posY);
+                    var getCardOwnerNode = graph.createActionNode(getCardOwnerDefine, posX - 500, posY);
+
+                    var thisCardOutput = thisCardNode.getOutputPort(MethodActionDefine.returnValueName);
+                    var getCardOwnerInput = getCardOwnerNode.getInputPort("card");
+                    var getCardOwnerOutput = getCardOwnerNode.getOutputPort(MethodActionDefine.returnValueName);
+                    var selectCardInput = actionNode.getInputPort(inputName);
+
+                    graph.connect(thisCardOutput, getCardOwnerInput);
+                    graph.connect(getCardOwnerOutput, selectCardInput);
+                }
+                void connectSource(string inputName)
+                {
+                    var thisCardDefine = getActionDefine(builtinCardPoolReference, BuiltinActionDefineID.ThisCard);
+                    var thisCardNode = graph.createActionNode(thisCardDefine, posX - 500, posY);
+
+                    var thisCardOutput = thisCardNode.getOutputPort(MethodActionDefine.returnValueName);
+                    var selectCardInput = actionNode.getInputPort(inputName);
+
+                    graph.connect(thisCardOutput, selectCardInput);
                 }
             }
             #endregion

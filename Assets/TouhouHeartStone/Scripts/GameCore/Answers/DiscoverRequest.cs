@@ -17,9 +17,9 @@ namespace TouhouHeartstone
         public DefineReference[] cardRefArray;
         public override IResponse getDefaultResponse(IGame game, int playerId)
         {
-            var choice = game.responseRandomInt(0, cardRefArray.Length);
             if (cardRefArray != null)
             {
+                var choice = game.responseRandomInt(0, cardRefArray.Length);
                 return new DiscoverResponse() 
                 { 
                     playerId = playerId,
@@ -28,6 +28,7 @@ namespace TouhouHeartstone
             }
             else
             {
+                var choice = game.responseRandomInt(0, cardIdArray.Length);
                 return new DiscoverResponse()
                 {
                     playerId = playerId,
