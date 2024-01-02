@@ -28,8 +28,11 @@ namespace Game.BattleTable
             _duration += _deltaTime;
             if (_finished)
             {
-                table.StopCoroutine(_coroutine);
-                _coroutine = null;
+                if (_coroutine != null)
+                {
+                    table.StopCoroutine(_coroutine);
+                    _coroutine = null;
+                }
                 return true;
             }
             else if (_coroutine == null)
@@ -50,14 +53,19 @@ namespace Game.BattleTable
         {
             return _finished;
         }
-        public void finish()
+        public void finish(BattleTableManager table)
         {
             _finished = true;
+            if (_coroutine != null)
+            {
+                table.StopCoroutine(_coroutine);
+                _coroutine = null;
+            }
         }
         private IEnumerator updateCoroutine(BattleTableManager table)
         {
             yield return update(table);
-            finish();
+            finish(table);
         }
         /// <summary>
         /// 是否会阻挡组内的另一个动画？

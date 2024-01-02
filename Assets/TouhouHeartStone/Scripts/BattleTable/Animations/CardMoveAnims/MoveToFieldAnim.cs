@@ -98,7 +98,7 @@ namespace Game.BattleTable
             {
                 table.createServant(_cardDesc, _position);
             }
-            finish();
+            finish(table);
         }
         public override Vector3 getCurrentPosition(BattleTableManager table)
         {

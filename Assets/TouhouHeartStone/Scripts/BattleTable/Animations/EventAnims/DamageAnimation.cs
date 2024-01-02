@@ -14,7 +14,7 @@ namespace Game.BattleTable
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
             yield return pauseWhileNotCompleted();
-            yield return stopWhenCanceled();
+            stopWhenCanceled(table);
 
             var targetId = eventArg.getVar<Card>(EVENTVAR.CARD);
             var damagedValue = eventArg.getVar<int>(Arg.VAR_DAMAGED_VALUE);

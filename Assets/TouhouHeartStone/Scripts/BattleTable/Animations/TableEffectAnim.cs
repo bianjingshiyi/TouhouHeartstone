@@ -52,7 +52,7 @@ namespace Game.Animations
                 effect.update(_deltaTime);
                 yield return null;
             }
-            finish();
+            finish(table);
             table.removeEffect(effect);
             effect = null;
         }

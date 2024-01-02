@@ -25,7 +25,7 @@ namespace Game.BattleTable
 
             table.setOpponentWaiting(false);
 
-            yield return stopWhenCanceled();
+            stopWhenCanceled(table);
 
             var choose = eventArg.getVar<CardDefine>(EVENTVAR.CHOSEN_CARD);
 

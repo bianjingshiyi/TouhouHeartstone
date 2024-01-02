@@ -2415,8 +2415,9 @@ namespace Game.BattleTable
         }
         private bool cancelServantPreviewAnim(Card card)
         {
-            if (finishServantPreviewAnim(card.id) && card.pile == player.getHand())
+            if (card.pile == player.getHand())
             {
+                finishServantPreviewAnim(card.id);
                 var handPosition = card.pile.indexOf(card);
                 // 如果没有手牌。
                 if (!tryGetHand(card, out HandItem hand))

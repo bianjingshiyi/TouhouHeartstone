@@ -11,7 +11,7 @@ namespace Game.BattleTable
 
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            yield return stopWhenCanceled();
+            stopWhenCanceled(table);
 
             var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
             var damage = eventArg.getVar<int>(Arg.VAR_DAMAGE);

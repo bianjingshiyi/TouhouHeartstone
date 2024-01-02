@@ -84,11 +84,10 @@ namespace Game.BattleTable
                 yield return null;
             yield break;
         }
-        protected IEnumerator stopWhenCanceled()
+        protected void stopWhenCanceled(BattleTableManager table)
         {
             if (eventArg.isCanceled)
-                finish();
-            yield break;
+                finish(table);
         }
         protected CardSnapshot snapshotCard(BattleTableManager table, Card card)
         {

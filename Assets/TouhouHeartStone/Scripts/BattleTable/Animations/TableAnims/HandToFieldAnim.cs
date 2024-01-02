@@ -22,7 +22,7 @@ namespace Game.BattleTable
         public void forceFinish(BattleTableManager table)
         {
             _anim.forceFinish(table);
-            finish();
+            finish(table);
         }
         CardDescriptor _cardDesc;
         MoveToFieldAnim _anim;

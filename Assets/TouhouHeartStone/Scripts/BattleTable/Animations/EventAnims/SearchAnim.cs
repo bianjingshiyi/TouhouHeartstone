@@ -22,7 +22,7 @@ namespace Game.BattleTable
 
             table.setOpponentWaiting(false);
 
-            yield return stopWhenCanceled();
+            stopWhenCanceled(table);
 
             var searched = table.getEventCardSnapshot(eventArg, EVENTVAR.CHOSEN_CARD);
 
