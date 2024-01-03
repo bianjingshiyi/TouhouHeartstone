@@ -58,7 +58,7 @@ namespace UI
                 DeckListItem deckListItem = item.GetComponentInChildren<DeckListItem>();
                 deckListItem.updateView(deckViewData[i].name, deckViewData[i].image);
                 deckListItem.SetMode(DeckListItem.Mode.CardPoolSelect);
-                deckListItem.SetToggleValue(deckViewData[i].selected);
+                deckListItem.setToggleValue(deckViewData[i].selected);
             }, onAddDeckListItem, onDestroyDeckListItem);
         }
         #endregion
@@ -82,21 +82,21 @@ namespace UI
         {
             DeckListItem deckListItem = item.GetComponent<DeckListItem>();
             deckListItem.onClick += onClickDeckListItemCallback;
-            deckListItem.onCardPoolAdd += onClickEditCardPoolCallback;
+            deckListItem.onAddCardPoolClick += onClickEditCardPoolCallback;
             deckListItem.onToggleValueChanged += onDeckListItemToggleValueChangedCallback;
         }
         private void onDestroyDeckListItem(RectTransform item)
         {
             DeckListItem deckListItem = item.GetComponent<DeckListItem>();
             deckListItem.onClick -= onClickDeckListItemCallback;
-            deckListItem.onCardPoolAdd -= onClickEditCardPoolCallback;
+            deckListItem.onAddCardPoolClick -= onClickEditCardPoolCallback;
             deckListItem.onToggleValueChanged -= onDeckListItemToggleValueChangedCallback;
         }
         private void onClickDeckListItemCallback(DeckListItem item)
         {
             onClickDeckListItem?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform));
         }
-        private void onClickEditCardPoolCallback()
+        private void onClickEditCardPoolCallback(DeckListItem item)
         {
             onClickEditCardPools?.Invoke();
         }

@@ -65,14 +65,17 @@ namespace UI
         #endregion
 
         #region 卡池依赖
-        public void openSelectCardPoolDependencyDialog((string name, Sprite spr, bool selected)[] viewDatas)
+        public void openSelectCardPoolDependencyDialog()
         {
             _addCardPoolDepDialogObj.SetActive(true);
-            _addCardPoolDepDialog.updateAddCardPools(viewDatas);
         }
         public void hideSelectCardPoolDependencyDialog()
         {
             _addCardPoolDepDialogObj.SetActive(false);
+        }
+        public void updateSelectCardPoolDependencyDialog((string name, Sprite spr, bool selected)[] viewDatas)
+        {
+            _addCardPoolDepDialog.updateAddCardPools(viewDatas);
         }
         public void updateCardPoolDependencies(string[] names)
         {
@@ -115,6 +118,10 @@ namespace UI
             _cardPoolDepTabButton.onClick.AddListener(() => displayTabPage(_cardPoolDepTabPage));
 
             _addCardPoolDepButton.onClick.AddListener(() => onClickAddCardPoolDepButton?.Invoke());
+            _addCardPoolDepDialog.onClickDeckListItem += index => onClickAddCardPoolDepItem?.Invoke(index);
+            _addCardPoolDepDialog.onDeckListItemToggleValueChanged += (index, value) => onClickAddCardPoolDepItem?.Invoke(index);
+            _cancelAddCardPoolDepButton.onClick.AddListener(() => hideSelectCardPoolDependencyDialog());
+            _confirmAddCardPoolDepButton.onClick.AddListener(() => onClickConfirmAddCardPoolDepButton?.Invoke());
         }
         #endregion
 
@@ -183,6 +190,8 @@ namespace UI
 
         public event Action onClickAddCardPoolDepButton;
         public event Action<int> onClickRemoveCardPoolDepButton;
+        public event Action<int> onClickAddCardPoolDepItem; 
+        public event Action onClickConfirmAddCardPoolDepButton;
         #endregion
 
         #region 属性字段
@@ -228,6 +237,10 @@ namespace UI
         GameObject _addCardPoolDepDialogObj;
         [SerializeField]
         DeckViewPanel _addCardPoolDepDialog;
+        [SerializeField]
+        Button _cancelAddCardPoolDepButton;
+        [SerializeField]
+        Button _confirmAddCardPoolDepButton;
 
         #endregion
     }

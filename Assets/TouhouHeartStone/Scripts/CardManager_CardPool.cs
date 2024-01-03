@@ -141,9 +141,6 @@ namespace Game
                 return false;
             }
             var cardPoolRef = cardPoolInfo.ToReference();
-            // 获取卡池中对其他卡池的卡牌的引用。
-            // TODO: 在被引用的卡池有新版本后，卡池保存时会提示玩家需要将卡池引用修改到新版本。
-            cardPoolInfo.dependencyRefs = evaluateLocalCardPoolDependencies(cardPoolInfo.cardPoolId);
             // 如果该卡池正在被创建，将正在创建的卡池设为空。
             if (_creatingCardPoolInfo == cardPoolInfo)
                 finishCreatingCardPool();
@@ -835,89 +832,6 @@ namespace Game
         }
         #endregion
 
-        /// <summary>
-        /// 重新获取一个本地卡池内对其他卡池的引用。
-        /// </summary>
-        /// <param name="cardPoolRef">要检查的卡池ID。</param>
-        /// <returns>引用的其他卡池列表。</returns>
-        public CardPoolReference[] evaluateLocalCardPoolDependencies(long cardPoolId)
-        {
-            HashSet<CardPoolReference> poolList = new HashSet<CardPoolReference>();
-            if (!tryGetLocalCardPool(cardPoolId, out var cardPool))
-            {
-                return new CardPoolReference[0];
-            }
-            iterateActionNodes(cardPool, addCardPoolByNode);
-            foreach (var card in cardPool.cardDefineList)
-            {
-                // 获取卡牌属性中所有引用其他卡池的属性。
-                var propNames = card.getPropNames();
-                foreach (string propName in propNames)
-                {
-                    var prop = card.getProp<object>(propName);
-                    addCardPoolOfObject(prop);
-                }
-                // 获取卡牌效果中所有引用其他卡池的属性。
-                var genEffects = card.getGeneratedEffects();
-                foreach (var effect in genEffects)
-                {
-                    addCardPoolByEffect(effect);
-                }
-            }
-            foreach (var buffDef in cardPool.buffDefineList)
-            {
-                // 获取增益效果中所有引用其他卡池的属性。
-                foreach (var effect in buffDef.effectList)
-                {
-                    addCardPoolByEffect(effect);
-                }
-            }
-            return poolList.ToArray();
-
-            // 使用的内嵌方法。
-
-            void addCardPoolOfDefRef(DefineReference defRef)
-            {
-                if (defRef == null)
-                    return;
-                if (defRef.cardPoolId != cardPoolId)
-                {
-                    var poolRef = getLocalCardPoolReference(defRef.cardPoolId);
-                    var info = getCardPoolInfo(poolRef);
-                    if (info != null)
-                        poolList.Add(info.ToReference());
-                }
-            }
-            void addCardPoolOfObject(object obj)
-            {
-                if (obj is DefineReference defRef)
-                {
-                    addCardPoolOfDefRef(defRef);
-                }
-                else if (obj is IEnumerable<DefineReference> defRefCol)
-                {
-                    foreach (var dRef in defRefCol)
-                    {
-                        addCardPoolOfDefRef(dRef);
-                    }
-                }
-            }
-            void addCardPoolByNode(Node node)
-            {
-                foreach (var defVal in node.inputDefaultValues)
-                {
-                    addCardPoolOfObject(defVal.value);
-                }
-            }
-            void addCardPoolByEffect(GeneratedEffect effect)
-            {
-                foreach (var propName in effect.getPropNames())
-                {
-                    var prop = effect.getProp<object>(propName);
-                    addCardPoolOfObject(prop);
-                }
-            }
-        }
         public void showCardPoolLoadErrorDialog()
         {
             var title = game.lang._(StringTable.ERROR);

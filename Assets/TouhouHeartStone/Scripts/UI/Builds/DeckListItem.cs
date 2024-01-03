@@ -1,80 +1,114 @@
 ﻿using UnityEngine;
 using System;
 using UnityEngine.UI;
+using BJSYGameCore.UI;
 
 namespace UI
 {
-    partial class DeckListItem
+    public class DeckListItem : UIObject
     {
-        public Action<int> onDeckSelect;
-        public Action<int, string> onDeckRename;
-        public Action onDeckAdd;
-
-
-        public Action<string> onFileRemove;
-        public Action<string> onFileSelect;
-
-        string key;
-        int id;
-        public int ID => id;
-        public string KEY => key;
-
-        partial void onAwake()
-        {
-            NameInputField.onEndEdit.AddListener((s) => { onDeckRename?.Invoke(id, s); });
-            AddButtonBlack.asButton.onClick.AddListener(() => { onDeckAdd?.Invoke(); });
-            _addCardPoolButton.onClick.AddListener(() => onCardPoolAdd?.Invoke());
-
-            DeleteButtonIconGlass.asButton.onClick.AddListener(() => onFileRemove?.Invoke(key));
-            HeadImageButton.onClick.AddListener(() => onFileSelect?.Invoke(key));
-
-            HeadImageButton.onClick.AddListener(onClickCallback);
-            DeleteButtonIconGlass.asButton.onClick.AddListener(onClickDeleteButtonCallback);
-            NameInputField.onEndEdit.AddListener(onEndEditNameInputField);
-
-            _toggle?.onValueChanged.AddListener((value) => onToggleValueChanged?.Invoke(this, value));
-        }
+        #region 公有方法
         public void updateView(string name, Sprite image)
         {
             _nameText.text = name;
             _image.sprite = image;
-        }
-        public void SetContent(int id, string name, Sprite img)
-        {
-            this.id = id;
-
-            HeadImageButton.image.sprite = img;
-            NameInputField.text = name;
-            Text.text = name;
-        }
-
-        public void SetContent(string key, string name, Sprite img)
-        {
-            this.key = key;
-            HeadImageButton.image.sprite = img;
-            NameInputField.text = name;
-            Text.text = name;
+            _nameInputField.text = name;
         }
 
         public void SetSelectable(bool val)
         {
-            HeadImageButton.interactable = val;
+            _imageButton.interactable = val;
         }
 
         public void setWarning(bool val)
         {
-            NotCompleteImage.gameObject.SetActive(val);
+            _warningImage.gameObject.SetActive(val);
         }
 
-        public void setCardRentWarning (bool val) 
+        public void setCardRentWarning(bool val)
         {
             _cardPoolWarningImage.gameObject.SetActive(val);
         }
-        public void SetToggleValue(bool val)
+        public void setToggleValue(bool val)
         {
-            if (_toggle != null)
-                _toggle.isOn = val;
+            if (_toggle)
+                _toggle.SetIsOnWithoutNotify(val);
         }
+        public void SetMode(Mode mode)
+        {
+            _imageObj.SetActive(mode != Mode.AddDeck && mode != Mode.EditCardPool); // 图片
+            _createDeckButton.gameObject.SetActive(mode == Mode.AddDeck); // 添加牌组按钮
+            _addCardPoolButton.gameObject.SetActive(mode == Mode.EditCardPool); // 编辑卡池按钮
+
+            _nameInputField.gameObject.SetActive(mode == Mode.DeckTitle);
+            _deleteButton.gameObject.SetActive(mode == Mode.DeckListItem);
+            _toggleObj.SetActive(mode == Mode.CardPoolSelect);
+        }
+        #endregion
+
+        #region 私有方法
+
+        #region 生命周期
+        protected override void Awake()
+        {
+            base.Awake();
+            _imageButton.onClick.AddListener(() => onClick?.Invoke(this));
+            _deleteButton.onClick.AddListener(() => onClickDeleteButton?.Invoke(this));
+            _nameInputField.onEndEdit.AddListener(value => onNameInputFieldValueChanged?.Invoke(this, value));
+            _createDeckButton.onClick.AddListener(() => onCreateDeckClick?.Invoke(this));
+            _addCardPoolButton.onClick.AddListener(() => onAddCardPoolClick?.Invoke(this));
+            if (_toggle)
+                _toggle.onValueChanged.AddListener((value) => onToggleValueChanged?.Invoke(this, value));
+        }
+        #endregion
+
+        #endregion
+
+        #region 事件
+        public event Action<DeckListItem> onClick;
+        public event Action<DeckListItem> onClickDeleteButton;
+        public event Action<DeckListItem, string> onNameInputFieldValueChanged;
+        public event Action<DeckListItem, bool> onToggleValueChanged;
+        public event Action<DeckListItem> onAddCardPoolClick;
+        public event Action<DeckListItem> onCreateDeckClick;
+        #endregion
+
+        #region 属性字段
+
+        [Header("主体")]
+        [SerializeField]
+        Text _nameText;
+        [SerializeField]
+        Image _image;
+        [SerializeField]
+        GameObject _imageObj;
+
+        [Header("UI组件")]
+        [SerializeField]
+        Button _deleteButton;
+        [SerializeField]
+        InputField _nameInputField;
+        [SerializeField]
+        GameObject _toggleObj;
+        [SerializeField]
+        Toggle _toggle;
+
+        [Header("大按钮")]
+        [SerializeField]
+        Button _imageButton;
+        [SerializeField]
+        Button _addCardPoolButton;
+        [SerializeField]
+        Button _createDeckButton;
+
+        [Header("提醒图标")]
+        [SerializeField]
+        private Image _warningImage;
+        [SerializeField]
+        private Image _cardPoolWarningImage;
+        #endregion
+
+        #region 内嵌类
         public enum Mode
         {
             DeckListItem, // 牌组列表
@@ -83,86 +117,6 @@ namespace UI
             DeckSelect, // 牌组选择（人物编辑）
             EditCardPool, // 编辑卡池按钮
             CardPoolSelect, // 卡池选择
-        }
-
-        public void SetMode(Mode mode)
-        {
-            ImageMask.gameObject.SetActive(true);
-            AddButtonBlack.gameObject.SetActive(false);
-            _addCardPoolButton.gameObject.SetActive(false);
-
-            DeckNameImage.gameObject.SetActive(false);
-            NameInputField.gameObject.SetActive(false);
-            DeleteButtonIconGlass.gameObject.SetActive(false);
-            _toggleObj.SetActive(false);
-
-            switch (mode)
-            {
-                case Mode.DeckListItem: // 牌组列表
-                    DeckNameImage.gameObject.SetActive(true); // 显示名称
-                    DeleteButtonIconGlass.gameObject.SetActive(true); //显示删除按钮
-                    break;
-                case Mode.DeckTitle: // 当前编辑的牌组
-                    NameInputField.gameObject.SetActive(true); // 显示编辑输入栏
-                    break;
-                case Mode.AddDeck: // 添加牌组按钮
-                    ImageMask.gameObject.SetActive(false); // 隐藏图片
-                    AddButtonBlack.gameObject.SetActive(true); // 显示添加牌组按钮
-                    break;
-                case Mode.DeckSelect: // 牌组选择（人物编辑）
-                    DeckNameImage.gameObject.SetActive(true); // 显示名称
-                    break;
-                case Mode.EditCardPool: // 编辑卡池按钮
-                    ImageMask.gameObject.SetActive(false); // 隐藏图片
-                    _addCardPoolButton.gameObject.SetActive(true); // 显示编辑卡池按钮
-                    break;
-                case Mode.CardPoolSelect: // 卡池选择
-                    DeckNameImage.gameObject.SetActive(true); // 显示名称
-                    _toggleObj.SetActive(true); // 显示勾选框
-                    break;
-            }
-            _mode = mode;
-        }
-        void onClickCallback()
-        {
-            onDeckSelect?.Invoke(id);
-            onClick?.Invoke(this);
-        }
-        void onClickDeleteButtonCallback()
-        {
-            onClickDeleteButton?.Invoke(this);
-        }
-        void onEndEditNameInputField(string value)
-        {
-            onNameInputFieldValueChanged?.Invoke(this, value);
-        }
-        public event Action<DeckListItem> onClick;
-        public event Action<DeckListItem> onClickDeleteButton;
-        public event Action<DeckListItem, string> onNameInputFieldValueChanged;
-        public event Action<DeckListItem, bool> onToggleValueChanged;
-        public event Action onCardPoolAdd;
-        #region 属性字段
-
-        [SerializeField]
-        Text _nameText;
-        [SerializeField]
-        Image _image;
-        [SerializeField]
-        Image _cardPoolWarningImage;
-        [SerializeField]
-        Button _addCardPoolButton;
-        [SerializeField]
-        GameObject _toggleObj;
-        [SerializeField]
-        Toggle _toggle;
-
-        public Image HeadImage => _image;
-
-        private Mode _mode;
-        public Mode mode 
-        { 
-            get => _mode;
-            set => SetMode(value);
         }
         #endregion
     }

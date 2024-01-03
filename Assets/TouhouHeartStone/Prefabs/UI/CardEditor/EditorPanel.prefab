@@ -2931,7 +2931,7 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 3
+  m_ChildAlignment: 0
   m_Spacing: 0
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
@@ -3201,7 +3201,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 174.5, y: -30}
+  m_AnchoredPosition: {x: 174.5, y: -23.685}
   m_SizeDelta: {x: 349, y: 47.37}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4716226802983337354
@@ -4046,6 +4046,8 @@ MonoBehaviour:
   _cardPoolDepList: {fileID: 6817865792830877654}
   _addCardPoolDepDialogObj: {fileID: 7760634145625436984}
   _addCardPoolDepDialog: {fileID: 4858042791865651602}
+  _cancelAddCardPoolDepButton: {fileID: 6145509367223652973}
+  _confirmAddCardPoolDepButton: {fileID: 3644432707447788134}
 --- !u!114 &2633333649658191229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7831,6 +7833,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2542530885127992429}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3644432707447788134 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1286695113556157963, guid: 8f87f95af032014448691606aece594a,
+    type: 3}
+  m_PrefabInstance: {fileID: 2542530885127992429}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3162883717245726036
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10470,10 +10484,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: 60
-  m_PreferredHeight: 60
+  m_MinWidth: 60
+  m_MinHeight: 60
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -11084,6 +11098,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a86a5a498bbda940b218e5db86fdeea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6145509367223652973 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3395257643538153459, guid: e2102c19846404041a400979b8ee05b5,
+    type: 3}
+  m_PrefabInstance: {fileID: 8815616925782961566}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &7760634145625436984 stripped
