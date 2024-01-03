@@ -267,6 +267,10 @@ namespace Controllers
             _ui.onClickRemoveRuleItem += onClickRemoveRuleItemCallback;
             _ui.onConfrimCreateEventRule += onConfirmCreateEventRuleCallback;
 
+            // 卡池依赖
+            _ui.onClickAddCardPoolDepButton += onClickAddCardPoolDefButtonCallback;
+            _ui.onClickRemoveCardPoolDepButton += onClickRemoveCardPoolDefButtonCallback;
+
             _cardPoolViewPanelCtrl.onClickCard += onClickCard;
             _cardPoolViewPanelCtrl.onUpdateCardListItem += onUpdateCardListItem;
         }
@@ -544,6 +548,17 @@ namespace Controllers
             game.card.addRuleLogic(_curCardPoolId, logic);
             _ui.hideCreateEventRuleDialog();
             openRuleEditor(logic);
+        }
+        #endregion
+
+        #region 卡池依赖
+        private void onClickAddCardPoolDefButtonCallback()
+        {
+            // TODO
+        }
+        private void onClickRemoveCardPoolDefButtonCallback(int index)
+        {
+            // TODO
         }
         #endregion
 
