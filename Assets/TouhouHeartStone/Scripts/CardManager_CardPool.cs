@@ -642,10 +642,10 @@ namespace Game
         /// 获取卡池内的所有包含过时节点的节点图。
         /// </summary>
         /// <returns>过时节点节点图列表。</returns>
-        public (int cardId, int buffId, int actionId)[] getObsoleteNodeGraphs(CardPool cardPool)
+        public ObsoleteNodeHintInfo[] getObsoleteNodeGraphs(CardPool cardPool)
         {
-            HashSet<(int cardId, int buffId, int actionId)> list = new HashSet<(int cardId, int buffId, int actionId)>();
-            void checkObsoleteNodes(Node node, (int cardId, int buffId, int actionId) graphObj)
+            HashSet<ObsoleteNodeHintInfo> list = new HashSet<ObsoleteNodeHintInfo> ();
+            void checkObsoleteNodes(Node node, ObsoleteNodeHintInfo graphObj)
             {
                 if (node is not ActionNode actionNode)
                     return;
@@ -659,17 +659,33 @@ namespace Game
 
             Action<CardDefine, GeneratedEffect> cardAction = (card, effect) =>
             {
-                effect.traverseActionNode(node => checkObsoleteNodes(node, (card.id, 0, 0)));
+                foreach (var node in effect.graph.nodes)
+                {
+                    checkObsoleteNodes(node, ObsoleteNodeHintInfo.card(card.id));
+                }
             };
             Action<BuffDefine, GeneratedEffect> buffAction = (buff, effect) =>
             {
-                effect.traverseActionNode(node => checkObsoleteNodes(node, (0, buff.id, 0)));
+                foreach (var node in effect.graph.nodes)
+                {
+                    checkObsoleteNodes(node, ObsoleteNodeHintInfo.buff(buff.id));
+                }
             };
             Action<GeneratedActionDefine> defineAction = (define) =>
             {
-                define.traverse(node => checkObsoleteNodes(node, (0, 0, define.id)));
+                foreach (var node in define.graph.nodes)
+                {
+                    checkObsoleteNodes(node, ObsoleteNodeHintInfo.action(define.defineId));
+                }
             };
-            traverseActionGraphs(cardPool, cardAction, buffAction, defineAction);
+            Action<GeneratedRuleLogic> logicAction = (logic) =>
+            {
+                foreach (var node in logic.graph.nodes)
+                {
+                    checkObsoleteNodes(node, ObsoleteNodeHintInfo.rule(logic.id));
+                }
+            };
+            iterateActionGraphs(cardPool, cardAction, buffAction, defineAction, logicAction);
             return list.ToArray();
         }
 
@@ -831,7 +847,7 @@ namespace Game
             {
                 return new CardPoolReference[0];
             }
-            traverseActionNodes(cardPool, addCardPoolByNode);
+            iterateActionNodes(cardPool, addCardPoolByNode);
             foreach (var card in cardPool.cardDefineList)
             {
                 // 获取卡牌属性中所有引用其他卡池的属性。
@@ -1098,10 +1114,11 @@ namespace Game
 
             List<ActionGraph> collectedGraphs = new List<ActionGraph>();
             // 遍历所有节点图并修复信息。
-            traverseActionGraphs(cardPool,
+            iterateActionGraphs(cardPool,
                 (b, e) => effectAction(e),
                 (b, e) => effectAction(e),
-                defineAction);
+                defineAction,
+                l => collectGraph(l.graph));
 
             // 修复所有收集到的节点。
             foreach (var graph in collectedGraphs)
@@ -1191,7 +1208,7 @@ namespace Game
             {
                 collectGraph(define.graph);
             }
-            // 收集节点图，防止在traverse节点的时候因为操作节点图而报错。
+            // 收集节点图，防止在遍历节点的时候因为操作节点图而报错。
             void collectGraph(ActionGraph graph)
             {
                 collectedGraphs.Add(graph);
@@ -1663,9 +1680,10 @@ namespace Game
             }
             #endregion
         }
-        private void traverseActionGraphs(CardPool cardPool, Action<CardDefine, GeneratedEffect> cardAction,
+        private void iterateActionGraphs(CardPool cardPool, Action<CardDefine, GeneratedEffect> cardAction,
             Action<BuffDefine, GeneratedEffect> buffAction,
-            Action<GeneratedActionDefine> defineAction)
+            Action<GeneratedActionDefine> defineAction,
+            Action<GeneratedRuleLogic> ruleLogicAction)
         {
             foreach (var card in cardPool.cardDefineList)
             {
@@ -1685,22 +1703,42 @@ namespace Game
             {
                 defineAction?.Invoke(actionDefine);
             }
+            foreach (var ruleLogic in cardPool.ruleLogicList)
+            {
+                ruleLogicAction?.Invoke(ruleLogic);
+            }
         }
-        private void traverseActionNodes(CardPool cardPool, Action<Node> action)
+        private void iterateActionNodes(CardPool cardPool, Action<Node> action)
         {
             Action<CardDefine, GeneratedEffect> cardAction = (card, effect) =>
             {
-                effect.traverseActionNode(action);
+                foreach (var node in effect.graph.nodes)
+                {
+                    action?.Invoke(node);
+                }
             };
             Action<BuffDefine, GeneratedEffect> buffAction = (buff, effect) =>
             {
-                effect.traverseActionNode(action);
+                foreach (var node in effect.graph.nodes)
+                {
+                    action?.Invoke(node);
+                }
             };
             Action<GeneratedActionDefine> defineAction = (define) =>
             {
-                define.traverse(action);
+                foreach (var node in define.graph.nodes)
+                {
+                    action?.Invoke(node);
+                }
             };
-            traverseActionGraphs(cardPool, cardAction, buffAction, defineAction);
+            Action<GeneratedRuleLogic> logicAction = (logic) =>
+            {
+                foreach (var node in logic.graph.nodes)
+                {
+                    action?.Invoke(node);
+                }
+            };
+            iterateActionGraphs(cardPool, cardAction, buffAction, defineAction, logicAction);
         }
         private void removeConflictCardPoolInfo(CardPoolInfo cardPoolInfo)
         {
@@ -1819,5 +1857,16 @@ namespace Game
             relativePath = null;
             return false;
         }
+    }
+    public struct ObsoleteNodeHintInfo
+    {
+        public int cardId;
+        public int buffId;
+        public int actionId;
+        public int ruleId;
+        public static ObsoleteNodeHintInfo card(int id) => new ObsoleteNodeHintInfo() { cardId = id };
+        public static ObsoleteNodeHintInfo buff(int id) => new ObsoleteNodeHintInfo() { buffId = id };
+        public static ObsoleteNodeHintInfo action(int id) => new ObsoleteNodeHintInfo() { actionId = id };
+        public static ObsoleteNodeHintInfo rule(int id) => new ObsoleteNodeHintInfo() { ruleId = id };
     }
 }

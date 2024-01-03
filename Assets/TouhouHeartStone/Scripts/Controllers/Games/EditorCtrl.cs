@@ -724,26 +724,32 @@ namespace Controllers
             List<string> descs = new List<string>();
             for (int i = 0; i < Math.Min(obsoleteGraphs.Length, MAX_DISPLAY_COUNT); i++)
             {
-                var (cardId, buffId, actionId) = obsoleteGraphs[i];
-                if (cardId != 0)
+                var nodeInfo = obsoleteGraphs[i];
+                if (nodeInfo.cardId != 0)
                 {
-                    var cardName = game.card.getCardSkin(cardPoolRef, cardId)?.name;
+                    var cardName = game.card.getCardSkin(cardPoolRef, nodeInfo.cardId)?.name;
                     descs.Add(cardName ?? StringTable.BUILD_UNKNOW_CARD_NAME);
                 }
-                else if (buffId != 0)
+                else if (nodeInfo.buffId != 0)
                 {
                     string buffName = null;
-                    if (game.card.tryGetBuffDefine(cardPoolRef, buffId, out var buffDefine))
+                    if (game.card.tryGetBuffDefine(cardPoolRef, nodeInfo.buffId, out var buffDefine))
                     {
                         buffName = game.card.getBuffSkin(buffDefine)?.name;
                     }
                     descs.Add(buffName ?? EDITOR_UNKNOWN_BUFF_NAME);
                 }
-                else if (actionId != 0)
+                else if (nodeInfo.actionId != 0)
                 {
-                    var actionDefine = game.card.getActionDefine(cardPoolRef, actionId);
+                    var actionDefine = game.card.getActionDefine(cardPoolRef, nodeInfo.actionId);
                     string actionName = actionDefine?.editorName ?? EDITOR_UNKNOWN_ACTION_NAME;
                     descs.Add(actionName);
+                }
+                else if (nodeInfo.ruleId != 0)
+                {
+                    var ruleLogic = game.card.getRuleLogic(cardPoolRef, nodeInfo.ruleId);
+                    string ruleName = ruleLogic?.name ?? EDITOR_UNKNOWN_RULE_NAME;
+                    descs.Add(ruleName);
                 }
             }
             string obsoleteString = string.Join(",", descs);
@@ -1111,6 +1117,8 @@ namespace Controllers
         const string EDITOR_UNKNOWN_BUFF_NAME = "未知增益";
         [TranslateMsg]
         const string EDITOR_UNKNOWN_ACTION_NAME = "未知自定义动作";
+        [TranslateMsg]
+        const string EDITOR_UNKNOWN_RULE_NAME = "未知自定义规则";
         [TranslateMsg("尝试保存具有过时节点的卡池时的警告。（{0}：过时节点列表）")]
         const string EDITOR_WARNING_OBSOLETE_NODES_TEMPLATE = "以下内容包含过时的节点：\n{0}\n是否保存卡池？";
         [TranslateMsg("尝试保存具有过时节点的卡池，并且显示达到上限时的警告。（{0}：过时节点列表）")]
