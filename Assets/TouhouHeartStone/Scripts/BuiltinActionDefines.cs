@@ -230,6 +230,7 @@ namespace Game
         public const int GetTempVar = Type_Function + Category_Other + 7;    // 获取临时变量
         public const int RandomInt = Type_Function + Category_Other + 8;    // x到y之间的随机整数
         public const int IsNotExists = Type_Function + Category_Other + 9;    // 是否不存在
+        public const int ChooseIf = Type_Function + Category_Other + 10; // 根据条件选择值
 
         #endregion 函数
 

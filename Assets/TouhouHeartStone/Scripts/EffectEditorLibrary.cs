@@ -61,6 +61,10 @@ namespace Game
         public const string EDITOR_PARAM_NAME_GET_INT_X = "整数X";
         [TranslateMsg("编辑器-参数名称")]
         public const string EDITOR_PARAM_NAME_GET_INT_Y = "整数Y";
+        [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_TRUE_VALUE = "成立值";
+        [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_ELSE_VALUE = "否则值";
 
         [TranslateMsg("编辑器-节点名称")]
         private const string EDIOTR_NODE_NAME_SET_TEMP_VARIABLE = "设置临时变量";
@@ -70,6 +74,9 @@ namespace Game
         private const string EDITOR_NODE_NAME_BREAK = "停止重复动作";
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_CONTINUE = "跳过重复动作";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDIOTR_NODE_NAME_CHOOSE_IF = "根据条件选择值";
+        
         /// <summary>
         /// 设置临时变量
         /// </summary>
@@ -172,7 +179,7 @@ namespace Game
             while (times < maxRepeatTime && !finished);
         }
 
-        [THHActionMethod(BuiltinActionDefineID.DoUntilAction, null, EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
+        [THHActionMethod(BuiltinActionDefineID.DoUntilAction, EDITOR_CATEGORY_NAME_OTHER, EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
         public static async Task doUntilAction(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(EDIOTR_PARAM_NAME_STOP_CONDITION, isOut: false)] NodeValueRef<bool> condition,
             [ActionNodeParam(EDIOTR_PARAM_NAME_MAX_REPEAT_TIME)] int maxRepeatTime,
@@ -275,6 +282,22 @@ namespace Game
                 return;
             setScopeLoopState(scope, SCOPE_STATE_CONTINUED);
             scope.terminate();
+        }
+        /// <summary>
+        /// 根据条件选择值
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="isTrue"></param>
+        /// <param name="value"></param>
+        /// <param name="elseValue"></param>
+        /// <returns></returns>
+        [THHActionMethod(BuiltinActionDefineID.ChooseIf, EDITOR_CATEGORY_NAME_OTHER, EDIOTR_NODE_NAME_CHOOSE_IF)]
+        public static object chooseIf(CardEngine game, 
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] bool isTrue,
+            [ActionNodeParam(EDITOR_PARAM_NAME_TRUE_VALUE)] object value,
+            [ActionNodeParam(EDITOR_PARAM_NAME_ELSE_VALUE)] object elseValue)
+        {
+            return isTrue ? value : elseValue;
         }
         #endregion
 

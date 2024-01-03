@@ -431,6 +431,7 @@
     <defineId>212005</defineId>
     <obsoleteNames />
     <editorName>重复动作直到</editorName>
+    <category>其他</category>
     <inputs>
       <ActionParameterComment>
         <type>NodeValueRef&lt;Boolean&gt;</type>
@@ -552,6 +553,50 @@
     <inputs />
     <outputs />
     <summary><![CDATA[跳过本次重复动作，该次重复动作内的剩余节点都不再执行。<br>仅适用于<b>重复动作</b>、<b>重复动作直到</b>和<b>遍历</b>的内部。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>112010</defineId>
+    <obsoleteNames />
+    <editorName>根据条件选择值</editorName>
+    <category>其他</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>isTrue</name>
+        <displayName>条件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断的条件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>value</name>
+        <displayName>成立值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[条件成立时，输出的值。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>elseValue</name>
+        <displayName>否则值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[条件不成立时，输出的值。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>Value</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[最终输出的值。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[根据一个条件成立与否，选择不同的值。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -5984,7 +6029,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>206047</defineId>
+    <defineId>206048</defineId>
     <obsoleteNames />
     <editorName>设置卡牌属性可见性</editorName>
     <category>卡牌</category>
@@ -6080,7 +6125,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>206048</defineId>
+    <defineId>206049</defineId>
     <obsoleteNames />
     <editorName>设置卡牌可见性</editorName>
     <category>卡牌</category>
