@@ -583,7 +583,7 @@ namespace Game
         /// <param name="cardPoolId">卡池ID。</param>
         /// <param name="set">卡池引用集合。</param>
         /// <returns>获取到的卡池引用。</returns>
-        public ICardPoolReference getCardPoolReferenceInSet(long cardPoolId, IEnumerable<ICardPoolReference> set)
+        public ICardPoolReference getCardPoolReferenceInEnv(long cardPoolId, IEnumerable<ICardPoolReference> set)
         {
             // 集合不存在，返回null。
             if (set == null)
@@ -830,8 +830,12 @@ namespace Game
             string path = getCardPoolPath(cardPoolRef);
             return isLocalCardPoolPath(path);
         }
+        public bool isLocalCardPoolRefExists(ICardPoolReference cardPoolRef)
+        {
+            var info = game.card.getLocalCardPoolInfo(cardPoolRef.CardPoolID);
+            return info != null && info.editTime == cardPoolRef.CardPoolVersion;
+        }
         #endregion
-
         public void showCardPoolLoadErrorDialog()
         {
             var title = game.lang._(StringTable.ERROR);

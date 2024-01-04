@@ -919,7 +919,7 @@ namespace Controllers
         #region 卡池获取
         private ICardPoolReference getCardPoolReference(long cardPoolId)
         {
-            return game.card.getCardPoolReferenceInSet(cardPoolId, getCardPoolReferenceSet());
+            return game.card.getCardPoolReferenceInEnv(cardPoolId, getCardPoolReferenceSet());
         }
         private IEnumerable<ICardPoolReference> getCardPoolReferenceSet()
         {

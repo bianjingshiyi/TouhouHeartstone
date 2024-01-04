@@ -20,8 +20,8 @@ namespace Controllers
         /// </summary>
         public async Task display(long cardPoolId, CardDefine cardDefine, CardSkinData[] skins)
         {
-            _selectableCharacters = await getSelectableCharacters(cardDefine);
-            _cardPoolId = cardPoolId;
+            _selectableCharacters = await getSelectableCharacters();
+            _curCardPoolId = cardPoolId;
             _cardDefine = cardDefine;
             _cardSkins.Clear();
             _cardSkins.AddRange(skins);
@@ -70,12 +70,12 @@ namespace Controllers
             _effectEditorCtrl.hideActionGraph();
             if (effects.Length > 0)
             {
-                await _effectEditorCtrl.display(_cardPoolId, effects[0]);
+                await _effectEditorCtrl.display(_curCardPoolId, effects[0]);
             }
             _effectEditorCtrl.updateEventTriggerTimes();
             updateEffectList(effects);
 
-            _graphEditor.display(_cardPoolId);
+            _graphEditor.display(_curCardPoolId);
         }
         public override async Task display(CardPoolDisplayPage info)
         {
@@ -227,7 +227,7 @@ namespace Controllers
             if (skinIndex == getCurrentLangaugeSkins().Length)
             {
                 //新建皮肤
-                _curCardSkin = game.card.createSkin(_cardPoolId, _cardDefine.id);
+                _curCardSkin = game.card.createSkin(_curCardPoolId, _cardDefine.id);
                 _cardSkins.Add(_curCardSkin);
                 updateSkinNames();
             }
@@ -458,7 +458,7 @@ namespace Controllers
             var effectArray = effects.Append(effect).ToArray();
             _cardDefine.setEffects(effectArray);
 
-            await _effectEditorCtrl.display(_cardPoolId, effect);
+            await _effectEditorCtrl.display(_curCardPoolId, effect);
             _graphEditor.updateUndoRedoButton();
             updateEffectList(effectArray);
 
@@ -474,7 +474,7 @@ namespace Controllers
             GeneratedEffect effect = effects.ElementAt(index);
             if (_effectEditorCtrl.getCurrentEffect() != effect)
             {
-                await _effectEditorCtrl.display(_cardPoolId, effect);
+                await _effectEditorCtrl.display(_curCardPoolId, effect);
                 updateEffectList(effects.ToArray());
                 _graphEditor.updateUndoRedoButton();
             }
@@ -529,7 +529,7 @@ namespace Controllers
                {
                    //删除当前卡牌
                    game.card.removeCard(_cardDefine);
-                   scene.editor.markCardPoolUnsaved(_cardPoolId);
+                   scene.editor.markCardPoolUnsaved(_curCardPoolId);
                    await exit(true);
                });
         }
@@ -577,17 +577,13 @@ namespace Controllers
         private async void onClickSkillRefButton()
         {
             //打开卡牌选择界面
-            long poolId = _cardPoolId;
+            long poolId = _curCardPoolId;
             var skillRef = _cardDefine.getSkillRef();
             if (skillRef.defineId != 0)
             {
                 poolId = skillRef.cardPoolId;
             }
-            await _cardPoolViewPanelCtrl.display(cardPoolFiltersId: new long[] { poolId }, cardFilter: (card) =>
-            {
-                return card.isSkill();
-            });
-            _ui.displayCardSelectPanel(true);
+            await displayCardSelectPanel(cardPoolFiltersId: new long[] { poolId }, cardFilter: card => card.isSkill());
             _cardSelectTarget = CardSelectTarget.Skill;
         }
         private async void onSkillRefEditButtonClicked()
@@ -693,14 +689,13 @@ namespace Controllers
             if (prop == null)
                 return;
             //打开卡牌选择界面
-            long poolId = _cardPoolId;
+            long poolId = _curCardPoolId;
             var define = prop?[index];
             if (define != null && define.defineId != 0)
             {
                 poolId = define.cardPoolId;
             }
-            await _cardPoolViewPanelCtrl.display(cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
-            _ui.displayCardSelectPanel(true);
+            await displayCardSelectPanel(cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
             _cardSelectTarget = CardSelectTarget.Property;
             _curCardSeekingPropName = name;
             _curCardSeekingPropIndex = index;
@@ -728,7 +723,7 @@ namespace Controllers
             if (prop == null || index < 0 || index >= prop.Length)
                 return;
             var define = prop[index];
-            var poolRef = game.card.getLocalCardPoolReference(define.cardPoolId);
+            var poolRef = getCardPoolReference(define.cardPoolId);
             if (game.card.tryGetBuffDefine(poolRef, define.defineId, out GeneratedBuffDefine buffDefine))
             {
                 await scene.editor.openBuffEditor(buffDefine);
@@ -761,13 +756,12 @@ namespace Controllers
             if (prop == null)
                 return;
             //打开卡牌选择界面
-            long poolId = _cardPoolId;
+            long poolId = _curCardPoolId;
             if (prop.defineId != 0)
             {
                 poolId = prop.cardPoolId;
             }
-            await _cardPoolViewPanelCtrl.display(cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
-            _ui.displayCardSelectPanel(true);
+            await displayCardSelectPanel(cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
             _cardSelectTarget = CardSelectTarget.Property;
             _curCardSeekingPropName = name;
             _curCardSeekingPropIndex = -1;
@@ -790,7 +784,7 @@ namespace Controllers
             var prop = _cardDefine.getProp<DefineReference>(name);
             if (prop == null)
                 return;
-            var poolRef = game.card.getLocalCardPoolReference(prop.cardPoolId);
+            var poolRef = getCardPoolReference(prop.cardPoolId);
             if (game.card.tryGetBuffDefine(poolRef, prop.defineId, out GeneratedBuffDefine buffDefine))
             {
                 await scene.editor.openBuffEditor(buffDefine);
@@ -819,17 +813,16 @@ namespace Controllers
         #endregion
 
         #endregion
-        private async Task<CardDefine[]> getSelectableCharacters(CardDefine define)
+        private async Task<CardDefine[]> getSelectableCharacters()
         {
             List<CardDefine> cardList = new List<CardDefine>();
-            // 必须加载打开的卡牌的指定英雄卡牌定义。
-            var characterRef = define.getCharacterRef();
-            if (characterRef != null)
+            foreach (var poolRef in getCardPoolReferenceEnv())
             {
-                var poolRef = game.card.getLocalCardPoolReference(characterRef.cardPoolId);
-                await game.card.getOrLoadCardPool(poolRef);
+                var (info, pool) = await game.card.getOrLoadCardPool(poolRef);
+                if (pool == null)
+                    continue;
+                cardList.AddRange(pool.cardDefineList.Where(c => c.isMaster()));
             }
-            cardList.AddRange(game.card.GetCardDefines(c => c.isMaster()));
             return cardList.ToArray();
         }
         private async Task updateCardType()
@@ -898,6 +891,15 @@ namespace Controllers
             clearUnsaved();
             await scene.editor.closeEditor(forceSave);
         }
+        private async Task displayCardSelectPanel(long[] cardPoolFiltersId = null, DefineReference[] characterRefs = null, Predicate<CardDefine> cardFilter = null)
+        {
+            var cardPoolsRange = getCardPoolReferenceEnv()
+                .Where(poolRef => game.card.isLocalCardPoolRefExists(poolRef))
+                .Select(r => r.CardPoolID)
+                .ToArray();
+            await _cardPoolViewPanelCtrl.display(cardPoolsRange, cardPoolFiltersId, characterRefs, cardFilter);
+            _ui.displayCardSelectPanel(true);
+        }
         #endregion
 
 
@@ -906,7 +908,7 @@ namespace Controllers
             CardSkinData[] skins = getCurrentLangaugeSkins();
             if (skins.Length < 1)
             {
-                CardSkinData skin = game.card.createSkin(_cardPoolId, _cardDefine.id);
+                CardSkinData skin = game.card.createSkin(_curCardPoolId, _cardDefine.id);
                 skins = new CardSkinData[] { skin };
                 _cardSkins.Add(skin);
             }
@@ -937,7 +939,7 @@ namespace Controllers
             _ui.setName(skin.name);
             _ui.setSubName(skin.subname);
             _ui.setDesc(skin.desc);
-            var poolRef = game.card.getLocalCardPoolReference(_cardPoolId);
+            var poolRef = getCurrentCardPoolRef();
             Sprite image = await game.card.loadCardImage(poolRef, skin);
             _ui.setImage(image);
         }
@@ -965,7 +967,7 @@ namespace Controllers
         private async Task setSkillRef(DefineReference defRef)
         {
             _cardDefine.setSkillRef(defRef);
-            var poolRef = game.card.getLocalCardPoolReference(defRef.cardPoolId);
+            var poolRef = getCardPoolReference(defRef.cardPoolId);
             var cardDefine = game.card.getCardDefine(poolRef, defRef.defineId);
             var skin = game.card.getCardSkin(poolRef, defRef.defineId);
             Sprite spr;
@@ -985,18 +987,19 @@ namespace Controllers
 
         private void saveCard()
         {
-            if (game.card.getLocalCardDefine(_cardPoolId, _cardDefine.id) != null)
+            var poolRef = getCurrentCardPoolRef();
+            if (game.card.getCardDefine(poolRef, _cardDefine.id) != null)
             {
-                game.card.removeCard(_cardPoolId, _cardDefine.id);
-                game.card.removeAllCardSkins(_cardPoolId, _cardDefine.id);
+                game.card.removeCard(_curCardPoolId, _cardDefine.id);
+                game.card.removeAllCardSkins(_curCardPoolId, _cardDefine.id);
             }
-            game.card.addCard(_cardPoolId, _cardDefine);
+            game.card.addCard(_curCardPoolId, _cardDefine);
             foreach (var skin in _cardSkins)
             {
-                game.card.addCardSkin(_cardPoolId, skin);
+                game.card.addCardSkin(_curCardPoolId, skin);
             }
 
-            scene.editor.markCardPoolUnsaved(_cardPoolId);
+            scene.editor.markCardPoolUnsaved(_curCardPoolId);
             clearUnsaved();
         }
         public override void markUnsaved()
@@ -1273,7 +1276,6 @@ namespace Controllers
         };
         string[] _races;
         string[] _tags;
-        long _cardPoolId;
         /// <summary>
         /// 当前正在选择的卡牌引用属性的属性名称。
         /// </summary>

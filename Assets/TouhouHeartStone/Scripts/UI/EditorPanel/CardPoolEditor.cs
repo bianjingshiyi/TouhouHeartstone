@@ -2,6 +2,7 @@
 using Controllers;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UnityEngine;
 
@@ -60,6 +61,22 @@ namespace UI
             return game.lang._(CARD_EFFECT_DEFAULT_NAME_TEMPLATE, names?[index] ?? CARD_EFFECT_DEFAULT_NAME, num);
         }
         #endregion
+
+        #region 卡池环境
+        protected ICardPoolReference[] getCardPoolReferenceEnv()
+        {
+            return game.editor.getEnvCardPoolRefs();
+        }
+        protected ICardPoolReference getCardPoolReference(long cardPoolId)
+        {
+            return game.card.getCardPoolReferenceInEnv(cardPoolId, getCardPoolReferenceEnv());
+        }
+        protected ICardPoolReference getCurrentCardPoolRef()
+        {
+            return getCardPoolReference(_curCardPoolId);
+        }
+        #endregion
+
         public bool hasUnsavedChanges { get; protected set; }
         public CardPoolDisplayPage displayInfo { get; protected set; }
         [TranslateMsg("效果默认名称")]
@@ -70,6 +87,8 @@ namespace UI
         protected EffectEditorCtrl _effectEditorCtrl;
         [SerializeField]
         protected GraphEditorPanelCtrl _graphEditor;
+
+        protected long _curCardPoolId;
     }
     public class CardPoolDisplayPage
     {

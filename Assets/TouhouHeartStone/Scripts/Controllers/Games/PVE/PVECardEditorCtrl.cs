@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Game.PVE;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -19,11 +20,21 @@ namespace Controllers
         #region 公有方法
         public async Task display(string dataName, SaveData data)
         {
-            _dataName = dataName;
-            _saveData = data;
             _srcCardDefine = null;
             _cardDefine = null;
             _slotGroups = null;
+            _dataName = dataName;
+            _saveData = data;
+
+            var env = new List<ICardPoolReference>()
+            {
+                game.card.getLocalCardPoolReference(CardManager.STANDARD_POOL_ID),
+                game.card.getLocalCardPoolReference(CardManager.PVE_POOL_ID),
+            };
+            var (generatedPoolInfo, _) = await game.pve.getGeneratedCardPool(_dataName);
+            env.Add(generatedPoolInfo.ToReference());
+            _cardPoolEnv = env.ToArray();
+
             _ui.setCardSelected(false);
             _ui.displayDeckPage();
             await updateDeck();
@@ -304,7 +315,7 @@ namespace Controllers
             var seri = new SerializableActionNodeGraph(sourceGraph);
 
             // 粘贴
-            var definer = game.card.getLocalNodeDefiner();
+            var definer = getNodeDefiner();
             ActionNodeGraphCtrl.pasteNodes(seri, targetGraph, Vector2.zero, definer, out _);
         }
         private Dictionary<int, int> cloneNodes(IEnumerable<Node> source, ActionGraph targetGraph)
@@ -316,7 +327,7 @@ namespace Controllers
             var seri = ActionNodeGraphCtrl.copyNodes(source, out var buffer);
 
             // 粘贴
-            var definer = game.card.getLocalNodeDefiner();
+            var definer = getNodeDefiner();
             var rect = new Rect(targetGraph.centerX - targetGraph.width * 0.5f, targetGraph.centerY - targetGraph.height * 0.5f, targetGraph.width, targetGraph.height);
             var rightTop = new Vector2(rect.xMax, rect.yMax);
             var pos = rightTop + new Vector2(200 + buffer.width * 0.5f, buffer.height * -0.5f);
@@ -414,9 +425,9 @@ namespace Controllers
                 if (slot.gem == null)
                     continue;
                 // 获取宝石对应的卡牌定义。
-                var gemPoolRef = cardManager.getLocalCardPoolReference(gem.cardRef.cardPoolId);
+                var gemPoolRef = getCardPoolReference(gem.cardRef.cardPoolId);
                 await cardManager.getOrLoadCardPool(gemPoolRef);
-                var gemCardDefine = cardManager.getLocalCardDefine(gem.cardRef);
+                var gemCardDefine = cardManager.getCardDefine(gemPoolRef, gem.cardRef.defineId);
 
                 // 获取宝石卡牌定义的效果。
                 var srcEffect = PVEManager.getSlotEffect(gemCardDefine, slot.tags);
@@ -465,7 +476,8 @@ namespace Controllers
         {
             if (gem == null)
                 return null;
-            var cardDefine = game.card.getLocalCardDefine(gem.cardRef);
+            var gemPoolRef = getCardPoolReference(gem.cardRef.cardPoolId);
+            var cardDefine = game.card.getCardDefine(gemPoolRef, gem.cardRef.defineId);
             var image = await game.card.loadCardImage(cardDefine);
             return new CardGemViewData()
             {
@@ -588,6 +600,12 @@ namespace Controllers
         }
         #endregion
 
+        #region 卡池环境
+        private ICardPoolReference[] getCardPoolEnv() => _cardPoolEnv;
+        private ICardPoolReference getCardPoolReference(long cardPoolId) => game.card.getCardPoolReferenceInEnv(cardPoolId, getCardPoolEnv());
+        private INodeDefiner getNodeDefiner() => game.card.getNodeDefiner(getCardPoolEnv());
+        #endregion
+
         #endregion
 
         #region 属性字段
@@ -601,6 +619,7 @@ namespace Controllers
         private CardGem[] _inventoryGems;
         private string _dataName;
         private bool _hasUnsavedChanges;
+        private ICardPoolReference[] _cardPoolEnv;
         [SerializeField]
         private PVECardEditor _ui;
         [SerializeField]

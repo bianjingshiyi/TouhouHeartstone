@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TouhouCardEngine;
@@ -171,14 +172,8 @@ namespace Controllers
             return outputs;
         }
         #region 动作定义
-        private ActionDefine getActionDefine(ActionReference actRef)
-        {
-            return game.card.getLocalActionDefine(actRef);
-        }
-        private ActionDefine[] getAllActionDefines()
-        {
-            return game.card.getAllLocalActionDefines(_curCardPoolId);
-        }
+        private ActionDefine getActionDefine(ActionReference actRef) => game.card.getActionDefineInEnv(actRef, getCardPoolEnv());
+        private ActionDefine[] getActionDefines() => game.card.getAllActionDefines(getCardPoolEnv());
         private string getActionDefineCategory(ActionDefine actionDefine)
         {
             string name = string.Empty;
@@ -196,7 +191,7 @@ namespace Controllers
             if (parent == null)
                 parent = string.Empty;
             parent = parent.Replace('\\', '/').Trim('/');
-            var categories = getAllActionDefines().Where(d => CanActionDefineBeCreated(d)).Select(actionDefine =>
+            var categories = getActionDefines().Where(d => CanActionDefineBeCreated(d)).Select(actionDefine =>
             {
                 var nodeCategory = getActionDefineCategory(actionDefine);
                 // 去掉父类别。
@@ -233,7 +228,7 @@ namespace Controllers
             if (parent == null)
                 parent = string.Empty;
             parent = parent.Replace('\\', '/').Trim('/');
-            return getAllActionDefines().Where(actionDefine =>
+            return getActionDefines().Where(actionDefine =>
             {
                 if (!CanActionDefineBeCreated(actionDefine))
                     return false;

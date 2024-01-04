@@ -68,7 +68,7 @@ namespace Controllers
             }
 
 
-            var cardPoolRef = game.card.getLocalCardPoolReference(cardPoolId);
+            var cardPoolRef = getCardPoolReference(cardPoolId);
             if (cardPoolRef != null)
             {
                 return game.card.tryGetBuffDefine(cardPoolRef, cardId, out buffDefine);
@@ -111,7 +111,7 @@ namespace Controllers
         /// </summary>
         private void updateBuffReferences()
         {
-            BuffDefine[] buffDefines = game.card.getBuffDefines(game.card.getLocalCardPoolReference(_curCardPoolId))
+            BuffDefine[] buffDefines = game.card.getBuffDefines(getCardPoolReference(_curCardPoolId))
                 .OrderBy(p => p.Value.cardPoolId)
                 .ThenBy(p => p.Value.id)
                 .Select(p => p.Value)
@@ -176,7 +176,7 @@ namespace Controllers
                 // 设置为卡池内的第一个增益。
                 buffDefine = _buffReferences.Select(r =>
                 {
-                    var poolRef = game.card.getLocalCardPoolReference(r.cardPoolId);
+                    var poolRef = getCardPoolReference(r.cardPoolId);
                     if (game.card.tryGetBuffDefine(poolRef, r.defineId, out var buffDefine))
                     {
                         return buffDefine;

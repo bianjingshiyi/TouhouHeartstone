@@ -29,6 +29,8 @@ namespace Game
             }
             return new EventReference(0, EventHelper.getName(arg.define));
         }
+
+        #region 获取单个事件定义
         public EventDefine getEventDefine(ICardPoolReference cardPoolRef, string name, bool includeHidden = true)
         {
             if (cardPoolRef == null)
@@ -43,17 +45,20 @@ namespace Game
             }
             return null;
         }
-        public EventDefine getLocalEventDefine(long cardPoolId, string name, bool includeHidden = true)
-        {
-            var poolRef = getLocalCardPoolReference(cardPoolId);
-            return getEventDefine(poolRef, name, includeHidden);
-        }
         public EventDefine getLocalEventDefine(EventReference eventRef, bool includeHidden = true)
+        {
+            return getEventDefineInEnv(eventRef, getLocalCardPoolReferences(), includeHidden);
+        }
+        public EventDefine getEventDefineInEnv(EventReference eventRef, IEnumerable<ICardPoolReference> env, bool includeHidden = true)
         {
             if (eventRef == null)
                 return null;
-            return getLocalEventDefine(eventRef.cardPoolId, eventRef.eventName, includeHidden);
+            var poolRef = getCardPoolReferenceInEnv(eventRef.cardPoolId, env);
+            return getEventDefine(poolRef, eventRef.eventName, includeHidden);
         }
+        #endregion
+
+        #region 获取多个事件定义
         public EventDefine[] getEventDefines(ICardPoolReference cardPoolRef)
         {
             if (cardPoolRef == null)
@@ -79,6 +84,8 @@ namespace Game
             }
             return actionDefineList.ToArray();
         }
+        #endregion
+
         #endregion
 
         #region 获取事件触发时间
@@ -120,7 +127,7 @@ namespace Game
         }
         public EventReference[] getActionBindedEventsRecursive(long poolId, int actionId, IEnumerable<ICardPoolReference> poolSet)
         {
-            var poolRef = getCardPoolReferenceInSet(poolId, poolSet);
+            var poolRef = getCardPoolReferenceInEnv(poolId, poolSet);
             if (isBuiltinCardPool(poolRef))
             {
                 return game.eventManager.getBuiltinActionBindedEventsRecursive(actionId);

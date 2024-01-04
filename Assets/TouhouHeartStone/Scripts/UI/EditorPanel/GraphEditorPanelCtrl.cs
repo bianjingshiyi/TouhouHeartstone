@@ -6,6 +6,7 @@ using Controllers;
 using Game;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -21,7 +22,6 @@ namespace UI
             _nodesPanel.setOutputFilter(outputFilter);
             _nodesPanel.setSearchFilter(searchFilter);
             _createActionDefineDialog.setDefineTypeOptions(defineTypeNames.Select(n => game.lang._(n)).ToArray());
-            var poolRef = game.card.getLocalCardPoolReference(_cardPoolId);
             updatePasteButton();
             updateDeleteButton();
             updateUndoRedoButton();
@@ -37,9 +37,10 @@ namespace UI
         }
         public void updateNodeDefines()
         {
-            var actionDefines = game.card.getAllLocalActionDefines(_cardPoolId);
+            var env = getCardPoolEnv();
+            var actionDefines = game.card.getAllActionDefines(env);
             var nodeDefines = actionDefines.Select(a => new NodeDefine(a));
-            var eventNodeDefines = eventTriggerTimes.Select(e => new NodeDefine(game.card.getLocalEventDefine(e.defineRef), e.type));
+            var eventNodeDefines = eventTriggerTimes.Select(e => new NodeDefine(game.card.getEventDefineInEnv(e.defineRef, env), e.type));
             nodeDefines = nodeDefines.Union(eventNodeDefines);
 
             _nodeDefines = nodeDefines.ToArray();
@@ -96,6 +97,15 @@ namespace UI
         {
             _editVisualEffectDialogObj.SetActive(true);
             _curEditingVisualEffectNode = node;
+        }
+        public async Task displayCardSelectPanel(long[] cardPoolFiltersId = null, DefineReference[] characterRefs = null, Predicate<CardDefine> cardFilter = null)
+        {
+            var cardPoolsRange = getCardPoolEnv()
+                .Where(poolRef => game.card.isLocalCardPoolRefExists(poolRef))
+                .Select(r => r.CardPoolID)
+                .ToArray();
+            await _cardSelectPanel.display(cardPoolsRange, cardPoolFiltersId, characterRefs, cardFilter);
+            _cardSelectPanelObj.SetActive(true);
         }
         #region 私有方法
         #region 生命周期
@@ -579,11 +589,6 @@ namespace UI
             _hintMessageText.gameObject.SetActive(false);
         }
         #endregion
-        private async Task displayCardSelectPanel(long[] cardPoolsRange = null, long[] cardPoolFiltersId = null, DefineReference[] characterRefs = null, Predicate<CardDefine> cardFilter = null)
-        {
-            await _cardSelectPanel.display(cardPoolsRange, cardPoolFiltersId, characterRefs, cardFilter);
-            _cardSelectPanelObj.SetActive(true);
-        }
         private void hideCardSelectPanel()
         {
             _cardSelectPanelObj.SetActive(false);
@@ -736,6 +741,12 @@ namespace UI
                 _actionGraphCtrl.addRecordBreakpoint();
             }
         }
+
+        #region 卡池环境
+        private ICardPoolReference[] getCardPoolEnv() => game.editor.getEnvCardPoolRefs();
+        private ICardPoolReference getCardPoolReference(long cardPoolId) => game.card.getCardPoolReferenceInEnv(cardPoolId, getCardPoolEnv());
+        #endregion
+
         #endregion
         #region 事件
         public event Action<Node> onOpenNodeAnimationDialog;

@@ -19,7 +19,7 @@ namespace Controllers
         {
             gameObject.SetActive(true);
             _ui.reset();
-            _cardPoolId = cardPoolId;
+            _curCardPoolId = cardPoolId;
             _actionDefine = actionDefine;
 
             _ui.setName(actionDefine.editorName);
@@ -29,7 +29,7 @@ namespace Controllers
 
             await _actionNodeGraphCtrl.display(new ActionNodeGraphCtrl.DisplayInfo(cardPoolId, actionDefine));
             updateProperties();
-            _graphEditor.display(_cardPoolId);
+            _graphEditor.display(_curCardPoolId);
         }
         public override async Task display(CardPoolDisplayPage info)
         {
@@ -159,9 +159,9 @@ namespace Controllers
                async () =>
                {
                    //删除动作定义
-                   game.card.removeActionDefine(_cardPoolId, _actionDefine.defineId);
+                   game.card.removeActionDefine(_curCardPoolId, _actionDefine.defineId);
                    scene.editor.updateAllEvents();
-                   scene.editor.markCardPoolUnsaved(_cardPoolId);
+                   scene.editor.markCardPoolUnsaved(_curCardPoolId);
                    //返回上个界面
                    await exit(true);
                });
@@ -263,14 +263,15 @@ namespace Controllers
         }
         private void saveAction()
         {
-            if (game.card.getLocalActionDefine(_actionDefine.cardPoolId, _actionDefine.defineId) is GeneratedActionDefine gen)
+            var cardPoolRef = getCurrentCardPoolRef();
+            if (game.card.getActionDefine(cardPoolRef, _actionDefine.defineId) is GeneratedActionDefine gen)
             {
                 game.card.removeActionDefine(gen);
             }
-            game.card.addActionDefine(_cardPoolId, _actionDefine);
+            game.card.addActionDefine(_curCardPoolId, _actionDefine);
             scene.editor.updateAllEvents();
 
-            scene.editor.markCardPoolUnsaved(_cardPoolId);
+            scene.editor.markCardPoolUnsaved(_curCardPoolId);
             clearUnsaved();
         }
 
@@ -412,8 +413,6 @@ namespace Controllers
         public const string ACTION_DEFINE_TYPE_FUNCTION = "函数";
         [TranslateMsg("节点动作类型/事件")]
         public const string ACTION_DEFINE_TYPE_EVENT = "事件";
-
-        long _cardPoolId;
         /// <summary>
         /// 正在编辑的动作定义。
         /// </summary>

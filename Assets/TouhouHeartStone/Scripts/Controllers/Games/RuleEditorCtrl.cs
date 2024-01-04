@@ -21,11 +21,11 @@ namespace Controllers
             gameObject.SetActive(true);
             _ui.reset();
             _ui.setName(ruleLogic.name);
-            _cardPoolId = cardPoolId;
+            _curCardPoolId = cardPoolId;
             _ruleLogic = ruleLogic;
 
             await _actionNodeGraphCtrl.display(new ActionNodeGraphCtrl.DisplayInfo(cardPoolId, ruleLogic));
-            _graphEditor.display(_cardPoolId);
+            _graphEditor.display(_curCardPoolId);
         }
         public override async Task display(CardPoolDisplayPage info)
         {
@@ -82,8 +82,8 @@ namespace Controllers
                async () =>
                {
                    //删除动作定义
-                   game.card.removeRuleLogic(_cardPoolId, _ruleLogic.id);
-                   scene.editor.markCardPoolUnsaved(_cardPoolId);
+                   game.card.removeRuleLogic(_curCardPoolId, _ruleLogic.id);
+                   scene.editor.markCardPoolUnsaved(_curCardPoolId);
                    //返回上个界面
                    await exit(true);
                });
@@ -144,13 +144,14 @@ namespace Controllers
         }
         private void saveLogic()
         {
-            if (game.card.getLocalRuleLogic(_ruleLogic.cardPoolId, _ruleLogic.id) is GeneratedRuleLogic gen)
+            var poolRef = getCurrentCardPoolRef();
+            if (game.card.getRuleLogic(poolRef, _ruleLogic.id) is GeneratedRuleLogic gen)
             {
                 game.card.removeRuleLogic(gen);
             }
-            game.card.addRuleLogic(_cardPoolId, _ruleLogic);
+            game.card.addRuleLogic(_curCardPoolId, _ruleLogic);
 
-            scene.editor.markCardPoolUnsaved(_cardPoolId);
+            scene.editor.markCardPoolUnsaved(_curCardPoolId);
             clearUnsaved();
         }
         #endregion
@@ -175,7 +176,6 @@ namespace Controllers
         [TranslateMsg("尝试退出自定义规则的编辑页面，但没有保存情况下的按钮名称")]
         public const string RULE_WARNING_OPTION_CANCEL = "取消";
 
-        long _cardPoolId;
         /// <summary>
         /// 正在编辑的动作定义。
         /// </summary>

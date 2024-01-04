@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BJSYGameCore;
+using Controllers;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -115,6 +118,25 @@ namespace Game
             }
             return game.lang._(RULE_NAME_UNKNOWN);
         }
+
+        #region 编辑器环境
+        public void reloadCardPoolEnv(CardPoolInfo info)
+        {
+            clearCardPoolEnv();
+            cardPoolEnv.Add(info.ToReference());
+            if (info.dependencyRefs != null)
+                cardPoolEnv.AddRange(info.dependencyRefs);
+        }
+        public void clearCardPoolEnv()
+        {
+            cardPoolEnv.Clear();
+        }
+        public ICardPoolReference[] getEnvCardPoolRefs()
+        {
+            return cardPoolEnv.ToArray();
+        }
+        #endregion
+
         #endregion
         #region 私有方法
         #endregion
@@ -154,6 +176,9 @@ namespace Game
         public string categoryFilter { get; set; }
         public bool[] outputFilter { get; set; }
         public string searchFilter { get; set; }
+
+        private List<ICardPoolReference> cardPoolEnv = new List<ICardPoolReference>();
+
         [SerializeField]
         MainManager _game;
         static readonly Dictionary<ActionNodeValueType, string> valueTypeNames = new Dictionary<ActionNodeValueType, string>()

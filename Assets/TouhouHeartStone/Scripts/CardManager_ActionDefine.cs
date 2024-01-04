@@ -129,6 +129,13 @@ namespace Game
                 return null;
             return getLocalActionDefine(actRef.cardPoolId, actRef.defineId);
         }
+        public ActionDefine getActionDefineInEnv(ActionReference actRef, IEnumerable<ICardPoolReference> env)
+        {
+            if (actRef == null)
+                return null;
+            var poolRef = getCardPoolReferenceInEnv(actRef.cardPoolId, env);
+            return getActionDefine(poolRef, actRef.defineId);
+        }
         /// <summary>
         /// 根据名称获取过时的内置动作定义。
         /// </summary>
@@ -164,6 +171,11 @@ namespace Game
             var poolRef = getLocalCardPoolReference(cardPoolId);
             return getActionDefines(poolRef);
         }
+        public GeneratedActionDefine[] getActionDefinesInEnv(long cardPoolId, IEnumerable<ICardPoolReference> env)
+        {
+            var poolRef = getCardPoolReferenceInEnv(cardPoolId, env);
+            return getActionDefines(poolRef);
+        }
         /// <summary>
         /// 获取内置的所有动作定义，以及几个自定义卡池内的所有动作定义。
         /// </summary>
@@ -186,15 +198,6 @@ namespace Game
                 }
             }
             return actionDefineList.ToArray();
-        }
-        /// <summary>
-        /// 获取内置的所有动作定义，以及几个本地自定义卡池内的所有动作定义。
-        /// </summary>
-        /// <param name="includedCardPools"></param>
-        /// <returns></returns>
-        public ActionDefine[] getAllLocalActionDefines(params long[] includedCardPools)
-        {
-            return getAllActionDefines(includedCardPools.Select(id => getLocalCardPoolReference(id)).ToArray());
         }
         #endregion
 

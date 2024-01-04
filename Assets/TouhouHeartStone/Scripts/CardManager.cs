@@ -196,11 +196,15 @@ namespace Game
             text = null;
             return false;
         }
-        public INodeDefiner getLocalNodeDefiner()
+        public INodeDefiner getNodeDefiner(IEnumerable<ICardPoolReference> env)
         {
             return new THHNodeDefiner(
-                (a, n) => getLocalActionDefine(a),
-                (eventRef) => getLocalEventDefine(eventRef, true));
+                (a, n) => getActionDefineInEnv(a, env),
+                (eventRef) => getEventDefineInEnv(eventRef, env, true));
+        }
+        public INodeDefiner getLocalNodeDefiner()
+        {
+            return getNodeDefiner(getLocalCardPoolReferences());
         }
         public static DefineReference getClassicCardRef(int id)
         {
@@ -225,7 +229,7 @@ namespace Game
             {
                 if (defRef is BuffReference)
                     return;
-                var poolRef = getCardPoolReferenceInSet(defRef.cardPoolId, cardPoolSet);
+                var poolRef = getCardPoolReferenceInEnv(defRef.cardPoolId, cardPoolSet);
                 var cardDefine = getCardDefine(poolRef, defRef.defineId);
                 if (cardDefines.Contains(cardDefine))
                     return;
@@ -294,7 +298,7 @@ namespace Game
             }
             void addBuffDefRef(DefineReference buffRef)
             {
-                var poolRef = getCardPoolReferenceInSet(buffRef.cardPoolId, cardPoolSet);
+                var poolRef = getCardPoolReferenceInEnv(buffRef.cardPoolId, cardPoolSet);
                 if (tryGetBuffDefine(poolRef, buffRef.defineId, out var buffDefine))
                 {
                     foreach (var effect in buffDefine.effectList)
@@ -330,7 +334,7 @@ namespace Game
             return deckItems.OrderBy(item =>
             {
                 var cardRef = item.cardRef;
-                var poolRef = getCardPoolReferenceInSet(cardRef.cardPoolId, poolSet);
+                var poolRef = getCardPoolReferenceInEnv(cardRef.cardPoolId, poolSet);
                 return getCardDefine(poolRef, cardRef.defineId) is CardDefine cardDefine ? cardDefine.getCost() : 0;
             }).ToArray();
         }

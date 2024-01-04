@@ -6,9 +6,10 @@ namespace UI
 {
     public class CardPoolDependencyItem : MonoBehaviour
     {
-        public void update(string name)
+        public void update(string name, bool outdated)
         {
             _nameText.text = name;
+            _outdatedWarningObj.SetActive(outdated);
         }
         protected void Awake()
         {
@@ -23,5 +24,7 @@ namespace UI
         Button _removeButton;
         [SerializeField]
         TextMeshProUGUI _nameText;
+        [SerializeField]
+        GameObject _outdatedWarningObj;
     }
 }

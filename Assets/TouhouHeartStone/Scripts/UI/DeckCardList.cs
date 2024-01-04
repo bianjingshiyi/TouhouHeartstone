@@ -141,7 +141,7 @@ namespace UI
             var defRef = deckItem.cardRef;
             if (defRef == null)
                 return;
-            var poolRef = cardManager.getCardPoolReferenceInSet(defRef.cardPoolId, poolSet);
+            var poolRef = cardManager.getCardPoolReferenceInEnv(defRef.cardPoolId, poolSet);
             var cardDef = cardManager.getCardDefine(poolRef, defRef.defineId);
             await deckView.showPreviewCard(cardDef, index, cardManager);
         }

@@ -8,6 +8,7 @@ using Game;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -69,14 +70,7 @@ namespace Controllers
         }
         public bool isActionDefineNameExist(string name)
         {
-            foreach (var actionDefine in game.card.builtinActionDefines)
-            {
-                if (actionDefine.editorName == name)
-                {
-                    return true;
-                }
-            }
-            foreach (var actionDefine in game.card.getLocalActionDefines(_curCardPoolId))
+            foreach (var actionDefine in getActionDefines())
             {
                 if (actionDefine.editorName == name)
                 {
@@ -162,7 +156,7 @@ namespace Controllers
             if (string.IsNullOrEmpty(clipboard))
                 return;
             var seri = JsonHelper.fromJson<SerializableActionNodeGraph>(clipboard);
-            var definer = game.card.getLocalNodeDefiner();
+            var definer = getNodeDefiner();
             var clipGraph = pasteNodes(seri, graph, pos, definer, out _);
 
             foreach (var node in clipGraph.nodes)
@@ -1183,7 +1177,7 @@ namespace Controllers
             {
                 var triggerTime = eventEntryNode.triggerTime;
                 var eventDefineRef = triggerTime.defineRef;
-                var eventDefine = game.card.getLocalEventDefine(eventDefineRef);
+                var eventDefine = getEventDefine(eventDefineRef);
                 eventEntryNode.setEventDefine(eventDefine, triggerTime.type);
                 eventEntryNode.Define();
             }
@@ -1195,7 +1189,7 @@ namespace Controllers
             {
                 var triggerTime = eventRuleEntryNode.triggerTime;
                 var eventDefineRef = triggerTime.defineRef;
-                var eventDefine = game.card.getLocalEventDefine(eventDefineRef);
+                var eventDefine = getEventDefine(eventDefineRef);
                 eventRuleEntryNode.setEventDefine(eventDefine, triggerTime.type);
                 eventRuleEntryNode.Define();
             }
@@ -1750,6 +1744,15 @@ namespace Controllers
             return outputList.ToArray();
         }
         #endregion
+
+        #region 编辑器环境
+        private ICardPoolReference[] getCardPoolEnv() => game.editor.getEnvCardPoolRefs();
+        private ICardPoolReference getCardPoolReference(long id) => game.card.getCardPoolReferenceInEnv(id, getCardPoolEnv());
+        private INodeDefiner getNodeDefiner() => game.card.getNodeDefiner(getCardPoolEnv());
+        private EventDefine getEventDefine(EventReference eventRef, bool includeHidden = true) => 
+            game.card.getEventDefine(getCardPoolReference(eventRef.cardPoolId), eventRef.eventName, includeHidden);
+        #endregion
+
         /// <summary>
         /// 重置所有对于编辑物体的引用。
         /// </summary>
@@ -1832,7 +1835,7 @@ namespace Controllers
             CardDefine cardDefine = null;
             if (cardReference != null)
             {
-                var localRef = game.card.getLocalCardPoolReference(cardReference.cardPoolId);
+                var localRef = getCardPoolReference(cardReference.cardPoolId);
                 // 如果卡池没有被加载，加载卡池。
                 await game.card.getOrLoadCardPool(localRef, true);
                 cardDefine = game.card.getCardDefine(localRef, cardReference.defineId);
@@ -1919,7 +1922,7 @@ namespace Controllers
 
             var inputPort = node.getInputPort<ValueInput>(EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_PARAM_KEY);
             var eventRef = getConnectedEventReference(inputPort);
-            var eventDefine = game.card.getLocalEventDefine(eventRef);
+            var eventDefine = getEventDefine(eventRef);
 
             var varInfos = eventDefine?.afterVariableInfos;
 

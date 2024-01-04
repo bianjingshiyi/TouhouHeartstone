@@ -142,7 +142,7 @@ namespace Game.BattleTable
         public ICardPoolReference getCardPoolReference(long cardPoolId)
         {
             var poolRefs = getCardPoolSet();
-            return cardManager.getCardPoolReferenceInSet(cardPoolId, poolRefs);
+            return cardManager.getCardPoolReferenceInEnv(cardPoolId, poolRefs);
         }
         public CardSkinData getCardSkin(ICardData card)
         {

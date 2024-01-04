@@ -23,7 +23,7 @@ namespace Controllers
         {
             gameObject.SetActive(true);
             _ui.reset();
-            _cardPoolId = cardPoolId;
+            _curCardPoolId = cardPoolId;
             _buffDefine = buffDefine;
             _buffSkins.Clear();
             _buffSkins.AddRange(skins);
@@ -42,7 +42,6 @@ namespace Controllers
             GeneratedEffect[] effects = buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
             updateModifiers();
             // 持续限制
-            var poolRef = game.card.getLocalCardPoolReference(cardPoolId);
             _ui.initExistLimits(eventTriggerTimeEditorNames);
             updateExistLimits();
             // 皮肤
@@ -52,11 +51,11 @@ namespace Controllers
 
             if (effects.Length > 0)
             {
-                await _effectEditorCtrl.display(_cardPoolId, effects[0]);
+                await _effectEditorCtrl.display(_curCardPoolId, effects[0]);
             }
             _effectEditorCtrl.updateEventTriggerTimes();
             updateEffectList(effects);
-            _graphEditor.display(_cardPoolId);
+            _graphEditor.display(_curCardPoolId);
         }
         public override async Task display(CardPoolDisplayPage info)
         {
@@ -148,7 +147,7 @@ namespace Controllers
             if (skinIndex == getSkinCount())
             {
                 //新建皮肤
-                _curBuffSkin = game.card.createBuffSkin(_cardPoolId, _buffDefine.id, _curLanguage);
+                _curBuffSkin = game.card.createBuffSkin(_curCardPoolId, _buffDefine.id, _curLanguage);
                 _buffSkins.Add(_curBuffSkin);
                 updateSkinNames();
             }
@@ -226,7 +225,7 @@ namespace Controllers
             {
                 markUnsaved();
                 //不存在对应语言的皮肤，新建一个
-                targetSkin = game.card.createBuffSkin(_cardPoolId, _buffDefine.id, language);
+                targetSkin = game.card.createBuffSkin(_curCardPoolId, _buffDefine.id, language);
                 _buffSkins.Add(targetSkin);
             }
             updateSkinNames();
@@ -251,7 +250,7 @@ namespace Controllers
             markUnsaved();
             _buffDefine.effectList.Add(effect);
 
-            await _effectEditorCtrl.display(_cardPoolId, effect);
+            await _effectEditorCtrl.display(_curCardPoolId, effect);
             updateEffectList(_buffDefine.effectList.ToArray());
             _graphEditor.updateUndoRedoButton();
 
@@ -266,7 +265,7 @@ namespace Controllers
             GeneratedEffect effect = effects.ElementAt(index);
             if (_effectEditorCtrl.getCurrentEffect() != effect)
             {
-                await _effectEditorCtrl.display(_cardPoolId, effect);
+                await _effectEditorCtrl.display(_curCardPoolId, effect);
                 updateEffectList(effects.ToArray());
                 _graphEditor.updateUndoRedoButton();
             }
@@ -430,9 +429,9 @@ namespace Controllers
                async () =>
                {
                    //删除当前增益
-                   game.card.removeBuffDefine(_cardPoolId, _buffDefine.id);
-                   game.card.removeAllBuffSkins(_cardPoolId, _buffDefine.id);
-                   scene.editor.markCardPoolUnsaved(_cardPoolId);
+                   game.card.removeBuffDefine(_curCardPoolId, _buffDefine.id);
+                   game.card.removeAllBuffSkins(_curCardPoolId, _buffDefine.id);
+                   scene.editor.markCardPoolUnsaved(_curCardPoolId);
                    await exit(true);
                });
         }
@@ -480,7 +479,7 @@ namespace Controllers
             BuffSkin[] skins = getCurrentLangSkins();
             if (skins.Length < 1)
             {
-                BuffSkin skin = game.card.createBuffSkin(_cardPoolId, _buffDefine.id, _curLanguage);
+                BuffSkin skin = game.card.createBuffSkin(_curCardPoolId, _buffDefine.id, _curLanguage);
                 _buffSkins.Add(skin);
                 skins = new BuffSkin[] { skin };
             }
@@ -500,7 +499,7 @@ namespace Controllers
             _ui.setName(skin.name);
             _ui.setDesc(skin.desc);
             _ui.setSkin(skinIndex);
-            var poolRef = game.card.getLocalCardPoolReference(_cardPoolId);
+            var poolRef = getCurrentCardPoolRef();
             Sprite image = await game.card.loadBuffImage(poolRef, skin);
             _ui.setImage(image);
             var animRef = skin.persistentAnimRef;
@@ -819,16 +818,16 @@ namespace Controllers
         }
         private void saveBuff()
         {
-            game.card.removeBuffDefine(_cardPoolId, _buffDefine.id);
-            game.card.addBuffDefine(_cardPoolId, _buffDefine);
+            game.card.removeBuffDefine(_curCardPoolId, _buffDefine.id);
+            game.card.addBuffDefine(_curCardPoolId, _buffDefine);
 
-            game.card.removeAllBuffSkins(_cardPoolId, _buffDefine.id);
+            game.card.removeAllBuffSkins(_curCardPoolId, _buffDefine.id);
             foreach (var skin in _buffSkins)
             {
-                game.card.addBuffSkin(_cardPoolId, skin);
+                game.card.addBuffSkin(_curCardPoolId, skin);
             }
 
-            scene.editor.markCardPoolUnsaved(_cardPoolId);
+            scene.editor.markCardPoolUnsaved(_curCardPoolId);
             clearUnsaved();
         }
         public override void markUnsaved()
@@ -897,7 +896,6 @@ namespace Controllers
             StringTable.GAME_CARD_PROP_MODIFY_SUB_PROP,
             StringTable.GAME_CARD_PROP_MODIFY_SETTO_PROP
         };
-        long _cardPoolId;
         /// <summary>
         /// 正在编辑的增益定义。
         /// </summary>

@@ -107,7 +107,7 @@ namespace Game
         }
         public void getEventReferenceChildrenNonAlloc(EventReference eventRef, IEnumerable<ICardPoolReference> poolSet, List<EventReference> list)
         {
-            var poolRef = game.card.getCardPoolReferenceInSet(eventRef.cardPoolId, poolSet);
+            var poolRef = game.card.getCardPoolReferenceInEnv(eventRef.cardPoolId, poolSet);
             var eventDefine = game.card.getEventDefine(poolRef, eventRef.eventName);
             if (eventDefine?.childrenEvents == null)
                 return;

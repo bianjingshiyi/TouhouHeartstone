@@ -77,13 +77,17 @@ namespace UI
         {
             _addCardPoolDepDialog.updateAddCardPools(viewDatas);
         }
-        public void updateCardPoolDependencies(string[] names)
+        public void setAutoUpdateDepButtonInteractable(bool interactable)
+        {
+            _updateCardPoolDepsButton.interactable = interactable;
+        }
+        public void updateCardPoolDependencies(string[] names, bool[] outdated)
         {
             _cardPoolDepList.updateList(names.Length, (i, rect) =>
             {
                 var name = names[i];
                 var item = rect.GetComponent<CardPoolDependencyItem>();
-                item.update(name);
+                item.update(name, outdated[i]);
             },
             rect =>
             {
@@ -122,6 +126,7 @@ namespace UI
             _addCardPoolDepDialog.onDeckListItemToggleValueChanged += (index, value) => onClickAddCardPoolDepItem?.Invoke(index);
             _cancelAddCardPoolDepButton.onClick.AddListener(() => hideSelectCardPoolDependencyDialog());
             _confirmAddCardPoolDepButton.onClick.AddListener(() => onClickConfirmAddCardPoolDepButton?.Invoke());
+            _updateCardPoolDepsButton.onClick.AddListener(() => onClickUpdateCardPoolDepsButton?.Invoke());
         }
         #endregion
 
@@ -192,6 +197,7 @@ namespace UI
         public event Action<int> onClickRemoveCardPoolDepButton;
         public event Action<int> onClickAddCardPoolDepItem; 
         public event Action onClickConfirmAddCardPoolDepButton;
+        public event Action onClickUpdateCardPoolDepsButton;
         #endregion
 
         #region 属性字段
@@ -241,6 +247,8 @@ namespace UI
         Button _cancelAddCardPoolDepButton;
         [SerializeField]
         Button _confirmAddCardPoolDepButton;
+        [SerializeField]
+        Button _updateCardPoolDepsButton;
 
         #endregion
     }

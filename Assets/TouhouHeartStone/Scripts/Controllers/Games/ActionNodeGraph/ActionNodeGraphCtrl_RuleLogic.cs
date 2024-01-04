@@ -18,18 +18,8 @@ namespace Controllers
             await ApplyGraph(_generatedRuleLogic.graph);
         }
 
-        #region 动作定义
-        private GeneratedRuleLogic getRuleLogic(ActionReference actRef)
-        {
-            return game.card.getLocalRuleLogic(actRef);
-        }
-        private GeneratedRuleLogic[] getAllRuleLogics()
-        {
-            return game.card.getAllLocalRuleLogics(_curCardPoolId);
-        }
         #endregion
 
-        #endregion
         #region 属性字段
         private GeneratedRuleLogic _generatedRuleLogic;
         #endregion
