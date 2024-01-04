@@ -82,6 +82,7 @@ namespace UI
         {
             DeckListItem deckListItem = item.GetComponent<DeckListItem>();
             deckListItem.onClick += onClickDeckListItemCallback;
+            deckListItem.onClickDeleteButton += onClickItemDeleteButtonCallback;
             deckListItem.onAddCardPoolClick += onClickEditCardPoolCallback;
             deckListItem.onToggleValueChanged += onDeckListItemToggleValueChangedCallback;
         }
@@ -89,12 +90,17 @@ namespace UI
         {
             DeckListItem deckListItem = item.GetComponent<DeckListItem>();
             deckListItem.onClick -= onClickDeckListItemCallback;
+            deckListItem.onClickDeleteButton -= onClickItemDeleteButtonCallback;
             deckListItem.onAddCardPoolClick -= onClickEditCardPoolCallback;
             deckListItem.onToggleValueChanged -= onDeckListItemToggleValueChangedCallback;
         }
         private void onClickDeckListItemCallback(DeckListItem item)
         {
-            onClickDeckListItem?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform));
+            onClickItemButton?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform));
+        }
+        private void onClickItemDeleteButtonCallback(DeckListItem item)
+        {
+            onClickItemDeleteButton?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform));
         }
         private void onClickEditCardPoolCallback(DeckListItem item)
         {
@@ -102,7 +108,7 @@ namespace UI
         }
         private void onDeckListItemToggleValueChangedCallback(DeckListItem item, bool value)
         {
-            onDeckListItemToggleValueChanged?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform), value);
+            onItemToggleValueChanged?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform), value);
         }
 
         #endregion
@@ -110,20 +116,10 @@ namespace UI
         #endregion
 
         #region 事件
-
-        /// <summary>
-        /// 当点击右侧卡组列表项，参数为索引
-        /// </summary>
-        public event Action<int> onClickDeckListItem;
-        /// <summary>
-        /// 当点击修改卡池按钮时触发的事件。
-        /// </summary>
+        public event Action<int> onClickItemButton;
+        public event Action<int> onClickItemDeleteButton;
         public event Action onClickEditCardPools;
-        /// <summary>
-        /// 当更改卡组列表的勾选框的值，参数为索引、更改的值
-        /// </summary>
-        public event Action<int, bool> onDeckListItemToggleValueChanged;
-        
+        public event Action<int, bool> onItemToggleValueChanged;
         #endregion
 
         #region 属性字段

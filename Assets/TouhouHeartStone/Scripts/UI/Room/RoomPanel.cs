@@ -211,10 +211,10 @@ namespace UI
             _cardPoolsPanel.SetActive(false);
             _addAIPlayerButton.onClick.AddListener(onClickAddAIPlayerButtonCallback);
             _selectDeckButton.onClick.AddListener(onClickSelectDeckButtonCallback);
-            _deckViewPanel.onClickDeckListItem += onClickDeckSelectItemCallback;
-            _cardPoolsViewPanel.onClickDeckListItem += onClickCardPoolsSelectItemCallback;
+            _deckViewPanel.onClickItemButton += onClickDeckSelectItemCallback;
+            _cardPoolsViewPanel.onClickItemButton += onClickCardPoolsSelectItemCallback;
             _cardPoolsViewPanel.onClickEditCardPools += onClickEditCardPoolsCallback;
-            _cardPoolsViewPanel.onDeckListItemToggleValueChanged += onAddCardPoolsSelectItemToggleCallback;
+            _cardPoolsViewPanel.onItemToggleValueChanged += onAddCardPoolsSelectItemToggleCallback;
 
             _deckViewCardList.onDeckItemPointerEnter += onDeckItemPointerEnterCallback;
             _deckViewCardList.onDeckItemPointerExit += onDeckItemPointerExitCallback;

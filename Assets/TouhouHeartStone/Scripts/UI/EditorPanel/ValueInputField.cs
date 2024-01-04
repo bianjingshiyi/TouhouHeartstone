@@ -2,8 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Game;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
+using TouhouHeartstone;
 using UnityEngine;
 using UnityEngine.UI;
 using EventArgReference = Game.EventArgReference;
@@ -37,11 +40,12 @@ namespace UI
         {
             _buttonText.text = text;
         }
-        public void setCard(CardDefine cardDefine, CardSkinData skin, Sprite image)
+        public void setCard(string name, Sprite image)
         {
-            if (_valueInfo.type.type == ActionNodeValueType.cardReference)
+            var valueType = _valueInfo.type;
+            if (valueType.type == ActionNodeValueType.cardReference && !valueType.isArray)
             {
-                _buildItem.update(cardDefine, image, skin?.name ?? string.Empty, 0);
+                _buildItem.updateView(name, image, 0);
             }
         }
         public ValueInputField getItemAt(int index)
@@ -92,7 +96,7 @@ namespace UI
             _dropdown.interactable = canEdit;
             _buffDropdown.interactable = canEdit;
             _buffItemEditButton.interactable = canEdit;
-            _buildItem.CanClick = canEdit;
+            _buildItem.interactable = canEdit;
             _buildItemEditButton.interactable = canEdit;
             _inputDropdown.interactable = canEdit;
             _multiInputDropdown.interactable = canEdit;
@@ -120,7 +124,7 @@ namespace UI
 
             _button.onClick.AddListener(() => callButtonCallback(ValueInputFieldButton.EditButton));
             _removeItemButton.onClick.AddListener(() => onClickRemoveButton?.Invoke(this));
-            _buildItem.onClick += () => callButtonCallback(ValueInputFieldButton.CardButton);
+            _buildItem.onClick += (item, data) => callButtonCallback(ValueInputFieldButton.CardButton);
             _buildItemEditButton.onClick.AddListener(() => callButtonCallback(ValueInputFieldButton.CardEditButton));
             _buffItemEditButton.onClick.AddListener(() => callButtonCallback(ValueInputFieldButton.BuffEditButton));
         }
@@ -781,7 +785,7 @@ namespace UI
         [SerializeField]
         Dropdown _dropdown;
         [SerializeField]
-        BuildDeckListItem _buildItem;
+        CardViewDeckCardListItem _buildItem;
         [SerializeField]
         Button _buildItemEditButton;
         [SerializeField]
@@ -842,6 +846,57 @@ namespace UI
         [SerializeField]
         bool _isListItem;
         #endregion
+    }
+
+    public static class ValueInputFieldHelper 
+    {
+        public static async Task setInputFieldCardByValue(this ValueInputField inputField, object value, IEnumerable<ICardPoolReference> env, MainManager game)
+        {
+            if (value is DefineReference cardReference)
+            {
+                await inputField.setInputFieldCard(cardReference, env, game);
+            }
+            else if (value is IList<DefineReference> cardReferenceList)
+            {
+                await inputField.setInputFieldCards(cardReferenceList, env, game);
+            }
+        }
+        public static async Task setInputFieldCard(this ValueInputField inputField, DefineReference cardReference, IEnumerable<ICardPoolReference> env, MainManager game)
+        {
+            if (!inputField)
+                return;
+            string cardName = string.Empty;
+            Sprite image = null;
+            if (cardReference != null && cardReference != DefineReference.Empty)
+            {
+                var localRef = game.card.getCardPoolReferenceInEnv(cardReference.cardPoolId, env);
+                // 如果卡池没有被加载，加载卡池。
+                await game.card.getOrLoadCardPool(localRef, true);
+                var cardDefine = game.card.getCardDefine(localRef, cardReference.defineId);
+                if (cardDefine != null)
+                {
+                    var cardSkin = game.card.getCardSkin(cardDefine);
+                    cardName = cardSkin?.name ?? game.lang._(StringTable.BUILD_UNKNOW_CARD_NAME);
+                    image = await game.card.loadCardImage(cardDefine, true);
+                }
+                else
+                {
+                    cardName = game.lang._(StringTable.BUILD_UNKNOW_CARD_NAME);
+                    image = game.card.getDefaultSprite();
+                }
+            }
+            inputField.setCard(cardName, image);
+        }
+        public static async Task setInputFieldCards(this ValueInputField inputField, IList<DefineReference> cardReferenceList, IEnumerable<ICardPoolReference> env, MainManager game)
+        {
+            for (int i = 0; i < cardReferenceList.Count; i++)
+            {
+                var childInputField = inputField.getItemAt(i);
+                var defRef = cardReferenceList[i];
+                await childInputField.setInputFieldCard(defRef, env, game);
+            }
+        }
+
     }
 
     public enum ValueInputFieldButton

@@ -52,6 +52,7 @@ namespace UI
                     listItem.onEndDrag += onDeckItemEndDragCallback;
                     listItem.onPointerEnter += onDeckItemPointerEnterCallback;
                     listItem.onPointerExit += onDeckItemPointerExitCallback;
+                    listItem.onDeselect += onDeckCardDeselectCallback;
                 },
                 rect =>
                 {
@@ -62,6 +63,7 @@ namespace UI
                     listItem.onEndDrag -= onDeckItemEndDragCallback;
                     listItem.onPointerEnter -= onDeckItemPointerEnterCallback;
                     listItem.onPointerExit -= onDeckItemPointerExitCallback;
+                    listItem.onDeselect -= onDeckCardDeselectCallback;
                 });
         }
 
@@ -94,6 +96,10 @@ namespace UI
         {
             onDeckItemClicked?.Invoke(_cardElementList.indexOf(item), pointer);
         }
+        private void onDeckCardDeselectCallback(CardViewDeckCardListItem item)
+        {
+            onDeckItemDeselect?.Invoke(_cardElementList.indexOf(item));
+        }
         #endregion
 
         #endregion
@@ -105,6 +111,7 @@ namespace UI
         public event Action<int, PointerEventData> onDeckItemPointerEnter;
         public event Action<int, PointerEventData> onDeckItemPointerExit;
         public event Action<int, PointerEventData> onDeckItemClicked;
+        public event Action<int> onDeckItemDeselect;
         #endregion
 
         #region 属性字段
@@ -136,7 +143,7 @@ namespace UI
         {
             if (deck == null)
                 return;
-            var deckItems = await cardManager.orderDeckItemsByPoolsInSet(deck.cardList, poolSet);
+            var deckItems = await cardManager.orderDeckItemsByPoolsInEnv(deck.cardList, poolSet);
             var deckItem = deckItems[index];
             var defRef = deckItem.cardRef;
             if (defRef == null)

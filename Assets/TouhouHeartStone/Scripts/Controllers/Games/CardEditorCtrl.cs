@@ -968,7 +968,6 @@ namespace Controllers
         {
             _cardDefine.setSkillRef(defRef);
             var poolRef = getCardPoolReference(defRef.cardPoolId);
-            var cardDefine = game.card.getCardDefine(poolRef, defRef.defineId);
             var skin = game.card.getCardSkin(poolRef, defRef.defineId);
             Sprite spr;
             string name;
@@ -982,7 +981,7 @@ namespace Controllers
                 spr = game.card.getDefaultSprite();
                 name = game.lang._(StringTable.BUILD_UNKNOW_CARD_NAME);
             }
-            _ui.setSkillRef(cardDefine, spr, name);
+            _ui.setSkillRef(spr, name);
         }
 
         private void saveCard()
@@ -1017,10 +1016,17 @@ namespace Controllers
         /// <summary>
         /// 更新所有关键词。
         /// </summary>
-        private void updateKeywords()
+        private async void updateKeywords()
         {
-            var item = GetCardDefineKeywordItems();
-            _ui.updateKeywords(item, game.card);
+            var itemInfos = GetCardDefineKeywordItems();
+            _ui.keywordsFoldout.updateItems(itemInfos);
+
+            var env = getCardPoolReferenceEnv();
+            var fields = _ui.keywordsFoldout.getPropertyItemFields();
+            for (int i = 0; i < itemInfos.Length; i++)
+            {
+                await fields[i].valueInputField.setInputFieldCardByValue(itemInfos[i].value, env, game);
+            }
 
             var keywords = EditorManager.editorKeywords;
             var keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray();
@@ -1029,28 +1035,39 @@ namespace Controllers
         /// <summary>
         /// 更新所有自定义属性。
         /// </summary>
-        private void updateCustomProperties()
+        private async void updateCustomProperties()
         {
-            var items = GetCardDefineCustomProps();
-            _ui.updateCustomProperties(items, game.card);
+            var itemInfos = GetCardDefineCustomProps();
+            _ui.updateCustomProperties(itemInfos);
+
+            var env = getCardPoolReferenceEnv();
+            var fields = _ui.getCustomPropertyItemFields();
+            for (int i = 0; i < itemInfos.Length; i++)
+            {
+                await fields[i].valueInputField.setInputFieldCardByValue(itemInfos[i].value, env, game);
+            }
         }
         /// <summary>
         /// 更新一项属性。
         /// </summary>
         /// <param name="isCustom">要更新的属性是否是自定义属性？</param>
         /// <param name="name">属性名称。</param>
-        private void updatePropertyItem(bool isCustom, string name)
+        private async void updatePropertyItem(bool isCustom, string name)
         {
+            PropertyItemInfo itemInfo;
+            PropertyItemField propertyItemField;
             if (isCustom)
             {
-                var item = GetCardDefineCustomProperty(name);
-                _ui.updateCustomPropertyItem(name, item, game.card);
+                itemInfo = GetCardDefineCustomProperty(name);
+                propertyItemField = _ui.getCustomPropertyItemField(name);
             }
             else
             {
-                var item = GetCardDefineKeywordItem(name);
-                _ui.updateKeywordItem(name, item, game.card);
+                itemInfo = GetCardDefineKeywordItem(name);
+                propertyItemField = _ui.keywordsFoldout.getPropertyItemField(name);
             }
+            propertyItemField.updateItem(itemInfo);
+            await propertyItemField.valueInputField.setInputFieldCardByValue(itemInfo.value, getCardPoolReferenceEnv(), game);
         }
         private PropertyItemInfo[] GetCardDefineCustomProps()
         {

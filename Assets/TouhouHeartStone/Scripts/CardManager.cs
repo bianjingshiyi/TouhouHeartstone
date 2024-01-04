@@ -323,18 +323,18 @@ namespace Game
                 return getCardDefine(poolRef, cardRef.defineId) is CardDefine cardDefine ? cardDefine.getCost() : 0;
             }).ToArray();
         }
-        public async Task<DeckItem[]> orderDeckItemsByPoolsInSet(IEnumerable<DeckItem> deckItems, IEnumerable<ICardPoolReference> poolSet)
+        public async Task<DeckItem[]> orderDeckItemsByPoolsInEnv(IEnumerable<DeckItem> deckItems, IEnumerable<ICardPoolReference> env)
         {
             // 加载未加载的卡池。
             foreach (var deckItem in deckItems)
             {
-                var poolRef = getCardPoolReferenceInSet(deckItem.cardRef.cardPoolId, poolSet);
+                var poolRef = getCardPoolReferenceInEnv(deckItem.cardRef.cardPoolId, env);
                 await getOrLoadCardPool(poolRef);
             }
             return deckItems.OrderBy(item =>
             {
                 var cardRef = item.cardRef;
-                var poolRef = getCardPoolReferenceInEnv(cardRef.cardPoolId, poolSet);
+                var poolRef = getCardPoolReferenceInEnv(cardRef.cardPoolId, env);
                 return getCardDefine(poolRef, cardRef.defineId) is CardDefine cardDefine ? cardDefine.getCost() : 0;
             }).ToArray();
         }

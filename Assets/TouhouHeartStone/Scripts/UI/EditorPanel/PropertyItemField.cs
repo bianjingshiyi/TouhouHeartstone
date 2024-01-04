@@ -1,10 +1,7 @@
-﻿using Game;
+﻿using System;
 using System.Collections.Generic;
-using System;
-using TouhouCardEngine;
-using UnityEngine;
-using System.Threading.Tasks;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI
@@ -18,7 +15,7 @@ namespace UI
             _valueInputField.onClickItemButton += (item, index, type) => onClickItemButton?.Invoke(_name, index, type);
             _deleteButton.onClick.AddListener(() => onClickDelete?.Invoke(_name));
         }
-        public async Task updateItem(PropertyItemInfo info, CardManager cardManager)
+        public void updateItem(PropertyItemInfo info)
         {
             _name = info.propertyName;
             _nameText.text = info.getDisplayName();
@@ -27,26 +24,6 @@ namespace UI
             var value = info.value;
             var valueInfo = new ActionNodeValueInfo(string.Empty, type, value);
             _valueInputField.setValueInfo(string.Empty, valueInfo);
-
-
-            if (type.type == ActionNodeValueType.cardReference)
-            {
-                if (info.value is DefineReference defRef)
-                {
-                    await setCard(_valueInputField, defRef, cardManager);
-                }
-                else if (type.isArray && info.value is DefineReference[] defRefs)
-                {
-                    for (int i = 0; i < defRefs.Length; i++)
-                    {
-                        var inputField = _valueInputField.getItemAt(i);
-                        if (inputField == null)
-                            continue;
-                        var dref = defRefs[i];
-                        await setCard(inputField, dref, cardManager);
-                    }
-                }
-            }
         }
         public void setPiles(string[] pileNames, string[] pileValues)
         {
@@ -64,16 +41,6 @@ namespace UI
         {
             setKeywords(keywords.Select(p => p.name).ToArray(), keywords.Select(p => p.value).ToArray());
         }
-        private static async Task setCard(ValueInputField inputField, DefineReference defRef, CardManager cardManager)
-        {
-            var poolRef = cardManager.getLocalCardPoolReference(defRef.cardPoolId);
-            await cardManager.getOrLoadCardPool(poolRef);
-            var cardDefine = cardManager.getCardDefine(poolRef, defRef.defineId);
-            var skin = cardManager.getCardSkin(cardDefine);
-            Sprite image = await cardManager.loadCardImage(poolRef, skin, false);
-            inputField.setCard(cardDefine, skin, image);
-        }
-
 
         public event Action<string> onClickDelete;
 
@@ -82,6 +49,7 @@ namespace UI
         public event Action<string, int, ValueInputFieldButton> onClickItemButton;
 
         public string propertyName => _name;
+        public ValueInputField valueInputField => _valueInputField;
         private string _name;
         [SerializeField]
         private Text _nameText;

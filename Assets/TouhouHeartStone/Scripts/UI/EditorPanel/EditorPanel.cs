@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    class EditorPanel : CardViewPanel
+    class EditorPanel : MonoBehaviour
     {
         #region 公有方法
         public void setTitleText(string text)
@@ -25,6 +25,28 @@ namespace UI
         {
             setTabPageActive(_ruleTabPage, page);
             setTabPageActive(_cardPoolDepTabPage, page);
+        }
+        public void setCardPoolListActive(bool value)
+        {
+            _cardPoolListObj.SetActive(value);
+        }
+        public void setEditCardPoolPanelActive(bool value)
+        {
+            _cardPoolEditPanel.SetActive(value);
+        }
+        public void updateCurCardPoolInfo(string name, Sprite image)
+        {
+            _curCardPoolNameText.text = name;
+            _curCardPoolImage.sprite = image;
+            _cardPoolNameInputField.SetTextWithoutNotify(name);
+        }
+        /// <summary>
+        /// 更新卡池列表
+        /// </summary>
+        /// <param name="deckViewData"></param>
+        public void updateCardPoolList((string name, Sprite image, bool errorTip)[] deckViewData)
+        {
+            _cardPoolList.update(deckViewData.Select(i => (i.name, i.image, i.errorTip, false)).ToArray());
         }
 
         #region 游戏规则
@@ -107,9 +129,21 @@ namespace UI
         #region 私有方法
 
         #region 生命周期
-        protected override void Awake()
+        private void Awake()
         {
-            base.Awake();
+            _returnButton.onClick.AddListener(() => onClickReturnButton?.Invoke());
+            _cardPoolList.onClickItemButton += index => onClickCardPoolListItem?.Invoke(index);
+            _cardPoolList.onClickItemDeleteButton += index => onClickCardPoolListItemDeleteButton?.Invoke(index);
+
+            _addCardPoolButton.onClick.AddListener(onClickAddCardPoolButtonCallback);
+            _saveCardPoolButton.onClick.AddListener(onClickSaveCardPoolButtonCallback);
+            _returnToCardPoolViewButton.onClick.AddListener(onClickReturnToCardPoolViewButtonCallback);
+            _deleteCurCardPoolButton.onClick.AddListener(onClickDeleteCurCardPoolButtonCallback);
+
+            _curCardPoolImageButton.onClick.AddListener(onClickEditCardPoolImageButtonCallback);
+            _curCardPoolNameButton.onClick.AddListener(onClickEditCardPoolNameButtonCallback);
+            _cardPoolNameInputField.onEndEdit.AddListener(onEndEditCardPoolNameInputFieldCallback);
+
             _newCardButton.onClick.AddListener(onClickNewCardButtonCallback);
             _pasteCardButton.onClick.AddListener(onClickPasteCardButtonCallback);
             _exportCardPoolButton.onClick.AddListener(onClickExportCardPoolButtonCallback);
@@ -122,8 +156,8 @@ namespace UI
             _cardPoolDepTabButton.onClick.AddListener(() => displayTabPage(_cardPoolDepTabPage));
 
             _addCardPoolDepButton.onClick.AddListener(() => onClickAddCardPoolDepButton?.Invoke());
-            _addCardPoolDepDialog.onClickDeckListItem += index => onClickAddCardPoolDepItem?.Invoke(index);
-            _addCardPoolDepDialog.onDeckListItemToggleValueChanged += (index, value) => onClickAddCardPoolDepItem?.Invoke(index);
+            _addCardPoolDepDialog.onClickItemButton += index => onClickAddCardPoolDepItem?.Invoke(index);
+            _addCardPoolDepDialog.onItemToggleValueChanged += (index, value) => onClickAddCardPoolDepItem?.Invoke(index);
             _cancelAddCardPoolDepButton.onClick.AddListener(() => hideSelectCardPoolDependencyDialog());
             _confirmAddCardPoolDepButton.onClick.AddListener(() => onClickConfirmAddCardPoolDepButton?.Invoke());
             _updateCardPoolDepsButton.onClick.AddListener(() => onClickUpdateCardPoolDepsButton?.Invoke());
@@ -131,6 +165,42 @@ namespace UI
         #endregion
 
         #region 事件回调
+        private void onClickAddCardPoolButtonCallback()
+        {
+            onClickAddCardPoolButton?.Invoke();
+        }
+        private void onClickSaveCardPoolButtonCallback()
+        {
+            onClickSaveCardPoolButton?.Invoke();
+        }
+        private void onClickReturnToCardPoolViewButtonCallback()
+        {
+            onClickReturnToCardPoolViewButton?.Invoke();
+        }
+        private void onClickDeleteCurCardPoolButtonCallback()
+        {
+            onClickDeleteCurCardPoolButton?.Invoke();
+        }
+        private void onClickEditCardPoolImageButtonCallback()
+        {
+            onClickEditCardPoolImageButton?.Invoke();
+        }
+        private void onClickEditCardPoolNameButtonCallback()
+        {
+            //编辑名称模式
+            _cardPoolNameInputField.gameObject.SetActive(true);
+            _cardPoolNameInputField.ActivateInputField();
+            _curCardPoolNameButton.gameObject.SetActive(false);
+            _curCardPoolNameText.gameObject.SetActive(false);
+        }
+        private void onEndEditCardPoolNameInputFieldCallback(string value)
+        {
+            _cardPoolNameInputField.gameObject.SetActive(false);
+            _curCardPoolNameButton.gameObject.SetActive(true);
+            _curCardPoolNameText.gameObject.SetActive(true);
+            _curCardPoolNameText.text = value;
+            onCardPoolNameInputFieldValueChanged?.Invoke(value);
+        }
         private void onClickNewCardButtonCallback()
         {
             onClickNewCardButton?.Invoke();
@@ -184,6 +254,42 @@ namespace UI
         #endregion
 
         #region 事件
+
+        #region 卡池列表
+        /// <summary>
+        /// 当点击卡池列表项，参数为索引
+        /// </summary>
+        public event Action<int> onClickCardPoolListItem;
+        /// <summary>
+        /// 当点击卡池列表项的删除按钮，参数为列表索引
+        /// </summary>
+        public event Action<int> onClickCardPoolListItemDeleteButton;
+        #endregion
+
+        public event Action onClickReturnButton;
+        /// <summary>
+        /// 当点击返回浏览卡池按钮
+        /// </summary>
+        public event Action onClickReturnToCardPoolViewButton;
+        /// <summary>
+        /// 当点击删除当前卡池按钮
+        /// </summary>
+        public event Action onClickDeleteCurCardPoolButton;
+        /// <summary>
+        /// 当点击修改卡池图片按钮。
+        /// </summary>
+        public event Action onClickEditCardPoolImageButton;
+        public event Action<string> onCardPoolNameInputFieldValueChanged;
+        /// <summary>
+        /// 当点击右侧卡组列表添加按钮
+        /// </summary>
+        public event Action onClickAddCardPoolButton;
+        /// <summary>
+        /// 当点击保存卡池按钮
+        /// </summary>
+        public event Action onClickSaveCardPoolButton;
+
+
         public event Action onClickNewCardButton;
         public event Action onClickPasteCardButton;
         public event Action onClickExportCardPoolButton;
@@ -195,14 +301,46 @@ namespace UI
 
         public event Action onClickAddCardPoolDepButton;
         public event Action<int> onClickRemoveCardPoolDepButton;
-        public event Action<int> onClickAddCardPoolDepItem; 
+        public event Action<int> onClickAddCardPoolDepItem;
         public event Action onClickConfirmAddCardPoolDepButton;
         public event Action onClickUpdateCardPoolDepsButton;
         #endregion
 
         #region 属性字段
 
+
+        [Header("卡池列表")]
+        [SerializeField]
+        GameObject _cardPoolListObj;
+        [SerializeField]
+        DeckViewPanel _cardPoolList;
+        [SerializeField]
+        Button _returnButton;
+        [SerializeField]
+        Button _addCardPoolButton;
+        [SerializeField]
+        Button _importCardPoolButton;
+
+
         [Header("编辑器")]
+        [SerializeField]
+        GameObject _cardPoolEditPanel;
+        [SerializeField]
+        InputField _cardPoolNameInputField;
+        [SerializeField]
+        Button _saveCardPoolButton;
+        [SerializeField]
+        Button _returnToCardPoolViewButton;
+        [SerializeField]
+        Button _deleteCurCardPoolButton;
+        [SerializeField]
+        Text _curCardPoolNameText;
+        [SerializeField]
+        Image _curCardPoolImage;
+        [SerializeField]
+        Button _curCardPoolImageButton;
+        [SerializeField]
+        Button _curCardPoolNameButton;
         [SerializeField]
         Text _editorTitle;
         [SerializeField]
@@ -211,8 +349,6 @@ namespace UI
         Button _pasteCardButton;
         [SerializeField]
         Button _exportCardPoolButton;
-        [SerializeField]
-        Button _importCardPoolButton;
 
         [Header("选项卡")]
         [SerializeField]

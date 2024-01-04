@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Game;
 using UnityEngine;
@@ -20,12 +21,12 @@ namespace UI
         {
             return _contentsObj.activeSelf;
         }
-        public void updateItems(PropertyItemInfo[] items, CardManager cardManager)
+        public void updateItems(PropertyItemInfo[] items)
         {
-            UIHelper.updateList(_propItemsRoot, _propItemTemplate, _itemList, items.Length, async (index, rect) =>
+            UIHelper.updateList(_propItemsRoot, _propItemTemplate, _itemList, items.Length, (index, rect) =>
             {
                 PropertyItemField listItem = rect.GetComponent<PropertyItemField>();
-                await listItem.updateItem(items[index], cardManager);
+                listItem.updateItem(items[index]);
             }, 
             rect =>
             {
@@ -42,25 +43,25 @@ namespace UI
                 listItem.onClickItemButton -= onClickPropChildButtonCallback;
             });
         }
-        public async Task updateItem(string name, PropertyItemInfo item, CardManager cardManager)
+        public PropertyItemField[] getPropertyItemFields()
         {
-            PropertyItemField listItem = null;
+            return _itemList.Select(i => i.GetComponent<PropertyItemField>()).ToArray();
+        }
+        public PropertyItemField getPropertyItemField(string name)
+        {
             foreach (var rect in _itemList)
             {
                 if (rect == null)
                     continue;
-                var i = rect.GetComponent<PropertyItemField>();
-                if (i == null)
+                var field = rect.GetComponent<PropertyItemField>();
+                if (field == null)
                     continue;
-                if (i.propertyName == name)
+                if (field.propertyName == name)
                 {
-                    listItem = i;
-                    break;
+                    return field;
                 }
             }
-            if (listItem == null)
-                return;
-            await listItem.updateItem(item, cardManager);
+            return null;
         }
 
         private void Awake()

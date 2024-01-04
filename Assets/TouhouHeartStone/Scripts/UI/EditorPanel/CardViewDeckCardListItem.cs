@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    public class CardViewDeckCardListItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+    public class CardViewDeckCardListItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, IDeselectHandler
     {
         #region 公有方法
         public void updateView(string name, Sprite sprite)
@@ -34,7 +34,8 @@ namespace UI
         #region 事件回调
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
-            onBeginDrag?.Invoke(this, eventData);
+            if (interactable)
+                onBeginDrag?.Invoke(this, eventData);
             if (!eventData.used)
             {
                 GetComponentInParent<ScrollRect>()?.SendMessage("OnBeginDrag", eventData, SendMessageOptions.DontRequireReceiver);
@@ -42,7 +43,8 @@ namespace UI
         }
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
-            onDrag?.Invoke(this, eventData);
+            if (interactable)
+                onDrag?.Invoke(this, eventData);
             if (!eventData.used)
             {
                 GetComponentInParent<ScrollRect>()?.SendMessage("OnDrag", eventData, SendMessageOptions.DontRequireReceiver);
@@ -50,7 +52,8 @@ namespace UI
         }
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
-            onEndDrag?.Invoke(this, eventData);
+            if (interactable)
+                onEndDrag?.Invoke(this, eventData);
             if (!eventData.used)
             {
                 GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
@@ -58,7 +61,8 @@ namespace UI
         }
         void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
         {
-            onClick?.Invoke(this, eventData);
+            if (interactable)
+                onClick?.Invoke(this, eventData);
         }
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
@@ -68,6 +72,11 @@ namespace UI
         {
             onPointerExit?.Invoke(this, eventData);
         }
+        void IDeselectHandler.OnDeselect(BaseEventData eventData)
+        {
+            onDeselect?.Invoke(this);
+        }
+        
         #endregion
         #endregion
         #region 事件
@@ -77,7 +86,9 @@ namespace UI
         public event Action<CardViewDeckCardListItem, PointerEventData> onClick;
         public event Action<CardViewDeckCardListItem, PointerEventData> onPointerEnter;
         public event Action<CardViewDeckCardListItem, PointerEventData> onPointerExit;
+        public event Action<CardViewDeckCardListItem> onDeselect;
         #endregion
+        public bool interactable { get; set; } = true;
         [SerializeField]
         Text _nameText;
         [SerializeField]

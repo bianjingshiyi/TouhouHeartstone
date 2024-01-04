@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Game;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
+using UnityEngine;
 
 namespace Controllers
 {
@@ -50,13 +53,17 @@ namespace Controllers
         /// 更新一项属性。
         /// </summary>
         /// <param name="name">属性名称。</param>
-        public void updatePropertyItem(string name)
+        public async void updatePropertyItem(string name)
         {
-            var item = GetEffectPropertyItem(name);
+            var itemInfo = GetEffectPropertyItem(name);
             var nodeItem = getEffectEntryNodeItem();
-            if (item != null)
+            if (itemInfo != null)
             {
-                nodeItem.updateEffectPropertyItem(name, item, game.card);
+                var field = nodeItem.getEffectPropertyItemField(name);
+                if (!field)
+                    return;
+                field.updateItem(itemInfo);
+                await field.valueInputField.setInputFieldCardByValue(itemInfo.value, getCardPoolEnv(), game);
             }
         }
         #region 事件回调
@@ -212,13 +219,23 @@ namespace Controllers
         /// <summary>
         /// 更新所有效果属性。
         /// </summary>
-        private void updateEffectProperties()
+        private async void updateEffectProperties()
         {
-            var items = GetEffectPropItems();
-            var item = getEffectEntryNodeItem();
-            if (item != null)
+            var itemInfos = GetEffectPropItems();
+            var nodeItem = getEffectEntryNodeItem();
+            if (nodeItem != null)
             {
-                item.updateEffectProperties(items, game.card);
+                nodeItem.updateEffectProperties(itemInfos);
+                var fields = nodeItem.getEffectPropertyItemFields();
+                var env = getCardPoolEnv();
+                for (int i = 0; i < itemInfos.Length; i++)
+                {
+                    var field = fields[i];
+                    var itemInfo = itemInfos[i];
+                    if (!field)
+                        return;
+                    await field.valueInputField.setInputFieldCardByValue(itemInfo.value, env, game);
+                }
             }
         }
         private PropertyItemInfo[] GetEffectPropItems()

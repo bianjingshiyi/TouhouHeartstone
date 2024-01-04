@@ -93,8 +93,8 @@ namespace Controllers
 
                 //更新UI
                 gameObject.SetActive(true);
-                _ui.setDeckListActive(false);
-                _ui.setEditDeckPanelActive(true);
+                _ui.setCardPoolListActive(false);
+                _ui.setEditCardPoolPanelActive(true);
                 _ui.updateCurCardPoolInfo(poolInfo.cardPoolName, image);
                 updatePasteButton();
                 await _cardPoolViewPanelCtrl.display(cardPoolsRange: new long[] { poolId }, cardFilter: c =>
@@ -251,19 +251,22 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<EditorPanel>();
             }
+            // 卡池列表
             _ui.onClickReturnButton += onClickReturnButton;
-            _ui.onClickDeckListItem += onClickCardPoolListItem;
-            _ui.onClickDeckListItemDeleteButton += onClickDeleteCardPoolButton;
-            _ui.onClickDeckListAddButton += onClickAddCardPoolButton;
-            _ui.onClickSaveDeckButton += onClickSaveCardPoolButton;
+            _ui.onClickAddCardPoolButton += onClickAddCardPoolButton;
+            _ui.onClickCardPoolListItem += onClickCardPoolListItem;
+            _ui.onClickCardPoolListItemDeleteButton += onClickDeleteCardPoolButton;
+            _ui.onClickImportCardPoolButton += onClickImportCardPoolButton;
+
+            // 编辑器UI
+            _ui.onClickSaveCardPoolButton += onClickSaveCardPoolButton;
             _ui.onClickReturnToCardPoolViewButton += onClickReturnToCardPoolViewButton;
             _ui.onClickDeleteCurCardPoolButton += onClickDeleteCurCardPoolButton;
             _ui.onClickEditCardPoolImageButton += onClickEditCardPoolImageButtonCallback;
-            _ui.onDeckNameInputFieldValueChanged += onDeckNameInputFieldValueChanged;
+            _ui.onCardPoolNameInputFieldValueChanged += onCardPoolNameInputFieldValueChanged;
             _ui.onClickNewCardButton += onClickNewCardButton;
             _ui.onClickPasteCardButton += onClickPasteCardButton;
             _ui.onClickExportCardPoolButton += onClickExportCardPoolButton;
-            _ui.onClickImportCardPoolButton += onClickImportCardPoolButton;
 
             // 自定义规则
             _ui.onClickAddRuleItem += onClickAddRuleItemCallback;
@@ -335,7 +338,7 @@ namespace Controllers
                     var poolRef = getLocalCardPoolRef(cardPoolId);
                     game.card.removeCardPool(poolRef);
                     _cardPoolIdList.RemoveAt(index);
-                    await updateDeckListUI();
+                    await updateCardPoolListUI();
                 });
             }
         }
@@ -447,7 +450,7 @@ namespace Controllers
                 {
                     game.ui.dialog.ShowConfirm(game.i18n._(StringTable.HINT_TITLE), game.i18n._(IMPORT_SUCCESS));
                     await getCardPoolsInfoAsync();
-                    await updateDeckListUI();
+                    await updateCardPoolListUI();
                 }
             }
             catch (Exception e)
@@ -486,7 +489,7 @@ namespace Controllers
                     game.card.removeCardPool(poolRef);
                     int index = _cardPoolIdList.IndexOf(cardPoolId);
                     _cardPoolIdList.RemoveAt(index);
-                    await updateDeckListUI();
+                    await updateCardPoolListUI();
                     await returnToView();
                 });
             }
@@ -502,7 +505,7 @@ namespace Controllers
                 _ui.updateCurCardPoolInfo(poolInfo.cardPoolName, sprite);
             }
         }
-        private void onDeckNameInputFieldValueChanged(string value)
+        private void onCardPoolNameInputFieldValueChanged(string value)
         {
             markCardPoolUnsaved(_curCardPoolId);
             var poolInfo = getCurrentCardPoolInfo();
@@ -969,26 +972,27 @@ namespace Controllers
         /// <returns></returns>
         private async Task displayView()
         {
-            _ui.setDeckListActive(true);
-            _ui.setEditDeckPanelActive(false);
+            _ui.setCardPoolListActive(true);
+            _ui.setEditCardPoolPanelActive(false);
             await _cardPoolViewPanelCtrl.hide();
-            await updateDeckListUI();
+            await updateCardPoolListUI();
         }
         /// <summary>
         /// 更新卡池列表UI
         /// </summary>
         /// <returns></returns>
-        private async Task updateDeckListUI()
+        private async Task updateCardPoolListUI()
         {
-            (string name, Sprite image)[] viewData = new (string name, Sprite image)[_cardPoolIdList.Count];
+            (string name, Sprite image, bool errorTip)[] viewData = new (string name, Sprite image, bool errorTip)[_cardPoolIdList.Count];
             for (int i = 0; i < viewData.Length; i++)
             {
                 var cardPoolId = _cardPoolIdList[i];
                 var cardPoolInfo = getCardPoolInfo(cardPoolId);
                 viewData[i].name = cardPoolInfo.cardPoolName;
                 viewData[i].image = await game.card.loadCardPoolImage(cardPoolInfo);
+                viewData[i].errorTip = false;
             }
-            _ui.updateDeckList(viewData);
+            _ui.updateCardPoolList(viewData);
         }
         private void createCard(out CardDefine newCardDefine, out CardSkinData skin)
         {

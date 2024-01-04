@@ -7,6 +7,7 @@ using Game;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace UI
@@ -169,9 +170,9 @@ namespace UI
             _card.setTag(name);
             _tagDropdown.SetValueWithoutNotify(index);
         }
-        public void setSkillRef(CardDefine cardDefine, Sprite spr, string name)
+        public void setSkillRef(Sprite spr, string name)
         {
-            _skillRef.update(cardDefine, spr, name, 0);
+            _skillRef.updateView(name, spr);
         }
         public void setEffectTypes(string[] effectTypeNames)
         {
@@ -258,16 +259,6 @@ namespace UI
         {
             _cardPoolViewPanelObj.SetActive(display);
         }
-        public void updateKeywords(PropertyItemInfo[] items, CardManager cardManager)
-        {
-            _keywordsFoldout.updateItems(items, cardManager);
-        }
-
-        public async void updateKeywordItem(string name, PropertyItemInfo item, CardManager cardManager)
-        {
-            await _keywordsFoldout.updateItem(name, item, cardManager);
-        }
-
         public void showEffectListItemInputField(int index, string value)
         {
             _effectList.showItemInputField(index, value);
@@ -291,13 +282,13 @@ namespace UI
                 _createCustomPropDialog.hide();
             }
         }
-        public void updateCustomProperties(PropertyItemInfo[] items, CardManager cardManager)
+        public void updateCustomProperties(PropertyItemInfo[] items)
         {
             int count = items.Length;
-            BJSYGameCore.UI.UIHelper.updateList(_customPropertiesRoot, _customPropertyItemTemplate, _customPropertyItemList, count, async (i, rect) =>
+            BJSYGameCore.UI.UIHelper.updateList(_customPropertiesRoot, _customPropertyItemTemplate, _customPropertyItemList, count, (i, rect) =>
             {
                 PropertyItemField item = rect.GetComponent<PropertyItemField>();
-                await item.updateItem(items[i], cardManager);
+                item.updateItem(items[i]);
             },
             rect =>
             {
@@ -317,26 +308,25 @@ namespace UI
                 item.onClickDelete -= onDeleteCustomPropertyCallback;
             });
         }
-
-        public async void updateCustomPropertyItem(string name, PropertyItemInfo item, CardManager cardManager)
+        public PropertyItemField[] getCustomPropertyItemFields()
         {
-            PropertyItemField listItem = null;
+            return _customPropertyItemList.Select(i => i.GetComponent<PropertyItemField>()).ToArray();
+        }
+        public PropertyItemField getCustomPropertyItemField(string name)
+        {
             foreach (var rect in _customPropertyItemList)
             {
                 if (rect == null)
                     continue;
-                var i = rect.GetComponent<PropertyItemField>();
-                if (i == null)
+                var field = rect.GetComponent<PropertyItemField>();
+                if (field == null)
                     continue;
-                if (i.propertyName == name)
+                if (field.propertyName == name)
                 {
-                    listItem = i;
-                    break;
+                    return field;
                 }
             }
-            if (listItem == null)
-                return;
-            await listItem.updateItem(item, cardManager);
+            return null;
         }
         public void showCustomPropertyDialogError(string message)
         {
@@ -646,7 +636,7 @@ namespace UI
             onChangeTag?.Invoke(text);
 
         }
-        private void onSkillIDInputFieldEndEdit()
+        private void onSkillIDInputFieldEndEdit(CardViewDeckCardListItem item, PointerEventData data)
         {
             onClickSkillRefButton?.Invoke();
         }
@@ -809,6 +799,7 @@ namespace UI
 
         #endregion
         public Card card => _card;
+        public CardPropertiesFoldout keywordsFoldout => _keywordsFoldout;
         [Header("编辑内容")]
         [SerializeField]
         Card _card;
@@ -821,7 +812,7 @@ namespace UI
         [SerializeField]
         GameObject _skillIdGameObject;
         [SerializeField]
-        BuildDeckListItem _skillRef;
+        CardViewDeckCardListItem _skillRef;
         [SerializeField]
         Button _skillRefEditButton;
         [SerializeField]

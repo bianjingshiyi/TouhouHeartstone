@@ -409,12 +409,12 @@ namespace UI
             }
         }
         #region 自定义属性
-        public void updateEffectProperties(PropertyItemInfo[] properties, CardManager cardManager)
+        public void updateEffectProperties(PropertyItemInfo[] properties)
         {
-            UIHelper.updateList(_effectPropertyRoot, _effectPropertyItemTemplate, _effectPropertyItems, properties.Length, async (i, itemRect) =>
+            UIHelper.updateList(_effectPropertyRoot, _effectPropertyItemTemplate, _effectPropertyItems, properties.Length, (i, itemRect) =>
             {
                 PropertyItemField item = itemRect.GetComponent<PropertyItemField>();
-                await item.updateItem(properties[i], cardManager);
+                item.updateItem(properties[i]);
             }, itemRect =>
             {
                 PropertyItemField item = itemRect.GetComponent<PropertyItemField>();
@@ -434,25 +434,25 @@ namespace UI
             }, rebuild: true);
             SetDirty();
         }
-        public async void updateEffectPropertyItem(string name, PropertyItemInfo item, CardManager cardManager)
+        public PropertyItemField[] getEffectPropertyItemFields()
         {
-            PropertyItemField listItem = null;
+            return _effectPropertyItems.Select(i => i.GetComponent<PropertyItemField>()).ToArray();
+        }
+        public PropertyItemField getEffectPropertyItemField(string name)
+        {
             foreach (var rect in _effectPropertyItems)
             {
                 if (rect == null)
                     continue;
-                var i = rect.GetComponent<PropertyItemField>();
-                if (i == null)
+                var field = rect.GetComponent<PropertyItemField>();
+                if (field == null)
                     continue;
-                if (i.propertyName == name)
+                if (field.propertyName == name)
                 {
-                    listItem = i;
-                    break;
+                    return field;
                 }
             }
-            if (listItem == null)
-                return;
-            await listItem.updateItem(item, cardManager);
+            return null;
         }
         #endregion
         /// <summary>

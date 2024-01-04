@@ -1814,40 +1814,8 @@ namespace Controllers
         private async Task updateCardDefineDefaultValue(ActionNodeItem item, Node node, int portIndex, object value)
         {
             ValueInputField cardInputField = item.getInputDefaultValueInputField(portIndex);
-            if (value is DefineReference cardReference)
-            {
-                await updateCardDefineInputField(node, cardInputField, cardReference);
-            }
-            else if (value is IList<DefineReference> cardReferenceList)
-            {
-                for (int i = 0; i < cardReferenceList.Count; i++)
-                {
-                    var childInputField = cardInputField.getItemAt(i);
-                    var defRef = cardReferenceList[i];
-                    await updateCardDefineInputField(node, childInputField, defRef);
-                }
-            }
-        }
-        private async Task updateCardDefineInputField(Node node, ValueInputField cardInputField, DefineReference cardReference)
-        {
-            if (!cardInputField)
-                return;
-            CardDefine cardDefine = null;
-            if (cardReference != null)
-            {
-                var localRef = getCardPoolReference(cardReference.cardPoolId);
-                // 如果卡池没有被加载，加载卡池。
-                await game.card.getOrLoadCardPool(localRef, true);
-                cardDefine = game.card.getCardDefine(localRef, cardReference.defineId);
-            }
-            CardSkinData cardSkin = null;
-            Sprite image = null;
-            if (cardDefine != null)
-            {
-                cardSkin = game.card.getDefaultSkin(cardDefine);
-                image = await game.card.loadCardImage(cardDefine, false);
-            }
-            cardInputField.setCard(cardDefine, cardSkin, image);
+            var env = getCardPoolEnv();
+            cardInputField.setInputFieldCardByValue(value, env, game);
         }
         private bool tryGetValueTypeDefaultValue(ActionNodeValueType valueType, out object value)
         {

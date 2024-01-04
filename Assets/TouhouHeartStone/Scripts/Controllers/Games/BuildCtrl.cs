@@ -65,7 +65,7 @@ namespace Controllers
             // 更新UI
             _ui.gameObject.SetActive(true);
             _ui.showErrorTip(false);
-            _ui.updateCurCardPoolInfo(deck.name, await loadDeckImage(deck));
+            _ui.updateDeckInfo(deck.name, await loadDeckImage(deck));
             var masterName = masterSkin.name;
             if (masterName.Length > masterNameMaxLength)
                 masterName = game.lang._(MASTER_NAME_OVERFLOW_TEMPLATE, masterName.Substring(0, masterNameMaxLength));
@@ -89,24 +89,31 @@ namespace Controllers
                 _ui = GetComponent<BuildCardPanel>();
             }
             _ui.onClickReturnButton += onReturnButtonClick;
+
+            // 修改卡组
             _ui.onStartDragDeckCardListItem += onStartDragDeckCardListItem;
             _ui.onDragDeckCardListItem += onDragDeckCardListItem;
             _ui.onEndDragDeckCardListItem += onEndDragDeckCardListItem;
             _ui.onDeckCardPointerEnter += onDeckCardPointerEnterCallback;
             _ui.onDeckCardPointerExit += onDeckCardPointerExitCallback;
-            _ui.onClickDeckListItem += onClickDeckListItem;
-            _ui.onClickDeckListItemDeleteButton += onClickDeckListItemDeleteButton;
-            _ui.onDeckListItemNameValueChanged += onDeckListItemNameValueChanged;
-            _ui.onClickDeckListAddButton += onClickDeckListAddButton;
-            _ui.onClickMasterSelectPanelItem += onMasterSelect;
             _ui.onClickSaveDeckButton += onSaveDeckClick;
             _ui.onClickExitEditButton += onExitEditButtonClick;
             _ui.onClickExportDeckButton += onExportDeckClick;
+            _ui.onDeckNameInputFieldValueChanged += onDeckNameInputFieldValueChanged;
+
+            // 卡组列表
+            _ui.onClickDeckListItem += onClickDeckListItem;
+            _ui.onClickDeckListItemDeleteButton += onClickDeckListItemDeleteButton;
+            _ui.onDeckListItemNameValueChanged += onDeckListItemNameValueChanged;
+            _ui.onClickAddDeckButton += onClickDeckListAddButton;
             _ui.onClickImportDeckButton += onClickImportButton;
             _ui.onClickUploadDeckButton += onUploadDeckClick;
             _ui.onClickDownloadDeckButton += onDownloadDeckClick;
-            _ui.onDeckNameInputFieldValueChanged += onDeckNameInputFieldValueChanged;
 
+            // 新建卡组
+            _ui.onClickMasterSelectPanelItem += onMasterSelect;
+
+            // 卡牌列表
             _cardPoolViewPanelCtrl.onUpdateCardListItem += onUpdateCardListItem;
             _cardPoolViewPanelCtrl.onStartDragCard += onStartDragCard;
             _cardPoolViewPanelCtrl.onDragCard += onDragCard;

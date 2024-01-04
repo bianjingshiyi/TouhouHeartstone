@@ -11,9 +11,82 @@ namespace UI
     /// <summary>
     /// 卡牌构筑界面
     /// </summary>
-    partial class BuildCardPanel : CardViewPanel
+    partial class BuildCardPanel : MonoBehaviour
     {
         #region 公有方法
+        public void setLoadingUIActive(bool value)
+        {
+            _loadingImgObj.SetActive(value);
+        }
+        public void showErrorTip(string msg)
+        {
+            _errorTipText.text = msg;
+            _errorTipText.gameObject.SetActive(false);
+            _errorTipText.gameObject.SetActive(true);
+            _errorTipText.gameObject.GetComponent<SEPlayer>()?.Play();
+        }
+        public void showErrorTip(bool value)
+        {
+            _errorTipText.gameObject.SetActive(value);
+        }
+
+        #region 新建卡组面板
+        public void showMasterSelectPanel((string name, Sprite image)[] viewData)
+        {
+            _masterSelectionPanel.SetActive(true);
+            _masterSelectionDeckViewPanel.update(viewData);
+        }
+        public void hideMasterSelectPanel()
+        {
+            _masterSelectionPanel.SetActive(false);
+        }
+        #endregion
+
+        #region 卡组列表
+        /// <summary>
+        /// 显示右边的卡组列表
+        /// </summary>
+        /// <param name="value"></param>
+        public void setDeckListActive(bool value)
+        {
+            _deckListObj.SetActive(value);
+        }
+        /// <summary>
+        /// 更新卡组列表
+        /// </summary>
+        /// <param name="deckViewData"></param>
+        public void updateDeckList((string name, Sprite image, bool errorTip)[] deckViewData)
+        {
+            _deckList.updateList(deckViewData.Length, (i, item) =>
+            {
+                DeckListItem deckListItem = item.GetComponentInChildren<DeckListItem>();
+                deckListItem.updateView(deckViewData[i].name, deckViewData[i].image);
+                deckListItem.setWarning(deckViewData[i].errorTip);
+            }, item =>
+            {
+                DeckListItem deckListItem = item.GetComponent<DeckListItem>();
+                deckListItem.onClick += onClickDeckListItemCallback;
+                deckListItem.onClickDeleteButton += onClickDeckListItemDeleteButtonCallback;
+                deckListItem.onNameInputFieldValueChanged += onDeckListItemNameInputFieldValueChanged;
+            }, item =>
+            {
+                DeckListItem deckListItem = item.GetComponent<DeckListItem>();
+                deckListItem.onClick -= onClickDeckListItemCallback;
+                deckListItem.onClickDeleteButton -= onClickDeckListItemDeleteButtonCallback;
+                deckListItem.onNameInputFieldValueChanged -= onDeckListItemNameInputFieldValueChanged;
+            });
+        }
+        #endregion
+
+        #region 卡组编辑
+        public void setEditDeckPanelActive(bool value)
+        {
+            _editCardListRightPanel.SetActive(value);
+        }
+        public void setEnableDragDeckCard(bool value)
+        {
+            _enableDragDeckCard = value;
+        }
         public void setCharacterName(string name)
         {
             _characterNameText.text = name;
@@ -41,29 +114,18 @@ namespace UI
             _dragDeckListItem.gameObject.SetActive(false);
             _dragCard.gameObject.SetActive(false);
         }
-        public void showMasterSelectPanel((string name, Sprite image)[] viewData)
+        public void updateDeckInfo(string name, Sprite sprite)
         {
-            _masterSelectionPanel.SetActive(true);
-            _masterSelectionDeckViewPanel.update(viewData);
+            _editDeckImage.sprite = sprite;
+            _deckNameText.text = name;
+            _deckNameInputField.text = name;
         }
-        public void hideMasterSelectPanel()
+        /// <summary>
+        /// 更新自定义卡池卡牌编辑栏卡牌列表
+        /// </summary>
+        public void updateDeckCardList(DeckCardViewData[] viewData)
         {
-            _masterSelectionPanel.SetActive(false);
-        }
-        public void setLoadingUIActive(bool value)
-        {
-            LoadingImg.SetActive(value);
-        }
-        public void showErrorTip(string msg)
-        {
-            HintMessageText.text = msg;
-            HintMessageText.gameObject.SetActive(false);
-            HintMessageText.gameObject.SetActive(true);
-            HintMessageText.gameObject.GetComponent<SEPlayer>()?.Play();
-        }
-        public void showErrorTip(bool value)
-        {
-            HintMessageText.gameObject.SetActive(value);
+            _deckCardList.update(viewData);
         }
         /// <summary>
         /// 判断坐标是否位于卡组卡牌列表区域中
@@ -75,24 +137,46 @@ namespace UI
             return _deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(position));
         }
         #endregion
-        #region 私有方法
-        #region 生命周期
-        protected override void Awake()
-        {
-            base.Awake();
 
-            HintMessageText.gameObject.SetActive(false);
+        #endregion
+
+        #region 私有方法
+
+        #region 生命周期
+        private void Awake()
+        {
+            _errorTipText.gameObject.SetActive(false);
             setLoadingUIActive(false);
 
+            _returnButton.onClick.AddListener(() => onClickReturnButton?.Invoke());
+            _addDeckButton.onClick.AddListener(() => onClickAddDeckButton?.Invoke());
+
             _masterSelectionCloseButton.onClick.AddListener(hideMasterSelectPanel);
+            _masterSelectionDeckViewPanel.onClickItemButton += (index) => onClickMasterSelectPanelItem?.Invoke(index);
 
             _exportDeckButton.onClick.AddListener(onClickExportDeckButtonCallback);
             _exitEditButton.onClick.AddListener(onClickExitEditButtonCallback);
             _importDeckButton.onClick.AddListener(onClickImportDeckButtonCallback);
             _uploadDeckButton.onClick.AddListener(onClickUploadDeckButtonCallback);
             _downloadDeckButton.onClick.AddListener(onClickDownloadDeckButtonCallback);
+
+            if (_editDeckImageButton)
+                _editDeckImageButton.onClick.AddListener(onClickEditDeckImageButtonCallback);
+            _editDeckNameButton.onClick.AddListener(onClickEditDeckNameButtonCallback);
+            _deckNameInputField.onEndEdit.AddListener(onEndEditDeckNameInputFieldCallback);
+
+            if (_deckCardList)
+            {
+                _deckCardList.onDeckItemBeginDrag += onBeginDragDeckCardListItemCallback;
+                _deckCardList.onDeckItemDrag += onDragDeckCardListItemCallback;
+                _deckCardList.onDeckItemEndDrag += onEndDragDeckCardListItemCallback;
+                _deckCardList.onDeckItemPointerEnter += onDeckCardPointerEnterCallback;
+                _deckCardList.onDeckItemPointerExit += onDeckCardPointerExitCallback;
+                _deckCardList.onDeckItemDeselect += onDeckCardDeselectCallback;
+            }
         }
         #endregion
+
         #region 事件回调
         private void onClickExportDeckButtonCallback()
         {
@@ -114,80 +198,196 @@ namespace UI
         {
             onClickDownloadDeckButton?.Invoke();
         }
-        #endregion
-        #endregion
-        #region 事件
-        public event Action<int> onClickMasterSelectPanelItem
+
+        #region 卡组列表
+        private void onClickDeckListItemCallback(DeckListItem item)
         {
-            add { _masterSelectionDeckViewPanel.onClickDeckListItem += value; }
-            remove { _masterSelectionDeckViewPanel.onClickDeckListItem -= value; }
+            onClickDeckListItem?.Invoke(_deckList.indexOf(item));
         }
+        private void onClickDeckListItemDeleteButtonCallback(DeckListItem item)
+        {
+            onClickDeckListItemDeleteButton?.Invoke(_deckList.indexOf(item));
+        }
+        private void onDeckListItemNameInputFieldValueChanged(DeckListItem item, string value)
+        {
+            onDeckListItemNameValueChanged?.Invoke(_deckList.indexOf(item), value);
+        }
+        #endregion
+
+        #region 编辑卡组
+        private void onClickEditDeckImageButtonCallback()
+        {
+            onClickEditDeckImageButton?.Invoke();
+        }
+        private void onClickEditDeckNameButtonCallback()
+        {
+            //编辑名称模式
+            _deckNameInputField.gameObject.SetActive(true);
+            _deckNameInputField.ActivateInputField();
+            _editDeckNameButton.gameObject.SetActive(false);
+            _deckNameText.gameObject.SetActive(false);
+        }
+        private void onEndEditDeckNameInputFieldCallback(string value)
+        {
+            _deckNameInputField.gameObject.SetActive(false);
+            _editDeckNameButton.gameObject.SetActive(true);
+            _deckNameText.gameObject.SetActive(true);
+            _deckNameText.text = value;
+            onDeckNameInputFieldValueChanged?.Invoke(value);
+        }
+        #endregion
+
+        #region 卡组卡牌编辑
+        private void onBeginDragDeckCardListItemCallback(int index, PointerEventData eventData)
+        {
+            if (!_enableDragDeckCard)
+                return;
+            onStartDragDeckCardListItem?.Invoke(index, eventData);
+        }
+        private void onDragDeckCardListItemCallback(int index, PointerEventData eventData)
+        {
+            if (!_enableDragDeckCard)
+                return;
+            onDragDeckCardListItem?.Invoke(index, eventData);
+        }
+        private void onEndDragDeckCardListItemCallback(int index, PointerEventData eventData)
+        {
+            if (!_enableDragDeckCard)
+                return;
+            onEndDragDeckCardListItem?.Invoke(index, eventData);
+        }
+        private void onDeckCardPointerEnterCallback(int index, PointerEventData eventData)
+        {
+            onDeckCardPointerEnter?.Invoke(index, eventData);
+        }
+        private void onDeckCardPointerExitCallback(int index, PointerEventData eventData)
+        {
+            onDeckCardPointerExit?.Invoke(index, eventData);
+        }
+        private void onDeckCardDeselectCallback(int index)
+        {
+            _dragCard.hide();
+        }
+        #endregion
+
+        #endregion
+
+        #endregion
+
+        #region 事件
+        public event Action onClickReturnButton;
+
+        public event Action<int> onClickMasterSelectPanelItem;
         public event Action onClickExportDeckButton;
         public event Action onClickExitEditButton;
         public event Action onClickImportDeckButton;
         public event Action onClickDownloadDeckButton;
         public event Action onClickUploadDeckButton;
+
+        /// <summary>
+        /// 当点击右侧卡组列表添加按钮
+        /// </summary>
+        public event Action onClickAddDeckButton;
+        /// <summary>
+        /// 当点击保存卡池按钮
+        /// </summary>
+        public event Action onClickSaveDeckButton;
+
+        #region 卡组列表
+        /// <summary>
+        /// 当点击右侧卡组列表项，参数为索引
+        /// </summary>
+        public event Action<int> onClickDeckListItem;
+        /// <summary>
+        /// 当点击右侧卡组列表项的删除按钮，参数为列表索引
+        /// </summary>
+        public event Action<int> onClickDeckListItemDeleteButton;
+        /// <summary>
+        /// 当重命名右侧卡组列表项的名字，参数为列表索引和名字的值
+        /// </summary>
+        public event Action<int, string> onDeckListItemNameValueChanged;
         #endregion
+
+        #region 编辑卡组
         /// <summary>
-        /// 当前正在编辑的卡组的卡片
+        /// 当卡组名称被更改，参数为更改的名称。
         /// </summary>
-        List<int> currentDeckCards { get; set; } = new List<int>();
+        public event Action<string> onDeckNameInputFieldValueChanged;
+
+        public event Action<int, PointerEventData> onStartDragDeckCardListItem;
+        public event Action<int, PointerEventData> onDragDeckCardListItem;
         /// <summary>
-        /// 当松开拖拽构筑牌库中的卡牌
+        /// 当拖拽卡组卡牌列表中的项目结束时调用，参数为是否位于卡组卡牌列表区域当中
         /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        public void onReleaseDeckItem(BuildDeckListItem item, PointerEventData pointer)
-        {
-            DragCard.hide();
-            Vector3 localPosition = DeckViewScroll.GetComponent<RectTransform>().InverseTransformPoint(pointer.position);
-            if (DeckViewScroll.GetComponent<RectTransform>().rect.Contains(localPosition))
-            {
-                item.recovery();
-            }
-            else
-            {
-                if (currentDeckCards.Contains(item.card.id))
-                    currentDeckCards.Remove(item.card.id);
+        public event Action<int, PointerEventData> onEndDragDeckCardListItem;
+        public event Action<int, PointerEventData> onDeckCardPointerEnter;
+        public event Action<int, PointerEventData> onDeckCardPointerExit;
+        public event Action onClickEditDeckImageButton;
+        #endregion
 
-                // 更新可用信息
-                var cardCount = currentDeckCards.Where(i => i == item.card.id).Count();
-                //updateCardRemainTextAt(item.card.id, cardCount);
+        #endregion
 
-                // 更新UI
-                if (item.count < 1)
-                    BuildDeckList.removeItem(item);
-
-                //onDeckCardChange();
-            }
-        }
-        public void DeckItemDeselect(BuildDeckListItem item)
-        {
-            DragCard.hide();
-        }
         #region 属性字段
         public Card dragCard => _dragCard;
         public CardViewDeckCardListItem dragDeckListItem => _dragDeckListItem;
-        [SerializeField]
-        RectTransform _deckListViewportRect;
-        [SerializeField]
-        Text _characterNameText;
-        [SerializeField]
-        Text _deckCardCountText;
-        [SerializeField]
-        Card _dragCard;
-        [SerializeField]
-        CardViewDeckCardListItem _dragDeckListItem;
-        [SerializeField]
-        GameObject _editCardListRightPanel;
+        public DeckCardList deckCardList => _deckCardList;
 
-        [Header("Master Selection")]
+
+        [SerializeField]
+        Button _returnButton;
+        [SerializeField]
+        Text _errorTipText;
+        [SerializeField]
+        GameObject _loadingImgObj;
+
+        [Header("套牌列表")]
+        [SerializeField]
+        GameObject _deckListObj;
+        [SerializeField]
+        ElementList _deckList;
+        [SerializeField]
+        Button _addDeckButton;
+
+        [Header("新建套牌")]
         [SerializeField]
         GameObject _masterSelectionPanel;
         [SerializeField]
         Button _masterSelectionCloseButton;
         [SerializeField]
         DeckViewPanel _masterSelectionDeckViewPanel;
+
+        [Header("编辑套牌")]
+        [SerializeField]
+        Button _editDeckImageButton;
+        [SerializeField]
+        Button _editDeckNameButton;
+        [SerializeField]
+        Image _editDeckImage;
+        [SerializeField]
+        InputField _deckNameInputField;
+        [SerializeField]
+        Text _deckNameText;
+        [SerializeField]
+        Text _characterNameText;
+        [SerializeField]
+        Text _deckCardCountText;
+
+        [Header("卡组卡牌列表")]
+        /// <summary>
+        /// 当前能否拖拽卡牌
+        /// </summary>
+        [SerializeField]
+        bool _enableDragDeckCard = true;
+        [SerializeField]
+        DeckCardList _deckCardList;
+        [SerializeField]
+        Card _dragCard;
+        [SerializeField]
+        CardViewDeckCardListItem _dragDeckListItem;
+        [SerializeField]
+        GameObject _editCardListRightPanel;
+        [SerializeField]
+        RectTransform _deckListViewportRect;
 
         [Header("Buttons")]
         [SerializeField]
