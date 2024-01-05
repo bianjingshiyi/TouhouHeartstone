@@ -91,7 +91,7 @@ namespace Game
         {
             if (!tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
-                throw new KeyNotFoundException($"不存在卡池{cardPoolRef}");
+                return null;
             }
             return cardPool.buffDefineList.ToDictionary(b => b.id, b => b as BuffDefine);
         }

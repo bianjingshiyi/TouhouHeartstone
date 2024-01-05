@@ -45,9 +45,9 @@ namespace Game
             newSkin.language = language;
             return newSkin;
         }
-        public CardSkinData[] cloneCardSkins(CardPoolInfo info, int cardId)
+        public CardSkinData[] cloneCardSkins(ICardPoolReference poolRef, int cardId)
         {
-            return cloneCardSkins(getAllCardSkins(info.ToReference(), cardId));
+            return cloneCardSkins(getAllCardSkins(poolRef, cardId));
         }
         public CardSkinData[] cloneCardSkins(CardSkinData[] skins)
         {

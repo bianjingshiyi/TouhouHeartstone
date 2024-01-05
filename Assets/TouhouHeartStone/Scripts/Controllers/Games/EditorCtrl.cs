@@ -158,7 +158,7 @@ namespace Controllers
         }
         public async Task openReferedCard(DefineReference defRef, Action<CardDefine> setPropAction)
         {
-            var cardPoolId = _curCardPoolId;
+            var curCardPoolId = _curCardPoolId;
             if (defRef == null)
             {
                 // 新建一个卡牌并打开
@@ -166,7 +166,7 @@ namespace Controllers
             }
             else
             {
-                var sourcePoolRef = getLocalCardPoolRef(_copyingCard.cardPoolId);
+                var sourcePoolRef = getEnvCardPoolRef(defRef.cardPoolId);
                 var cardDefine = game.card.getCardDefine(sourcePoolRef, defRef.defineId);
                 if (cardDefine == null)
                 {
@@ -178,7 +178,7 @@ namespace Controllers
                     // 卡牌定义存在
                     var curDisplayPage = getCurrentDisplayPage();
                     var curDisplayCardId = curDisplayPage?.displayObj?.cardDefine?.id ?? -1;
-                    if (defRef.cardPoolId == cardPoolId && defRef.defineId == curDisplayCardId)
+                    if (defRef.cardPoolId == curCardPoolId && defRef.defineId == curDisplayCardId)
                     {
                         // 是同一张卡，什么也不做
                     }
@@ -201,7 +201,7 @@ namespace Controllers
         }
         public void updateAllEvents()
         {
-            var poolRefs = game.editor.getEnvCardPoolRefs();
+            var poolRefs = getCardPoolEnv();
             var mainEventDefines = game.card.getAllEventDefines(includeHidden: false, poolRefs);
             eventTriggerTimes = mainEventDefines.getEventTriggerTimes();
             eventReferences = mainEventDefines.Select(d => d.getReference()).ToArray();
@@ -589,7 +589,7 @@ namespace Controllers
                 return;
 
             var depRef = depRefs[index];
-            var depInfo = game.card.getCardPoolInfo(depRef) ?? getCardPoolInfo(depRef.cardPoolId);
+            var depInfo = game.card.getCardPoolInfo(depRef) ?? getLocalCardPoolInfo(depRef.cardPoolId);
             var depName = depInfo?.cardPoolName ?? game.lang._(EDITOR_UNKNOWN_CARD_POOL);
 
             var title = game.lang._(StringTable.WARNING);
@@ -675,10 +675,10 @@ namespace Controllers
                 return Array.Empty<ICardPoolReference>();
             return depRefs.Where(depRef =>
             {
-                var localPool = getCardPoolInfo(depRef.cardPoolId);
-                if (localPool == null)
+                var poolInfo = getCardPoolInfo(depRef.cardPoolId);
+                if (poolInfo == null)
                     return false;
-                if (localPool.editTime == depRef.version)
+                if (poolInfo.editTime == depRef.version)
                     return false;
                 return true;
             }).ToArray();
@@ -694,8 +694,8 @@ namespace Controllers
                 var oldDep = oldDeps[i];
                 if (!depRefs.Any(d => d.CompareCardPool(oldDep)))
                     continue;
-                var localPool = getCardPoolInfo(oldDep.cardPoolId);
-                var newDep = localPool.ToReference();
+                var poolInfo = getCardPoolInfo(oldDep.cardPoolId);
+                var newDep = poolInfo.ToReference();
                 newDeps[i] = newDep;
             }
             curPoolInfo.dependencyRefs = newDeps;
@@ -859,9 +859,11 @@ namespace Controllers
         /// <returns></returns>
         private async Task<bool> saveCardPool()
         {
-            bool success = await game.card.saveCardPool(getCurrentCardPoolInfo());
+            var info = getCurrentCardPoolInfo();
+            bool success = await game.card.saveCardPool(info);
             if (success)
             {
+                _cardPoolInfoClones.RemoveAll(c => c.cardPoolId == info.cardPoolId);
                 clearCardPoolUnsaved(_curCardPoolId);
             }
             return success;
@@ -875,7 +877,7 @@ namespace Controllers
         private bool hasObsoleteNodes(long cardPoolId, out string desc)
         {
             // 检查有无过时的节点。
-            var cardPoolRef = getLocalCardPoolRef(cardPoolId);
+            var cardPoolRef = getEnvCardPoolRef(cardPoolId);
             if (!game.card.tryGetCardPool(cardPoolRef, out var cardPool))
             {
                 desc = null;
@@ -987,7 +989,7 @@ namespace Controllers
             for (int i = 0; i < viewData.Length; i++)
             {
                 var cardPoolId = _cardPoolIdList[i];
-                var cardPoolInfo = getCardPoolInfo(cardPoolId);
+                var cardPoolInfo = getLocalCardPoolInfo(cardPoolId);
                 viewData[i].name = cardPoolInfo.cardPoolName;
                 viewData[i].image = await game.card.loadCardPoolImage(cardPoolInfo);
                 viewData[i].errorTip = false;
@@ -996,10 +998,10 @@ namespace Controllers
         }
         private void createCard(out CardDefine newCardDefine, out CardSkinData skin)
         {
-            var cardPoolId = _curCardPoolId;
+            var cardPoolRef = getCurrentCardPoolRef();
+            var cardPoolId = cardPoolRef.CardPoolID;
             markCardPoolUnsaved(cardPoolId);
-            var cardPoolInfo = getCardPoolInfo(cardPoolId);
-            game.card.createCard(cardPoolInfo, out newCardDefine, out skin);
+            game.card.createCard(cardPoolRef, out newCardDefine, out skin);
             game.card.addCard(cardPoolId, newCardDefine);
             game.card.addCardSkin(cardPoolId, skin);
         }
@@ -1019,8 +1021,8 @@ namespace Controllers
                 if (infoData.cardDefine is CardDefine cardDefine)
                 {
                     var newCard = game.card.cloneCardDefine(cardDefine);
-                    var poolInfo = getCardPoolInfo(cardDefine.cardPoolId);
-                    var newCardSkins = game.card.cloneCardSkins(poolInfo, infoData.cardDefine.id);
+                    var poolRef = getEnvCardPoolRef(cardDefine.cardPoolId);
+                    var newCardSkins = game.card.cloneCardSkins(poolRef, infoData.cardDefine.id);
                     var displayObj = new CardPoolDisplayObject(newCard);
                     displayInfo = new CardPoolDisplayPage()
                     {
@@ -1115,33 +1117,84 @@ namespace Controllers
         private void setCurrentCardPool(CardPoolInfo poolInfo)
         {
             _curCardPoolId = poolInfo.cardPoolId;
+            if (!_cardPoolInfoClones.Exists(c => c.cardPoolId == poolInfo.cardPoolId))
+                _cardPoolInfoClones.Add(cloneCardPoolInfo(poolInfo));
             game.editor.reloadCardPoolEnv(poolInfo);
         }
         private void clearCurrentCardPool()
         {
             _curCardPoolId = -1;
+            _cardPoolInfoClones.Clear();
             game.editor.clearCardPoolEnv();
         }
-        private ICardPoolReference getLocalCardPoolRef(long cardPoolId)
+        private ICardPoolReference[] getCardPoolEnv()
         {
-            return game.card.getLocalCardPoolReference(cardPoolId);
-        }
-        private ICardPoolReference getCurrentCardPoolRef()
-        {
-            return getLocalCardPoolRef(_curCardPoolId);
-        }
-        private CardPoolInfo getCardPoolInfo(long cardPoolId)
-        {
-            return game.card.getLocalCardPoolInfo(cardPoolId);
-        }
-        private CardPoolInfo getCurrentCardPoolInfo()
-        {
-            return getCardPoolInfo(_curCardPoolId);
+            return game.editor.getEnvCardPoolRefs();
         }
         private GeneratedRuleLogic[] getRuleLogics()
         {
             var cardPoolRef = getCurrentCardPoolRef();
             return game.card.getRuleLogics(cardPoolRef);
+        }
+        #endregion
+
+        #region 卡池引用
+        private ICardPoolReference getLocalCardPoolRef(long cardPoolId)
+        {
+            return game.card.getLocalCardPoolReference(cardPoolId);
+        }
+        private ICardPoolReference getEnvCardPoolRef(long cardPoolId)
+        {
+            return game.card.getCardPoolReferenceInEnv(cardPoolId, getCardPoolEnv());
+        }
+        private ICardPoolReference getCurrentCardPoolRef()
+        {
+            return getCurrentCardPoolInfo().ToReference();
+        }
+        #endregion
+
+        #region 卡池信息
+        /// <summary>
+        /// 获取正在编辑中的卡池信息复制。
+        /// </summary>
+        /// <param name="cardPoolId">卡池ID。</param>
+        /// <returns>获取到的卡池信息复制。</returns>
+        private CardPoolInfo getEditingCardPoolInfo(long cardPoolId)
+        {
+            return _cardPoolInfoClones.FirstOrDefault(c => c.cardPoolId == cardPoolId);
+        }
+        /// <summary>
+        /// 获取尚未更改的，本地文件的卡池信息。
+        /// </summary>
+        /// <param name="cardPoolId">卡池ID。</param>
+        /// <returns>获取到的卡池信息。</returns>
+        private CardPoolInfo getLocalCardPoolInfo(long cardPoolId)
+        {
+            return game.card.getLocalCardPoolInfo(cardPoolId);
+        }
+        /// <summary>
+        /// 根据卡池ID获取卡池信息。优先获取正在编辑的卡池信息复制，然后才是尚未更改的本地文件的卡池信息。
+        /// </summary>
+        /// <param name="cardPoolId">卡池ID。</param>
+        /// <returns>获取到的卡池信息。</returns>
+        private CardPoolInfo getCardPoolInfo(long cardPoolId)
+        {
+            return getEditingCardPoolInfo(cardPoolId) ?? getLocalCardPoolInfo(cardPoolId);
+        }
+        /// <summary>
+        /// 获取当前正在编辑的卡池信息。
+        /// </summary>
+        /// <returns>获取到的卡池信息。</returns>
+        private CardPoolInfo getCurrentCardPoolInfo()
+        {
+            return getEditingCardPoolInfo(_curCardPoolId);
+        }
+        private CardPoolInfo cloneCardPoolInfo(CardPoolInfo poolInfo)
+        {
+            var seriInfo = new SerializableCardPoolInfo(poolInfo);
+            var json = seriInfo.toJson();
+            var seriClone = JsonHelper.fromJson<SerializableCardPoolInfo>(json);
+            return seriClone.toInfo();
         }
         #endregion
         /// <summary>
@@ -1341,7 +1394,8 @@ namespace Controllers
         private long _curCardPoolId = -1;
         private DefineReference _copyingCard = null;
         private HashSet<long> _unsavedCardPools = new HashSet<long>();
-        long _firstOpenedCardPoolId;
+        private long _firstOpenedCardPoolId;
+        private List<CardPoolInfo> _cardPoolInfoClones = new List<CardPoolInfo>();
         private List<CardPoolReference> _viewingAddCardPoolDependencies = new List<CardPoolReference>();
         private List<CardPoolReference> _selectedAddingCardPoolDependencies = new List<CardPoolReference>();
         /// <summary>

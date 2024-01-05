@@ -111,10 +111,11 @@ namespace Controllers
         /// </summary>
         private void updateBuffReferences()
         {
-            BuffDefine[] buffDefines = game.card.getBuffDefines(getCardPoolReference(_curCardPoolId))
-                .OrderBy(p => p.Value.cardPoolId)
-                .ThenBy(p => p.Value.id)
-                .Select(p => p.Value)
+            BuffDefine[] buffDefines = getCardPoolEnv().Select(poolRef => game.card.getBuffDefines(poolRef))
+                .Where(d => d != null)
+                .SelectMany(d => d.Values)
+                .OrderBy(p => p.cardPoolId)
+                .ThenBy(p => p.id)
                 .ToArray();
 
             var newBuffName = game.lang._(ACTION_NODE_NEW_BUFF);
