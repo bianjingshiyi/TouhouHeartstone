@@ -186,6 +186,10 @@ namespace Game
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_CHANGE_CARD_VISIBILITY = "卡牌可见性变动";
         [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_CHANGE_CARD_PROP_VISIBILITY = "卡牌属性可见性变动";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_CHANGE_BUFF_PROP_VISIBILITY = "增益属性可见性变动";
+        [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_SET_CARD_PROP = "修改卡牌属性";
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_BE_CHARGED = "蓄力";
@@ -257,6 +261,8 @@ namespace Game
             "MassShuffleToDeckEvent",
             "SplitDamageEvent",
             "ChangeCardVisibilityEvent",
+            "ChangeCardPropVisibilityEvent",
+            "ChangeBuffPropVisibilityEvent",
         };
         static Dictionary<string, string> _eventNameTranslations = new Dictionary<string, string>()
         {
@@ -322,7 +328,9 @@ namespace Game
             { "MassSetCardDefineEvent", EDITOR_EVENT_NAME_MASS_SET_CARD_DEFINE },
             { "MassShuffleToDeckEvent", EDITOR_EVENT_NAME_MASS_SHUFFLE_TO_DECK },
             { "SplitDamageEvent", EDITOR_EVENT_NAME_MASS_SPLIT_DAMAGE },
-            { "ChangeCardVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_CARD_VISIBILITY }
+            { "ChangeCardVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_CARD_VISIBILITY },
+            { "ChangeCardPropVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_CARD_PROP_VISIBILITY },
+            { "ChangeBuffPropVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_BUFF_PROP_VISIBILITY }
         };
         List<EventDefine> _builtinEventDefineList = null;
         [SerializeField]
