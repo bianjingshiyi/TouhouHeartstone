@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Game;
 using MukioI18n;
@@ -79,34 +80,6 @@ namespace Controllers
             return false;
         }
         /// <summary>
-        /// 防止增益被跨卡池引用。
-        /// </summary>
-        /// <param name="node"></param>
-        private void fixTransCardPoolBuffRef(Node node)
-        {
-            // 防止增益被跨卡池引用
-            // 虽然这以后肯定是要实现的，但是不是现在要做的事情
-            if (node == null)
-                return;
-            var defaultValues = node.inputDefaultValues.ToArray();
-            foreach (var defaultValue in defaultValues)
-            {
-                var name = defaultValue.name;
-                var paramIndex = defaultValue.paramIndex;
-                var value = defaultValue.value;
-                var valueType = value?.GetType()?.getNodeValueType() ?? default;
-                if (valueType.type == ActionNodeValueType.buffReference && defaultValue.value is DefineReference defRef && defRef.cardPoolId != _curCardPoolId)
-                {
-                    if (!tryGetValueTypeDefaultValue(valueType.type, out var buffRef))
-                    {
-                        buffRef = valueType.getDefaultValue();
-                    }
-                    buffRef = validateInputFieldValue(valueType, buffRef);
-                    node.setInputDefaultValue(name, paramIndex, buffRef);
-                }
-            }
-        }
-        /// <summary>
         /// 更新所有增益引用，并重新设置节点图内的增益定义的选项。
         /// </summary>
         private void updateBuffReferences()
@@ -124,41 +97,16 @@ namespace Controllers
             var buffValues = _buffReferences.Prepend(new BuffReference(0, -1)).ToArray();
             _ui.initBuffReferences(buffNames, buffValues);
         }
-        private object validateInputFieldValueBuff(NodeValueType valueType, object value)
-        {
-            bool needUpdateBuffs = false;
-            if (valueType.isArray && value is IList<DefineReference> buffRefs)
-            {
-                for (int i = 0; i < buffRefs.Count; i++)
-                {
-                    var buffRef = buffRefs[i];
-                    var newBuffRef = validateSingleBuffReferenceValue(buffRef, out var needUpdate);
-                    needUpdateBuffs |= needUpdate;
-                    if (newBuffRef is DefineReference defRef)
-                    {
-                        buffRefs[i] = defRef;
-                    }
-                }
-                value = buffRefs;
-            }
-            else
-            {
-                value = validateSingleBuffReferenceValue(value, out needUpdateBuffs);
-            }
-            if (needUpdateBuffs)
-            {
-                updateBuffReferences();
-            }
-            return value;
-        }
         /// <summary>
         /// 对单个增益引用进行检查。如果没有指定的增益定义或增益皮肤，获取第一个或创建一个，并通知需要更新增益。
         /// </summary>
         /// <param name="value">单个增益引用的值。</param>
+        /// <param name="newValue">被改变后的值。没有改变则为null。</param>
         /// <param name="needUpdateBuffs">是否需要更新所有增益。</param>
-        /// <return>被改变后的值。没有改变则为null。</return>
-        private object validateSingleBuffReferenceValue(object value, out bool needUpdateBuffs)
+        /// <return>值是否发生改变？</return>
+        private bool validateSingleBuffReferenceValue(object value, out BuffReference newValue, out bool needUpdateBuffs)
         {
+            newValue = null;
             needUpdateBuffs = false;
             GeneratedBuffDefine buffDefine = null;
             // 新建增益选项。
@@ -168,7 +116,7 @@ namespace Controllers
                 game.card.addBuffDefine(_curCardPoolId, buffDefine);
                 needUpdateBuffs = true;
 
-                value = new BuffReference(buffDefine.cardPoolId, buffDefine.id);
+                newValue = new BuffReference(buffDefine.cardPoolId, buffDefine.id);
             }
             else if (value == null || !tryGetBuffDefine(value, out buffDefine))
             {
@@ -192,7 +140,7 @@ namespace Controllers
                     game.card.addBuffDefine(_curCardPoolId, buffDefine);
                     needUpdateBuffs = true;
                 }
-                value = new BuffReference(buffDefine.cardPoolId, buffDefine.id);
+                newValue = new BuffReference(buffDefine.cardPoolId, buffDefine.id);
             }
             //获取增益对应的皮肤
             BuffSkin buffSkin = game.card.getBuffSkin(buffDefine);
@@ -203,7 +151,7 @@ namespace Controllers
                 game.card.addBuffSkin(_curCardPoolId, buffSkin);
                 needUpdateBuffs = true;
             }
-            return value;
+            return newValue != null;
         }
         #endregion
 

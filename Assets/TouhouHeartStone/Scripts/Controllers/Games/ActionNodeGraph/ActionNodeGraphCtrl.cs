@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -161,7 +162,6 @@ namespace Controllers
 
             foreach (var node in clipGraph.nodes)
             {
-                fixTransCardPoolBuffRef(node);
                 await applyNode(node);
                 addOperationRecord(new CreateNodeOperation(this, node));
             }
@@ -342,7 +342,8 @@ namespace Controllers
             var beforeValue = node.getInputDefaultValue(name, paramIndex);
             if (value != null)
             {
-                var valueType = value.GetType().getNodeValueType();
+                var inputPort = paramIndex < 0 ? node.getInputPort(name) : node.getParamInputPort(name, paramIndex);
+                var valueType = inputPort.define.type.getNodeValueType();
                 value = validateInputFieldValue(valueType, value);
             }
             if (value is ICloneable clonable)
@@ -355,6 +356,29 @@ namespace Controllers
             }
             node.setInputDefaultValue(name, paramIndex, value);
             addOperationRecord(new ChangeNodeDefaultValueOperation(this, node, name, paramIndex, beforeValue, value));
+        }
+        /// <summary>
+        /// 验证一个节点的所有输入默认值是否合法。
+        /// </summary>
+        /// <param name="node"></param>
+        private void validateNodeInputDefaultValues(Node node)
+        {
+            if (node == null)
+                return;
+            var defaultValues = node.inputDefaultValues.ToArray();
+            foreach (var defaultValue in defaultValues)
+            {
+                var name = defaultValue.name;
+                var paramIndex = defaultValue.paramIndex;
+                var value = defaultValue.value;
+                var inputPort = paramIndex < 0 ? node.getInputPort(name) : node.getParamInputPort(name, paramIndex);
+                var valueType = inputPort?.define?.type?.getNodeValueType() ?? default;
+                var newValue = validateInputFieldValue(valueType, value);
+                if (value != newValue)
+                {
+                    node.setInputDefaultValue(name, paramIndex, newValue);
+                }
+            }
         }
         public string getNodeDefineName(NodeDefine define)
         {
@@ -845,6 +869,7 @@ namespace Controllers
         #region 创建节点UI
         private Task<ActionNodeItem> applyNode(Node node)
         {
+            validateNodeInputDefaultValues(node);
             _actionNodeList.Add(node);
             return createNodeUI4Node(node);
         }
@@ -1815,7 +1840,7 @@ namespace Controllers
         {
             ValueInputField cardInputField = item.getInputDefaultValueInputField(portIndex);
             var env = getCardPoolEnv();
-            cardInputField.setInputFieldCardByValue(value, env, game);
+            await cardInputField.setInputFieldCardByValue(value, env, game);
         }
         private bool tryGetValueTypeDefaultValue(ActionNodeValueType valueType, out object value)
         {
@@ -1846,11 +1871,37 @@ namespace Controllers
             }
             return value != null;
         }
-        private object validateInputFieldValue(NodeValueType valueType, object value)
+        private object validateInputFieldValue(NodeValueType targetValueType, object value)
         {
-            if (valueType.type == ActionNodeValueType.buffReference)
+            if (targetValueType.isArray && value is IList list)
             {
-                return validateInputFieldValueBuff(valueType, value);
+                // 数组。
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var listElement = list[i];
+                    // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
+                    var elementTargetType = listElement.GetType().getNodeValueType();
+                    list[i] = validateInputFieldValue(elementTargetType, listElement);
+                }
+                value = list;
+            }
+            else
+            {
+                // 单个值。
+                var actualValueType = ActionNodeValueType.none;
+                if (value != null)
+                {
+                    actualValueType = value.GetType().getNodeValueType().type;
+                }
+                if (targetValueType.type == ActionNodeValueType.buffReference || actualValueType == ActionNodeValueType.buffReference)
+                {
+                    if (validateSingleBuffReferenceValue(value, out var newBuffRef, out var needUpdateBuffs))
+                        value = newBuffRef;
+                    if (needUpdateBuffs)
+                    {
+                        updateBuffReferences();
+                    }
+                }
             }
             return value;
         }
@@ -2257,7 +2308,6 @@ namespace Controllers
             }
             public long cardPoolId;
             public object editObject;
-            public ActionNodeGraphInfo graphInfo;
         }
         #endregion
     }

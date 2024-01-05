@@ -692,10 +692,12 @@ namespace Controllers
             for (int i = 0; i < count; i++)
             {
                 var oldDep = oldDeps[i];
-                if (!depRefs.Any(d => d.CompareCardPool(oldDep)))
-                    continue;
-                var poolInfo = getCardPoolInfo(oldDep.cardPoolId);
-                var newDep = poolInfo.ToReference();
+                var newDep = oldDep;
+                if (depRefs.Any(d => d.CompareCardPool(oldDep)))
+                {
+                    var poolInfo = getCardPoolInfo(oldDep.cardPoolId);
+                    newDep = poolInfo.ToReference();
+                }
                 newDeps[i] = newDep;
             }
             curPoolInfo.dependencyRefs = newDeps;
@@ -732,7 +734,7 @@ namespace Controllers
                 }
                 else
                 {
-                    var localInfo = game.card.getLocalCardPoolInfo(depRef.cardPoolId);
+                    var localInfo = depRef != null ? game.card.getLocalCardPoolInfo(depRef.cardPoolId) : null;
                     if (localInfo != null)
                     {
                         names[i] = game.lang._(EDITOR_CARD_POOL_DEPENDENCY_TEMPLATE, localInfo.cardPoolName, depRef.version);
@@ -863,7 +865,6 @@ namespace Controllers
             bool success = await game.card.saveCardPool(info);
             if (success)
             {
-                _cardPoolInfoClones.RemoveAll(c => c.cardPoolId == info.cardPoolId);
                 clearCardPoolUnsaved(_curCardPoolId);
             }
             return success;
@@ -938,7 +939,7 @@ namespace Controllers
         /// </summary>
         private async Task returnToView()
         {
-            await reloadCurrentCardPool();
+            await quitCardPool();
             clearAllCardPoolsUnsaved();
             clearCurrentCardPool();
             _firstOpenedCardPoolId = -1;
@@ -948,7 +949,7 @@ namespace Controllers
         /// 重新加载当前卡池。
         /// </summary>
         /// <returns></returns>
-        private async Task reloadCurrentCardPool()
+        private async Task quitCardPool()
         {
             var cardPoolId = _curCardPoolId;
             if (game.card.isCreatingCardPool(cardPoolId)) // 正在创建新卡池，退出时直接把创建的这个卡池删除
@@ -965,7 +966,8 @@ namespace Controllers
                 await game.card.loadCardPool(path);
             }
             // 删除所有属于该卡池的页面信息。
-            _displayPagePool.RemoveAll(p => p.cardPoolId == _curCardPoolId);
+            _displayPagePool.RemoveAll(p => p.cardPoolId == cardPoolId);
+            _cardPoolInfoClones.RemoveAll(c => c.cardPoolId == cardPoolId);
             clearCardPoolUnsaved(_curCardPoolId);
         }
         /// <summary>
@@ -1221,7 +1223,7 @@ namespace Controllers
                 {
                     if (index == 0)
                     {
-                        await reloadCurrentCardPool();
+                        await quitCardPool();
                         await closeCurrentEditor();
                     }
                 };
@@ -1235,8 +1237,8 @@ namespace Controllers
                     // 强制保存或不保存
                     options = new string[2]
                     {
-                            game.lang._(EDITOR_OPTION_SAVE),
-                            game.lang._(EDITOR_OPTION_DONT_SAVE)
+                        game.lang._(EDITOR_OPTION_SAVE),
+                        game.lang._(EDITOR_OPTION_DONT_SAVE)
                     };
                     clickButtonAction = async (index) =>
                     {
@@ -1245,10 +1247,8 @@ namespace Controllers
                             case 0:
                                 await saveCardPool();
                                 break;
-                            case 1:
-                                await reloadCurrentCardPool();
-                                break;
                         }
+                        await quitCardPool();
                         await closeCurrentEditor();
                     };
                 }
@@ -1269,11 +1269,14 @@ namespace Controllers
                                 trySaveCardPool(async (success) =>
                                 {
                                     if (success)
+                                    {
+                                        await quitCardPool();
                                         await closeCurrentEditor();
+                                    }
                                 });
                                 break;
                             case 1:
-                                await reloadCurrentCardPool();
+                                await quitCardPool();
                                 await closeCurrentEditor();
                                 break;
                         }
