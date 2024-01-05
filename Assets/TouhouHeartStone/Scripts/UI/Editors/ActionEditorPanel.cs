@@ -184,10 +184,6 @@ namespace UI
         /// 参数：端口定义项。
         /// </summary>
         public event Action<ActionPortDefineItem> onCreatePortDefine;
-        /// <summary>
-        /// 当点击删除动作按钮
-        /// </summary>
-        public event Action onClickDeleteActionButton;
 
         #region 输入变量
         /// <summary>

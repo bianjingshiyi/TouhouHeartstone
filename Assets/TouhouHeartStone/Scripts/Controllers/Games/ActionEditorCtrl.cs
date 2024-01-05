@@ -73,7 +73,7 @@ namespace Controllers
             _ui.onAddOutput += onAddOutput;
             _ui.onDeleteOutput += onDeleteOutput;
 
-            _ui.onClickDeleteActionButton += onClickDeleteActionButton;
+            _ui.onClickDeleteButton += onClickDeleteActionButton;
             _ui.onClickSaveButton += onClickSaveButton;
             _ui.onClickCloseButton += onClickCloseButton;
 
