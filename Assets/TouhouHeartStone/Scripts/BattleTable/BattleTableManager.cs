@@ -612,7 +612,9 @@ namespace Game.BattleTable
             if (arg.define is UpdateDeathEventDefine)
             {
                 // 死亡结算事件结束后，清理死亡仆从。
-                addAnim(new ClearDeadAnchorAnimation());
+                var anim = new ClearDeadAnchorAnimation();
+                addAnim(anim);
+                addToInsertedAnimsOfParent(arg, anim);
             }
         }
         #endregion

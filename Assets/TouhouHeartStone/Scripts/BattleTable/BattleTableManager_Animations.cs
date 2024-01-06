@@ -228,7 +228,9 @@ namespace Game.BattleTable
             var animationDef = getAnimationDefine(skinAnimRef.animRef);
             if (animationDef != null)
             {
-                addAnim(new EventEffectAnim(animationDef, arg, arg, skinAnimRef));
+                var anim = new EventEffectAnim(animationDef, arg, arg, skinAnimRef);
+                addAnim(anim);
+                addToInsertedAnimsOfParent(arg, anim);
             }
         }
         public EventArg getEffectEventTriggerArg(IEventArg arg)
