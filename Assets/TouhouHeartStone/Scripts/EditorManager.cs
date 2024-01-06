@@ -86,13 +86,21 @@ namespace Game
             }
             throw new ArgumentException($"不存在名为{name}的类型");
         }
+        public string getDefaultValueTypeName()
+        {
+            return game.lang._(EDITOR_TYPE_NAME_UNKNOWN);
+        }
         public string getNameByValueType(ActionNodeValueType type)
         {
             if (valueTypeNames.TryGetValue(type, out var str))
             {
                 return game.lang._(str);
             }
-            return game.lang._(EDITOR_TYPE_NAME_UNKNOWN);
+            return getDefaultValueTypeName();
+        }
+        public ValueTypeNameMap[] getValueTypeNameMaps()
+        {
+            return valueTypeNames.Select(p => new ValueTypeNameMap(p.Key, game.lang._(p.Value))).ToArray();
         }
         public string getRuleLogicTypeEditorName(GameRuleLogicType type)
         {
@@ -136,6 +144,25 @@ namespace Game
             return cardPoolEnv.ToArray();
         }
         #endregion
+        
+        #region 牌堆
+        public string[] getAllPileNames()
+        {
+            return piles.Select(p => game.lang._(p.Value)).ToArray();
+        }
+        public string[] getAllPileValues()
+        {
+            return piles.Select(p => p.Key).ToArray();
+        }
+        public string getPileNameByValue(string value)
+        {
+            if (piles.TryGetValue(value, out var name))
+            {
+                return game.lang._(name);
+            }
+            return game.lang._(EDITOR_PILE_NAME_UNKNOWN);
+        }
+        #endregion
 
         #endregion
         #region 私有方法
@@ -168,6 +195,9 @@ namespace Game
         public const string RULE_NAME_POST_GAME_END = "游戏结束后";
         [TranslateMsg("游戏规则逻辑类型")]
         public const string RULE_NAME_UNKNOWN = "未知规则";
+
+        [TranslateMsg("未知牌堆名称")]
+        public const string EDITOR_PILE_NAME_UNKNOWN = "未知牌堆";
         public MainManager game
         {
             get { return _game; }
@@ -271,6 +301,18 @@ namespace Game
             KEYWORD.CAN_BE_CHARGED,
             DEFINE.SPELL_DAMAGE,
             DEFINE.DAMAGE_REDUCE,
+        };
+
+        private static readonly Dictionary<string, string> piles = new Dictionary<string, string>
+        {
+            { PILE.FIELD, StringTable.GAME_FIELD },
+            { PILE.HAND, StringTable.GAME_HAND },
+            { PILE.DECK, StringTable.GAME_DECK },
+            { PILE.GRAVE, StringTable.GAME_GRAVE},
+            { PILE.MASTER, StringTable.GAME_MASTER },
+            { PILE.SKILL, StringTable.GAME_SKILL },
+            { PILE.ITEM, StringTable.GAME_ITEM },
+            { PILE.HEAD, StringTable.GAME_DELAY }
         };
         #endregion
         #region 内部类

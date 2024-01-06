@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using Game;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,21 +24,9 @@ namespace UI
             var valueInfo = new ActionNodeValueInfo(string.Empty, type, value);
             _valueInputField.setValueInfo(string.Empty, valueInfo);
         }
-        public void setPiles(string[] pileNames, string[] pileValues)
+        public void initInputFieldProperties(ValueInputFieldProperties props)
         {
-            _valueInputField.initPileNames(pileNames, pileValues);
-        }
-        public void setPiles(IEnumerable<(string name, string value)> piles)
-        {
-            setPiles(piles.Select(p => p.name).ToArray(), piles.Select(p => p.value).ToArray());
-        }
-        public void setKeywords(string[] keywordNames, string[] keywordValues)
-        {
-            _valueInputField.initKeywords(keywordNames, keywordValues);
-        }
-        public void setKeywords(IEnumerable<(string name, string value)> keywords)
-        {
-            setKeywords(keywords.Select(p => p.name).ToArray(), keywords.Select(p => p.value).ToArray());
+            _valueInputField.initProperties(props);
         }
 
         public event Action<string> onClickDelete;

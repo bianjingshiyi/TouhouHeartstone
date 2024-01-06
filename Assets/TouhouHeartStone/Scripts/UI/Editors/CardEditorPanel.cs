@@ -182,10 +182,10 @@ namespace UI
         {
             _effectList.setScrollValue(value);
         }
-        public void initKeywords(string[] names, string[] values)
+        public void initValueInputFieldProperies(ValueInputFieldProperties props)
         {
             var itemField = _customPropertyItemTemplate.GetComponent<PropertyItemField>();
-            itemField.setKeywords(names, values);
+            itemField.initInputFieldProperties(props);
         }
         /// <summary>
         /// 设置效果列表
@@ -293,7 +293,6 @@ namespace UI
             rect =>
             {
                 PropertyItemField item = rect.GetComponent<PropertyItemField>();
-                item.setPiles(CardEditorCtrl.piles.Select(p => (p.Value, p.Key)));
                 item.onValueChanged += onCustomPropertyValueChangedCallback;
                 item.onClickButton += onClickCustomPropertyButtonCallback;
                 item.onClickItemButton += onClickCustomPropertyItemButtonCallback;

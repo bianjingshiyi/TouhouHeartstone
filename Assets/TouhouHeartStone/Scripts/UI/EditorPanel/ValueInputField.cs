@@ -10,7 +10,6 @@ using TouhouHeartstone;
 using UnityEngine;
 using UnityEngine.UI;
 using EventArgReference = Game.EventArgReference;
-using UIHelper = BJSYGameCore.UI.UIHelper;
 
 namespace UI
 {
@@ -33,6 +32,7 @@ namespace UI
                 _nameText.text = name;
             }
             _valueInfo = info;
+            _valueTypeValues = info.assignType.getAssignableValueTypes();
             _isListItem = isListItem;
             update();
         }
@@ -48,43 +48,68 @@ namespace UI
                 _buildItem.updateView(name, image, 0);
             }
         }
-        public ValueInputField getItemAt(int index)
+        public ValueInputFieldListItem getItemAt(int index)
         {
-            return _list[index].GetComponent<ValueInputField>();
+            return _childrenElementList.getElement<ValueInputFieldListItem>(index);
         }
-        public void initEventReferences(string[] eventNames, EventReference[] eventValues)
+        public void initProperties(ValueInputFieldProperties props)
         {
-            _eventNames = eventNames;
-            _eventValues = eventValues;
+            setProp(ref _eventNames, props.eventNames);
+            setProp(ref _eventValues, props.eventValues);
+
+            setProp(ref _pileNames, props.pileNames);
+            setProp(ref _pileValues, props.pileValues);
+
+            setProp(ref _effectTagNames, props.effectTagNames);
+            setProp(ref _effectTagValues, props.effectTagValues);
+
+            setProp(ref _eventVarNameNames, props.eventVarNameNames);
+            setProp(ref _eventVarNameValues, props.eventVarNameValues);
+
+            setProp(ref _keywordNames, props.keywordNames);
+            setProp(ref _keywordValues, props.keywordValues);
+
+            setProp(ref _buffNames, props.buffNames);
+            setProp(ref _buffValues, props.buffValues);
+
+            setProp(ref _cardPropertyNameItems, props.cardPropertys);
+
+            setProp(ref _defaultValueTypeName, props.defaultValueTypeName);
+            setProp(ref _valueTypeNames, props.valueTypeNames);
+
+            void setProp<T>(ref T variable, T value)
+            {
+                if (value != null)
+                    variable = value;
+            }
         }
-        public void initPileNames(string[] pileNames, string[] pileValues)
+        public ValueInputFieldProperties getFieldProperties()
         {
-            _pileNames = pileNames;
-            _pileValues = pileValues;
-        }
-        public void initEffectTagNames(string[] effectTagNames, string[] effectTagValues)
-        {
-            _effectTagNames = effectTagNames;
-            _effectTagValues = effectTagValues;
-        }
-        public void initEventVarNames(string[] eventVarNameNames, string[] eventVarNameValues)
-        {
-            _eventVarNameNames = eventVarNameNames;
-            _eventVarNameValues = eventVarNameValues;
-        }
-        public void initKeywords(string[] keywordNames, string[] keywordValues)
-        {
-            _keywordNames = keywordNames;
-            _keywordValues = keywordValues;
-        }
-        public void initBuffReferences(string[] buffNames, BuffReference[] buffValues)
-        {
-            _buffNames = buffNames;
-            _buffValues = buffValues;
-        }
-        public void initCardProperties(CardPropertyNameItem[] values)
-        {
-            _cardPropertyNameItems = values;
+            return new ValueInputFieldProperties()
+            {
+                eventNames = _eventNames,
+                eventValues = _eventValues,
+
+                pileNames = _pileNames,
+                pileValues = _pileValues,
+
+                effectTagNames = _effectTagNames,
+                effectTagValues = _effectTagValues,
+
+                eventVarNameNames = _eventVarNameNames,
+                eventVarNameValues = _eventVarNameValues,
+
+                keywordNames = _keywordNames,
+                keywordValues = _keywordValues,
+
+                buffNames = _buffNames,
+                buffValues = _buffValues,
+
+                cardPropertys = _cardPropertyNameItems,
+
+                defaultValueTypeName = _defaultValueTypeName,
+                valueTypeNames = _valueTypeNames,
+            };
         }
         public void setReadonly(bool isReadonly)
         {
@@ -101,10 +126,8 @@ namespace UI
             _inputDropdown.interactable = canEdit;
             _multiInputDropdown.interactable = canEdit;
             _addItemButton.interactable = canEdit;
-            _removeItemButton.interactable = canEdit;
-            foreach (var item in _list)
+            foreach (var field in _childrenElementList.getElements<ValueInputFieldListItem>())
             {
-                var field = item.GetComponent<ValueInputField>();
                 field.setReadonly(isReadonly);
             }
         }
@@ -123,7 +146,6 @@ namespace UI
             _addItemButton.onClick.AddListener(onClickAddItemButtonCallback);
 
             _button.onClick.AddListener(() => callButtonCallback(ValueInputFieldButton.EditButton));
-            _removeItemButton.onClick.AddListener(() => onClickRemoveButton?.Invoke(this));
             _buildItem.onClick += (item, data) => callButtonCallback(ValueInputFieldButton.CardButton);
             _buildItemEditButton.onClick.AddListener(() => callButtonCallback(ValueInputFieldButton.CardEditButton));
             _buffItemEditButton.onClick.AddListener(() => callButtonCallback(ValueInputFieldButton.BuffEditButton));
@@ -131,7 +153,7 @@ namespace UI
         #region 事件回调
         private void onTypeDropdownValueChangedCallback(int index)
         {
-            var typeValues = _valueInfo.assignableTypeValues;
+            var typeValues = _valueTypeValues;
             if (typeValues != null)
             {
                 var type = typeValues[index];
@@ -158,7 +180,7 @@ namespace UI
         {
             if (_isReadonly)
                 return;
-            var childValueType = new NodeValueType(_valueInfo.type.type, false);
+            var childValueType = _valueInfo.type.getElementType();
             var defaultValue = childValueType.getDefaultValue();
             if (_valueInfo.value is Array array)
             {
@@ -176,11 +198,11 @@ namespace UI
             callValueChangedCallback(_valueInfo.value);
             update();
         }
-        private void onClickItemRemoveButtonCallback(ValueInputField item)
+        private void onClickItemRemoveButtonCallback(ValueInputFieldListItem item)
         {
             if (_isReadonly)
                 return;
-            int index = _list.IndexOf(item.transform as RectTransform);
+            int index = _childrenElementList.indexOf(item);
             if (_valueInfo.value is Array array)
             {
                 var arrayType = array.GetType();
@@ -205,11 +227,11 @@ namespace UI
             callValueChangedCallback(_valueInfo.value);
             update();
         }
-        private void onItemValueChangedCallback(ValueInputField item, object value)
+        private void onItemValueChangedCallback(ValueInputFieldListItem listItem, object value)
         {
             if (_isReadonly)
                 return;
-            int index = _list.IndexOf(item.transform as RectTransform);
+            int index = _childrenElementList.indexOf(listItem);
             var arrayValue = _valueInfo.value;
             if (arrayValue is Array array)
             {
@@ -225,17 +247,13 @@ namespace UI
         #endregion
 
         #region 按钮
-        private void onClickItemButtonCallback(ValueInputField item, ValueInputFieldButton type)
+        private void onClickItemButtonCallback(ValueInputFieldListItem listItem, ValueInputFieldButton type)
         {
-            callItemButtonCallback(item, type);
+            onClickItemButton?.Invoke(this, _childrenElementList.indexOf(listItem), type);
         }
         private void callButtonCallback(ValueInputFieldButton type)
         {
             onClickButton?.Invoke(this, type);
-        }
-        private void callItemButtonCallback(ValueInputField item, ValueInputFieldButton type)
-        {
-            onClickItemButton?.Invoke(this, _list.IndexOf(item.transform as RectTransform), type);
         }
         #endregion
 
@@ -390,8 +408,6 @@ namespace UI
         #endregion
         private void update()
         {
-            _removeItemButton.gameObject.SetActive(_isListItem);
-
             updateTypeDropdown();
 
             if (_valueInfo.type.isArray)
@@ -414,13 +430,13 @@ namespace UI
         }
         private void updateTypeDropdown()
         {
-            var typeNames = _valueInfo.assignableTypeNames;
-            var typeValues = _valueInfo.assignableTypeValues;
+            var typeValues = _valueTypeValues;
             var valueTypeCount = typeValues?.Length ?? 0;
             _typeDropdown.gameObject.SetActive(valueTypeCount > 0);
             _typeDropdown.ClearOptions();
-            if (typeValues != null && typeNames != null)
+            if (typeValues != null && _valueTypeNames != null)
             {
+                var typeNames = typeValues.Select(t => _valueTypeNames.FirstOrDefault(m => m.type == t.type).name ?? _defaultValueTypeName);
                 _typeDropdown.AddOptions(typeNames.ToList());
                 _typeDropdown.value = Array.IndexOf(typeValues, _valueInfo.type);
             }
@@ -435,7 +451,7 @@ namespace UI
             if (_valueInfo.value is IList list)
             {
                 _inputField.gameObject.SetActive(false);
-                _toggle.gameObject.SetActive(false);
+                _toggleField.SetActive(false);
                 _dropdown.gameObject.SetActive(false);
                 _buffItemObj.gameObject.SetActive(false);
                 _inputDropdown.gameObject.SetActive(false);
@@ -445,24 +461,30 @@ namespace UI
                 _multiInputDropdown.gameObject.SetActive(false);
 
                 _listRoot.gameObject.SetActive(true);
-                var childValueType = new NodeValueType(_valueInfo.type.type, false);
-                UIHelper.updateList(_listContentRoot, GetListTemplate(), _list, list.Count, (i, itemRect) =>
+                var childValueType = _valueInfo.type.getElementType();
+                _childrenElementList.updateList(list.Count, (i, itemRect) =>
                 {
-                    ValueInputField item = itemRect.GetComponent<ValueInputField>();
+                    ValueInputFieldListItem listItem = itemRect.GetComponent<ValueInputFieldListItem>();
+                    var item = listItem.valueField;
+
+                    var value = list[i];
+                    var assignType = childValueType;
+                    var valueType = assignType.getAssignableValueTypeByValue(value);
+                    var childTypes = assignType.getAssignableValueTypes();
+                    var valueInfo = new ActionNodeValueInfo(null, valueType, value, assignType);
+
+                    var fieldProps = getFieldProperties();
+                    item.initProperties(fieldProps);
+                    item.setValueInfo(null, valueInfo, true);
                     item.setReadonly(_isReadonly);
-                    item.setValueInfo(null, new ActionNodeValueInfo()
-                    {
-                        type = childValueType,
-                        value = list[i]
-                    }, true);
                 }, itemRect =>
                 {
-                    ValueInputField item = itemRect.GetComponent<ValueInputField>();
-                    addListItemCallbacks(item);
+                    ValueInputFieldListItem listItem = itemRect.GetComponent<ValueInputFieldListItem>();
+                    addListItemCallbacks(listItem);
                 }, itemRect =>
                 {
-                    ValueInputField item = itemRect.GetComponent<ValueInputField>();
-                    removeListItemCallbacks(item);
+                    ValueInputFieldListItem listItem = itemRect.GetComponent<ValueInputFieldListItem>();
+                    removeListItemCallbacks(listItem);
                 });
             }
             else
@@ -507,7 +529,7 @@ namespace UI
             //勾选框
             if (valueType == ActionNodeValueType.boolean)
             {
-                _toggle.gameObject.SetActive(true);
+                _toggleField.SetActive(true);
                 if (_valueInfo.value != null)
                     _toggle.SetIsOnWithoutNotify((bool)_valueInfo.value);
                 else
@@ -515,7 +537,7 @@ namespace UI
             }
             else
             {
-                _toggle.gameObject.SetActive(false);
+                _toggleField.SetActive(false);
             }
         }
         private void updateDropdown()
@@ -731,39 +753,27 @@ namespace UI
                 value = values.FirstOrDefault();
             _inputDropdown.setValueWithoutNotify(value);
         }
-        private void addListItemCallbacks(ValueInputField item)
+        private void addListItemCallbacks(ValueInputFieldListItem listItem)
         {
-            item.onValueChanged += onItemValueChangedCallback;
-            item.onClickButton += onClickItemButtonCallback;
-            item.onClickRemoveButton += onClickItemRemoveButtonCallback;
+            listItem.onValueChanged += onItemValueChangedCallback;
+            listItem.onClickButton += onClickItemButtonCallback;
+            listItem.onClickRemoveButton += onClickItemRemoveButtonCallback;
         }
-        private void removeListItemCallbacks(ValueInputField item)
+        private void removeListItemCallbacks(ValueInputFieldListItem listItem)
         {
-            item.onValueChanged -= onItemValueChangedCallback;
-            item.onClickButton -= onClickItemButtonCallback;
-            item.onClickRemoveButton -= onClickItemRemoveButtonCallback;
+            listItem.onValueChanged -= onItemValueChangedCallback;
+            listItem.onClickButton -= onClickItemButtonCallback;
+            listItem.onClickRemoveButton -= onClickItemRemoveButtonCallback;
         }
         private void callValueChangedCallback(object value)
         {
             onValueChanged?.Invoke(this, value);
-        }
-        private RectTransform GetListTemplate()
-        {
-            // 列表项模板直接引用自身，会在创建列表项时连同自身的所有列表项一同复制，造成性能开销指数上升。
-            // 这里创建一个自身的复制，用它来当模板。
-            if (!_listTemplateClone)
-            {
-                _listTemplateClone = Instantiate(_listTemplate, transform);
-                _listTemplateClone.gameObject.SetActive(false);
-            }
-            return _listTemplateClone;
         }
         #endregion
         #region 事件
         public event Action<ValueInputField, object> onValueChanged;
         public event Action<ValueInputField, ValueInputFieldButton> onClickButton;
         public event Action<ValueInputField, int, ValueInputFieldButton> onClickItemButton;
-        private event Action<ValueInputField> onClickRemoveButton;
         #endregion
         #region 属性字段
         private ActionNodeValueType valueType => _valueInfo.type.type;
@@ -776,6 +786,8 @@ namespace UI
         [Header("操作UI引用")]
         [SerializeField]
         InputField _inputField;
+        [SerializeField]
+        GameObject _toggleField;
         [SerializeField]
         Toggle _toggle;
         [SerializeField]
@@ -803,16 +815,9 @@ namespace UI
         [SerializeField]
         RectTransform _listRoot;
         [SerializeField]
-        RectTransform _listContentRoot;
-        [SerializeField]
-        RectTransform _listTemplate;
-        RectTransform _listTemplateClone;
-        [SerializeField]
-        List<RectTransform> _list = new List<RectTransform>();
+        ElementList _childrenElementList;
         [SerializeField]
         Button _addItemButton;
-        [SerializeField]
-        Button _removeItemButton;
 
         [Header("下拉列表值")]
         [SerializeField]
@@ -841,6 +846,13 @@ namespace UI
         private string[] _buffNames;
         [SerializeField]
         private BuffReference[] _buffValues;
+        [SerializeField]
+        private string _defaultValueTypeName;
+        [SerializeField]
+        private ValueTypeNameMap[] _valueTypeNames;
+        [SerializeField]
+        private NodeValueType[] _valueTypeValues;
+
         [SerializeField]
         ActionNodeValueInfo _valueInfo;
         [SerializeField]
@@ -891,7 +903,9 @@ namespace UI
         {
             for (int i = 0; i < cardReferenceList.Count; i++)
             {
-                var childInputField = inputField.getItemAt(i);
+                var childInputField = inputField.getItemAt(i)?.valueField;
+                if (childInputField == null)
+                    continue;
                 var defRef = cardReferenceList[i];
                 await childInputField.setInputFieldCard(defRef, env, game);
             }
@@ -905,5 +919,73 @@ namespace UI
         CardButton,
         CardEditButton,
         BuffEditButton
+    }
+    [Serializable]
+    public struct ValueInputFieldProperties
+    {
+        public string[] pileNames;
+        public string[] pileValues;
+
+        public string[] keywordNames;
+        public string[] keywordValues;
+
+        public CardPropertyNameItem[] cardPropertys;
+
+        public string[] eventNames;
+        public EventReference[] eventValues;
+
+        public string[] eventVarNameNames;
+        public string[] eventVarNameValues;
+
+        public string[] effectTagNames;
+        public string[] effectTagValues;
+
+        public string[] buffNames;
+        public BuffReference[] buffValues;
+
+        public string defaultValueTypeName;
+        public ValueTypeNameMap[] valueTypeNames;
+
+
+        public static ValueInputFieldProperties eventReference(string[] eventNames, EventReference[] eventValues)
+        {
+            return new ValueInputFieldProperties()
+            {
+                eventNames = eventNames,
+                eventValues = eventValues
+            };
+        }
+        public static ValueInputFieldProperties eventVar(string[] eventVarNameNames, string[] eventVarNameValues)
+        {
+            return new ValueInputFieldProperties()
+            {
+                eventVarNameNames = eventVarNameNames,
+                eventVarNameValues = eventVarNameValues
+            };
+        }
+        public static ValueInputFieldProperties keyword(string[] keywordNames, string[] keywordValues)
+        {
+            return new ValueInputFieldProperties()
+            {
+                keywordNames = keywordNames,
+                keywordValues = keywordValues
+            };
+        }
+        public static ValueInputFieldProperties buffReference(string[] buffNames, BuffReference[] buffValues)
+        {
+            return new ValueInputFieldProperties()
+            {
+                buffNames = buffNames,
+                buffValues = buffValues,
+            };
+        }
+        public static ValueInputFieldProperties effectTag(string[] tagNames, string[] tagValues)
+        {
+            return new ValueInputFieldProperties()
+            {
+                effectTagNames = tagNames,
+                effectTagValues = tagValues,
+            };
+        }
     }
 }

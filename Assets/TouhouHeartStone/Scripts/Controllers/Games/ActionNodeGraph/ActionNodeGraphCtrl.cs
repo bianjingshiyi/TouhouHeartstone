@@ -36,7 +36,9 @@ namespace Controllers
                 updateBuffReferences();
                 //更新UI
                 _ui.gameObject.SetActive(true);
-                _ui.initEventReferences(eventEditorNames, eventReferences);
+
+                var fieldProps = ValueInputFieldProperties.eventReference(eventEditorNames, eventReferences);
+                _ui.initValueInputFieldProperties(fieldProps);
                 _ui.resetView();
 
 
@@ -431,13 +433,26 @@ namespace Controllers
             _ui.onEffectPropertyValueChanged += onEffectPropertyValueChangedCallback;
             _ui.onDeleteEffectProperty += onDeleteEffectPropertyCallback;
 
-            _ui.initPiles(getAllPiles());
-            _ui.initCardProperties(CardEditorCtrl.cardProps.ToArray());
             var keywords = EditorManager.editorKeywords;
-            _ui.initKeywords(keywords.Select(k => game.card.getKeywordName(k)).ToArray(), keywords.ToArray());
             var effectTagNames = _activeEffectTagNames.Union(_passiveEffectTagNames).ToArray();
             var effectTagValues = getAllEffectTagValues();
-            _ui.initEffectTags(effectTagNames, effectTagValues);
+            var properties = new ValueInputFieldProperties()
+            {
+                pileNames = game.editor.getAllPileNames(),
+                pileValues = game.editor.getAllPileValues(),
+
+                keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray(),
+                keywordValues = keywords.ToArray(),
+
+                effectTagNames = effectTagNames,
+                effectTagValues = effectTagValues,
+
+                cardPropertys = CardEditorCtrl.cardProps.ToArray(),
+
+                defaultValueTypeName = game.editor.getDefaultValueTypeName(),
+                valueTypeNames = game.editor.getValueTypeNameMaps(),
+            };
+            _ui.initValueInputFieldProperties(properties);
         }
         #endregion
         #region 事件回调
@@ -981,7 +996,8 @@ namespace Controllers
                 inputViewData,
                 targetTypes, checkers,
                 outputViewData);
-            actionNodeItem.initEffectTags(_activeEffectTagNames, _activeEffectTags);
+            var properties = ValueInputFieldProperties.effectTag(_activeEffectTagNames, _activeEffectTags);
+            actionNodeItem.initNodeInputFields(properties);
 
             afterCreateNodeItem(activeEntry, actionNodeItem);
             return actionNodeItem;
@@ -1006,7 +1022,8 @@ namespace Controllers
                 inputViewData,
                 outputViewData,
                 visualEffect: true);
-            actionNodeItem.initEffectTags(_passiveEffectTagNames, _passiveEffectTags);
+            var properties = ValueInputFieldProperties.effectTag(_passiveEffectTagNames, _passiveEffectTags);
+            actionNodeItem.initNodeInputFields(properties);
             actionNodeItem.switchToEventEntryNode();
 
             afterCreateNodeItem(passiveEntry, actionNodeItem);
@@ -1690,9 +1707,7 @@ namespace Controllers
             {
                 var assignType = type.getNodeValueType();
                 var valueType = assignType.getAssignableValueTypeByValue(value);
-                var childTypes = assignType.getAssignableValueTypes();
-                var typeNames = childTypes?.Select(t => game.editor.getNameByValueType(t.type))?.ToArray();
-                return new ActionNodeValueInfo(name, portDefine.name, valueType, value, typeNames, assignType);
+                return new ActionNodeValueInfo(name, portDefine.name, valueType, value, assignType);
             }
         }
         private bool shouldInputPortShowPort(IPort inputPort)
@@ -1864,7 +1879,7 @@ namespace Controllers
                     value = eventReferences[0];
                     break;
                 case ActionNodeValueType.pileName:
-                    value = getAllPiles()[0].value;
+                    value = game.editor.getAllPileValues()[0];
                     break;
                 case ActionNodeValueType.buffReference:
                     value = _buffReferences.FirstOrDefault();
@@ -1949,7 +1964,8 @@ namespace Controllers
             string[] eventVarNames = varInfos != null ? eventVarNames = varInfos.Select(v => v.name).ToArray() : Array.Empty<string>();
             var eventVarNamesEditor = eventVarNames.Select(n => game.lang._(n)).ToArray();
 
-            item.setEventVarNames(eventVarNamesEditor, eventVarNames);
+            var properties = ValueInputFieldProperties.eventVar(eventVarNamesEditor, eventVarNames);
+            item.initNodeInputFields(properties);
             var inputViewDatas = getNodeInputViewData(node);
             item.setInputs(inputViewDatas);
 
@@ -2020,10 +2036,6 @@ namespace Controllers
                     updateNodePortModes(actionNode, _connectingPort);
                 }
             }
-        }
-        private (string name, string value)[] getAllPiles()
-        {
-            return CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray();
         }
         private string[] getAllEffectTagValues()
         {

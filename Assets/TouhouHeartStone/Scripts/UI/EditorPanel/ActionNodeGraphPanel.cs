@@ -222,36 +222,12 @@ namespace UI
             return _actionNodesRoot.InverseTransformPoint(worldPosition);
         }
 
-        public void initPiles((string name, string value)[] piles)
+        public void initValueInputFieldProperties(ValueInputFieldProperties properties)
         {
-            initPiles(piles.Select(i => i.name).ToArray(), piles.Select(i => i.value).ToArray());
-        }
-        public void initPiles(string[] pileNames, string[] pileValues)
-        {
-            _actionNodeItemTemplate.initPileNames(pileNames, pileValues);
-        }
-        public void initCardProperties(CardPropertyNameItem[] cardProperties)
-        {
-            _actionNodeItemTemplate.initCardProperties(cardProperties);
-        }
-        public void initKeywords(string[] keywordNames, string[] keywordValues)
-        {
-            _actionNodeItemTemplate.initKeywords(keywordNames, keywordValues);
-        }
-        public void initEffectTags(string[] effectTagNames, string[] effectTagValues)
-        {
-            _actionNodeItemTemplate.initEffectTags(effectTagNames, effectTagValues);
-        }
-        public void initEventReferences(string[] eventNames, EventReference[] eventValues)
-        {
-            _actionNodeItemTemplate.initEventReferences(eventNames, eventValues);
-        }
-        public void initBuffReferences(string[] buffNames, BuffReference[] buffValues)
-        {
-            _actionNodeItemTemplate.initBuffReferences(buffNames, buffValues);
+            _actionNodeItemTemplate.initNodeInputFields(properties);
             foreach (var node in _actionNodeItemList)
             {
-                node.initBuffReferences(buffNames, buffValues);
+                node.initNodeInputFields(properties);
             }
         }
         public void resetView()

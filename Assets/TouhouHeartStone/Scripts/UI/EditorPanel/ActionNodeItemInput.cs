@@ -1,6 +1,4 @@
 ﻿using System;
-using Game;
-using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -9,29 +7,9 @@ namespace UI
     public class ActionNodeItemInput : ActionNodeItemKnob
     {
         #region 公有方法
-        public void initEventReferences(string[] eventNames, EventReference[] eventValues)
+        public void initDefaultValueProperties(ValueInputFieldProperties properties)
         {
-            _defaultValueInputField.initEventReferences(eventNames, eventValues);
-        }
-        public void initPileNames(string[] pileNames, string[] pileValues)
-        {
-            _defaultValueInputField.initPileNames(pileNames, pileValues);
-        }
-        public void initEffectTagNames(string[] effectTagNames, string[] effectTagValues)
-        {
-            _defaultValueInputField.initEffectTagNames(effectTagNames, effectTagValues);
-        }
-        public void initEventVarNames(string[] eventVarNameNames, string[] eventVarNameValues)
-        {
-            _defaultValueInputField.initEventVarNames(eventVarNameNames, eventVarNameValues);
-        }
-        public void initCardProperties(CardPropertyNameItem[] cardProperties)
-        {
-            _defaultValueInputField.initCardProperties(cardProperties);
-        }
-        public void initBuffReferences(string[] buffNames, BuffReference[] buffValues)
-        {
-            _defaultValueInputField.initBuffReferences(buffNames, buffValues);
+            _defaultValueInputField.initProperties(properties);
         }
         public void setReadonly(bool isReadonly)
         {

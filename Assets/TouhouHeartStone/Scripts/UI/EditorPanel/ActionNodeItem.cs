@@ -98,79 +98,24 @@ namespace UI
         {
             return _inputList[index].GetComponent<ActionNodeItemInput>()?.defaultValueInputField;
         }
-        /// <summary>
-        /// 初始化事件名称
-        /// </summary>
-        /// <param name="eventNames"></param>
-        public void initEventReferences(string[] eventNames, EventReference[] eventValues)
+        public void initNodeInputFields(ValueInputFieldProperties properties)
         {
             ActionNodeItemInput item = _inputTemplate.GetComponent<ActionNodeItemInput>();
-            item.initEventReferences(eventNames, eventValues);
-        }
-        /// <summary>
-        /// 初始化事件类型名称
-        /// </summary>
-        /// <param name="eventNames"></param>
-        public void initPileNames(string[] pileNames, string[] pileValues)
-        {
-            ActionNodeItemInput item = _inputTemplate.GetComponent<ActionNodeItemInput>();
-            item.initPileNames(pileNames, pileValues);
-
-            PropertyItemField propItem = _effectPropertyItemTemplate.GetComponent<PropertyItemField>();
-            propItem.setPiles(pileNames, pileValues);
-        }
-        /// <summary>
-        /// 初始化效果标签
-        /// </summary>
-        /// <param name="eventNames"></param>
-        public void initEffectTags(string[] effectTagNames, string[] effectTagValues)
-        {
-            ActionNodeItemInput item = _inputTemplate.GetComponent<ActionNodeItemInput>();
-            item.initEffectTagNames(effectTagNames, effectTagValues);
-        }
-        /// <summary>
-        /// 设置事件变量名称列表
-        /// </summary>
-        /// <param name="eventNames"></param>
-        public void setEventVarNames(string[] eventVarNameNames, string[] eventVarNameValues)
-        {
-            ActionNodeItemInput item = _inputTemplate.GetComponent<ActionNodeItemInput>();
-            item.initEventVarNames(eventVarNameNames, eventVarNameValues);
+            item.initDefaultValueProperties(properties);
             foreach (var valueRect in _inputList)
             {
                 var valueItem = valueRect.GetComponent<ActionNodeItemInput>();
-                valueItem.initEventVarNames(eventVarNameNames, eventVarNameValues);
+                valueItem.initDefaultValueProperties(properties);
             }
-        }
-        public void initKeywords(string[] keywordNames, string[] keywordValues)
-        {
-            PropertyItemField propItem = _effectPropertyItemTemplate.GetComponent<PropertyItemField>();
-            propItem.setKeywords(keywordNames, keywordValues);
-        }
-        /// <summary>
-        /// 初始化卡牌属性名。
-        /// </summary>
-        /// <param name="cardProperties"></param>
-        public void initCardProperties(CardPropertyNameItem[] cardProperties)
-        {
-            ActionNodeItemInput item = _inputTemplate.GetComponent<ActionNodeItemInput>();
-            item.initCardProperties(cardProperties);
-        }
-        /// <summary>
-        /// 初始化增益名称
-        /// </summary>
-        /// <param name="buffNames"></param>
-        public void initBuffReferences(string[] buffNames, BuffReference[] buffValues)
-        {
-            ActionNodeItemInput item = _inputTemplate.GetComponent<ActionNodeItemInput>();
-            item.initBuffReferences(buffNames, buffValues);
-            foreach (var valueRect in _inputList)
-            {
-                var valueItem = valueRect.GetComponent<ActionNodeItemInput>();
-                valueItem.initBuffReferences(buffNames, buffValues);
-            }
-        }
 
+            PropertyItemField propField = _effectPropertyItemTemplate.GetComponent<PropertyItemField>();
+            propField.initInputFieldProperties(properties);
+            foreach (var valueRect in _effectPropertyItems)
+            {
+                var itemPropField = valueRect.GetComponent<PropertyItemField>();
+                itemPropField.initInputFieldProperties(properties);
+            }
+        }
 
         /// <summary>
         /// 获取类型索引，用于输出颜色、

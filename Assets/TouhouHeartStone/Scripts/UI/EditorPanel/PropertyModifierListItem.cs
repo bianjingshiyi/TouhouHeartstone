@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System;
 using System.Collections.Generic;
-using System;
-using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -23,9 +22,9 @@ namespace UI
             _modifyTypeDropdown.SetValueWithoutNotify(modifyTypeIndex);
             _valueField.setValueInfo(valueInfo);
         }
-        public void init(string[] names, string[] keywords)
+        public void initInputFieldProperties(ValueInputFieldProperties props)
         {
-            _valueField.initKeywords(names, keywords);
+            _valueField.initProperties(props);
         }
         public void setCustomPropertyFieldVisible(bool visible)
         {

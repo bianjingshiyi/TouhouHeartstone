@@ -110,6 +110,18 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<CardEditorPanel>();
             }
+            var keywords = EditorManager.editorKeywords;
+            var keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray();
+            var fieldProps = new ValueInputFieldProperties()
+            {
+                keywordNames = keywordNames,
+                keywordValues = keywords.ToArray(),
+
+                pileNames = game.editor.getAllPileNames(),
+                pileValues = game.editor.getAllPileValues()
+            };
+            _ui.initValueInputFieldProperies(fieldProps);
+
             _types = new string[] { DEFINE.SERVANT, DEFINE.SPELL, DEFINE.ITEM, DEFINE.MASTER, DEFINE.SKILL };
             string[] typeNames = new string[]
             {
@@ -1027,10 +1039,6 @@ namespace Controllers
             {
                 await fields[i].valueInputField.setInputFieldCardByValue(itemInfos[i].value, env, game);
             }
-
-            var keywords = EditorManager.editorKeywords;
-            var keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray();
-            _ui.initKeywords(keywordNames, keywords.ToArray());
         }
         /// <summary>
         /// 更新所有自定义属性。
@@ -1217,18 +1225,6 @@ namespace Controllers
                 )
             }
 
-        };
-
-        public static readonly Dictionary<string, string> piles = new Dictionary<string, string>
-        {
-            { PILE.FIELD, StringTable.GAME_FIELD },
-            { PILE.HAND, StringTable.GAME_HAND },
-            { PILE.DECK, StringTable.GAME_DECK },
-            { PILE.GRAVE, StringTable.GAME_GRAVE},
-            { PILE.MASTER, StringTable.GAME_MASTER },
-            { PILE.SKILL, StringTable.GAME_SKILL },
-            { PILE.ITEM, StringTable.GAME_ITEM },
-            { PILE.HEAD, StringTable.GAME_DELAY }
         };
         public static readonly ActionNodeValueType[] customPropTypes = new ActionNodeValueType[]
         {

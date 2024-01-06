@@ -90,12 +90,13 @@ namespace Controllers
                 .OrderBy(p => p.cardPoolId)
                 .ThenBy(p => p.id)
                 .ToArray();
+            _buffReferences = buffDefines.Select(b => new BuffReference(b.cardPoolId, b.id)).ToArray();
 
             var newBuffName = game.lang._(ACTION_NODE_NEW_BUFF);
             var buffNames = buffDefines.Select(b => game.card.getDefaultBuffSkin(b)?.name ?? b.ToString()).Prepend(newBuffName).ToArray();
-            _buffReferences = buffDefines.Select(b => new BuffReference(b.cardPoolId, b.id)).ToArray();
             var buffValues = _buffReferences.Prepend(new BuffReference(0, -1)).ToArray();
-            _ui.initBuffReferences(buffNames, buffValues);
+            var fieldProps = ValueInputFieldProperties.buffReference(buffNames, buffValues);
+            _ui.initValueInputFieldProperties(fieldProps);
         }
         /// <summary>
         /// 对单个增益引用进行检查。如果没有指定的增益定义或增益皮肤，获取第一个或创建一个，并通知需要更新增益。

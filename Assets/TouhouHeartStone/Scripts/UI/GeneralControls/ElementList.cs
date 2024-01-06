@@ -33,6 +33,17 @@ namespace UI
         {
             return getElement(index).GetComponent<T>();
         }
+        public IEnumerable<RectTransform> getElements()
+        {
+            return _itemList;
+        }
+        public IEnumerable<T> getElements<T>() where T : Component
+        {
+            foreach (var item in _itemList)
+            {
+                yield return item.GetComponent<T>();
+            }
+        }
         public int count => _itemList.Count;
         [SerializeField]
         private RectTransform _listRoot;

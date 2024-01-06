@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Game;
-using MukioI18n;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
@@ -102,7 +101,7 @@ namespace Controllers
             {
                 poolId = define.cardPoolId;
             }
-            await displayCardSelectPanel(poolId );
+            await displayCardSelectPanel(poolId);
             _curCardSeekingEffectPropName = name;
             _curCardSeekingEffectPropIndex = index;
         }
@@ -308,7 +307,7 @@ namespace Controllers
         #region 内嵌类
         class AddEffectPropertyOperation : GraphOperation
         {
-            public AddEffectPropertyOperation(ActionNodeGraphCtrl graphCtrl, PropertyItemInfo propItem) : 
+            public AddEffectPropertyOperation(ActionNodeGraphCtrl graphCtrl, PropertyItemInfo propItem) :
                 this(graphCtrl, propItem.propertyName, propItem.type, propItem.value)
             {
             }

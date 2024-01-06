@@ -41,6 +41,17 @@ namespace UI
             return !(lhs == rhs);
         }
     }
+    [Serializable]
+    public struct ValueTypeNameMap
+    {
+        public ActionNodeValueType type;
+        public string name;
+        public ValueTypeNameMap(ActionNodeValueType type, string name)
+        {
+            this.type = type;
+            this.name = name;
+        }
+    }
     public static class NodeValueTypeHelper
     {
         public static bool tryGetValueTypeByType(this Type type, out NodeValueType valueType)
@@ -78,6 +89,12 @@ namespace UI
                 return valueType;
             }
             return default;
+        }
+        public static NodeValueType getElementType(this NodeValueType type)
+        {
+            if (!type.isArray)
+                throw new InvalidOperationException("无法获取非数组类型的元素类型。");
+            return new NodeValueType(type.type, false);
         }
         public static NodeValueType[] getAssignableValueTypes(this NodeValueType type)
         {
