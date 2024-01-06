@@ -1227,7 +1227,7 @@ namespace TouhouHeartstone
             var enterFieldArg = await to.owner.tryEnterField(game, from, card, position);
             if (enterFieldArg == null)
                 return null;
-            return enterFieldArg.getChildEvents(EventState.Logic).OfType<EventArg>().FirstOrDefault();
+            return enterFieldArg.getChildEvents(EventState.Logic).OfType<EventArg>().FirstOrDefault(e => e.define is MoveCardEventDefine);
         }
         public static async Task<EventArg> moveToItem(this Card card, CardEngine game, Pile from, Pile to)
         {
@@ -1236,7 +1236,7 @@ namespace TouhouHeartstone
             var equipArg = await to.owner.equip(game, card.pile, card);
             if (equipArg == null)
                 return null;
-            return equipArg.getChildEvents(EventState.Logic).OfType<EventArg>().FirstOrDefault();
+            return equipArg.getChildEvents(EventState.Logic).OfType<EventArg>().FirstOrDefault(e => e.define is MoveCardEventDefine);
         }
         public static async Task<EventArg> moveCardFromPileToPile(this Card card, CardEngine game, Pile fromPile, Pile toPile, int position = -1)
         {
@@ -1388,7 +1388,7 @@ namespace TouhouHeartstone
                     continue;
                 foreach (var player in invisiblePlayers)
                 {
-                    clone.setPropInvisibleTo(game, invisiblePropName, player, true);
+                    await clone.setPropInvisibleTo(game, invisiblePropName, player, true);
                 }
             }
 
