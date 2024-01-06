@@ -1467,6 +1467,10 @@ namespace Game
                                     case BuiltinActionDefineID.GetBuffDefine: defaultValue = new BuffReference(0, 0); break;
                                 }
                             }
+                            else if (constPair.Key == BuiltinActionDefineID.GetBuffDefine && defaultValue is DefineReference buffDefRef)
+                            {
+                                defaultValue = new BuffReference(buffDefRef.cardPoolId, buffDefRef.defineId);
+                            }
                             dest.node.setInputDefaultValue(vi.name, vi.paramIndex, defaultValue);
                         }
                         action.graph.removeNode(action);
