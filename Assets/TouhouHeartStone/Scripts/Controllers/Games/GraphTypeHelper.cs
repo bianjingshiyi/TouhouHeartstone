@@ -10,7 +10,7 @@ namespace Game
         {
             Flow.addConversion(new CardDefineConversion());
             Flow.addConversion(new BuffDefineConversion());
-            Flow.addConversion(new EventReferenceFromStringConversion());
+            Flow.addConversion(new EventReferenceConversion());
             Flow.addConversion(new NodeConstProxyConversion());
             Flow.addConversion(new CollectionConversion());
         }
@@ -82,17 +82,21 @@ namespace Game
             return input;
         }
     }
-    public class EventReferenceFromStringConversion : ParamConversion
+    public class EventReferenceConversion : ParamConversion
     {
         public override bool canConvert(Type from, Type to)
         {
-            return typeof(EventReference).IsAssignableFrom(to) && typeof(string).IsAssignableFrom(from);
+            return typeof(EventReference).IsAssignableFrom(to) && (typeof(string).IsAssignableFrom(from) || typeof(EventArgReference).IsAssignableFrom(from));
         }
         public override object convert(Flow flow, object input, Type to)
         {
             if (input is string str)
             {
                 return new EventReference(0, str);
+            }
+            else if (input is EventArgReference eventArgRef)
+            {
+                return new EventReference(0, eventArgRef.value);
             }
             return input;
         }
