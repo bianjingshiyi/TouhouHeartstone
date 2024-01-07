@@ -781,21 +781,12 @@ namespace Controllers
                 return;
             var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
             long cardPoolId = _curCardPoolId;
-            if (node.getInputDefaultValue(inputDefine.name, paramIndex) is CardReferenceCollection defRefCol)
+            if (node.getInputDefaultValue(inputDefine.name, paramIndex) is IList list)
             {
-                if (defRefCol[itemIndex] == null)
+                if (list[itemIndex] is DefineReference defRef)
                 {
-                    defRefCol[itemIndex] = new DefineReference();
+                    cardPoolId = defRef.cardPoolId;
                 }
-                cardPoolId = defRefCol[itemIndex].cardPoolId;
-            }
-            else if (node.getInputDefaultValue(inputDefine.name, paramIndex) is DefineReference[] defRefs)
-            {
-                if (defRefs[itemIndex] == null)
-                {
-                    defRefs[itemIndex] = new DefineReference();
-                }
-                cardPoolId = defRefs[itemIndex].cardPoolId;
             }
             //打开卡牌选择界面
             await displayCardSelectPanel(cardPoolId);

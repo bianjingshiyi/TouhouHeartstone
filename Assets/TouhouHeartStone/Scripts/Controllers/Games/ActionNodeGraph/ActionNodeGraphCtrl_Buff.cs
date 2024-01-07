@@ -32,9 +32,9 @@ namespace Controllers
             if (inputPort is not ValueInput valueInput)
                 return;
             var buffRefObj = node.getInputDefaultValue(valueInput.name, valueInput.paramIndex);
-            if (buffRefObj is IEnumerable<object> defRefs)
+            if (buffRefObj is IList list)
             {
-                var buffRef = defRefs.ElementAt(index);
+                var buffRef = list[index];
                 if (tryGetBuffDefine(buffRef, out GeneratedBuffDefine buffDefine))
                 {
                     await scene.editor.openBuffEditor(buffDefine);

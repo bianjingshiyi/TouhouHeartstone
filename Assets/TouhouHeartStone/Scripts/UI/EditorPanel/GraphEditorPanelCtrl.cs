@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -448,8 +449,10 @@ namespace UI
         #region 卡牌跳转
         private async void onOpenActionNodeConstCardDefineCallback(Node node, string name, int paramIndex)
         {
-            var value = node.getInputDefaultValue(name, paramIndex) as DefineReference;
-            await scene.editor.openReferedCard(value, setPropAction);
+            if (node.getInputDefaultValue(name, paramIndex) is DefineReference defRef)
+            {
+                await scene.editor.openReferedCard(defRef, setPropAction);
+            }
             void setPropAction(CardDefine cardDefine)
             {
                 _actionGraphCtrl.setNodeDefaultValue(node, name, paramIndex, new DefineReference(cardDefine.cardPoolId, cardDefine.id));
@@ -457,17 +460,18 @@ namespace UI
         }
         private async void onOpenActionNodeConstItemCardDefineCallback(Node node, string name, int paramIndex, int index)
         {
-            IList<DefineReference> list = null;
-            if (node.getInputDefaultValue(name, paramIndex) is IList<DefineReference> defList)
+            if (node.getInputDefaultValue(name, paramIndex) is IList list)
             {
-                list = defList;
+                if (list[index] is DefineReference defRef)
+                {
+                    await scene.editor.openReferedCard(defRef, setPropAction);
+                }
+                void setPropAction(CardDefine cardDefine)
+                {
+                    list[index] = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
+                    _actionGraphCtrl.setNodeDefaultValue(node, name, paramIndex, list);
+                };
             }
-            await scene.editor.openReferedCard(list[index], setPropAction);
-            void setPropAction(CardDefine cardDefine)
-            {
-                list[index] = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
-                _actionGraphCtrl.setNodeDefaultValue(node, name, paramIndex, list);
-            };
         }
         private async void onOpenEffectPropertyCardDefineCallback(GeneratedEffect effect, string name)
         {
@@ -482,17 +486,18 @@ namespace UI
         }
         private async void onOpenEffectPropertyItemCardDefineCallback(GeneratedEffect effect, string name, int index)
         {
-            var prop = effect.getProp<IList<DefineReference>>(name);
+            var prop = effect.getProp<IList>(name);
             if (prop == null || index < 0 || index >= prop.Count)
                 return;
-            var define = prop[index];
-            await scene.editor.openReferedCard(define, setPropAction);
-
-            void setPropAction(CardDefine cardDefine)
+            if (prop[index] is DefineReference defRef)
             {
-                prop[index] = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
-                _actionGraphCtrl.setEffectProp(name, prop);
-                _actionGraphCtrl.updatePropertyItem(name);
+                await scene.editor.openReferedCard(defRef, setPropAction);
+                void setPropAction(CardDefine cardDefine)
+                {
+                    prop[index] = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
+                    _actionGraphCtrl.setEffectProp(name, prop);
+                    _actionGraphCtrl.updatePropertyItem(name);
+                }
             }
         }
         #endregion

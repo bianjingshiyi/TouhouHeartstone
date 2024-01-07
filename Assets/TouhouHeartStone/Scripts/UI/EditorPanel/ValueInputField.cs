@@ -77,6 +77,12 @@ namespace UI
             setProp(ref _defaultValueTypeName, props.defaultValueTypeName);
             setProp(ref _valueTypeNames, props.valueTypeNames);
 
+            foreach (var child in _childrenElementList.getElements<ValueInputFieldListItem>())
+            {
+                child.valueField.initProperties(props);
+            }
+            update();
+
             void setProp<T>(ref T variable, T value)
             {
                 if (value != null)
@@ -888,7 +894,7 @@ namespace UI
                 if (cardDefine != null)
                 {
                     var cardSkin = game.card.getCardSkin(cardDefine);
-                    cardName = cardSkin?.name ?? game.lang._(StringTable.BUILD_UNKNOW_CARD_NAME);
+                    cardName = cardSkin != null ? cardSkin.name : game.lang._(StringTable.BUILD_UNKNOW_CARD_NAME);
                     image = await game.card.loadCardImage(cardDefine, true);
                 }
                 else

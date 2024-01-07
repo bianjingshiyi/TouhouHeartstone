@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -167,10 +168,10 @@ namespace Controllers
         }
         private async void onClickEffectPropertyItemBuffEditButtonCallback(string name, int index)
         {
-            var prop = _effect.getProp<IEnumerable<DefineReference>>(name);
-            if (prop == null)
+            var prop = _effect.getProp<IList>(name);
+            if (prop == null || index < 0 || index >= prop.Count)
                 return;
-            var buffRef = prop.ElementAt(index);
+            var buffRef = prop[index];
             if (tryGetBuffDefine(buffRef, out GeneratedBuffDefine buffDefine))
             {
                 await scene.editor.openBuffEditor(buffDefine);
