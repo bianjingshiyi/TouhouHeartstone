@@ -964,7 +964,7 @@ namespace Controllers
                         var name = inputPort.name;
                         var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
                         var defaultValue = actionNode.getInputDefaultValue(name, paramIndex);
-                        await updateCardDefineDefaultValue(actionNodeItem, actionNode, i, defaultValue);
+                        await updateCardDefineDefaultValue(actionNodeItem, i, defaultValue);
                     }
                 }
             }
@@ -1197,9 +1197,12 @@ namespace Controllers
             }
             else
             {
-                IList<DefineReference> collection = _curEditNode.getInputDefaultValue(name, paramIndex) as IList<DefineReference>;
-                collection[itemIndex] = defineRef;
-                setNodeDefaultValue(_curEditNode, name, paramIndex, collection);
+                var defValue = _curEditNode.getInputDefaultValue(name, paramIndex);
+                if (defValue is IList list) 
+                {
+                    list[itemIndex] = defineRef;
+                    setNodeDefaultValue(_curEditNode, name, paramIndex, list);
+                }
             }
             // 更新UI.
             updateNodeItemInputPorts(_curEditNode);
@@ -1850,9 +1853,9 @@ namespace Controllers
             if (inputPort == null)
                 return Task.CompletedTask;
             var portIndex = inputPort.GetPortIndex();
-            return updateCardDefineDefaultValue(item, node, portIndex, value);
+            return updateCardDefineDefaultValue(item, portIndex, value);
         }
-        private async Task updateCardDefineDefaultValue(ActionNodeItem item, Node node, int portIndex, object value)
+        private async Task updateCardDefineDefaultValue(ActionNodeItem item, int portIndex, object value)
         {
             ValueInputField cardInputField = item.getInputDefaultValueInputField(portIndex);
             var env = getCardPoolEnv();

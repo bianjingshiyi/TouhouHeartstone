@@ -868,9 +868,9 @@ namespace UI
             {
                 await inputField.setInputFieldCard(cardReference, env, game);
             }
-            else if (value is IList<DefineReference> cardReferenceList)
+            else if (value is IList list)
             {
-                await inputField.setInputFieldCards(cardReferenceList, env, game);
+                await inputField.setInputFieldCards(list, env, game);
             }
         }
         public static async Task setInputFieldCard(this ValueInputField inputField, DefineReference cardReference, IEnumerable<ICardPoolReference> env, MainManager game)
@@ -899,14 +899,16 @@ namespace UI
             }
             inputField.setCard(cardName, image);
         }
-        public static async Task setInputFieldCards(this ValueInputField inputField, IList<DefineReference> cardReferenceList, IEnumerable<ICardPoolReference> env, MainManager game)
+        public static async Task setInputFieldCards(this ValueInputField inputField, IList list, IEnumerable<ICardPoolReference> env, MainManager game)
         {
-            for (int i = 0; i < cardReferenceList.Count; i++)
+            for (int i = 0; i < list.Count; i++)
             {
+                var element = list[i];
+                if (element is not DefineReference defRef)
+                    continue;
                 var childInputField = inputField.getItemAt(i)?.valueField;
                 if (childInputField == null)
                     continue;
-                var defRef = cardReferenceList[i];
                 await childInputField.setInputFieldCard(defRef, env, game);
             }
         }
