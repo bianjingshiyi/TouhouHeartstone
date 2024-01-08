@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 437, "dependencyRefs" : [] }
+{ "_t" : "SerializableCardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "imageResPath" : "D:\\TouhouHeartstone\\ExternalData\\Textures\\622dd65afacba24ee201e9714dd02262e4366b768c4c1df1c95a74eacc46da9d.jpg", "versionNumber" : 2, "editTime" : 439, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -46827,155 +46827,6 @@
         }],
       "effectList" : []
     }, {
-      "_id" : 9,
-      "type" : "Spell",
-      "propDict" : {
-        "cost" : 10,
-        "isToken" : true
-      },
-      "effects" : [{
-          "_t" : "SerializableActiveEffect",
-          "name" : "主动效果1",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableActiveEntryNode",
-                "_id" : 1,
-                "posX" : -499.72500610351563,
-                "inputDefaultValues" : [{
-                    "name" : "condition",
-                    "paramIndex" : -1,
-                    "value" : true
-                  }],
-                "propDict" : { },
-                "tags" : null,
-                "consts" : null,
-                "targetCheckerList" : [{
-                    "targetType" : "Character",
-                    "errorTip" : ""
-                  }]
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "posX" : -578.2503662109375,
-                "posY" : -413.64913940429688,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102008
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "posX" : -446.67935180664063,
-                "posY" : 422.51663208007813,
-                "inputDefaultValues" : [{
-                    "name" : "select",
-                    "paramIndex" : -1,
-                    "value" : 3
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102002
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "posX" : 576.5030517578125,
-                "posY" : -7.3030242919921875,
-                "inputDefaultValues" : [{
-                    "name" : "propName",
-                    "paramIndex" : -1,
-                    "value" : "currentLife"
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 202037
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "posX" : -133.94126892089844,
-                "posY" : -422.51663208007813,
-                "inputDefaultValues" : [{
-                    "name" : "operator",
-                    "paramIndex" : -1,
-                    "value" : 3
-                  }, {
-                    "name" : "arg",
-                    "paramIndex" : 1,
-                    "value" : 2
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112004
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "return",
-                "sourceNodeId" : 2,
-                "destName" : "arg",
-                "destParamIndex" : 1,
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 5,
-                "destName" : "value",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "targetCondition",
-                "destParamIndex" : 1,
-                "destNodeId" : 1
-              }, {
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "card",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "card",
-                "destNodeId" : 4
-              }]
-          }
-        }],
-      "effectList" : []
-    }, {
       "_id" : 8,
       "type" : "Spell",
       "propDict" : {
@@ -47828,6 +47679,160 @@
                 "sourceNodeId" : 2,
                 "destName" : "enter",
                 "destNodeId" : 6
+              }]
+          }
+        }],
+      "effectList" : []
+    }, {
+      "_id" : 9,
+      "type" : "Spell",
+      "propDict" : {
+        "cost" : 10,
+        "isToken" : true
+      },
+      "effects" : [{
+          "_t" : "SerializableActiveEffect",
+          "name" : "主动效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableActiveEntryNode",
+                "_id" : 1,
+                "posX" : -499.72500610351563,
+                "inputDefaultValues" : [{
+                    "name" : "condition",
+                    "paramIndex" : -1,
+                    "value" : true
+                  }],
+                "propDict" : { },
+                "tags" : null,
+                "consts" : null,
+                "targetCheckerList" : [{
+                    "targetType" : "Character",
+                    "errorTip" : ""
+                  }]
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "posX" : -578.2503662109375,
+                "posY" : -413.64913940429688,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102008
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "posX" : -446.67935180664063,
+                "posY" : 422.51663208007813,
+                "inputDefaultValues" : [{
+                    "name" : "select",
+                    "paramIndex" : -1,
+                    "value" : 3
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102002
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "posX" : 576.5030517578125,
+                "posY" : -7.3030242919921875,
+                "inputDefaultValues" : [{
+                    "name" : "propName",
+                    "paramIndex" : -1,
+                    "value" : "currentLife"
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 202037
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "posX" : -133.94126892089844,
+                "posY" : -422.51663208007813,
+                "inputDefaultValues" : [{
+                    "name" : "operator",
+                    "paramIndex" : -1,
+                    "value" : 3
+                  }, {
+                    "name" : "arg",
+                    "paramIndex" : 1,
+                    "value" : 2
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112004
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "return",
+                "sourceNodeId" : 2,
+                "destName" : "arg",
+                "destParamIndex" : 1,
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 5,
+                "destName" : "value",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 3,
+                "destName" : "targetCondition",
+                "destParamIndex" : 1,
+                "destNodeId" : 1
+              }, {
+                "sourceName" : "目标卡牌",
+                "sourceNodeId" : 1,
+                "destName" : "card",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "目标卡牌",
+                "sourceNodeId" : 1,
+                "destName" : "card",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "目标卡牌",
+                "sourceNodeId" : 1,
+                "destName" : "card",
+                "destNodeId" : 2
               }]
           }
         }],
@@ -49853,13 +49858,6 @@
       "_language" : "zh-Hans",
       "_animationRefs" : []
     }, {
-      "_id" : 9,
-      "_name" : "生命游戏-衰亡",
-      "_imagePath" : "d86885ddd6c8e72bcd7355832a0781952b377e7d769ef0f802ab37fe3f0fb28d.jpg",
-      "_desc" : "使一个英雄的当前生命值减半。",
-      "_language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
       "_id" : 8,
       "_name" : "生命游戏-苏活",
       "_imagePath" : "674c00513749a1c742c8ace08f1cda47a2933ff18d45f42cf634cb34f7ff0fad.jpg",
@@ -49887,6 +49885,13 @@
       "_name" : "永夜归-永恒",
       "_imagePath" : "6e181c613de71299a93d7830cc1d7001b198aaa7164c51157b1a3877d76be6d7.jpg",
       "_desc" : "所有玩家在两个回合内无法抽牌。",
+      "_language" : "zh-Hans",
+      "_animationRefs" : []
+    }, {
+      "_id" : 9,
+      "_name" : "生命游戏-衰亡",
+      "_imagePath" : "d86885ddd6c8e72bcd7355832a0781952b377e7d769ef0f802ab37fe3f0fb28d.jpg",
+      "_desc" : "使一个英雄的当前生命值减半。",
       "_language" : "zh-Hans",
       "_animationRefs" : []
     }],
@@ -55670,6 +55675,10 @@
                       "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
                       "_v" : ["Master"]
                     }
+                  }, {
+                    "name" : "condition",
+                    "paramIndex" : -1,
+                    "value" : true
                   }],
                 "propDict" : { },
                 "consts" : null,
@@ -55818,6 +55827,10 @@
                       "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
                       "_v" : ["Master"]
                     }
+                  }, {
+                    "name" : "condition",
+                    "paramIndex" : -1,
+                    "value" : true
                   }],
                 "propDict" : { },
                 "consts" : null,
