@@ -72,6 +72,8 @@ namespace Game
         }
         public string[] getKeywordsInDescription(string desc)
         {
+            if (string.IsNullOrEmpty(desc))
+                return Array.Empty<string>();
             List<string> keywords = new List<string>();
             foreach (var keyword in keywordInfos.Keys)
             {
