@@ -781,7 +781,7 @@ namespace TouhouHeartstone
         {
             await card.setCurrentLife(game, card.getLife(game));
             await card.setProp(game, CARD.ARMOR, 0);
-            await card.setProp(game, CARD.SILENCE, false);
+            await card.restoreFromSeal(game);
             await card.clearConsumableKeywords(game);
         }
         /// <summary>
