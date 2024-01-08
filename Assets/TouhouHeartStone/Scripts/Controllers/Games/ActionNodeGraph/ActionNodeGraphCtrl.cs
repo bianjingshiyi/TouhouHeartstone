@@ -262,6 +262,7 @@ namespace Controllers
                 return null;
             }
             var actionNode = graph.createEventEntryNode(eventDefine, triggerType, x, y);
+            _actionNodeList.Add(actionNode);
 
             addOperationRecord(new CreateNodeOperation(this, actionNode));
             ActionNodeItem actionNodeItem = createNodeUI4PassiveEntryNode(actionNode);

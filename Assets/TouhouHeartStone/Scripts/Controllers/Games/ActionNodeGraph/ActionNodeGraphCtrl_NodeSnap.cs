@@ -69,15 +69,15 @@ namespace Controllers
                             true,
                             false),
                         new InputPortInfo(
-                            new PortItemInfo(game.lang._(PassiveEntryNode.tagsPortName), arrayColor, false),
+                            new PortItemInfo(game.lang._(PassiveEntryNode.tagsPortDisplayName), arrayColor, false),
                             new ActionNodeValueInfo(PassiveEntryNode.tagsPortName, new NodeValueType(ActionNodeValueType.effectTagCollection), null),
                             false,
-                            false),
+                            true),
                         new InputPortInfo(
-                            new PortItemInfo(game.lang._(PassiveEntryNode.pileListPortName), arrayColor, false),
-                            new ActionNodeValueInfo(PassiveEntryNode.tagsPortName, new NodeValueType(ActionNodeValueType.effectTagCollection), null),
+                            new PortItemInfo(game.lang._(PassiveEntryNode.pileListPortDisplayName), arrayColor, false),
+                            new ActionNodeValueInfo(PassiveEntryNode.pileListPortName, new NodeValueType(ActionNodeValueType.pileNameCollection), null),
                             false,
-                            false)
+                            true)
                     };
                     // 事件输出
                     var variableInfos = eventDefine.getVariableInfos(define.eventTriggerType);

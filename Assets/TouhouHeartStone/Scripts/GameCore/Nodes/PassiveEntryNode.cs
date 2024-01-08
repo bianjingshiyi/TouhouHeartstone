@@ -162,13 +162,15 @@ namespace TouhouCardEngine
         public const string actionPortName = "action";
         public const string playerPortName = "玩家";
         public const string cardPortName = "卡牌";
+        public const string tagsPortDisplayName = "标签列表";
         public const string tagsPortName = "tags";
+        public const string pileListPortDisplayName = "生效区域";
         public const string pileListPortName = "pileList";
         public const string triggerConditionPortName = "触发条件";
         public static PortDefine triggerConditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, triggerConditionPortName);
         public static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
-        public static PortDefine tagsPortDefine = PortDefine.Value(typeof(EffectTagCollection), tagsPortName, "标签列表", isConst: true);
-        public static PortDefine pileListPortDefine = PortDefine.Value(typeof(PileNameCollection), pileListPortName, "生效区域", isConst: true);
+        public static PortDefine tagsPortDefine = PortDefine.Value(typeof(EffectTagCollection), tagsPortName, tagsPortDisplayName, isConst: true);
+        public static PortDefine pileListPortDefine = PortDefine.Value(typeof(PileNameCollection), pileListPortName, pileListPortDisplayName, isConst: true);
         protected static PortDefine playerPortDefine = PortDefine.Value(typeof(Player), playerPortName, "Player");
         protected static PortDefine cardPortDefine = PortDefine.Value(typeof(Card), cardPortName, "Card");
     }
