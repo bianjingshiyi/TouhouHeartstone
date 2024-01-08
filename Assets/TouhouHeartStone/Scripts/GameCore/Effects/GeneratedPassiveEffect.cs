@@ -29,7 +29,7 @@ namespace TouhouHeartstone
             if (entry != null)
             {
                 var condition = entry.getTriggerCondtionValuePort();
-                if (condition == null || condition.getConnectedOutputPort() == null)
+                if (condition == null || !condition.hasValue())
                     return true;
 
                 var flow = new Flow(env.toFlowEnv());

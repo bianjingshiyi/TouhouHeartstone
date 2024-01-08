@@ -163,7 +163,7 @@ namespace TouhouHeartstone
         }
         private async Task<bool> checkAuraCondition(CardEngine game, ICard card, IBuff buff, Card targetCard)
         {
-            if (affectCondition == null || affectCondition.getConnectedOutputPort() == null)
+            if (affectCondition == null || !affectCondition.hasValue())
                 return false;
             try
             {
