@@ -154,6 +154,7 @@ namespace UI
             _masterSelectionCloseButton.onClick.AddListener(hideMasterSelectPanel);
             _masterSelectionDeckViewPanel.onClickItemButton += (index) => onClickMasterSelectPanelItem?.Invoke(index);
 
+            _saveDeckButton.onClick.AddListener(onClickSaveDeckButtonCallback);
             _exportDeckButton.onClick.AddListener(onClickExportDeckButtonCallback);
             _exitEditButton.onClick.AddListener(onClickExitEditButtonCallback);
             _importDeckButton.onClick.AddListener(onClickImportDeckButtonCallback);
@@ -178,6 +179,10 @@ namespace UI
         #endregion
 
         #region 事件回调
+        private void onClickSaveDeckButtonCallback()
+        {
+            onClickSaveDeckButton?.Invoke();
+        }
         private void onClickExportDeckButtonCallback()
         {
             onClickExportDeckButton?.Invoke();
@@ -394,6 +399,8 @@ namespace UI
         Button _exitEditButton;
         [SerializeField]
         Button _exportDeckButton;
+        [SerializeField]
+        Button _saveDeckButton;
         [SerializeField]
         Button _importDeckButton;
         [SerializeField]

@@ -1201,6 +1201,7 @@ MonoBehaviour:
   _deckListViewportRect: {fileID: 3879115452320181790}
   _exitEditButton: {fileID: 6835868563013034219}
   _exportDeckButton: {fileID: 8515615924541493297}
+  _saveDeckButton: {fileID: 7608124180014604736}
   _importDeckButton: {fileID: 264779908303057851}
   _uploadDeckButton: {fileID: 884761979775206724}
   _downloadDeckButton: {fileID: 3851851767734825284}
@@ -5602,3 +5603,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8387368149569153790}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7608124180014604736 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2157389444735961918, guid: e392c785257f9364ebb3ca3a70fcb14a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8387368149569153790}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -12,18 +12,7 @@ namespace Game
         {
             if (_deckList == null)
             {
-                _deckList = new List<Deck>();
-                foreach (DeckDefine deckData in GetDecks())
-                {
-                    Deck deck = new Deck()
-                    {
-                        id = (int)deckData.ID,
-                        name = deckData.Name,
-                        masterCardRef = deckData.MasterCardRef,
-                    };
-                    deck.addCards(GetDeckCards(deckData.ID).Values);
-                    _deckList.Add(deck);
-                }
+                reloadDeckList();
             }
             return _deckList;
         }

@@ -293,7 +293,7 @@ namespace Controllers
             {
                 game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), game.lang._(StringTable.BUILD_CONFIRM_EXIT_WITHOUT_SAVE), () =>
                 {
-                    display();
+                    quit();
                 });
             }
             else
@@ -777,6 +777,14 @@ namespace Controllers
             _isDraggingHorizontal = false;
             _isDraggingVertical = false;
             _isDraggingDeckListItem = false;
+        }
+        private void quit()
+        {
+            if (_isDeckChanged)
+            {
+                game.deck.reloadDeckList();
+            }
+            display();
         }
         #endregion
         #region 属性字段
