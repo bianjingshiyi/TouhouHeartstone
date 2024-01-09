@@ -8845,6 +8845,42 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>111034</defineId>
+    <obsoleteNames />
+    <editorName>获取元素在集合中的位置</editorName>
+    <category>集合运算</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>array</name>
+        <displayName>集合</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[要获取元素位置的集合。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>element</name>
+        <displayName>元素</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取位置的元素。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>元素位置</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[元素在该集合中的位置。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[获取一个元素在一个集合中的位置。<br>如果该元素是集合内的第一个元素，输出0，第二个元素则输出1，以此类推。<br>如果集合或者元素不存在，或者元素不位于该集合中，输出-1。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>107001</defineId>
     <obsoleteNames />
     <editorName>该效果</editorName>

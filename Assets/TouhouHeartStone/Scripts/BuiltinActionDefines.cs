@@ -219,6 +219,7 @@ namespace Game
         public const int Select = Type_Function + Category_Collection + 31; // 获取集合内所有元素的某项属性
         public const int Randomize = Type_Function + Category_Collection + 32; // 打乱集合内元素的顺序
         public const int ContentEquals = Type_Function + Category_Collection + 33; // 集合内容是否相同
+        public const int IndexOf = Type_Function + Category_Collection + 34; // 获取元素在集合中的位置
 
         // 其他
         public const int BooleanConst = Type_Function + Category_Other + 1;       // 固定真值

@@ -762,6 +762,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_RANDOMIZE = "打乱集合内元素顺序";
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_NAME_CONTENT_EQUALS = "集合内容是否相同";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_GET_INDEX_OF_ELEMENT = "获取元素在集合中的位置";
 
         [TranslateMsg("编辑器-参数名称")]
         public const string EDITOR_PARAM_NAME_SELECTOR = "选择的属性";
@@ -831,6 +833,24 @@ namespace Game
             if (!ignoreOrder)
                 return arrayA.SequenceEqual(arrayB);
             return arrayA.Count() == arrayB.Count() && arrayA.isSubset(arrayB); // 数量相同，并且其中一个是另一个的子集
+        }
+        /// <summary>
+        /// 获取元素在集合中的位置
+        /// </summary>
+        /// <param name="flow"></param>
+        /// <param name="node"></param>
+        /// <param name="array"></param>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        [THHActionMethod(BuiltinActionDefineID.IndexOf, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_GET_INDEX_OF_ELEMENT)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_INDEX)]
+        public static int indexOf(Flow flow, ActionNode node,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT)] object element)
+        {
+            if (array == null || element == null)
+                return -1;
+            return Array.IndexOf(array, element);
         }
         #endregion
         #endregion
