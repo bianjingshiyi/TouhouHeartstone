@@ -59,12 +59,6 @@ namespace Game
             // 铺设节点。
             var clone = cloneSeri.deserialize(nodeDefiner);
             clone.cardPoolId = cardPoolId;
-            // 定义所有节点。
-            clone.graph.DefineNodes(nodeDefiner);
-            // 连接所有节点。
-            var graph = clone.graph;
-            var nodes = cloneSeri.graph.GetConnections(graph);
-            graph.AddConnections(nodes);
 
             return clone;
         }

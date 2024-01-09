@@ -90,7 +90,7 @@ namespace UI
                     item.onDefaultValueChanged -= onDefaultValueChangedCallback;
                     item.onClickDefaultValueButton -= onDefaultValueButtonClickCallback;
                     item.onClickDefaultValueItemButton -= onDefaultValueItemButtonClickCallback;
-                }, rebuild: true);
+                });
             }
             SetDirty();
         }
@@ -185,7 +185,7 @@ namespace UI
                     item.onDragNode -= onDragOutputNodeCallback;
                     item.onEndDragNode -= onEndDragOutputNodeCallback;
                     item.onClickNode -= onClickOutputNodeCallback;
-                }, rebuild: true);
+                });
             }
             SetDirty();
         }
@@ -221,7 +221,7 @@ namespace UI
                     item.onDragNode -= onDragOutputNodeCallback;
                     item.onEndDragNode -= onEndDragOutputNodeCallback;
                     item.onClickNode -= onClickOutputNodeCallback;
-                }, rebuild: true);
+                });
             }
             SetDirty();
         }
@@ -294,7 +294,7 @@ namespace UI
                 item.onClickEditButton -= onClickEditTargetCheckerButtonCallback;
                 item.onClickRemoveButton -= onClickRemoveTargetCheckerButtonCallback;
                 item.onErrorTipInputFieldValueChanged -= onTargetCheckerErrorTipValueChangedCallback;
-            }, rebuild: true);
+            });
             SetDirty();
         }
         public int indexOfInput(ActionNodeItemInput input)
@@ -376,7 +376,7 @@ namespace UI
                 item.onClickDelete -= onDeleteEffectPropertyCallback;
 
                 item.onClickItemButton -= onClickEffectPropertyItemButtonCallback;
-            }, rebuild: true);
+            });
             SetDirty();
         }
         public PropertyItemField[] getEffectPropertyItemFields()

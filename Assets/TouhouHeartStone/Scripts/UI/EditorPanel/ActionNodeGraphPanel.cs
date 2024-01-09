@@ -238,11 +238,9 @@ namespace UI
             _selectFrameTrans.gameObject.SetActive(false);
             clearFreePlaceCheckRegion();
         }
-        public void updateNodeLines(ActionNodeItem item)
+        public void updateNodeLines()
         {
-            LayoutRebuilder.ForceRebuildLayoutImmediate(item.transform as RectTransform);
-            var connections = _connectionList.FindAll(c => c.outputNode == item || c.inputNode == item);
-            foreach (var connection in connections)
+            foreach (var connection in _connectionList)
             {
                 ActionNodeItemInput inputPort = null;
                 ActionNodeItemOutput outputPort = null;
@@ -516,6 +514,15 @@ namespace UI
             {
                 _focused = false;
                 EventSystem.current.SetSelectedGameObject(gameObject);
+            }
+        }
+        private void LateUpdate()
+        {
+            if (_linesDirty)
+            {
+                _linesDirty = false;
+                updateNodeLines();
+                clearFreePlaceCheckRegion();
             }
         }
         #endregion
@@ -975,8 +982,7 @@ namespace UI
         }
         private void onActionNodeItemUpdateTransform(ActionNodeItem item)
         {
-            updateNodeLines(item);
-            clearFreePlaceCheckRegion();
+            _linesDirty = true;
         }
 
         private void onActionNodeClickObsoleteButtonCallback(string value)
@@ -1407,6 +1413,7 @@ namespace UI
         /// 被设置为焦点，会在下一次Update中将EventSystem的选择物体设置为自身。
         /// </summary>
         private bool _focused;
+        private bool _linesDirty;
         #endregion
     }
     [Serializable]

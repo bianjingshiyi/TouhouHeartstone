@@ -39,7 +39,7 @@ namespace UI
                 item.onEditButtonClick -= onClickItemEditButtonCallback;
                 item.onRemoveButtonClick -= onClickItemRemoveButtonCallback;
                 item.onInputFieldEndEdit -= onItemInputFieldEndEditCallback;
-            }, rebuild: true);
+            });
         }
 
         public void showItemInputField(int index, string name)
