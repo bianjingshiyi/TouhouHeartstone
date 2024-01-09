@@ -150,11 +150,12 @@ namespace Game
             {
                 //官方卡池只能保存到指定路径下面，也就是工程文件
                 path = Path.Combine(editorCardPoolDirName, $"{cardPoolInfo.cardPoolName}.{cardPoolFilePostfix}");
+                path = Path.GetFullPath(path);
             }
             else if (path.isStreamingAssetsPath(out var streamingPath))
             {
                 //如果是StreamingAssets，那要转存成可持续化文件
-                path = streamingPath;
+                path = Path.Combine(Application.persistentDataPath, streamingPath);
             }
             // 修改卡池的版本，并使卡池编辑次数+1。
             cardPoolInfo.editTime++;
@@ -162,6 +163,7 @@ namespace Game
             cardPoolInfo.versionNumber = CURRENT_CARD_POOL_VERSION;
 
             // 更新字典中的卡池信息和卡池内容。
+            removeConflictCardPoolInfo(cardPoolInfo.cardPoolId);
             _cardPoolInfoDict[path] = cardPoolInfo;
             _cardPoolDict.Remove(cardPoolRef);
             _cardPoolDict.Add(cardPoolInfo.ToReference(), cardPool);
@@ -263,7 +265,7 @@ namespace Game
                 CardPoolInfo cardPool = parseCardPoolInfo(lines[0]);
 
                 // 移除冲突的卡池信息，并添加卡池信息。
-                removeConflictCardPoolInfo(cardPool);
+                removeConflictCardPoolInfo(cardPool.cardPoolId);
                 _cardPoolInfoDict.Add(path, cardPool);
                 Debug.Log($"读取卡池信息{path}完毕");
                 return cardPool;
@@ -316,7 +318,7 @@ namespace Game
                 }
 
                 // 移除冲突的卡池，并添加该卡池。
-                removeConflictCardPoolInfo(cardPoolInfo);
+                removeConflictCardPoolInfo(cardPoolInfo.cardPoolId);
                 addCardPool(cardPool, cardPoolInfo, path);
 
                 //错误信息修复
@@ -1658,10 +1660,10 @@ namespace Game
             };
             iterateActionGraphs(cardPool, cardAction, buffAction, defineAction, logicAction);
         }
-        private void removeConflictCardPoolInfo(CardPoolInfo cardPoolInfo)
+        private void removeConflictCardPoolInfo(long cardPoolId)
         {
             //去重，多份文件中可能包含相同的卡池
-            var conflictedKeys = _cardPoolInfoDict.Where(i => i.Value.CompareCardPool(cardPoolInfo)).Select(i => i.Key).ToArray();
+            var conflictedKeys = _cardPoolInfoDict.Where(i => i.Value.cardPoolId == cardPoolId).Select(i => i.Key).ToArray();
             foreach (var key in conflictedKeys)
             {
                 _cardPoolInfoDict.Remove(key);

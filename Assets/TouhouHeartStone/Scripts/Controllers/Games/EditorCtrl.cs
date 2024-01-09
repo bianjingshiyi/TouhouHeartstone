@@ -866,6 +866,7 @@ namespace Controllers
             if (success)
             {
                 clearCardPoolUnsaved(_curCardPoolId);
+                game.editor.reloadCardPoolEnv(info);
             }
             return success;
         }

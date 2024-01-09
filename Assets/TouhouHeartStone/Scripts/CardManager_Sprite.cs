@@ -345,12 +345,16 @@ namespace Game
         public string getCardPoolTexturesDirectory(CardPoolInfo cardPoolInfo)
         {
             var path = getCardPoolPath(cardPoolInfo);
-            var relativePath = $"../{textureDirName}";
+            var cardPoolDir = Path.GetDirectoryName(path);
             if (!string.IsNullOrEmpty(cardPoolInfo.texturesDir))
             {
-                relativePath = cardPoolInfo.texturesDir;
+                return Path.Combine(cardPoolDir, cardPoolInfo.texturesDir);
             }
-            return Path.Combine(Path.GetDirectoryName(path), relativePath);
+            else
+            {
+                var poolDir = Path.GetDirectoryName(cardPoolDir);
+                return Path.Combine(poolDir, textureDirName);
+            }
         }
 
         /// <summary>
