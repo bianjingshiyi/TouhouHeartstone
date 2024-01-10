@@ -1107,7 +1107,7 @@ MonoBehaviour:
   _root: {fileID: 1427868817}
   _sourceTransform: {fileID: 1163011664}
   _targetTransform: {fileID: 94933727}
-  _projectilePrefab: {fileID: 8797299633640501442, guid: 3e3dd7009c43ecf45ab13ba0cb8be3d9,
+  _projectilePrefab: {fileID: 8797299633640501442, guid: c36626d6c68c4f24bb0324cb13e8dcd6,
     type: 3}
 --- !u!114 &1654659876
 MonoBehaviour:
