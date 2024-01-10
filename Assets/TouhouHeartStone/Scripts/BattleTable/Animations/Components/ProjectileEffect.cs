@@ -25,12 +25,23 @@ namespace Game.Animations
             var t = time;
             var fly = _flyCurve.Evaluate(t) * distance.magnitude;
             var offset = _offsetCurve.Evaluate(t) * distance.magnitude;
-            transform.position = sourcePos + axis * fly + offsetAxis * offset;
+
+            var targetWorldPos = sourcePos + axis * fly + offsetAxis * offset;
+            if (_projectileRoot)
+            {
+                _projectileRoot.localPosition = _projectileRoot.parent.InverseTransformPoint(targetWorldPos) + rootObj.transform.localPosition;
+            }
+            else
+            {
+                transform.position = targetWorldPos;
+            }
             transform.forward = distance.normalized;
         }
         [SerializeField]
         private AnimationCurve _flyCurve = AnimationCurve.Linear(0, 0, 1, 1);
         [SerializeField]
         private AnimationCurve _offsetCurve = AnimationCurve.Constant(0, 1, 0);
+        [SerializeField]
+        private Transform _projectileRoot;
     }
 }
