@@ -238,9 +238,8 @@ namespace Controllers
         public async Task<ActionNodeItem> createActionNode(ActionDefine actionDefine, float x, float y)
         {
             var actionNode = graph.createActionNode(actionDefine, x, y);
-            _actionNodeList.Add(actionNode);
+            var actionNodeItem = await applyNode(actionNode);
             addOperationRecord(new CreateNodeOperation(this, actionNode));
-            ActionNodeItem actionNodeItem = await createNodeUI4ActionNode(actionNode);
             return actionNodeItem;
         }
         public Task<ActionNodeItem> createActionNode(ActionDefine actionDefine, Vector2 pos)
@@ -264,10 +263,9 @@ namespace Controllers
                 return null;
             }
             var actionNode = graph.createEventEntryNode(eventDefine, triggerType, x, y);
-            _actionNodeList.Add(actionNode);
-
-            addOperationRecord(new CreateNodeOperation(this, actionNode));
+            registerNode(actionNode);
             ActionNodeItem actionNodeItem = createNodeUI4PassiveEntryNode(actionNode);
+            addOperationRecord(new CreateNodeOperation(this, actionNode));
             updateEffectProperties();
             return actionNodeItem;
         }
@@ -347,7 +345,8 @@ namespace Controllers
             {
                 var inputPort = paramIndex < 0 ? node.getInputPort(name) : node.getParamInputPort(name, paramIndex);
                 var valueType = inputPort.define.type.getNodeValueType();
-                value = validateInputFieldValue(valueType, value);
+                var forceHasValue = inputPort?.define?.isConst ?? false;
+                value = validateInputFieldValue(valueType, value, forceHasValue);
             }
             if (value is ICloneable clonable)
             {
@@ -368,15 +367,14 @@ namespace Controllers
         {
             if (node == null)
                 return;
-            var defaultValues = node.inputDefaultValues.ToArray();
-            foreach (var defaultValue in defaultValues)
+            foreach (var inputPort in node.inputPorts)
             {
-                var name = defaultValue.name;
-                var paramIndex = defaultValue.paramIndex;
-                var value = defaultValue.value;
-                var inputPort = paramIndex < 0 ? node.getInputPort(name) : node.getParamInputPort(name, paramIndex);
-                var valueType = inputPort?.define?.type?.getNodeValueType() ?? default;
-                var newValue = validateInputFieldValue(valueType, value);
+                var name = inputPort.name;
+                var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
+                var value = node.getInputDefaultValue(name, paramIndex);
+                var valueType = inputPort.define?.type?.getNodeValueType() ?? default;
+                var forceHasValue = inputPort.define?.isConst ?? false;
+                var newValue = validateInputFieldValue(valueType, value, forceHasValue);
                 if (value != newValue)
                 {
                     node.setInputDefaultValue(name, paramIndex, newValue);
@@ -874,10 +872,14 @@ namespace Controllers
         #endregion
 
         #region 创建节点UI
-        private Task<ActionNodeItem> applyNode(Node node)
+        private void registerNode(Node node)
         {
             validateNodeInputDefaultValues(node);
             _actionNodeList.Add(node);
+        }
+        private Task<ActionNodeItem> applyNode(Node node)
+        {
+            registerNode(node);
             return createNodeUI4Node(node);
         }
         private async Task<ActionNodeItem> createNodeUI4Node(Node node)
@@ -1784,8 +1786,12 @@ namespace Controllers
         private ICardPoolReference[] getCardPoolEnv() => game.editor.getEnvCardPoolRefs();
         private ICardPoolReference getCardPoolReference(long id) => game.card.getCardPoolReferenceInEnv(id, getCardPoolEnv());
         private INodeDefiner getNodeDefiner() => game.card.getNodeDefiner(getCardPoolEnv());
-        private EventDefine getEventDefine(EventReference eventRef, bool includeHidden = true) => 
-            game.card.getEventDefine(getCardPoolReference(eventRef.cardPoolId), eventRef.eventName, includeHidden);
+        private EventDefine getEventDefine(EventReference eventRef, bool includeHidden = true)
+        {
+            if (eventRef == null)
+                return null;
+            return game.card.getEventDefine(getCardPoolReference(eventRef.cardPoolId), eventRef.eventName, includeHidden);
+        }
         #endregion
 
         /// <summary>
@@ -1881,7 +1887,7 @@ namespace Controllers
             }
             return value != null;
         }
-        private object validateInputFieldValue(NodeValueType targetValueType, object value)
+        private object validateInputFieldValue(NodeValueType targetValueType, object value, bool forceHasValue)
         {
             if (targetValueType.isArray && value is IList list)
             {
@@ -1891,7 +1897,7 @@ namespace Controllers
                     var listElement = list[i];
                     // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
                     var elementTargetType = listElement.GetType().getNodeValueType();
-                    list[i] = validateInputFieldValue(elementTargetType, listElement);
+                    list[i] = validateInputFieldValue(elementTargetType, listElement, false);
                 }
                 value = list;
             }
@@ -1902,6 +1908,18 @@ namespace Controllers
                 if (value != null)
                 {
                     actualValueType = value.GetType().getNodeValueType().type;
+                }
+                else if (forceHasValue)
+                {
+                    // 强制设置一个值。
+                    if (tryGetValueTypeDefaultValue(targetValueType.type, out var defValue))
+                    {
+                        value = defValue;
+                    }
+                    else
+                    {
+                        value = targetValueType.getDefaultValue();
+                    }
                 }
                 if (targetValueType.type == ActionNodeValueType.buffReference || actualValueType == ActionNodeValueType.buffReference)
                 {
