@@ -8881,6 +8881,34 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>111035</defineId>
+    <obsoleteNames />
+    <editorName>合并多个集合</editorName>
+    <category>集合运算</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Object[]</type>
+        <name>collections</name>
+        <displayName>多个集合</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[由多个集合组成的集合。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>合并的集合</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[合并后的集合。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[将一个集合中的多个集合的内容合并为一个拥有所有这些内容的集合。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>107001</defineId>
     <obsoleteNames />
     <editorName>该效果</editorName>

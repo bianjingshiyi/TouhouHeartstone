@@ -1889,19 +1889,7 @@ namespace Controllers
         }
         private object validateInputFieldValue(NodeValueType targetValueType, object value, bool forceHasValue)
         {
-            if (targetValueType.isArray && value is IList list)
-            {
-                // 数组。
-                for (int i = 0; i < list.Count; i++)
-                {
-                    var listElement = list[i];
-                    // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
-                    var elementTargetType = listElement.GetType().getNodeValueType();
-                    list[i] = validateInputFieldValue(elementTargetType, listElement, false);
-                }
-                value = list;
-            }
-            else
+            if (!targetValueType.isArray())
             {
                 // 单个值。
                 var actualValueType = ActionNodeValueType.none;
@@ -1930,6 +1918,18 @@ namespace Controllers
                         updateBuffReferences();
                     }
                 }
+            }
+            else if (value is IList list)
+            {
+                // 数组。
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var listElement = list[i];
+                    // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
+                    var elementTargetType = listElement.GetType().getNodeValueType();
+                    list[i] = validateInputFieldValue(elementTargetType, listElement, false);
+                }
+                value = list;
             }
             return value;
         }

@@ -764,11 +764,17 @@ namespace Game
         public const string EDITOR_NODE_NAME_CONTENT_EQUALS = "集合内容是否相同";
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_NAME_GET_INDEX_OF_ELEMENT = "获取元素在集合中的位置";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_MERGE = "合并多个集合";
 
         [TranslateMsg("编辑器-参数名称")]
         public const string EDITOR_PARAM_NAME_SELECTOR = "选择的属性";
         [TranslateMsg("编辑器-参数名称")]
         public const string EDITOR_PARAM_NAME_IGNORE_ORDER = "忽略顺序";
+        [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_MANY_COLLECTIONS = "多个集合";
+        [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_MERGED_COLLECTION = "合并的集合";
 
         /// <summary>
         /// 获取集合内所有元素的某项属性
@@ -851,6 +857,23 @@ namespace Game
             if (array == null || element == null)
                 return -1;
             return Array.IndexOf(array, element);
+        }
+        /// <summary>
+        /// 合并多个集合
+        /// </summary>
+        /// <param name="flow"></param>
+        /// <param name="node"></param>
+        /// <param name="array"></param>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        [THHActionMethod(BuiltinActionDefineID.Merge, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_MERGE)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_MERGED_COLLECTION)]
+        public static object[] merge(Flow flow, ActionNode node,
+            [ActionNodeParam(EDITOR_PARAM_NAME_MANY_COLLECTIONS)] object[][] collections)
+        {
+            if (collections == null)
+                return null;
+            return collections.SelectMany(e => e).ToArray();
         }
         #endregion
         #endregion

@@ -43,7 +43,7 @@ namespace UI
         public void setCard(string name, Sprite image)
         {
             var valueType = _valueInfo.type;
-            if (valueType.type == ActionNodeValueType.cardReference && !valueType.isArray)
+            if (valueType.type == ActionNodeValueType.cardReference && !valueType.isArray())
             {
                 _buildItem.updateView(name, image, 0);
             }
@@ -416,7 +416,7 @@ namespace UI
         {
             updateTypeDropdown();
 
-            if (_valueInfo.type.isArray)
+            if (_valueInfo.type.isArray())
             {
                 updateArray();
             }

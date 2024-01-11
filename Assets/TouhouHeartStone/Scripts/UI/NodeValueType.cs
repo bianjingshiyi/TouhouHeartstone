@@ -9,27 +9,28 @@ namespace UI
     public struct NodeValueType
     {
         public ActionNodeValueType type;
-        public bool isArray;
-        public NodeValueType(ActionNodeValueType type) : this(type, false)
+        public int arrayLevel;
+        public NodeValueType(ActionNodeValueType type) : this(type, 0)
         {
         }
-        public NodeValueType(ActionNodeValueType type, bool isArray)
+        public NodeValueType(ActionNodeValueType type, int arrayLevel)
         {
             this.type = type;
-            this.isArray = isArray;
+            this.arrayLevel = arrayLevel;
         }
+        public bool isArray() => arrayLevel > 0;
         public override bool Equals(object obj)
         {
             if (obj is NodeValueType other)
             {
-                return type == other.type && isArray == other.isArray;
+                return type == other.type && arrayLevel == other.arrayLevel;
             }
             return base.Equals(obj);
         }
         public override int GetHashCode()
         {
             var hash = type.GetHashCode();
-            hash = hash * 31 + isArray.GetHashCode();
+            hash = hash * 31 + arrayLevel.GetHashCode();
             return hash;
         }
         public static bool operator ==(NodeValueType lhs, NodeValueType rhs)
@@ -75,7 +76,7 @@ namespace UI
             {
                 if (tryGetValueTypeByType(type.GetElementType(), out valueType))
                 {
-                    valueType.isArray = true;
+                    valueType.arrayLevel++;
                     return true;
                 }
             }
@@ -92,13 +93,13 @@ namespace UI
         }
         public static NodeValueType getElementType(this NodeValueType type)
         {
-            if (!type.isArray)
+            if (!type.isArray())
                 throw new InvalidOperationException("无法获取非数组类型的元素类型。");
-            return new NodeValueType(type.type, false);
+            return new NodeValueType(type.type, type.arrayLevel - 1);
         }
         public static NodeValueType[] getAssignableValueTypes(this NodeValueType type)
         {
-            if (type.isArray)
+            if (type.isArray())
                 return null;
             switch (type.type)
             {
@@ -119,28 +120,32 @@ namespace UI
         {
             if (!defaultValues.TryGetValue(valueType.type, out var func))
                 return null;
-            var value = func();
-            if (!valueType.isArray)
+            if (!valueType.isArray())
             {
                 // 不是数组
-                return value;
+                return func();
+            }
+            else
+            {
+                // 数组
+                Type type = null;
+                foreach (var pair in typeDict)
+                {
+                    if (pair.Value == valueType.type)
+                    {
+                        type = pair.Key;
+                        break;
+                    }
+                }
+                if (type == null)
+                    return null;
+                var array = Array.CreateInstance(type, 1);
+                var elementValueType = valueType.getElementType();
+                var elementValue = elementValueType.getDefaultValue();
+                array.SetValue(elementValue, 0);
+                return array;
             }
 
-            // 数组
-            Type type = null;
-            foreach (var pair in typeDict)
-            {
-                if (pair.Value == valueType.type)
-                {
-                    type = pair.Key;
-                    break;
-                }
-            }
-            if (type == null)
-                return null;
-            var array = Array.CreateInstance(type, 1);
-            array.SetValue(value, 0);
-            return array;
         }
         public static NodeValueType getAssignableValueTypeByValue(this NodeValueType assignType, object value)
         {
