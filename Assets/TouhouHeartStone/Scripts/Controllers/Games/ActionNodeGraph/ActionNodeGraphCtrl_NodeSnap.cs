@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Game;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
@@ -114,46 +115,53 @@ namespace Controllers
             {
                 _nodeSnapped = true;
                 var inputViewDatas = getNodeInputViewData(node);
+                var outputViewDatas = getNodeOutputViewData(node);
+
+                string nodeName = null;
+                int docKey = -1;
+                bool visualEffect = false;
+                string obsoleteMsg = null;
                 if (node is ActiveEntryNode)
                 {
-                    string nodeName = game.lang._(EDITOR_NODE_NAME_ACTIVE_ENTRY_NODE);
-                    _ui.setPreviewNode(tryTranslateWithDict(nodeName),
-                        inputViewDatas,
-                        getNodeOutputViewData(node));
+                    nodeName = game.lang._(EDITOR_NODE_NAME_ACTIVE_ENTRY_NODE);
+                    visualEffect = true;
                 }
                 else if (node is EventEntryNode eventEntry)
                 {
                     var triggerTime = eventEntry.triggerTime;
-                    _ui.setPreviewEventNode(tryTranslateWithDict(game.eventManager.translateEventTriggerTimeNameForEditor(triggerTime)),
-                        inputViewDatas,
-                        getNodeOutputViewData(node));
+                    nodeName = game.eventManager.translateEventTriggerTimeNameForEditor(triggerTime);
+                    visualEffect = true;
                 }
                 else if (node is PassiveEntryNode)
                 {
-                    string nodeName = game.lang._(EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE);
-                    _ui.setPreviewNode(tryTranslateWithDict(nodeName),
-                        inputViewDatas,
-                        getNodeOutputViewData(node));
+                    nodeName = game.lang._(EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE);
+                    visualEffect = true;
                 }
                 else if (node is AuraEntryNode)
                 {
-                    string nodeName = game.lang._(EDITOR_NODE_NAME_AURA_ENTRY_NODE);
-                    _ui.setPreviewNode(tryTranslateWithDict(nodeName),
-                        inputViewDatas,
-                        getNodeOutputViewData(node));
+                    nodeName = game.lang._(EDITOR_NODE_NAME_AURA_ENTRY_NODE);
+                }
+                else if (node is GeneratedActionEntryNode)
+                {
+                    nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_INPUT);
+                }
+                else if (node is GeneratedActionReturnNode)
+                {
+                    nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_OUTPUT);
                 }
                 else if (node is ActionNode actionNode)
                 {
                     var define = actionNode.define;
-                    int docKey = CanNodeOpenDocument(actionNode) ? actionNode.defineRef.defineId : -1;
-                    bool visualEffect = game.anims.canActionAddEffect(actionNode.defineRef);
-                    _ui.setPreviewNode(tryTranslateWithDict(define.editorName),
-                        inputViewDatas,
-                        getNodeOutputViewData(node),
-                        define.obsoleteMsg,
-                        docKey,
-                        visualEffect);
+                    nodeName = tryTranslateWithDict(define.editorName);
+                    docKey = CanNodeOpenDocument(actionNode) ? actionNode.defineRef.defineId : -1;
+                    visualEffect = game.anims.canActionAddEffect(actionNode.defineRef);
                 }
+                _ui.setPreviewNode(tryTranslateWithDict(nodeName),
+                    inputViewDatas,
+                    outputViewDatas,
+                    obsoleteMsg,
+                    docKey,
+                    visualEffect);
             }
         }
         /// <summary>
@@ -254,15 +262,13 @@ namespace Controllers
             var node = getActionNode(item);
             if (config.Config.NodeSnap)
             {
-                Vector2 previewSize = _ui.getPreviewNodeSize();
-                Vector2 position = new Vector2(item.posX, item.posY);
-                Rect previewRect = new Rect(position - previewSize * 0.5f, previewSize);
+                Rect nodeRect = item.getNodeItemRect();
 
                 // 寻找合适的节点。
                 var targets = findNodeSnapTargets(node);
 
                 // 有左侧连接节点。
-                result = getNodeSnapResult(position, previewRect, targets);
+                result = getNodeSnapResult(nodeRect.position, nodeRect, targets);
             }
             if (result != null)
             {
