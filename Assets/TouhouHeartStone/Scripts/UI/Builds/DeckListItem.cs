@@ -8,41 +8,37 @@ namespace UI
     public class DeckListItem : UIObject
     {
         #region 公有方法
-        public void updateView(string name, Sprite image)
+        public void updateView(DeckListItemViewData viewData)
         {
-            _nameText.text = name;
-            _image.sprite = image;
-            _nameInputField.text = name;
-        }
-
-        public void SetSelectable(bool val)
-        {
-            _imageButton.interactable = val;
-        }
-
-        public void setWarning(bool val)
-        {
-            _warningImage.gameObject.SetActive(val);
-        }
-
-        public void setCardRentWarning(bool val)
-        {
-            _cardPoolWarningImage.gameObject.SetActive(val);
-        }
-        public void setToggleValue(bool val)
-        {
+            _nameText.text = viewData.name;
+            _nameInputField.text = viewData.name;
+            _image.sprite = viewData.image;
+            _imageButton.interactable = !viewData.banned;
+            _warningImage.gameObject.SetActive(viewData.isWarning);
+            _cardPoolWarningImage.gameObject.SetActive(viewData.hasPrivatePools);
+            _fullButtonText.text = viewData.buttonText;
             if (_toggle)
-                _toggle.SetIsOnWithoutNotify(val);
+                _toggle.SetIsOnWithoutNotify(viewData.selected);
+
+            SetMode(viewData.mode);
+        }
+        public void setNameInputFieldVisible(bool visible)
+        {
+            _nameInputFieldVisible = visible;
+            updateNameInputFieldVisible();
+            if (visible)
+                _nameInputField.ActivateInputField();
+            else
+                _nameInputField.DeactivateInputField();
         }
         public void SetMode(Mode mode)
         {
-            _imageObj.SetActive(mode != Mode.AddDeck && mode != Mode.EditCardPool); // 图片
-            _createDeckButton.gameObject.SetActive(mode == Mode.AddDeck); // 添加牌组按钮
-            _addCardPoolButton.gameObject.SetActive(mode == Mode.EditCardPool); // 编辑卡池按钮
-
-            _nameInputField.gameObject.SetActive(mode == Mode.DeckTitle);
-            _deleteButton.gameObject.SetActive(mode == Mode.DeckListItem);
-            _toggleObj.SetActive(mode == Mode.CardPoolSelect);
+            _mode = mode;
+            _imageObj.SetActive(mode != Mode.Button); // 图片
+            _fullButton.gameObject.SetActive(mode == Mode.Button); // 黑按钮
+            _deleteButton.gameObject.SetActive(mode == Mode.CanDelete);
+            _toggleObj.SetActive(mode == Mode.CanSelect);
+            updateNameInputFieldVisible();
         }
         #endregion
 
@@ -54,13 +50,20 @@ namespace UI
             base.Awake();
             _imageButton.onClick.AddListener(() => onClick?.Invoke(this));
             _deleteButton.onClick.AddListener(() => onClickDeleteButton?.Invoke(this));
+            _nameButton.onClick.AddListener(() => onClickNameButton?.Invoke(this));
             _nameInputField.onEndEdit.AddListener(value => onNameInputFieldValueChanged?.Invoke(this, value));
-            _createDeckButton.onClick.AddListener(() => onCreateDeckClick?.Invoke(this));
-            _addCardPoolButton.onClick.AddListener(() => onAddCardPoolClick?.Invoke(this));
+            _fullButton.onClick.AddListener(() => onClick?.Invoke(this));
             if (_toggle)
                 _toggle.onValueChanged.AddListener((value) => onToggleValueChanged?.Invoke(this, value));
         }
         #endregion
+
+        private void updateNameInputFieldVisible()
+        {
+            _nameInputField.gameObject.SetActive(_nameInputFieldVisible && _mode == Mode.CanEditName);
+            _nameButton.gameObject.SetActive(!_nameInputFieldVisible && _mode == Mode.CanEditName);
+            _nameText.gameObject.SetActive(!_nameInputFieldVisible);
+        }
 
         #endregion
 
@@ -68,12 +71,13 @@ namespace UI
         public event Action<DeckListItem> onClick;
         public event Action<DeckListItem> onClickDeleteButton;
         public event Action<DeckListItem, string> onNameInputFieldValueChanged;
+        public event Action<DeckListItem> onClickNameButton;
         public event Action<DeckListItem, bool> onToggleValueChanged;
-        public event Action<DeckListItem> onAddCardPoolClick;
-        public event Action<DeckListItem> onCreateDeckClick;
         #endregion
 
         #region 属性字段
+        private Mode _mode;
+        private bool _nameInputFieldVisible;
 
         [Header("主体")]
         [SerializeField]
@@ -89,6 +93,8 @@ namespace UI
         [SerializeField]
         InputField _nameInputField;
         [SerializeField]
+        Button _nameButton;
+        [SerializeField]
         GameObject _toggleObj;
         [SerializeField]
         Toggle _toggle;
@@ -97,9 +103,9 @@ namespace UI
         [SerializeField]
         Button _imageButton;
         [SerializeField]
-        Button _addCardPoolButton;
+        Button _fullButton;
         [SerializeField]
-        Button _createDeckButton;
+        Text _fullButtonText;
 
         [Header("提醒图标")]
         [SerializeField]
@@ -111,13 +117,38 @@ namespace UI
         #region 内嵌类
         public enum Mode
         {
-            DeckListItem, // 牌组列表
-            DeckTitle, // 当前编辑的牌组
-            AddDeck, // 添加牌组按钮
-            DeckSelect, // 牌组选择（人物编辑）
-            EditCardPool, // 编辑卡池按钮
-            CardPoolSelect, // 卡池选择
+            /// <summary>
+            /// 只显示卡图和名称
+            /// </summary>
+            Default,
+            /// <summary>
+            /// 可以被删除
+            /// </summary>
+            CanDelete,
+            /// <summary>
+            /// 可以修改名称
+            /// </summary>
+            CanEditName,
+            /// <summary>
+            /// 可以选择
+            /// </summary>
+            CanSelect,
+            /// <summary>
+            /// 纯按钮
+            /// </summary>
+            Button,
         }
         #endregion
+    }
+    public struct DeckListItemViewData
+    {
+        public string name;
+        public Sprite image;
+        public bool isWarning;
+        public bool hasPrivatePools;
+        public DeckListItem.Mode mode;
+        public bool banned;
+        public bool selected;
+        public string buttonText;
     }
 }

@@ -135,7 +135,6 @@ namespace Controllers
             _ui.onClickTitleConfirmEditButton += onClickRoomNameConfirmEditButtonCallback;
 
             _ui.onViewCardPoolsClick += onViewCardPoolsClick;
-            _ui.onAddCardPoolsClick += onAddCardPoolsClick;
             _ui.onClickPlayerItemViewDeckButton += onClickPlayerListItemViewDeckButton;
             _ui.onClickPlayerItemSetDeckButton += onClickPlayerListItemSetDeckButton;
             _ui.onClickPlayerItemRemoveButton += onClickPlayerListItemRemoveButton;
@@ -272,19 +271,19 @@ namespace Controllers
         {
             await viewRoomCardPools();
         }
-        private async void onAddCardPoolsClick()
-        {
-            await UpdateEditingCardPools();
-            _selectedEditCardPools?.Clear();
-            AddSelectedEditingCardPools(_currentRoomData.getCardPools());
-            await openEditCardPoolsPanel();
-        }
-        private void onClickCardPoolSelectPanelItem(int index)
+        private async void onClickCardPoolSelectPanelItem(int index)
         {
             if (IsEditingCardPools())
             {
                 var pool = _editingCardPools[index];
                 onAddCardPoolSelectPanelItemToggle(index, !_selectedEditCardPools.Contains(pool));
+            }
+            else if (_viewingCardPools != null && isRoomOwner && index >= _viewingCardPools.Length)
+            {
+                await UpdateEditingCardPools();
+                _selectedEditCardPools?.Clear();
+                AddSelectedEditingCardPools(_currentRoomData.getCardPools());
+                await openEditCardPoolsPanel();
             }
         }
         private async void onAddCardPoolSelectPanelItemToggle(int index, bool value)
@@ -1106,18 +1105,37 @@ namespace Controllers
         private async Task viewRoomCardPools()
         {
             _viewingCardPools = _currentRoomData.getCardPools();
-            var viewDatas = new (string name, Sprite image)[_viewingCardPools.Length];
-            for (int i = 0; i < viewDatas.Length; i++)
+            var count = _viewingCardPools.Length;
+            if (isRoomOwner)
+                count++;
+            var viewDatas = new DeckListItemViewData[count];
+            for (int i = 0; i < count; i++)
             {
-                var pool = _viewingCardPools[i];
-                viewDatas[i] = (pool.cardPoolName, await game.card.loadCardPoolImage(pool));
+                if (isRoomOwner && i == count - 1)
+                {
+                    viewDatas[i] = new DeckListItemViewData()
+                    {
+                        mode = DeckListItem.Mode.Button,
+                        buttonText = game.lang._(ROOM_BUTTON_EDIT_CARD_POOL)
+                    };
+                }
+                else
+                {
+                    var pool = _viewingCardPools[i];
+                    viewDatas[i] = new DeckListItemViewData()
+                    {
+                        name = pool.cardPoolName,
+                        image = await game.card.loadCardPoolImage(pool),
+                        mode = DeckListItem.Mode.Default
+                    };
+                }
             }
             var title = game.lang._(ROOM_TITLE_VIEW_CARD_POOLS);
-            _ui.viewCardPools(viewDatas, isRoomOwner, title);
+            _ui.viewCardPools(viewDatas, title);
         }
         private async Task openEditCardPoolsPanel()
         {
-            var viewDatas = new (string name, Sprite image, bool selected)[_editingCardPools.Length];
+            var viewDatas = new DeckListItemViewData[_editingCardPools.Length];
             for (int i = 0; i < viewDatas.Length; i++)
             {
                 var pool = _editingCardPools[i];
@@ -1128,7 +1146,13 @@ namespace Controllers
                 {
                     name = game.lang._(ROOM_CARD_POOL_VERSION_TEMPLATE, name, pool.version);
                 }
-                viewDatas[i] = (name, await game.card.loadCardPoolImage(pool), selected);
+                viewDatas[i] = new DeckListItemViewData()
+                {
+                    name = name, 
+                    image = await game.card.loadCardPoolImage(pool), 
+                    selected = selected,
+                    mode = DeckListItem.Mode.CanSelect
+                };
             }
             var title = game.lang._(ROOM_TITLE_EDIT_CARD_POOLS);
             _ui.openAddCardPoolsPanel(viewDatas, title);
@@ -1282,14 +1306,14 @@ namespace Controllers
         private async Task displaySelectDeckPanel()
         {
             List<Deck> deckList = game.deck.getOrLoadDeckList();
-            (string name, Sprite image, bool isWarning, bool hasPrivatePools)[] viewData = new (string name, Sprite image, bool isWarning, bool hasPrivatePools)[deckList.Count];
+            DeckListItemViewData[] viewData = new DeckListItemViewData[deckList.Count];
 
             for (int i = 0; i < viewData.Length; i++)
             {
                 Deck deck = deckList[i];
                 CardPoolInfoPack[] cardPoolList = getDeckCardPools(deck, out _);
 
-                viewData[i].name = deck.name;
+                var name = deck.name;
 
                 // 如果卡组内有不存在的卡池，加载卡池。
                 foreach (CardPoolInfoPack cardPoolPack in cardPoolList)
@@ -1298,21 +1322,24 @@ namespace Controllers
                     await game.card.getOrLoadCardPool(cardPoolRef, true);
                 }
                 var masterPoolRef = game.card.getLocalCardPoolReference(deck.masterCardRef.cardPoolId);
-                viewData[i].image = await game.card.loadCardImage(masterPoolRef, deck.masterCardRef.defineId);
+                var image = await game.card.loadCardImage(masterPoolRef, deck.masterCardRef.defineId);
 
                 bool warning;
                 // 判断牌组是否合法。
                 if (_isLocalGame)
-                {
                     warning = !game.deck.isValidDeck(deck);
-                }
                 else
-                {
                     warning = !game.deck.isValidDeckForOnlineGame(deck);
-                }
-                viewData[i].isWarning = warning;
 
-                viewData[i].hasPrivatePools = HasNotSharedPools(cardPoolList, out _);
+                viewData[i] = new DeckListItemViewData()
+                {
+                    name = name,
+                    image = image,
+                    isWarning = warning,
+                    hasPrivatePools = HasNotSharedPools(cardPoolList, out _),
+                    mode = DeckListItem.Mode.Default,
+                    banned = warning
+                };
             }
             _ui.displayDeckSelectPanel(viewData);
         }        
@@ -1482,6 +1509,8 @@ namespace Controllers
         public const string ROOM_EDIT_CARD_POOL_REMOVE = "即将移除卡池：{0}\n";
         [TranslateMsg("房间-卡池编辑-是否继续提醒")]
         public const string ROOM_EDIT_CARD_POOL_CONTINUE = "是否继续？";
+        [TranslateMsg("房间-卡池编辑-编辑卡池按钮的文字")]
+        public const string ROOM_BUTTON_EDIT_CARD_POOL = "编辑卡池";
 
         [TranslateMsg("房间-卡池操作失败-标题")]
         public const string ROOM_CARD_POOL_MODIFY_FAILED = "卡池操作失败";

@@ -65,7 +65,7 @@ namespace Controllers
             // 更新UI
             _ui.gameObject.SetActive(true);
             _ui.showErrorTip(false);
-            _ui.updateDeckInfo(deck.name, await loadDeckImage(deck));
+            await updateEditingDeck(deck);
             var masterName = masterSkin.name;
             if (masterName.Length > masterNameMaxLength)
                 masterName = game.lang._(MASTER_NAME_OVERFLOW_TEMPLATE, masterName.Substring(0, masterNameMaxLength));
@@ -227,16 +227,18 @@ namespace Controllers
         /// </summary>
         private async void onClickDeckListAddButton()
         {
-            (string name, Sprite image)[] viewData = new (string name, Sprite image)[_selectableMasters.Length];
+            DeckListItemViewData[] viewData = new DeckListItemViewData[_selectableMasters.Length];
             for (int i = 0; i < viewData.Length; i++)
             {
                 var cardDefine = _selectableMasters[i];
                 var cardPoolRef = game.card.getCardPoolReferenceOfCard(cardDefine);
                 CardSkinData skin = game.card.getCardSkin(cardDefine);
-                viewData[i].name = skin.name;
-                viewData[i].image = await game.card.loadCardImage(
-                    cardPoolRef,
-                    _selectableMasters[i].id);
+                viewData[i] = new DeckListItemViewData()
+                {
+                    name = skin.name,
+                    image = await game.card.loadCardImage(cardPoolRef, cardDefine.id),
+                    mode = DeckListItem.Mode.Default
+                };
             }
             _ui.showMasterSelectPanel(viewData);
         }
@@ -443,9 +445,10 @@ namespace Controllers
                 }
             });
         }
-        private void onDeckNameInputFieldValueChanged(string value)
+        private async void onDeckNameInputFieldValueChanged(string value)
         {
             _deck.name = value;
+            await updateEditingDeck(_deck);
         }
         #endregion
         private bool cardFilter(CardDefine c)
@@ -623,12 +626,17 @@ namespace Controllers
         /// <returns></returns>
         private async Task updateDeckListUI()
         {
-            (string name, Sprite image, bool errorTip)[] viewData = new (string name, Sprite image, bool errorTip)[deckList.Count];
+            DeckListItemViewData[] viewData = new DeckListItemViewData[deckList.Count];
             for (int i = 0; i < deckList.Count; i++)
             {
-                viewData[i].name = deckList[i].name;
-                viewData[i].image = await loadDeckImage(deckList[i]);
-                viewData[i].errorTip = !game.deck.isValidDeck(deckList[i]);
+                var deckItem = deckList[i];
+                viewData[i] = new DeckListItemViewData()
+                {
+                    name = deckItem.name,
+                    image = await loadDeckImage(deckItem),
+                    isWarning = !game.deck.isValidDeck(deckItem),
+                    mode = DeckListItem.Mode.CanDelete
+                };
             }
             _ui.updateDeckList(viewData);
         }
@@ -637,6 +645,16 @@ namespace Controllers
             _ui.setDeckCardCount(_deck.cardList.Sum(e => e.count), game.deck.deckValidSize);
             DeckCardViewData[] deckCardsViewData = await DeckCardViewData.fromDeck(_deck, game.card, game.lang);
             _ui.updateDeckCardList(deckCardsViewData);
+        }
+        private async Task updateEditingDeck(Deck deck)
+        {
+            var viewData = new DeckListItemViewData()
+            {
+                name = deck.name,
+                image = await loadDeckImage(deck),
+                mode = DeckListItem.Mode.CanEditName
+            };
+            _ui.updateDeckInfo(viewData);
         }
         private async Task showDragCard(bool isDeckListItem, bool force = false)
         {

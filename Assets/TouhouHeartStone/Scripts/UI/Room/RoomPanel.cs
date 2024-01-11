@@ -60,11 +60,10 @@ namespace UI
         #endregion
 
         #region 选择卡组界面
-        public void displayDeckSelectPanel((string name, Sprite image, bool isWarning, bool hasPrivatePools)[] viewData)
+        public void displayDeckSelectPanel(DeckListItemViewData[] viewData)
         {
             _deckViewPanel.update(viewData);
             _deckPanel.SetActive(true);
-            //DeckPanelMasterCardSelection.updateItemList(viewData);
         }
         public void hideDeckSelectPanel()
         {
@@ -96,9 +95,9 @@ namespace UI
         /// 查看房间卡池
         /// </summary>
         /// <param name="cards"></param>
-        public void viewCardPools((string name, Sprite image)[] viewDatas, bool showEditButton, string title)
+        public void viewCardPools(DeckListItemViewData[] viewDatas, string title)
         {
-            _cardPoolsViewPanel.updateCardPools(viewDatas, showEditButton);
+            _cardPoolsViewPanel.update(viewDatas);
             _cardPoolsPanel.SetActive(true);
             _confirmEditCardPoolButtonObj.SetActive(false);
             _cardPoolsPanelTitle.text = title;
@@ -115,9 +114,9 @@ namespace UI
         /// 打开添加房间卡池界面
         /// </summary>
         /// <param name="cards"></param>
-        public void openAddCardPoolsPanel((string name, Sprite image, bool selected)[] viewDatas, string title)
+        public void openAddCardPoolsPanel(DeckListItemViewData[] viewDatas, string title)
         {
-            _cardPoolsViewPanel.updateAddCardPools(viewDatas);
+            _cardPoolsViewPanel.update(viewDatas);
             _cardPoolsPanel.SetActive(true);
             _confirmEditCardPoolButtonObj.SetActive(true);
             _cardPoolsPanelTitle.text = title;
@@ -195,7 +194,7 @@ namespace UI
         {
             base.Awake();
             _startButton.setSelectable(false);
-            _deckSelectionItem.SetMode(DeckListItem.Mode.DeckSelect);
+            _deckSelectionItem.SetMode(DeckListItem.Mode.Default);
 
             _closeDeckPanelButton.asButton.onClick.AddListener(onClickCloseDeckPanelButtonCallback);
             _closeViewDeckCardsButton.onClick.AddListener(onClickCloseCardPanelButtonCallback);
@@ -213,7 +212,6 @@ namespace UI
             _selectDeckButton.onClick.AddListener(onClickSelectDeckButtonCallback);
             _deckViewPanel.onClickItemButton += onClickDeckSelectItemCallback;
             _cardPoolsViewPanel.onClickItemButton += onClickCardPoolsSelectItemCallback;
-            _cardPoolsViewPanel.onClickEditCardPools += onClickEditCardPoolsCallback;
             _cardPoolsViewPanel.onItemToggleValueChanged += onAddCardPoolsSelectItemToggleCallback;
 
             _deckViewCardList.onDeckItemPointerEnter += onDeckItemPointerEnterCallback;
@@ -321,10 +319,6 @@ namespace UI
         {
             onViewCardPoolsClick?.Invoke();
         }
-        private void onClickEditCardPoolsCallback()
-        {
-            onAddCardPoolsClick?.Invoke();
-        }
         private void onClickCloseCardPoolsPanelButtonCallback()
         {
             onCloseCardPoolsPanel?.Invoke();
@@ -409,10 +403,6 @@ namespace UI
 
         #region 房间设置
         /// <summary>
-        /// 在房间名被编辑后触发的事件。
-        /// </summary>
-        public event Action<string> OnRoomNameEdited;
-        /// <summary>
         /// 当房主更改房间的密码
         /// </summary>
         public event Action<string> onPasswordInputFieldValueChanged;
@@ -436,7 +426,6 @@ namespace UI
 
         #region 查看/添加卡池
         public event Action onViewCardPoolsClick;
-        public event Action onAddCardPoolsClick;
         public event Action onConfirmAddCardPools;
         public event Action onCloseCardPoolsPanel;
         public event Action<int> onClickCardPoolsSelectPanelItem;

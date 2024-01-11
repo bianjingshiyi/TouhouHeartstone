@@ -44,9 +44,9 @@ namespace UI
         /// 更新卡池列表
         /// </summary>
         /// <param name="deckViewData"></param>
-        public void updateCardPoolList((string name, Sprite image, bool errorTip)[] deckViewData)
+        public void updateCardPoolList(DeckListItemViewData[] deckViewData)
         {
-            _cardPoolList.update(deckViewData.Select(i => (i.name, i.image, i.errorTip, false)).ToArray());
+            _cardPoolList.update(deckViewData);
         }
 
         #region 游戏规则
@@ -95,9 +95,9 @@ namespace UI
         {
             _addCardPoolDepDialogObj.SetActive(false);
         }
-        public void updateSelectCardPoolDependencyDialog((string name, Sprite spr, bool selected)[] viewDatas)
+        public void updateSelectCardPoolDependencyDialog(DeckListItemViewData[] viewDatas)
         {
-            _addCardPoolDepDialog.updateAddCardPools(viewDatas);
+            _addCardPoolDepDialog.update(viewDatas);
         }
         public void setAutoUpdateDepButtonInteractable(bool interactable)
         {

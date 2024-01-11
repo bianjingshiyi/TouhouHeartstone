@@ -31,10 +31,10 @@ namespace UI
         }
 
         #region 新建卡组面板
-        public void showMasterSelectPanel((string name, Sprite image)[] viewData)
+        public void showMasterSelectPanel(DeckListItemViewData[] viewDatas)
         {
             _masterSelectionPanel.SetActive(true);
-            _masterSelectionDeckViewPanel.update(viewData);
+            _masterSelectionDeckViewPanel.update(viewDatas);
         }
         public void hideMasterSelectPanel()
         {
@@ -55,13 +55,12 @@ namespace UI
         /// 更新卡组列表
         /// </summary>
         /// <param name="deckViewData"></param>
-        public void updateDeckList((string name, Sprite image, bool errorTip)[] deckViewData)
+        public void updateDeckList(DeckListItemViewData[] deckViewData)
         {
             _deckList.updateList(deckViewData.Length, (i, item) =>
             {
                 DeckListItem deckListItem = item.GetComponentInChildren<DeckListItem>();
-                deckListItem.updateView(deckViewData[i].name, deckViewData[i].image);
-                deckListItem.setWarning(deckViewData[i].errorTip);
+                deckListItem.updateView(deckViewData[i]);
             }, item =>
             {
                 DeckListItem deckListItem = item.GetComponent<DeckListItem>();
@@ -114,11 +113,9 @@ namespace UI
             _dragDeckListItem.gameObject.SetActive(false);
             _dragCard.gameObject.SetActive(false);
         }
-        public void updateDeckInfo(string name, Sprite sprite)
+        public void updateDeckInfo(DeckListItemViewData viewData)
         {
-            _editDeckImage.sprite = sprite;
-            _deckNameText.text = name;
-            _deckNameInputField.text = name;
+            _editDeckHeader.updateView(viewData);
         }
         /// <summary>
         /// 更新自定义卡池卡牌编辑栏卡牌列表
@@ -161,10 +158,9 @@ namespace UI
             _uploadDeckButton.onClick.AddListener(onClickUploadDeckButtonCallback);
             _downloadDeckButton.onClick.AddListener(onClickDownloadDeckButtonCallback);
 
-            if (_editDeckImageButton)
-                _editDeckImageButton.onClick.AddListener(onClickEditDeckImageButtonCallback);
-            _editDeckNameButton.onClick.AddListener(onClickEditDeckNameButtonCallback);
-            _deckNameInputField.onEndEdit.AddListener(onEndEditDeckNameInputFieldCallback);
+            _editDeckHeader.onClick += onClickEditDeckImageButtonCallback;
+            _editDeckHeader.onClickNameButton += onClickEditDeckNameButtonCallback;
+            _editDeckHeader.onNameInputFieldValueChanged += onEndEditDeckNameInputFieldCallback;
 
             if (_deckCardList)
             {
@@ -220,24 +216,18 @@ namespace UI
         #endregion
 
         #region 编辑卡组
-        private void onClickEditDeckImageButtonCallback()
+        private void onClickEditDeckImageButtonCallback(DeckListItem item)
         {
             onClickEditDeckImageButton?.Invoke();
         }
-        private void onClickEditDeckNameButtonCallback()
+        private void onClickEditDeckNameButtonCallback(DeckListItem item)
         {
             //编辑名称模式
-            _deckNameInputField.gameObject.SetActive(true);
-            _deckNameInputField.ActivateInputField();
-            _editDeckNameButton.gameObject.SetActive(false);
-            _deckNameText.gameObject.SetActive(false);
+            _editDeckHeader.setNameInputFieldVisible(true);
         }
-        private void onEndEditDeckNameInputFieldCallback(string value)
+        private void onEndEditDeckNameInputFieldCallback(DeckListItem item, string value)
         {
-            _deckNameInputField.gameObject.SetActive(false);
-            _editDeckNameButton.gameObject.SetActive(true);
-            _deckNameText.gameObject.SetActive(true);
-            _deckNameText.text = value;
+            _editDeckHeader.setNameInputFieldVisible(false);
             onDeckNameInputFieldValueChanged?.Invoke(value);
         }
         #endregion
@@ -363,15 +353,7 @@ namespace UI
 
         [Header("编辑套牌")]
         [SerializeField]
-        Button _editDeckImageButton;
-        [SerializeField]
-        Button _editDeckNameButton;
-        [SerializeField]
-        Image _editDeckImage;
-        [SerializeField]
-        InputField _deckNameInputField;
-        [SerializeField]
-        Text _deckNameText;
+        DeckListItem _editDeckHeader;
         [SerializeField]
         Text _characterNameText;
         [SerializeField]

@@ -705,15 +705,18 @@ namespace Controllers
         private async Task updateAddCardPoolDependenciesDialog()
         {
             var deps = _viewingAddCardPoolDependencies;
-            var viewDatas = new (string name, Sprite sprite, bool selected)[deps.Count];
+            var viewDatas = new DeckListItemViewData[deps.Count];
             for (int i = 0; i < viewDatas.Length; i++)
             {
                 var dep = deps[i];
                 var info = game.card.getCardPoolInfo(dep);
-                var name = info.cardPoolName;
-                var sprite = await game.card.loadCardPoolImage(info);
-                var selected = _selectedAddingCardPoolDependencies.Contains(dep);
-                viewDatas[i] = (name, sprite, selected);
+                viewDatas[i] = new DeckListItemViewData()
+                {
+                    name = info.cardPoolName,
+                    image = await game.card.loadCardPoolImage(info),
+                    selected = _selectedAddingCardPoolDependencies.Contains(dep),
+                    mode = DeckListItem.Mode.CanSelect
+                };
             }
             _ui.updateSelectCardPoolDependencyDialog(viewDatas);
         }
@@ -988,14 +991,17 @@ namespace Controllers
         /// <returns></returns>
         private async Task updateCardPoolListUI()
         {
-            (string name, Sprite image, bool errorTip)[] viewData = new (string name, Sprite image, bool errorTip)[_cardPoolIdList.Count];
+            DeckListItemViewData[] viewData = new DeckListItemViewData[_cardPoolIdList.Count];
             for (int i = 0; i < viewData.Length; i++)
             {
                 var cardPoolId = _cardPoolIdList[i];
                 var cardPoolInfo = getLocalCardPoolInfo(cardPoolId);
-                viewData[i].name = cardPoolInfo.cardPoolName;
-                viewData[i].image = await game.card.loadCardPoolImage(cardPoolInfo);
-                viewData[i].errorTip = false;
+                viewData[i] = new DeckListItemViewData()
+                {
+                    name = cardPoolInfo.cardPoolName,
+                    image = await game.card.loadCardPoolImage(cardPoolInfo),
+                    mode = DeckListItem.Mode.CanDelete
+                };
             }
             _ui.updateCardPoolList(viewData);
         }
