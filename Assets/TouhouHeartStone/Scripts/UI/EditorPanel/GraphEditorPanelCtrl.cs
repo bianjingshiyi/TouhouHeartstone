@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Controllers;
@@ -877,11 +876,13 @@ namespace UI
         public static readonly NodeDefineType[] defineTypes = new NodeDefineType[]
         {
             NodeDefineType.Action,
+            NodeDefineType.Function,
             NodeDefineType.Event
         };
         public static readonly string[] defineTypeNames = new string[]
         {
             ActionEditorCtrl.ACTION_DEFINE_TYPE_ACTION,
+            ActionEditorCtrl.ACTION_DEFINE_TYPE_FUNCTION,
             ActionEditorCtrl.ACTION_DEFINE_TYPE_EVENT,
         };
 
