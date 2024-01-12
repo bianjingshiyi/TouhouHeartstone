@@ -10,7 +10,7 @@ namespace UI
         {
             _removeButton.onClick.AddListener(() => onClickRemoveButton?.Invoke(this));
             _valueField.onValueChanged += (item, value) => onValueChanged?.Invoke(this, value);
-            _valueField.onClickButton += (item, button) => onClickButton?.Invoke(this, button);
+            _valueField.onClickButton += (item, itemIndexes, button) => onClickButton?.Invoke(this, itemIndexes, button);
         }
         public void setReadonly(bool isReadonly)
         {
@@ -19,7 +19,7 @@ namespace UI
             _valueField.setReadonly(isReadonly);
         }
         public event Action<ValueInputFieldListItem, object> onValueChanged;
-        public event Action<ValueInputFieldListItem, ValueInputFieldButton> onClickButton;
+        public event Action<ValueInputFieldListItem, int[], ValueInputFieldButton> onClickButton;
         public event Action<ValueInputFieldListItem> onClickRemoveButton;
         public ValueInputField valueField => _valueField;
         [SerializeField]

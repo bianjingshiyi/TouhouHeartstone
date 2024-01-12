@@ -33,14 +33,12 @@ namespace UI
                 var listItem = rect.GetComponent<PropertyItemField>();
                 listItem.onValueChanged += onPropValueChangedCallback;
                 listItem.onClickButton += onClickPropButtonCallback;
-                listItem.onClickItemButton += onClickPropChildButtonCallback;
             }, 
             rect =>
             {
                 var listItem = rect.GetComponent<PropertyItemField>();
                 listItem.onValueChanged -= onPropValueChangedCallback;
                 listItem.onClickButton -= onClickPropButtonCallback;
-                listItem.onClickItemButton -= onClickPropChildButtonCallback;
             });
         }
         public PropertyItemField[] getPropertyItemFields()
@@ -72,22 +70,17 @@ namespace UI
         {
             setFolded(!isExpanded());
         }
-        private void onClickPropButtonCallback(string name, ValueInputFieldButton button)
+        private void onClickPropButtonCallback(string name, int[] itemIndexes, ValueInputFieldButton button)
         {
-            onClickPropButton?.Invoke(name, button);
+            onClickPropButton?.Invoke(name, itemIndexes, button);
         }
         private void onPropValueChangedCallback(string name, object value)
         {
             onPropValueChanged?.Invoke(name, value);
         }
-        private void onClickPropChildButtonCallback(string name, int index, ValueInputFieldButton button)
-        {
-            onClickPropChildButton?.Invoke(name, index, button);
-        }
 
         public event Action<string, object> onPropValueChanged;
-        public event Action<string, ValueInputFieldButton> onClickPropButton;
-        public event Action<string, int, ValueInputFieldButton> onClickPropChildButton;
+        public event Action<string, int[], ValueInputFieldButton> onClickPropButton;
 
         [SerializeField]
         private Button _headerButton;

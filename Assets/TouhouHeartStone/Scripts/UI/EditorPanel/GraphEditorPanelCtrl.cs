@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Controllers;
 using Game;
@@ -127,9 +128,7 @@ namespace UI
             _actionGraphCtrl.onAddEffectPropertyButtonClicked += onAddEffectPropertyButtonClickedCallback;
 
             _actionGraphCtrl.onOpenNodeInputDefaultValueCardDefine += onOpenActionNodeConstCardDefineCallback;
-            _actionGraphCtrl.onOpenNodeInputDefaultValueItemCardDefine += onOpenActionNodeConstItemCardDefineCallback;
             _actionGraphCtrl.onOpenEffectPropertyCardDefine += onOpenEffectPropertyCardDefineCallback;
-            _actionGraphCtrl.onOpenEffectPropertyItemCardDefine += onOpenEffectPropertyItemCardDefineCallback;
 
             var categoryNames = categories.Select(c => _actionGraphCtrl.tryTranslateWithDict(c)).ToArray();
             _nodesPanel.initCategories(categoryNames, categories);
@@ -446,56 +445,36 @@ namespace UI
         #endregion
 
         #region 卡牌跳转
-        private async void onOpenActionNodeConstCardDefineCallback(Node node, string name, int paramIndex)
+        private async void onOpenActionNodeConstCardDefineCallback(Node node, string name, int paramIndex, int[] itemIndexes)
         {
-            if (node.getInputDefaultValue(name, paramIndex) is DefineReference defRef)
+            var defaultValue = node.getInputDefaultValue(name, paramIndex);
+            if (defaultValue.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
             {
                 await scene.editor.openReferedCard(defRef, setPropAction);
-            }
-            void setPropAction(CardDefine cardDefine)
-            {
-                _actionGraphCtrl.setNodeDefaultValue(node, name, paramIndex, new DefineReference(cardDefine.cardPoolId, cardDefine.id));
-            }
-        }
-        private async void onOpenActionNodeConstItemCardDefineCallback(Node node, string name, int paramIndex, int index)
-        {
-            if (node.getInputDefaultValue(name, paramIndex) is IList list)
-            {
-                if (list[index] is DefineReference defRef)
+                void setPropAction(CardDefine cardDefine)
                 {
-                    await scene.editor.openReferedCard(defRef, setPropAction);
+                    var newDefRef = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
+                    if (defaultValue.replaceListElementByIndexes(itemIndexes, newDefRef, out var newValue))
+                    {
+                        _actionGraphCtrl.setNodeDefaultValue(node, name, paramIndex, newValue);
+                    }
                 }
-                void setPropAction(CardDefine cardDefine)
-                {
-                    list[index] = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
-                    _actionGraphCtrl.setNodeDefaultValue(node, name, paramIndex, list);
-                };
             }
         }
-        private async void onOpenEffectPropertyCardDefineCallback(GeneratedEffect effect, string name)
+        private async void onOpenEffectPropertyCardDefineCallback(GeneratedEffect effect, string name, int[] itemIndexes)
         {
-            var prop = effect.getProp<DefineReference>(name);
-            await scene.editor.openReferedCard(prop, setPropAction);
-
-            void setPropAction(CardDefine cardDefine)
-            {
-                _actionGraphCtrl.setEffectProp(name, new DefineReference(cardDefine.cardPoolId, cardDefine.id));
-                _actionGraphCtrl.updatePropertyItem(name);
-            }
-        }
-        private async void onOpenEffectPropertyItemCardDefineCallback(GeneratedEffect effect, string name, int index)
-        {
-            var prop = effect.getProp<IList>(name);
-            if (prop == null || index < 0 || index >= prop.Count)
-                return;
-            if (prop[index] is DefineReference defRef)
+            var prop = effect.getProp(name);
+            if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
             {
                 await scene.editor.openReferedCard(defRef, setPropAction);
                 void setPropAction(CardDefine cardDefine)
                 {
-                    prop[index] = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
-                    _actionGraphCtrl.setEffectProp(name, prop);
-                    _actionGraphCtrl.updatePropertyItem(name);
+                    var newDefRef = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
+                    if (prop.replaceListElementByIndexes(itemIndexes, newDefRef, out var newProp))
+                    {
+                        _actionGraphCtrl.setEffectProp(name, newDefRef);
+                        _actionGraphCtrl.updatePropertyItem(name);
+                    }
                 }
             }
         }

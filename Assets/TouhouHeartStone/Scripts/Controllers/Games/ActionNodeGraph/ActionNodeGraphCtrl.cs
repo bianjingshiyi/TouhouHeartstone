@@ -327,9 +327,9 @@ namespace Controllers
             _curEditNode = null;
             _curEditNodeInputDefaultValueName = string.Empty;
             _curEditNodeInputDefaultValueParamIndex = -1;
-            _curEditNodeInputDefaultValueItemIndex = -1;
+            _curEditNodeInputDefaultValueItemIndexes = null;
             _curCardSeekingEffectPropName = string.Empty;
-            _curCardSeekingEffectPropIndex = -1;
+            _curCardSeekingEffectPropIndexes = null;
         }
 
         /// <summary>
@@ -413,7 +413,6 @@ namespace Controllers
             _ui.onEndConnection += onEndConnection;
             _ui.onNodeInputDefaultValueChanged += onNodeInputDefaultValueChangedCallback;
             _ui.onClickActionNodeDefaultValueButton += onClickActionNodeDefaultValueButton;
-            _ui.onClickActionNodeDefaultValueItemButton += onClickNodeDefaultValueItemButton;
             _ui.onNodeSelected += onNodeSelected;
             _ui.onNodeDeselected += onNodeDeselected;
             _ui.onNodeVisualEffectButtonClicked += onNodeVisualEffectButtonClickedCallback;
@@ -426,7 +425,6 @@ namespace Controllers
 
             // 效果属性
             _ui.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
-            _ui.onClickEffectPropertyItemButton += onClickEffectPropertyItemButtonCallback;
             _ui.onClickEffectPropertyButton += onClickEffectPropertyButtonCallback;
             _ui.onEffectPropertyValueChanged += onEffectPropertyValueChangedCallback;
             _ui.onDeleteEffectProperty += onDeleteEffectPropertyCallback;
@@ -703,27 +701,27 @@ namespace Controllers
             updateNodeItemInputPorts(node);
             addRecordBreakpoint();
         }
-        private void onClickActionNodeDefaultValueButton(ActionNodeItem actionNodeItem, int index, ValueInputFieldButton type)
+        private void onClickActionNodeDefaultValueButton(ActionNodeItem actionNodeItem, int inputIndex, int[] itemIndexes, ValueInputFieldButton type)
         {
             switch (type)
             {
                 case ValueInputFieldButton.CardButton:
-                    onClickNodeInputDefaultValueCardButton(actionNodeItem, index);
+                    onClickNodeInputDefaultValueCardButton(actionNodeItem, inputIndex, itemIndexes);
                     break;
                 case ValueInputFieldButton.CardEditButton:
-                    onClickNodeDefaultValueCardEditButton(actionNodeItem, index);
+                    onClickNodeDefaultValueCardEditButton(actionNodeItem, inputIndex, itemIndexes);
                     break;
                 case ValueInputFieldButton.BuffEditButton:
-                    onClickNodeDefaultValueBuffEditButton(actionNodeItem, index);
+                    onClickNodeDefaultValueBuffEditButton(actionNodeItem, inputIndex, itemIndexes);
                     break;
             }
         }
-        private async void onClickNodeInputDefaultValueCardButton(ActionNodeItem actionNodeItem, int index)
+        private async void onClickNodeInputDefaultValueCardButton(ActionNodeItem actionNodeItem, int inputIndex, int[] itemIndexes)
         {
             if (isReadonly)
                 return;
             Node actionNode = getActionNode(actionNodeItem);
-            var inputPort = actionNode.getInputPortAt(index);
+            var inputPort = actionNode.getInputPortAt(inputIndex);
             if (inputPort == null)
                 return;
             var inputDefine = inputPort.define;
@@ -731,76 +729,26 @@ namespace Controllers
                 return;
             var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
             long cardPoolId = _curCardPoolId;
-            if (actionNode.getInputDefaultValue(inputDefine.name, paramIndex) is DefineReference value)
+            var defaultValue = actionNode.getInputDefaultValue(inputDefine.name, paramIndex);
+            if (defaultValue.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
             {
                 //打开卡牌选择界面
-                cardPoolId = value.cardPoolId;
+                cardPoolId = defRef.cardPoolId;
             }
             await displayCardSelectPanel(cardPoolId);
             _curEditNode = actionNode;
             _curEditNodeInputDefaultValueName = inputDefine.name;
             _curEditNodeInputDefaultValueParamIndex = paramIndex;
-            _curEditNodeInputDefaultValueItemIndex = -1;
+            _curEditNodeInputDefaultValueItemIndexes = itemIndexes;
         }
-        private void onClickNodeDefaultValueCardEditButton(ActionNodeItem actionNodeItem, int index)
+        private void onClickNodeDefaultValueCardEditButton(ActionNodeItem actionNodeItem, int index, int[] itemIndexes)
         {
             Node node = getActionNode(actionNodeItem);
             var inputPort = node.getInputPortAt(index);
             if (inputPort == null)
                 return;
             var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
-            onOpenNodeInputDefaultValueCardDefine?.Invoke(node, inputPort.name, paramIndex);
-        }
-        private void onClickNodeDefaultValueItemButton(ActionNodeItem actionNodeItem, int index, int itemIndex, ValueInputFieldButton type)
-        {
-            switch (type)
-            {
-                case ValueInputFieldButton.CardButton:
-                    onClickNodeDefaultValueItemCardButton(actionNodeItem, index, itemIndex);
-                    break;
-                case ValueInputFieldButton.CardEditButton:
-                    onClickNodeDefaultValueItemCardEditButton(actionNodeItem, index, itemIndex);
-                    break;
-                case ValueInputFieldButton.BuffEditButton:
-                    onClickNodeDefaultValueItemBuffEditButton(actionNodeItem, index, itemIndex);
-                    break;
-            }
-        }
-        private async void onClickNodeDefaultValueItemCardButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
-        {
-            if (isReadonly)
-                return;
-            Node node = getActionNode(actionNodeItem);
-            var inputPort = node.getInputPortAt(index);
-            if (inputPort == null)
-                return;
-            var inputDefine = inputPort.define;
-            if (inputDefine == null)
-                return;
-            var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
-            long cardPoolId = _curCardPoolId;
-            if (node.getInputDefaultValue(inputDefine.name, paramIndex) is IList list)
-            {
-                if (list[itemIndex] is DefineReference defRef)
-                {
-                    cardPoolId = defRef.cardPoolId;
-                }
-            }
-            //打开卡牌选择界面
-            await displayCardSelectPanel(cardPoolId);
-            _curEditNode = node;
-            _curEditNodeInputDefaultValueName = inputDefine.name;
-            _curEditNodeInputDefaultValueParamIndex = paramIndex;
-            _curEditNodeInputDefaultValueItemIndex = itemIndex;
-        }
-        private void onClickNodeDefaultValueItemCardEditButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
-        {
-            Node node = getActionNode(actionNodeItem);
-            var inputPort = node.getInputPortAt(index);
-            if (inputPort == null)
-                return;
-            var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
-            onOpenNodeInputDefaultValueItemCardDefine?.Invoke(node, inputPort.name, paramIndex, itemIndex);
+            onOpenNodeInputDefaultValueCardDefine?.Invoke(node, inputPort.name, paramIndex, itemIndexes);
         }
         private void onNodeSelected(ActionNodeItem actionNodeItem)
         {
@@ -1183,23 +1131,16 @@ namespace Controllers
             var defineRef = cardDefine.getDefineRef();
             var name = _curEditNodeInputDefaultValueName;
             var paramIndex = _curEditNodeInputDefaultValueParamIndex;
-            var itemIndex = _curEditNodeInputDefaultValueItemIndex;
-            if (itemIndex < 0)
+            var itemIndexes = _curEditNodeInputDefaultValueItemIndexes;
+
+            var defValue = _curEditNode.getInputDefaultValue(name, paramIndex);
+            if (defValue.replaceListElementByIndexes(itemIndexes, defineRef, out var newDefValue))
             {
-                setNodeDefaultValue(_curEditNode, name, paramIndex, defineRef);
+                setNodeDefaultValue(_curEditNode, name, paramIndex, newDefValue);
+                // 更新UI.
+                updateNodeItemInputPorts(_curEditNode);
+                addRecordBreakpoint();
             }
-            else
-            {
-                var defValue = _curEditNode.getInputDefaultValue(name, paramIndex);
-                if (defValue is IList list) 
-                {
-                    list[itemIndex] = defineRef;
-                    setNodeDefaultValue(_curEditNode, name, paramIndex, list);
-                }
-            }
-            // 更新UI.
-            updateNodeItemInputPorts(_curEditNode);
-            addRecordBreakpoint();
         }
         private void updateNodeWithVariablePorts(Node node)
         {
@@ -1925,6 +1866,8 @@ namespace Controllers
                 for (int i = 0; i < list.Count; i++)
                 {
                     var listElement = list[i];
+                    if (listElement == null)
+                        continue;
                     // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
                     var elementTargetType = listElement.GetType().getNodeValueType();
                     list[i] = validateInputFieldValue(elementTargetType, listElement, false);
@@ -2075,8 +2018,7 @@ namespace Controllers
         public event Action<Node> OnNodeVisualEffectButtonClicked;
         public event Func<long, Task> onStartSelectCard;
         public event Action<string> onShowErrorTip;
-        public event Action<Node, string, int> onOpenNodeInputDefaultValueCardDefine;
-        public event Action<Node, string, int, int> onOpenNodeInputDefaultValueItemCardDefine;
+        public event Action<Node, string, int, int[]> onOpenNodeInputDefaultValueCardDefine;
         #endregion
         #region 属性字段
         [TranslateMsg("编辑器-在分类中返回上一层的按钮({0}为按钮文本)")]
@@ -2144,7 +2086,7 @@ namespace Controllers
         /// <summary>
         /// 当前正在编辑的动作节点常量子项索引
         /// </summary>
-        int _curEditNodeInputDefaultValueItemIndex = -1;
+        int[] _curEditNodeInputDefaultValueItemIndexes = null;
         string[] _targetCheckerTypes = new string[]
         {
             DEFINE.TARGET_TYPE_CHARACTER,

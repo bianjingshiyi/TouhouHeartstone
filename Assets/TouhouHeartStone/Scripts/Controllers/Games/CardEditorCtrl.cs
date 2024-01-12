@@ -219,7 +219,6 @@ namespace Controllers
 
             _ui.onPropertyValueChanged += onPropertyValueChangedCallback;
             _ui.onClickPropertyButton += onClickPropertyButtonCallback;
-            _ui.onClickPropertyItemButton += onClickPropertyItemButtonCallback;
 
             _effectEditorCtrl.onCreateEffect += onCreateEffect;
             _effectEditorCtrl.OnGraphEdited += onGraphEdited;
@@ -614,7 +613,7 @@ namespace Controllers
             _ui.displayCardSelectPanel(false);
             _cardSelectTarget = CardSelectTarget.None;
             _curCardSeekingPropName = null;
-            _curCardSeekingPropIndex = -1;
+            _curCardSeekingPropIndexes = null;
             _curCardSeekingPropIsCustom = false;
         }
         private async void onClickCardPoolViewCard(CardDefine cardDefine)
@@ -628,26 +627,16 @@ namespace Controllers
                 case CardSelectTarget.Property:
                     if (_curCardSeekingPropName == null)
                         break;
-                    if (_curCardSeekingPropIndex >= 0)
+                    var itemIndexes = _curCardSeekingPropIndexes;
+                    var prop = _cardDefine.getProp<object>(_curCardSeekingPropName);
+                    var defineRef = cardDefine.getDefineRef();
+                    if (prop.replaceListElementByIndexes(itemIndexes, defineRef, out var newProp))
                     {
-                        var array = _cardDefine.getProp<DefineReference[]>(_curCardSeekingPropName);
-                        var defRef = cardDefine.getDefineRef();
-                        if (array == null || _curCardSeekingPropIndex >= array.Length)
-                        {
-                            var newArray = new DefineReference[_curCardSeekingPropIndex + 1];
-                            array.CopyTo(newArray, 0);
-                            array = newArray;
-                            setCardProp(_curCardSeekingPropIsCustom, _curCardSeekingPropName, array);
-                        }
-                        array[_curCardSeekingPropIndex] = defRef;
-                    }
-                    else
-                    {
-                        setCardProp(_curCardSeekingPropIsCustom, _curCardSeekingPropName, cardDefine.getDefineRef());
+                        setCardProp(_curCardSeekingPropIsCustom, _curCardSeekingPropName, newProp);
                     }
                     updatePropertyItem(_curCardSeekingPropIsCustom, _curCardSeekingPropName);
                     _curCardSeekingPropName = null;
-                    _curCardSeekingPropIndex = -1;
+                    _curCardSeekingPropIndexes = null;
                     _curCardSeekingPropIsCustom = false;
                     markUnsaved();
                     break;
@@ -680,126 +669,78 @@ namespace Controllers
             updateCustomProperties();
             _ui.displayCustomPropertyDialog(false);
         }
-        private void onClickPropertyItemButtonCallback(bool isCustom, string name, int index, ValueInputFieldButton button)
-        {
-            switch (button)
-            {
-                case ValueInputFieldButton.CardButton:
-                    onClickPropertyItemCardButtonCallback(isCustom, name, index);
-                    break;
-                case ValueInputFieldButton.CardEditButton:
-                    onClickPropertyItemCardEditButtonCallback(isCustom, name, index);
-                    break;
-                case ValueInputFieldButton.BuffEditButton:
-                    onClickPropertyItemBuffEditButtonCallback(isCustom, name, index);
-                    break;
-            }
-        }
-        private async void onClickPropertyItemCardButtonCallback(bool isCustom, string name, int index)
-        {
-            var prop = _cardDefine.getProp<DefineReference[]>(name);
-            if (prop == null)
-                return;
-            //打开卡牌选择界面
-            long poolId = _curCardPoolId;
-            var define = prop?[index];
-            if (define != null && define.defineId != 0)
-            {
-                poolId = define.cardPoolId;
-            }
-            await displayCardSelectPanel(cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
-            _cardSelectTarget = CardSelectTarget.Property;
-            _curCardSeekingPropName = name;
-            _curCardSeekingPropIndex = index;
-            _curCardSeekingPropIsCustom = isCustom;
-        }
-        private async void onClickPropertyItemCardEditButtonCallback(bool isCustom, string name, int index)
-        {
-            var prop = _cardDefine.getProp<DefineReference[]>(name);
-            if (prop == null || index < 0 || index >= prop.Length)
-                return;
-            var define = prop[index];
-            await scene.editor.openReferedCard(define, setPropAction);
-
-            void setPropAction(CardDefine cardDefine)
-            {
-                prop[index] = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
-                _cardDefine.setProp(name, prop);
-                markUnsaved();
-                updatePropertyItem(isCustom, name);
-            }
-        }
-        private async void onClickPropertyItemBuffEditButtonCallback(bool isCustom, string name, int index)
-        {
-            var prop = _cardDefine.getProp<DefineReference[]>(name);
-            if (prop == null || index < 0 || index >= prop.Length)
-                return;
-            var define = prop[index];
-            var poolRef = getCardPoolReference(define.cardPoolId);
-            if (game.card.tryGetBuffDefine(poolRef, define.defineId, out GeneratedBuffDefine buffDefine))
-            {
-                await scene.editor.openBuffEditor(buffDefine);
-            }
-        }
         private void onPropertyValueChangedCallback(bool isCustom, string name, object value)
         {
             setCardProp(isCustom, name, value);
             markUnsaved();
             updatePropertyItem(isCustom, name);
         }
-        private void onClickPropertyButtonCallback(bool isCustom, string name, ValueInputFieldButton button)
+        private void onClickPropertyButtonCallback(bool isCustom, string name, int[] itemIndexes, ValueInputFieldButton button)
         {
             switch (button)
             {
                 case ValueInputFieldButton.CardButton:
-                    onClickPropertyCardButtonCallback(isCustom, name);
+                    onClickPropertyCardButtonCallback(isCustom, name, itemIndexes);
                     break;
                 case ValueInputFieldButton.CardEditButton:
-                    onClickPropertyCardEditButtonCallback(isCustom, name);
+                    onClickPropertyCardEditButtonCallback(isCustom, name, itemIndexes);
                     break;
                 case ValueInputFieldButton.BuffEditButton:
-                    onClickPropertyBuffEditButtonCallback(isCustom, name);
+                    onClickPropertyBuffEditButtonCallback(isCustom, name, itemIndexes);
                     break;
             }
         }
-        private async void onClickPropertyCardButtonCallback(bool isCustom, string name)
+        private async void onClickPropertyCardButtonCallback(bool isCustom, string name, int[] itemIndexes)
         {
-            var prop = _cardDefine.getProp<DefineReference>(name);
+            var prop = _cardDefine.getProp<object>(name);
             if (prop == null)
                 return;
             //打开卡牌选择界面
             long poolId = _curCardPoolId;
-            if (prop.defineId != 0)
+            if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
             {
-                poolId = prop.cardPoolId;
+                if (defRef.defineId != 0)
+                {
+                    poolId = defRef.cardPoolId;
+                }
             }
             await displayCardSelectPanel(cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
             _cardSelectTarget = CardSelectTarget.Property;
             _curCardSeekingPropName = name;
-            _curCardSeekingPropIndex = -1;
+            _curCardSeekingPropIndexes = itemIndexes;
             _curCardSeekingPropIsCustom = isCustom;
         }
-        private async void onClickPropertyCardEditButtonCallback(bool isCustom, string name)
+        private async void onClickPropertyCardEditButtonCallback(bool isCustom, string name, int[] itemIndexes)
         {
-            var prop = _cardDefine.getProp<DefineReference>(name);
-            await scene.editor.openReferedCard(prop, setPropAction);
-
-            void setPropAction(CardDefine cardDefine)
+            var prop = _cardDefine.getProp<object>(name);
+            if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
             {
-                _cardDefine.setProp(name, new DefineReference(cardDefine.cardPoolId, cardDefine.id));
-                markUnsaved();
-                updatePropertyItem(isCustom, name);
+                await scene.editor.openReferedCard(defRef, setPropAction);
+
+                void setPropAction(CardDefine cardDefine)
+                {
+                    var newDefRef = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
+                    if (prop.replaceListElementByIndexes(itemIndexes, newDefRef, out var newValue))
+                    {
+                        _cardDefine.setProp(name, newValue);
+                        markUnsaved();
+                        updatePropertyItem(isCustom, name);
+                    }
+                }
             }
         }
-        private async void onClickPropertyBuffEditButtonCallback(bool isCustom, string name)
+        private async void onClickPropertyBuffEditButtonCallback(bool isCustom, string name, int[] itemIndexes)
         {
-            var prop = _cardDefine.getProp<DefineReference>(name);
+            var prop = _cardDefine.getProp<object>(name);
             if (prop == null)
                 return;
-            var poolRef = getCardPoolReference(prop.cardPoolId);
-            if (game.card.tryGetBuffDefine(poolRef, prop.defineId, out GeneratedBuffDefine buffDefine))
+            if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
             {
-                await scene.editor.openBuffEditor(buffDefine);
+                var poolRef = getCardPoolReference(defRef.cardPoolId);
+                if (game.card.tryGetBuffDefine(poolRef, defRef.defineId, out GeneratedBuffDefine buffDefine))
+                {
+                    await scene.editor.openBuffEditor(buffDefine);
+                }
             }
         }
         private void onDeleteCustomPropertyCallback(string name)
@@ -1296,7 +1237,7 @@ namespace Controllers
         /// <summary>
         /// 当前正在选择的卡牌引用属性的列表索引。
         /// </summary>
-        int _curCardSeekingPropIndex;
+        int[] _curCardSeekingPropIndexes;
         /// <summary>
         /// 当前正在选择的卡牌引用属性的卡牌属性，是否是自定义属性。
         /// </summary>

@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using ExcelLibrary.BinaryFileFormat;
 using Game;
 using TouhouCardEngine;
 using TouhouHeartstone;
@@ -33,20 +35,17 @@ namespace Controllers
         public void setEffectProp(string name, object value)
         {
             var beforeValue = _effect.getProp(name);
-            _effect.setProp(name, value);
-
-            // 复制一份之前的值和新的值，存储在记录中，用以随时回退。
-            var recordBeforeValue = beforeValue;
-            var recordValue = value;
             if (beforeValue is ICloneable beforeCloneable)
             {
-                recordBeforeValue = beforeCloneable.Clone();
+                beforeValue = beforeCloneable.Clone();
             }
             if (value is ICloneable valueCloneable)
             {
-                recordValue = valueCloneable.Clone();
+                value = valueCloneable.Clone();
             }
-            addOperationRecord(new ChangeEffectPropertyValueOperation(this, name, recordBeforeValue, recordValue));
+            _effect.setProp(name, value);
+            // 复制一份之前的值和新的值，存储在记录中，用以随时回退。
+            addOperationRecord(new ChangeEffectPropertyValueOperation(this, name, beforeValue, value));
             updatePropertyItem(name);
         }
         /// <summary>
@@ -73,43 +72,6 @@ namespace Controllers
                 return;
             onAddEffectPropertyButtonClicked?.Invoke();
         }
-        private void onClickEffectPropertyItemButtonCallback(string name, int index, ValueInputFieldButton button)
-        {
-            switch (button)
-            {
-                case ValueInputFieldButton.CardButton:
-                    onClickEffectPropertyItemCardButtonCallback(name, index);
-                    break;
-                case ValueInputFieldButton.CardEditButton:
-                    onClickEffectPropertyItemCardEditButtonCallback(name, index);
-                    break;
-                case ValueInputFieldButton.BuffEditButton:
-                    onClickEffectPropertyItemBuffEditButtonCallback(name, index);
-                    break;
-            }
-        }
-        private async void onClickEffectPropertyItemCardButtonCallback(string name, int index)
-        {
-            if (isReadonly)
-                return;
-            var prop = _effect.getProp<DefineReference[]>(name);
-            if (prop == null)
-                return;
-            //打开卡牌选择界面
-            long poolId = _curCardPoolId;
-            var define = prop?[index];
-            if (define != null && define.defineId != 0)
-            {
-                poolId = define.cardPoolId;
-            }
-            await displayCardSelectPanel(poolId);
-            _curCardSeekingEffectPropName = name;
-            _curCardSeekingEffectPropIndex = index;
-        }
-        private void onClickEffectPropertyItemCardEditButtonCallback(string name, int index)
-        {
-            onOpenEffectPropertyItemCardDefine?.Invoke(_effect, name, index);
-        }
         private void onEffectPropertyValueChangedCallback(string name, object value)
         {
             if (isReadonly)
@@ -122,59 +84,54 @@ namespace Controllers
             setEffectProp(name, value);
             addRecordBreakpoint();
         }
-        private void onClickEffectPropertyButtonCallback(string name, ValueInputFieldButton button)
+        private void onClickEffectPropertyButtonCallback(string name, int[] itemIndexs, ValueInputFieldButton button)
         {
             switch (button)
             {
                 case ValueInputFieldButton.CardButton:
-                    onClickEffectPropertyCardButtonCallback(name);
+                    onClickEffectPropertyCardButtonCallback(name, itemIndexs);
                     break;
                 case ValueInputFieldButton.CardEditButton:
-                    onClickEffectPropertyCardEditButtonCallback(name);
+                    onClickEffectPropertyCardEditButtonCallback(name, itemIndexs);
                     break;
                 case ValueInputFieldButton.BuffEditButton:
-                    onClickEffectPropertyBuffEditButtonCallback(name);
+                    onClickEffectPropertyBuffEditButtonCallback(name, itemIndexs);
                     break;
             }
         }
-        private async void onClickEffectPropertyCardButtonCallback(string name)
+        private async void onClickEffectPropertyCardButtonCallback(string name, int[] itemIndexs)
         {
             if (isReadonly)
                 return;
-            var prop = _effect.getProp<DefineReference>(name);
+            var prop = _effect.getProp(name);
             if (prop == null)
                 return;
             //打开卡牌选择界面
             long poolId = _curCardPoolId;
-            if (prop.defineId != 0)
+            if (prop.tryGetListElementByIndexes(itemIndexs, out DefineReference defRef))
             {
-                poolId = prop.cardPoolId;
+                if (defRef.defineId != 0)
+                {
+                    poolId = defRef.cardPoolId;
+                }
             }
             await displayCardSelectPanel(poolId);
             _curCardSeekingEffectPropName = name;
-            _curCardSeekingEffectPropIndex = -1;
+            _curCardSeekingEffectPropIndexes = itemIndexs;
         }
-        private void onClickEffectPropertyCardEditButtonCallback(string name)
+        private void onClickEffectPropertyCardEditButtonCallback(string name, int[] itemIndexs)
         {
-            onOpenEffectPropertyCardDefine?.Invoke(_effect, name);
+            onOpenEffectPropertyCardDefine?.Invoke(_effect, name, itemIndexs);
         }
-        private async void onClickEffectPropertyBuffEditButtonCallback(string name)
+        private async void onClickEffectPropertyBuffEditButtonCallback(string name, int[] itemIndexs)
         {
-            var buffRefObj = _effect.getProp(name);
-            if (tryGetBuffDefine(buffRefObj, out GeneratedBuffDefine buffDefine))
+            var prop = _effect.getProp(name);
+            if (prop.tryGetListElementByIndexes(itemIndexs, out object buffRefObj))
             {
-                await scene.editor.openBuffEditor(buffDefine);
-            }
-        }
-        private async void onClickEffectPropertyItemBuffEditButtonCallback(string name, int index)
-        {
-            var prop = _effect.getProp<IList>(name);
-            if (prop == null || index < 0 || index >= prop.Count)
-                return;
-            var buffRef = prop[index];
-            if (tryGetBuffDefine(buffRef, out GeneratedBuffDefine buffDefine))
-            {
-                await scene.editor.openBuffEditor(buffDefine);
+                if (tryGetBuffDefine(buffRefObj, out GeneratedBuffDefine buffDefine))
+                {
+                    await scene.editor.openBuffEditor(buffDefine);
+                }
             }
         }
         private void onDeleteEffectPropertyCallback(string name)
@@ -282,26 +239,15 @@ namespace Controllers
         }
         private void selectCardForEffectProperty(CardDefine cardDefine)
         {
-            object value;
             var defRef = cardDefine.getDefineRef();
-            if (_curCardSeekingEffectPropIndex >= 0)
+            var propName = _curCardSeekingEffectPropName;
+            var itemIndexes = _curCardSeekingEffectPropIndexes;
+            var prop = _effect.getProp(propName);
+            if (prop.replaceListElementByIndexes(itemIndexes, defRef, out var newProp))
             {
-                var array = _effect.getProp<DefineReference[]>(_curCardSeekingEffectPropName);
-                if (array == null || _curCardSeekingEffectPropIndex >= array.Length)
-                {
-                    var newArray = new DefineReference[_curCardSeekingEffectPropIndex + 1];
-                    array.CopyTo(newArray, 0);
-                    array = newArray;
-                }
-                array[_curCardSeekingEffectPropIndex] = defRef;
-                value = array.Clone();
+                setEffectProp(propName, newProp);
+                addRecordBreakpoint();
             }
-            else
-            {
-                value = defRef;
-            }
-            setEffectProp(_curCardSeekingEffectPropName, value);
-            addRecordBreakpoint();
         }
         #endregion
 
@@ -387,8 +333,7 @@ namespace Controllers
 
         #region 事件
         public event Action onAddEffectPropertyButtonClicked;
-        public event Action<GeneratedEffect, string> onOpenEffectPropertyCardDefine;
-        public event Action<GeneratedEffect, string, int> onOpenEffectPropertyItemCardDefine;
+        public event Action<GeneratedEffect, string, int[]> onOpenEffectPropertyCardDefine;
         #endregion
 
         #region 属性字段
@@ -399,7 +344,7 @@ namespace Controllers
         /// <summary>
         /// 当前正在选择的卡牌引用属性的列表索引。
         /// </summary>
-        int _curCardSeekingEffectPropIndex;
+        int[] _curCardSeekingEffectPropIndexes;
         #endregion
     }
 }

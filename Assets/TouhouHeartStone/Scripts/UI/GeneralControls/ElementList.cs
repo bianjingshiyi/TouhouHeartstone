@@ -27,11 +27,13 @@ namespace UI
         }
         public RectTransform getElement(int index)
         {
+            if (index < 0 || index >= _itemList.Count)
+                return null;
             return _itemList[index];
         }
         public T getElement<T>(int index) where T : Component
         {
-            return getElement(index).GetComponent<T>();
+            return getElement(index)?.GetComponent<T>();
         }
         public IEnumerable<RectTransform> getElements()
         {

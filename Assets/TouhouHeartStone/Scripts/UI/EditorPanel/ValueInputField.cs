@@ -253,13 +253,14 @@ namespace UI
         #endregion
 
         #region 按钮
-        private void onClickItemButtonCallback(ValueInputFieldListItem listItem, ValueInputFieldButton type)
+        private void onClickItemButtonCallback(ValueInputFieldListItem listItem, int[] itemIndexes, ValueInputFieldButton type)
         {
-            onClickItemButton?.Invoke(this, _childrenElementList.indexOf(listItem), type);
+            var itemIndex = _childrenElementList.indexOf(listItem);
+            onClickButton?.Invoke(this, itemIndexes.Prepend(itemIndex).ToArray(), type);
         }
         private void callButtonCallback(ValueInputFieldButton type)
         {
-            onClickButton?.Invoke(this, type);
+            onClickButton?.Invoke(this, Array.Empty<int>(), type);
         }
         #endregion
 
@@ -778,8 +779,7 @@ namespace UI
         #endregion
         #region 事件
         public event Action<ValueInputField, object> onValueChanged;
-        public event Action<ValueInputField, ValueInputFieldButton> onClickButton;
-        public event Action<ValueInputField, int, ValueInputFieldButton> onClickItemButton;
+        public event Action<ValueInputField, int[], ValueInputFieldButton> onClickButton;
         #endregion
         #region 属性字段
         private ActionNodeValueType valueType => _valueInfo.type.type;
@@ -876,7 +876,14 @@ namespace UI
             }
             else if (value is IList list)
             {
-                await inputField.setInputFieldCards(list, env, game);
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var element = list[i];
+                    var childInputField = inputField.getItemAt(i)?.valueField;
+                    if (childInputField == null)
+                        continue;
+                    await childInputField.setInputFieldCardByValue(element, env, game);
+                }
             }
         }
         public static async Task setInputFieldCard(this ValueInputField inputField, DefineReference cardReference, IEnumerable<ICardPoolReference> env, MainManager game)
@@ -904,19 +911,6 @@ namespace UI
                 }
             }
             inputField.setCard(cardName, image);
-        }
-        public static async Task setInputFieldCards(this ValueInputField inputField, IList list, IEnumerable<ICardPoolReference> env, MainManager game)
-        {
-            for (int i = 0; i < list.Count; i++)
-            {
-                var element = list[i];
-                if (element is not DefineReference defRef)
-                    continue;
-                var childInputField = inputField.getItemAt(i)?.valueField;
-                if (childInputField == null)
-                    continue;
-                await childInputField.setInputFieldCard(defRef, env, game);
-            }
         }
 
     }

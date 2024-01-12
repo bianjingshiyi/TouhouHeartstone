@@ -13,29 +13,16 @@ namespace Controllers
         #region 私有方法
 
         #region 事件回调
-        private async void onClickNodeDefaultValueBuffEditButton(ActionNodeItem item, int index)
+        private async void onClickNodeDefaultValueBuffEditButton(ActionNodeItem item, int index, int[] itemIndexes)
         {
             var node = getActionNode(item);
             var inputPort = node.getInputPortAt(index);
             if (inputPort is not ValueInput valueInput)
                 return;
             var buffRefObj = node.getInputDefaultValue(valueInput.name, valueInput.paramIndex);
-            if (tryGetBuffDefine(buffRefObj, out GeneratedBuffDefine buffDefine))
+            if (buffRefObj.tryGetListElementByIndexes(itemIndexes, out object result))
             {
-                await scene.editor.openBuffEditor(buffDefine);
-            }
-        }
-        private async void onClickNodeDefaultValueItemBuffEditButton(ActionNodeItem item, int portIndex, int index)
-        {
-            var node = getActionNode(item);
-            var inputPort = node.getInputPortAt(portIndex);
-            if (inputPort is not ValueInput valueInput)
-                return;
-            var buffRefObj = node.getInputDefaultValue(valueInput.name, valueInput.paramIndex);
-            if (buffRefObj is IList list)
-            {
-                var buffRef = list[index];
-                if (tryGetBuffDefine(buffRef, out GeneratedBuffDefine buffDefine))
+                if (tryGetBuffDefine(result, out GeneratedBuffDefine buffDefine))
                 {
                     await scene.editor.openBuffEditor(buffDefine);
                 }

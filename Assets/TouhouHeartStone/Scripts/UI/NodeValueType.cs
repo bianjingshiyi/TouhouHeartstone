@@ -139,10 +139,7 @@ namespace UI
                 }
                 if (type == null)
                     return null;
-                var array = Array.CreateInstance(type, 1);
-                var elementValueType = valueType.getElementType();
-                var elementValue = elementValueType.getDefaultValue();
-                array.SetValue(elementValue, 0);
+                var array = Array.CreateInstance(type, 0);
                 return array;
             }
 

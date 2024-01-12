@@ -950,15 +950,10 @@ namespace UI
             setFocused();
             onNodeInputDefaultValueChanged?.Invoke(item, constValueIndex, value);
         }
-        private void onClickActionNodeItemDefaultValueButton(ActionNodeItem item, int constValueIndex, ValueInputFieldButton type)
+        private void onClickActionNodeItemDefaultValueButton(ActionNodeItem item, int constValueIndex, int[] itemIndexes, ValueInputFieldButton type)
         {
             setFocused();
-            onClickActionNodeDefaultValueButton?.Invoke(item, constValueIndex, type);
-        }
-        private void onClickActionNodeItemDefaultValueItemButton(ActionNodeItem item, int constValueIndex, int itemIndex, ValueInputFieldButton type)
-        {
-            setFocused();
-            onClickActionNodeDefaultValueItemButton?.Invoke(item, constValueIndex, itemIndex, type);
+            onClickActionNodeDefaultValueButton?.Invoke(item, constValueIndex, itemIndexes, type);
         }
         private void onClickTriggerNodeAddTargetCheckerButton(ActionNodeItem item)
         {
@@ -1011,20 +1006,15 @@ namespace UI
             setFocused();
             onDeleteEffectProperty?.Invoke(name);
         }
-        private void onClickEffectPropertyButtonCallback(string name, ValueInputFieldButton button)
+        private void onClickEffectPropertyButtonCallback(string name, int[] itemIndexes, ValueInputFieldButton button)
         {
             setFocused();
-            onClickEffectPropertyButton?.Invoke(name, button);
+            onClickEffectPropertyButton?.Invoke(name, itemIndexes, button);
         }
         private void onEffectPropertyValueChangedCallback(string name, object value)
         {
             setFocused();
             onEffectPropertyValueChanged?.Invoke(name, value);
-        }
-        private void onClickEffectPropertyItemButtonCallback(string name, int index, ValueInputFieldButton button)
-        {
-            setFocused();
-            onClickEffectPropertyItemButton?.Invoke(name, index, button);
         }
         #endregion
 
@@ -1116,11 +1106,9 @@ namespace UI
             // 输入默认值。
             actionNodeItem.onDefaultValueChanged += onNodeInputDefaultValueChangedCallback;
             actionNodeItem.onClickDefaultValueButton += onClickActionNodeItemDefaultValueButton;
-            actionNodeItem.onClickDefaultValueItemButton += onClickActionNodeItemDefaultValueItemButton;
 
             // 效果属性。
             actionNodeItem.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
-            actionNodeItem.onClickEffectPropertyItemButton += onClickEffectPropertyItemButtonCallback;
             actionNodeItem.onClickEffectPropertyButton += onClickEffectPropertyButtonCallback;
             actionNodeItem.onEffectPropertyValueChanged += onEffectPropertyValueChangedCallback;
             actionNodeItem.onDeleteEffectProperty += onDeleteEffectPropertyCallback;
@@ -1255,13 +1243,9 @@ namespace UI
         /// </summary>
         public event Action<ActionNodeItem, int, object> onNodeInputDefaultValueChanged;
         /// <summary>
-        /// 当节点的常量的编辑按钮被点击，参数为被点击的节点和常量索引
+        /// 当点击节点的常量的编辑按钮，参数为点击的节点，常量索引和常量子项的索引
         /// </summary>
-        public event Action<ActionNodeItem, int, ValueInputFieldButton> onClickActionNodeDefaultValueButton;
-        /// <summary>
-        /// 当点击节点的常量的子项的编辑按钮，参数为点击的节点，常量索引和常量子项的索引
-        /// </summary>
-        public event Action<ActionNodeItem, int, int, ValueInputFieldButton> onClickActionNodeDefaultValueItemButton;
+        public event Action<ActionNodeItem, int, int[], ValueInputFieldButton> onClickActionNodeDefaultValueButton;
         /// <summary>
         /// 当点击触发器节点的添加目标按钮
         /// </summary>
@@ -1309,8 +1293,7 @@ namespace UI
         public event Action onClickAddEffectPropertyButton;
         public event Action<string> onDeleteEffectProperty;
         public event Action<string, object> onEffectPropertyValueChanged;
-        public event Action<string, ValueInputFieldButton> onClickEffectPropertyButton;
-        public event Action<string, int, ValueInputFieldButton> onClickEffectPropertyItemButton;
+        public event Action<string, int[], ValueInputFieldButton> onClickEffectPropertyButton;
         #endregion
         #endregion
         #region 属性字段

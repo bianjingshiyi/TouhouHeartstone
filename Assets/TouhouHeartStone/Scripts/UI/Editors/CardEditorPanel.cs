@@ -295,13 +295,11 @@ namespace UI
                 PropertyItemField item = rect.GetComponent<PropertyItemField>();
                 item.onValueChanged += onCustomPropertyValueChangedCallback;
                 item.onClickButton += onClickCustomPropertyButtonCallback;
-                item.onClickItemButton += onClickCustomPropertyItemButtonCallback;
                 item.onClickDelete += onDeleteCustomPropertyCallback;
             },
             rect =>
             {
                 PropertyItemField item = rect.GetComponent<PropertyItemField>();
-                item.onClickItemButton -= onClickCustomPropertyItemButtonCallback;
                 item.onClickButton -= onClickCustomPropertyButtonCallback;
                 item.onValueChanged -= onCustomPropertyValueChangedCallback;
                 item.onClickDelete -= onDeleteCustomPropertyCallback;
@@ -396,8 +394,6 @@ namespace UI
             // Keywords.
             _keywordsFoldout.onClickPropButton += onClickKeywordButtonCallback;
             _keywordsFoldout.onPropValueChanged += onKeywordValueChangedCallback;
-
-            _keywordsFoldout.onClickPropChildButton += onClickKeywordItemButtonCallback;
         }
         #endregion
         #region 事件回调
@@ -649,13 +645,9 @@ namespace UI
         }
 
         #region 关键词
-        private void onClickKeywordItemButtonCallback(string name, int index, ValueInputFieldButton button)
+        private void onClickKeywordButtonCallback(string name, int[] itemIndexes, ValueInputFieldButton button)
         {
-            onClickPropertyItemButton?.Invoke(false, name, index, button);
-        }
-        private void onClickKeywordButtonCallback(string name, ValueInputFieldButton button)
-        {
-            onClickPropertyButton?.Invoke(false, name, button);
+            onClickPropertyButton?.Invoke(false, name, itemIndexes, button);
         }
         private void onKeywordValueChangedCallback(string name, object value)
         {
@@ -664,13 +656,9 @@ namespace UI
         #endregion
 
         #region 自定义属性
-        private void onClickCustomPropertyItemButtonCallback(string name, int index, ValueInputFieldButton button)
+        private void onClickCustomPropertyButtonCallback(string name, int[] itemIndexes, ValueInputFieldButton button)
         {
-            onClickPropertyItemButton?.Invoke(true, name, index, button);
-        }
-        private void onClickCustomPropertyButtonCallback(string name, ValueInputFieldButton button)
-        {
-            onClickPropertyButton?.Invoke(true, name, button);
+            onClickPropertyButton?.Invoke(true, name, itemIndexes, button);
         }
         private void onCustomPropertyValueChangedCallback(string name, object value)
         {
@@ -791,8 +779,7 @@ namespace UI
         /// </summary>
         public event Action<PropertyItemInfo> onConfirmCreateCustomProperty;
         public event Action<bool, string, object> onPropertyValueChanged;
-        public event Action<bool, string, ValueInputFieldButton> onClickPropertyButton;
-        public event Action<bool, string, int, ValueInputFieldButton> onClickPropertyItemButton;
+        public event Action<bool, string, int[], ValueInputFieldButton> onClickPropertyButton;
         public event Action<string> onDeleteCustomProperty;
         #endregion
 

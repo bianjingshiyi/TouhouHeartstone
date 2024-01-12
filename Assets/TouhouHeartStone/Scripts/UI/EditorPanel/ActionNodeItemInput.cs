@@ -33,7 +33,6 @@ namespace UI
             base.Awake();
             _defaultValueInputField.onValueChanged += onDefaultValueChangedCallback;
             _defaultValueInputField.onClickButton += onDefaultValueButtonClickCallback;
-            _defaultValueInputField.onClickItemButton += onDefaultValueItemButtonClickCallback;
         }
         #endregion
 
@@ -59,13 +58,9 @@ namespace UI
         {
             onDefaultValueChanged?.Invoke(this, value);
         }
-        private void onDefaultValueButtonClickCallback(ValueInputField item, ValueInputFieldButton type)
+        private void onDefaultValueButtonClickCallback(ValueInputField item, int[] itemIndexes, ValueInputFieldButton type)
         {
-            onClickDefaultValueButton?.Invoke(this, type);
-        }
-        private void onDefaultValueItemButtonClickCallback(ValueInputField item, int index, ValueInputFieldButton type)
-        {
-            onClickDefaultValueItemButton?.Invoke(this, index, type);
+            onClickDefaultValueButton?.Invoke(this, itemIndexes, type);
         }
         #endregion
 
@@ -83,8 +78,7 @@ namespace UI
         #region 默认值
 
         public event Action<ActionNodeItemInput, object> onDefaultValueChanged;
-        public event Action<ActionNodeItemInput, ValueInputFieldButton> onClickDefaultValueButton;
-        public event Action<ActionNodeItemInput, int, ValueInputFieldButton> onClickDefaultValueItemButton;
+        public event Action<ActionNodeItemInput, int[], ValueInputFieldButton> onClickDefaultValueButton;
 
         #endregion
 

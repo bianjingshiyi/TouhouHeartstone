@@ -1,5 +1,4 @@
 ﻿using System;
-using Game;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,8 +9,7 @@ namespace UI
         private void Awake()
         {
             _valueInputField.onValueChanged += (item, value) => onValueChanged?.Invoke(_name, value);
-            _valueInputField.onClickButton += (item, type) => onClickButton?.Invoke(_name, type);
-            _valueInputField.onClickItemButton += (item, index, type) => onClickItemButton?.Invoke(_name, index, type);
+            _valueInputField.onClickButton += (item, itemIndexes, type) => onClickButton?.Invoke(_name, itemIndexes, type);
             _deleteButton.onClick.AddListener(() => onClickDelete?.Invoke(_name));
         }
         public void updateItem(PropertyItemInfo info)
@@ -32,8 +30,7 @@ namespace UI
         public event Action<string> onClickDelete;
 
         public event Action<string, object> onValueChanged;
-        public event Action<string, ValueInputFieldButton> onClickButton;
-        public event Action<string, int, ValueInputFieldButton> onClickItemButton;
+        public event Action<string, int[], ValueInputFieldButton> onClickButton;
 
         public string propertyName => _name;
         public ValueInputField valueInputField => _valueInputField;
