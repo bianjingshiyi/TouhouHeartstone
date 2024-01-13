@@ -30,7 +30,7 @@ namespace Game
             {
                 return game.lang._(editorName);
             }
-            return game.lang._(EDITOR_NODE_NAME_UNKNOWN_EVENT);
+            return game.lang._(eventName);
         }
         public string translateEventDefineNameForEditor(EventDefine define)
         {
@@ -42,7 +42,7 @@ namespace Game
             {
                 return game.card.getLocalActionDefine(gen.actionReference).editorName;
             }
-            return game.lang._(EDITOR_NODE_NAME_UNKNOWN_EVENT);
+            return game.lang._(define.eventName);
         }
         public string translateEventReferenceNameForEditor(EventReference eventRef)
         {
@@ -190,6 +190,8 @@ namespace Game
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_CHANGE_BUFF_PROP_VISIBILITY = "增益属性可见性变动";
         [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_REVEAL_CARD_DEFINE = "展示卡牌定义";
+        [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_SET_CARD_PROP = "修改卡牌属性";
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_BE_CHARGED = "蓄力";
@@ -263,6 +265,7 @@ namespace Game
             "ChangeCardVisibilityEvent",
             "ChangeCardPropVisibilityEvent",
             "ChangeBuffPropVisibilityEvent",
+            "RevealCardDefineEvent",
         };
         static Dictionary<string, string> _eventNameTranslations = new Dictionary<string, string>()
         {
@@ -330,7 +333,8 @@ namespace Game
             { "SplitDamageEvent", EDITOR_EVENT_NAME_MASS_SPLIT_DAMAGE },
             { "ChangeCardVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_CARD_VISIBILITY },
             { "ChangeCardPropVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_CARD_PROP_VISIBILITY },
-            { "ChangeBuffPropVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_BUFF_PROP_VISIBILITY }
+            { "ChangeBuffPropVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_BUFF_PROP_VISIBILITY },
+            { "RevealCardDefineEvent", EDITOR_EVENT_NAME_REVEAL_CARD_DEFINE }
         };
         List<EventDefine> _builtinEventDefineList = null;
         [SerializeField]
