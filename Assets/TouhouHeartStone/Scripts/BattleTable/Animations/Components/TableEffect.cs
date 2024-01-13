@@ -140,11 +140,14 @@ namespace Game.Animations
         }
         private void updatePersistentAnim()
         {
-            if ((!sourceTransform || !_visible) && _state == EffectState.Started)
+            if (!sourceTransform || !_visible)
             {
-                _state = EffectState.Dormant;
-                stopParticles();
-            }
+                if (_state == EffectState.Started)
+                {
+                    _state = EffectState.Dormant;
+                    stopParticles();
+                }
+            } 
             else if (_state == EffectState.Dormant)
             {
                 _state = EffectState.Started;
