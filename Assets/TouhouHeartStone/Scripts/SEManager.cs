@@ -9,15 +9,15 @@ namespace Game
     public class SEManager : Manager
     {
         #region 公有方法
-        public void PlaySE(string name)
+        public void PlaySE(string name, float pitch = 1)
         {
             var clip = GetSE(name);
             if (clip != null)
-                playSE(clip);
+                playSE(clip, pitch);
             else
                 Debug.LogWarning($"Unable to find audio: {name}");
         }
-        public void playSE(AudioClip clip, bool loop = false)
+        public void playSE(AudioClip clip, float pitch = 1, bool loop = false)
         {
             if (clip == null)
                 return;
@@ -26,6 +26,7 @@ namespace Game
             source.name = clip.name;
             source.clip = clip;
             source.loop = loop;
+            source.pitch = pitch;
             source.play();
             source.onFinished += onSourceFinished;
             _seSourceList.Add(source);

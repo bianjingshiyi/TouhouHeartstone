@@ -56,6 +56,11 @@ namespace Game
             get => source.clip;
             set => source.clip = value;
         }
+        public float pitch
+        {
+            get => source.pitch;
+            set => source.pitch = value;
+        }
         public bool loop
         {
             get => source.loop;

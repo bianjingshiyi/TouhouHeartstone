@@ -15,15 +15,15 @@ namespace Game.BattleTable
         }
         public void PlaySE(string name)
         {
-            manager?.sounds?.PlaySE(name);
+            manager?.sounds?.PlaySE(name, _pitch);
         }
         public void PlaySEClip(AudioClip clip)
         {
-            manager?.sounds?.playSE(clip);
+            manager?.sounds?.playSE(clip, _pitch);
         }
         public void PlaySEClipLoop(AudioClip clip)
         {
-            manager?.sounds?.playSE(clip, true);
+            manager?.sounds?.playSE(clip, _pitch, true);
         }
         public void stopSEClip(AudioClip clip)
         {
@@ -65,6 +65,8 @@ namespace Game.BattleTable
         bool playOnEnable;
         [SerializeField]
         float _fadeoutTime = 1;
+        [SerializeField]
+        float _pitch = 1;
         #endregion
     }
 }
