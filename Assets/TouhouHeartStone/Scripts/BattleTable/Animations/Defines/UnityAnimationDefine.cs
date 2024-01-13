@@ -23,6 +23,5 @@ namespace Game.Animations
             return Object.Instantiate(prefab, parent, false);
         }
         public TableEffect prefab;
-
     }
 }

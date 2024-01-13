@@ -1231,6 +1231,19 @@ namespace Game.BattleTable
             }
             return null;
         }
+        public Transform getAreaTransform(TableArea area)
+        {
+            switch (area)
+            {
+                case TableArea.AllField:
+                    return table.AllFieldAreaTransform;
+                case TableArea.SelfField:
+                    return table.SelfFieldAreaTransform;
+                case TableArea.EnemyField:
+                    return table.EnemyFieldAreaTransform;
+            }
+            return null;
+        }
         public UICard createCard(ICardData card, Vector3 position, float height = -1) => createCard(updateCardDescriptor(card), position, height);
         public UICard createCard(CardDescriptor desc, Vector3 position, float height = -1)
         {

@@ -335,6 +335,10 @@ namespace Game.BattleTable
             }
             return null;
         }
+        public TableArea getEventSkinAnimArea(EventArg effectArg, IEventArg arg, int area)
+        {
+            return TableArea.AllField;
+        }
         private SkinAnimationRef getAnimRefOfEntryNode(ISkin skin, Node node)
         {
             if (node == null) return null; // 节点不存在

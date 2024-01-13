@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Game.BattleTable;
 using UnityEngine;
-using static Sentry.MeasurementUnit;
 
 namespace Game.Animations
 {
@@ -36,6 +34,7 @@ namespace Game.Animations
             name = animDef.name;
             duration = animDef.duration;
             blockTime = animDef.blockTime;
+            type = (int)animDef.type;
             foreach (string propName in animDef.getPropNames())
             {
                 propDict.Add(propName, animDef.getProp<object>(propName));
@@ -47,6 +46,7 @@ namespace Game.Animations
             var anim = new GeneratedAnimationDefine(id, name);
             anim.duration = duration;
             anim.blockTime = blockTime;
+            anim.type = (AnimationType)type;
             foreach (var pair in propDict)
             {
                 anim.setProp(pair.Key, pair.Value);
@@ -59,6 +59,7 @@ namespace Game.Animations
         public string name;
         public float duration;
         public float blockTime;
+        public int type;
         public Dictionary<string, object> propDict = new Dictionary<string, object>();
         #endregion
     }

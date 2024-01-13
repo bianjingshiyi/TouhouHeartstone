@@ -19,8 +19,16 @@ namespace Game.Animations
         }
         public override IEnumerator update(BattleTableManager table)
         {
-            sourceCardId = getEventSkinAnimCardId(table, true);
-            targetCardId = getEventSkinAnimCardId(table, false);
+            switch (define.type)
+            {
+                case AnimationType.Area:
+                    area = table.getEventSkinAnimArea(effectArg, eventArg, 0); // TODO
+                    break;
+                default:
+                    sourceCardId = getEventSkinAnimCardId(table, true);
+                    targetCardId = getEventSkinAnimCardId(table, false);
+                    break;
+            }
             yield return base.update(table);
         }
         public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)

@@ -84,7 +84,14 @@ namespace Game.BattleTable
         public DiscoverDialog Discover => _discover;
         public AttackArrow AttackArrowImage => _attackArrow;
 
+        #region 战场区域
+        public Transform AllFieldAreaTransform => _allFieldAreaTransform;
+        public Transform SelfFieldAreaTransform => _selfFieldAreaTransform;
+        public Transform EnemyFieldAreaTransform => _enemyFieldAreaTransform;
+        #endregion
+
         public AudioClip playCardSound => _playCardSound;
+
 
         [SerializeField]
         private Camera _camera;
@@ -148,6 +155,15 @@ namespace Game.BattleTable
         private DiscoverDialog _discover;
         [SerializeField]
         private AttackArrow _attackArrow;
+
+        #region 战场区域
+        [SerializeField]
+        private Transform _allFieldAreaTransform;
+        [SerializeField]
+        private Transform _selfFieldAreaTransform;
+        [SerializeField]
+        private Transform _enemyFieldAreaTransform;
+        #endregion
 
         [SerializeField]
         private AudioClip _playCardSound;

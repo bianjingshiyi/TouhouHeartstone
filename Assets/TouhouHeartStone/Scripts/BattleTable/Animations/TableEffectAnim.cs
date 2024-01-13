@@ -12,22 +12,18 @@ namespace Game.Animations
             this.sourceCardId = sourceCardId;
             this.targetCardId = targetCardId;
         }
+        public TableEffectAnim(AnimationDefine define, TableArea area)
+        {
+            this.define = define;
+            this.area = area;
+        }
         public override IEnumerator update(BattleTableManager table)
         {
             if (!effect)
             {
-                Transform srcTransform = null;
-                Transform targetTransform = null;
-                if (sourceCardId >= 0)
-                {
-                    srcTransform = table.getCardTransform(sourceCardId);
-                    _sourceConfirmed = srcTransform;
-                }
-                if (targetCardId >= 0)
-                {
-                    targetTransform = table.getCardTransform(targetCardId);
-                    _destConfirmed = targetTransform;
-                }
+                Transform srcTransform = initSourceTransform(table);
+                Transform targetTransform = initDestTransform(table);
+
                 var info = new VisualEffectInfo()
                 {
                     srcTransform = srcTransform,
@@ -38,15 +34,13 @@ namespace Game.Animations
             while (!effect.isFinished() && !(effect.state == EffectState.None && _duration >= 10f)) // 十秒没播放算超时
             {
                 // 防止类似飞刀的弹射物特效在击杀目标后又突然插在其他卡牌上之类的
-                if (!_sourceConfirmed && !effect.sourceTransform && sourceCardId >= 0)
+                if (!_sourceConfirmed && !effect.sourceTransform)
                 {
-                    effect.sourceTransform = table.getCardTransform(sourceCardId);
-                    _sourceConfirmed = effect.sourceTransform;
-                }
-                if (!_destConfirmed && !effect.destTransform && targetCardId >= 0)
+                    effect.sourceTransform = initSourceTransform(table);
+                } 
+                if (!_destConfirmed && !effect.destTransform)
                 {
-                    effect.destTransform = table.getCardTransform(targetCardId);
-                    _destConfirmed = effect.destTransform;
+                    effect.destTransform = initDestTransform(table);
                 }
                 effect.update(_deltaTime);
                 yield return null;
@@ -64,9 +58,35 @@ namespace Game.Animations
             var blockTime = effect.blockTime;
             return _duration > blockTime && blockTime >= 0;
         }
+        private Transform initSourceTransform(BattleTableManager table)
+        {
+            Transform srcTransform = null;
+            if (sourceCardId >= 0)
+            {
+                srcTransform = table.getCardTransform(sourceCardId);
+            }
+            else if (area != TableArea.None)
+            {
+                srcTransform = table.getAreaTransform(area);
+            }
+            _sourceConfirmed = srcTransform;
+            return srcTransform;
+        }
+        private Transform initDestTransform(BattleTableManager table)
+        {
+            Transform targetTransform = null;
+            if (targetCardId >= 0)
+            {
+                targetTransform = table.getCardTransform(targetCardId);
+                _destConfirmed = targetTransform;
+            }
+            _destConfirmed = targetTransform;
+            return targetTransform;
+        }
         protected AnimationDefine define;
         protected int sourceCardId;
         protected int targetCardId;
+        protected TableArea area;
         protected TableEffect effect;
         private bool _sourceConfirmed;
         private bool _destConfirmed;

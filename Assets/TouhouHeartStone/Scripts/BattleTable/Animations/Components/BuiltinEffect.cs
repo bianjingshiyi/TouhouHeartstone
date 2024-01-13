@@ -10,7 +10,20 @@ namespace Game.Animations
             anim.duration = duration;
             anim.blockTime = blockTime;
             anim.isPersistent = isPersistent;
-            anim.prefab = GetComponent<TableEffect>();
+            var comp = GetComponent<TableEffect>();
+            anim.prefab = comp;
+            switch (comp)
+            {
+                case AreaEffect:
+                    anim.type = AnimationType.Area;
+                    break;
+                case CardEffect:
+                    anim.type = AnimationType.Card;
+                    break;
+                case ProjectileEffect:
+                    anim.type = AnimationType.Projectile;
+                    break;
+            }
             return anim;
         }
         public string defineName;

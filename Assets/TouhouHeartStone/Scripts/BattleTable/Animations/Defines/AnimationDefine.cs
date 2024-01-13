@@ -95,7 +95,15 @@ namespace Game.Animations
         public float duration;
         public float blockTime;
         public bool isPersistent;
+        public AnimationType type;
         Dictionary<string, object> _propDict = new Dictionary<string, object>();
         #endregion
+    }
+    public enum AnimationType
+    {
+        Camera,
+        Area,
+        Card,
+        Projectile
     }
 }
