@@ -26,8 +26,8 @@ namespace Game.BattleTable
             servant.gameObject.SetActive(false);
             servant.setHidden(true);
 
-            // 4. 如果源牌堆不是空牌堆或广义战场牌堆，创建MovingCard，将MovingCard移动到Servant位置。
-            if (_from == null || _from.isGeneralizedBattlefield())
+            // 4. 如果源牌堆是手牌、牌库或者墓地，创建MovingCard，将MovingCard移动到Servant位置。
+            if (!shouldMoveCreateMovingCardFromPile(_from))
                 yield break;
             _tableCard = table.createMovingCard(_cardDesc, _startTablePos, _cardHeight);
 
@@ -108,6 +108,22 @@ namespace Game.BattleTable
             if (transform)
                 return table.WorldToTablePosition(transform.position);
             return _startTablePos;
+        }
+        /// <summary>
+        /// 当卡牌从某牌堆移动到战场时，是否应该创建MovingCard？
+        /// </summary>
+        /// <param name="pile"></param>
+        /// <returns></returns>
+        private static bool shouldMoveCreateMovingCardFromPile(Pile pile)
+        {
+            switch (pile?.name)
+            {
+                case PILE.GRAVE:
+                case PILE.DECK:
+                case PILE.HAND:
+                    return true;
+            }
+            return false;
         }
 
         private int _position;
