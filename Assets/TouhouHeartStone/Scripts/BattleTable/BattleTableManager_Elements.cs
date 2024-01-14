@@ -2041,6 +2041,8 @@ namespace Game.BattleTable
             var buffViewDatas = await getCardBuffViewDatas(buffs);
             ui.CardDisplayer.setBuffs(buffViewDatas);
 
+            ui.CardDisplayer.limitCanvasHeight();
+
             _isDisplayingCard = true;
         }
         private void hideCardDisplayer()
