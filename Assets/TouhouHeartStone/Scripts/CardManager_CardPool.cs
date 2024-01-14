@@ -168,6 +168,8 @@ namespace Game
             _cardPoolDict.Remove(cardPoolRef);
             _cardPoolDict.Add(cardPoolInfo.ToReference(), cardPool);
 
+            // 检查并修复路径不正确的卡图
+            await fixIncorrectPathImages(cardPoolInfo, cardPool);
             // 检查并修复老旧大卡图
             await fixLargeImage(cardPoolInfo, cardPool);
             // 对缓存的图片进行保存
@@ -1029,7 +1031,6 @@ namespace Game
                 { BuiltinActionDefineID.DealDamageToRandomTargets_Obs_Mass, BuiltinActionDefineID.DealDamageToRandomTargets },
             };
 
-            bool hasUnsavedFix = false;
             var builtinActions = builtinActionDefines;
 
             List<ActionGraph> collectedGraphs = new List<ActionGraph>();
@@ -1043,7 +1044,7 @@ namespace Game
             // 修复所有收集到的节点。
             foreach (var graph in collectedGraphs)
             {
-                fixGraph(graph);
+                await fixGraph(graph);
             }
 
             foreach (var cardDefine in cardPool.cardDefineList)
@@ -1055,29 +1056,13 @@ namespace Game
                 fixBuffDefine(buffDefine);
             }
 
-            await fixImages();
-            if (hasUnsavedFix)
-                await saveCardPool(cardPoolInfo);
+            fixSkins();
 
 
 
             #region 内嵌方法
-            async Task fixImages()
+            void fixSkins()
             {
-                if (!string.IsNullOrEmpty(cardPoolInfo.imageResPath))
-                {
-                    if (!isHashNamedImage(cardPoolInfo.imageResPath))
-                    {
-                        //图片地址必须是32位哈希.jpg
-                        Sprite sprite = await loadCardPoolImage(cardPoolInfo);
-                        // 不保存丢失的贴图。
-                        if (sprite != null)
-                        {
-                            cardPoolInfo.imageResPath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
-                            hasUnsavedFix = true;
-                        }
-                    }
-                }
                 foreach (var skin in cardPool.cardSkinList)
                 {
                     if (string.IsNullOrEmpty(skin.language))
@@ -1085,32 +1070,13 @@ namespace Game
                         //皮肤不能没有对应语言信息，如果没有那么至少设置为默认语言
                         skin.language = game.langManager.getDefaultLanguage();
                     }
-                    if (!string.IsNullOrEmpty(skin.imagePath) && !isHashNamedImage(skin.imagePath))
-                    {
-                        //图片地址必须是32位哈希.jpg
-                        Sprite sprite = await loadImage(cardPoolInfo, skin.imagePath, false);
-                        // 不保存丢失的贴图。
-                        if (sprite != null)
-                        {
-                            skin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
-                            hasUnsavedFix = true;
-                        }
-                    }
                 }
-                foreach (var buffSkin in cardPool.buffSkinList)
+                foreach (var skin in cardPool.buffSkinList)
                 {
-                    if (string.IsNullOrEmpty(buffSkin.imagePath))
-                        continue;
-                    if (!isHashNamedImage(buffSkin.imagePath))
+                    if (string.IsNullOrEmpty(skin.language))
                     {
-                        //图片地址必须是32位哈希.jpg
-                        Sprite sprite = await loadBuffImage(cardPoolInfo, buffSkin, false);
-                        // 不保存丢失的贴图。
-                        if (sprite != null)
-                        {
-                            buffSkin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
-                            hasUnsavedFix = true;
-                        }
+                        //皮肤不能没有对应语言信息，如果没有那么至少设置为默认语言
+                        skin.language = game.langManager.getDefaultLanguage();
                     }
                 }
             }
@@ -1135,26 +1101,26 @@ namespace Game
             }
 
             #region 修复节点信息
-            void fixGraph(ActionGraph graph)
+            async Task fixGraph(ActionGraph graph)
             {
                 foreach (var node in graph.nodes.ToArray())
                 {
-                    fixNode(node);
+                    await fixNode(node);
                 }
                 foreach (var connection in graph.connections.OfType<InvalidNodeConnection>().ToArray())
                 {
                     graph.disconnect(connection);
                 }
             }
-            void fixNode(Node node)
+            async Task fixNode(Node node)
             {
                 if (node is ActionNode action)
                 {
-                    fixActionNodeIncorrectData(action);
+                    await fixActionNodeIncorrectData(action);
                 }
             }
             // 修复动作节点的错误。
-            async void fixActionNodeIncorrectData(ActionNode actionNode)
+            async Task fixActionNodeIncorrectData(ActionNode actionNode)
             {
                 await fixUnknownOrObsoleteNode(actionNode);
                 fixMassObsoleteNode(actionNode);

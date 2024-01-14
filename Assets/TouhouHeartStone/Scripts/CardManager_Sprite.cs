@@ -101,7 +101,39 @@ namespace Game
                 }
             }
         }
+        /// <summary>
+        /// 保存时修正路径不正确的图片
+        /// </summary>
+        /// <param name="cardPoolInfo"></param>
+        /// <param name="cardPool"></param>
+        /// <returns></returns>
+        public async Task fixIncorrectPathImages(CardPoolInfo cardPoolInfo, CardPool cardPool)
+        {
+            cardPoolInfo.imageResPath = await fixImage(cardPoolInfo.imageResPath);
+            foreach (var skin in cardPool.cardSkinList)
+            {
+                skin.imagePath = await fixImage(skin.imagePath);
+            }
+            foreach (var buffSkin in cardPool.buffSkinList)
+            {
+                buffSkin.imagePath = await fixImage(buffSkin.imagePath);
+            }
 
+            async Task<string> fixImage(string path)
+            {
+                if (!string.IsNullOrEmpty(path) && !isHashNamedImage(path))
+                {
+                    //图片地址必须是32位哈希.jpg
+                    Sprite sprite = await loadImage(cardPoolInfo, path, false);
+                    // 不保存丢失的贴图。
+                    if (sprite != null)
+                    {
+                        path = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
+                    }
+                }
+                return path;
+            }
+        }
         /// <summary>
         /// 保存时修正过大的图片
         /// </summary>
