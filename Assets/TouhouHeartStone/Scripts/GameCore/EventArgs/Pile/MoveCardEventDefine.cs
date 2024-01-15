@@ -45,7 +45,7 @@ namespace TouhouHeartstone
             var position = arg.getVar<int>(VAR_POSITION);
             var resetProps = arg.getVar<bool>(VAR_RESET_PROPS);
 
-            var success = Pile.moveCard(game, card, from, to, position);
+            var success = await Pile.moveCard(game, card, from, to, position);
             arg.setVar(VAR_SUCCESS, success);
             if (success)
             {

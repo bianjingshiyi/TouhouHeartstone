@@ -1422,26 +1422,7 @@ namespace TouhouHeartstone
                     await clone.setProp(game, propName, propValue);
                 }
                 // 复制卡牌所有效果的启用状态，用于复制被封印的仆从。
-                foreach (var (buff, effect) in clone.getEnabledEffects())
-                {
-                    await effect.onDisable(game, clone, buff as Buff);
-                }
-                var enabledEffects = card.getEnabledEffects();
-                foreach (var (buff, effect) in enabledEffects)
-                {
-                    if (buff != null) // 该效果依附于增益上
-                    {
-                        // 寻找卡牌复制中拥有同样实例ID的增益。
-                        var cloneBuff = clone.getBuffs().FirstOrDefault(b => b.instanceID == buff.instanceID);
-                        if (cloneBuff != null) // 如果没有找到，说明该增益没有被复制，不启用。
-                            await effect.onEnable(game, clone, buff as Buff);
-                    }
-                    else
-                    {
-                        // 效果是卡牌定义上的，复制。
-                        await effect.onEnable(game, clone, null);
-                    }
-                }
+                await cloneCardEffectEnableStates(game, card, clone, from, targetPile);
                 // 清除卡牌的临时战场属性，包括已就绪，攻击次数，濒死，以及技能已使用的状态。
                 await clone.resetTemporaryFieldProps(game);
             }
@@ -1459,6 +1440,56 @@ namespace TouhouHeartstone
             if (from != null && !from.Contains(card)) // 源牌堆不包含该卡牌。
                 return true;
             return false;
+        }
+        private static async Task cloneCardEffectEnableStates(CardEngine game, Card card, Card clone, Pile from, Pile to)
+        {
+            var enableEffects = new List<(int buffId, IEffect effect)>();
+            var disableEffects = new List<(int buffId, IEffect effect)>();
+            enableEffects.AddRange(card.getEnabledEffects().Select(e => (e.buff?.instanceID ?? -1, e.effect)));
+            disableEffects.AddRange(clone.getEnabledEffects().Select(e => (e.buff?.instanceID ?? -1, e.effect)));
+            disableEffects.RemoveAll(e1 => enableEffects.Contains(e1));
+
+            // 如果目的地不是源牌堆，更新一下从卡牌原牌堆到新牌堆的效果启用状态。
+            if (from?.name != to?.name)
+            {
+                var shouldEnableEffects = Pile.getMoveShouldEnableCardEffects(clone, from, to).Select(e => (e.buff?.instanceID ?? -1, e.effect));
+                var shouldDisableEffects = Pile.getMoveShouldDisableCardEffects(clone, from, to).Select(e => (e.buff?.instanceID ?? -1, e.effect));
+                disableEffects.RemoveAll(e1 => shouldEnableEffects.Contains(e1) || shouldDisableEffects.Contains(e1));
+                enableEffects.RemoveAll(e1 => shouldEnableEffects.Contains(e1) || shouldDisableEffects.Contains(e1));
+                enableEffects.AddRange(shouldEnableEffects);
+                disableEffects.AddRange(shouldDisableEffects);
+            }
+
+            foreach (var (buffId, effect) in disableEffects)
+            {
+                if (buffId >= 0) // 该效果依附于增益上
+                {
+                    // 寻找卡牌复制中拥有同样实例ID的增益。
+                    var cloneBuff = clone.getBuffs().FirstOrDefault(b => b.instanceID == buffId);
+                    if (cloneBuff != null) // 如果没有找到，说明该增益没有被复制，不禁用。
+                        await effect.onDisable(game, clone, cloneBuff);
+                }
+                else
+                {
+                    // 效果是卡牌定义上的，复制。
+                    await effect.onDisable(game, clone, null);
+                }
+            }
+            foreach (var (buffId, effect) in enableEffects)
+            {
+                if (buffId >= 0) // 该效果依附于增益上
+                {
+                    // 寻找卡牌复制中拥有同样实例ID的增益。
+                    var cloneBuff = clone.getBuffs().FirstOrDefault(b => b.instanceID == buffId);
+                    if (cloneBuff != null) // 如果没有找到，说明该增益没有被复制，不启用。
+                        await effect.onEnable(game, clone, cloneBuff);
+                }
+                else
+                {
+                    // 效果是卡牌定义上的，复制。
+                    await effect.onEnable(game, clone, null);
+                }
+            }
         }
         #endregion
 
