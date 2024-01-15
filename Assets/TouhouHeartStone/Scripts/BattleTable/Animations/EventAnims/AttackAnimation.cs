@@ -14,6 +14,8 @@ namespace Game.BattleTable
         {
             var card = table.getEventCardSnapshot(startData, EVENTVAR.CARD);
             var target = table.getEventCardSnapshot(startData, EVENTVAR.TARGET_CARD);
+            if (card == null || target == null)
+                yield break;
             TableCharacter attackObj = getCharacterUI(table, card.id);
             TableCharacter attackedObj = getCharacterUI(table, target.id);
             SimpleAnim attackStartSimpleAnim = attackObj?.onAttackStart;
@@ -35,45 +37,52 @@ namespace Game.BattleTable
         {
             var card = eventArg.getVar<Card>(EVENTVAR.CARD);
             var target = eventArg.getVar<Card>(EVENTVAR.TARGET_CARD);
-            TableCharacter attackObj = getCharacterUI(table, card.id);
-            TableCharacter attackedObj = getCharacterUI(table, target.id);
-            SimpleAnim attackSimpleAnim = attackObj?.onAttack;
-            SimpleAnim attackedSimpleAnim = attackedObj?.onAttacked;
-
-            // 攻击。
-            if (attackObj && attackedObj)
+            if (card != null)
             {
-                attackObj.positionLerp.setStartPositionToCurrent();
-                attackObj.positionLerp.setTargetTransform(attackedObj.transform, table.TableToWorldDistance(150));
-            }
-
-            if (attackObj && attackSimpleAnim != null)
-            {
-                AnimAnim attackAnim = null;
-                while (!SimpleAnimHelper.update(table, ref attackAnim, attackSimpleAnim, attackObj.animator, _deltaTime))
+                if (target != null)
                 {
-                    if (attackObj.isAttackHit())
-                    {
-                        _attacked = true;
-                    }
-                    yield return null;
-                }
-                attackObj.resetAttackHit();
-            }
-            _attacked = true;
-            if (attackedObj && attackedSimpleAnim != null)
-            {
-                AnimAnim attackAnim = null;
-                while (!SimpleAnimHelper.update(table, ref attackAnim, attackedSimpleAnim, attackedObj.animator, _deltaTime))
-                    yield return null;
-            }
+                    TableCharacter attackObj = getCharacterUI(table, card.id);
+                    TableCharacter attackedObj = getCharacterUI(table, target.id);
+                    SimpleAnim attackSimpleAnim = attackObj?.onAttack;
+                    SimpleAnim attackedSimpleAnim = attackedObj?.onAttacked;
 
-            // 返回。
-            yield return returnFromAttack(table, card.id);
+                    // 攻击。
+                    if (attackObj && attackedObj)
+                    {
+                        attackObj.positionLerp.setStartPositionToCurrent();
+                        attackObj.positionLerp.setTargetTransform(attackedObj.transform, table.TableToWorldDistance(150));
+                    }
+
+                    if (attackObj && attackSimpleAnim != null)
+                    {
+                        AnimAnim attackAnim = null;
+                        while (!SimpleAnimHelper.update(table, ref attackAnim, attackSimpleAnim, attackObj.animator, _deltaTime))
+                        {
+                            if (attackObj.isAttackHit())
+                            {
+                                _attacked = true;
+                            }
+                            yield return null;
+                        }
+                        attackObj.resetAttackHit();
+                    }
+                    _attacked = true;
+                    if (attackedObj && attackedSimpleAnim != null)
+                    {
+                        AnimAnim attackAnim = null;
+                        while (!SimpleAnimHelper.update(table, ref attackAnim, attackedSimpleAnim, attackedObj.animator, _deltaTime))
+                            yield return null;
+                    }
+                }
+                // 返回。
+                yield return returnFromAttack(table, card.id);
+            }
         }
         public override IEnumerator canceledUpdate(BattleTableManager table)
         {
             var card = eventArg.getVar<Card>(EVENTVAR.CARD);
+            if (card == null)
+                yield break;
             yield return returnFromAttack(table, card.id);
         }
         public override bool continueNextGroup(AnimationGroup nextGroup)
