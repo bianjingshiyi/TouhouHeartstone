@@ -89,9 +89,12 @@ namespace UI
             _editVisualEffectDialog.initEffects(animations);
             _editVisualEffectDialog.initPositionOptions(positions);
         }
-        public void updateAnimationDialog(string[] eventNames, VisualEffectDialogInfo viewData)
+        public void initNodeAnimationDialogEvents(string[] eventNames)
         {
             _editVisualEffectDialog.initEvents(eventNames);
+        }
+        public void updateAnimationDialog(VisualEffectDialogInfo viewData)
+        {
             _editVisualEffectDialog.update(viewData);
         }
         public void displayNodeAnimationDialog(Node node)
@@ -835,6 +838,8 @@ namespace UI
         public const string VISUAL_EFFECT_POSITION_THIS_CARD = "这张卡牌";
         [TranslateMsg("特效动画的始末位置选项")]
         public const string VISUAL_EFFECT_POSITION_TARGET_CARD = "目标卡牌";
+        [TranslateMsg("特效动画的始末位置选项")]
+        public const string VISUAL_EFFECT_POSITION_TEMP_VAR = "临时变量";
 
         public static readonly string[] categories = new string[]
         {
@@ -870,7 +875,8 @@ namespace UI
             VISUAL_EFFECT_POSITION_SELF_MASTER,
             VISUAL_EFFECT_POSITION_ENEMY_MASTER,
             VISUAL_EFFECT_POSITION_THIS_CARD,
-            VISUAL_EFFECT_POSITION_TARGET_CARD
+            VISUAL_EFFECT_POSITION_TARGET_CARD,
+            VISUAL_EFFECT_POSITION_TEMP_VAR
         };
         private EventTriggerTime[] eventTriggerTimes => scene.editor.eventTriggerTimes;
     }
@@ -880,5 +886,6 @@ namespace UI
         public const int ENEMY_MASTER = 1;
         public const int THIS_CARD = 2;
         public const int TARGET_CARD = 3;
+        public const int TEMP_VAR = 4;
     }
 }

@@ -43,6 +43,8 @@ namespace Game
             int animIndex = -1;
             int sourcePosition = 0;
             int targetPosition = 0;
+            string sourcePositionVarName = string.Empty;
+            string targetPositionVarName = string.Empty;
             if (animRef != null)
             {
                 var animEventRef = animRef.eventReference;
@@ -65,6 +67,8 @@ namespace Game
                 }
                 sourcePosition = animRef.sourcePosition;
                 targetPosition = animRef.targetPosition;
+                sourcePositionVarName = animRef.sourcePositionVarName;
+                targetPositionVarName = animRef.targetPositionVarName;
             }
 
             var eventViewData = new VisualEffectDialogInfo()
@@ -72,7 +76,11 @@ namespace Game
                 eventIndex = eventIndex,
                 animIndex = animIndex + 1,
                 sourcePosition = sourcePosition,
-                targetPosition = targetPosition
+                targetPosition = targetPosition,
+                sourcePositionVarName = sourcePositionVarName,
+                targetPositionVarName = targetPositionVarName,
+                sourcePositionVarNameVisible = sourcePosition == VisualEffectPosition.TEMP_VAR,
+                targetPositionVarNameVisible = targetPosition == VisualEffectPosition.TEMP_VAR
             };
             return eventViewData;
         }
@@ -144,6 +152,8 @@ namespace Game
             animRef.eventReference = eventRefs == null || info.eventIndex < 0 ? null : eventRefs[info.eventIndex];
             animRef.sourcePosition = info.sourcePosition;
             animRef.targetPosition = info.targetPosition;
+            animRef.sourcePositionVarName = info.sourcePositionVarName;
+            animRef.targetPositionVarName = info.targetPositionVarName;
         }
         [TranslateMsg("默认的特效名称")]
         public const string VFX_DEFAULT_NAME = "特效";

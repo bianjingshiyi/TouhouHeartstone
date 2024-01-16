@@ -33,7 +33,11 @@ namespace UI
             setEvent(viewData.eventIndex);
             setAnimation(viewData.animIndex);
             setSourcePosition(viewData.sourcePosition);
+            setSourcePositionVarName(viewData.sourcePositionVarName);
+            _sourcePositionVarNameObject.SetActive(viewData.sourcePositionVarNameVisible);
             setTargetPosition(viewData.targetPosition);
+            setTargetPositionVarName(viewData.targetPositionVarName);
+            _targetPositionVarNameObject.SetActive(viewData.targetPositionVarNameVisible);
         }
         public void setEvent(int index)
         {
@@ -51,6 +55,14 @@ namespace UI
         {
             _targetPositionDropdown.SetValueWithoutNotify(index);
         }
+        public void setSourcePositionVarName(string varName)
+        {
+            _sourcePositionVarNameField.SetTextWithoutNotify(varName);
+        }
+        public void setTargetPositionVarName(string varName)
+        {
+            _targetPositionVarNameField.SetTextWithoutNotify(varName);
+        }
         #endregion
         #region 私有方法
         protected void Awake()
@@ -59,6 +71,8 @@ namespace UI
             _effectDropdown.onValueChanged.AddListener(v => onValueChangedCallback());
             _sourcePositionDropdown.onValueChanged.AddListener(v => onValueChangedCallback());
             _targetPositionDropdown.onValueChanged.AddListener(v => onValueChangedCallback());
+            _sourcePositionVarNameField.onEndEdit.AddListener(v => onValueChangedCallback());
+            _targetPositionVarNameField.onEndEdit.AddListener(v => onValueChangedCallback());
             _confirmButton.onClick.AddListener(OnConfirmCallback);
         }
         private void onValueChangedCallback()
@@ -77,6 +91,8 @@ namespace UI
                 animIndex = _effectDropdown.value - 1,
                 sourcePosition = _sourcePositionDropdown.value,
                 targetPosition = _targetPositionDropdown.value,
+                sourcePositionVarName = _sourcePositionVarNameField.text,
+                targetPositionVarName = _targetPositionVarNameField.text,
             };
         }
         #endregion
@@ -96,6 +112,14 @@ namespace UI
         [SerializeField]
         private Dropdown _targetPositionDropdown;
         [SerializeField]
+        private GameObject _sourcePositionVarNameObject;
+        [SerializeField]
+        private GameObject _targetPositionVarNameObject;
+        [SerializeField]
+        private InputField _sourcePositionVarNameField;
+        [SerializeField]
+        private InputField _targetPositionVarNameField;
+        [SerializeField]
         private Button _confirmButton;
         #endregion
     }
@@ -105,5 +129,9 @@ namespace UI
         public int animIndex;
         public int sourcePosition;
         public int targetPosition;
+        public string sourcePositionVarName;
+        public string targetPositionVarName;
+        public bool sourcePositionVarNameVisible;
+        public bool targetPositionVarNameVisible;
     }
 }

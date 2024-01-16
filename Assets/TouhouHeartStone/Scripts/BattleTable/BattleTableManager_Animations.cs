@@ -197,11 +197,33 @@ namespace Game.BattleTable
         {
             return gameManager.getAnimationDefine(animRef);
         }
-        private void checkCardSkinEffectAnimations(IEventArg arg)
+        private void addSkinEffectAnim(AnimationDefine animationDef, EventArg arg, EventArg effectTriggerArg, SkinAnimationRef skinAnimRef, Flow flow)
+        {
+            var anim = new EventEffectAnim(animationDef, arg, effectTriggerArg, skinAnimRef);
+            if (skinAnimRef.sourcePosition == VisualEffectPosition.TEMP_VAR)
+            {
+                var tempVar = flow.getFlowVariable(skinAnimRef.sourcePositionVarName);
+                if (FlowConvert.tryConvertType(flow, tempVar, out Card card))
+                {
+                    anim.sourceTempVarCardId = card?.id ?? -1;
+                }
+            }
+            if (skinAnimRef.targetPosition == VisualEffectPosition.TEMP_VAR)
+            {
+                var tempVar = flow.getFlowVariable(skinAnimRef.targetPositionVarName);
+                if (FlowConvert.tryConvertType(flow, tempVar, out Card card))
+                {
+                    anim.targetTempVarCardId = card?.id ?? -1;
+                }
+            }
+            addAnim(anim);
+            addToInsertedAnimsOfParent(arg, anim);
+        }
+        private void checkCardSkinEffectAnimations(Flow flow, EventArg arg)
         {
             if (arg is EventArg eventArg && eventArg.define is EffectTriggerEventDefine)
             {
-                checkCardSkinEffectEntryAnimation(eventArg);
+                checkCardSkinEffectEntryAnimation(flow, eventArg);
                 return;
             }
             var effectTriggerArg = getEffectEventTriggerArg(arg);
@@ -213,24 +235,20 @@ namespace Game.BattleTable
             var animationDef = getAnimationDefine(skinAnimRef.animRef);
             if (animationDef != null)
             {
-                var anim = new EventEffectAnim(animationDef, arg, effectTriggerArg, skinAnimRef);
-                addAnim(anim);
-                addToInsertedAnimsOfParent(arg, anim);
+                addSkinEffectAnim(animationDef, arg, effectTriggerArg, skinAnimRef, flow);
             }
         }
-        private void checkCardSkinEffectEntryAnimation(EventArg arg)
+        private void checkCardSkinEffectEntryAnimation(Flow flow, EventArg arg)
         {
             if (arg == null)
                 return;
-            var skinAnimRef = getEffectEntrySkinAnimRef(arg);
+            var skinAnimRef = getEffectEntrySkinAnimRef(flow, arg);
             if (skinAnimRef == null)
                 return;
             var animationDef = getAnimationDefine(skinAnimRef.animRef);
             if (animationDef != null)
             {
-                var anim = new EventEffectAnim(animationDef, arg, arg, skinAnimRef);
-                addAnim(anim);
-                addToInsertedAnimsOfParent(arg, anim);
+                addSkinEffectAnim(animationDef, arg, arg, skinAnimRef, flow);
             }
         }
         public EventArg getEffectEventTriggerArg(IEventArg arg)
@@ -246,7 +264,7 @@ namespace Game.BattleTable
             }
             return null;
         }
-        public SkinAnimationRef getEventSkinAnimRef(IEventArg arg, EventArg effectArg)
+        public SkinAnimationRef getEventSkinAnimRef(EventArg arg, EventArg effectArg)
         {
             var effectRef = effectArg.getVar<EffectReference>(EffectTriggerEventDefine.VAR_EFFECT_REF);
             var effect = effectRef.getEffect();
@@ -272,7 +290,7 @@ namespace Game.BattleTable
             }
             return null;
         }
-        public SkinAnimationRef getEffectEntrySkinAnimRef(EventArg effectArg)
+        public SkinAnimationRef getEffectEntrySkinAnimRef(Flow flow, EventArg effectArg)
         {
             var effectRef = effectArg.getVar<EffectReference>(EffectTriggerEventDefine.VAR_EFFECT_REF);
             var effect = effectRef.getEffect();

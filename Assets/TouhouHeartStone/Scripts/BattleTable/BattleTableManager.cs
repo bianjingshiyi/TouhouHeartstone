@@ -585,7 +585,7 @@ namespace Game.BattleTable
         /// <param name="arg"></param>
         private void onEventBefore(IEventArg arg)
         {
-            checkCardSkinEffectAnimations(arg);
+            checkCardSkinEffectAnimations(game.currentFlow, arg as EventArg);
             TableAnimation anim = createEventAnim(arg);
             if (anim != null)
             {

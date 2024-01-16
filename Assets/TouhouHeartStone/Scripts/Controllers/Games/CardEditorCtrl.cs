@@ -755,13 +755,16 @@ namespace Controllers
         {
             var eventNames = game.anims.getNodeVisualEffectEventEditorNames(node);
             var viewData = game.anims.getNodeAnimationViewData(node, _curCardSkin);
-            _graphEditor.updateAnimationDialog(eventNames, viewData);
+            _graphEditor.initNodeAnimationDialogEvents(eventNames);
+            _graphEditor.updateAnimationDialog(viewData);
             _graphEditor.displayNodeAnimationDialog(node);
         }
         private void onNodeAnimationPropChangedCallback(Node node, VisualEffectDialogInfo info)
         {
             game.anims.updateNodeAnimRef(node, _curCardSkin, info);
             markUnsaved();
+            var eventViewData = game.anims.getNodeAnimationViewData(node, _curCardSkin);
+            _graphEditor.updateAnimationDialog(eventViewData);
         }
         #endregion
 

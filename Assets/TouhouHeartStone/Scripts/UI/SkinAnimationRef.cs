@@ -29,6 +29,8 @@ namespace UI
         public string key;
         public int sourcePosition;
         public int targetPosition;
+        public string sourcePositionVarName;
+        public string targetPositionVarName;
         public EventReference eventReference;
         public DefineReference animRef;
         public const string NODE_CONST_KEY = "EDITOR_ANIMATION_REF";
@@ -43,6 +45,8 @@ namespace UI
             this.animRef = animRef.animRef;
             sourcePosition = animRef.sourcePosition;
             targetPosition = animRef.targetPosition;
+            sourcePositionVarName = animRef.sourcePositionVarName;
+            targetPositionVarName = animRef.targetPositionVarName;
             if (animRef.eventReference != null)
                 eventReference = animRef.eventReference;
         }
@@ -52,11 +56,15 @@ namespace UI
             {
                 eventReference = eventReference,
                 sourcePosition = sourcePosition,
-                targetPosition = targetPosition
+                targetPosition = targetPosition,
+                sourcePositionVarName = sourcePositionVarName,
+                targetPositionVarName = targetPositionVarName
             };
         }
         public int sourcePosition;
         public int targetPosition;
+        public string sourcePositionVarName;
+        public string targetPositionVarName;
         public string key;
         public DefineReference animRef;
         public EventReference eventReference;
