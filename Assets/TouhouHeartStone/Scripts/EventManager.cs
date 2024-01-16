@@ -229,6 +229,8 @@ namespace Game
         public const string EDITOR_EVENT_NAME_SELECT_CARD = "选择卡牌";
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_SELECT_CARD_DEFINE = "选择卡牌定义";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_LIFESTEAL = "吸血";
         static string[] _hiddenEvents =
         {
             "SecretTriggerEvent",
@@ -334,7 +336,8 @@ namespace Game
             { "ChangeCardVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_CARD_VISIBILITY },
             { "ChangeCardPropVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_CARD_PROP_VISIBILITY },
             { "ChangeBuffPropVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_BUFF_PROP_VISIBILITY },
-            { "RevealCardDefineEvent", EDITOR_EVENT_NAME_REVEAL_CARD_DEFINE }
+            { "RevealCardDefineEvent", EDITOR_EVENT_NAME_REVEAL_CARD_DEFINE },
+            { "LifestealEvent", EDITOR_EVENT_NAME_LIFESTEAL }
         };
         List<EventDefine> _builtinEventDefineList = null;
         [SerializeField]

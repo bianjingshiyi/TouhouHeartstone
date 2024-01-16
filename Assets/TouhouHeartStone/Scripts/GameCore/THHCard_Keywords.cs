@@ -156,6 +156,13 @@ namespace TouhouHeartstone
         }
         #endregion
 
+        #region 实现
+        public static Task lifesteal(this Card source, CardEngine game, int damage)
+        {
+            return LifestealEventDefine.doEvent(game, source, damage);
+        }
+        #endregion
+
         #endregion
 
         #region 动作关键词
@@ -190,7 +197,6 @@ namespace TouhouHeartstone
             return card.getProp<bool>(game, CARD.SILENCE);
         }
         #endregion
-
 
         #region 可消耗关键词
         /// <summary>

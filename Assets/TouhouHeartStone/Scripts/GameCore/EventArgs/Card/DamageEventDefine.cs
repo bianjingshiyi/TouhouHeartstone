@@ -182,7 +182,7 @@ namespace TouhouHeartstone
                 if (poisonous && card.isServant())
                     await card.kill(game);
                 if (lifesteal && (card.isServant() || card.isMaster()))
-                    await source.getOwner().getMaster().heal(game, card, damage);
+                    await source.lifesteal(game, damage);
             }
         }
 
