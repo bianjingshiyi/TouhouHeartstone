@@ -104,6 +104,7 @@ namespace Game.Animations
         Camera,
         Area,
         Card,
+        Vector,
         Projectile
     }
 }

@@ -20,6 +20,9 @@ namespace Game.Animations
                 case CardEffect:
                     anim.type = AnimationType.Card;
                     break;
+                case VectorEffect:
+                    anim.type = AnimationType.Vector;
+                    break;
                 case ProjectileEffect:
                     anim.type = AnimationType.Projectile;
                     break;
