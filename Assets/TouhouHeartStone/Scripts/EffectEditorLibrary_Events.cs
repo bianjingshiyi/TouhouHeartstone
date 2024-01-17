@@ -116,6 +116,7 @@ namespace Game
             return equals ? eventArg : null;
         }
 
+        [EventNode(typeof(SetEventVarEventDefine))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetEventVariable, EDITOR_NODE_EVENT, StringTable.EDITOR_NODE_NAME_SET_VARIABLE, "SetVariable")]
         public static void setVariable(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,

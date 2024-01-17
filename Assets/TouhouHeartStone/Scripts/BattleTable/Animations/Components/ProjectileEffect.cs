@@ -35,13 +35,19 @@ namespace Game.Animations
             {
                 transform.position = targetWorldPos;
             }
-            transform.forward = distance.normalized;
+
+            if (_faceToTarget)
+                transform.forward = distance.normalized;
         }
+
+        [Header("Projectile")]
         [SerializeField]
         private AnimationCurve _flyCurve = AnimationCurve.Linear(0, 0, 1, 1);
         [SerializeField]
         private AnimationCurve _offsetCurve = AnimationCurve.Constant(0, 1, 0);
         [SerializeField]
         private Transform _projectileRoot;
+        [SerializeField]
+        private bool _faceToTarget = true;
     }
 }
