@@ -17,7 +17,7 @@ namespace TouhouHeartstone
                 new EventVariableInfo() { name = EVENTVAR.CARD, type=typeof(Card)},
                 new EventVariableInfo() { name = EVENTVAR.POSITION, type=typeof(int)},
                 new EventVariableInfo() { name = EVENTVAR.COST, type=typeof(int)},
-                new EventVariableInfo() { name = EVENTVAR.TARGET_CARD, type = typeof(Card) }
+                new EventVariableInfo() { name = VAR_TARGETS, type = typeof(Card[]) }
             };
             afterVariableInfos = new EventVariableInfo[]
             {
@@ -25,7 +25,7 @@ namespace TouhouHeartstone
                 new EventVariableInfo() { name = EVENTVAR.CARD,type=typeof(Card)},
                 new EventVariableInfo() { name = EVENTVAR.POSITION,type=typeof(int)},
                 new EventVariableInfo() { name = EVENTVAR.COST,type=typeof(int)},
-                new EventVariableInfo() { name = EVENTVAR.TARGET_CARD, type = typeof(Card) }
+                new EventVariableInfo() { name = VAR_TARGETS, type = typeof(Card[]) }
             };
         }
         [Obsolete]
@@ -34,17 +34,15 @@ namespace TouhouHeartstone
             record.setVar(EVENTVAR.PLAYER, arg);
             record.setCardState(EVENTVAR.CARD, arg);
             record.setVar(EVENTVAR.POSITION, arg);
-            record.setCardStates(EVENTVAR.TARGETS, arg);
+            record.setCardStates(VAR_TARGETS, arg);
             record.setVar(EVENTVAR.COST, arg);
-            var targets = arg.getVar<Card[]>(EVENTVAR.TARGETS);
-            record.setCardState(EVENTVAR.TARGET_CARD, targets != null && targets.Length > 0 ? targets[0] : null);
         }
         public override async Task execute(IEventArg arg)
         {
             var game = arg.game;
             var player = arg.getVar<Player>(EVENTVAR.PLAYER);
             var card = arg.getVar<Card>(EVENTVAR.CARD); ;
-            var targets = arg.getVar<Card[]>(EVENTVAR.TARGETS);
+            var targets = arg.getVar<Card[]>(VAR_TARGETS);
             var position = arg.getVar<int>(EVENTVAR.POSITION);
             var targetLog = targets.Length > 0 ? $"，目标：{string.Join<Card>("，", targets)}" : null;
             game.logger.logTrace($"{player}使用{card}{targetLog}");
@@ -90,9 +88,8 @@ namespace TouhouHeartstone
             arg.setVar(EVENTVAR.PLAYER, player);
             arg.setVar(EVENTVAR.CARD, card);
             arg.setVar(EVENTVAR.POSITION, position);
-            arg.setVar(EVENTVAR.TARGETS, targets);
+            arg.setVar(VAR_TARGETS, targets);
             arg.setVar(EVENTVAR.COST, cost);
-            arg.setVar(EVENTVAR.TARGET_CARD, targets != null && targets.Length > 0 ? targets[0] : null);
             return game.triggers.doEvent(arg);
         }
         #region 私有方法
@@ -109,7 +106,7 @@ namespace TouhouHeartstone
 
         DescribableCard[] IDescribableEventDefine.getTargets(IGame game, EventArg eventArg, IPlayer viewer)
         {
-            var targets = eventArg.getVar<Card[]>(EVENTVAR.TARGETS);
+            var targets = eventArg.getVar<Card[]>(VAR_TARGETS);
             return targets.Select(t => (DescribableCard)t).ToArray();
         }
 
@@ -137,7 +134,7 @@ namespace TouhouHeartstone
 
         private string localizeTemplateString(EventArg eventArg)
         {
-            var targets = eventArg.getVar<Card[]>(EVENTVAR.TARGETS);
+            var targets = eventArg.getVar<Card[]>(VAR_TARGETS);
             if (targets == null || targets.Length < 1)
                 return TEMPLATE_NO_TARGET;
             else
@@ -147,7 +144,7 @@ namespace TouhouHeartstone
         {
             var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
             var card = eventArg.getVar<Card>(EVENTVAR.CARD);
-            var targets = eventArg.getVar<Card[]>(EVENTVAR.TARGETS);
+            var targets = eventArg.getVar<Card[]>(VAR_TARGETS);
             return new object[]
             {
                 player.name,
@@ -166,5 +163,7 @@ namespace TouhouHeartstone
         const string TEMPLATE_HAS_TARGET = "{0} 对 {2} 使用了 {1}";
         [TranslateMsg("游戏事件日志项名称")]
         private const string LOG_ITEM_NAME = "使用";
+
+        public static string VAR_TARGETS => EVENTVAR.TARGET_CARD;
     }
 }
