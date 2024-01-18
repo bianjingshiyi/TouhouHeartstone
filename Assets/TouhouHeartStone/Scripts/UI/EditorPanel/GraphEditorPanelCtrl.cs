@@ -135,7 +135,7 @@ namespace UI
 
             var categoryNames = categories.Select(c => _actionGraphCtrl.tryTranslateWithDict(c)).ToArray();
             _nodesPanel.initCategories(categoryNames, categories);
-            _nodesPanel.initTypes(game.editor.getEditorVarTypeNames());
+            _nodesPanel.initTypes(game.editor.getEditorPortTypeNames());
             _nodesPanel.onItemBeginDrag += OnNodeItemBeginDrag;
             _nodesPanel.onItemDrag += OnNodeItemDrag;
             _nodesPanel.onItemEndDrag += OnNodeItemEndDrag;
@@ -621,7 +621,7 @@ namespace UI
                 {
                     if (!outputFilter[i])
                         continue;
-                    var outputType = game.editor.getEditorVarTypeAt(i);
+                    var outputType = GraphTypes.getPortTypeAt(i);
                     if (!outputs.Any(d => d == outputType))
                     {
                         return false;

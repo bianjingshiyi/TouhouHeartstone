@@ -77,6 +77,9 @@ namespace UI
             setProp(ref _defaultValueTypeName, props.defaultValueTypeName);
             setProp(ref _valueTypeNames, props.valueTypeNames);
 
+            setProp(ref _typeNames, props.graphTypeNames);
+            setProp(ref _typeValues, props.graphTypeValues);
+
             foreach (var child in _childrenElementList.getElements<ValueInputFieldListItem>())
             {
                 child.valueField.initProperties(props);
@@ -308,6 +311,10 @@ namespace UI
             else if (valueType == ActionNodeValueType.eventReference)
             {
                 callValueChangedCallback(_eventValues[index]);
+            }
+            else if (valueType == ActionNodeValueType.type)
+            {
+                callValueChangedCallback(_typeValues[index]);
             }
         }
         private void onBuffDropdownValueChangedCallback(int index)
@@ -592,6 +599,29 @@ namespace UI
                     index = 0;
                 _dropdown.SetValueWithoutNotify(index);
             }
+            else if (valueType == ActionNodeValueType.type)
+            {
+                _dropdown.gameObject.SetActive(true);
+                _dropdown.ClearOptions();
+                _dropdown.AddOptions(new List<string>(_typeNames));
+                int index = 0;
+                if (_valueInfo.value is int intValue)
+                {
+                    //如果value为int，那有可能是枚举值序列化之后变成了整数再反序列化的结果，直接使用。
+                    index = intValue;
+                }
+                else if (_valueInfo.value is string str)
+                {
+                    index = Array.FindIndex(_typeValues, t => t == str);
+                }
+                else if (_valueInfo.value is TypeName typeName)
+                {
+                    index = Array.IndexOf(_typeValues, typeName);
+                }
+                if (index < 0)
+                    index = 0;
+                _dropdown.SetValueWithoutNotify(index);
+            }
             else
             {
                 _dropdown.gameObject.SetActive(false);
@@ -858,6 +888,10 @@ namespace UI
         private ValueTypeNameMap[] _valueTypeNames;
         [SerializeField]
         private NodeValueType[] _valueTypeValues;
+        [SerializeField]
+        private string[] _typeNames;
+        [SerializeField]
+        private string[] _typeValues;
 
         [SerializeField]
         ActionNodeValueInfo _valueInfo;
@@ -948,6 +982,8 @@ namespace UI
         public string defaultValueTypeName;
         public ValueTypeNameMap[] valueTypeNames;
 
+        public string[] graphTypeNames;
+        public string[] graphTypeValues;
 
         public static ValueInputFieldProperties eventReference(string[] eventNames, EventReference[] eventValues)
         {

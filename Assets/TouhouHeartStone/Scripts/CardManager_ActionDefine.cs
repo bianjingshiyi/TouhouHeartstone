@@ -39,7 +39,7 @@ namespace Game
 
             var nodeDefiner = getLocalNodeDefiner();
             // 铺设节点。
-            var clone = cloneSeri.toGeneratedActionDefine(game.editor.getTypeByName);
+            var clone = cloneSeri.toGeneratedActionDefine(GraphTypes.getTypeByName);
             clone.cardPoolId = cardPoolId;
             // 定义所有节点。
             clone.graph.DefineGeneratedActionDefine(clone);

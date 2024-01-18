@@ -180,6 +180,7 @@ namespace UI
             { typeof(CardPropertyGetterName), ActionNodeValueType.cardPropertyNameGet },
             { typeof(CardDefinePropertyGetterName), ActionNodeValueType.cardDefinePropertyNameGet },
             { typeof(EventVarName), ActionNodeValueType.eventVarName },
+            { typeof(TypeName), ActionNodeValueType.type },
 
             { typeof(CardDefine), ActionNodeValueType.cardReference },
             { typeof(BuffDefine), ActionNodeValueType.buffReference },
@@ -203,6 +204,7 @@ namespace UI
             { ActionNodeValueType.cardPropertyNameGet, () => new CardPropertyGetterName(string.Empty) },
             { ActionNodeValueType.cardDefinePropertyNameGet, () => new CardDefinePropertyGetterName(string.Empty)  },
             { ActionNodeValueType.eventVarName, () => new EventVarName(string.Empty) },
+            { ActionNodeValueType.type, () => new TypeName(typeof(object).Name) },
         };
 
     }
@@ -288,5 +290,9 @@ namespace UI
         /// 增益引用
         /// </summary>
         buffReference,
+        /// <summary>
+        /// 类型
+        /// </summary>
+        type,
     }
 }

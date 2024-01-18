@@ -204,12 +204,12 @@ namespace Controllers
         }
         private (Type type, string name)[] getEditorVarTypes()
         {
-            var typeNames = game.editor.getEditorVarTypeNames();
+            var typeNames = game.editor.getEditorPortTypeNames();
             (Type type, string name)[] types = new (Type type, string name)[typeNames.Length];
             for (int i = 0; i < types.Length; i++)
             {
                 var name = typeNames[i];
-                types[i] = (game.editor.getEditorVarTypeAt(i), name);
+                types[i] = (GraphTypes.getPortTypeAt(i), name);
             }
             return types;
         }
@@ -293,8 +293,8 @@ namespace Controllers
                 {
                     type = type.GetElementType();
                 }
-                int typeIndex = game.editor.getEditorVarTypeNameIndex(type.Name);
-                var typeName = game.editor.getEditorVarTypeNames()[typeIndex];
+                int typeIndex = GraphTypes.getPortTypeIndexByName(type.Name);
+                var typeName = game.editor.getEditorPortTypeNames()[typeIndex];
                 var arrayStr = isArray ? game.lang._(ACTION_VARIABLE_IS_ARRAY) : string.Empty;
                 var paramsStr = isParams ? game.lang._(ACTION_VARIABLE_IS_PARAMS) : string.Empty;
                 var typeNameStr = game.lang._(ACTION_VARIABLE_TYPE_NAME_TEMPLATE, typeName, arrayStr, paramsStr);
@@ -319,8 +319,8 @@ namespace Controllers
                 {
                     type = type.GetElementType();
                 }
-                int typeIndex = game.editor.getEditorVarTypeNameIndex(type.Name);
-                var typeName = game.editor.getEditorVarTypeNames()[typeIndex];
+                int typeIndex = GraphTypes.getPortTypeIndexByName(type.Name);
+                var typeName = game.editor.getEditorPortTypeNames()[typeIndex];
                 var arrayStr = isArray ? game.lang._(ACTION_VARIABLE_IS_ARRAY) : string.Empty;
                 var typeNameStr = game.lang._(ACTION_VARIABLE_TYPE_NAME_TEMPLATE, typeName, arrayStr, string.Empty);
                 return new ActionPortDefineViewData()

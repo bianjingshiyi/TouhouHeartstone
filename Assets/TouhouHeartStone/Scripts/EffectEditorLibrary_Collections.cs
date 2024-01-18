@@ -765,6 +765,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_INDEX_OF_ELEMENT = "获取元素在集合中的位置";
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_NAME_MERGE = "合并多个集合";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_CAST_COLLECTION_TYPE = "转换集合类型"; 
 
         [TranslateMsg("编辑器-参数名称")]
         public const string EDITOR_PARAM_NAME_SELECTOR = "选择的属性";
@@ -774,6 +776,10 @@ namespace Game
         public const string EDITOR_PARAM_NAME_MANY_COLLECTIONS = "多个集合";
         [TranslateMsg("编辑器-参数名称")]
         public const string EDITOR_PARAM_NAME_MERGED_COLLECTION = "合并的集合";
+        [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_SPECIFIC_TYPE_COLLECTION = "特定类型的集合";
+        [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_TYPE = "类型";
 
         /// <summary>
         /// 获取集合内所有元素的某项属性
@@ -881,6 +887,38 @@ namespace Game
                 }
             }
             return list.ToArray();
+        }
+
+
+        /// <summary>
+        /// 转换集合类型
+        /// </summary>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        [THHActionMethod(BuiltinActionDefineID.CastCollectionType, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_CAST_COLLECTION_TYPE)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_SPECIFIC_TYPE_COLLECTION)]
+        public static Array castCollectionType(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Array array,
+            [ActionNodeParam(EDITOR_PARAM_NAME_TYPE, isConst: true)] TypeName typeName)
+        {
+            if (array == null || typeName == null)
+                return null;
+            var type = GraphTypes.getTypeByName(typeName);
+            if (type == null)
+                return null;
+            var newArray = Array.CreateInstance(type, array.Length);
+            for (int i = 0; i < array.Length; i++)
+            {
+                var value = array.GetValue(i);
+                if (value == null)
+                    continue;
+                var valueType = value.GetType();
+                if (type.IsAssignableFrom(valueType))
+                {
+                    newArray.SetValue(value, i);
+                }
+            }
+            return newArray;
         }
         #endregion
         #endregion

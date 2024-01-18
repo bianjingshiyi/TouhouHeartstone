@@ -897,7 +897,7 @@ namespace Game
         {
             SerializableCardPool serializableCardPool = JsonHelper.fromJson<SerializableCardPool>(json);
 
-            TypeFinder typeFinder = game.editor.getTypeByName;
+            TypeFinder typeFinder = GraphTypes.getTypeByName;
 
             CardPool cardPool = serializableCardPool.toCardPool(cardPoolID, game, typeFinder);
             for (int i = 0; i < cardPool.cardDefineList.Count; i++)
@@ -921,7 +921,7 @@ namespace Game
         {
             SerializableCardPool serializableCardPool = JsonHelper.fromJson<SerializableCardPool>(json);
 
-            TypeFinder typeFinder = game.editor.getTypeByName;
+            TypeFinder typeFinder = GraphTypes.getTypeByName;
 
             var convertor = new CardPoolConvertor(cardPoolID, serializableCardPool, game, typeFinder);
             return convertor.Convert();

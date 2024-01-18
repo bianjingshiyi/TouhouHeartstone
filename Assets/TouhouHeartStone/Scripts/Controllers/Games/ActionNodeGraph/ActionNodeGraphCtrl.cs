@@ -34,10 +34,20 @@ namespace Controllers
                 _curCardPoolId = info.cardPoolId;
                 // 获取事件定义列表
                 updateBuffReferences();
+                // 更新类型名称列表
+                var typeInfos = GraphTypes.getAllPortTypeInfos();
+                var typeNames = game.editor.getEditorPortTypeNames();
+                typeValues = typeInfos.Select(i => i.type.Name).ToArray();
                 //更新UI
                 _ui.gameObject.SetActive(true);
 
-                var fieldProps = ValueInputFieldProperties.eventReference(eventEditorNames, eventReferences);
+                var fieldProps = new ValueInputFieldProperties()
+                {
+                    graphTypeNames = typeNames,
+                    graphTypeValues = typeValues,
+                    eventNames = eventEditorNames, 
+                    eventValues = eventReferences,
+                };
                 _ui.initValueInputFieldProperties(fieldProps);
                 _ui.resetView();
 
@@ -1819,6 +1829,9 @@ namespace Controllers
                 case ActionNodeValueType.eventReference:
                     value = eventReferences[0];
                     break;
+                case ActionNodeValueType.type:
+                    value = typeValues[0];
+                    break;
                 case ActionNodeValueType.pileName:
                     value = game.editor.getAllPileValues()[0];
                     break;
@@ -2262,6 +2275,7 @@ namespace Controllers
             StringTable.GAME_KEYWORD_DEATHRATTLE,
             StringTable.GAME_KEYWORD_SECRET,
         };
+        private string[] typeValues;
         private EventReference[] eventReferences => scene.editor.eventReferences;
         private string[] eventEditorNames => scene.editor.eventEditorNames;
         #endregion

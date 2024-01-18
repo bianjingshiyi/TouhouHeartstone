@@ -8909,6 +8909,42 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>111036</defineId>
+    <obsoleteNames />
+    <editorName>转换集合类型</editorName>
+    <category>集合运算</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Array</type>
+        <name>array</name>
+        <displayName>集合</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要进行转换的集合。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TypeName</type>
+        <name>typeName</name>
+        <displayName>类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要转换的集合元素类型。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Array</type>
+        <name>return</name>
+        <displayName>特定类型的集合</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[转换类型之后的集合。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[将一个集合转换为包含指定类型元素的集合。<br>节点图中，某些集合类型的节点输入要求是特定类型的集合（如修改“使用卡牌”事件的目标卡牌集合，或者将集合传入自定义动作中），需要将集合的类型进行转换，否则将无法正确识别该集合。<br><b>警告：</b>如果集合中包括不能转换为指定类型的元素，这些元素会被抛弃，变为“不存在”。]]></summary>
+    <example><![CDATA[幻视调律、古明地恋]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>107001</defineId>
     <obsoleteNames />
     <editorName>该效果</editorName>
