@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -220,11 +221,24 @@ namespace Game
             }
             foreach (var propName in define.getPropNames())
             {
-                if (define.getProp<DefineReference>(propName) is DefineReference defRef)
-                    addDefRef(defRef);
+                addDefRefByObject(define.getProp<object>(propName));
             }
             return cardDefines.ToArray();
 
+            void addDefRefByObject(object obj)
+            {
+                if (obj is DefineReference defRef)
+                {
+                    addDefRef(defRef);
+                }
+                else if (obj is IList list)
+                {
+                    foreach (var item in list)
+                    {
+                        addDefRefByObject(item);
+                    }
+                }
+            }
             void addDefRef(DefineReference defRef)
             {
                 if (defRef is BuffReference)
@@ -267,32 +281,26 @@ namespace Game
                         var inputValueType = inputPort.define.type.getNodeValueType();
                         if (inputValueType.type == ActionNodeValueType.buffReference)
                         {
-                            if (inputDefaultValue is DefineReference buffRef)
-                            {
-                                addBuffDefRef(buffRef);
-                            }
-                            else if (inputDefaultValue is IEnumerable<DefineReference> defRefs)
-                            {
-                                foreach (var dr in defRefs)
-                                {
-                                    addBuffDefRef(dr);
-                                }
-                            }
+                            addBuffDefRefByObject(inputDefaultValue);
                         }
                         else if (inputValueType.type == ActionNodeValueType.cardReference)
                         {
-                            if (inputDefaultValue is DefineReference defRef)
-                            {
-                                addDefRef(defRef);
-                            }
-                            else if (inputDefaultValue is IEnumerable<DefineReference> defRefs)
-                            {
-                                foreach (var dr in defRefs)
-                                {
-                                    addDefRef(dr);
-                                }
-                            }
+                            addDefRefByObject(inputDefaultValue);
                         } 
+                    }
+                }
+            }
+            void addBuffDefRefByObject(object obj)
+            {
+                if (obj is DefineReference defRef)
+                {
+                    addBuffDefRef(defRef);
+                }
+                else if (obj is IList list)
+                {
+                    foreach (var item in list)
+                    {
+                        addBuffDefRefByObject(item);
                     }
                 }
             }

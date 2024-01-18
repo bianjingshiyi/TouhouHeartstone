@@ -504,6 +504,7 @@ namespace Game.BattleTable
                 });
                 _choosingCardDefineRefs = null;
             }
+            _cardChooseMode = CardChooseMode.None;
         }
         private void onCardChooseItemPointerEnterCallback(int index)
         {

@@ -2,6 +2,7 @@
 {
     public enum CardChooseMode
     {
+        None,
         Card,
         CardDefine
     }
