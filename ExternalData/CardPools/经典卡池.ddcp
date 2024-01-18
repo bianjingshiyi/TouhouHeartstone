@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "imageResPath" : "D:\\TouhouHeartstone\\ExternalData\\Textures\\622dd65afacba24ee201e9714dd02262e4366b768c4c1df1c95a74eacc46da9d.jpg", "versionNumber" : 2, "editTime" : 443, "dependencyRefs" : [] }
+{ "_t" : "SerializableCardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "imageResPath" : "D:\\TouhouHeartstone\\ExternalData\\Textures\\622dd65afacba24ee201e9714dd02262e4366b768c4c1df1c95a74eacc46da9d.jpg", "versionNumber" : 2, "editTime" : 444, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -59014,8 +59014,8 @@
           }, {
             "_t" : "SerializableActionNode",
             "_id" : 8,
-            "posX" : 2353.9072265625,
-            "posY" : -469.73696899414063,
+            "posX" : 2410.403076171875,
+            "posY" : -113.56733703613281,
             "inputDefaultValues" : [],
             "propDict" : { },
             "defineRef" : {
@@ -59118,11 +59118,6 @@
             "destName" : "所有结果",
             "destNodeId" : 2
           }, {
-            "sourceName" : "return",
-            "sourceNodeId" : 5,
-            "destName" : "value",
-            "destNodeId" : 3
-          }, {
             "sourceName" : "元素列表A",
             "sourceNodeId" : 1,
             "destName" : "array",
@@ -59140,14 +59135,19 @@
             "destNodeId" : 10
           }, {
             "sourceName" : "return",
-            "sourceNodeId" : 9,
+            "sourceNodeId" : 5,
             "destName" : "collections",
             "destNodeId" : 8
           }, {
             "sourceName" : "return",
-            "sourceNodeId" : 8,
+            "sourceNodeId" : 9,
             "destName" : "selector",
             "destNodeId" : 5
+          }, {
+            "sourceName" : "return",
+            "sourceNodeId" : 8,
+            "destName" : "value",
+            "destNodeId" : 3
           }]
       },
       "inputs" : [{
