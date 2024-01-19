@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using MukioI18n;
 using TouhouCardEngine;
 
@@ -557,7 +556,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
             if (array == null || condition?.outputPort == null)
-                return false; 
+                return false;
 
             var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
 
@@ -868,12 +867,20 @@ namespace Game
         /// <returns></returns>
         [THHActionMethod(BuiltinActionDefineID.Merge, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_MERGE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_MERGED_COLLECTION)]
-        public static object[] merge(Flow flow, ActionNode node,
-            [ActionNodeParam(EDITOR_PARAM_NAME_MANY_COLLECTIONS)] object[][] collections)
+        public static object[] merge(
+            [ActionNodeParam(EDITOR_PARAM_NAME_MANY_COLLECTIONS)] Array[] collections)
         {
             if (collections == null)
                 return null;
-            return collections.SelectMany(e => e).ToArray();
+            var list = new List<object>();
+            foreach (var array in collections)
+            {
+                foreach (var element in array)
+                {
+                    list.Add(element);
+                }
+            }
+            return list.ToArray();
         }
         #endregion
         #endregion
