@@ -1185,11 +1185,7 @@ namespace Game.BattleTable
         }
         public Transform getCardTransform(int cardId, bool ignoreDeck = false)
         {
-            if (tryGetServant(cardId, out Servant servant))
-            {
-                return servant.positionLerp.transform;
-            }
-            else if (tryGetMaster(cardId, out Master master))
+            if (tryGetMaster(cardId, out Master master))
             {
                 return master.positionLerp.transform;
             }
@@ -1199,7 +1195,7 @@ namespace Game.BattleTable
             }
             else if (tryGetHand(cardId, out HandItem hand))
             {
-                return hand.positionLerp.transform;
+                return hand.card.positionLerp.transform;
             }
             else if (tryGetSecret(cardId, out Secret secret))
             {
@@ -1212,6 +1208,10 @@ namespace Game.BattleTable
             else if (tryGetMovingCard(cardId, out var movingCard))
             {
                 return movingCard.positionLerp.transform;
+            }
+            else if (tryGetServant(cardId, out Servant servant))
+            {
+                return servant.positionLerp.transform;
             }
             else if (tryGetDeadCardAnchor(cardId, out Transform trans))
             {

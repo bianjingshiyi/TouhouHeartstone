@@ -50,6 +50,7 @@ MonoBehaviour:
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
   testMode: 0
+  _useSourceScale: 0
 --- !u!114 &7469736703990675199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,7 +183,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0.5
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -289,7 +290,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0, b: 0, a: 1}
+      maxColor: {r: 0.75, g: 0.1875, b: 0.1875, a: 0.5019608}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -353,7 +354,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.8
+      scalar: 2
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -406,7 +407,7 @@ ParticleSystem:
     startSizeY:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 2.5
+      scalar: 2.7
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -936,7 +937,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 3
+      scalar: 2.5
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -1375,8 +1376,8 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 0}
-        key1: {r: 1, g: 1, b: 1, a: 0.24705882}
-        key2: {r: 0, g: 0, b: 0, a: 0.24705882}
+        key1: {r: 1, g: 1, b: 1, a: 1}
+        key2: {r: 0, g: 0, b: 0, a: 1}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
@@ -1394,7 +1395,7 @@ ParticleSystem:
         atime1: 13107
         atime2: 52428
         atime3: 65535
-        atime4: 0
+        atime4: 65535
         atime5: 0
         atime6: 0
         atime7: 0
@@ -4855,7 +4856,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 991ce8ab7d217524583108593e2ac2da, type: 2}
+  - {fileID: 2100000, guid: 83d287e4d6fbd594c9644b40b9a523ee, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

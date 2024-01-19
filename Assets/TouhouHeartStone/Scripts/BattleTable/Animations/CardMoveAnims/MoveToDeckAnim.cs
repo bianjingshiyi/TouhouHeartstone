@@ -70,10 +70,7 @@ namespace Game.BattleTable
         {
             if (_cardUI)
                 return table.WorldToTablePosition(_cardUI.transform.position);
-            var transform = table.getCardTransform(_cardDesc.id);
-            if (transform)
-                return table.WorldToTablePosition(transform.position);
-            return _startTablePos;
+            return base.getCurrentPosition(table);
         }
 
         private float _cardHeight;

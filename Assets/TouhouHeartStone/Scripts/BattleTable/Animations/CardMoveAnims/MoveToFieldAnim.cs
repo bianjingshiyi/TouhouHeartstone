@@ -104,10 +104,7 @@ namespace Game.BattleTable
         {
             if (_tableCard)
                 return table.WorldToTablePosition(_tableCard.transform.position);
-            var transform = table.getCardTransform(_cardDesc.id);
-            if (transform)
-                return table.WorldToTablePosition(transform.position);
-            return _startTablePos;
+            return base.getCurrentPosition(table);
         }
         /// <summary>
         /// 当卡牌从某牌堆移动到战场时，是否应该创建MovingCard？

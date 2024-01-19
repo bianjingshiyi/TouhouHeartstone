@@ -101,7 +101,6 @@ namespace Game.Animations
                 _time = 0;
                 _duration = GetComponent<BuiltinEffect>()?.duration ?? 0;
             }
-            _particleSystems = GetComponentsInChildren<ParticleSystem>();
         }
         private void Update()
         {
@@ -140,7 +139,7 @@ namespace Game.Animations
                 if (_state == EffectState.Stopped)
                 {
                     bool allStopped = true;
-                    foreach (var particleSystem in _particleSystems)
+                    foreach (var particleSystem in particleSystems)
                     {
                         if (!particleSystem.isStopped)
                         {
@@ -167,7 +166,7 @@ namespace Game.Animations
         }
         private void stopParticles()
         {
-            foreach (var particleSystem in _particleSystems)
+            foreach (var particleSystem in particleSystems)
             {
                 if (!particleSystem.isEmitting)
                     continue;
@@ -176,7 +175,7 @@ namespace Game.Animations
         }
         private void resumeParticles()
         {
-            foreach (var particleSystem in _particleSystems)
+            foreach (var particleSystem in particleSystems)
             {
                 if (particleSystem.isEmitting)
                     continue;
@@ -224,6 +223,15 @@ namespace Game.Animations
         private bool testMode;
 #endif
         private ParticleSystem[] _particleSystems;
+        private ParticleSystem[] particleSystems
+        {
+            get
+            {
+                if (_particleSystems == null)
+                    _particleSystems = GetComponentsInChildren<ParticleSystem>();
+                return _particleSystems;
+            }
+        }
         protected float _time;
         protected float _duration;
         protected float _blockTime;

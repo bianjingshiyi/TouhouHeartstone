@@ -436,7 +436,6 @@ namespace Game.BattleTable
             //动画
             queueAnims();
             updateAnim();
-            updateCardBuffEffects(Time.deltaTime);
             if (_allControlDirty)
             {
                 updateAllControlable();
@@ -452,6 +451,10 @@ namespace Game.BattleTable
                 }
                 _controlDirtyCards.Clear();
             }
+        }
+        private void LateUpdate()
+        {
+            updateCardBuffEffects(Time.deltaTime);
         }
         #endregion
         #region 事件回调

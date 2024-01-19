@@ -32,7 +32,13 @@ namespace Game.BattleTable
             yield return startUpdate(table, _deltaTime);
             yield return logicUpdate(table, _deltaTime);
         }
-        public abstract Vector3 getCurrentPosition(BattleTableManager table);
+        public virtual Vector3 getCurrentPosition(BattleTableManager table)
+        {
+            var transform = table.getCardTransform(_cardDesc.id);
+            if (transform)
+                return table.WorldToTablePosition(transform.position);
+            return _startTablePos;
+        }
         protected Vector3 getMiddleTargetPosition(BattleTableManager table, Vector3 startWorldPos, Vector3 targetWorldPos)
         {
             if (_from?.owner == table.player || _to?.owner == table.player)

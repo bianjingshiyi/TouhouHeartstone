@@ -128,10 +128,7 @@ namespace Game.BattleTable
         {
             if (_handItem)
                 return table.WorldToTablePosition(_handItem.transform.position);
-            var transform = table.getCardTransform(_cardDesc.id);
-            if (transform)
-                return table.WorldToTablePosition(transform.position);
-            return _startTablePos;
+            return base.getCurrentPosition(table);
         }
         private static bool isDeckPile(Pile pile)
         {
