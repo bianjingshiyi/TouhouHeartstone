@@ -400,11 +400,12 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(EDITOR_PARAM_NAME_FROM_PILE)] Pile fromPile,
             [ActionNodeParam(EDITOR_PARAM_NAME_TO_PILE)] Pile toPile,
-            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)][NodeParamEventType(typeof(MoveCardEventDefine))] EventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)][NodeParamEventType(typeof(MoveCardEventDefine))] EventArg outEvent,
+            [ActionNodeParam(EDITOR_PARAM_NAME_POSITION)] int position = -1)
         {
             if (card == null)
                 return false;
-            var arg = await card.moveCardFromPileToPile(game, fromPile, toPile);
+            var arg = await card.moveCardFromPileToPile(game, fromPile, toPile, position);
             setOutParam(flow, node, nameof(outEvent), arg);
             return arg != null && arg.getVar<bool>(MoveCardEventDefine.VAR_SUCCESS);
         }

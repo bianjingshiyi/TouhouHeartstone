@@ -765,6 +765,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[目标牌堆。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>position</name>
+        <displayName>位置</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要将卡牌置入的牌堆的位置。留空或提供-1则默认为牌堆最后一个位置。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -3547,7 +3555,7 @@
         <displayName>位置</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[要将卡牌置入的牌堆的位置。提供-1则为牌堆的最后一个位置。]]></summary>
+        <summary><![CDATA[要将卡牌置入的牌堆的位置。留空或提供-1则为牌堆的最后一个位置。]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs>
@@ -3592,6 +3600,14 @@
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌复制要移动到的牌堆。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>position</name>
+        <displayName>位置</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要将卡牌复制置入的牌堆的位置。留空或提供-1则为牌堆的最后一个位置。]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs>
@@ -5921,6 +5937,14 @@
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要被获得控制权的仆从。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>position</name>
+        <displayName>位置</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要将目标仆从移动到的战场的位置。0为最左侧，1为最左侧仆从的右侧，以此类推。留空或提供-1则默认为最右侧。]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs>

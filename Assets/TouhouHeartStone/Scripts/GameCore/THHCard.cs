@@ -1362,7 +1362,7 @@ namespace TouhouHeartstone
         /// <param name="game">游戏对象。</param>
         /// <param name="targetPile">目标牌堆。</param>
         /// <returns></returns>
-        public static async Task<Card> cloneCardTo(this Card card, CardEngine game, Pile targetPile)
+        public static async Task<Card> cloneCardTo(this Card card, CardEngine game, Pile targetPile, int position = -1)
         {
             // 根据卡牌的定义创建一张新的卡牌。
             var clone = game.createCard(card.define);
@@ -1401,7 +1401,7 @@ namespace TouhouHeartstone
 
             // 将卡牌移动到目标牌堆。
             // 从null移动到目标牌堆，不会清除卡牌的增益或者属性，但是会清除所有战场属性。
-            var moveArg = await moveCardFromPileToPile(clone, game, null, targetPile);
+            var moveArg = await moveCardFromPileToPile(clone, game, null, targetPile, position);
 
             // 移动不成功，复制失败。
             if (moveArg == null || !moveArg.getVar<bool>(MoveCardEventDefine.VAR_SUCCESS))

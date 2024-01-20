@@ -288,7 +288,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)] Pile pile,
             [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)][NodeParamEventType(typeof(MoveCardEventDefine))] EventArg outEvent,
-            [ActionNodeParam(EDITOR_PARAM_NAME_POSITION)] int position)
+            [ActionNodeParam(EDITOR_PARAM_NAME_POSITION)] int position = -1)
         {
             if (cardDefine == null)
                 return null;
@@ -311,16 +311,17 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="cardDefine"></param>
         /// <returns></returns>
-        [EventNode]
+        [EventNode(typeof(MoveCardEventDefine), typeof(SetCardPropEventDefine), typeof(AddBuffEventDefine))]
         [THHActionMethod(BuiltinActionDefineID.CloneCard, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CLONE_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Task<Card> cloneCard(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
-            [ActionNodeParam(EDITOR_PARAM_NAME_TO_PILE)] Pile targetPile)
+            [ActionNodeParam(EDITOR_PARAM_NAME_TO_PILE)] Pile targetPile,
+            [ActionNodeParam(EDITOR_PARAM_NAME_POSITION)] int position = -1)
         {
             if (card == null)
                 return null;
-            return card.cloneCardTo(game, targetPile);
+            return card.cloneCardTo(game, targetPile, position);
         }
         #endregion
 
@@ -1409,13 +1410,14 @@ namespace Game
         public static async Task takeControl(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card card,
-            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)][NodeParamEventType(typeof(MoveCardEventDefine))] EventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)][NodeParamEventType(typeof(MoveCardEventDefine))] EventArg outEvent,
+            [ActionNodeParam(EDITOR_PARAM_NAME_POSITION)] int position = -1)
         {
             if (card == null)
                 return;
             if (player == null)
                 return;
-            outEvent = await card.takeControl(game, player, -1);// TODO：ActionNodeParam不吃默认值，先填-1，以后有时间了做对仆从位置有关的兼容
+            outEvent = await card.takeControl(game, player, position);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
 
