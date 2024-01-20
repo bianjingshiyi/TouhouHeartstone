@@ -72,7 +72,12 @@ namespace Game
             {
                 throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
             }
-            return cardPool.buffDefineList.Remove(buffDefine);
+            if (cardPool.buffDefineList.Remove(buffDefine))
+            {
+                cardPool.buffSkinList.RemoveAll(skin => skin.buffId == buffDefine.id);
+                return true;
+            }
+            return false;
         }
         #endregion
 

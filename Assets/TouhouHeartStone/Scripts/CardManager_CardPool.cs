@@ -168,6 +168,8 @@ namespace Game
             _cardPoolDict.Remove(cardPoolRef);
             _cardPoolDict.Add(cardPoolInfo.ToReference(), cardPool);
 
+            // 移除无效的皮肤
+            removeInvalidSkins(cardPool);
             // 检查并修复路径不正确的卡图
             await fixIncorrectPathImages(cardPoolInfo, cardPool);
             // 检查并修复老旧大卡图
@@ -1019,6 +1021,11 @@ namespace Game
         #endregion
 
         #region 卡池修复
+        private void removeInvalidSkins(CardPool cardPool)
+        {
+            cardPool.cardSkinList.RemoveAll(skin => !cardPool.cardDefineList.Exists(c => c.id == skin.id));
+            cardPool.buffSkinList.RemoveAll(skin => !cardPool.buffDefineList.Exists(b => b.id == skin.buffId));
+        }
         private async Task fixCardPool(CardPoolInfo cardPoolInfo, CardPool cardPool)
         {
             Dictionary<int, int> massEventNodeMap = new Dictionary<int, int>()

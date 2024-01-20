@@ -56238,10 +56238,6 @@
       "imagePath" : "3979b40b2ad1c123f65d1a805ee335495ec820ec835b7429474e0dc4ae967cc4.jpg",
       "_animationRefs" : []
     }, {
-      "buffId" : 3,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
       "buffId" : 4,
       "language" : "zh-Hans",
       "name" : "风灵角笛",
@@ -56316,43 +56312,11 @@
       "imagePath" : "bcbbaa3c93895d307056e586f0067e484e45efb5c195af0012466c9ef9cf15b0.jpg",
       "_animationRefs" : []
     }, {
-      "buffId" : 13,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 13,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
       "buffId" : 14,
       "language" : "zh-Hans",
       "name" : "水精灵",
       "desc" : "属性+3/+6，嘲讽",
       "imagePath" : "01428f9e046b3b6461c00fd52942169032b3d4751050ddb6a6f706afa3b8aa8c.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 14,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 14,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 15,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 16,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 17,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 18,
-      "language" : "zh-Hans",
       "_animationRefs" : []
     }, {
       "buffId" : 19,
@@ -56415,35 +56379,11 @@
       },
       "_animationRefs" : []
     }, {
-      "buffId" : 26,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 26,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
       "buffId" : 27,
       "language" : "zh-Hans",
       "name" : "抽芽",
       "desc" : "+3/+3",
       "imagePath" : "1cb59acc395a5f42fbcbb0730446dfeec0930399f1c5ebc1b9e137f27a2db3cd.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 27,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 27,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 27,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 27,
-      "language" : "zh-Hans",
       "_animationRefs" : []
     }, {
       "buffId" : 28,
@@ -56460,10 +56400,6 @@
       "imagePath" : "62771449af63d37f957e8f599e2232ac225bd0dcfbb8e44d52651be1af386aa4.jpg",
       "_animationRefs" : []
     }, {
-      "buffId" : 29,
-      "language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
       "buffId" : 30,
       "language" : "zh-Hans",
       "name" : "乱步",
@@ -56476,10 +56412,6 @@
       "name" : "猫步",
       "desc" : "本回合下次攻击消灭敌人可再次攻击",
       "imagePath" : "ca56fff6d1ffae4437d5310d178e41904ac34be1d9534e32b52bf4f9d22c53d9.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 31,
-      "language" : "zh-Hans",
       "_animationRefs" : []
     }, {
       "buffId" : 32,
