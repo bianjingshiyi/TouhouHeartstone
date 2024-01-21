@@ -54,11 +54,24 @@ namespace TouhouHeartstone
         {
             if (!Pile.canMove(card, from, to))
                 return null;
-            if (from != to && !(card.isTrap(game) && (to?.name == PILE.WARP || to?.name == PILE.HEAD)))
+            // 目标牌堆和源牌堆不是牌堆，更新卡牌可见性。
+            if (from != to)
             {
+                // 这里的一个例外是陷阱，陷阱在被置入暂存区或者延迟区时不会取消它对某个玩家的可见性，用于透露某个已经被知晓的陷阱被使用。
+                // 但是一个本身不可见的陷阱，在被挂载后需要开启对自己的可见性，以防通过衍生物创建的陷阱不能被自己查看。
+                // 也就是说，挂载陷阱这个行为不能向任意玩家隐藏它的可见性，但是可以向其拥有者显示自己。
+                bool isUsingTrap = card.isTrap(game) && (to?.name == PILE.WARP || to?.name == PILE.HEAD);
                 foreach (var player in game.players)
                 {
-                    await card.setCardVisibleTo(game, player, to.isVisiblePileTo(player));
+                    bool shouldVisible = to.isVisiblePileTo(player);
+                    if (isUsingTrap)
+                    {
+                        if (!shouldVisible)
+                            continue;
+                        if (player != to?.owner)
+                            continue;
+                    }
+                    await card.setCardVisibleTo(game, player, shouldVisible);
                 }
             }
             return await MoveCardEventDefine.doEvent(game, from, to, card, position, true);
