@@ -142,7 +142,7 @@ namespace Game
             }
             var cardPoolRef = cardPoolInfo.ToReference();
             // 如果该卡池正在被创建，将正在创建的卡池设为空。
-            if (_creatingCardPoolInfo == cardPoolInfo)
+            if (_creatingCardPoolInfo.CompareCardPool(cardPoolInfo))
                 finishCreatingCardPool();
 
 
