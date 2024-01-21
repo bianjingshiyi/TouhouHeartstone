@@ -254,10 +254,8 @@ namespace TouhouHeartstone
         }
         public static async Task<bool> tryEnterHead(this Player player, CardEngine game, Pile from, Card card)
         {
-            if (!player.canAddToHead(game, card, out _))
-                return false;
-            await from.moveTo(game, card, player.getHead());
-            return true;
+            var eventArg = await card.moveToHead(game, from, player?.getHead(), -1);
+            return eventArg != null;
         }
         public static Task<EventArg> createToken(this Player player, CardEngine game, CardDefine define, int position = -1)
         {

@@ -1247,7 +1247,6 @@ namespace Game
                     {
                         var player = card.getOwner();
                         await player.tryEnterHead(game, card.pile, card);
-                        await card.updateSecret(game);
                     }
                     else
                     {

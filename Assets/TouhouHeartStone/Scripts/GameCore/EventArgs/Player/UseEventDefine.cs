@@ -62,7 +62,6 @@ namespace TouhouHeartstone
                 if (card.isTrap(game) || card.hasKeyword(game, KEYWORD.MISSION))
                 {
                     await player.tryEnterHead(game, player.getWarp(), card);
-                    await card.updateSecret(game);
                 }
                 else
                 {

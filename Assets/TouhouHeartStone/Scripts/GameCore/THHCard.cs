@@ -1181,7 +1181,9 @@ namespace TouhouHeartstone
 
             if (position < 0)
                 position = to.count;
-            return await from.moveTo(game, card, to, position);
+            var eventArg = await from.moveTo(game, card, to, position);
+            await card.updateSecret(game);
+            return eventArg;
         }
         /// <summary>
         /// 将一张卡牌返回到指定玩家的手牌。
