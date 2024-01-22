@@ -4944,9 +4944,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _manager: {fileID: 0}
   se_name: 
-  clip: {fileID: 0}
-  playOnEnable: 0
+  clip: {fileID: 8300000, guid: 40ea16c5538fb62479f3b5dde582d316, type: 3}
   _fadeoutTime: 1
+  _pitch: 1
 --- !u!114 &3752911038805685409
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4962,6 +4962,7 @@ MonoBehaviour:
   _animator: {fileID: 65972746486911399}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 1
   testMode: 0
 --- !u!1 &6963852963075178319
 GameObject:

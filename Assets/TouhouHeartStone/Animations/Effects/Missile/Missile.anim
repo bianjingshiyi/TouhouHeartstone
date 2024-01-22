@@ -402,7 +402,7 @@ AnimationClip:
   - time: 0
     functionName: PlaySEClip
     data: 
-    objectReferenceParameter: {fileID: 8300000, guid: 9a6cd2d682e12994f9c4e97f98831d6e,
+    objectReferenceParameter: {fileID: 8300000, guid: 8b0d1c39f74724348973b7478a6839f1,
       type: 3}
     floatParameter: 0
     intParameter: 0
@@ -410,7 +410,7 @@ AnimationClip:
   - time: 0.5
     functionName: PlaySEClip
     data: 
-    objectReferenceParameter: {fileID: 8300000, guid: a46632b6ecf48dd41b8ab366f818730f,
+    objectReferenceParameter: {fileID: 8300000, guid: 60037a08edbdc2046944393837347020,
       type: 3}
     floatParameter: 0
     intParameter: 0
