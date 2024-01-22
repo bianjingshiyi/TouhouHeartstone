@@ -26,13 +26,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2921111684108095817}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5663380724125913849}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!114 &7424428395774798949
 MonoBehaviour:
@@ -49,7 +50,9 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
-  _testMode: 0
+  _playSoundOnStart: 1
+  testMode: 0
+  _useSourceScale: 0
 --- !u!114 &3357318705534277009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -65,6 +68,7 @@ MonoBehaviour:
   defineName: "\u5E15\u79CB\u8389\u6CD5\u672F"
   duration: 2
   blockTime: 2
+  isPersistent: 0
 --- !u!114 &57655315720220865
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -80,7 +84,8 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 8300000, guid: 19372fef85bfadf44a937b8bbfc61225, type: 3}
-  playOnEnable: 1
+  _fadeoutTime: 1
+  _pitch: 1
 --- !u!1 &7527371027500852666
 GameObject:
   m_ObjectHideFlags: 0
@@ -104,19 +109,21 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7527371027500852666}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3029803103928016933}
   m_Father: {fileID: 2223392804696418309}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2929483104703419306
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 5663380724125913849}
     m_Modifications:
     - target: {fileID: 192415093246030735, guid: d2d2d3c0636b77f4a9b3d711cdfe7980,
@@ -180,6 +187,9 @@ PrefabInstance:
       value: PatchouliMagicCircle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d2d2d3c0636b77f4a9b3d711cdfe7980, type: 3}
 --- !u!4 &3029803103928016933 stripped
 Transform:

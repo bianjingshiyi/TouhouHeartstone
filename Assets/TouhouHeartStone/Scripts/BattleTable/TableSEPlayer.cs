@@ -34,15 +34,6 @@ namespace Game.BattleTable
             manager?.sounds?.fadeoutSE(clip, _fadeoutTime);
         }
         #endregion
-        #region 私有方法
-        private void OnEnable()
-        {
-            if (playOnEnable)
-            {
-                Play();
-            }
-        }
-        #endregion
         #region 属性字段
         public BattleTableManager manager
         {
@@ -61,8 +52,6 @@ namespace Game.BattleTable
         string se_name;
         [SerializeField]
         AudioClip clip;
-        [SerializeField]
-        bool playOnEnable;
         [SerializeField]
         float _fadeoutTime = 1;
         [SerializeField]

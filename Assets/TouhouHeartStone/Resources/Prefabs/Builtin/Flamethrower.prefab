@@ -105,6 +105,7 @@ MonoBehaviour:
   _animator: {fileID: 7471902508016391099}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 1
   testMode: 0
   _flyCurve:
     serializedVersion: 2
@@ -154,6 +155,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _projectileRoot: {fileID: 0}
+  _faceToTarget: 1
 --- !u!114 &867717880089020223
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,6 +172,7 @@ MonoBehaviour:
   defineName: "\u55B7\u706B"
   duration: 2
   blockTime: 0.5
+  isPersistent: 0
 --- !u!114 &2882366054065771026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,8 +188,8 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 8300000, guid: 9355ff8d4810b2b4cbb9f59b3bf7c225, type: 3}
-  playOnEnable: 1
   _fadeoutTime: 1
+  _pitch: 1
 --- !u!114 &2463405283394867343
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -201,6 +201,7 @@ MonoBehaviour:
   _animator: {fileID: 7527580489375798917}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 1
   testMode: 0
   _flyCurve:
     serializedVersion: 2
@@ -301,6 +302,5 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 8300000, guid: aa61ff4eafa13534fa25150d93507298, type: 3}
-  playOnEnable: 1
   _fadeoutTime: 1
   _pitch: 1

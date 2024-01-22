@@ -21,26 +21,37 @@ namespace Game.Animations
         }
         public void update(float deltaTime)
         {
+            // 禁用动画器。
+            if (_animator)
+            {
+                _animator.enabled = false;
+            }
             if (_state == EffectState.None)
             {
-                // 必须要求存在源位置才能播放。
-                if (sourceTransform == null)
+                if (!isTestMode())
                 {
-                    rootObj?.SetActive(false);
-                    return;
-                }
-                // 源位置存在，启动。
-                if (!rootObj.activeSelf)
-                {
-                    rootObj?.SetActive(true);
+                    // 必须要求存在源位置才能播放。
+                    if (sourceTransform == null)
+                    {
+                        gameObject.SetActive(false);
+                        return;
+                    }
+                    // 源位置存在，启动。
+                    if (!gameObject.activeSelf)
+                    {
+                        gameObject.SetActive(true);
+                    }
                 }
                 _state = EffectState.Started;
                 transform.position = sourceTransform.position;
+                if (_playSoundOnStart && sePlayer)
+                {
+                    sePlayer.Play();
+                }
             }
             // 更新动画器。
             if (_animator)
             {
-                _animator.enabled = false;
                 _animator.Update(deltaTime);
             }
             // 更新动画。
@@ -94,6 +105,14 @@ namespace Game.Animations
         #region 私有方法
 
         #region 生命周期
+        private void OnEnable()
+        {
+            // 禁用动画器。
+            if (_animator)
+            {
+                _animator.enabled = false;
+            }
+        }
         private void Start()
         {
             if (isTestMode())
@@ -218,6 +237,8 @@ namespace Game.Animations
         private Transform _srcTransform;
         [SerializeField]
         private Transform _destTransform;
+        [SerializeField]
+        private bool _playSoundOnStart;
 #if UNITY_EDITOR
         [SerializeField]
         private bool testMode;
@@ -230,6 +251,16 @@ namespace Game.Animations
                 if (_particleSystems == null)
                     _particleSystems = GetComponentsInChildren<ParticleSystem>();
                 return _particleSystems;
+            }
+        }
+        private TableSEPlayer _sePlayer;
+        private TableSEPlayer sePlayer
+        {
+            get
+            {
+                if (_sePlayer == null)
+                    _sePlayer = GetComponent<TableSEPlayer>();
+                return _sePlayer;
             }
         }
         protected float _time;

@@ -26,13 +26,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9036407537124663379}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9036407538465952749}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9036407537124663390
 MonoBehaviour:
@@ -49,7 +50,9 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
-  _testMode: 0
+  _playSoundOnStart: 1
+  testMode: 0
+  _useSourceScale: 0
 --- !u!114 &9036407537124663389
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -65,6 +68,7 @@ MonoBehaviour:
   defineName: "\u51B0\u51BB"
   duration: 3
   blockTime: 0.5
+  isPersistent: 0
 --- !u!114 &5876030516301372623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -80,7 +84,8 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 8300000, guid: e26d65dc59c667841ac922f7ee221b16, type: 3}
-  playOnEnable: 1
+  _fadeoutTime: 1
+  _pitch: 1
 --- !u!1 &9036407538465952748
 GameObject:
   m_ObjectHideFlags: 0
@@ -104,19 +109,21 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9036407538465952748}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9036581771870620786}
   m_Father: {fileID: 9036407537124663388}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &9036407538174391324
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 9036407538465952749}
     m_Modifications:
     - target: {fileID: 1051198682156340, guid: ded1c96ba26c75041b7877e882e6f62e, type: 3}
@@ -164,6 +171,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ded1c96ba26c75041b7877e882e6f62e, type: 3}
 --- !u!4 &9036581771870620786 stripped
 Transform:

@@ -50,7 +50,9 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 1
   testMode: 0
+  _useSourceScale: 0
 --- !u!114 &3357318705534277009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82,8 +84,8 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 8300000, guid: eacda8eb603d44941b99773729919033, type: 3}
-  playOnEnable: 1
   _fadeoutTime: 1
+  _pitch: 1
 --- !u!1 &7527371027500852666
 GameObject:
   m_ObjectHideFlags: 0

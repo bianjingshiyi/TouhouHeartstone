@@ -82,7 +82,9 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 1
   testMode: 0
+  _useSourceScale: 0
 --- !u!114 &4183102731042709933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,6 +100,7 @@ MonoBehaviour:
   defineName: "\u5200\u5203\u8FDE\u65A9"
   duration: 1.5
   blockTime: 0.5
+  isPersistent: 0
 --- !u!114 &7415116640658268504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,8 +116,8 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 8300000, guid: 29ca8349799e77c4999e9632d6f18afb, type: 3}
-  playOnEnable: 1
   _fadeoutTime: 1
+  _pitch: 1
 --- !u!1001 &6761848696986767620
 PrefabInstance:
   m_ObjectHideFlags: 0
