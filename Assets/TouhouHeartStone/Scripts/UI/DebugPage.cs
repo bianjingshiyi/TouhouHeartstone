@@ -3,27 +3,16 @@ using Game;
 using UnityEngine.UI;
 using UnityEngine;
 using BJSYGameCore.UI;
+using Controllers;
 
 namespace UI
 {
     public class DebugPage : UIObject
     {
-        DebugManager debug => this.findInstance<DebugManager>();
-        NetworkingManager net => this.findInstance<NetworkingManager>();
-
-        [SerializeField]
-        InputField serverAddrField;
-
-        [SerializeField]
-        Toggle skipCardNumCheckField;
-
-        [SerializeField]
-        Button backBtn;
-
-
         new void Awake()
         {
             backBtn.onClick.AddListener(onBack);
+            _clearTutorialDataButton.onClick.AddListener(onClickClearTutorialDataButtonCallback);
         }
 
         protected override void onDisplay()
@@ -42,8 +31,26 @@ namespace UI
             }
             debug.SkipCardNumberCheck = skipCardNumCheckField.isOn;
 
-            var parent = GetComponentInParent<Main>();
-            parent.display(parent.MainMenu);
+            hide();
+            scene.menu.display();
         }
+        private void onClickClearTutorialDataButtonCallback()
+        {
+            main.config.clearTutorialFinishedData();
+        }
+
+        MainManager main => this.findInstance<MainManager>();
+        MainSceneCtrl scene => this.findInstance<MainSceneCtrl>();
+        DebugManager debug => this.findInstance<DebugManager>();
+        NetworkingManager net => this.findInstance<NetworkingManager>();
+
+        [SerializeField]
+        InputField serverAddrField;
+        [SerializeField]
+        Toggle skipCardNumCheckField;
+        [SerializeField]
+        Button _clearTutorialDataButton;
+        [SerializeField]
+        Button backBtn;
     }
 }

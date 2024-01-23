@@ -21,7 +21,7 @@ namespace Controllers
 #else
             _ui.pveButton.gameObject.SetActive(false);
 #endif
-            _ui.pveButton.setNewMarkVisible(true);
+            _ui.pveButton.setNewMarkVisible(!game.config.isTutorialFinished(TutorialID.Basic));
         }
         public void hide()
         {
@@ -153,6 +153,21 @@ namespace Controllers
         {
             await scene.pveRoom.display();
             hide();
+            if (!game.config.isTutorialFinished(TutorialID.Basic))
+            {
+                // 教程未完成，弹出对话框询问是否进入教程
+                var title = game.lang._(StringTable.HINT_TITLE);
+                var desc = game.lang._(TUTORIAL_QUESTION);
+                game.ui.dialog.ShowQuestion(title, desc, () =>
+                {
+                    // TODO 开始教程
+                },
+                () =>
+                {
+                    game.config.setTutorialFinished(TutorialID.Basic, true);
+                });
+                return;
+            }
         }
 
         private void onEditorButtonClick()
@@ -491,6 +506,8 @@ namespace Controllers
         }
         #endregion
         #region 属性字段
+        [TranslateMsg]
+        private const string TUTORIAL_QUESTION = "你似乎是第一次启动游戏，要开始新手教程吗？\n（之后也可以在XX位置重新游玩新手教程）";
         [TranslateMsg]
         private const string INVALID_USERNAME_OR_PASSWORD = "用户名或密码不正确";
         [TranslateMsg]
