@@ -1,7 +1,6 @@
 ﻿using System;
 using BJSYGameCore.UI;
 using NitoriNetwork.Common;
-using UberLogger;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -123,13 +122,8 @@ namespace UI
         protected override void Awake()
         {
             base.Awake();
-#if DEBUG || DEVELOPMENT_BUILD || UNITY_EDITOR
-            _pveButton.gameObject.SetActive(true);
-#else
-            _pveButton.gameObject.SetActive(false);
-#endif
             _vsBotButton.onClick.AddListener(onVsBotButtonClickCallback);
-            _pveButton.onClick.AddListener(onPVEButtonClickCallback);
+            _pveButton.button.onClick.AddListener(onPVEButtonClickCallback);
             _buildCardButton.onClick.AddListener(onBuildCardButtonClickCallback);
             _replayButton.onClick.AddListener(onReplayButtonClickCallback);
             _quitButton.onClick.AddListener(onQuitButtonClickCallback);
@@ -289,8 +283,8 @@ namespace UI
             PlayerInfoEditInfo info = _playerInfoEditPanel.getPlayerInfoEditInfo();
             onPlayerInfoEditConfirmClick?.Invoke(info);
         }
-#endregion
-#endregion
+        #endregion
+        #endregion
         #region 事件
         public event Action onVsBotButtonClick;
         public event Action onPVEButtonClick;
@@ -327,6 +321,8 @@ namespace UI
 
         public event Action<PlayerInfoEditInfo> onPlayerInfoEditConfirmClick;
         #endregion
+
+        public ButtonIconGlass pveButton => _pveButton;
         [SerializeField]
         EULAPanel _eulaPanel;
         [SerializeField]
@@ -334,7 +330,7 @@ namespace UI
         [SerializeField]
         Button _vsBotButton;
         [SerializeField]
-        Button _pveButton;
+        ButtonIconGlass _pveButton;
         [SerializeField]
         Button _buildCardButton;
         [SerializeField]

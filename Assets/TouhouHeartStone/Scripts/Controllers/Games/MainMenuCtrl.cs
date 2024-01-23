@@ -16,6 +16,12 @@ namespace Controllers
         public void display()
         {
             gameObject.SetActive(true);
+#if DEBUG || DEVELOPMENT_BUILD || UNITY_EDITOR
+            _ui.pveButton.gameObject.SetActive(true);
+#else
+            _ui.pveButton.gameObject.SetActive(false);
+#endif
+            _ui.pveButton.setNewMarkVisible(true);
         }
         public void hide()
         {
