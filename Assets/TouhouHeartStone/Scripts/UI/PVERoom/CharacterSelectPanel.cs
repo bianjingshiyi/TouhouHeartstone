@@ -1,17 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using BJSYGameCore.UI;
 using UnityEngine;
 
 namespace UI
 {
     public class CharacterSelectPanel : MonoBehaviour
     {
+        public CharacterSelectItem getCharacterItem(int index)
+        {
+            var y = index / _iconsPerRow;
+            var row = _rowList.getElement<CharacterSelectRow>(y);
+            if (!row)
+                return null;
+            return row.getCharacterItem(index % _iconsPerRow);
+        }
         public void update(CharacterViewData[] viewDatas)
         {
-            var rowCount = Mathf.CeilToInt(viewDatas.Length / _iconsPerRow);
-            UIHelper.updateList(_rowListRoot, _rowTemplate, _rowList, rowCount,
+            var rowCount = Mathf.CeilToInt(viewDatas.Length / (float)_iconsPerRow);
+            _rowList.updateList(rowCount,
                 (index, rect) =>
                 {
                     var row = rect.GetComponent<CharacterSelectRow>();
@@ -33,14 +39,11 @@ namespace UI
             onItemClicked?.Invoke(index);
         }
         public event Action<int> onItemClicked;
+
         [SerializeField]
-        private float _iconsPerRow = 5;
+        private int _iconsPerRow = 5;
         [SerializeField]
-        private RectTransform _rowListRoot;
-        [SerializeField]
-        private RectTransform _rowTemplate;
-        [SerializeField]
-        private List<RectTransform> _rowList = new List<RectTransform>();
+        private ElementList _rowList;
     }
     public struct CharacterViewData
     {

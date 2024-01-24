@@ -35,6 +35,7 @@ namespace Controllers
                 await displayInRunPanel();
             }
             _ui.gameObject.SetActive(true);
+            updateTutorialStep();
         }
         public void openGamePage()
         {
@@ -82,6 +83,7 @@ namespace Controllers
             //选择人物
             _selectedCharacter = _characterList[index];
             await displayPlayerInfoPanel(_selectedCharacter);
+            nextTutorialStep(PVETutorialSteps.PVEEntered);
         }
         private void onCancelSelectPlayerCallback()
         {
@@ -92,9 +94,11 @@ namespace Controllers
             await createSaveFile();
             await generateStageData();
             await displayInRunPanel();
+            nextTutorialStep(PVETutorialSteps.CharacterSelected);
         }
         private async void onFightClickedCallback()
         {
+            finishTutorial(PVETutorialSteps.RunStarted);
             await startFight();
         }
         private void onGiveUpClickedCallback()
@@ -312,6 +316,22 @@ namespace Controllers
             _ui.setInRunPanelVisible(false);
             _ui.setPlayerInfoPanelVisible(false);
             await updatePlayerList();
+
+            if (!game.tutorial.isTutorialClosed(TutorialID.PVE) && !game.tutorial.isTutorialRunning(TutorialID.PVE))
+            {
+                // 教程未完成，弹出对话框询问是否进入教程
+                var title = game.lang._(StringTable.HINT_TITLE);
+                var desc = game.lang._(TUTORIAL_QUESTION);
+                game.ui.dialog.ShowQuestion(title, desc, () =>
+                {
+                    nextTutorialStep(PVETutorialSteps.NotStarted);
+                },
+                () =>
+                {
+                    game.tutorial.skipTutorial(TutorialID.PVE);
+                });
+                return;
+            }
         }
         private async Task displayPlayerInfoPanel(PVECharacter character)
         {
@@ -394,12 +414,65 @@ namespace Controllers
             scene.menu.display();
             reset();
         }
+
+        #region 教程
+        private void nextTutorialStep(int expectedStep)
+        {
+            if (game.tutorial.nextTutorialStep(TutorialID.PVE, expectedStep))
+            {
+                updateTutorialStep();
+            }
+        }
+        private void finishTutorial(int expectedStep)
+        {
+            game.tutorial.finishTutorial(TutorialID.PVE, expectedStep);
+        }
+        private void updateTutorialStep()
+        {
+            if (!game.tutorial.isTutorialActive(TutorialID.PVE))
+                return;
+            var step = game.tutorial.getTutorialStep(TutorialID.PVE);
+            switch (step)
+            {
+                case PVETutorialSteps.PVEEntered:
+                    var playerItem = _ui.playerSelectPanel.getCharacterItem(0).getButtonTransform();
+                    if (playerItem)
+                    {
+                        game.tutorial.showGuideTip(playerItem.transform as RectTransform, game.lang._(TUTORIAL_STEP_SELECT_CHARACTER));
+                    }
+                    break;
+                case PVETutorialSteps.CharacterSelected:
+                    var confirmButton = _ui.playerInfoPanel.confirmButton;
+                    if (confirmButton)
+                    {
+                        game.tutorial.showGuideTip(confirmButton.transform as RectTransform, game.lang._(TUTORIAL_STEP_START_GAME));
+                    }
+                    break;
+                case PVETutorialSteps.RunStarted:
+                    var enemyButton = _ui.enemyInfoPanel.confirmButton;
+                    if (enemyButton)
+                    {
+                        game.tutorial.showGuideTip(enemyButton.transform as RectTransform, game.lang._(TUTORIAL_STEP_START_FIGHT));
+                    }
+                    break;
+            }
+        }
+        #endregion
+
         #endregion
         #endregion
 
         #endregion
 
         #region 属性字段
+        [TranslateMsg]
+        private const string TUTORIAL_QUESTION = "你似乎是第一次启动游戏，要开始新手教程吗？\n（之后也可以在XX位置重新游玩新手教程）";
+        [TranslateMsg("PVE教程-步骤")]
+        private const string TUTORIAL_STEP_SELECT_CHARACTER = "点击以选择人物";
+        [TranslateMsg("PVE教程-步骤")]
+        private const string TUTORIAL_STEP_START_GAME = "点击开始一局PVE游戏";
+        [TranslateMsg("PVE教程-步骤")]
+        private const string TUTORIAL_STEP_START_FIGHT = "点击开始战斗！";
         [TranslateMsg("PVE模式-放弃一局游戏的提示")]
         private const string PVE_CONFIRM_GIVE_UP = "确认要放弃本局游戏？";
         [SerializeField]
@@ -432,5 +505,12 @@ namespace Controllers
         Win,
         Draw,
         Defeat
+    }
+    public static class PVETutorialSteps
+    {
+        public const int NotStarted = 0;
+        public const int PVEEntered = 1;
+        public const int CharacterSelected = 2;
+        public const int RunStarted = 3;
     }
 }

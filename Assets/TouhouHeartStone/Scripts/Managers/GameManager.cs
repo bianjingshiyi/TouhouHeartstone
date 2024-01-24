@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using BJSYGameCore;
+using Controllers;
 using Game.Animations;
 using Game.BattleTable;
 using Game.BattleTable.UI;
@@ -331,7 +332,8 @@ namespace Game
             op.completed += (o) =>
             {
                 _mainUI.setBackgroundVisible(true);
-                _mainUI.display(_mainUI.MainMenu);
+                _mainUI.hidePages();
+                scene.menu.display();
                 main.camera.gameObject.SetActive(true);
                 main.seManager.stopAllLoopingSE();
                 main.bgm.PlayList("Menu");
@@ -429,6 +431,7 @@ namespace Game
         public MainManager main => getManager<MainManager>();
         public CardManager cards => main.card;
         public LangManager lang => main.lang;
+        private MainSceneCtrl scene => this.findInstance<MainSceneCtrl>();
         Task gameTask { get; set; } = null;
         private BattleTableManager battleTableManager => _battleTableManager;
         private TableUI tableUI => _tableUI;

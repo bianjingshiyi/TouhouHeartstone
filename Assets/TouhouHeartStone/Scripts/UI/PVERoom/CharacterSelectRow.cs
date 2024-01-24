@@ -1,16 +1,17 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using BJSYGameCore.UI;
 using UnityEngine;
 
 namespace UI
 {
     public class CharacterSelectRow : MonoBehaviour
     {
+        public CharacterSelectItem getCharacterItem(int index)
+        {
+            return _itemList.getElement<CharacterSelectItem>(index);
+        }
         public void update(CharacterViewData[] viewDatas)
         {
-            UIHelper.updateList(_itemListRoot, _itemTemplate, _itemList, viewDatas.Length,
+            _itemList.updateList(viewDatas.Length,
                 (i, rect) =>
                 {
                     var item = rect.GetComponent<CharacterSelectItem>();
@@ -29,14 +30,10 @@ namespace UI
         }
         private void onItemClickedCallback(CharacterSelectItem item)
         {
-            onItemClicked?.Invoke(_itemList.IndexOf(item.transform as RectTransform));
+            onItemClicked?.Invoke(_itemList.indexOf(item));
         }
         public event Action<int> onItemClicked;
         [SerializeField]
-        private RectTransform _itemListRoot;
-        [SerializeField]
-        private RectTransform _itemTemplate;
-        [SerializeField]
-        private List<RectTransform> _itemList = new List<RectTransform>();
+        private ElementList _itemList;
     }
 }

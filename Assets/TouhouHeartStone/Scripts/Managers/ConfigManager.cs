@@ -27,28 +27,6 @@ namespace Game
             Screen.fullScreen = Config.FullScreen;
             OnConfigChange?.Invoke(Config);
         }
-        public bool isTutorialFinished(TutorialID id)
-        {
-            if (finishedTutorials.TryGetValue(id, out var value))
-                return value;
-            return false;
-        }
-        public void setTutorialFinished(TutorialID id, bool value)
-        {
-            finishedTutorials[id] = value;
-            var key = getTutorialKey(id);
-            PlayerPrefs.SetInt(key, value ? 1 : 0);
-        }
-        public void clearTutorialFinishedData()
-        {
-            foreach (var pair in finishedTutorials)
-            {
-                var id = pair.Key;
-                var key = getTutorialKey(id);
-                PlayerPrefs.SetInt(key, 0);
-            }
-            finishedTutorials.Clear();
-        }
         #endregion
 
         #region 私有方法
@@ -87,20 +65,8 @@ namespace Game
             Config.Language = PlayerPrefs.HasKey(keyLanguage) ? PlayerPrefs.GetString(keyLanguage) : lang.CurrentCulture.Name;
             Config.CacheSize = PlayerPrefs.HasKey(keyCache) ? PlayerPrefs.GetFloat(keyCache) : 0.5f;
             Config.NodeSnap = (PlayerPrefs.HasKey(keyNodeSnap) ? PlayerPrefs.GetInt(keyNodeSnap, 0) : 1) == 1;
-
-            foreach (var tutorialId in tutorialID)
-            {
-                var key = getTutorialKey(tutorialId);
-                finishedTutorials.Add(tutorialId, (PlayerPrefs.HasKey(key) ? PlayerPrefs.GetInt(key, 0) : 0) == 1);
-            }
-
             MarkChange();
         }
-        private string getTutorialKey(TutorialID id)
-        {
-            return string.Format(keyTutorialFinishedTemplate, (int)id);
-        }
-
         #endregion
 
         #region 事件
@@ -115,15 +81,8 @@ namespace Game
         const string keyLanguage = "Language";
         const string keyCache = "Cache Size";
         const string keyNodeSnap = "NodeSnap";
-
-        const string keyTutorialFinishedTemplate = "TutorialFinished_{0}";
         public PlayerConfig Config { get; } = new PlayerConfig();
         LangManager lang => getManager<LangManager>();
-        private Dictionary<TutorialID, bool> finishedTutorials = new Dictionary<TutorialID, bool>();
-        private static readonly TutorialID[] tutorialID = new TutorialID[]
-        {
-            TutorialID.Basic
-        };
         [SerializeField]
         AudioMixer mixer;
         #endregion
@@ -141,10 +100,5 @@ namespace Game
         }
 
         #endregion
-    }
-
-    public enum TutorialID
-    {
-        Basic = 1
     }
 }

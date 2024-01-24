@@ -36,7 +36,8 @@ namespace UI
         }
         private void onClickClearTutorialDataButtonCallback()
         {
-            main.config.clearTutorialFinishedData();
+            main.tutorial.clearTutorialFinishedData();
+            main.tutorial.hideGuideTip();
         }
 
         MainManager main => this.findInstance<MainManager>();

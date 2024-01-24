@@ -12,6 +12,10 @@ namespace UI
             _text.text = viewData.name;
             _image.sprite = viewData.image;
         }
+        public RectTransform getButtonTransform()
+        {
+            return _button.transform as RectTransform;
+        }
         private void Awake()
         {
             _button.onClick.AddListener(onClickCallback);

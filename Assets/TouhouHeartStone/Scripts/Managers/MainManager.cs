@@ -264,6 +264,7 @@ namespace Game
         public ConfigManager config => getManager<ConfigManager>();
         public ReplayManager replays => getManager<ReplayManager>();
         public FileManager fileManager => new FileManager();
+        public TutorialManager tutorial => getManager<TutorialManager>();
         /// <summary>
         /// 语言管理器，仅用于控制语言的修改。如果你需要翻译，请使用 i18n._();
         /// </summary>

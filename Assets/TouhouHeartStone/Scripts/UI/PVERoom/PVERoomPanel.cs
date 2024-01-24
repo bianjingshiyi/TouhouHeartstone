@@ -240,6 +240,9 @@ namespace UI
         public event Action<int, DeckList> onDeckItemPointerExit;
         #endregion
         #region 属性字段
+        public CharacterSelectPanel playerSelectPanel => _playerSelectPanel;
+        public PVECharacterInfoPanel playerInfoPanel => _playerInfoPanel;
+        public PVECharacterInfoPanel enemyInfoPanel => _enemyInfoPanel;
         [Header("选择玩家页面")]
         [SerializeField]
         GameObject _preStartPanelObj;

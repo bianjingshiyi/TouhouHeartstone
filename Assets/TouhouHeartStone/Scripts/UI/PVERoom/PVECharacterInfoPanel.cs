@@ -38,6 +38,7 @@ namespace UI
         public event Action<int, PointerEventData> onDeckItemPointerEnter;
         public event Action<int, PointerEventData> onDeckItemPointerExit;
         public DeckCardList deckCardList => _deckView;
+        public Button confirmButton => _confirmButton;
         [SerializeField]
         TextMeshProUGUI _masterName;
         [SerializeField]

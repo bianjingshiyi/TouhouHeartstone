@@ -31,7 +31,6 @@ namespace UI
             this._RoomPanel = this.transform.Find("RoomPanel").GetComponent<RoomPanel>();
             this._SettingPage = this.transform.Find("SettingPage").GetComponent<SettingPage>();
             this._Loading = this.transform.Find("Loading").GetComponent<Loading>();
-            this._Dialog = this.transform.Find("Dialog").GetComponent<Dialog>();
         }
         [SerializeField()]
         private MainMenu _MainMenu;
@@ -111,19 +110,6 @@ namespace UI
                 return this._Loading;
             }
         }
-        [SerializeField()]
-        private Dialog _Dialog;
-        public Dialog Dialog
-        {
-            get
-            {
-                if ((this._Dialog == null))
-                {
-                    this._Dialog = this.transform.Find("Dialog").GetComponent<Dialog>();
-                }
-                return this._Dialog;
-            }
-        }
         public override UIObject[] getPages()
         {
             return new UIObject[] {
@@ -134,7 +120,6 @@ namespace UI
                     this.SettingPage,
                     this.DebugPage,
                     this.Loading,
-                    this.Dialog,
             };
         }
         partial void onAwake();
