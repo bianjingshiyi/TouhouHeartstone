@@ -856,7 +856,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.IndexOf, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_GET_INDEX_OF_ELEMENT)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_INDEX)]
         public static int indexOf(Flow flow, ActionNode node,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Array array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT)] object element)
         {
             if (array == null || element == null)

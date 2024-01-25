@@ -71,7 +71,7 @@ namespace Game.BattleTable
             }
             var sourceField = servant.field;
             var targetField = table.getField(_to);
-            if (sourceField != targetField && sourceField != null)
+            if (sourceField != null)
             {
                 Vector3 transPos = servant.transform.position;
                 if (sourceField.removeServant(servant, false))
