@@ -412,6 +412,27 @@ namespace Game
             return fileList.ToArray();
         }
         /// <summary>
+        public CardPoolInfo[] getAllCardPoolInfos()
+        {
+            List<CardPoolInfo> set = new List<CardPoolInfo>();
+            if (_creatingCardPoolInfo != null)
+                set.Add(_creatingCardPoolInfo);
+            set.AddRange(_cardPoolInfoDict.Values);
+            return set.ToArray();
+        }
+        /// <summary>
+        /// 获取所有本地卡池信息。
+        /// </summary>
+        /// <returns></returns>
+        public CardPoolInfo[] getLocalCardPoolInfos()
+        {
+            List<CardPoolInfo> set = new List<CardPoolInfo>();
+            if (_creatingCardPoolInfo != null)
+                set.Add(_creatingCardPoolInfo);
+            set.AddRange(_cardPoolInfoDict.Values.Where(i => isLocalCardPool(i)));
+            return set.ToArray();
+        }
+        /// <summary>
         /// 根据卡池路径获取卡池。如果卡池没有被加载，加载卡池。
         /// </summary>
         /// <param name="path">卡池路径。</param>
@@ -627,16 +648,20 @@ namespace Game
             return info?.ToReference();
         }
         /// <summary>
+        /// 获取所有卡池引用（只限读取了CardPoolInfo的）。
+        /// </summary>
+        /// <returns></returns>
+        public ICardPoolReference[] getAllCardPoolReferences()
+        {
+            return getAllCardPoolInfos().Select(i => i.ToReference()).ToArray();
+        }
+        /// <summary>
         /// 获取所有本地卡池。
         /// </summary>
         /// <returns></returns>
         public ICardPoolReference[] getLocalCardPoolReferences()
         {
-            List<ICardPoolReference> set = new List<ICardPoolReference>();
-            if (_creatingCardPoolInfo != null)
-                set.Add(new CardPoolReference(_creatingCardPoolInfo.cardPoolId, 0));
-            set.AddRange(_cardPoolInfoDict.Values.Where(p => isLocalCardPool(p)).Select(p => p.ToReference()));
-            return set.ToArray();
+            return getLocalCardPoolInfos().Select(i => i.ToReference()).ToArray();
         }
         #endregion
 
@@ -807,6 +832,14 @@ namespace Game
             path = path.Replace("/", "\\");
             if (path.isStreamingAssetsPath(out _) || path.isResourcesPath(out _))
                 return true;
+
+            if (Application.isEditor)
+            {
+                //编辑器下的官方卡池，位于项目文件夹下的ExternalData中
+                var startPath = Path.GetFullPath(_editorCardPoolDirName);
+                if (Path.GetFullPath(path).StartsWith(startPath))
+                    return true;
+            }
 
             // 如果路径以本地卡池的路径开头，说明是本身拥有的卡池。
             string cardPoolDir = Path.Combine(Application.persistentDataPath, cardPoolDirName).Replace("/", "\\");
@@ -1140,67 +1173,64 @@ namespace Game
             // 修复未知或过时的节点。
             async Task fixUnknownOrObsoleteNode(ActionNode actionNode)
             {
+                if (string.IsNullOrEmpty(actionNode.defineName))
+                    return;
                 var defineRef = actionNode.defineRef;
                 bool actionExists = false;
                 if (defineRef != null)
                 {
-                    CardPool definePool = null;
-                    // 获取目标卡池的动作引用。
-                    var localPoolRef = getLocalCardPoolReference(defineRef.cardPoolId);
-                    if (!tryGetCardPool(localPoolRef, out definePool))
-                    {
-                        var path = getCardPoolPath(localPoolRef);
-                        if (!string.IsNullOrEmpty(path))
-                        {
-                            var result = await loadCardPool(path, true);
-                            definePool = result.cardPool;
-                        }
-                    }
+                    IEnumerable<ActionDefine> actionDefines = null;
                     // 检查动作是否存在。
-                    if (defineRef.cardPoolId == 0)
+                    if (defineRef.cardPoolId == BUILTIN_POOL_ID)
                     {
-                        actionExists = builtinActions.Exists(a => a.defineId == defineRef.defineId);
-                    }
-                    else if (definePool != null)
-                    {
-                        actionExists = definePool.actionDefineList.Exists(a => a.defineId == defineRef.defineId);
-                    }
-                }
-                if (!actionExists)
-                {
-                    //包含不存在的动作名称，可能是名称过期了
-                    ActionReference newDefineRef = null;
-                    // 内置动作。
-                    foreach (ActionDefine actionDefine in builtinActions)
-                    {
-                        if (actionDefine.obsoleteNames?.Contains(actionNode.defineName) == true)
-                        {
-                            newDefineRef = new ActionReference(0, actionDefine.defineId);
-                            break;
-                        }
-                    }
-                    // 卡池内的自定义动作。
-                    if (newDefineRef == null)
-                    {
-                        foreach (GeneratedActionDefine actionDefine in cardPool.actionDefineList)
-                        {
-                            if (actionDefine.obsoleteNames?.Contains(actionNode.defineName) == true)
-                            {
-                                newDefineRef = new ActionReference(actionDefine.cardPoolId, actionDefine.defineId);
-                                break;
-                            }
-                        }
-                    }
-                    if (newDefineRef != null)
-                    {
-                        Debug.LogWarning($"将动作节点{actionNode.id}过期的动作名称{actionNode.defineName}替换为{newDefineRef}");
-                        actionNode.defineRef = newDefineRef;
+                        // 内置卡池。
+                        actionDefines = builtinActions;
                     }
                     else
                     {
-                        Debug.LogError($"动作节点{actionNode.id}的名称未知：{actionNode.defineName}");
+                        // 自定义卡池。
+                        // 获取目标卡池的动作引用。
+                        var poolRef = getCardPoolReferenceInEnv(defineRef.cardPoolId, getAllCardPoolReferences());
+                        var (_, definePool) = await getOrLoadCardPool(poolRef, true);
+                        if (definePool != null)
+                            actionDefines = definePool.actionDefineList;
+                    }
+                    if (actionDefines != null)
+                        actionExists = actionDefines.Any(a => a.defineId == defineRef.defineId);
+                }
+                if (actionExists)
+                    return;
+                //包含不存在的动作名称，可能是名称过期了
+                ActionReference newDefineRef = null;
+                // 内置动作。
+                foreach (ActionDefine actionDefine in builtinActions)
+                {
+                    if (actionDefine.obsoleteNames?.Contains(actionNode.defineName) == true)
+                    {
+                        newDefineRef = new ActionReference(0, actionDefine.defineId);
+                        break;
                     }
                 }
+                // 卡池内的自定义动作。
+                if (newDefineRef == null)
+                {
+                    foreach (GeneratedActionDefine actionDefine in cardPool.actionDefineList)
+                    {
+                        if (actionDefine.obsoleteNames?.Contains(actionNode.defineName) == true)
+                        {
+                            newDefineRef = new ActionReference(actionDefine.cardPoolId, actionDefine.defineId);
+                            break;
+                        }
+                    }
+                }
+                if (newDefineRef == null)
+                {
+                    Debug.LogError($"动作节点{actionNode.id}的名称未知：{actionNode.defineName}");
+                    return;
+                }
+
+                Debug.LogWarning($"将动作节点{actionNode.id}过期的动作名称{actionNode.defineName}替换为{newDefineRef}");
+                actionNode.defineRef = newDefineRef;
             }
             // 修复因加入群体事件而过时的节点。
             void fixMassObsoleteNode(ActionNode actionNode)
@@ -1684,9 +1714,10 @@ namespace Game
         #region 属性字段
         [TranslateMsg]
         public const string CARD_POOL_LOAD_ERROR_DESC = "卡池加载失败，卡池文件可能已损坏。";
+        public const long BUILTIN_POOL_ID = 0;
         public const long STANDARD_POOL_ID = 1;
         public const long PVE_POOL_ID = 2;
-        public static readonly CardPoolReference builtinCardPoolReference = new CardPoolReference(0, 0);
+        public static readonly CardPoolReference builtinCardPoolReference = new CardPoolReference(BUILTIN_POOL_ID, 0);
         public string cardPoolDirName => _cardPoolDirName;
         public string editorCardPoolDirName => _editorCardPoolDirName;
         public string cardPoolFilePostfix => _cardPoolFilePostfix;

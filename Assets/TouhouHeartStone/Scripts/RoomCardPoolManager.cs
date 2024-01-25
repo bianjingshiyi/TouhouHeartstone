@@ -492,21 +492,21 @@ namespace Game
         {
             var token = _cts.Token;
             // 首先下载并读取卡池文件。
-            var downloadingPoolFiles = plans;
-            var downloadedPoolFiles = new List<CardPoolPlan>();
+            var downloadingPoolPlans = plans;
+            var downloadedPoolPlans = new List<CardPoolPlan>();
             do
             {
                 bool allSuccess = true;
 
-                foreach (var plan in downloadingPoolFiles)
+                foreach (var plan in downloadingPoolPlans)
                 {
                     token.ThrowIfCancellationRequested();
 
                     // 如果卡池文件下载成功，加入到成功下载的卡池列表中。
-                    bool poolLoaded = await DownloadPlanCardPool(plan);
+                    bool poolLoaded = await DownloadPlanCardPoolFile(plan);
                     if (poolLoaded)
                     {
-                        downloadedPoolFiles.Add(plan);
+                        downloadedPoolPlans.Add(plan);
                     }
                     else
                     {
@@ -516,19 +516,45 @@ namespace Game
 
                 token.ThrowIfCancellationRequested();
 
+                // 卡池文件全部保存后，将下载的卡池信息读取到内存中，构建一个卡池依赖环境。
+                foreach (var plan in downloadedPoolPlans)
+                {
+                    var resPlan = plan.resPlans[0];
+                    var path = game.cache.GetCachePath(resPlan.type, resPlan.id);
+                    await game.card.loadCardPoolInfoAsync(path);
+                    token.ThrowIfCancellationRequested();
+                }
+                // 卡池文件全部保存后，读取所有下载的卡池内容。
+                foreach (var plan in downloadedPoolPlans)
+                {
+                    var poolRef = plan.poolPack.GetReference();
+                    var cardPoolData = await game.card.loadCachedCardPoolAsync(poolRef.cardPoolId, poolRef.version);
+                    CardPool cardPool = cardPoolData.cardPool;
+                    // 如果获得的卡池对象是null，下载失败。
+                    if (cardPool == null)
+                    {
+                        allSuccess = false;
+                        continue;
+                    }
+                    // 获取该卡池的所有图片id，添加ResourcePlan。
+                    var picPlans = GetCardPoolPicturePlans(poolRef).Where(p => !plan.resPlans.Any(rp => rp.id == p.id));
+                    plan.resPlans.AddRange(picPlans);
+                    token.ThrowIfCancellationRequested();
+                }
+
                 if (allSuccess)
                 {
                     break;
                 }
                 else
                 {
-                    var newPoolFileList = plans.Except(downloadedPoolFiles);
+                    var newPoolFileList = plans.Except(downloadedPoolPlans);
                     ChangeProgress(0);
-                    await StartRetry(downloadingPoolFiles, newPoolFileList);
-                    downloadingPoolFiles = newPoolFileList;
+                    await StartRetry(downloadingPoolPlans, newPoolFileList);
+                    downloadingPoolPlans = newPoolFileList;
                 }
             }
-            while (downloadingPoolFiles.Count() > 0);
+            while (downloadingPoolPlans.Count() > 0);
         }
         /// <summary>
         /// 下载卡池内的图片。
@@ -731,9 +757,8 @@ namespace Game
             return false;
         }
 
-        private async Task<bool> DownloadPlanCardPool(CardPoolPlan plan)
+        private async Task<bool> DownloadPlanCardPoolFile(CardPoolPlan plan)
         {
-            var poolRef = plan.poolPack.GetReference();
             // 先下载计划中的卡池文件资源。
             if (plan.resPlans.Count <= 0)
                 return false;
@@ -746,23 +771,6 @@ namespace Game
                 return false;
             // 将资源保存为缓存。
             await game.cache.SaveCache(game.fileManager, resPlan.type, resPlan.id, bytes);
-
-            // 如果有任何未完成的ResourcePlan，视为下载失败。
-            //if (plan.resPlans.Any(p => !p.completed))
-            //    return false;
-
-
-            // 缓存保存后，读取该卡池。
-            var cardPoolData = await game.card.loadCachedCardPoolAsync(poolRef.cardPoolId, poolRef.version);
-            CardPool cardPool = cardPoolData.cardPool;
-            // 如果获得的卡池对象是null，返回false，下载失败。
-            if (cardPool == null)
-            {
-                return false;
-            }
-            // 获取该卡池的所有卡图和buff图片id，添加ResourcePlan。
-            var plans = GetCardPoolPicturePlans(poolRef).Where(p => !plan.resPlans.Any(rp => rp.id == p.id));
-            plan.resPlans.AddRange(plans);
             return true;
         }
 
