@@ -3,11 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore;
-using Controllers;
 using TouhouCardEngine;
-using UI;
+using ResourceType = TouhouCardEngine.ResourceType;
 using UnityEngine;
-using FileItem = System.Tuple<string, long>;
 
 namespace Game
 {
@@ -34,9 +32,27 @@ namespace Game
         /// <param name="type">资源类型。</param>
         /// <param name="id">资源ID。</param>
         /// <returns>缓存文件路径。</returns>
-        public string GetCachePath(TouhouCardEngine.ResourceType type, string id)
+        public string GetCachePath(ResourceType type, string id)
         {
             return GetCachePath(type.GetString(), id);
+        }
+        /// <summary>
+        /// 根据资源类型字符串，获取缓存文件目录。
+        /// </summary>
+        /// <param name="type">资源类型字符串。</param>
+        /// <returns>缓存文件目录。</returns>
+        public string GetCacheResourcePath(string type)
+        {
+            return Path.Combine(CacheDir, type);
+        }
+        /// <summary>
+        /// 根据资源类型，获取缓存文件目录。
+        /// </summary>
+        /// <param name="type">资源类型。</param>
+        /// <returns>缓存文件目录。</returns>
+        public string GetCacheResourcePath(ResourceType type)
+        {
+            return GetCacheResourcePath(type.GetString());
         }
         /// <summary>
         /// 获取缓存文件是否存在。
@@ -44,9 +60,9 @@ namespace Game
         /// <param name="type">资源类型。</param>
         /// <param name="id">资源ID。</param>
         /// <returns>缓存文件是否存在。</returns>
-        public bool FileExists(FileManager fileManager, TouhouCardEngine.ResourceType type, string id)
+        public bool FileExists(ResourceType type, string id)
         {
-            return fileManager.isFileExist(GetCachePath(type, id));
+            return main.fileManager.isFileExist(GetCachePath(type, id));
         }
         /// <summary>
         /// 将字节数组保存为缓存文件资源。
@@ -55,11 +71,11 @@ namespace Game
         /// <param name="id">资源ID。</param>
         /// <param name="bytes">字节数组。</param>
         /// <returns></returns>
-        public Task SaveCache(FileManager fileManager, TouhouCardEngine.ResourceType type, string id, byte[] bytes)
+        public Task SaveCache(ResourceType type, string id, byte[] bytes)
         {
             string path = GetCachePath(type, id);
             addLRU(path, bytes.LongLength);
-            return fileManager.saveFile(path, bytes);
+            return main.fileManager.saveFile(path, bytes);
         }
         /// <summary>
         /// 从缓存文件资源中读取字节数组。
@@ -67,22 +83,33 @@ namespace Game
         /// <param name="type">资源类型。</param>
         /// <param name="id">资源ID。</param>
         /// <returns>读取出的字节数组。</returns>
-        public Task<byte[]> ReadCache(FileManager fileManager, TouhouCardEngine.ResourceType type, string id)
+        public Task<byte[]> ReadCache(ResourceType type, string id)
         {
             string path = GetCachePath(type, id);
             visitLRU(path);
-            return fileManager.readBinaryFile(path);
+            return main.fileManager.readBinaryFile(path);
+        }
+        /// <summary>
+        /// 根据资源类型和资源ID，获取缓存文件路径。
+        /// </summary>
+        /// <param name="type">资源类型。</param>
+        /// <param name="id">资源ID。</param>
+        /// <returns>缓存文件路径。</returns>
+        public string[] GetCachePaths(ResourceType type)
+        {
+            var cacheResourceDir = GetCacheResourcePath(type);
+            return main.fileManager.getFiles(cacheResourceDir, "*");
         }
         /// <summary>
         /// 清除所有缓存文件。
         /// </summary>
-        public void ClearCache(FileManager fileManager)
+        public void ClearCache()
         {
             foreach (var cache in cacheItems)
             {
                 try
                 {
-                    fileManager.deleteFile(cache.Item1);
+                    main.fileManager.deleteFile(cache.path);
                 }
                 catch { }
             }
@@ -123,7 +150,7 @@ namespace Game
             }
             return false;
         }
-        public bool GetResourceInfo(TouhouCardEngine.ResourceType resType, string id, out long size)
+        public bool GetResourceInfo(ResourceType resType, string id, out long size)
         {
             return GetResourceInfo(resType.GetString(), id, out size);
         }
@@ -174,7 +201,7 @@ namespace Game
             var info = new FileInfo(path);
             size = info.Length;
             return true;
-        } 
+        }
         /// <summary>
         /// 获取当前缓存的大小。
         /// </summary>
@@ -236,13 +263,13 @@ namespace Game
                     cacheItems.RemoveLast();
                     continue;
                 }
-                cacheIndexer.Remove(remove.Item1);
+                cacheIndexer.Remove(remove.path);
                 cacheItems.RemoveLast();
-                totalSize -= remove.Item2;
+                totalSize -= remove.size;
 
                 try
                 {
-                    File.Delete(Path.Combine(CacheDir, remove.Item1));
+                    File.Delete(Path.Combine(CacheDir, remove.path));
                 }
                 catch { }
             }
@@ -293,8 +320,8 @@ namespace Game
             CacheDir = Path.Combine(Application.persistentDataPath, dirName);
             config.OnConfigChange += OnConfigChange;
 
-            prepareDirectory(TouhouCardEngine.ResourceType.CardDefine.GetString());
-            prepareDirectory(TouhouCardEngine.ResourceType.Picture.GetString());
+            prepareDirectory(ResourceType.CardDefine.GetString());
+            prepareDirectory(ResourceType.Picture.GetString());
             rebuildLRU();
         }
         #endregion
@@ -339,7 +366,7 @@ namespace Game
                     }
                 }
             }
-            else if(resType == "pic")
+            else if (resType == "pic")
             {
                 // 查找本地的图片资源。
                 string fileName = string.Format("{0}.jpg", resID);
@@ -367,15 +394,26 @@ namespace Game
         #endregion
 
         #region 字段属性
-        [SerializeField]
-        private ConfigManager config;
-        [SerializeField]
-        private CardManager card;
+        private MainManager main => this.findInstance<MainManager>();
+        private ConfigManager config => main.config;
+        private CardManager card => main.card;
         [SerializeField]
         private string dirName = "cache";
         public long MaxSize { get; set; }
         public string CacheDir { get; private set; }
 
         #endregion
+
+        private class FileItem
+        {
+            public string path;
+            public long size;
+            public FileItem(string path, long size)
+            {
+                this.path = path;
+                this.size = size;
+            }
+        }
+
     }
 }

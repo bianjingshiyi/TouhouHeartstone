@@ -359,7 +359,7 @@ namespace Game
         public async Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPoolAsync(long cardPoolId, int version)
         {
             string resID = CardPoolReference.GetResourceID(cardPoolId, version);
-            if (game.cache.FileExists(game.fileManager, ResourceType.CardDefine, resID))
+            if (game.cache.FileExists(ResourceType.CardDefine, resID))
             {
                 string path = game.cache.GetCachePath(ResourceType.CardDefine, resID);
                 var cardPoolData = await loadCardPool(path, true);

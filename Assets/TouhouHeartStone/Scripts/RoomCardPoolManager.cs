@@ -212,7 +212,7 @@ namespace Game
                     }
 
                     // 这个卡池是否存在于玩家本地或者缓存中。
-                    bool hasLocalPool = game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id) || (localPoolInfo != null && localPoolInfo.editTime == roomPool.version);
+                    bool hasLocalPool = game.cache.FileExists(ResourceType.CardDefine, id) || (localPoolInfo != null && localPoolInfo.editTime == roomPool.version);
 
                     // 远端是否有该卡池。
                     // 局域网房主的远端就是本地。
@@ -285,7 +285,7 @@ namespace Game
                             token.ThrowIfCancellationRequested();
                             string picId = Path.GetFileNameWithoutExtension(path);
                             if (!string.IsNullOrEmpty(picId) &&
-                            !game.cache.FileExists(game.fileManager, ResourceType.Picture, picId) &&
+                            !game.cache.FileExists(ResourceType.Picture, picId) &&
                                 !game.card.isExternalImageExists(path))
                             {
                                 downloadPools.Add(roomPool);
@@ -770,7 +770,7 @@ namespace Game
             if (bytes == null)
                 return false;
             // 将资源保存为缓存。
-            await game.cache.SaveCache(game.fileManager, resPlan.type, resPlan.id, bytes);
+            await game.cache.SaveCache(resPlan.type, resPlan.id, bytes);
             return true;
         }
 
@@ -799,7 +799,7 @@ namespace Game
 
                 byte[] downloaded = await DownloadResourcePlan(resPlan);
                 if (downloaded != null)
-                    await game.cache.SaveCache(game.fileManager, resPlan.type, resPlan.id, downloaded);
+                    await game.cache.SaveCache(resPlan.type, resPlan.id, downloaded);
                 // 进度条只表示下载的资源数量。
                 _transmitedSize++;
                 if (_totalSize > 0)

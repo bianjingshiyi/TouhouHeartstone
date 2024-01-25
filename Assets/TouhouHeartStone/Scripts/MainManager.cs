@@ -261,6 +261,7 @@ namespace Game
         public GameManager game => getManager<GameManager>();
         public EventManager eventManager => getManager<EventManager>();
         public SEManager seManager => getManager<SEManager>();
+        public ConfigManager config => getManager<ConfigManager>();
         public ReplayManager replays => getManager<ReplayManager>();
         public FileManager fileManager => new FileManager();
         /// <summary>

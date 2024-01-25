@@ -291,7 +291,7 @@ namespace Game
             if (!isLocalCardPool(cardPoolRef))
             {
                 var picId = Path.GetFileNameWithoutExtension(imagePath);
-                if (game.cache.FileExists(game.fileManager, ResourceType.Picture, picId))
+                if (game.cache.FileExists(ResourceType.Picture, picId))
                 {
                     //添加到缓存
                     sprite = await loadCacheSprite(picId);
@@ -698,7 +698,7 @@ namespace Game
         private async Task<Sprite> loadCacheSprite(string picId)
         {
             var fileManager = game.fileManager;
-            byte[] bytes = await game.cache.ReadCache(fileManager, ResourceType.Picture, picId);
+            byte[] bytes = await game.cache.ReadCache(ResourceType.Picture, picId);
             return createSprite(bytes);
         }
         private Sprite createSprite(byte[] bytes)
