@@ -16,18 +16,13 @@ namespace Controllers
     partial class EditorCtrl : GameObjectCtrl<MainSceneCtrl>
     {
         #region 公有方法
-        public async void display(bool switchToView = true, bool reloadCardPoolInfos = true, int cardPoolIndex = -1, bool reloadCardPool = true)
+        public async void display(bool switchToView = true, int cardPoolIndex = -1, bool reloadCardPool = true)
         {
             //显示界面
             //切换模式
             if (switchToView)
             {
-                //牌库浏览模式
-                if (reloadCardPoolInfos)
-                {
-                    //重新加载所有牌库信息
-                    await getCardPoolsInfoAsync();
-                }
+                loadCardPoolInfos();
                 gameObject.SetActive(true);
                 clearAllCardPoolsUnsaved();
                 _firstOpenedCardPoolId = -1;
@@ -317,7 +312,7 @@ namespace Controllers
         /// <param name="index"></param>
         private void onClickCardPoolListItem(int index)
         {
-            display(false, false, index, true);
+            display(false, index, true);
         }
         /// <summary>
         /// 当用户点击删除卡池按钮，弹出对话框询问用户是否确定删除卡池，确定则删除并刷新卡池列表
@@ -356,7 +351,7 @@ namespace Controllers
             markCardPoolUnsaved(_curCardPoolId);
             _cardPoolIdList.Add(_curCardPoolId);
 
-            display(false, false, _cardPoolIdList.IndexOf(_curCardPoolId), true);
+            display(false, _cardPoolIdList.IndexOf(_curCardPoolId), true);
         }
         /// <summary>
         /// 当卡牌列表被点击，打开卡牌编辑器，如果是新建卡牌则新建卡牌并打开
@@ -404,7 +399,7 @@ namespace Controllers
                 skin.id = newCardDefine.id;
                 game.card.addCardSkin(curCardPoolId, skin);
             }
-            display(false, false, -1, true);
+            display(false, -1, true);
         }
         /// <summary>
         /// 当点击保存按钮，保存当前编辑的卡池
@@ -449,7 +444,7 @@ namespace Controllers
                 if (success)
                 {
                     game.ui.dialog.ShowConfirm(game.i18n._(StringTable.HINT_TITLE), game.i18n._(IMPORT_SUCCESS));
-                    await getCardPoolsInfoAsync();
+                    loadCardPoolInfos();
                     await updateCardPoolListUI();
                 }
             }
@@ -567,9 +562,9 @@ namespace Controllers
         {
             _viewingAddCardPoolDependencies.Clear();
             _selectedAddingCardPoolDependencies.Clear();
-            var cardPoolInfos = await game.card.loadCardPoolInfosAsync();
+            var cardPoolInfos = game.card.getLocalCardPoolInfos();
             var curDeps = getCurrentCardPoolInfo().dependencyRefs;
-            foreach (var info in cardPoolInfos.Values)
+            foreach (var info in cardPoolInfos)
             {
                 if (info.cardPoolId == _curCardPoolId)
                     continue;
@@ -758,14 +753,13 @@ namespace Controllers
         /// 读取所有卡池文件中的卡池信息。
         /// </summary>
         /// <returns>包含卡池文件相对路径和卡池信息键值对的字典</returns>
-        private async Task getCardPoolsInfoAsync()
+        private void loadCardPoolInfos()
         {
             _cardPoolIdList.Clear();
-            var result = await game.card.loadCardPoolInfosAsync();
-            foreach (var pair in result)
+            var result = game.card.getLocalCardPoolInfos();
+            foreach (var cardPoolInfo in result)
             {
-                CardPoolInfo cardPool = pair.Value;
-                var poolId = cardPool.cardPoolId;
+                var poolId = cardPoolInfo.cardPoolId;
                 if (game.card.isCardPoolHidden(poolId))
                     continue;
                 int index = _cardPoolIdList.FindIndex(id => id == poolId);
@@ -773,7 +767,7 @@ namespace Controllers
                 {
                     var poolRef = getLocalCardPoolRef(poolId);
                     var conflictPath = game.card.getCardPoolPath(poolRef);
-                    Debug.LogWarning($"无法加载卡池{pair.Key}，因为{conflictPath}拥有与其相同的Id{poolId}");
+                    Debug.LogWarning($"无法加载卡池{cardPoolInfo}，因为{conflictPath}拥有与其相同的Id{poolId}");
                     continue;
                 }
                 _cardPoolIdList.Add(poolId);
@@ -960,14 +954,15 @@ namespace Controllers
             {
                 game.card.deleteCreatingCardPool();
                 //重新加载所有卡池信息
-                await getCardPoolsInfoAsync();
+                await game.card.loadAllCardPoolInfosAsync();
+                loadCardPoolInfos();
             }
             else if (isCurrentCardPoolUnsaved()) // 未保存，退出时重新加载牌库信息，防止出现临时卡牌变更。
             {
-                await game.card.loadCardPoolInfosAsync();
                 var cardPoolRef = game.card.getLocalCardPoolReference(cardPoolId);
                 var path = game.card.getCardPoolPath(cardPoolRef);
-                await game.card.loadCardPool(path);
+                await game.card.loadLocalCardPoolInfoAsync(path);
+                await game.card.loadLocalCardPool(path);
             }
             // 删除所有属于该卡池的页面信息。
             _displayPagePool.RemoveAll(p => p.cardPoolId == cardPoolId);
@@ -1315,7 +1310,7 @@ namespace Controllers
             {
                 _displayObjectStack.Clear();
                 _displayPagePool.Clear();
-                display(false, false, -1, true);
+                display(false, -1, true);
             }
         }
         /// <summary>

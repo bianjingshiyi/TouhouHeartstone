@@ -30,7 +30,7 @@ namespace Controllers
             {
                 _displayInfo = info;
                 // 卡池筛选器
-                await initCardPoolFilters(info);
+                initCardPoolFilters(info);
                 // 加载卡牌定义。
                 await loadCardDefines();
                 // 更新过滤器。
@@ -276,7 +276,7 @@ namespace Controllers
         /// <summary>
         /// 根据显示信息，更新卡池过滤器。
         /// </summary>
-        private async Task initCardPoolFilters(DisplayInfo info)
+        private void initCardPoolFilters(DisplayInfo info)
         {
             List<long> cardPoolIdList = new List<long>();
             // 选项
@@ -286,8 +286,8 @@ namespace Controllers
             }
             else
             {
-                var result = await game.card.loadCardPoolInfosAsync();
-                cardPoolIdList.AddRange(result.Values.Where(p => !game.card.isCardPoolHidden(p.cardPoolId)).Select(a => a.cardPoolId));
+                var result = game.card.getLocalCardPoolInfos();
+                cardPoolIdList.AddRange(result.Where(p => !game.card.isCardPoolHidden(p.cardPoolId)).Select(a => a.cardPoolId));
             }
             cardPoolIdList.Sort();
             _cardPoolIdList = cardPoolIdList.ToArray();

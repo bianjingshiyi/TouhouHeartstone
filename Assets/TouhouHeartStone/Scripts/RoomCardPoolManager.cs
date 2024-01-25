@@ -222,7 +222,7 @@ namespace Game
                     CardPool localCardPool = null;
                     if (hasLocalPool && !game.card.tryGetCardPool(roomPool.GetReference(), out localCardPool) && !string.IsNullOrEmpty(cardPoolPath))
                     {
-                        localCardPool = (await game.card.loadCardPool(cardPoolPath, true)).cardPool;
+                        localCardPool = (await game.card.loadLocalCardPool(cardPoolPath, true)).cardPool;
                     }
 
                     token.ThrowIfCancellationRequested();
@@ -521,7 +521,7 @@ namespace Game
                 {
                     var resPlan = plan.resPlans[0];
                     var path = game.cache.GetCachePath(resPlan.type, resPlan.id);
-                    await game.card.loadCardPoolInfoAsync(path);
+                    await game.card.loadCachedCardPoolInfoAsync(path);
                     token.ThrowIfCancellationRequested();
                 }
                 // 卡池文件全部保存后，读取所有下载的卡池内容。

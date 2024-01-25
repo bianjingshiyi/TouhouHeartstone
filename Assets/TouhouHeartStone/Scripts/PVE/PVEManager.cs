@@ -120,7 +120,7 @@ namespace Game.PVE
             else
             {
                 var path = getCardPoolFilePath(dataName);
-                var (info, pool) = await main.card.loadCardPool(path);
+                var (info, pool) = await main.card.loadLocalCardPool(path);
                 _pvePoolDict.Add(dataName, info);
                 return (info, pool);
             }

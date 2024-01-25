@@ -697,7 +697,6 @@ namespace Game
         }
         private async Task<Sprite> loadCacheSprite(string picId)
         {
-            var fileManager = game.fileManager;
             byte[] bytes = await game.cache.ReadCache(ResourceType.Picture, picId);
             return createSprite(bytes);
         }

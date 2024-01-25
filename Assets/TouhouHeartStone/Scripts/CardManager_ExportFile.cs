@@ -34,7 +34,7 @@ namespace Game
             }
 
             string cardPoolDefineFile = null;
-            foreach (var kv in _cardPoolInfoDict)
+            foreach (var kv in _localCardPoolInfoDict)
             {
                 if (kv.Value.CompareCardPool(cardPoolInfo))
                 {
@@ -43,7 +43,7 @@ namespace Game
                 }
             }
 
-            var cardPool = _cardPoolDict[cardPoolInfo.ToReference()];
+            var cardPool = _localCardPoolDict[cardPoolInfo.ToReference()];
             if (cardPoolDefineFile == null)
                 return null;
 
@@ -209,7 +209,7 @@ namespace Game
                     Debug.Log($"即将导入的卡池ID：{manifest.CardPoolID}");
 
                     // 判断卡池是否存在，若存在则不给导入
-                    var oldPoolInfo = _cardPoolInfoDict.Where(kv => kv.Value.cardPoolId == manifest.CardPoolID);
+                    var oldPoolInfo = _localCardPoolInfoDict.Where(kv => kv.Value.cardPoolId == manifest.CardPoolID);
                     if (oldPoolInfo.Count() > 0)
                     {
                         // 已存在相同卡池的不同版本，不允许导入
@@ -273,7 +273,7 @@ namespace Game
                         }
 
                         // 加载卡池
-                        await loadCardPool(definePath);
+                        await loadLocalCardPool(definePath);
                     }
                 }
             }

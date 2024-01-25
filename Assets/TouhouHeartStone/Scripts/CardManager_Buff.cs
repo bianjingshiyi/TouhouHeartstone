@@ -171,7 +171,7 @@ namespace Game
         }
         public bool removeBuffSkin(BuffSkin buffSkin)
         {
-            foreach (var cardPool in _cardPoolDict.Values)
+            foreach (var cardPool in _localCardPoolDict.Values)
             {
                 if (cardPool.buffSkinList.Remove(buffSkin))
                 {

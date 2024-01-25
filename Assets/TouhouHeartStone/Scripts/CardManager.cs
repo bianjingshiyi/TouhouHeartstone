@@ -129,7 +129,7 @@ namespace Game
         public CardDefine[] GetCardDefines(Func<CardDefine, bool> filter = null)
         {
             List<CardDefine> cardList = new List<CardDefine>();
-            foreach (var cardPool in _cardPoolDict.Values)
+            foreach (var cardPool in _localCardPoolDict.Values)
             {
                 cardList.AddRange(filter != null ?
                     cardPool.cardDefineList.Where(c => filter.Invoke(c)) :
@@ -147,7 +147,11 @@ namespace Game
         {
             List<CardDefine> cardDefineList = new List<CardDefine>();
             //卡池卡牌
-            foreach (var cardPool in _cardPoolDict.Values)
+            foreach (var cardPool in _localCardPoolDict.Values)
+            {
+                cardDefineList.AddRange(filter == null ? cardPool.cardDefineList : cardPool.cardDefineList.Where(c => filter(c)));
+            }
+            foreach (var cardPool in _cachedCardPoolDict.Values)
             {
                 cardDefineList.AddRange(filter == null ? cardPool.cardDefineList : cardPool.cardDefineList.Where(c => filter(c)));
             }

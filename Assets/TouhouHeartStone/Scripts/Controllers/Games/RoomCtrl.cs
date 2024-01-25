@@ -949,12 +949,12 @@ namespace Controllers
             missingPools = missingPoolList.ToArray();
             return packs.ToArray();
         }
-        private async Task<CardPoolInfoPack[]> GetLocalCardPools()
+        private CardPoolInfoPack[] GetLocalCardPools()
         {
             List<CardPoolInfoPack> cardPools = new List<CardPoolInfoPack>();
             // 本地游戏，将玩家的本地的所有卡池加进去.
-            var result = await game.card.loadCardPoolInfosAsync();
-            CardPoolInfoPack[] localPools = result.Values.Select(p => p.ToCardPoolInfoPack()).ToArray();
+            var result = game.card.getLocalCardPoolInfos();
+            CardPoolInfoPack[] localPools = result.Select(p => p.ToCardPoolInfoPack()).ToArray();
             cardPools.AddRange(localPools);
             return cardPools.ToArray();
         }
@@ -1021,7 +1021,7 @@ namespace Controllers
         private async Task<(IEnumerable<CardPoolInfoPack> addedPools, IEnumerable<CardPoolInfoPack> removedPools)> UpdateEditingCardPools()
         {
             var roomPools = _currentRoomData.getCardPools();
-            var localPools = await GetLocalCardPools();
+            var localPools = GetLocalCardPools();
 
             var newCardPools = localPools.Union(roomPools);
             // 忽略无法加载的卡池。

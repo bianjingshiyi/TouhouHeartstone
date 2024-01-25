@@ -52,7 +52,7 @@ namespace Game
             }
             anims.loadBuiltinAnimations();
             //加载外部卡片数据
-            await card.loadCardPoolInfosAsync();
+            await card.loadAllCardPoolInfosAsync();
 
             //加载卡片资源成功
             UIManager ui = getManager<UIManager>();
