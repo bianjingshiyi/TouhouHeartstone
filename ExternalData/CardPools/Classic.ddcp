@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "versionNumber" : 2, "editTime" : 517, "dependencyRefs" : [] }
+{ "_t" : "SerializableCardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "versionNumber" : 2, "editTime" : 518, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -10916,7 +10916,9 @@
                     "paramIndex" : -1,
                     "value" : 2
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_7"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 202043
@@ -32513,7 +32515,9 @@
                     "paramIndex" : -1,
                     "value" : true
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_2"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 202041
@@ -34841,7 +34845,9 @@
                       "defineId" : 147
                     }
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_4"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 202029
@@ -35209,7 +35215,9 @@
                       "defineId" : 62
                     }
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_3"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 206001
@@ -35337,7 +35345,9 @@
                     "paramIndex" : -1,
                     "value" : true
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_1"
+                },
                 "tags" : null,
                 "consts" : null,
                 "targetCheckerList" : []
@@ -35944,8 +35954,8 @@
               }, {
                 "_t" : "SerializableActionNode",
                 "_id" : 2,
-                "posX" : 966.3331298828125,
-                "posY" : 325.703125,
+                "posX" : 1574.1849365234375,
+                "posY" : -729.90814208984375,
                 "inputDefaultValues" : [{
                     "name" : "buffDefine",
                     "paramIndex" : -1,
@@ -35955,7 +35965,9 @@
                       "defineId" : 63
                     }
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_2"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 206001
@@ -35969,8 +35981,8 @@
               }, {
                 "_t" : "SerializableActionNode",
                 "_id" : 3,
-                "posX" : 2312.5,
-                "posY" : 417.66268920898438,
+                "posX" : 3603.2470703125,
+                "posY" : -748.84588623046875,
                 "inputDefaultValues" : [],
                 "propDict" : { },
                 "defineRef" : {
@@ -35986,8 +35998,8 @@
               }, {
                 "_t" : "SerializableActionNode",
                 "_id" : 4,
-                "posX" : 312.6754150390625,
-                "posY" : -356.1298828125,
+                "posX" : 643.2835693359375,
+                "posY" : -627.953857421875,
                 "inputDefaultValues" : [{
                     "name" : "buffDefine",
                     "paramIndex" : -1,
@@ -36011,8 +36023,8 @@
               }, {
                 "_t" : "SerializableActionNode",
                 "_id" : 5,
-                "posX" : 349.10220336914063,
-                "posY" : -4.9571762084960938,
+                "posX" : 2262.7099609375,
+                "posY" : -716.2022705078125,
                 "inputDefaultValues" : [],
                 "propDict" : { },
                 "defineRef" : {
@@ -36027,9 +36039,30 @@
                 "consts" : null
               }, {
                 "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "posX" : 1182.08251953125,
+                "posY" : -157.50579833984375,
+                "inputDefaultValues" : [{
+                    "name" : "variableName",
+                    "paramIndex" : -1,
+                    "value" : "具有增益"
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 212004
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
                 "_id" : 7,
-                "posX" : 1512.073974609375,
-                "posY" : -89.729049682617188,
+                "posX" : 1567.1063232421875,
+                "posY" : -1076.1331787109375,
                 "inputDefaultValues" : [],
                 "propDict" : { },
                 "defineRef" : {
@@ -36045,8 +36078,8 @@
               }, {
                 "_t" : "SerializableActionNode",
                 "_id" : 8,
-                "posX" : 1216.033203125,
-                "posY" : 35.573348999023438,
+                "posX" : 2294.57373046875,
+                "posY" : -1303.951904296875,
                 "inputDefaultValues" : [],
                 "propDict" : { },
                 "defineRef" : {
@@ -36062,21 +36095,17 @@
               }, {
                 "_t" : "SerializableActionNode",
                 "_id" : 9,
-                "posX" : 1021.912353515625,
-                "posY" : -404.98123168945313,
+                "posX" : 1646.198974609375,
+                "posY" : -1275.9482421875,
                 "inputDefaultValues" : [{
-                    "name" : "buffDefine",
+                    "name" : "variableName",
                     "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "DefineReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 63
-                    }
+                    "value" : "具有增益"
                   }],
                 "propDict" : { },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
-                  "defineId" : 206001
+                  "defineId" : 112007
                 },
                 "constDict" : null,
                 "defineName" : null,
@@ -36167,13 +36196,78 @@
               }, {
                 "_t" : "SerializableActionNode",
                 "_id" : 14,
-                "posX" : 1724.923828125,
-                "posY" : 287.66253662109375,
+                "posX" : 2903.10546875,
+                "posY" : -876.34466552734375,
+                "inputDefaultValues" : [{
+                    "name" : "damagetype",
+                    "paramIndex" : -1,
+                    "value" : false
+                  }],
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef2_14"
+                },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 202041
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 15,
+                "posX" : 505.87152099609375,
+                "posY" : -153.22348022460938,
+                "inputDefaultValues" : [{
+                    "name" : "variableName",
+                    "paramIndex" : -1,
+                    "value" : "目标卡牌"
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 212004
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 16,
+                "posX" : 174.47270202636719,
+                "posY" : -651.107177734375,
                 "inputDefaultValues" : [],
                 "propDict" : { },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
-                  "defineId" : 202041
+                  "defineId" : 111024
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 18,
+                "posX" : 882.751953125,
+                "posY" : -1620.3323974609375,
+                "inputDefaultValues" : [{
+                    "name" : "variableName",
+                    "paramIndex" : -1,
+                    "value" : "目标卡牌"
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112007
                 },
                 "constDict" : null,
                 "defineName" : null,
@@ -36185,33 +36279,8 @@
             "connections" : [{
                 "sourceName" : "目标卡牌",
                 "sourceNodeId" : 1,
-                "destName" : "cards",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "cards",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
                 "destName" : "card",
                 "destNodeId" : 4
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "card",
-                "destNodeId" : 7
-              }, {
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "cards",
-                "destNodeId" : 9
               }, {
                 "sourceName" : "目标卡牌",
                 "sourceNodeId" : 1,
@@ -36228,30 +36297,35 @@
                 "destName" : "card",
                 "destNodeId" : 12
               }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 15
+              }, {
                 "sourceName" : "目标卡牌",
                 "sourceNodeId" : 1,
-                "destName" : "damageSource",
-                "destNodeId" : 14
+                "destName" : "array",
+                "destNodeId" : 16
               }, {
                 "sourceName" : "exit",
                 "sourceNodeId" : 2,
                 "destName" : "enter",
-                "destNodeId" : 14
+                "destNodeId" : 5
               }, {
                 "sourceName" : "return",
                 "sourceNodeId" : 4,
-                "destName" : "isTrue",
-                "destNodeId" : 5
+                "destName" : "value",
+                "destNodeId" : 6
               }, {
                 "sourceName" : "thenAction",
                 "sourceNodeId" : 5,
                 "destName" : "enter",
-                "destNodeId" : 2
+                "destNodeId" : 14
               }, {
-                "sourceName" : "elseAction",
-                "sourceNodeId" : 5,
+                "sourceName" : "exit",
+                "sourceNodeId" : 6,
                 "destName" : "enter",
-                "destNodeId" : 9
+                "destNodeId" : 2
               }, {
                 "sourceName" : "return",
                 "sourceNodeId" : 7,
@@ -36262,6 +36336,11 @@
                 "sourceNodeId" : 8,
                 "destName" : "targets",
                 "destNodeId" : 14
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 9,
+                "destName" : "isTrue",
+                "destNodeId" : 5
               }, {
                 "sourceName" : "return",
                 "sourceNodeId" : 10,
@@ -36290,6 +36369,36 @@
                 "sourceNodeId" : 14,
                 "destName" : "enter",
                 "destNodeId" : 3
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 15,
+                "destName" : "enter",
+                "destNodeId" : 6
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 16,
+                "destName" : "value",
+                "destNodeId" : 15
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 18,
+                "destName" : "cards",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 18,
+                "destName" : "cards",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 18,
+                "destName" : "card",
+                "destNodeId" : 7
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 18,
+                "destName" : "damageSource",
+                "destNodeId" : 14
               }]
           }
         }],
@@ -36333,6 +36442,10 @@
                       "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
                       "_v" : ["Head"]
                     }
+                  }, {
+                    "name" : "condition",
+                    "paramIndex" : -1,
+                    "value" : true
                   }],
                 "propDict" : { },
                 "consts" : null,
@@ -36463,7 +36576,9 @@
                     "paramIndex" : -1,
                     "value" : true
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_9"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 202041
@@ -36746,7 +36861,7 @@
               }, {
                 "_t" : "SerializableActionNode",
                 "_id" : 11,
-                "posX" : 675.18359375,
+                "posX" : 560.83160400390625,
                 "posY" : -595.59014892578125,
                 "inputDefaultValues" : [],
                 "propDict" : { },
@@ -36763,7 +36878,7 @@
               }, {
                 "_t" : "SerializableActionNode",
                 "_id" : 12,
-                "posX" : 936.7158203125,
+                "posX" : 850.9517822265625,
                 "posY" : -235.64834594726563,
                 "inputDefaultValues" : [],
                 "propDict" : { },
@@ -36783,7 +36898,9 @@
                 "posX" : 1289.45654296875,
                 "posY" : -268.14834594726563,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_13"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 202028
@@ -37277,6 +37394,27 @@
                 "consts" : null
               }, {
                 "_t" : "SerializableActionNode",
+                "_id" : 18,
+                "posX" : 3184.274658203125,
+                "posY" : 0.80499267578125,
+                "inputDefaultValues" : [{
+                    "name" : "variableName",
+                    "paramIndex" : -1,
+                    "value" : "新目标"
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 212004
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
                 "_id" : 19,
                 "posX" : 1398.2762451171875,
                 "posY" : -350.19992065429688,
@@ -37333,8 +37471,8 @@
               }, {
                 "_t" : "SerializableActionNode",
                 "_id" : 22,
-                "posX" : 3283.17724609375,
-                "posY" : -28.890533447265625,
+                "posX" : 4090.7880859375,
+                "posY" : -25.317070007324219,
                 "inputDefaultValues" : [{
                     "name" : "varName",
                     "paramIndex" : -1,
@@ -37343,7 +37481,9 @@
                     "name" : "enter",
                     "paramIndex" : -1
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_22"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 208001
@@ -37374,13 +37514,34 @@
               }, {
                 "_t" : "SerializableActionNode",
                 "_id" : 24,
-                "posX" : 2887.99853515625,
-                "posY" : -170.47528076171875,
+                "posX" : 3700.9697265625,
+                "posY" : -195.48980712890625,
                 "inputDefaultValues" : [],
                 "propDict" : { },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 108001
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 25,
+                "posX" : 640.23358154296875,
+                "posY" : -8.3959980010986328,
+                "inputDefaultValues" : [{
+                    "name" : "variableName",
+                    "paramIndex" : -1,
+                    "value" : "原目标"
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 212004
                 },
                 "constDict" : null,
                 "defineName" : null,
@@ -37415,15 +37576,20 @@
                 "destName" : "A",
                 "destNodeId" : 21
               }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 22
-              }, {
                 "sourceName" : "卡牌",
                 "sourceNodeId" : 1,
                 "destName" : "card",
                 "destNodeId" : 23
+              }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 25
+              }, {
+                "sourceName" : "目标卡牌",
+                "sourceNodeId" : 1,
+                "destName" : "value",
+                "destNodeId" : 25
               }, {
                 "sourceName" : "return",
                 "sourceNodeId" : 2,
@@ -37505,6 +37671,11 @@
                 "destNodeId" : 16
               }, {
                 "sourceName" : "return",
+                "sourceNodeId" : 15,
+                "destName" : "value",
+                "destNodeId" : 18
+              }, {
+                "sourceName" : "return",
                 "sourceNodeId" : 16,
                 "destName" : "array",
                 "destNodeId" : 17
@@ -37512,6 +37683,11 @@
                 "sourceName" : "return",
                 "sourceNodeId" : 17,
                 "destName" : "value",
+                "destNodeId" : 22
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 18,
+                "destName" : "enter",
                 "destNodeId" : 22
               }, {
                 "sourceName" : "return",
@@ -37548,6 +37724,11 @@
                 "sourceNodeId" : 24,
                 "destName" : "eventArg",
                 "destNodeId" : 22
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 25,
+                "destName" : "enter",
+                "destNodeId" : 18
               }]
           }
         }],
@@ -37840,7 +38021,9 @@
                     "paramIndex" : -1,
                     "value" : true
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_1"
+                },
                 "consts" : null,
                 "triggerTime" : {
                   "defineRef" : {
@@ -38466,7 +38649,9 @@
                       "defineId" : 64
                     }
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_3"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 206001
@@ -45498,6 +45683,13 @@
                     "name" : "condition",
                     "paramIndex" : -1,
                     "value" : true
+                  }, {
+                    "name" : "tags",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
+                      "_v" : []
+                    }
                   }],
                 "propDict" : { },
                 "tags" : null,
@@ -45513,7 +45705,9 @@
                     "paramIndex" : -1,
                     "value" : 2
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_2"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 202041
@@ -46077,7 +46271,9 @@
                     "paramIndex" : -1,
                     "value" : 2
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_2"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 202041
@@ -50077,7 +50273,9 @@
                       "_v" : ["played"]
                     }
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_1"
+                },
                 "tags" : null,
                 "consts" : null,
                 "targetCheckerList" : []
@@ -50087,7 +50285,9 @@
                 "posX" : 1204.1563720703125,
                 "posY" : 34.247291564941406,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_2"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 202044
@@ -50846,7 +51046,9 @@
                 "posX" : 1151.912353515625,
                 "posY" : -138.73443603515625,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_7"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 202028
@@ -50934,7 +51136,9 @@
                       "_v" : []
                     }
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_1"
+                },
                 "tags" : null,
                 "consts" : null,
                 "targetCheckerList" : []
@@ -51151,7 +51355,9 @@
                       "_v" : []
                     }
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_1"
+                },
                 "tags" : null,
                 "consts" : null,
                 "targetCheckerList" : []
@@ -51335,7 +51541,9 @@
                       "_v" : []
                     }
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_1"
+                },
                 "tags" : null,
                 "consts" : null,
                 "targetCheckerList" : []
@@ -51574,10 +51782,12 @@
               }, {
                 "_t" : "SerializableActionNode",
                 "_id" : 3,
-                "posX" : 1157.2496337890625,
-                "posY" : 37.741874694824219,
+                "posX" : 1160.8231201171875,
+                "posY" : 10.940631866455078,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_3"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 202044
@@ -51869,7 +52079,9 @@
                 "posX" : 605.20941162109375,
                 "posY" : -21.776241302490234,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_4"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 202044
@@ -52034,7 +52246,9 @@
                       "_v" : []
                     }
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_1"
+                },
                 "tags" : null,
                 "consts" : null,
                 "targetCheckerList" : []
@@ -54775,7 +54989,21 @@
       "_imagePath" : "bc5b91ad9f1ae0edeb808ce70657b70010d2eaa029902921f87d9db86e5c65a3.jpg",
       "_desc" : "每当你使用英雄技能后，随机对一个敌人造成2点伤害。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePosition" : 2,
+          "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_7",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 32
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "DamageEvent"
+          }
+        }]
     }, {
       "_id" : -2147418043,
       "_skinName" : "Defector",
@@ -57422,7 +57650,20 @@
       "_imagePath" : "512ded9424839979c4393c58a438433fa9a70ce3a12ea82d18abfff00ec39168.jpg",
       "_desc" : "对一个仆从造成3点伤害。\n在本回合中，你每使用过一次技能，此牌的灵力值消耗便减少(2)点。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_2",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 33
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "DamageEvent"
+          }
+        }]
     }, {
       "_id" : 90,
       "_skinName" : "Illusionary Blast",
@@ -57564,7 +57805,21 @@
       "_imagePath" : "8373d30a19306c56a024092c2874034b2347ff3f96b138b9c54f62684d7ed941.jpg",
       "_desc" : "使你的技能变为“造成2点伤害”且能对仆从额外造成1点伤害，持续两回合。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePosition" : 3,
+          "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_4",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 48
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "SetCardDefineEvent"
+          }
+        }]
     }, {
       "_id" : 96,
       "_skinName" : "Mind Projectile",
@@ -57590,7 +57845,21 @@
       "_imagePath" : "e8bd150132b660dff30e8720d60bd215be972c4f7a523f732e1cfce7fe0f474c.jpg",
       "_desc" : "复原你的技能，使你的下两次技能的灵力值消耗减少(2)点。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePosition" : 3,
+          "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_3",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 42
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "AddBuffEvent"
+          }
+        }]
     }, {
       "_id" : 97,
       "_skinName" : "Field Ultraviolet",
@@ -57615,7 +57884,15 @@
       "_imagePath" : "0c4fd09fd9e7d37fe614510c83431724f7fe7acf63e34896b7e8c72ccb0a4c4f.jpg",
       "_desc" : "将在你本回合中使用的上一张法术牌的复制置入你的手牌，它会在回合结束时<b>消失</b>。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_1",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 38
+          }
+        }]
     }, {
       "_id" : 98,
       "_skinName" : "Fake Vision",
@@ -57638,7 +57915,33 @@
       "_imagePath" : "15f5fa1b050aebed78f976be487c1deb2aea5fd38e0872519b4534f21665302a.jpg",
       "_desc" : "使一个友方仆从获得+3/+3，<b>速攻</b>和“在你的回合开始时死亡”。<i>(警告：过量服用会导致爆炸性后果！)</i>",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_2",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 34
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "AddBuffEvent"
+          }
+        }, {
+          "sourcePosition" : 4,
+          "sourcePositionVarName" : "目标卡牌",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef2_14",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 35
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "MassDamageEvent"
+          }
+        }]
     }, {
       "_id" : 99,
       "_skinName" : "Peerless Elixir",
@@ -57661,7 +57964,21 @@
       "_imagePath" : "48737b404e3272b068e71b556c58a1b7445f6cda99574b38e197ae7421defd2f.jpg",
       "_desc" : "<b>陷阱</b>：当一个敌人攻击时，取消此攻击并使其受到等同于自身攻击力的伤害。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePosition" : 3,
+          "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_9",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 36
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "DamageEvent"
+          }
+        }]
     }, {
       "_id" : 100,
       "_skinName" : "Ultrashort Brainwave",
@@ -57684,7 +58001,19 @@
       "_imagePath" : "bf708bab7cbc617490ff5cd98c117921994fc5626b200377521c4631de2b74ad.jpg",
       "_desc" : "<b>陷阱</b>：当一个攻击力不大于2的敌方仆从攻击时，取消此攻击并获得其控制权。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_13",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 37
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "MoveCardEvent"
+          }
+        }]
     }, {
       "_id" : 101,
       "_skinName" : "Red-Eye Hypnosis",
@@ -57708,7 +58037,21 @@
       "_imagePath" : "33102a74c47119bf74098c3f250e4585588ba7287b4bad9c671ac2ad79de99bf.jpg",
       "_desc" : "<b>陷阱</b>：当对手使用一张指向性法术牌时，使其目标变为另一个合法目标(尽可能指定敌人为目标)。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePosition" : 4,
+          "targetPosition" : 4,
+          "sourcePositionVarName" : "原目标",
+          "targetPositionVarName" : "新目标",
+          "key" : "AnimRef0_22",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 47
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "SetEventVarEvent"
+          }
+        }]
     }, {
       "_id" : 102,
       "_skinName" : "Visionary Tuning",
@@ -57759,7 +58102,15 @@
       "_imagePath" : "4fc339d3c6cc700d6d0ffef65ffa1adafd72fb9f9bcc246ab16dd89ae129a2b2.jpg",
       "_desc" : "<b>陷阱</b>：当一个敌人攻击时，召唤三个0/2并具有<b>守卫</b>的<u>残像</u>并随机使其中一个成为被攻击的目标。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_1",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 38
+          }
+        }]
     }, {
       "_id" : 104,
       "_skinName" : "Disorder Eyes",
@@ -57783,7 +58134,21 @@
       "_imagePath" : "64c826dd7b0f492530c0f4f6808feffcefdf03816b7dac9b63f9fcf1ef021e2e.jpg",
       "_desc" : "复原你的技能，你的下两次技能可以额外造成2点伤害。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePosition" : 3,
+          "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_3",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 41
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "AddBuffEvent"
+          }
+        }]
     }, {
       "_id" : 105,
       "_skinName" : "Field Infrared",
@@ -58592,7 +58957,21 @@
       "_imagePath" : "6e168f53fcc0b7d56a32f9f3ad7dd75095ea6e2682371dcc1e9e056f6d820a0d.jpg",
       "_desc" : "对敌方英雄造成2点伤害。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePosition" : 2,
+          "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_2",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 32
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "DamageEvent"
+          }
+        }]
     }, {
       "_id" : 138,
       "_skinName" : "Lunatic Shooting",
@@ -58846,7 +59225,21 @@
       "_imagePath" : "93a576f1aff0fdcbe7dd6f81673289de14e6effd211e20df38ae780ba2092e28.jpg",
       "_desc" : "造成2点伤害。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePosition" : 2,
+          "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_2",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 32
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "DamageEvent"
+          }
+        }]
     }, {
       "_id" : 147,
       "_skinName" : "Lunatic Shooting",
@@ -59216,7 +59609,31 @@
       "_name" : "幻术师",
       "_desc" : "<b>宣言</b>：召唤此牌的一个复制，并随机使其中的一个成为<b>幻象</b>",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePosition" : 3,
+          "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_2",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 45
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "MoveCardEvent"
+          }
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_1",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 45
+          }
+        }]
     }, {
       "_id" : 162,
       "_skinId" : 1,
@@ -59240,7 +59657,21 @@
       "_name" : "吹笛人",
       "_desc" : "<b>宣言</b>：随机获得一个攻击力小于等于2的敌方仆从的控制权。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_7",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 37
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "MoveCardEvent"
+          }
+        }]
     }, {
       "_id" : 165,
       "_skinId" : 1,
@@ -59248,7 +59679,16 @@
       "_name" : "丧心丧意",
       "_desc" : "使所有敌方仆从获得\n-2攻击力并消灭攻击力为0的敌方仆从。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "targetPosition" : 1,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_1",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 46
+          }
+        }]
     }, {
       "_id" : 166,
       "_skinId" : 1,
@@ -59256,7 +59696,15 @@
       "_name" : "真实之月",
       "_desc" : "使所有仆从<b>消失</b>，它们会在你的回合开始后重新出现。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_1",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 43
+          }
+        }]
     }, {
       "_id" : 167,
       "_skinId" : 1,
@@ -59264,7 +59712,15 @@
       "_name" : "花冠视线",
       "_desc" : "随机将你牌库中的两张卡牌的复制置入你的手牌，它们会在回合结束后<b>消失</b>。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_1",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 45
+          }
+        }]
     }, {
       "_id" : 168,
       "_skinId" : 1,
@@ -59272,7 +59728,21 @@
       "_name" : "红移幻象",
       "_desc" : "召唤一个友方仆从的复制，并随机使其中一个成为<b>幻象</b><i>(只有你知道哪个是真的！)</i>",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePosition" : 3,
+          "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_3",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 45
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "MoveCardEvent"
+          }
+        }]
     }, {
       "_id" : 169,
       "_skinId" : 1,
@@ -59280,7 +59750,21 @@
       "_name" : "幻胧月睨",
       "_desc" : "<b>唯一</b>，为所有友方仆从召唤一个复制，并随机使其中的一个成为\n<b>幻象</b>。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePosition" : 3,
+          "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_4",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 45
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "MoveCardEvent"
+          }
+        }]
     }, {
       "_id" : 170,
       "_skinId" : 1,
@@ -59288,7 +59772,15 @@
       "_name" : "疯狂之梦",
       "_desc" : "<b>唯一</b>\n将你的手牌替换为你牌库中六张卡牌的复制，回合结束后换回。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_1",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 0
+          }
+        }]
     }],
   "buffDefineList" : [{
       "_id" : 1,
@@ -67443,7 +67935,9 @@
                 "posX" : 853.17437744140625,
                 "posY" : -116.58836364746094,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_5"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 200006
@@ -69014,6 +69508,10 @@
       "name" : "紫外线场",
       "desc" : "下两次使用灵力值消耗减少(2)点。",
       "imagePath" : "e8bd150132b660dff30e8720d60bd215be972c4f7a523f732e1cfce7fe0f474c.jpg",
+      "persistentAnimRef" : {
+        "cardPoolId" : NumberLong(0),
+        "defineId" : 40
+      },
       "_animationRefs" : []
     }, {
       "buffId" : 62,
@@ -69042,6 +69540,10 @@
       "name" : "红外线场",
       "desc" : "下两次使用额外造成2点伤害。",
       "imagePath" : "64c826dd7b0f492530c0f4f6808feffcefdf03816b7dac9b63f9fcf1ef021e2e.jpg",
+      "persistentAnimRef" : {
+        "cardPoolId" : NumberLong(0),
+        "defineId" : 39
+      },
       "_animationRefs" : []
     }, {
       "buffId" : 64,
@@ -69238,6 +69740,10 @@
       "name" : "消失",
       "desc" : "回合结束后，这张卡牌会消失。",
       "imagePath" : "1e13e72d5b5b373d25471a2e824d6cef12212ef835943bc324856190385c6e65.jpg",
+      "persistentAnimRef" : {
+        "cardPoolId" : NumberLong(0),
+        "defineId" : 49
+      },
       "_animationRefs" : []
     }, {
       "buffId" : 82,
@@ -69273,12 +69779,30 @@
       "language" : "zh-Hans",
       "name" : "真实之月",
       "desc" : "在你的回合开始时，将此牌移回其拥有者的战场。",
-      "_animationRefs" : []
+      "_animationRefs" : [{
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_5",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 44
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(0),
+            "eventName" : "MoveCardEvent"
+          }
+        }]
     }, {
       "buffId" : 88,
       "language" : "zh-Hans",
       "name" : "梦醒时分",
       "desc" : "回合结束后，置换的卡牌会从手牌中消失。",
+      "persistentAnimRef" : {
+        "cardPoolId" : NumberLong(0),
+        "defineId" : 49
+      },
       "_animationRefs" : []
     }, {
       "buffId" : 89,
