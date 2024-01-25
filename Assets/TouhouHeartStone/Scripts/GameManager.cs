@@ -235,7 +235,7 @@ namespace Game
                 // 如果本地卡地没有任何卡牌定义，或者版本不正确，尝试获取缓存内的该卡池。
                 if (cardPool == null)
                 {
-                    cardPool = (await this.cards.loadCachedCardPoolAsync(poolId, poolRef.version)).cardPool;
+                    cardPool = (await this.cards.loadCachedCardPool(poolId, poolRef.version)).cardPool;
                 }
                 if (cardPool != null)
                 {

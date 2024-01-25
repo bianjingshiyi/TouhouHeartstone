@@ -329,6 +329,10 @@ namespace Game.PVE
             var poolRef = main.card.getLocalCardPoolReference(CardManager.PVE_POOL_ID);
             return await main.card.getOrLoadCardPool(poolRef);
         }
+        public string getCardPoolFileDirectory()
+        {
+            return Path.Combine(Application.persistentDataPath, _directory);
+        }
         #endregion
         #region 私有方法
         private string getSaveDataDirectory(string dataName)
@@ -341,7 +345,7 @@ namespace Game.PVE
         }
         private string getCardPoolFilePath(string dataName)
         {
-            return Path.Combine(Application.persistentDataPath, _directory, dataName, $"{_cardPoolFileName}.{main.card.cardPoolFilePostfix}");
+            return Path.Combine(getCardPoolFileDirectory(), dataName, $"{_cardPoolFileName}.{main.card.cardPoolFilePostfix}");
         }
         private async Task<PVECharacter> generateNextBoss(int stage, int seed)
         {

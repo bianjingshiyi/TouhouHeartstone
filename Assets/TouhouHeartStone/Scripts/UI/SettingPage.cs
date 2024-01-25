@@ -74,6 +74,7 @@ namespace UI
                 main.ui.dialog.ShowQuestion(main.lang._(StringTable.WARNING), desc, () =>
                 {
                     main.cache.ClearCache();
+                    main.card.clearCachedCardPools();
                     main.ui.dialog.ShowConfirm(main.lang._(StringTable.HINT_TITLE), main.lang._(SETTING_CACHE_CLEARED));
                 });
             });

@@ -910,7 +910,7 @@ namespace Controllers
         {
             foreach (var cardPool in pools.Where(p => game.card.getCardPoolInfo(p) == null))
             {
-                await game.card.loadCachedCardPoolAsync(cardPool.cardPoolId, cardPool.version);
+                await game.card.loadCachedCardPool(cardPool.cardPoolId, cardPool.version);
             }
         }
         #endregion

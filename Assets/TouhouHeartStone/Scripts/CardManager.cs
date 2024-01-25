@@ -157,32 +157,6 @@ namespace Game
             }
             return cardDefineList.ToArray();
         }
-        public async Task<CardDefine[]> getOrLoadCardDefines(ICardPoolReference cardPoolRef)
-        {
-            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
-            {
-                //已经加载卡池
-                return cardPool.cardDefineList.ToArray();
-            }
-            else if (getCardPoolPath(cardPoolRef) is string path)
-            {
-                //未加载卡池但是存在地址
-                try
-                {
-                    var result = await loadCardPool(path);
-                    return result.cardPool.cardDefineList.ToArray();
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError(e);
-                    return Array.Empty<CardDefine>();
-                }
-            }
-            else
-            {
-                return new CardDefine[0];
-            }
-        }
         #endregion
 
         /// <summary>

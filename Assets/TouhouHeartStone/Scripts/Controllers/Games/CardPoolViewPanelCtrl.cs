@@ -255,8 +255,10 @@ namespace Controllers
             {
                 //卡池卡牌
                 var localRef = getCardPoolReference(cardPoolId);
-                CardDefine[] cardDefines = await game.card.getOrLoadCardDefines(localRef);
-                defines.AddRange(cardDefines);
+                var (_, cardPool) = await game.card.getOrLoadCardPool(localRef);
+                if (cardPool == null)
+                    continue;
+                defines.AddRange(cardPool.cardDefineList);
             }
             _cardDefineList = defines;
         }

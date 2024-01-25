@@ -773,15 +773,13 @@ namespace Controllers
                 _cardPoolIdList.Add(poolId);
             }
         }
-        /// <summary>
-        /// 读取指定路径上的卡池文件中的所有卡牌
-        /// </summary>
-        /// <param name="cardPoolId">卡池文件相对路径</param>
-        /// <returns></returns>
-        /// <exception cref="IOException">当读取文件失败的时候抛出这个异常</exception>
-        private Task readCardPoolByPathAsync(string cardPoolPath)
+        private async Task readCardPoolByPathAsync(string path)
         {
-            return game.card.getOrLoadCardPool(cardPoolPath);
+            var poolRef = game.card.getCardPoolInfo(path);
+            if (!game.card.tryGetCardPool(poolRef, out var _))
+            {
+                await game.card.loadLocalCardPool(path, true);
+            }
         }
         /// <summary>
         /// 读取指定id的卡池文件中的所有卡牌

@@ -295,11 +295,11 @@ namespace Game
         /// </summary>
         /// <param name="poolRef">卡池引用。</param>
         /// <returns></returns>
-        public async Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPoolAsync(ICardPoolReference poolRef)
+        public async Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPool(ICardPoolReference poolRef, bool handleException = true)
         {
             if (poolRef == null)
                 return (null, null);
-            return await loadCachedCardPoolAsync(poolRef.CardPoolID, poolRef.CardPoolVersion);
+            return await loadCachedCardPool(poolRef.CardPoolID, poolRef.CardPoolVersion);
         }
         /// <summary>
         /// 从缓存文件夹中读取从网络上下载的卡池。
@@ -307,20 +307,36 @@ namespace Game
         /// <param name="cardPoolId">卡池ID。</param>
         /// <param name="version">卡池版本。</param>
         /// <returns></returns>
-        public async Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPoolAsync(long cardPoolId, int version)
+        public async Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPool(long cardPoolId, int version, bool handleException = true)
         {
             string resID = CardPoolReference.GetResourceID(cardPoolId, version);
             if (game.cache.FileExists(ResourceType.CardDefine, resID))
             {
                 string path = game.cache.GetCachePath(ResourceType.CardDefine, resID);
-                var cardPoolData = await loadCardPoolToDict(_cachedCardPoolInfoDict, _cachedCardPoolDict, path, false, true);
+                var cardPoolData = await loadCachedCardPool(path, handleException);
                 return cardPoolData;
             }
             return (null, null);
         }
+        /// <summary>
+        /// 从缓存文件夹中读取从网络上下载的卡池。
+        /// </summary>
+        /// <param name="path">卡池路径。</param>
+        /// <returns></returns>
+        public async Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPool(string path, bool handleException = true)
+        {
+            if (!game.fileManager.isFileExist(path))
+                return (null, null);
+            return await loadCardPoolToDict(_cachedCardPoolInfoDict, _cachedCardPoolDict, path, false, handleException);
+        }
         #endregion
 
         #region 移除卡池
+        public void clearCachedCardPools()
+        {
+            _cachedCardPoolDict.Clear();
+            _cachedCardPoolInfoDict.Clear();
+        }
         public bool removeCardPool(ICardPoolReference cardPoolRef)
         {
             string path = _localCardPoolInfoDict.FirstOrDefault(p => p.Value.CompareCardPool(cardPoolRef)).Key;
@@ -476,35 +492,6 @@ namespace Game
 
         #region 获取卡池内容
         /// <summary>
-        /// 根据卡池路径获取卡池。如果卡池没有被加载，加载卡池。
-        /// </summary>
-        /// <param name="path">卡池路径。</param>
-        /// <param name="handleException">是否在方法内就捕获异常。</param>
-        /// <returns></returns>
-        public async Task<(CardPoolInfo cardPoolInfo, CardPool cardPool)> getOrLoadCardPool(string path, bool handleException = false)
-        {
-            var poolRef = getCardPoolInfo(path);
-            if (tryGetCardPool(poolRef, out var cardPool))
-            {
-                if (isLocalCardPoolPath(path))
-                {
-                    if (_localCardPoolInfoDict.TryGetValue(path, out CardPoolInfo localInfo))
-                        return (localInfo, cardPool);
-                }
-                else
-                {
-                    if (_cachedCardPoolInfoDict.TryGetValue(path, out CardPoolInfo cachedInfo))
-                        return (cachedInfo, cardPool);
-                }
-            } 
-
-            if (path is string)
-            {
-                return await loadCardPool(path, handleException);
-            }
-            return (null, null);
-        }
-        /// <summary>
         /// 根据卡池引用获取卡池。如果卡池没有被加载，加载卡池。
         /// </summary>
         /// <param name="path">卡池引用。</param>
@@ -522,7 +509,7 @@ namespace Game
             {
                 return await loadCardPool(path, handleException);
             }
-            var cache = await loadCachedCardPoolAsync(poolRef);
+            var cache = await loadCachedCardPool(poolRef);
             if (cache.info != null && cache.cardPool != null)
             {
                 return cache;
@@ -826,6 +813,17 @@ namespace Game
         }
         public bool isCardPoolHidden(long cardPoolId)
         {
+            var localPoolRef = getLocalCardPoolReference(cardPoolId);
+            if (localPoolRef != null)
+            {
+                var path = getCardPoolPath(localPoolRef)?.Replace("/", "\\");
+                var dir = game.pve.getCardPoolFileDirectory()?.Replace("/", "\\");
+                if (path.StartsWith(dir))
+                {
+                    return true;
+                }
+            }
+
 #if UNITY_EDITOR
             return false;
 #else
