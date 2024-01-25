@@ -643,7 +643,7 @@ namespace Controllers
         private async Task updateDeckCardListUI()
         {
             _ui.setDeckCardCount(_deck.cardList.Sum(e => e.count), game.deck.deckValidSize);
-            DeckCardViewData[] deckCardsViewData = await DeckCardViewData.fromDeck(_deck, game.card, game.lang);
+            DeckCardViewData[] deckCardsViewData = await DeckCardViewData.fromDeck(_deck, game);
             _ui.updateDeckCardList(deckCardsViewData);
         }
         private async Task updateEditingDeck(Deck deck)

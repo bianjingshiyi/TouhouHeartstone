@@ -172,21 +172,24 @@ namespace UI
         public Sprite image;
         public int count;
 
-        public static Task<DeckCardViewData[]> fromDeck(Deck deck, CardManager cardManager, ILanguageManager langManager)
+        public static Task<DeckCardViewData[]> fromDeck(Deck deck, MainManager main, IEnumerable<ICardPoolReference> env = null)
         {
             if (deck == null)
                 return Task.FromResult(Array.Empty<DeckCardViewData>());
-            return fromDeckItems(deck.cardList, cardManager, langManager);
+            return fromDeckItems(deck.cardList, main, env);
         }
-        public static async Task<DeckCardViewData[]> fromDeckItems(IEnumerable<DeckItem> deckItems, CardManager cardManager, ILanguageManager langManager)
+        public static async Task<DeckCardViewData[]> fromDeckItems(IEnumerable<DeckItem> deckItems, MainManager main, IEnumerable<ICardPoolReference> env = null)
         {
             if (deckItems == null)
                 return Array.Empty<DeckCardViewData>();
+            var cardManager = main.card;
+            var langManager = main.langManager;
             var cards = await cardManager.orderDeckItemsByLocalPools(deckItems);
             var deckCardsViewData = new DeckCardViewData[cards.Length];
             for (int i = 0; i < cards.Length; i++)
             {
-                var poolRef = cardManager.getLocalCardPoolReference(cards[i].cardRef.cardPoolId);
+                var cardPoolId = cards[i].cardRef.cardPoolId;
+                var poolRef = env == null ? cardManager.getLocalCardPoolReference(cardPoolId) : cardManager.getCardPoolReferenceInEnv(cardPoolId, env);
                 CardDefine cardDefine = cardManager.getCardDefine(poolRef, cards[i].cardRef.defineId);
                 CardSkinData skin = cardDefine != null ? cardManager.getCardSkin(cardDefine) : null;
 
@@ -208,10 +211,12 @@ namespace UI
             }
             return deckCardsViewData;
         }
-        public static async Task<DeckCardViewData[]> fromCardDefines(CardDefine[] cardDefines, CardManager cardManager, ILanguageManager langManager)
+        public static async Task<DeckCardViewData[]> fromCardDefines(CardDefine[] cardDefines, MainManager main)
         {
             if (cardDefines == null)
                 return Array.Empty<DeckCardViewData>();
+            var cardManager = main.card;
+            var langManager = main.langManager;
             var viewData = new DeckCardViewData[cardDefines.Length];
             for (int i = 0; i < viewData.Length; i++)
             {

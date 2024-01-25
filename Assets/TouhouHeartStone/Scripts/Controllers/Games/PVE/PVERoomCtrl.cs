@@ -329,7 +329,7 @@ namespace Controllers
             _ui.openInRunGamePage();
 
             var deck = _saveData.deck;
-            var yourDeckCardsViewData = await DeckCardViewData.fromDeck(deck, game.card, game.lang);
+            var yourDeckCardsViewData = await DeckCardViewData.fromDeck(deck, game);
             _ui.updateYourDeck(yourDeckCardsViewData);
 
             if (_saveData.stageState == PVEStageState.SelectCard)
@@ -373,7 +373,7 @@ namespace Controllers
         }
         private Task<DeckCardViewData[]> getDeckCardViewData(Deck deck)
         {
-            return DeckCardViewData.fromDeck(deck, game.card, game.lang);
+            return DeckCardViewData.fromDeck(deck, game);
         }
         private async Task<(string name, Sprite image)> getCharacterViewData(PVECharacter character)
         {

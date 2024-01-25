@@ -421,7 +421,7 @@ namespace Controllers
             var player = _currentRoomData.playerDataList[index];
             var deck = player.getDeck();
             _viewingDeck = deck;
-            var viewDatas = await DeckCardViewData.fromDeck(deck, game.card, game.lang);
+            var viewDatas = await DeckCardViewData.fromDeck(deck, game, getCardPoolReferenceSet());
             _ui.setViewingCard(true);
             _ui.updateViewingDeckCards(viewDatas);
         }

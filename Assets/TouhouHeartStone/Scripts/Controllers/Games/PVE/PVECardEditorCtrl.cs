@@ -549,7 +549,7 @@ namespace Controllers
         private async Task updateDeck()
         {
             var cardDefines = getEditorDeckItems();
-            DeckCardViewData[] viewDatas = await DeckCardViewData.fromDeckItems(cardDefines, game.card, game.lang);
+            DeckCardViewData[] viewDatas = await DeckCardViewData.fromDeckItems(cardDefines, game);
             _ui.updateDeck(viewDatas);
         }
         private async Task switchToCard(DefineReference defineRef)
