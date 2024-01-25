@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 2995414809144879685}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 0.01, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -81,7 +81,9 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 0
   testMode: 0
+  _useSourceScale: 0
 --- !u!114 &8829776408850064874
 MonoBehaviour:
   m_ObjectHideFlags: 0
