@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "versionNumber" : 2, "editTime" : 519, "dependencyRefs" : [] }
+{ "_t" : "SerializableCardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "versionNumber" : 2, "editTime" : 520, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -59710,7 +59710,7 @@
       "_skinId" : 1,
       "_skinName" : "新建皮肤",
       "_name" : "花冠视线",
-      "_desc" : "随机将你牌库中的两张卡牌的复制置入你的手牌，它们会在回合结束后<b>消失</b>。",
+      "_desc" : "随机将你牌库中的两张卡牌的复制置入你的手牌，它们会在回合结束后从手牌中<b>消失</b>。",
       "_language" : "zh-Hans",
       "_animationRefs" : [{
           "sourcePositionVarName" : "",
