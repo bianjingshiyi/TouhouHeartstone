@@ -179,6 +179,8 @@ namespace Controllers
             }
             foreach (var connection in clipGraph.connections)
             {
+                if (IsInvalidConnection(connection))
+                    continue;
                 connectPorts4UI(connection.source, connection.destination);
                 addOperationRecord(new ConnectOperation(this, connection));
             }
