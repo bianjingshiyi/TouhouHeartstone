@@ -13,9 +13,6 @@ namespace TouhouHeartstone
         public GeneratedEventEffect(ActionGraph graph) : base(graph)
         {
         }
-        public GeneratedEventEffect() : base()
-        {
-        }
         #endregion
         public override async Task onEnable(CardEngine game, Card card, Buff buff)
         {
@@ -85,19 +82,15 @@ namespace TouhouHeartstone
     [Serializable]
     public class SerializableEventEffect : SerializableEffect
     {
-        public SerializableEventEffect(GeneratedEventEffect effect)
+        public SerializableEventEffect(GeneratedEventEffect effect) : base(effect)
         {
-            name = effect.name;
-            propDict = effect.propDict;
-            graph = new SerializableActionNodeGraph(effect.graph);
         }
 
         public override GeneratedEffect Deserialize(INodeDefiner definer)
         {
-            GeneratedEventEffect effect = new GeneratedEventEffect();
-            effect.name = name;
-            effect.propDict = propDict;
-            effect.graph = graph.toActionGraph(definer);
+            var graph = this.graph.toActionGraph(definer);
+            GeneratedEventEffect effect = new GeneratedEventEffect(graph);
+            apply(effect);
             return effect;
         }
     }

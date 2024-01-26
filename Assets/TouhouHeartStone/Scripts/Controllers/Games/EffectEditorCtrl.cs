@@ -66,7 +66,7 @@ namespace Controllers
 
         private void onConfirmCreateEventEffectCallback(int index)
         {
-            var effect = game.card.createEffectByIndex(_cardPoolId, CardManager.EVENT_EFFECT_IDX);
+            var effect = game.card.createEffectByIndex(CardManager.EVENT_EFFECT_IDX);
             var triggerTime = eventTriggerTimes[index];
             var eventDefine = game.card.getEventDefineInEnv(triggerTime.defineRef, game.editor.getEnvCardPoolRefs());
             effect.graph.createEventEntryNode(eventDefine, triggerTime.type);
@@ -78,7 +78,7 @@ namespace Controllers
 
         private GeneratedEffect createEffect(int index)
         {
-            var effect = game.card.createEffectByIndex(_cardPoolId, index);
+            var effect = game.card.createEffectByIndex(index);
             onCreateEffect?.Invoke(effect);
             return effect;
         }

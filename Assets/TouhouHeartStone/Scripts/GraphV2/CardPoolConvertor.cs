@@ -271,6 +271,10 @@ namespace Game
                 // 创建节点图。
                 var graph = new ActionGraph();
                 GeneratedActiveEffect active = new GeneratedActiveEffect(graph);
+                if (card != null)
+                    active.cardDefineRef = new DefineReference(poolId, card.id);
+                else if (buff != null)
+                    active.buffDefineRef = new DefineReference(poolId, buff.id);
                 active.name = effect.name;
                 active.Init();
                 graph.DefineNodes(definer);
@@ -322,6 +326,10 @@ namespace Game
                 // 创建节点图。
                 var graph = new ActionGraph();
                 GeneratedPassiveEffect deathrattle = new GeneratedPassiveEffect(graph);
+                if (card != null)
+                    deathrattle.cardDefineRef = new DefineReference(poolId, card.id);
+                else if (buff != null)
+                    deathrattle.buffDefineRef = new DefineReference(poolId, buff.id);
                 deathrattle.name = effect.name;
                 deathrattle.Init();
                 graph.DefineNodes(definer);
@@ -374,6 +382,10 @@ namespace Game
                 var graph = new ActionGraph();
                 GeneratedAura aura = new GeneratedAura(graph);
                 aura.name = effect.name;
+                if (card != null)
+                    aura.cardDefineRef = new DefineReference(poolId, card.id);
+                else if (buff != null)
+                    aura.buffDefineRef = new DefineReference(poolId, buff.id);
                 aura.Init();
                 graph.DefineNodes(definer);
 
@@ -554,6 +566,10 @@ namespace Game
 
             var graph = new ActionGraph();
             GeneratedActiveEffect active = new GeneratedActiveEffect(graph);
+            if (card != null)
+                active.cardDefineRef = new DefineReference(poolId, card.id);
+            else if (buff != null)
+                active.buffDefineRef = new DefineReference(poolId, buff.id);
             active.name = effect.name;
             active.Init();
             graph.DefineNodes(definer);
@@ -603,6 +619,11 @@ namespace Game
                 // 事件效果
                 passive = new GeneratedEventEffect(graph);
             }
+
+            if (card != null)
+                passive.cardDefineRef = new DefineReference(poolId, card.id);
+            else if (buff != null)
+                passive.buffDefineRef = new DefineReference(poolId, buff.id);
             passive.Init();
             graph.DefineNodes(definer);
             passive.name = effect.name;
@@ -674,6 +695,10 @@ namespace Game
 
             // 创建效果。
             GeneratedPassiveEffect passive = new GeneratedPassiveEffect(graph);
+            if (card != null)
+                passive.cardDefineRef = new DefineReference(poolId, card.id);
+            else if (buff != null)
+                passive.buffDefineRef = new DefineReference(poolId, buff.id);
             passive.Init();
             graph.DefineNodes(definer);
             passive.name = effect.name;

@@ -51,8 +51,26 @@ namespace Game
                 (eventRef) => getLoadingEventDefine(cardPoolId, mainManager, eventRef));
             getGeneratedActionDefines(cardPoolId, mainManager, typeFinder);
 
-            var cardDefines = cardDefineList.ConvertAll(c => c.toCardDefine(_nodeDefiner));
-            var buffDefines = buffDefineList.ConvertAll(b => b.toGeneratedBuffDefine(_nodeDefiner));
+            var cardDefines = cardDefineList.ConvertAll(c => {
+                var card = c.toCardDefine(_nodeDefiner);
+                card.cardPoolId = cardPoolId;
+                foreach (var effect in card.getGeneratedEffects())
+                {
+                    effect.buffDefineRef = null;
+                    effect.cardDefineRef = card.getDefineRef();
+                }
+                return card;
+            });
+            var buffDefines = buffDefineList.ConvertAll(b => {
+                var buff = b.toGeneratedBuffDefine(_nodeDefiner);
+                buff.cardPoolId = cardPoolId;
+                foreach (var effect in buff.effectList)
+                {
+                    effect.buffDefineRef = buff.getDefineRef();
+                    effect.cardDefineRef = null;
+                }
+                return buff;
+            });
             var animationDefines = animationDefineList?.ConvertAll(b => b.toAnimDefine()) ?? new List<GeneratedAnimationDefine>();
 
             return new CardPool()

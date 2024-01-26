@@ -14,18 +14,7 @@ namespace TouhouHeartstone
     public class GeneratedAura : GeneratedPassiveEffect, IPileRangedEffect
     {
         #region 公有方法
-        /// <summary>
-        /// 构造一个光环被动
-        /// </summary>
-        /// <param name="buffDefineId">光环Buff类型Id</param>
-        /// <param name="piles">光环生效范围，只有拥有光环的卡牌在生效范围内时光环才会生效</param>
-        /// <param name="ranges">光环作用范围</param>
-        /// <param name="affectCondition">光环作用条件</param>
-        public GeneratedAura(ActionGraph graph) :
-            base(graph)
-        {
-        }
-        public GeneratedAura()
+        public GeneratedAura(ActionGraph graph) : base(graph)
         {
         }
         public override async Task onEnable(CardEngine game, Card card, Buff buff)
@@ -248,19 +237,15 @@ namespace TouhouHeartstone
     [Serializable]
     public class SerializableAuraEffect : SerializableEffect
     {
-        public SerializableAuraEffect(GeneratedAura effect)
+        public SerializableAuraEffect(GeneratedAura effect) : base(effect)
         {
-            name = effect.name;
-            propDict = effect.propDict;
-            graph = new SerializableActionNodeGraph(effect.graph);
         }
 
         public override GeneratedEffect Deserialize(INodeDefiner nodeDefiner)
         {
-            GeneratedAura effect = new GeneratedAura();
-            effect.name = name;
-            effect.propDict = propDict;
-            effect.graph = graph.toActionGraph(nodeDefiner);
+            var graph = this.graph.toActionGraph(nodeDefiner);
+            GeneratedAura effect = new GeneratedAura(graph);
+            apply(effect);
             return effect;
         }
     }

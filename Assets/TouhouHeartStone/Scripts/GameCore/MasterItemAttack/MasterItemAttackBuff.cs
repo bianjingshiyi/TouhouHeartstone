@@ -10,9 +10,9 @@ namespace TouhouHeartstone
         {
             cardPoolId = buffDefineRef.cardPoolId;
             propModifierList.Add(new AttackModifier(0) { relatedPropName = buffPropName });
-            _effects.Add(new MasterItemAttackEffectPropChanged());
-            _effects.Add(new MasterItemAttackEffectSetDefine());
-            _effects.Add(new MasterItemAttackEffectMoveCard());
+            _effects.Add(new MasterItemAttackEffectPropChanged(buffDefineRef));
+            _effects.Add(new MasterItemAttackEffectSetDefine(buffDefineRef));
+            _effects.Add(new MasterItemAttackEffectMoveCard(buffDefineRef));
         }
         public override IEffect[] getEffects()
         {

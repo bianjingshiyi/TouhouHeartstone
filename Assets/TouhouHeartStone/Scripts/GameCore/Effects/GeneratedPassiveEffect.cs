@@ -14,9 +14,6 @@ namespace TouhouHeartstone
         public GeneratedPassiveEffect(ActionGraph graph) : base(graph)
         {
         }
-        public GeneratedPassiveEffect() : base()
-        {
-        }
         #endregion
         public override void Init()
         {
@@ -108,19 +105,15 @@ namespace TouhouHeartstone
     [Serializable]
     public class SerializablePassiveEffect : SerializableEffect
     {
-        public SerializablePassiveEffect(GeneratedPassiveEffect effect)
+        public SerializablePassiveEffect(GeneratedPassiveEffect effect) : base(effect)
         {
-            name = effect.name;
-            propDict = effect.propDict;
-            graph = new SerializableActionNodeGraph(effect.graph);
         }
 
         public override GeneratedEffect Deserialize(INodeDefiner definer)
         {
-            GeneratedPassiveEffect effect = new GeneratedPassiveEffect();
-            effect.name = name;
-            effect.propDict = propDict;
-            effect.graph = graph.toActionGraph(definer);
+            var graph = this.graph.toActionGraph(definer);
+            GeneratedPassiveEffect effect = new GeneratedPassiveEffect(graph);
+            apply(effect);
             return effect;
         }
     }

@@ -10,8 +10,9 @@ namespace TouhouHeartstone
     {
         #region 公有方法
         #region 构造方法
-        public MasterItemAttackEffect()
+        public MasterItemAttackEffect(DefineReference buffDefineRef)
         {
+            this.buffDefineRef = buffDefineRef;
         }
         #endregion
         public Task onEnable(CardEngine game, Card card, Buff buff)
@@ -59,6 +60,8 @@ namespace TouhouHeartstone
         Task IEventEffect.onTrigger(EffectEnv env) => execute(env);
 
         #region 属性字段
+        public DefineReference cardDefineRef { get; set; }
+        public DefineReference buffDefineRef { get; set; }
         protected abstract Type eventType { get; }
         protected abstract EventTriggerTimeType triggerType { get; }
         private string[] _piles = new string[] { PILE.MASTER };
@@ -67,6 +70,11 @@ namespace TouhouHeartstone
 
     public sealed class MasterItemAttackEffectPropChanged : MasterItemAttackEffect
     {
+        #region 构造方法
+        public MasterItemAttackEffectPropChanged(DefineReference buffDefineRef) : base(buffDefineRef)
+        {
+        }
+        #endregion
         public override bool checkCondition(EffectEnv env)
         {
             var eventArg = env.eventArg;
@@ -82,6 +90,11 @@ namespace TouhouHeartstone
 
     public sealed class MasterItemAttackEffectSetDefine : MasterItemAttackEffect
     {
+        #region 构造方法
+        public MasterItemAttackEffectSetDefine(DefineReference buffDefineRef) : base(buffDefineRef)
+        {
+        }
+        #endregion
         public override bool checkCondition(EffectEnv env)
         {
             var eventArg = env.eventArg;
@@ -94,6 +107,11 @@ namespace TouhouHeartstone
     }
     public sealed class MasterItemAttackEffectMoveCard: MasterItemAttackEffect
     {
+        #region 构造方法
+        public MasterItemAttackEffectMoveCard(DefineReference buffDefineRef) : base(buffDefineRef)
+        {
+        }
+        #endregion
         public override bool checkCondition(EffectEnv env)
         {
             var eventArg = env.eventArg;

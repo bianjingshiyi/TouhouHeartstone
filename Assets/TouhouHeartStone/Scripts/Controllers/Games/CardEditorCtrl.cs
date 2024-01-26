@@ -464,6 +464,9 @@ namespace Controllers
         private async void onCreateEffect(GeneratedEffect effect)
         {
             markUnsaved();
+            effect.cardDefineRef = _cardDefine.getDefineRef();
+            effect.buffDefineRef = null;
+
             var effects = _cardDefine.getEffects().OfType<GeneratedEffect>();
             effect.name = getEffectDefaultName(effect, effects.Count() + 1);
             var effectArray = effects.Append(effect).ToArray();

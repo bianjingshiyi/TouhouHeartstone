@@ -249,6 +249,9 @@ namespace Controllers
         private async void onCreateEffect(GeneratedEffect effect)
         {
             markUnsaved();
+            effect.cardDefineRef = null;
+            effect.buffDefineRef = _buffDefine.getDefineRef();
+
             _buffDefine.effectList.Add(effect);
 
             await _effectEditorCtrl.display(_curCardPoolId, effect);

@@ -3,6 +3,7 @@ using System.Linq;
 using Controllers;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
+using TouhouHeartstone;
 using UI;
 using UnityEngine;
 
@@ -39,6 +40,11 @@ namespace Game
             var nodeDefiner = getLocalNodeDefiner();
             var clone = cloneSeri.toGeneratedBuffDefine(nodeDefiner);
             clone.cardPoolId = buffDefine.cardPoolId;
+            foreach (var effect in clone.effectList)
+            {
+                effect.buffDefineRef = clone.getDefineRef();
+                effect.cardDefineRef = null;
+            }
             return clone;
         }
         #endregion

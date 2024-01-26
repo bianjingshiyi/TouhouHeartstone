@@ -266,22 +266,22 @@ namespace Game.BattleTable
         }
         public SkinAnimationRef getEventSkinAnimRef(EventArg arg, EventArg effectArg)
         {
-            var effectRef = effectArg.getVar<EffectReference>(EffectTriggerEventDefine.VAR_EFFECT_REF);
-            var effect = effectRef.getEffect();
-            var buff = effectRef.buff;
-            var cardDefine = effectRef.cardDefine;
-            if (buff != null)
+            var effect = effectArg.getVar<IEffect>(EffectTriggerEventDefine.VAR_EFFECT);
+            var buffDefineRef = effect.buffDefineRef;
+            var cardDefineRef = effect.cardDefineRef;
+            if (buffDefineRef != null)
             {
-                var define = buff.define;
-                var skin = getBuffSkin(define);
+                var buffDefine = game.getBuffDefine(buffDefineRef);
+                var skin = getBuffSkin(buffDefine);
                 if (effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
 
                 var node = genEffect.graph.findNodeById(arg.flowNodeId);
                 return getAnimRefOfEventNode(skin, arg, node);
 
             }
-            else if (cardDefine != null)
+            else if (cardDefineRef != null)
             {
+                var cardDefine = game.getDefine(cardDefineRef);
                 var skin = getCardSkin(cardDefine);
                 if (effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
 
@@ -292,21 +292,21 @@ namespace Game.BattleTable
         }
         public SkinAnimationRef getEffectEntrySkinAnimRef(Flow flow, EventArg effectArg)
         {
-            var effectRef = effectArg.getVar<EffectReference>(EffectTriggerEventDefine.VAR_EFFECT_REF);
-            var effect = effectRef.getEffect();
-            var buff = effectRef.buff;
-            var cardDefine = effectRef.cardDefine;
-            if (buff != null)
+            var effect = effectArg.getVar<IEffect>(EffectTriggerEventDefine.VAR_EFFECT);
+            var buffDefineRef = effect.buffDefineRef;
+            var cardDefineRef = effect.cardDefineRef;
+            if (buffDefineRef != null)
             {
-                var define = buff.define;
-                var skin = getBuffSkin(define);
+                var buffDefine = game.getBuffDefine(cardDefineRef);
+                var skin = getBuffSkin(buffDefine);
                 if (effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
 
                 var node = entryNodeEffect.entryNode;
                 return getAnimRefOfEntryNode(skin, node);
             }
-            else if (cardDefine != null)
+            else if (cardDefineRef != null)
             {
+                var cardDefine = game.getDefine(cardDefineRef);
                 var skin = getCardSkin(cardDefine);
                 if (effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
 

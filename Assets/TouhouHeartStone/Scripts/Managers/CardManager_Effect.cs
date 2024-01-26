@@ -8,7 +8,7 @@ namespace Game
         #region 公有方法
 
         #region 创建效果
-        public GeneratedEffect createEffectByIndex(long cardPoolId, int index)
+        public GeneratedEffect createEffectByIndex(int index)
         {
             ActionGraph graph = new ActionGraph();
             GeneratedEffect effect;

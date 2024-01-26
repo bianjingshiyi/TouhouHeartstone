@@ -933,14 +933,6 @@ namespace Game
             TypeFinder typeFinder = GraphTypes.getTypeByName;
 
             CardPool cardPool = serializableCardPool.toCardPool(cardPoolID, game, typeFinder);
-            for (int i = 0; i < cardPool.cardDefineList.Count; i++)
-            {
-                cardPool.cardDefineList[i].cardPoolId = cardPoolID;
-            }
-            for (int i = 0; i < cardPool.buffDefineList.Count; i++)
-            {
-                cardPool.buffDefineList[i].cardPoolId = cardPoolID;
-            }
             return cardPool;
         }
 

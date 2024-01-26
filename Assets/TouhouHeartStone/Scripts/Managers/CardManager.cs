@@ -47,6 +47,11 @@ namespace Game
             var nodeDefiner = getLocalNodeDefiner();
             var clone = cloneSeri.toCardDefine(nodeDefiner);
             clone.cardPoolId = define.cardPoolId;
+            foreach (var effect in clone.getGeneratedEffects())
+            {
+                effect.cardDefineRef = clone.getDefineRef();
+                effect.buffDefineRef = null;
+            }
             return clone;
         }
         #endregion

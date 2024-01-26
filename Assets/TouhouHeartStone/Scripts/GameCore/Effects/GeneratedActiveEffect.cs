@@ -14,9 +14,6 @@ namespace TouhouHeartstone
         public GeneratedActiveEffect(ActionGraph graph) : base(graph)
         {
         }
-        public GeneratedActiveEffect() : base()
-        {
-        }
         #endregion
 
         public override void Init()
@@ -132,19 +129,15 @@ namespace TouhouHeartstone
     [Serializable]
     public class SerializableActiveEffect : SerializableEffect
     {
-        public SerializableActiveEffect(GeneratedActiveEffect effect)
+        public SerializableActiveEffect(GeneratedActiveEffect effect) : base(effect)
         {
-            name = effect.name;
-            propDict = effect.propDict;
-            graph = new SerializableActionNodeGraph(effect.graph);
         }
 
         public override GeneratedEffect Deserialize(INodeDefiner definer)
         {
-            GeneratedActiveEffect effect = new GeneratedActiveEffect();
-            effect.name = name;
-            effect.propDict = propDict;
-            effect.graph = graph.toActionGraph(definer);
+            var graph = this.graph.toActionGraph(definer);
+            GeneratedActiveEffect effect = new GeneratedActiveEffect(graph);
+            apply(effect);
             return effect;
         }
     }
