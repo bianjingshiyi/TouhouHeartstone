@@ -8911,7 +8911,7 @@
     <category>集合运算</category>
     <inputs>
       <ActionParameterComment>
-        <type>Object[]</type>
+        <type>Array</type>
         <name>collections</name>
         <displayName>多个集合</displayName>
         <isParams>false</isParams>
@@ -8976,7 +8976,7 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>IEffect</type>
+        <type>Effect</type>
         <name>return</name>
         <displayName>效果</displayName>
         <isParams>false</isParams>
@@ -8994,7 +8994,7 @@
     <category>效果</category>
     <inputs>
       <ActionParameterComment>
-        <type>IEffect</type>
+        <type>Effect</type>
         <name>effect</name>
         <displayName>效果</displayName>
         <isParams>false</isParams>
@@ -9030,7 +9030,7 @@
     <category>效果</category>
     <inputs>
       <ActionParameterComment>
-        <type>IEffect</type>
+        <type>Effect</type>
         <name>effect</name>
         <displayName>效果</displayName>
         <isParams>false</isParams>
@@ -9076,7 +9076,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>IEffect</type>
+        <type>Effect</type>
         <name>return</name>
         <displayName>效果集合</displayName>
         <isParams>false</isParams>
@@ -9104,7 +9104,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>IEffect</type>
+        <type>Effect</type>
         <name>return</name>
         <displayName>效果集合</displayName>
         <isParams>false</isParams>
@@ -9132,7 +9132,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>IEffect</type>
+        <type>Effect</type>
         <name>return</name>
         <displayName>效果集合</displayName>
         <isParams>false</isParams>
@@ -9150,7 +9150,7 @@
     <category>效果</category>
     <inputs>
       <ActionParameterComment>
-        <type>IEffect</type>
+        <type>Effect</type>
         <name>effect</name>
         <displayName>效果</displayName>
         <isParams>false</isParams>
@@ -9177,6 +9177,102 @@
       </ActionParameterComment>
     </outputs>
     <summary><![CDATA[获取一个效果的所有合法的目标，即可以指向哪些卡牌并使用。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>107008</defineId>
+    <obsoleteNames />
+    <editorName>效果类型判断</editorName>
+    <category>效果</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Effect</type>
+        <name>effect</name>
+        <displayName>效果</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断类型的效果。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>EffectType</type>
+        <name>type</name>
+        <displayName>效果类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[效果的类型。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[该效果是否是指定的类型。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[判断一个效果是否是某种类型。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>207001</defineId>
+    <obsoleteNames />
+    <editorName>发动效果</editorName>
+    <category>效果</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[发动该效果的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Buff</type>
+        <name>buff</name>
+        <displayName>增益</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[发动该效果的增益。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Effect</type>
+        <name>effect</name>
+        <displayName>效果</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要发动的效果。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[效果的目标卡牌列表。如果不是需要目标的主动效果，可以为空。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>ignoreTriggerCondition</name>
+        <displayName>忽略触发条件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[是否忽略效果的触发条件，强制发动效果？]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>outEvent</name>
+        <displayName>发动效果事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[发动效果产生的事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[发动一个效果。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>

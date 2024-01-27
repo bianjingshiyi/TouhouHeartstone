@@ -323,7 +323,7 @@ namespace TouhouHeartstone
                 invalidMsg = INFO_TARGET_IS_ELUSIVE;
                 return false;
             }
-            var eventArg = EffectTriggerEventDefine.newEvent(game, card, new Card[] { target });
+            var eventArg = EffectTriggerEventDefine.newEvent(game, card, null, generatedEffect, null, new Card[] { target });
             if (generatedEffect != null && !generatedEffect.checkTarget(game, card, null, eventArg, out invalidMsg))
                 return false;
             return true;
@@ -979,7 +979,9 @@ namespace TouhouHeartstone
             var effects = define.getSpellActiveEffects();
             foreach (var effect in effects)
             {
-                var eventArg = await EffectTriggerEventDefine.doEvent(game, card, null, effect, targets: targets);
+                var eventArg = await EffectTriggerEventDefine.doEventIfValid(game, card, null, effect, targets: targets);
+                if (eventArg == null)
+                    continue;
                 eventArgs.Add(eventArg);
             }
             return eventArgs.ToArray();
@@ -990,7 +992,9 @@ namespace TouhouHeartstone
             var effects = card.getSpellActiveEffects(game);
             foreach (var (effect, buff) in effects)
             {
-                var eventArg = await EffectTriggerEventDefine.doEvent(game, card, buff, effect, targets: targets);
+                var eventArg = await EffectTriggerEventDefine.doEventIfValid(game, card, buff, effect, targets: targets);
+                if (eventArg == null)
+                    continue;
                 eventArgs.Add(eventArg);
             }
             return eventArgs.ToArray();
@@ -1010,7 +1014,9 @@ namespace TouhouHeartstone
             var effects = define.getBattlecries();
             foreach (var effect in effects)
             {
-                var eventArg = await EffectTriggerEventDefine.doEvent(game, card, null, effect, targets: targets);
+                var eventArg = await EffectTriggerEventDefine.doEventIfValid(game, card, null, effect, targets: targets);
+                if (eventArg == null)
+                    continue;
                 eventArgs.Add(eventArg);
             }
             return eventArgs.ToArray();
@@ -1021,7 +1027,9 @@ namespace TouhouHeartstone
             var effects = card.getBattlecries(game);
             foreach (var (effect, buff) in effects)
             {
-                var eventArg = await EffectTriggerEventDefine.doEvent(game, card, buff, effect, targets: targets);
+                var eventArg = await EffectTriggerEventDefine.doEventIfValid(game, card, buff, effect, targets: targets);
+                if (eventArg == null)
+                    continue;
                 eventArgs.Add(eventArg);
             }
             return eventArgs.ToArray();
@@ -1039,7 +1047,9 @@ namespace TouhouHeartstone
             var deathrattles = define.getDeathRattles();
             foreach (var effect in deathrattles)
             {
-                var eventArg = await EffectTriggerEventDefine.doEvent(game, card, null, effect);
+                var eventArg = await EffectTriggerEventDefine.doEventIfValid(game, card, null, effect);
+                if (eventArg == null)
+                    continue;
                 eventArgs.Add(eventArg);
             }
             return eventArgs.ToArray();
@@ -1054,7 +1064,9 @@ namespace TouhouHeartstone
             List<EventArg> eventArgs = new List<EventArg>();
             foreach (var (effect, buff) in deathrattles)
             {
-                var eventArg = await EffectTriggerEventDefine.doEvent(game, card, buff, effect);
+                var eventArg = await EffectTriggerEventDefine.doEventIfValid(game, card, buff, effect);
+                if (eventArg == null)
+                    continue;
                 eventArgs.Add(eventArg);
             }
             return eventArgs.ToArray();

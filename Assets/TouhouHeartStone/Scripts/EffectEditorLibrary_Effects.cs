@@ -169,6 +169,8 @@ namespace Game
         public const string EDITOR_PARAM_NAME_EFFECT_TRIGGER_EVENT = "发动效果事件";
         [TranslateMsg("编辑器-参数名称")]
         public const string EDITOR_PARAM_NAME_TARGETS = "目标卡牌";
+        [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_IGNORE_TRIGGER_CONDITION = "忽略触发条件";
         /// <summary>
         /// 发动效果
         /// </summary>
@@ -178,11 +180,15 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff,
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
             [ActionNodeParam(EDITOR_PARAM_NAME_TARGETS)] Card[] targets,
+            [ActionNodeParam(EDITOR_PARAM_NAME_IGNORE_TRIGGER_CONDITION)] bool ignoreTriggerCondition,
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_TRIGGER_EVENT, isOut: true)][NodeParamEventType(typeof(EffectTriggerEventDefine))] EventArg outEvent)
         {
             if (effect == null)
                 return;
-            outEvent = await EffectTriggerEventDefine.doEvent(game, card, buff, effect, targets: targets);
+            if (ignoreTriggerCondition)
+                outEvent = await EffectTriggerEventDefine.doEvent(game, card, buff, effect, targets: targets);
+            else
+                outEvent = await EffectTriggerEventDefine.doEventIfValid(game, card, buff, effect, targets: targets);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
         #endregion
