@@ -395,8 +395,6 @@ namespace Game
         public const string EDITOR_EVENT_NAME_TURN_START = "回合开始";
         [TranslateMsg("编辑器中的事件类型之使用卡牌时")]
         public const string EDITOR_EVENT_NAME_USE = "使用卡牌";
-        [TranslateMsg("编辑器中的事件类型之发动事件")]
-        public const string EDITOR_EVENT_NAME_ACTIVE = "发动事件";
         [TranslateMsg("编辑器中的事件类型之护甲改变时")]
         public const string EDITOR_EVENT_NAME_ARMOR_CHANGE = "护甲改变";
         [TranslateMsg("编辑器中的事件类型之回合结束时")]

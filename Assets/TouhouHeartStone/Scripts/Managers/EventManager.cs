@@ -196,8 +196,6 @@ namespace Game
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_BE_CHARGED = "蓄力";
         [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_LASTWORD = "遗言";
-        [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_SET_EVENT_VAR = "设置事件变量";
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_AUTOCAST = "自动施放";
@@ -231,6 +229,8 @@ namespace Game
         public const string EDITOR_EVENT_NAME_SELECT_CARD_DEFINE = "选择卡牌定义";
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_LIFESTEAL = "吸血";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_EFFECT_TRIGGER = "效果发动";
         static string[] _hiddenEvents =
         {
             "SecretTriggerEvent",
@@ -239,15 +239,12 @@ namespace Game
             "RevealEvent",
             "SelectCardEvent",
             "SelectCardDefineEvent",
-            "ActiveEvent",
             "BeChargedEvent",
             "TestEvent",
             "CardPropChangeEvent",
             "SetCardPropEvent",
             "BuffPropertyChangeEvent",
-            "EffectTriggerEvent",
             "ElementMixEvent",
-            "LastwordEvent",
             "UpdateDeathEvent",
             "GeneratedEvent",
             "SetEventVarEvent",
@@ -268,6 +265,7 @@ namespace Game
             "ChangeCardPropVisibilityEvent",
             "ChangeBuffPropVisibilityEvent",
             "RevealCardDefineEvent",
+            "EffectActivationEvent",
         };
         static Dictionary<string, string> _eventNameTranslations = new Dictionary<string, string>()
         {
@@ -303,7 +301,6 @@ namespace Game
             { "DrawEvent", StringTable.EDITOR_EVENT_NAME_DRAW },
             { "FatigueEvent", StringTable.EDITOR_EVENT_NAME_FATIGUE },
             { "SelectCardEvent", EDITOR_EVENT_NAME_SELECT_CARD },
-            { "ActiveEvent", StringTable.EDITOR_EVENT_NAME_ACTIVE },
             { "DiscardEvent", StringTable.EDITOR_EVENT_NAME_DISCARD },
             { "CreateTokenEvent", StringTable.EDITOR_EVENT_NAME_CREATETOKEN },
             { "SetCardDefineEvent", StringTable.EDITOR_EVENT_NAME_SETDEFINE },
@@ -318,7 +315,6 @@ namespace Game
             { "EquipItemEvent", StringTable.EDITOR_EVENT_NAME_EQUIP },
             { "BeChargedEvent", EDITOR_EVENT_NAME_BE_CHARGED },
             { "ElementMixEvent", StringTable.EDITOR_EVENT_NAME_ELEMENT },
-            { "LastwordEvent", EDITOR_EVENT_NAME_LASTWORD },
             { "SetEventVarEvent", EDITOR_EVENT_NAME_SET_EVENT_VAR },
             { "AutocastEvent", EDITOR_EVENT_NAME_AUTOCAST },
             { "MassAddBuffEvent", EDITOR_EVENT_NAME_MASS_ADD_BUFF },
@@ -337,7 +333,8 @@ namespace Game
             { "ChangeCardPropVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_CARD_PROP_VISIBILITY },
             { "ChangeBuffPropVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_BUFF_PROP_VISIBILITY },
             { "RevealCardDefineEvent", EDITOR_EVENT_NAME_REVEAL_CARD_DEFINE },
-            { "LifestealEvent", EDITOR_EVENT_NAME_LIFESTEAL }
+            { "LifestealEvent", EDITOR_EVENT_NAME_LIFESTEAL },
+            { "EffectTriggerEvent", EDITOR_EVENT_NAME_EFFECT_TRIGGER }
         };
         List<EventDefine> _builtinEventDefineList = null;
         [SerializeField]

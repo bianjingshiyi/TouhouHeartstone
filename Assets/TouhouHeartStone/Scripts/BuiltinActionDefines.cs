@@ -162,6 +162,7 @@ namespace Game
         public const int GetAllBuffEffects = Type_Function + Category_Effect + 5;    // 获取增益的所有效果
         public const int GetAllCardDefineEffects = Type_Function + Category_Effect + 6;    // 获取卡牌定义的所有效果
         public const int GetValidEffectTargets = Type_Function + Category_Effect + 7;    // 获取效果的合法使用目标
+        public const int CheckEffectType = Type_Function + Category_Effect + 8; // 效果类型判断
 
         // 事件
         public const int ThisEvent = Type_Function + Category_Event + 1;    // 当前事件
@@ -324,6 +325,9 @@ namespace Game
         public const int RemoveBuff = Type_Action + Category_Buff + 2;    // 移除增益
         public const int SetBuffProp = Type_Action + Category_Buff + 3;    // 设置增益属性
         public const int SetBuffPropVisibility = Type_Action + Category_Buff + 4; // 设置增益属性可见性
+
+        // 效果
+        public const int TriggerEffect = Type_Action + Category_Effect + 1; // 发动效果
 
         // 事件
         public const int SetEventVariable = Type_Action + Category_Event + 1;    // 设置变量

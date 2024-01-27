@@ -61,6 +61,17 @@ namespace TouhouHeartstone
         {
             return passiveEntry?.getPiles()?.ToArray() ?? Array.Empty<string>();
         }
+        public override Task execute(EffectEnv env)
+        {
+            var entry = passiveEntry;
+            if (entry != null)
+            {
+                var flowEnv = env.toFlowEnv();
+                var flow = new Flow(flowEnv);
+                return env.game.runActions(flow, entry.getActionOutputPort());
+            }
+            return Task.CompletedTask;
+        }
         public override SerializableEffect Serialize()
         {
             return new SerializablePassiveEffect(this);
@@ -75,17 +86,6 @@ namespace TouhouHeartstone
         protected virtual void createEntryNode()
         {
             graph.createPassiveEntryNode();
-        }
-        protected override Task runEffect(EffectEnv env, string portName)
-        {
-            var entry = passiveEntry;
-            if (entry != null)
-            {
-                var flowEnv = env.toFlowEnv();
-                var flow = new Flow(flowEnv);
-                return env.game.runActions(flow, entry.getOutputPort<ControlOutput>(portName));
-            }
-            return Task.CompletedTask;
         }
         #endregion
         #region 属性字段

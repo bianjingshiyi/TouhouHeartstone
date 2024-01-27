@@ -323,8 +323,8 @@ namespace TouhouHeartstone
                 invalidMsg = INFO_TARGET_IS_ELUSIVE;
                 return false;
             }
-            var eventArg = ActiveEventDefine.newEvent(game, card, new Card[] { target });
-            if (generatedEffect != null && !generatedEffect.checkTarget(game, target, card, null, eventArg, out invalidMsg))
+            var eventArg = EffectTriggerEventDefine.newEvent(game, card, new Card[] { target });
+            if (generatedEffect != null && !generatedEffect.checkTarget(game, card, null, eventArg, out invalidMsg))
                 return false;
             return true;
         }
@@ -689,14 +689,14 @@ namespace TouhouHeartstone
                 // 卡牌定义自带的效果。
                 foreach (var effect in card.define.getEffects().OfType<IPileRangedEffect>().Where(e => !e.getPiles().Contains(PILE.GRAVE) && !e.isDeathRattle()))
                 {
-                    await effect.onDisable(game, card, null);
+                    await effect.disable(game, card, null);
                 }
                 // BUFF给予的效果。
                 foreach (var buff in card.getBuffs())
                 {
                     foreach (var effect in buff.getEffects().OfType<IPileRangedEffect>().Where(e => !e.getPiles().Contains(PILE.GRAVE) && !e.isDeathRattle()))
                     {
-                        await effect.onDisable(game, card, buff);
+                        await effect.disable(game, card, buff);
                     }
                 }
             }
@@ -945,11 +945,7 @@ namespace TouhouHeartstone
             var aura = card.getAuras(game);
             foreach (var (effect, buff) in aura)
             {
-                if (effect is GeneratedAura gen)
-                {
-                    var effectEnv = new EffectEnv(game, card, card.define, buff, null, effect);
-                    await gen.execute(effectEnv);
-                }
+                await EffectTriggerEventDefine.doEvent(game, card, buff, effect);
             }
         }
 
@@ -983,7 +979,7 @@ namespace TouhouHeartstone
             var effects = define.getSpellActiveEffects();
             foreach (var effect in effects)
             {
-                var eventArg = await ActiveEventDefine.doEvent(game, card, targets, define, null, effect);
+                var eventArg = await EffectTriggerEventDefine.doEvent(game, card, null, effect, targets: targets);
                 eventArgs.Add(eventArg);
             }
             return eventArgs.ToArray();
@@ -994,7 +990,7 @@ namespace TouhouHeartstone
             var effects = card.getSpellActiveEffects(game);
             foreach (var (effect, buff) in effects)
             {
-                var eventArg = await ActiveEventDefine.doEvent(game, card, targets, card.define, buff, effect);
+                var eventArg = await EffectTriggerEventDefine.doEvent(game, card, buff, effect, targets: targets);
                 eventArgs.Add(eventArg);
             }
             return eventArgs.ToArray();
@@ -1014,7 +1010,7 @@ namespace TouhouHeartstone
             var effects = define.getBattlecries();
             foreach (var effect in effects)
             {
-                var eventArg = await ActiveEventDefine.doEvent(game, card, targets, define, null, effect);
+                var eventArg = await EffectTriggerEventDefine.doEvent(game, card, null, effect, targets: targets);
                 eventArgs.Add(eventArg);
             }
             return eventArgs.ToArray();
@@ -1025,7 +1021,7 @@ namespace TouhouHeartstone
             var effects = card.getBattlecries(game);
             foreach (var (effect, buff) in effects)
             {
-                var eventArg = await ActiveEventDefine.doEvent(game, card, targets, card.define, buff, effect);
+                var eventArg = await EffectTriggerEventDefine.doEvent(game, card, buff, effect, targets: targets);
                 eventArgs.Add(eventArg);
             }
             return eventArgs.ToArray();
@@ -1043,7 +1039,7 @@ namespace TouhouHeartstone
             var deathrattles = define.getDeathRattles();
             foreach (var effect in deathrattles)
             {
-                var eventArg = await LastwordEventDefine.doEvent(game, card, define, null, effect);
+                var eventArg = await EffectTriggerEventDefine.doEvent(game, card, null, effect);
                 eventArgs.Add(eventArg);
             }
             return eventArgs.ToArray();
@@ -1058,7 +1054,7 @@ namespace TouhouHeartstone
             List<EventArg> eventArgs = new List<EventArg>();
             foreach (var (effect, buff) in deathrattles)
             {
-                var eventArg = await LastwordEventDefine.doEvent(game, card, card.define, buff, effect);
+                var eventArg = await EffectTriggerEventDefine.doEvent(game, card, buff, effect);
                 eventArgs.Add(eventArg);
             }
             return eventArgs.ToArray();
@@ -1318,9 +1314,9 @@ namespace TouhouHeartstone
                     if (effect is IPileRangedEffect rangedEffect && rangedEffect.getPiles().Contains(PILE.HEAD))
                     {
                         if (game.getCurrentPlayer() == secret.getOwner())
-                            await effect.onDisable(game, secret, null);
+                            await effect.disable(game, secret, null);
                         else
-                            await effect.onEnable(game, secret, null);
+                            await effect.enable(game, secret, null);
                     }
                 }
             }
@@ -1469,12 +1465,12 @@ namespace TouhouHeartstone
                     // 寻找卡牌复制中拥有同样实例ID的增益。
                     var cloneBuff = clone.getBuffs().FirstOrDefault(b => b.instanceID == buffId);
                     if (cloneBuff != null) // 如果没有找到，说明该增益没有被复制，不禁用。
-                        await effect.onDisable(game, clone, cloneBuff);
+                        await effect.disable(game, clone, cloneBuff);
                 }
                 else
                 {
                     // 效果是卡牌定义上的，复制。
-                    await effect.onDisable(game, clone, null);
+                    await effect.disable(game, clone, null);
                 }
             }
             foreach (var (buffId, effect) in enableEffects)
@@ -1484,12 +1480,12 @@ namespace TouhouHeartstone
                     // 寻找卡牌复制中拥有同样实例ID的增益。
                     var cloneBuff = clone.getBuffs().FirstOrDefault(b => b.instanceID == buffId);
                     if (cloneBuff != null) // 如果没有找到，说明该增益没有被复制，不启用。
-                        await effect.onEnable(game, clone, cloneBuff);
+                        await effect.enable(game, clone, cloneBuff);
                 }
                 else
                 {
                     // 效果是卡牌定义上的，复制。
-                    await effect.onEnable(game, clone, null);
+                    await effect.enable(game, clone, null);
                 }
             }
         }

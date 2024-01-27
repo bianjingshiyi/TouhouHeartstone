@@ -14,37 +14,6 @@ namespace TouhouHeartstone
         {
         }
         #endregion
-        public override async Task onEnable(CardEngine game, Card card, Buff buff)
-        {
-            if (!isDisabled(game, card, buff))
-                return;
-
-            await base.onEnable(game, card, buff);
-
-            if (eventEntry != null)
-            {
-                game.logger.logTrace("Effect", $"{card}注册触发器{this}");
-                Trigger trigger = new EffectTrigger(game, card, buff, this);
-                game.triggers.registerDelayed(eventEntry.triggerTime, trigger);
-            }
-        }
-        public override async Task onDisable(CardEngine game, Card card, Buff buff)
-        {
-            if (isDisabled(game, card, buff))
-                return;
-
-            var eventEntry = this.eventEntry;
-            if (eventEntry != null)
-            {
-                game.logger.logTrace("Effect", $"{card}注销触发器{this}");
-                var triggerTime = eventEntry.triggerTime;
-                var triggers = game.triggers.getTriggers(triggerTime);
-                var buffInstanceId = buff?.instanceID ?? -1;
-                var trigger = triggers.FirstOrDefault(t => t is EffectTrigger eventTrigger && eventTrigger.card == card && (eventTrigger.buff?.instanceID ?? -1) == buffInstanceId);
-                game.triggers.remove(triggerTime, trigger);
-            }
-            await base.onDisable(game, card, buff);
-        }
         public override void setPiles(params string[] tags)
         {
             eventEntry?.setPiles(tags);
@@ -64,7 +33,38 @@ namespace TouhouHeartstone
                 // 陷阱触发
                 return SecretTriggerEventDefine.doEvent(env);
             }
-            return execute(env);
+            return EffectTriggerEventDefine.doEvent(env);
+        }
+        protected override async Task onEnable(EffectEnv env)
+        {
+            await base.onEnable(env);
+
+            if (eventEntry != null)
+            {
+                var game = env.game;
+                var card = env.card;
+                var buff = env.buff;
+                game.logger.logTrace("Effect", $"{card}注册触发器{this}");
+                Trigger trigger = new EffectTrigger(game, card, buff, this);
+                game.triggers.registerDelayed(eventEntry.triggerTime, trigger);
+            }
+        }
+        protected override async Task onDisable(EffectEnv env)
+        {
+            var eventEntry = this.eventEntry;
+            if (eventEntry != null)
+            {
+                var game = env.game;
+                var card = env.card;
+                var buff = env.buff;
+                game.logger.logTrace("Effect", $"{card}注销触发器{this}");
+                var triggerTime = eventEntry.triggerTime;
+                var triggers = game.triggers.getTriggers(triggerTime);
+                var buffInstanceId = buff?.instanceID ?? -1;
+                var trigger = triggers.FirstOrDefault(t => t is EffectTrigger eventTrigger && eventTrigger.card == card && (eventTrigger.buff?.instanceID ?? -1) == buffInstanceId);
+                game.triggers.remove(triggerTime, trigger);
+            }
+            await base.onDisable(env);
         }
         protected override void createEntryNode()
         {

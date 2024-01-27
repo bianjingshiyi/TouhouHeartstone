@@ -2053,6 +2053,15 @@ namespace Controllers
         [TranslateMsg("编辑器-节点名称-光环效果入口节点")]
         public const string EDITOR_NODE_NAME_AURA_ENTRY_NODE = "光环效果入口";
 
+        [TranslateMsg("编辑器-效果类型-主动效果")]
+        public const string EDITOR_ENUM_EFFECT_TYPE_ACTIVE = "主动效果";
+        [TranslateMsg("编辑器-效果类型-被动效果")]
+        public const string EDITOR_ENUM_EFFECT_TYPE_PASSIVE = "被动效果";
+        [TranslateMsg("编辑器-效果类型-事件效果")]
+        public const string EDITOR_ENUM_EFFECT_TYPE_EVENT = "事件效果";
+        [TranslateMsg("编辑器-效果类型-光环效果")]
+        public const string EDITOR_ENUM_EFFECT_TYPE_AURA = "光环效果";
+
         [TranslateMsg("编辑器-错误提示")]
         public const string EDITOR_ERROR_CREATE_ENTRY_FOR_NON_EVENT_EFFECT = "非事件效果不能添加事件入口节点。";
         [TranslateMsg("编辑器-错误提示")]
@@ -2258,6 +2267,11 @@ namespace Controllers
             { "Game.CardDefineSelect.Skill", EDITOR_ENUM_CARD_TYPE_SKILL },
             { "Game.CardDefineSelect.Master", EDITOR_ENUM_CARD_TYPE_MASTER },
             { "Game.CardDefineSelect.Item", EDITOR_ENUM_CARD_TYPE_ITEM },
+
+            { "Game.EffectType.Active", EDITOR_ENUM_EFFECT_TYPE_ACTIVE },
+            { "Game.EffectType.Passive", EDITOR_ENUM_EFFECT_TYPE_PASSIVE },
+            { "Game.EffectType.Event", EDITOR_ENUM_EFFECT_TYPE_EVENT },
+            { "Game.EffectType.Aura", EDITOR_ENUM_EFFECT_TYPE_AURA },
         };
         static readonly string[] _activeEffectTags = new string[]
         {

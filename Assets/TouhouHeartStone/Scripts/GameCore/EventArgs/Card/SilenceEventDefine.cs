@@ -36,7 +36,7 @@ namespace TouhouHeartstone
             await card.removeAllBuffs(game);
             foreach (var effect in card.define.getEffects().OfType<IPassiveEffect>())
             {
-                await effect.onDisable(game, card, null);
+                await effect.disable(game, card, null);
             }
             await card.setKeywords(game, new string[0]);
             await card.setSpellDamage(game, 0);

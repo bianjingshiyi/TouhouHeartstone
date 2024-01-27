@@ -46,12 +46,12 @@ namespace TouhouHeartstone
         /// 检查目标卡牌是否是效果的合法目标
         /// </summary>
         /// <param name="game"></param>
-        /// <param name="card">目标卡牌</param>
+        /// <param name="card"></param>
         /// <param name="buff"></param>
         /// <param name="eventArg"></param>
         /// <param name="invalidMsg"></param>
         /// <returns></returns>
-        public virtual bool checkTarget(IGame game, ICard target, ICard card, IBuff buff, IEventArg eventArg, out string invalidMsg)
+        public virtual bool checkTarget(IGame game, ICard card, IBuff buff, EventArg eventArg, out string invalidMsg)
         {
             var entryNode = this.entryNode;
             if (entryNode != null)
@@ -60,20 +60,23 @@ namespace TouhouHeartstone
                 //如果触发不包含任何目标，那么目标肯定不是合法目标
                 if (targetCheckers == null || targetCheckers.Count() < 1)
                     return false;
-                foreach (var targetChecker in targetCheckers)
+                var targets = eventArg.getVar<Card[]>(EffectTriggerEventDefine.VAR_TARGETS);
+                // 目前只检查第一个目标。
+                var targetChecker = targetCheckers.FirstOrDefault();
+                var target = targets.FirstOrDefault();
+                if (target == null || targetChecker == null)
+                    return false;
+                //检查目标条件
+                if (target.isMaster() && targetChecker.targetType == DEFINE.SERVANT)
                 {
-                    //检查目标条件
-                    if (target.isMaster() && targetChecker.targetType == DEFINE.SERVANT)
-                    {
-                        // 目标类型是仆从，但是卡牌是英雄。
-                        return false;
-                    }
-                    FlowEnv env = new FlowEnv(game as CardEngine, card, buff, eventArg, this);
-                    if (!targetChecker.isValidTarget(env, out invalidMsg))
-                    {
-                        //有条件没有通过，不是合法目标
-                        return false;
-                    }
+                    // 目标类型是仆从，但是卡牌是英雄。
+                    return false;
+                }
+                FlowEnv env = new FlowEnv(game as CardEngine, card, buff, eventArg, this);
+                if (!targetChecker.isValidTarget(env, out invalidMsg))
+                {
+                    //有条件没有通过，不是合法目标
+                    return false;
                 }
                 //有目标并且没有条件不通过或者没有条件，返回真
                 return true;
@@ -100,22 +103,22 @@ namespace TouhouHeartstone
         {
             return new SerializableActiveEffect(this);
         }
+        public override Task execute(EffectEnv env)
+        {
+            var entry = entryNode;
+            if (entry != null)
+            {
+                var flow = new Flow(env.toFlowEnv());
+                return env.game.runActions(flow, entry.getActionOutputPort());
+            }
+            return Task.CompletedTask;
+        }
         #endregion
         #region 私有方法
         protected override IEnumerable<ITraversable> getTraversableProps()
         {
             if (entryNode != null)
                 yield return entryNode;
-        }
-        protected override Task runEffect(EffectEnv env, string portName)
-        {
-            var entry = entryNode;
-            if (entry != null)
-            {
-                var flow = new Flow(env.toFlowEnv());
-                return env.game.runActions(flow, entry.getOutputPort<ControlOutput>(portName));
-            }
-            return Task.CompletedTask;
         }
         #endregion
         #region 属性字段

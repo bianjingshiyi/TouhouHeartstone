@@ -151,9 +151,9 @@ namespace TouhouHeartstone
         public const string conditionPortName = "condition";
         public const string targetConditionName = "targetCondition";
         public const string actionPortName = "action";
-        public const string playerPortName = "玩家";
-        public const string cardPortName = "卡牌";
-        public const string targetsPortName = "目标卡牌";
+        public const string playerPortName = EffectTriggerEventDefine.VAR_PLAYER;
+        public const string cardPortName = EffectTriggerEventDefine.VAR_CARD;
+        public const string targetsPortName = EffectTriggerEventDefine.VAR_TARGETS;
         public const string tagsPortName = "tags";
         private static PortDefine targetConditionPortDefine = PortDefine.Value(typeof(bool), targetConditionName, "目标{0}条件");
         private static PortDefine triggerConditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, "触发条件");

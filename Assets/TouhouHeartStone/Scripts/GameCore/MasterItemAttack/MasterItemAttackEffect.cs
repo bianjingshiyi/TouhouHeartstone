@@ -15,34 +15,19 @@ namespace TouhouHeartstone
             this.buffDefineRef = buffDefineRef;
         }
         #endregion
-        public Task onEnable(CardEngine game, Card card, Buff buff)
+        public async Task enable(CardEngine game, Card card, Buff buff)
         {
             if (!isDisabled(card, buff))
-                return Task.CompletedTask;
-            card.enableEffect(buff, this);
+                return;
 
-            game.logger.logTrace("Effect", $"{card}注册触发器{this}");
-            Trigger trigger = new EffectTrigger(game, card, buff, this);
-            var eventRef = new EventReference(0, EventHelper.getName(eventType));
-            var triggerTime = new EventTriggerTime(eventRef, triggerType);
-            game.triggers.registerDelayed(triggerTime, trigger);
-
-            return Task.CompletedTask;
+            await EffectActivationEventDefine.doEvent(game, card, buff, this, true);
         }
-        public Task onDisable(CardEngine game, Card card, Buff buff)
+        public async Task disable(CardEngine game, Card card, Buff buff)
         {
             if (isDisabled(card, buff))
-                return Task.CompletedTask;
+                return;
 
-            game.logger.logTrace("Effect", $"{card}注销触发器{this}");
-            var eventRef = new EventReference(0, EventHelper.getName(eventType));
-            var triggerTime = new EventTriggerTime(eventRef, triggerType);
-            var triggers = game.triggers.getTriggers(triggerTime);
-            var trigger = triggers.FirstOrDefault(t => t is EffectTrigger eventTrigger && eventTrigger.effect == this);
-            game.triggers.remove(triggerTime, trigger);
-
-            card.disableEffect(buff, this);
-            return Task.CompletedTask;
+            await EffectActivationEventDefine.doEvent(game, card, buff, this, false);
         }
         public abstract bool checkCondition(EffectEnv env);
         public async Task execute(EffectEnv env)
@@ -56,6 +41,32 @@ namespace TouhouHeartstone
         }
         public string[] getPiles() => _piles;
         #endregion
+
+        Task IEffect.onEnable(EffectEnv env)
+        {
+            var game = env.game;
+            var card = env.card;
+            var buff = env.buff;
+            game.logger.logTrace("Effect", $"{card}注册触发器{this}");
+            Trigger trigger = new EffectTrigger(game, card, buff, this);
+            var eventRef = new EventReference(0, EventHelper.getName(eventType));
+            var triggerTime = new EventTriggerTime(eventRef, triggerType);
+            game.triggers.registerDelayed(triggerTime, trigger);
+            return Task.CompletedTask;
+        }
+        Task IEffect.onDisable(EffectEnv env)
+        {
+            var game = env.game;
+            var card = env.card;
+            var buff = env.buff;
+            game.logger.logTrace("Effect", $"{card}注销触发器{this}");
+            var eventRef = new EventReference(0, EventHelper.getName(eventType));
+            var triggerTime = new EventTriggerTime(eventRef, triggerType);
+            var triggers = game.triggers.getTriggers(triggerTime);
+            var trigger = triggers.FirstOrDefault(t => t is EffectTrigger eventTrigger && eventTrigger.effect == this);
+            game.triggers.remove(triggerTime, trigger);
+            return Task.CompletedTask;
+        }
 
         Task IEventEffect.onTrigger(EffectEnv env) => execute(env);
 

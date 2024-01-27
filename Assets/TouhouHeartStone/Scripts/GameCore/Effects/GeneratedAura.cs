@@ -17,16 +17,6 @@ namespace TouhouHeartstone
         public GeneratedAura(ActionGraph graph) : base(graph)
         {
         }
-        public override async Task onEnable(CardEngine game, Card card, Buff buff)
-        {
-            await base.onEnable(game, card, buff);
-            await updateAura(game, card, buff, null);
-        }
-        public override async Task onDisable(CardEngine game, Card card, Buff buff)
-        {
-            await base.onDisable(game, card, buff);
-            await updateAura(game, card, buff, null);
-        }
         public override bool isDisabled(IGame game, ICard card, IBuff buff)
         {
             // 被封印，禁用效果
@@ -91,12 +81,26 @@ namespace TouhouHeartstone
             // 更新所有增益。
             await updateBuffCards(game, card, buff, buffDict, ranges);
         }
+        public override Task execute(EffectEnv env)
+        {
+            return updateAura(env.game, env.card, env.buff, env.eventArg);
+        }
         public override SerializableEffect Serialize()
         {
             return new SerializableAuraEffect(this);
         }
         #endregion
         #region 私有方法
+        protected override async Task onEnable(EffectEnv env)
+        {
+            await base.onEnable(env);
+            await updateAura(env.game, env.card, env.buff, null);
+        }
+        protected override async Task onDisable(EffectEnv env)
+        {
+            await base.onDisable(env);
+            await updateAura(env.game, env.card, env.buff, null);
+        }
         protected override void createEntryNode()
         {
             graph.createAuraEntryNode(0, 0);
@@ -145,10 +149,6 @@ namespace TouhouHeartstone
             yield return getAuraBuffDefine;
             yield return affectCondition;
             yield return updateAction;
-        }
-        protected override Task runEffect(EffectEnv env, string portName)
-        {
-            return updateAura(env.game, env.card, env.buff, env.eventArg);
         }
         private async Task<bool> checkAuraCondition(CardEngine game, ICard card, IBuff buff, Card targetCard)
         {

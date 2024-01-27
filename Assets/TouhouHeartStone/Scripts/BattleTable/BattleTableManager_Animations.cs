@@ -221,7 +221,7 @@ namespace Game.BattleTable
         }
         private void checkCardSkinEffectAnimations(Flow flow, EventArg arg)
         {
-            if (arg is EventArg eventArg && eventArg.define is EffectTriggerEventDefine)
+            if (arg is EventArg eventArg && eventArg.define is IEffectEventDefine)
             {
                 checkCardSkinEffectEntryAnimation(flow, eventArg);
                 return;
@@ -242,7 +242,7 @@ namespace Game.BattleTable
         {
             if (arg == null)
                 return;
-            var skinAnimRef = getEffectEntrySkinAnimRef(flow, arg);
+            var skinAnimRef = getEffectEntrySkinAnimRef(arg);
             if (skinAnimRef == null)
                 return;
             var animationDef = getAnimationDefine(skinAnimRef.animRef);
@@ -256,7 +256,7 @@ namespace Game.BattleTable
             var seekArg = arg;
             while (seekArg != null)
             {
-                if (seekArg is EventArg effectArg && seekArg.define is EffectTriggerEventDefine)
+                if (seekArg is EventArg effectArg && seekArg.define is IEffectEventDefine)
                 {
                     return effectArg;
                 }
@@ -266,7 +266,8 @@ namespace Game.BattleTable
         }
         public SkinAnimationRef getEventSkinAnimRef(EventArg arg, EventArg effectArg)
         {
-            var effect = effectArg.getVar<IEffect>(EffectTriggerEventDefine.VAR_EFFECT);
+            var effectDefine = effectArg.define as IEffectEventDefine;
+            var effect = effectDefine.getEffect(effectArg);
             var buffDefineRef = effect.buffDefineRef;
             var cardDefineRef = effect.cardDefineRef;
             if (buffDefineRef != null)
@@ -290,9 +291,10 @@ namespace Game.BattleTable
             }
             return null;
         }
-        public SkinAnimationRef getEffectEntrySkinAnimRef(Flow flow, EventArg effectArg)
+        public SkinAnimationRef getEffectEntrySkinAnimRef(EventArg effectArg)
         {
-            var effect = effectArg.getVar<IEffect>(EffectTriggerEventDefine.VAR_EFFECT);
+            var effectDefine = effectArg.define as IEffectEventDefine;
+            var effect = effectDefine.getEffect(effectArg);
             var buffDefineRef = effect.buffDefineRef;
             var cardDefineRef = effect.cardDefineRef;
             if (buffDefineRef != null)
@@ -317,7 +319,8 @@ namespace Game.BattleTable
         }
         public Card getEventSkinAnimCard(EventArg effectArg, IEventArg arg, int position)
         {
-            var card = effectArg.getVar<Card>(EffectTriggerEventDefine.VAR_CARD);
+            var effectDefine = effectArg.define as IEffectEventDefine;
+            var card = effectDefine.getCard(effectArg);
             switch (position)
             {
                 case VisualEffectPosition.SELF_MASTER:
