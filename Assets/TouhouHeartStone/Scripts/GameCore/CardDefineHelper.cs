@@ -130,11 +130,11 @@ namespace TouhouHeartstone
             return getCardNumber(card.id);
         }
 
-        public static IEffect[] getAuras(this CardDefine card)
+        public static Effect[] getAuras(this CardDefine card)
         {
             return card.getEffects().Where(e => e.isAura()).ToArray();
         }
-        public static IEffect[] getBattlecries(this CardDefine card)
+        public static Effect[] getBattlecries(this CardDefine card)
         {
             return card.getEffects().Where(e => 
             {
@@ -143,13 +143,13 @@ namespace TouhouHeartstone
                 return false;
             }).ToArray();
         }
-        public static IEffect[] getSpellActiveEffects(this CardDefine card)
+        public static Effect[] getSpellActiveEffects(this CardDefine card)
         {
             if (card.isSpell() || card.isSkill())
             {
                 return card.getEffects().Where(e => e.isSpellActiveEffect()).ToArray();
             }
-            return Array.Empty<IEffect>();
+            return Array.Empty<Effect>();
         }
         public static bool hasBattlecry(this CardDefine card)
         {
@@ -160,7 +160,7 @@ namespace TouhouHeartstone
                 return false;
             });
         }
-        public static IEffect[] getDeathRattles(this CardDefine card)
+        public static Effect[] getDeathRattles(this CardDefine card)
         {
             return card.getEffects().Where(e => e.isDeathRattle()).ToArray();
         }

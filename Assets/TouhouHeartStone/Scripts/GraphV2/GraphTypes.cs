@@ -120,7 +120,7 @@ namespace Game
             new GraphTypeInfo() { type = typeof(CardSnapshot), typeName = EffectEditorLibrary.EDITOR_VAR_TYPE_CARD_SNAPSHOT, portType = true, color = new Color(.5f, .6f, 7f, 1) },
             new GraphTypeInfo() { type = typeof(BuffDefine), typeName = StringTable.EDITOR_TYPE_NAME_BUFF_DEFINE, portType = true, color = new Color(.1f, .5f, .6f, 1) },
             new GraphTypeInfo() { type = typeof(Buff), typeName = StringTable.EDITOR_TYPE_NAME_BUFF, portType = true, color = new Color(.2f, .8f, 1, 1) },
-            new GraphTypeInfo() { type = typeof(IEffect), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT, portType = true, color = new Color(.2f, 1, 1, 1) },
+            new GraphTypeInfo() { type = typeof(Effect), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT, portType = true, color = new Color(.2f, 1, 1, 1) },
             
             // 事件
             new GraphTypeInfo() { type = typeof(EventArg), typeName = StringTable.EDITOR_TYPE_NAME_EVENT_ARG, portType = true, color = new Color(1, 1, .2f, 1) },

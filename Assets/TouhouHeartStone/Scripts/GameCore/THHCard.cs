@@ -687,14 +687,14 @@ namespace TouhouHeartstone
             foreach (Card card in cards)
             {
                 // 卡牌定义自带的效果。
-                foreach (var effect in card.define.getEffects().OfType<IPileRangedEffect>().Where(e => !e.getPiles().Contains(PILE.GRAVE) && !e.isDeathRattle()))
+                foreach (var effect in card.define.getEffects().Where(e => !e.isDeathRattle() && e is IPileRangedEffect pe && !pe.getPiles().Contains(PILE.GRAVE)))
                 {
                     await effect.disable(game, card, null);
                 }
                 // BUFF给予的效果。
                 foreach (var buff in card.getBuffs())
                 {
-                    foreach (var effect in buff.getEffects().OfType<IPileRangedEffect>().Where(e => !e.getPiles().Contains(PILE.GRAVE) && !e.isDeathRattle()))
+                    foreach (var effect in buff.getEffects().Where(e => !e.isDeathRattle() && e is IPileRangedEffect pe && !pe.getPiles().Contains(PILE.GRAVE)))
                     {
                         await effect.disable(game, card, buff);
                     }
@@ -702,13 +702,13 @@ namespace TouhouHeartstone
             }
             // 触发死亡事件。
             List<EventArg> eventArgs = new List<EventArg>();
-            Dictionary<Card, (IEffect deathRattle, Buff buff)[]> deathrattles = new Dictionary<Card, (IEffect deathRattle, Buff buff)[]>();
+            Dictionary<Card, (Effect deathRattle, Buff buff)[]> deathrattles = new Dictionary<Card, (Effect deathRattle, Buff buff)[]>();
             foreach (Card card in cards)
             {
                 var eventArg = await DeathEventDefine.doEvent(game, card);
                 var deadCard = eventArg.getVar<Card>(EVENTVAR.CARD);
                 var deathrattleBuffs = eventArg.getVar<Buff[]>(DeathEventDefine.VAR_DEATHRATTLE_BUFFS);
-                var deathrattleEffects = eventArg.getVar<IEffect[]>(DeathEventDefine.VAR_DEATHRATTLE_EFFECTS);
+                var deathrattleEffects = eventArg.getVar<Effect[]>(DeathEventDefine.VAR_DEATHRATTLE_EFFECTS);
 
                 var rattles = deathrattleBuffs.Select((b, i) => (deathrattleEffects[i], b)).ToArray();
                 deathrattles.Add(deadCard, rattles);
@@ -839,30 +839,30 @@ namespace TouhouHeartstone
         #endregion
 
         #region 效果
-        public static (IEffect effect, Buff buff)[] getSpellActiveEffects(this Card card, IGame game)
+        public static (Effect effect, Buff buff)[] getSpellActiveEffects(this Card card, IGame game)
         {
-            List<(IEffect effect, Buff buff)> results = new List<(IEffect effect, Buff buff)>();
+            List<(Effect effect, Buff buff)> results = new List<(Effect effect, Buff buff)>();
             if (card.isSpell() || card.isSkill())
             {
                 if (!card.isSilenced(game))
                 {
-                    results.AddRange(card.define.getSpellActiveEffects().Select<IEffect, (IEffect effect, Buff buff)>(e => (e, null)));
+                    results.AddRange(card.define.getSpellActiveEffects().Select<Effect, (Effect effect, Buff buff)>(e => (e, null)));
                 }
                 foreach (var buff in card.getBuffs())
                 {
                     var effects = buff.getEffects();
-                    results.AddRange(effects.Where(e => e.isSpellActiveEffect()).Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
+                    results.AddRange(effects.Where(e => e.isSpellActiveEffect()).Select<Effect, (Effect effect, Buff buff)>(e => (e, buff)));
                 }
             }
             return results.ToArray();
         }
-        public static (IEffect effect, Buff buff)[] getBattlecries(this Card card, IGame game)
+        public static (Effect effect, Buff buff)[] getBattlecries(this Card card, IGame game)
         {
-            List<(IEffect effect, Buff buff)> results = new List<(IEffect effect, Buff buff)>();
+            List<(Effect effect, Buff buff)> results = new List<(Effect effect, Buff buff)>();
             if (!card.isSilenced(game))
             {
                 results.AddRange(card.define.getBattlecries()
-                    .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, null)));
+                    .Select<Effect, (Effect effect, Buff buff)>(e => (e, null)));
             }
             foreach (var buff in card.getBuffs())
             {
@@ -873,36 +873,36 @@ namespace TouhouHeartstone
                         return true;
                     return false;
                 })
-                    .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
+                    .Select<Effect, (Effect effect, Buff buff)>(e => (e, buff)));
             }
             return results.ToArray();
         }
-        public static (IEffect effect, Buff buff)[] getDeathRattles(this Card card, IGame game)
+        public static (Effect effect, Buff buff)[] getDeathRattles(this Card card, IGame game)
         {
-            List<(IEffect effect, Buff buff)> results = new List<(IEffect effect, Buff buff)>();
+            List<(Effect effect, Buff buff)> results = new List<(Effect effect, Buff buff)>();
             if (!card.isSilenced(game))
             {
                 results.AddRange(card.define.getDeathRattles()
-                    .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, null)));
+                    .Select<Effect, (Effect effect, Buff buff)>(e => (e, null)));
             }
             foreach (var buff in card.getBuffs())
             {
                 var effects = buff.getEffects();
                 results.AddRange(effects.Where(e => e.isDeathRattle())
-                    .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
+                    .Select<Effect, (Effect effect, Buff buff)>(e => (e, buff)));
             }
             return results.ToArray();
         }
-        public static (IEffect effect, Buff buff)[] getAuras(this Card card, IGame game)
+        public static (Effect effect, Buff buff)[] getAuras(this Card card, IGame game)
         {
-            List<(IEffect effect, Buff buff)> results = new List<(IEffect effect, Buff buff)>();
+            List<(Effect effect, Buff buff)> results = new List<(Effect effect, Buff buff)>();
             results.AddRange(card.define.getAuras()
-                .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, null)));
+                .Select<Effect, (Effect effect, Buff buff)>(e => (e, null)));
             foreach (var buff in card.getBuffs())
             {
                 var effects = buff.getEffects();
                 results.AddRange(effects.Where(e => e.isAura())
-                    .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
+                    .Select<Effect, (Effect effect, Buff buff)>(e => (e, buff)));
             }
             return results.ToArray();
         }
@@ -1049,7 +1049,7 @@ namespace TouhouHeartstone
             var deathrattles = card.getDeathRattles(game);
             return card.triggerDeathRattles(game, deathrattles);
         }
-        public static async Task<EventArg[]> triggerDeathRattles(this Card card, CardEngine game, (IEffect effect, Buff buff)[] deathrattles)
+        public static async Task<EventArg[]> triggerDeathRattles(this Card card, CardEngine game, (Effect effect, Buff buff)[] deathrattles)
         {
             List<EventArg> eventArgs = new List<EventArg>();
             foreach (var (effect, buff) in deathrattles)
@@ -1441,8 +1441,8 @@ namespace TouhouHeartstone
         }
         private static async Task cloneCardEffectEnableStates(CardEngine game, Card card, Card clone, Pile from, Pile to)
         {
-            var enableEffects = new List<(int buffId, IEffect effect)>();
-            var disableEffects = new List<(int buffId, IEffect effect)>();
+            var enableEffects = new List<(int buffId, Effect effect)>();
+            var disableEffects = new List<(int buffId, Effect effect)>();
             enableEffects.AddRange(card.getEnabledEffects().Select(e => (e.buff?.instanceID ?? -1, e.effect)));
             disableEffects.AddRange(clone.getEnabledEffects().Select(e => (e.buff?.instanceID ?? -1, e.effect)));
             disableEffects.RemoveAll(e1 => enableEffects.Contains(e1));

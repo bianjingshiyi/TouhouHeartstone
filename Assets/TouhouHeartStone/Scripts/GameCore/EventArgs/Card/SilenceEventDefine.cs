@@ -34,7 +34,7 @@ namespace TouhouHeartstone
                 return;
             await card.setProp(game, CARD.SILENCE, true);
             await card.removeAllBuffs(game);
-            foreach (var effect in card.define.getEffects().OfType<IPassiveEffect>())
+            foreach (var effect in card.define.getEffects().Where(e => e is IPassiveEffect))
             {
                 await effect.disable(game, card, null);
             }

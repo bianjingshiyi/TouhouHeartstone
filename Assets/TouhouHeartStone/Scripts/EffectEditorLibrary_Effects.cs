@@ -45,7 +45,7 @@ namespace Game
         /// </summary>
         [ObsoletedKeyMethod(BuiltinActionDefineID.ThisEffect, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_THIS_EFFECT)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)]
-        public static IEffect thisEffect(IEffect effect)
+        public static Effect thisEffect(Effect effect)
         {
             return effect;
         }
@@ -54,7 +54,7 @@ namespace Game
         /// </summary>
         [ObsoletedKeyMethod(BuiltinActionDefineID.EffectHasTag, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_EFFECT_HAS_TAG)]
         public static bool effectHasTag(
-            [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] IEffect effect,
+            [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_TAG)] EffectTag tag)
         {
             if (tag == null)
@@ -70,7 +70,7 @@ namespace Game
         /// </summary>
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetEffectProp, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_GET_EFFECT_PROPERTY)]
         public static object getEffectProp(
-            [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] IEffect effect,
+            [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName)
         {
             if (effect is GeneratedEffect gen)
@@ -84,12 +84,12 @@ namespace Game
         /// </summary>
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllCardEffects, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_GET_ALL_CARD_EFFECTS)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_COLLECTION)]
-        public static IEffect[] getAllCardEffects(CardEngine game,
+        public static Effect[] getAllCardEffects(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
             if (card == null)
-                return Array.Empty<IEffect>();
-            List<IEffect> effects = new List<IEffect>();
+                return Array.Empty<Effect>();
+            List<Effect> effects = new List<Effect>();
             if (!card.isSilenced(game))
             {
                 effects.AddRange(card.define.getEffects());
@@ -105,11 +105,11 @@ namespace Game
         /// </summary>
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllBuffEffects, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_GET_ALL_BUFF_EFFECTS)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_COLLECTION)]
-        public static IEffect[] getAllBuffEffects(
+        public static Effect[] getAllBuffEffects(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff)
         {
             if (buff == null)
-                return Array.Empty<IEffect>();
+                return Array.Empty<Effect>();
             return buff.getEffects().ToArray();
         }
         /// <summary>
@@ -117,11 +117,11 @@ namespace Game
         /// </summary>
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllCardDefineEffects, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_GET_ALL_CARD_DEFINE_EFFECTS)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_COLLECTION)]
-        public static IEffect[] getAllCardDefineEffects(
+        public static Effect[] getAllCardDefineEffects(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
         {
             if (cardDefine == null)
-                return Array.Empty<IEffect>();
+                return Array.Empty<Effect>();
             return cardDefine.getEffects().ToArray();
         }
         /// <summary>
@@ -130,7 +130,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.GetValidEffectTargets, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_GET_EFFECT_TARGETS)]
         [return: ActionNodeParam(EDITOR_NODE_GET_CARD_TARGETS_TARGETS)]
         public static Card[] getAllLegalEffectTargets(CardEngine game,
-            [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] IEffect effect,
+            [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
             [ActionNodeParam(EDITOR_PARAM_NAME_SOURCE_CARD)] Card source)
         {
             if (effect == null || source == null)
@@ -143,7 +143,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.CheckEffectType, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_CHECK_EFFECT_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool checkEffectType(
-            [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] IEffect effect,
+            [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_TYPE, isConst: true)] EffectType type)
         {
             if (effect == null)
@@ -176,7 +176,7 @@ namespace Game
         public static async Task triggerEffect(Flow flow, ActionNode node, CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff,
-            [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] IEffect effect,
+            [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
             [ActionNodeParam(EDITOR_PARAM_NAME_TARGETS)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_TRIGGER_EVENT, isOut: true)][NodeParamEventType(typeof(EffectTriggerEventDefine))] EventArg outEvent)
         {

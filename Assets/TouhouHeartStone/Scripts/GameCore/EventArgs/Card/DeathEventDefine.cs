@@ -40,7 +40,7 @@ namespace TouhouHeartstone
 
             var deathrattles = card.getDeathRattles(game);
             Buff[] deathrattleBuffs = new Buff[deathrattles.Length];
-            IEffect[] deathrattleEffects = new IEffect[deathrattles.Length];
+            Effect[] deathrattleEffects = new Effect[deathrattles.Length];
             for (int i = 0; i < deathrattles.Length; i++)
             {
                 var deathrattle = deathrattles[i];

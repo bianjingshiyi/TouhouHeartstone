@@ -30,7 +30,7 @@ namespace TouhouHeartstone
             var game = arg.game;
             var card = arg.getVar<Card>(VAR_CARD);
             var buff = arg.getVar<Buff>(VAR_BUFF);
-            var effect = arg.getVar<IEffect>(VAR_EFFECT);
+            var effect = arg.getVar<Effect>(VAR_EFFECT);
             var envEvent = arg.getVar<EventArg>(VAR_EVENT);
             var effectEnv = new EffectEnv(game, card, buff, envEvent, effect);
             await EffectTriggerEventDefine.doEvent(effectEnv);

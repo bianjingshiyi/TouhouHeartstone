@@ -187,7 +187,7 @@ namespace TouhouHeartstone
         public static async Task restoreFromSeal(this Card card, CardEngine game)
         {
             await card.setProp(game, CARD.SILENCE, false);
-            foreach (var effect in card.define.getEffects().OfType<IPassiveEffect>())
+            foreach (var effect in card.define.getEffects().Where(e => e is IPassiveEffect))
             {
                 await effect.updateEnable(game, card, null);
             }

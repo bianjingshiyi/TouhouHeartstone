@@ -6,23 +6,23 @@ namespace TouhouHeartstone
 {
     public static class EffectHelper
     {
-        public static bool isAura(this IEffect effect)
+        public static bool isAura(this Effect effect)
         {
             return effect is GeneratedAura;
         }
-        public static bool isDeathRattle(this IEffect effect)
+        public static bool isDeathRattle(this Effect effect)
         {
             return effect is GeneratedPassiveEffect passive && passive.hasTag(EFFECTTAG.PASSIVE_LASTWORD);
         }
-        public static bool isTrap(this IEffect effect)
+        public static bool isTrap(this Effect effect)
         {
             return effect is GeneratedEventEffect passive && passive.hasTag(EFFECTTAG.EVENT_TRAP);
         }
-        public static bool isBattlecry(this IEffect effect)
+        public static bool isBattlecry(this Effect effect)
         {
             return effect is GeneratedActiveEffect active && active.hasTag(EFFECTTAG.ACTIVE_PLAYED);
         }
-        public static bool isSpellActiveEffect(this IEffect effect)
+        public static bool isSpellActiveEffect(this Effect effect)
         {
             return effect is GeneratedActiveEffect;
         }
@@ -33,7 +33,7 @@ namespace TouhouHeartstone
         /// <param name="effect"></param>
         /// <param name="game"></param>
         /// <returns></returns>
-        public static Card[] getAvaliableTargets(this IEffect effect, CardEngine game, Card source)
+        public static Card[] getAvaliableTargets(this Effect effect, CardEngine game, Card source)
         {
             List<Card> targetList = new List<Card>();
             if (effect is GeneratedActiveEffect generatedEffect)

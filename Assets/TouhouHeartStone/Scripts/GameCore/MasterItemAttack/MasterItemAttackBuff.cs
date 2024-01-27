@@ -14,11 +14,11 @@ namespace TouhouHeartstone
             _effects.Add(new MasterItemAttackEffectSetDefine(buffDefineRef));
             _effects.Add(new MasterItemAttackEffectMoveCard(buffDefineRef));
         }
-        public override IEffect[] getEffects()
+        public override Effect[] getEffects()
         {
             return _effects.ToArray();
         }
-        public List<IEffect> _effects = new List<IEffect>();
+        public List<Effect> _effects = new List<Effect>();
         public const string buffPropName = "itemAttack";
         public static readonly DefineReference buffDefineRef = new DefineReference(0, 1);
     }

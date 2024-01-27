@@ -6,7 +6,7 @@ using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
-    public abstract class MasterItemAttackEffect : IEffect, IPileRangedEffect, IEventEffect
+    public abstract class MasterItemAttackEffect : Effect, IPileRangedEffect, IEventEffect
     {
         #region 公有方法
         #region 构造方法
@@ -15,22 +15,7 @@ namespace TouhouHeartstone
             this.buffDefineRef = buffDefineRef;
         }
         #endregion
-        public async Task enable(CardEngine game, Card card, Buff buff)
-        {
-            if (!isDisabled(card, buff))
-                return;
-
-            await EffectActivationEventDefine.doEvent(game, card, buff, this, true);
-        }
-        public async Task disable(CardEngine game, Card card, Buff buff)
-        {
-            if (isDisabled(card, buff))
-                return;
-
-            await EffectActivationEventDefine.doEvent(game, card, buff, this, false);
-        }
-        public abstract bool checkCondition(EffectEnv env);
-        public async Task execute(EffectEnv env)
+        public override async Task execute(EffectEnv env)
         {
             var game = env.game;
             await game.updateMasterItemAttack(env.card.getOwner());
@@ -42,7 +27,7 @@ namespace TouhouHeartstone
         public string[] getPiles() => _piles;
         #endregion
 
-        Task IEffect.onEnable(EffectEnv env)
+        protected override Task onEnable(EffectEnv env)
         {
             var game = env.game;
             var card = env.card;
@@ -54,7 +39,7 @@ namespace TouhouHeartstone
             game.triggers.registerDelayed(triggerTime, trigger);
             return Task.CompletedTask;
         }
-        Task IEffect.onDisable(EffectEnv env)
+        protected override Task onDisable(EffectEnv env)
         {
             var game = env.game;
             var card = env.card;
@@ -68,11 +53,12 @@ namespace TouhouHeartstone
             return Task.CompletedTask;
         }
 
-        Task IEventEffect.onTrigger(EffectEnv env) => execute(env);
+        Task IEventEffect.onTrigger(EffectEnv env)
+        {
+            return EffectTriggerEventDefine.doEvent(env);
+        }
 
         #region 属性字段
-        public DefineReference cardDefineRef { get; set; }
-        public DefineReference buffDefineRef { get; set; }
         protected abstract Type eventType { get; }
         protected abstract EventTriggerTimeType triggerType { get; }
         private string[] _piles = new string[] { PILE.MASTER };
