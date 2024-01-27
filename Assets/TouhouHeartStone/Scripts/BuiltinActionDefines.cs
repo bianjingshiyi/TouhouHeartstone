@@ -179,6 +179,7 @@ namespace Game
         public const int GetEventsInTurnsBefore = Type_Function + Category_Event + 7;    // 获取前x-y回合内的事件
         public const int GetCardSnapshotBeforeEvent = Type_Function + Category_Event + 8;    // 获取卡牌在某事件前的快照
         public const int GetCardSnapshotAfterEvent = Type_Function + Category_Event + 9;    // 获取卡牌在某事件后的快照
+        public const int GetEventRepeatTimes = Type_Function + Category_Event + 10;    // 获取事件重复次数
 
         // 事件记录
         public const int GetTurnCount_Obsolete = Type_Function + Category_EventRecord + 1;    // 获得当前回合数（过时）
@@ -343,6 +344,7 @@ namespace Game
         public const int DamageEvent_ChangeSource = Type_Action + Category_Event + 6;    // 伤害/更改伤害源
         public const int DamageEvent_ChangeValue = Type_Action + Category_Event + 7;    // 伤害/更改伤害值
         public const int HealEvent_ChangeValue = Type_Action + Category_Event + 8;    // 治疗/更改治疗值
+        public const int SetEventRepeatTimes = Type_Action + Category_Event + 9;    // 设置事件重复次数
 
         // 行动
         public const int SimpleDraw = Type_Action + Category_Action + 1;    // 简单抽牌
@@ -353,7 +355,6 @@ namespace Game
         public const int MoveToHead = Type_Action + Category_Action + 6;    // 卡牌置入延迟区
         public const int MoveToItem = Type_Action + Category_Action + 7;    // 卡牌装备到道具栏
         public const int MoveToWarp = Type_Action + Category_Action + 8;    // 卡牌移动到暂存区
-
 
         // 集合运算
         public const int ForeachAction = Type_Action + Category_Collection + 1;    // 遍历

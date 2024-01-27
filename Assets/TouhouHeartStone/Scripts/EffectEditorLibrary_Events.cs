@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using MukioI18n;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 
 namespace Game
@@ -38,6 +36,8 @@ namespace Game
         public const string EDITOR_PARAM_NAME_TURN_COUNT = "回合数";
         [TranslateMsg("编辑器/参数名称")]
         public const string EDITOR_PARAM_NAME_VARIABLE_NAME = "变量名";
+        [TranslateMsg("编辑器/参数名称")]
+        public const string EDITOR_PARAM_NAME_REPEAT_TIMES = "重复次数";
 
         [TranslateMsg("编辑器/事件_集合名称")]
         public const string EDITOR_NODE_EVENT = "事件";
@@ -46,7 +46,7 @@ namespace Game
         [TranslateMsg("编辑器/事件_阻止事件_节点名称")]
         public const string EDITOR_NODE_EVENT_STOP_EVENT = "阻止事件";
         [TranslateMsg("编辑器/事件-节点名称")]
-        public const string EDITOR_NODE_NAME_CAST_EVENT_TYPE = "转换事件类型"; 
+        public const string EDITOR_NODE_NAME_CAST_EVENT_TYPE = "转换事件类型";
         [TranslateMsg("编辑器/事件_更改攻击目标_节点名称")]
         public const string EDITOR_NODE_EVENT_CHANGE_ATTACK_TARGET = "更改攻击目标";
         [TranslateMsg("编辑器/事件_更改使用目标_节点名称")]
@@ -82,6 +82,10 @@ namespace Game
         [TranslateMsg("编辑器/事件_获取卡牌在某事件后的快照_节点名称")]
         public const string EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_AFTER_EVENT = "获取卡牌在某事件后的快照";
 
+        [TranslateMsg("编辑器/节点名称")]
+        public const string EDITOR_NODE_GET_EVENT_REPEAT_TIME = "获取事件重复次数";
+        [TranslateMsg("编辑器/节点名称")]
+        public const string EDITOR_NODE_SET_EVENT_REPEAT_TIME = "设置事件重复次数";
 
         #region 事件
 
@@ -282,6 +286,25 @@ namespace Game
             if (card == null || eventArg == null)
                 return null;
             return game.getCardSnapshotAfterEvent(card, eventArg);
+        }
+
+        [THHActionMethod(BuiltinActionDefineID.GetEventRepeatTimes, EDITOR_NODE_EVENT, EDITOR_NODE_GET_EVENT_REPEAT_TIME)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_REPEAT_TIMES)]
+        public static int setEventRepeatTime(
+            [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg)
+        {
+            if (eventArg == null)
+                return 0;
+            return eventArg.repeatTime;
+        }
+        [THHActionMethod(BuiltinActionDefineID.SetEventRepeatTimes, EDITOR_NODE_EVENT, EDITOR_NODE_SET_EVENT_REPEAT_TIME)]
+        public static void setEventRepeatTime(
+            [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg,
+            [ActionNodeParam(EDITOR_PARAM_NAME_REPEAT_TIMES)] int times)
+        {
+            if (eventArg == null)
+                return;
+            eventArg.repeatTime = times;
         }
         #endregion
 
