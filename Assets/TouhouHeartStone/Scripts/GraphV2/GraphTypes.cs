@@ -134,6 +134,7 @@ namespace Game
             new GraphTypeInfo() { type = typeof(EffectTag), typeName = EDITOR_TYPE_NAME_EFFECT_TAG, color = new Color(.7f, .8f, .2f, 1) },
             new GraphTypeInfo() { type = typeof(EventVarName), typeName = EDITOR_TYPE_NAME_EVENT_VAR_NAME, color = new Color(.7f, .8f, .2f, 1) },
             new GraphTypeInfo() { type = typeof(PileName), typeName = EDITOR_TYPE_NAME_PILE_NAME, color = new Color(.7f, .8f, .2f, 1) },
+            new GraphTypeInfo() { type = typeof(CardType), typeName = EDITOR_TYPE_NAME_CARD_TYPE, color = new Color(.7f, .8f, .2f, 1) },
 
             new GraphTypeInfo() { type = typeof(EventReference), typeName = EffectEditorLibrary.EDITOR_TYPE_NAME_EVENT_TYPE, color = new Color(1, 1, .2f, 1) },
             #endregion
@@ -169,6 +170,8 @@ namespace Game
         public const string EDITOR_TYPE_NAME_EVENT_VAR_NAME = "事件变量名";
         [TranslateMsg("编辑器类型名称")]
         public const string EDITOR_TYPE_NAME_PILE_NAME = "牌堆名";
+        [TranslateMsg("编辑器类型名称")]
+        public const string EDITOR_TYPE_NAME_CARD_TYPE = "卡牌类型";
         #endregion
     }
     public struct GraphTypeInfo

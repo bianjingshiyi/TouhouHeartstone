@@ -122,16 +122,8 @@ namespace Controllers
             };
             _ui.initValueInputFieldProperies(fieldProps);
 
-            _types = new string[] { DEFINE.SERVANT, DEFINE.SPELL, DEFINE.ITEM, DEFINE.MASTER, DEFINE.SKILL };
-            string[] typeNames = new string[]
-            {
-                StringTable.GAME_CARD_TYPE_SERVANT,
-                StringTable.GAME_CARD_TYPE_SPELL,
-                StringTable.GAME_CARD_TYPE_ITEM,
-                StringTable.GAME_CARD_TYPE_MASTER,
-                StringTable.GAME_CARD_TYPE_SKILL,
-
-            };
+            string[] typeNames = game.editor.getCardTypeNames();
+            _types = game.editor.getCardTypes();
             _ui.initTypes(typeNames);
             _ui.onChangeSkin += onChangeSkin;
             _ui.onChangeSkinName += onChangeSkinName;

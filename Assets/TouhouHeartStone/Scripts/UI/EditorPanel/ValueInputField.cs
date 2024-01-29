@@ -80,6 +80,9 @@ namespace UI
             setProp(ref _typeNames, props.graphTypeNames);
             setProp(ref _typeValues, props.graphTypeValues);
 
+            setProp(ref _cardTypeNames, props.cardTypeNames);
+            setProp(ref _cardTypeValues, props.cardTypeValues);
+
             foreach (var child in _childrenElementList.getElements<ValueInputFieldListItem>())
             {
                 child.valueField.initProperties(props);
@@ -315,6 +318,10 @@ namespace UI
             else if (valueType == ActionNodeValueType.type)
             {
                 callValueChangedCallback(_typeValues[index]);
+            }
+            else if (valueType == ActionNodeValueType.cardType)
+            {
+                callValueChangedCallback(_cardTypeValues[index]);
             }
         }
         private void onBuffDropdownValueChangedCallback(int index)
@@ -556,71 +563,100 @@ namespace UI
         }
         private void updateDropdown()
         {
+            bool isDropdown = true;
+            IEnumerable<string> optionNames = null;
+            int dropdownIndex = -1;
             //单选下拉菜单
-            if (valueType == ActionNodeValueType.enumValue)
+            switch (valueType)
             {
-                _dropdown.gameObject.SetActive(true);
-                _dropdown.ClearOptions();
-                _dropdown.AddOptions(new List<string>(_valueInfo.optionalNames));
-                if (_valueInfo.value is int index)
-                {
-                    //如果value为int，那有可能是枚举值序列化之后变成了整数再反序列化的结果，直接使用。
-                }
-                else
-                    index = Array.IndexOf(_valueInfo.optionalValues, _valueInfo.value);
-                if (index < 0)
-                    index = 0;
-                _dropdown.SetValueWithoutNotify(index);
+                case ActionNodeValueType.enumValue:
+                    {
+                        optionNames = _valueInfo.optionalNames;
+                        switch (_valueInfo.value)
+                        {
+                            case int index:
+                                //如果value为int，那有可能是枚举值序列化之后变成了整数再反序列化的结果，直接使用。
+                                dropdownIndex = index;
+                                break;
+                            default:
+                                dropdownIndex = Array.IndexOf(_valueInfo.optionalValues, _valueInfo.value);
+                                break;
+                        }
+                    }
+                    break;
+
+                case ActionNodeValueType.eventReference:
+                    {
+                        optionNames = _eventNames;
+                        switch (_valueInfo.value)
+                        {
+                            case int intValue:
+                                //如果value为int，那有可能是枚举值序列化之后变成了整数再反序列化的结果，直接使用。
+                                dropdownIndex = intValue;
+                                break;
+                            case string str:
+                                dropdownIndex = Array.FindIndex(_eventValues, e => e.cardPoolId == 0 && e.eventName == str);
+                                break;
+                            case EventArgReference evtArgRef:
+                                dropdownIndex = Array.FindIndex(_eventValues, e => e.cardPoolId == 0 && e.eventName == evtArgRef.value);
+                                break;
+                            case EventReference evtRef:
+                                dropdownIndex = Array.IndexOf(_eventValues, evtRef);
+                                break;
+                        }
+                    }
+                    break;
+
+                case ActionNodeValueType.type:
+                    {
+                        optionNames = _typeNames;
+                        switch (_valueInfo.value)
+                        {
+                            case int intValue:
+                                //如果value为int，那有可能是枚举值序列化之后变成了整数再反序列化的结果，直接使用。
+                                dropdownIndex = intValue;
+                                break;
+                            case string str:
+                                dropdownIndex = Array.FindIndex(_typeValues, t => t == str);
+                                break;
+                            case TypeName typeName:
+                                dropdownIndex = Array.IndexOf(_typeValues, typeName);
+                                break;
+                        }
+                    }
+                    break;
+
+                case ActionNodeValueType.cardType:
+                    {
+                        optionNames = _cardTypeNames;
+                        switch (_valueInfo.value)
+                        {
+                            case int intValue:
+                                //如果value为int，那有可能是枚举值序列化之后变成了整数再反序列化的结果，直接使用。
+                                dropdownIndex = intValue;
+                                break;
+                            case string str:
+                                dropdownIndex = Array.FindIndex(_cardTypeValues, t => t == str);
+                                break;
+                            case CardType cardType:
+                                dropdownIndex = Array.IndexOf(_cardTypeValues, cardType);
+                                break;
+                        }
+                        break;
+                    }
+                default:
+                    isDropdown = false;
+                    break;
             }
-            else if (valueType == ActionNodeValueType.eventReference)
+
+            if (isDropdown)
             {
                 _dropdown.gameObject.SetActive(true);
                 _dropdown.ClearOptions();
-                _dropdown.AddOptions(new List<string>(_eventNames));
-                int index = 0;
-                if (_valueInfo.value is int intValue)
-                {
-                    //如果value为int，那有可能是枚举值序列化之后变成了整数再反序列化的结果，直接使用。
-                    index = intValue;
-                }
-                else if (_valueInfo.value is string str)
-                {
-                    index = Array.FindIndex(_eventValues, e => e.cardPoolId == 0 && e.eventName == str);
-                }
-                else if (_valueInfo.value is EventArgReference evtArgRef)
-                {
-                    index = Array.FindIndex(_eventValues, e => e.cardPoolId == 0 && e.eventName == evtArgRef.value);
-                }
-                else if (_valueInfo.value is EventReference evtRef)
-                {
-                    index = Array.IndexOf(_eventValues, evtRef);
-                }
-                if (index < 0)
-                    index = 0;
-                _dropdown.SetValueWithoutNotify(index);
-            }
-            else if (valueType == ActionNodeValueType.type)
-            {
-                _dropdown.gameObject.SetActive(true);
-                _dropdown.ClearOptions();
-                _dropdown.AddOptions(new List<string>(_typeNames));
-                int index = 0;
-                if (_valueInfo.value is int intValue)
-                {
-                    //如果value为int，那有可能是枚举值序列化之后变成了整数再反序列化的结果，直接使用。
-                    index = intValue;
-                }
-                else if (_valueInfo.value is string str)
-                {
-                    index = Array.FindIndex(_typeValues, t => t == str);
-                }
-                else if (_valueInfo.value is TypeName typeName)
-                {
-                    index = Array.IndexOf(_typeValues, typeName);
-                }
-                if (index < 0)
-                    index = 0;
-                _dropdown.SetValueWithoutNotify(index);
+                _dropdown.AddOptions(new List<string>(optionNames));
+                if (dropdownIndex < 0)
+                    dropdownIndex = 0;
+                _dropdown.SetValueWithoutNotify(dropdownIndex);
             }
             else
             {
@@ -892,6 +928,10 @@ namespace UI
         private string[] _typeNames;
         [SerializeField]
         private string[] _typeValues;
+        [SerializeField]
+        private string[] _cardTypeNames;
+        [SerializeField]
+        private string[] _cardTypeValues;
 
         [SerializeField]
         ActionNodeValueInfo _valueInfo;
@@ -984,6 +1024,9 @@ namespace UI
 
         public string[] graphTypeNames;
         public string[] graphTypeValues;
+
+        public string[] cardTypeNames;
+        public string[] cardTypeValues;
 
         public static ValueInputFieldProperties eventReference(string[] eventNames, EventReference[] eventValues)
         {

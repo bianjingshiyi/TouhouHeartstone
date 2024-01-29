@@ -60,6 +60,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_CARD_DEFINE_TAG_LIST = "获取卡牌定义的标签列表";
         [TranslateMsg("节点名称")]
         public const string EDITOR_NODE_GET_CARD_DEFINE_TARGETS = "获取卡牌定义的合法使用目标";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_GET_CARD_DEFINE_TYPE = "获取卡牌定义的类型";
         [TranslateMsg("编辑器-参数名称-标签列表")]
         public const string EDITOR_PARAM_NAME_TAG_LIST = "标签列表";
         [TranslateMsg("编辑器-参数名称-源卡牌")]
@@ -153,9 +155,10 @@ namespace Game
         /// <param name="card">卡牌</param>
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardDefineOfType, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_NAME_IS_CARD_DEFINE_OF_TYPE)]
+        [Obsolete]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardDefineOfType_Obs_CardType, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_NAME_IS_CARD_DEFINE_OF_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
-        public static bool IsCardDefineOfType(
+        public static bool IsCardDefineOfTypeObsolete(
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_DEFINE)] CardDefine card,
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE, isConst: true)] CardDefineSelect select)
         {
@@ -174,6 +177,22 @@ namespace Game
                 default:
                     return card.isItem();
             }
+        }
+        /// <summary>
+        /// 卡牌定义类型判断节点
+        /// </summary>
+        /// <param name="card">卡牌</param>
+        /// <param name="type">选项</param>
+        /// <returns>bool,是否属于该类型</returns>
+        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardDefineOfType, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_NAME_IS_CARD_DEFINE_OF_TYPE)]
+        [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
+        public static bool IsCardDefineOfType(
+            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_DEFINE)] CardDefine card,
+            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE)] CardType type)
+        {
+            if (card == null || type == null)
+                return false;
+            return card.type == type.value;
         }
 
 
@@ -478,6 +497,18 @@ namespace Game
             if (cardDefine == null || source == null)
                 return Array.Empty<Card>();
             return cardDefine.getAvaliableTargets(game, source);
+        }
+        /// <summary>
+        /// 获取卡牌定义类型
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.GetCardDefineType, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_GET_CARD_DEFINE_TYPE)]
+        [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE)]
+        public static string getCardDefineType(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
+        {
+            if (cardDefine == null)
+                return null;
+            return cardDefine.type;
         }
         /// <summary>
         /// 展示卡牌定义

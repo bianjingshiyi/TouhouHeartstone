@@ -110,9 +110,10 @@ namespace Game
         /// <param name="card">卡牌</param>
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardOfType, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE__IS_DEFINE)]
+        [Obsolete]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardOfType_Obs_CardType, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE__IS_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
-        public static bool IsCardDefine(
+        public static bool IsCardDefineObsolete(
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE, isConst: true)] CardDefineSelect select)
         {
@@ -131,6 +132,22 @@ namespace Game
                 default:
                     return card.isItem();
             }
+        }
+        /// <summary>
+        /// 卡牌类型判断节点
+        /// </summary>
+        /// <param name="card">卡牌</param>
+        /// <param name="select">选项</param>
+        /// <returns>bool,是否属于该类型</returns>
+        [THHActionMethod(BuiltinActionDefineID.IsCardOfType, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE__IS_DEFINE)]
+        [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
+        public static bool IsCardOfType(
+            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD)] Card card,
+            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE)] CardType type)
+        {
+            if (card == null || type == null)
+                return false;
+            return card.define.type == type.value;
         }
         /// <summary>
         /// 卡牌关键词判断节点

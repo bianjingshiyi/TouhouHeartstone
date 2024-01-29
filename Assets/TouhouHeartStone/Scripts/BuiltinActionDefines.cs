@@ -62,7 +62,7 @@ namespace Game
 
         // 卡牌
         public const int ThisCard = Type_Function + Category_Card + 1; // 这张卡牌
-        public const int IsCardOfType = Type_Function + Category_Card + 2;    // 卡牌类型判断
+        public const int IsCardOfType_Obs_CardType = Type_Function + Category_Card + 2;    // 卡牌类型判断（过时）
         public const int CardHasKeyword = Type_Function + Category_Card + 3;    // 卡牌关键词判断
         public const int GetCardProp_Obsolete = Type_Function + Category_Card + 4;    // 获取属性（过时）
         public const int GetCardCost = Type_Function + Category_Card + 5;    // 获取花费
@@ -92,6 +92,7 @@ namespace Game
         public const int GetCardPile = Type_Function + Category_Card + 29;    // 获取卡牌所在牌堆
         public const int IsCardPropVisibleTo = Type_Function + Category_Buff + 30; // 卡牌属性是否可见
         public const int IsCardVisibleTo = Type_Function + Category_Buff + 31; // 卡牌是否可见
+        public const int IsCardOfType = Type_Function + Category_Card + 32;    // 卡牌类型判断
 
 
         // 卡牌定义
@@ -99,7 +100,7 @@ namespace Game
         public const int GetCardDefine = Type_Function + Category_CardDefine + 2;    // 获取卡牌定义
         public const int GetCardDefineArray = Type_Function + Category_CardDefine + 3;    // 获取卡牌定义列表
         public const int CardDefineHasTag = Type_Function + Category_CardDefine + 4;    // 卡牌定义是否具有标签
-        public const int IsCardDefineOfType = Type_Function + Category_CardDefine + 5;    // 卡牌定义类型判断
+        public const int IsCardDefineOfType_Obs_CardType = Type_Function + Category_CardDefine + 5;    // 卡牌定义类型判断（过时）
         public const int CardDefineHasKeyword = Type_Function + Category_CardDefine + 6;    // 卡牌定义关键词判断
         public const int GetCardDefinesOfCardArray = Type_Function + Category_CardDefine + 7;    // 获取目标卡牌的定义列表
         public const int GetCardDefineOfCard = Type_Function + Category_CardDefine + 8;    // 获取单张卡牌的定义
@@ -117,12 +118,14 @@ namespace Game
         public const int GetCardDefineProp = Type_Function + Category_CardDefine + 20;    // 获取卡牌定义属性
         public const int CardDefineIsTrap = Type_Function + Category_CardDefine + 21;    // 卡牌定义是否是陷阱
         public const int GetValidCardDefineTargets = Type_Function + Category_CardDefine + 22;    // 获取卡牌定义的合法使用目标
+        public const int GetCardDefineType = Type_Function + Category_CardDefine + 23; // 获取卡牌定义类型
+        public const int IsCardDefineOfType = Type_Function + Category_CardDefine + 24;    // 卡牌定义类型判断
 
 
         // 卡牌快照
         public const int GetCardOfCardSnapshot = Type_Function + Category_CardSnapshot + 1;    // 获取卡牌快照对应卡牌
         public const int GetCardDefineOfCardSnapshot = Type_Function + Category_CardSnapshot + 2;    // 获取卡牌快照卡牌定义
-        public const int CheckCardSnapshotType = Type_Function + Category_CardSnapshot + 3;    // 卡牌快照类型判断
+        public const int CheckCardSnapshotType_Obs_CardType = Type_Function + Category_CardSnapshot + 3;    // 卡牌快照类型判断（过时）
         public const int CardSnapshotHasKeywords = Type_Function + Category_CardSnapshot + 4;    // 卡牌快照关键词判断
         public const int GetCardSnapshotProp = Type_Function + Category_CardSnapshot + 5;    // 获取卡牌快照属性
         public const int GetCardSnapshotCost = Type_Function + Category_CardSnapshot + 6;    // 获取卡牌快照花费
@@ -136,6 +139,7 @@ namespace Game
         public const int DoesCardSnapshotHaveBattlecry = Type_Function + Category_CardSnapshot + 14;    // 卡牌快照具有宣言
         public const int DoesCardSnapshotHaveDeathrattle = Type_Function + Category_CardSnapshot + 15;    // 卡牌快照具有遗言
         public const int CardSnapshotIsTrap = Type_Function + Category_CardSnapshot + 16;    // 卡牌快照是否是陷阱
+        public const int CheckCardSnapshotType = Type_Function + Category_CardSnapshot + 17;    // 卡牌快照类型判断
 
 
         // 牌堆

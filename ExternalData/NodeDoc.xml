@@ -3186,6 +3186,7 @@
     <defineId>102002</defineId>
     <obsoleteNames />
     <editorName>卡牌类型判断</editorName>
+    <obsoleteMsg />
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
@@ -3220,6 +3221,42 @@
       <li>叛逃特工</li>
       <li>小恶魔</li>
     </ul>]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>102032</defineId>
+    <obsoleteNames />
+    <editorName>卡牌类型判断</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断卡牌类型的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>CardType</type>
+        <name>type</name>
+        <displayName>卡牌类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断的卡牌类型。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌是否属于该类型？]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[判断一个卡牌是否属于某种卡牌类型。]]></summary>
+    <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
     <defineId>102003</defineId>
@@ -6410,6 +6447,7 @@
     <defineId>103005</defineId>
     <obsoleteNames />
     <editorName>卡牌定义类型判断</editorName>
+    <obsoleteMsg />
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
@@ -6440,6 +6478,42 @@
       </ActionParameterComment>
     </outputs>
     <summary><![CDATA[]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>103024</defineId>
+    <obsoleteNames />
+    <editorName>卡牌定义类型判断</editorName>
+    <category>卡牌定义</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>card</name>
+        <displayName>卡牌定义</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断卡牌类型的卡牌定义。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>CardType</type>
+        <name>type</name>
+        <displayName>卡牌类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断的卡牌类型。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌定义是否属于该类型？]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[判断一个卡牌定义是否属于某种卡牌类型。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -7116,6 +7190,34 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>103023</defineId>
+    <obsoleteNames />
+    <editorName>获取卡牌定义的类型</editorName>
+    <category>卡牌定义</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取卡牌类型的卡牌定义。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>String</type>
+        <name>return</name>
+        <displayName>卡牌类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌定义的卡牌类型。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[获取一个卡牌定义的所属卡牌类型。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>203001</defineId>
     <obsoleteNames />
     <editorName>展示卡牌定义</editorName>
@@ -7218,6 +7320,7 @@
     <defineId>104003</defineId>
     <obsoleteNames />
     <editorName>卡牌快照类型判断</editorName>
+    <obsoleteMsg />
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
@@ -7231,6 +7334,42 @@
       <ActionParameterComment>
         <type>CardDefineSelect</type>
         <name>select</name>
+        <displayName>卡牌类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要进行判断的卡牌类型。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌快照是否是该类型？]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[判断一个卡牌快照在当时是否属于某种卡牌类型。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>104017</defineId>
+    <obsoleteNames />
+    <editorName>卡牌快照类型判断</editorName>
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要进行类型判断的卡牌快照。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>CardType</type>
+        <name>type</name>
         <displayName>卡牌类型</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>

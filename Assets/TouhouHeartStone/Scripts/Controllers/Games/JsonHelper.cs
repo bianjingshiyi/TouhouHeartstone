@@ -56,6 +56,7 @@ namespace Controllers
             registerClass<EffectTag>();
             registerClass<EventVarName>();
             registerClass<ObjectProxy>();
+            registerClass<CardType>();
             registerClass<GeneratedEffect>();
             registerClass<CompareOperator>();
             registerClass<IntegerOperator>();

@@ -42,6 +42,17 @@ namespace Game
         }
         #endregion
 
+        #region 卡牌类型
+        public string[] getCardTypes()
+        {
+            return cardTypes.Keys.ToArray();
+        }
+        public string[] getCardTypeNames()
+        {
+            return cardTypes.Values.Select(v => game.lang._(v)).ToArray();
+        }
+        #endregion
+
         public string getRuleLogicTypeEditorName(GameRuleLogicType type)
         {
             string str = null;
@@ -186,6 +197,14 @@ namespace Game
             { PILE.SKILL, StringTable.GAME_SKILL },
             { PILE.ITEM, StringTable.GAME_ITEM },
             { PILE.HEAD, StringTable.GAME_DELAY }
+        };
+        private static readonly Dictionary<string, string> cardTypes = new Dictionary<string, string>
+        {
+            { DEFINE.SPELL, StringTable.GAME_CARD_TYPE_SPELL },
+            { DEFINE.SERVANT, StringTable.GAME_CARD_TYPE_SERVANT },
+            { DEFINE.ITEM, StringTable.GAME_CARD_TYPE_ITEM },
+            { DEFINE.MASTER, StringTable.GAME_CARD_TYPE_MASTER },
+            { DEFINE.SKILL, StringTable.GAME_CARD_TYPE_SKILL },
         };
         #endregion
     }

@@ -181,6 +181,7 @@ namespace UI
             { typeof(CardDefinePropertyGetterName), ActionNodeValueType.cardDefinePropertyNameGet },
             { typeof(EventVarName), ActionNodeValueType.eventVarName },
             { typeof(TypeName), ActionNodeValueType.type },
+            { typeof(CardType), ActionNodeValueType.cardType },
 
             { typeof(CardDefine), ActionNodeValueType.cardReference },
             { typeof(BuffDefine), ActionNodeValueType.buffReference },
@@ -205,6 +206,7 @@ namespace UI
             { ActionNodeValueType.cardDefinePropertyNameGet, () => new CardDefinePropertyGetterName(string.Empty)  },
             { ActionNodeValueType.eventVarName, () => new EventVarName(string.Empty) },
             { ActionNodeValueType.type, () => new TypeName(typeof(object).Name) },
+            { ActionNodeValueType.cardType, () => new CardType(string.Empty) },
         };
 
     }
@@ -294,5 +296,9 @@ namespace UI
         /// 类型
         /// </summary>
         type,
+        /// <summary>
+        /// 卡牌类型
+        /// </summary>
+        cardType,
     }
 }

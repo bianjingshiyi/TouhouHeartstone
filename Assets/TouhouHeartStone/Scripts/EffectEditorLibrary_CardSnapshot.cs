@@ -1,4 +1,5 @@
-﻿using MukioI18n;
+﻿using System;
+using MukioI18n;
 using TouhouCardEngine;
 using TouhouHeartstone;
 
@@ -77,9 +78,10 @@ namespace Game
         /// <param name="card">卡牌</param>
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.CheckCardSnapshotType, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NAME_NODE_IS_CARD_SNAPSHOT_TYPE)]
+        [Obsolete]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CheckCardSnapshotType_Obs_CardType, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NAME_NODE_IS_CARD_SNAPSHOT_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
-        public static bool IsTypeOfCardSnapshot(
+        public static bool IsTypeOfCardSnapshotObsolete(
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card,
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE, isConst: true)] CardDefineSelect select)
         {
@@ -98,6 +100,22 @@ namespace Game
                 default:
                     return card.isItem();
             }
+        }
+        /// <summary>
+        /// 卡牌快照类型判断节点
+        /// </summary>
+        /// <param name="card">卡牌</param>
+        /// <param name="type">选项</param>
+        /// <returns>bool,是否属于该类型</returns>
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CheckCardSnapshotType, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NAME_NODE_IS_CARD_SNAPSHOT_TYPE)]
+        [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
+        public static bool IsTypeOfCardSnapshot(
+            [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card,
+            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE)] CardType type)
+        {
+            if (card == null || type == null)
+                return false;
+            return card.define.type == type.value;
         }
         /// <summary>
         /// 卡牌快照关键词判断节点

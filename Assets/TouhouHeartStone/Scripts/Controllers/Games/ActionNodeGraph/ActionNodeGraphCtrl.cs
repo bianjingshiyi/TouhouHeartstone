@@ -38,6 +38,9 @@ namespace Controllers
                 var typeInfos = GraphTypes.getAllPortTypeInfos();
                 var typeNames = game.editor.getEditorPortTypeNames();
                 typeValues = typeInfos.Select(i => i.type.Name).ToArray();
+                // 更新卡牌名称列表
+                var cardTypeNames = game.editor.getCardTypeNames();
+                cardTypeValues = game.editor.getCardTypes();
                 //更新UI
                 _ui.gameObject.SetActive(true);
 
@@ -47,6 +50,8 @@ namespace Controllers
                     graphTypeValues = typeValues,
                     eventNames = eventEditorNames, 
                     eventValues = eventReferences,
+                    cardTypeNames = cardTypeNames,
+                    cardTypeValues = cardTypeValues,
                 };
                 _ui.initValueInputFieldProperties(fieldProps);
                 _ui.resetView();
@@ -1834,6 +1839,9 @@ namespace Controllers
                 case ActionNodeValueType.type:
                     value = typeValues[0];
                     break;
+                case ActionNodeValueType.cardType:
+                    value = cardTypeValues[0];
+                    break;
                 case ActionNodeValueType.pileName:
                     value = game.editor.getAllPileValues()[0];
                     break;
@@ -2172,17 +2180,6 @@ namespace Controllers
         [TranslateMsg("比较运算符，小于等于 <=")]
         const string EDITOR_ENUM_CMP_OPERATOR_LESS_EQUAL = "小于等于";
 
-        [TranslateMsg("卡牌类型，法术")]
-        const string EDITOR_ENUM_CARD_TYPE_SPELL = "法术";
-        [TranslateMsg("卡牌类型，仆从")]
-        const string EDITOR_ENUM_CARD_TYPE_SERVANT = "仆从";
-        [TranslateMsg("卡牌类型，英雄")]
-        const string EDITOR_ENUM_CARD_TYPE_MASTER = "英雄";
-        [TranslateMsg("卡牌类型，技能")]
-        const string EDITOR_ENUM_CARD_TYPE_SKILL = "技能";
-        [TranslateMsg("卡牌类型，道具")]
-        const string EDITOR_ENUM_CARD_TYPE_ITEM = "道具";
-
         [TranslateMsg]
         const string TITLE_NODE_OBSOLETE = "过时的节点";
         [TranslateMsg("参数0为节点自带的消息")]
@@ -2262,11 +2259,11 @@ namespace Controllers
             { "TouhouCardEngine.CompareOperator.lessEquals", EDITOR_ENUM_CMP_OPERATOR_LESS_EQUAL },
 
 
-            { "Game.CardDefineSelect.Spell", EDITOR_ENUM_CARD_TYPE_SPELL },
-            { "Game.CardDefineSelect.Servant", EDITOR_ENUM_CARD_TYPE_SERVANT },
-            { "Game.CardDefineSelect.Skill", EDITOR_ENUM_CARD_TYPE_SKILL },
-            { "Game.CardDefineSelect.Master", EDITOR_ENUM_CARD_TYPE_MASTER },
-            { "Game.CardDefineSelect.Item", EDITOR_ENUM_CARD_TYPE_ITEM },
+            { "Game.CardDefineSelect.Spell", StringTable.GAME_CARD_TYPE_SPELL },
+            { "Game.CardDefineSelect.Servant",  StringTable.GAME_CARD_TYPE_SERVANT },
+            { "Game.CardDefineSelect.Skill", StringTable.GAME_CARD_TYPE_SKILL },
+            { "Game.CardDefineSelect.Master", StringTable.GAME_CARD_TYPE_MASTER },
+            { "Game.CardDefineSelect.Item", StringTable.GAME_CARD_TYPE_ITEM },
 
             { "Game.EffectType.Active", EDITOR_ENUM_EFFECT_TYPE_ACTIVE },
             { "Game.EffectType.Passive", EDITOR_ENUM_EFFECT_TYPE_PASSIVE },
@@ -2291,6 +2288,7 @@ namespace Controllers
             StringTable.GAME_KEYWORD_DEATHRATTLE,
             StringTable.GAME_KEYWORD_SECRET,
         };
+        private string[] cardTypeValues;
         private string[] typeValues;
         private EventReference[] eventReferences => scene.editor.eventReferences;
         private string[] eventEditorNames => scene.editor.eventEditorNames;
