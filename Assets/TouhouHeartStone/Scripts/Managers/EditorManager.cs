@@ -200,8 +200,8 @@ namespace Game
         };
         private static readonly Dictionary<string, string> cardTypes = new Dictionary<string, string>
         {
-            { DEFINE.SPELL, StringTable.GAME_CARD_TYPE_SPELL },
             { DEFINE.SERVANT, StringTable.GAME_CARD_TYPE_SERVANT },
+            { DEFINE.SPELL, StringTable.GAME_CARD_TYPE_SPELL },
             { DEFINE.ITEM, StringTable.GAME_CARD_TYPE_ITEM },
             { DEFINE.MASTER, StringTable.GAME_CARD_TYPE_MASTER },
             { DEFINE.SKILL, StringTable.GAME_CARD_TYPE_SKILL },

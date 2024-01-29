@@ -1159,6 +1159,7 @@ namespace Game
                 fixBuiltinCardRefs(actionNode);
                 fixConstsToDefaultValues(actionNode);
                 fixRuleObsoleteNode(actionNode);
+                fixCardTypeObsoleteNode(actionNode);
             }
             // 修复未知或过时的节点。
             async Task fixUnknownOrObsoleteNode(ActionNode actionNode)
@@ -1472,6 +1473,61 @@ namespace Game
                     var selectCardInput = actionNode.getInputPort(inputName);
 
                     graph.connect(thisCardOutput, selectCardInput);
+                }
+            }
+            // 修复因加入卡牌类型参数而过时的节点。
+            void fixCardTypeObsoleteNode(ActionNode actionNode)
+            {
+                if (actionNode.defineRef == null)
+                    return;
+                var graph = actionNode.graph;
+                if (actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.IsCardOfType_Obs_CardType))
+                {
+                    actionNode.defineRef = new ActionReference(0, BuiltinActionDefineID.IsCardOfType);
+                    actionNode.define = getActionDefine(builtinCardPoolReference, actionNode.defineRef.defineId);
+                    actionNode.Define();
+
+                    updateDefaultValue();
+                }
+                else if (actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.IsCardDefineOfType_Obs_CardType))
+                {
+                    actionNode.defineRef = new ActionReference(0, BuiltinActionDefineID.IsCardDefineOfType);
+                    actionNode.define = getActionDefine(builtinCardPoolReference, actionNode.defineRef.defineId);
+                    actionNode.Define();
+
+                    updateDefaultValue();
+                }
+                else if (actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.CheckCardSnapshotType_Obs_CardType))
+                {
+                    actionNode.defineRef = new ActionReference(0, BuiltinActionDefineID.CheckCardSnapshotType);
+                    actionNode.define = getActionDefine(builtinCardPoolReference, actionNode.defineRef.defineId);
+                    actionNode.Define();
+
+                    updateDefaultValue();
+                }
+                void updateDefaultValue()
+                {
+                    CardDefineSelect value = (CardDefineSelect)actionNode.getInputDefaultValue<int>("select");
+                    string newValue;
+                    switch (value)
+                    {
+                        case CardDefineSelect.Servant:
+                            newValue = DEFINE.SERVANT;
+                            break;
+                        case CardDefineSelect.Item:
+                            newValue = DEFINE.ITEM;
+                            break;
+                        case CardDefineSelect.Master:
+                            newValue = DEFINE.MASTER;
+                            break;
+                        case CardDefineSelect.Skill:
+                            newValue = DEFINE.SKILL;
+                            break;
+                        default:
+                            newValue = DEFINE.SPELL;
+                            break;
+                    }
+                    actionNode.setInputDefaultValue("type", newValue);
                 }
             }
             #endregion

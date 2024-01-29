@@ -525,6 +525,7 @@ namespace Game
             return game.revealCardDefine(cardDefine, player, invisibleForSelf, invisibleForOppo);
         }
     }
+    [Obsolete]
     public enum CardDefineSelect
     {
         Spell,
