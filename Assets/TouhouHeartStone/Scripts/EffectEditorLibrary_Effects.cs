@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using MukioI18n;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 
 namespace Game
@@ -22,6 +21,8 @@ namespace Game
         public const string EDITOR_PARAM_NAME_EFFECT_TAG = "效果标签";
         [TranslateMsg("编辑器-参数名称")]
         public const string EDITOR_PARAM_NAME_EFFECT_TYPE = "效果类型";
+        [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_BELONGS_TO_CARD_DEFINE = "属于卡牌定义";
 
         #region 函数
         [TranslateMsg("编辑器-节点名称")]
@@ -40,6 +41,8 @@ namespace Game
         public const string EDITOR_NODE_CHECK_EFFECT_TYPE = "效果类型判断";
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_GET_EFFECT_TARGETS = "获取效果的合法使用目标";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_GET_EFFECT_CARD_DEFINE_OR_BUFF_DEFINE = "获取效果所属卡牌定义或增益定义";
         /// <summary>
         /// 该效果
         /// </summary>
@@ -149,7 +152,7 @@ namespace Game
             if (effect == null)
                 return false;
             // 光环和事件效果必须在被动效果前面，因为他们自己本身也属于被动效果。
-            if (effect is GeneratedAura) 
+            if (effect is GeneratedAura)
                 return type == EffectType.Aura;
             else if (effect is GeneratedEventEffect)
                 return type == EffectType.Event;
@@ -158,6 +161,43 @@ namespace Game
             else if (effect is GeneratedPassiveEffect)
                 return type == EffectType.Passive;
             return false;
+        }
+        /// <summary>
+        /// 获取效果所属卡牌定义或增益定义
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.GetEffectCardDefineOrBuffDefine, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_GET_EFFECT_CARD_DEFINE_OR_BUFF_DEFINE)]
+        public static void getEffectCardDefineOrBuffDefine(CardEngine game,
+            [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] out CardDefine cardDefine,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)] out BuffDefine buffDefine,
+            [ActionNodeParam(EDITOR_PARAM_NAME_BELONGS_TO_CARD_DEFINE)] out bool isCardDefine)
+        {
+            if (effect == null)
+            {
+                cardDefine = null;
+                buffDefine = null;
+                isCardDefine = false;
+                return;
+            }
+            if (effect.cardDefineRef != null)
+            {
+                cardDefine = game.getDefine(effect.cardDefineRef);
+                buffDefine = null;
+                isCardDefine = true;
+            }
+            else if (effect.buffDefineRef != null)
+            {
+                cardDefine = null;
+                buffDefine = game.getBuffDefine(effect.buffDefineRef);
+                isCardDefine = false;
+            }
+            else
+            {
+                cardDefine = null;
+                buffDefine = null;
+                isCardDefine = false;
+            }
+
         }
         #endregion
 
