@@ -51,6 +51,14 @@ namespace Game
         {
             return cardTypes.Values.Select(v => game.lang._(v)).ToArray();
         }
+        public string getCardTypeName(string value)
+        {
+            if (cardTypes.TryGetValue(value, out var name))
+            {
+                return game.lang._(name);
+            }
+            return value;
+        }
         #endregion
 
         public string getRuleLogicTypeEditorName(GameRuleLogicType type)

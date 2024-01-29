@@ -29,6 +29,9 @@ namespace Controllers
             if (displayInfo is DisplayInfo info)
             {
                 _displayInfo = info;
+                // 自定义筛选器。
+                if (info.cardFilter != null)
+                    _cardFilter = info.cardFilter;
                 // 卡池筛选器
                 initCardPoolFilters(info);
                 // 加载卡牌定义。
@@ -75,7 +78,7 @@ namespace Controllers
             _ui.setSortType(_sortType);
             _ui.setCostFilters(_costFilters);
             _ui.setCostFilter(_costFiltersValue);
-            _ui.setTypeFilters(_typesName.Select(n => game.langManager.getString(n)).ToArray());
+            _ui.setTypeFilters(getCardTypeNames());
             _ui.setTypeFilter(_typeFiltersValue);
             _ui.setSearchInputField(_searchFilterString);
             _ui.updateCardListCount(_filteredCardDefineList.Count);
@@ -258,7 +261,10 @@ namespace Controllers
                 var (_, cardPool) = await game.card.getOrLoadCardPool(localRef);
                 if (cardPool == null)
                     continue;
-                defines.AddRange(cardPool.cardDefineList);
+                if (_cardFilter == null)
+                    defines.AddRange(cardPool.cardDefineList);
+                else
+                    defines.AddRange(cardPool.cardDefineList.Where(c => _cardFilter(c)));
             }
             _cardDefineList = defines;
         }
@@ -267,9 +273,8 @@ namespace Controllers
         /// </summary>
         private void initFilters(DisplayInfo info)
         {
-            // 自定义筛选器。
-            if (info.cardFilter != null)
-                _cardFilter = info.cardFilter;
+            // 卡牌类型筛选
+            updateCardTypeFilters();
             // 人物筛选
             updateCharacterFilters(info.characterFilterRefs);
             // 验证筛选合法性。
@@ -305,6 +310,40 @@ namespace Controllers
                     values[i] = Array.Exists(info.cardPoolFiltersId, c => c == _cardPoolIdList[i]);
                 }
                 _cardPoolFilterValue = values;
+            }
+        }
+        /// <summary>
+        /// 更新卡牌类型过滤器。
+        /// </summary>
+        private void updateCardTypeFilters(string[] values = null)
+        {
+            // 没有指定要选中的类型，保留之前选择的卡牌类型。
+            if (values == null)
+            {
+                values = _typeFilters.Where((c, i) => {
+                    if (_typeFiltersValue == null)
+                        return false;
+                    if (i < 0 || i >= _typeFiltersValue.Length)
+                        return false;
+                    return _typeFiltersValue[i];
+                }).ToArray();
+            }
+            // 更新选项。
+            HashSet<string> cardTypeList = new HashSet<string>();
+            foreach (var define in _cardDefineList)
+            {
+                cardTypeList.Add(define.type);
+            }
+            // 修改选择的类型值数组，保证同步。
+            _typeFilters = cardTypeList.ToArray();
+            // 根据人物引用，设置人物过滤器的值。
+            if (values != null)
+            {
+                _typeFiltersValue = new bool[_typeFilters.Length];
+                for (int i = 0; i < _typeFiltersValue.Length; i++)
+                {
+                    _typeFiltersValue[i] = Array.Exists(values, c => c == _typeFilters[i]);
+                }
             }
         }
         /// <summary>
@@ -596,8 +635,17 @@ namespace Controllers
             return cardPoolNames;
         }
         /// <summary>
+        /// 获取所有卡牌类型的名称。
+        /// </summary>
+        /// <returns>卡牌类型名称数组。</returns>
+        private string[] getCardTypeNames()
+        {
+            return _typeFilters.Select(t => game.editor.getCardTypeName(t)).ToArray();
+        }
+        /// <summary>
         /// 获取所有人物的名称。
         /// </summary>
+        /// <returns>人物名称数组。</returns>
         /// <returns>人物名称数组。</returns>
         private string[] getCharacterNames()
         {
@@ -670,6 +718,8 @@ namespace Controllers
         [SerializeField]
         bool[] _costFiltersValue;
         [SerializeField]
+        private string[] _typeFilters;
+        [SerializeField]
         bool[] _typeFiltersValue;
         [SerializeField]
         string _searchFilterString;
@@ -689,18 +739,6 @@ namespace Controllers
             "5",
             "6",
             "7+"
-        };
-        readonly string[] _typeFilters = new string[]
-        {
-            DEFINE.SERVANT,
-            DEFINE.SPELL,
-            DEFINE.ITEM
-        };
-        readonly string[] _typesName = new string[]
-        {
-            StringTable.GAME_CARD_TYPE_SERVANT,
-            StringTable.GAME_CARD_TYPE_SPELL,
-            StringTable.GAME_CARD_TYPE_ITEM
         };
         readonly static string[] _searchKeywords =
         {
