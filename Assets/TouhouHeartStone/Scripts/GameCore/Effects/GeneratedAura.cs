@@ -136,7 +136,7 @@ namespace TouhouHeartstone
                         // 记录中找不到目标增益，新建一个。
                         var flow = new Flow(game, card, buff, null, this);
                         BuffDefine buffDefine = await game.getValue<BuffDefine>(flow, getAuraBuffDefine);
-                        cardBuff = new GeneratedBuff(buffDefine);
+                        cardBuff = new Buff(buffDefine);
                         cardBuff.canClone = false;
                         buffDict.Add(targetCard, cardBuff);
                     }

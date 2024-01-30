@@ -429,6 +429,7 @@ namespace TouhouHeartstone
         }
         public override Task onGameInit(CardEngine game, GameOption options)
         {
+            game.addBuffDefine(new MasterItemAttackBuffDefine());
             game.logger.log($"游戏开始，本局游戏设置：{options.ToJson()}");
             return init(game);
         }
@@ -501,10 +502,11 @@ namespace TouhouHeartstone
         {
             const string buffPlayerPropName = "MASTER_ITEM_ATK_MODI";
             var master = player.getMaster();
-            var buff = player.getProp<MasterItemAttackBuff>(buffPlayerPropName);
+            var buff = player.getProp<Buff>(buffPlayerPropName);
             if (buff == null)
             {
-                buff = new MasterItemAttackBuff();
+                var buffDefine = game.getBuffDefine(MasterItemAttackBuffDefine.buffDefineRef);
+                buff = new Buff(buffDefine);
                 await master.addBuff(game, buff);
                 player.setProp(game, buffPlayerPropName, buff);
             }
@@ -513,7 +515,7 @@ namespace TouhouHeartstone
             {
                 attack = player.getItem()?.getAttack(game) ?? 0;
             }
-            await buff.setProp(game, MasterItemAttackBuff.buffPropName, attack);
+            await buff.setProp(game, MasterItemAttackBuffDefine.buffPropName, attack);
         }
         #endregion
 

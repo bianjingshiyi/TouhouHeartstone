@@ -2050,7 +2050,7 @@ namespace Game.BattleTable
             setCardDesc(ui.CardDisplayer.card, desc);
             ui.CardDisplayer.card.setFaceup(true);
 
-            var buffs = desc.getBuffs().Where(b => b is not IInnateBuff);
+            var buffs = desc.getBuffs().Where(b => b.define is not IInnateBuffDefine);
             var buffViewDatas = await getCardBuffViewDatas(buffs);
             ui.CardDisplayer.setBuffs(buffViewDatas);
 
@@ -2474,9 +2474,7 @@ namespace Game.BattleTable
             DefineReference curBuffRef = null;
             foreach (var buff in buffs)
             {
-                if (buff is not GeneratedBuff genBuff)
-                    continue;
-                var defineRef = genBuff.defineRef;
+                var defineRef = buff.define.getDefineRef();
                 if (curBuffRef == defineRef && buffCountList.Count > 0)
                 {
                     var lastTuple = buffCountList[buffCountList.Count - 1];

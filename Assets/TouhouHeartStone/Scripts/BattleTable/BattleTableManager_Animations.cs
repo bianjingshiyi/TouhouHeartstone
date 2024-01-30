@@ -270,9 +270,9 @@ namespace Game.BattleTable
             var effect = effectRef.getEffect();
             var buff = effectRef.buff;
             var cardDefine = effectRef.cardDefine;
-            if (buff is GeneratedBuff genBuff)
+            if (buff != null)
             {
-                var define = game.getBuffDefine(genBuff.defineRef);
+                var define = buff.define;
                 var skin = getBuffSkin(define);
                 if (effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
 
@@ -296,9 +296,9 @@ namespace Game.BattleTable
             var effect = effectRef.getEffect();
             var buff = effectRef.buff;
             var cardDefine = effectRef.cardDefine;
-            if (buff is GeneratedBuff genBuff)
+            if (buff != null)
             {
-                var define = game.getBuffDefine(genBuff.defineRef);
+                var define = buff.define;
                 var skin = getBuffSkin(define);
                 if (effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
 

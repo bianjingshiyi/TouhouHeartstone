@@ -16,28 +16,25 @@ namespace Game.BattleTable
             var buff = eventArg.getVar<Buff>(Arg.VAR_BUFF);
             table.updateCardBySnapshot(card);
 
-            if (buff is GeneratedBuff gen)
+            var buffDefine = buff.define;
+            var buffSkin = table.getBuffSkin(buffDefine);
+            DefineReference animRef = buffSkin?.persistentAnimRef;
+            if (animRef != null)
             {
-                var defRef = gen.defineRef;
-                var buffSkin = table.getBuffSkin(defRef);
-                DefineReference animRef = buffSkin?.persistentAnimRef;
-                if (animRef != null)
+                var srcTransform = table.getCardTransform(card.id, true);
+                var info = new VisualEffectInfo()
                 {
-                    var srcTransform = table.getCardTransform(card.id, true);
-                    var info = new VisualEffectInfo()
-                    {
-                        srcTransform = srcTransform,
-                        destTransform = srcTransform,
-                    };
-                    bool visible = true;
-                    if (buff.isHiddenToVisible() && !buff.isPropInvisibleTo(BUFF.HIDDEN_TO_VISIBLE, table.player))
-                    {
-                        visible = false;
-                    }
-                    var effect = table.createEffect(animRef, info);
-                    effect.setVisible(visible);
-                    table.addCardBuffEffect(card.id, buff.instanceID, effect);
+                    srcTransform = srcTransform,
+                    destTransform = srcTransform,
+                };
+                bool visible = true;
+                if (buff.isHiddenToVisible() && !buff.isPropInvisibleTo(BUFF.HIDDEN_TO_VISIBLE, table.player))
+                {
+                    visible = false;
                 }
+                var effect = table.createEffect(animRef, info);
+                effect.setVisible(visible);
+                table.addCardBuffEffect(card.id, buff.instanceID, effect);
             }
 
             yield break;

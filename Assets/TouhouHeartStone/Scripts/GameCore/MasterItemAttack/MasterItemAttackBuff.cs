@@ -1,26 +1,25 @@
-﻿using TouhouCardEngine;
+﻿using System.Collections.Generic;
+using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
-    public class MasterItemAttackBuff : Buff, IInnateBuff
+    public class MasterItemAttackBuffDefine : BuffDefine, IInnateBuffDefine
     {
-        public MasterItemAttackBuff() : base()
+        public MasterItemAttackBuffDefine() : base(buffDefineRef.defineId)
         {
-            _modifiers.Add(new AttackModifier(0) { relatedPropName = buffPropName });
-            canClone = false;
+            cardPoolId = buffDefineRef.cardPoolId;
+            propModifierList.Add(new AttackModifier(0) { relatedPropName = buffPropName });
             _effects.Add(new MasterItemAttackEffectPropChanged());
             _effects.Add(new MasterItemAttackEffectSetDefine());
             _effects.Add(new MasterItemAttackEffectMoveCard());
         }
-
-        public override Buff clone()
+        public override IEffect[] getEffects()
         {
-            return new MasterItemAttackBuff(this);
+            return _effects.ToArray();
         }
-        private MasterItemAttackBuff(MasterItemAttackBuff other) : base(other)
-        {
-        }
-        public override int id => 0;
+        public List<IEffect> _effects = new List<IEffect>();
         public const string buffPropName = "itemAttack";
+        public static readonly DefineReference buffDefineRef = new DefineReference(0, 1);
     }
 }

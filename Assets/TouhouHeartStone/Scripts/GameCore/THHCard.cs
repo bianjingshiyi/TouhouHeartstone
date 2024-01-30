@@ -1298,7 +1298,7 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static Task<int> removeAllBuffs(this Card card, IGame game)
         {
-            return card.removeBuff(game, card.getBuffs().Where(b => b is not IInnateBuff));
+            return card.removeBuff(game, card.getBuffs().Where(b => b.define is not IInnateBuffDefine));
         }
         #endregion
 

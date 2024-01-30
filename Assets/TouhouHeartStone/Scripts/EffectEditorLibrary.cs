@@ -1316,9 +1316,7 @@ namespace Game
         public static BuffDefine getDefineOfBuff(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff)
         {
-            if (buff is GeneratedBuff genBuff)
-                return game.getBuffDefine(genBuff.defineRef);
-            return null;
+            return buff.define;
         }
         [THHActionMethod(BuiltinActionDefineID.GetAllBuffsOnCard, StringTable.EDITOR_NODE_CATEGORY_BUFF, EDITOR_NODE_NAME_GET_ALL_BUFFS_ON_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]

@@ -47,7 +47,7 @@ namespace TouhouHeartstone
             {
                 if (card == null)
                     continue;
-                Buff buff = new GeneratedBuff(buffDefine);
+                Buff buff = new Buff(buffDefine);
                 buffList.Add(buff);
                 await card.addBuff(game, buff);
             }
