@@ -219,7 +219,7 @@ namespace Controllers
                 value = cloneable.Clone();
             }
             var valueType = value.GetType();
-            if (!valueType.tryGetValueTypeByType(out var type) || !CardEditorCtrl.isTypeCustomProp(type.type))
+            if (!valueType.tryGetValueTypeByType(out var type) || !EditorManager.isTypeCustomProp(type.type))
                 return null;
 
             var item = new PropertyItemInfo(name, type)

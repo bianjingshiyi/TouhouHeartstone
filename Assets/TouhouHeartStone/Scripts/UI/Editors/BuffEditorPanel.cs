@@ -32,7 +32,7 @@ namespace UI
                 var info = modifierInfos[i];
                 var valueInfo = new ActionNodeValueInfo()
                 {
-                    type = new NodeValueType(info.valueType), 
+                    type = new NodeValueType(info.valueType),
                     value = info.value
                 };
                 item.updateValues(info.propertyTypeIndex, info.customPropertyName, info.modifyTypes, info.modifyTypeIndex, valueInfo);
@@ -58,11 +58,18 @@ namespace UI
             }
             );
         }
-        public void init(string[] properties, ValueInputFieldProperties fieldProperties)
+        public void init(string[] properties)
         {
             var item = _propertyModifierItemTemplate.GetComponent<PropertyModifierListItem>();
             item.updateSelectableValues(properties);
-            item.initInputFieldProperties(fieldProperties);
+        }
+        public void initValueInputFields(ValueInputFieldProperties fieldProperties)
+        {
+            var modifierItem = _propertyModifierItemTemplate.GetComponent<PropertyModifierListItem>();
+            modifierItem.initInputFieldProperties(fieldProperties);
+
+            var propItem = _customPropertyList.getTemplate<PropertyItemField>();
+            propItem.initInputFieldProperties(fieldProperties);
         }
         #endregion
 
@@ -95,6 +102,55 @@ namespace UI
         {
             var item = _existLimitItemTemplate.GetComponent<ExistLimitListItem>();
             item.initEvents(eventNames);
+        }
+        #endregion
+
+        #region 自定义属性
+        public void setCustomPropertyDialogVisible(bool visible)
+        {
+            if (visible)
+            {
+                _customPropertyDialog.display();
+            }
+            else
+            {
+                _customPropertyDialog.hide();
+            }
+        }
+        public void showCustomPropertyDialogError(string message)
+        {
+            _customPropertyDialog.showErrorTip(message);
+        }
+        public PropertyItemField getCustomPropertyItemField(string name)
+        {
+            return _customPropertyList.getElements<PropertyItemField>().FirstOrDefault(f => f.propertyName == name);
+        }
+        public void updateCustomProperties(PropertyItemInfo[] propertyInfos)
+        {
+            _customPropertyList.updateList(propertyInfos.Length, (i, rect) =>
+            {
+                var item = rect.GetComponent<PropertyItemField>();
+                item.updateItem(propertyInfos[i]);
+            },
+            rect =>
+            {
+                var item = rect.GetComponent<PropertyItemField>();
+                item.onClickButton += onClickCustomPropertyButtonCallback;
+                item.onClickDelete += onCustomPropertyDeletedCallback;
+                item.onValueChanged += onCustomPropertyChangedCallback;
+            },
+            rect =>
+            {
+                var item = rect.GetComponent<PropertyItemField>();
+                item.onClickButton -= onClickCustomPropertyButtonCallback;
+                item.onClickDelete -= onCustomPropertyDeletedCallback;
+                item.onValueChanged -= onCustomPropertyChangedCallback;
+            }
+            );
+        }
+        public void setCustomPropertyTypes(ActionNodeValueType[] types, string[] names)
+        {
+            _customPropertyDialog.setTypes(types, names);
         }
         #endregion
 
@@ -247,6 +303,10 @@ namespace UI
             _buffPageButton.onClick.AddListener(() => displayPage(_buffPage, _buffPageIndicator));
             _propertyPageButton.onClick.AddListener(() => displayPage(_propertyPage, _propertyPageIndicator));
 
+            // Custom Properties.
+            _addCustomPropertyButton.onClick.AddListener(() => onAddCustomProperty?.Invoke());
+            _customPropertyDialog.onConfirm += info => onConfirmCreateCustomProperty?.Invoke(info);
+
             _animationRefList.onAddButtonClicked += onAddAnimationRefButtonClickedCallback;
             _animationRefList.onAnimationChanged += onAnimationRefAnimationChangedCallback;
             _animationRefList.onSourcePositionChanged += onAnimationRefSourcePositionChangedCallback;
@@ -364,6 +424,21 @@ namespace UI
             onChangeExistLimitCount?.Invoke(_existLimitList.IndexOf(item.transform as RectTransform), count);
         }
         #endregion
+
+        #region 自定义属性
+        private void onClickCustomPropertyButtonCallback(string name, int[] indexes, ValueInputFieldButton button)
+        {
+            onClickCustomPropertyButton?.Invoke(name, indexes, button);
+        }
+        private void onCustomPropertyDeletedCallback(string name)
+        {
+            onRemoveCustomProperty?.Invoke(name);
+        }
+        private void onCustomPropertyChangedCallback(string name, object value)
+        {
+            onCustomPropertyChanged?.Invoke(name, value);
+        }
+        #endregion
         private void onClickEffectListItemEditButton(int index)
         {
             onClickEditEffectButton?.Invoke(index);
@@ -465,12 +540,22 @@ namespace UI
         public event Action<int, int> OnChangeModifierOperator;
         public event Action<int, object> OnChangeModifierValue;
         #endregion
+
         #region 持续限制
         public event Action<int> onRemoveExistLimit;
         public event Action onAddExistLimit;
         public event Action<int, int> onChangeExistLimitEvent;
         public event Action<int, int> onChangeExistLimitCount;
         #endregion
+
+        #region 自定义属性
+        public event Action onAddCustomProperty;
+        public event Action<PropertyItemInfo> onConfirmCreateCustomProperty;
+        public event Action<string, int[], ValueInputFieldButton> onClickCustomPropertyButton;
+        public event Action<string> onRemoveCustomProperty;
+        public event Action<string, object> onCustomPropertyChanged;
+        #endregion
+
         /// <summary>
         /// 当点击编辑效果按钮，参数为效果索引。
         /// </summary>
@@ -523,6 +608,14 @@ namespace UI
         List<RectTransform> _existLimitList;
         [SerializeField]
         Button _addExistLimitButton;
+
+        [Header("Custom Propertiess")]
+        [SerializeField]
+        ElementList _customPropertyList;
+        [SerializeField]
+        Button _addCustomPropertyButton;
+        [SerializeField]
+        CreatePropertyItemDialog _customPropertyDialog;
 
         [Header("Skin")]
         [SerializeField]

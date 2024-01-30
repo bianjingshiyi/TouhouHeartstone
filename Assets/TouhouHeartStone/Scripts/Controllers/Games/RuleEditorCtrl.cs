@@ -54,8 +54,9 @@ namespace Controllers
         #endregion
         #region 私有方法
         #region 生命周期
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             if (_ui == null)
             {
                 _ui = GetComponentInChildren<RuleEditorPanel>();

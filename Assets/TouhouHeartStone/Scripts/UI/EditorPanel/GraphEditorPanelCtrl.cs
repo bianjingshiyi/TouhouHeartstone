@@ -156,8 +156,9 @@ namespace UI
             _cardSelectPanel.enableCount(false);
             _cardSelectPanel.onClickCard += onClickCardSelectPanelCardCallback;
 
-            var customPropTypes = CardEditorCtrl.customPropTypes.Select(t => (t, game.editor.getNameByValueType(t))).ToArray();
-            setEffectPropertyTypes(customPropTypes);
+            var customPropTypes = EditorManager.getCustomPropTypes();
+            var customPropNames = game.editor.getCustomPropNames();
+            setEffectPropertyTypes(customPropTypes, customPropNames);
 
             hideCardSelectPanel();
 
@@ -538,9 +539,9 @@ namespace UI
         #endregion
 
         #region 效果属性
-        private void setEffectPropertyTypes((ActionNodeValueType type, string name)[] types)
+        private void setEffectPropertyTypes(ActionNodeValueType[] types, string[] names)
         {
-            _createEffectPropDialog.setTypes(types);
+            _createEffectPropDialog.setTypes(types, names);
         }
         private void showEffectPropertyDialogError(string message)
         {
@@ -732,6 +733,7 @@ namespace UI
         private ICardPoolReference[] getCardPoolEnv() => game.editor.getEnvCardPoolRefs();
         private ICardPoolReference getCardPoolReference(long cardPoolId) => game.card.getCardPoolReferenceInEnv(cardPoolId, getCardPoolEnv());
         #endregion
+
 
         #endregion
         #region 事件

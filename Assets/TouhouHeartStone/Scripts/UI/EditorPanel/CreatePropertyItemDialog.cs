@@ -7,11 +7,11 @@ namespace UI
 {
     public class CreatePropertyItemDialog : MonoBehaviour
     {
-        public void setTypes((ActionNodeValueType type, string name)[] types)
+        public void setTypes(ActionNodeValueType[] types, string[] names)
         {
             _propTypes = types;
             _typeDropdown.ClearOptions();
-            _typeDropdown.AddOptions(types.Select(a => a.name).ToList());
+            _typeDropdown.AddOptions(names.ToList());
         }
         public void display()
         {
@@ -54,7 +54,7 @@ namespace UI
             ActionNodeValueType type = ActionNodeValueType.integer;
             var index = _typeDropdown.value;
             if (index >= 0 && index < _propTypes.Length)
-                type = _propTypes[index].type;
+                type = _propTypes[index];
             var item = new PropertyItemInfo(_propertyName.text, new NodeValueType(type, _isArrayToggle.isOn ? 1 : 0));
             return item;
         }
@@ -64,7 +64,7 @@ namespace UI
         public event Action<PropertyItemInfo> onConfirm;
         #endregion
 
-        private (ActionNodeValueType type, string name)[] _propTypes;
+        private ActionNodeValueType[] _propTypes;
 
         [SerializeField]
         private InputField _propertyName;

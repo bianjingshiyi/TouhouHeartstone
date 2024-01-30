@@ -123,6 +123,21 @@ namespace Game
         }
         #endregion
 
+        #region 自定义属性
+        public static ActionNodeValueType[] getCustomPropTypes()
+        {
+            return customPropTypes;
+        }
+        public string[] getCustomPropNames()
+        {
+            return customPropTypes.Select(t => getNameByValueType(t)).ToArray();
+        }
+        public static bool isTypeCustomProp(ActionNodeValueType type)
+        {
+            return customPropTypes.Contains(type);
+        }
+        #endregion
+
         #endregion
         #region 私有方法
         #endregion
@@ -168,6 +183,16 @@ namespace Game
             { ActionNodeValueType.buffReference, EDITOR_TYPE_NAME_BUFF_REFERENCE },
             { ActionNodeValueType.pileNameCollection, StringTable.EDITOR_TYPE_NAME_PILE },
             { ActionNodeValueType.keywords, StringTable.EDITOR_TYPE_NAME_KEYWORDS_TYPE }
+        };
+
+        private static readonly ActionNodeValueType[] customPropTypes = new ActionNodeValueType[]
+        {
+            ActionNodeValueType.integer,
+            ActionNodeValueType.boolean,
+            ActionNodeValueType.text,
+            ActionNodeValueType.cardReference,
+            ActionNodeValueType.pileNameCollection,
+            ActionNodeValueType.keywords,
         };
 
         public static readonly List<string> editorKeywords = new List<string>

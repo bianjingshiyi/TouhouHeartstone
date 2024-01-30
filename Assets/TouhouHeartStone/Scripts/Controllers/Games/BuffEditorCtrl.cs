@@ -44,6 +44,8 @@ namespace Controllers
             // 持续限制
             _ui.initExistLimits(eventTriggerTimeEditorNames);
             updateExistLimits();
+            // 自定义属性
+            updateCustomProperties();
             // 皮肤
             await setCurSkinIndex(0);
 
@@ -77,19 +79,38 @@ namespace Controllers
             base.hide();
             AnimationManager.cleanUnusedVisualEffects(_curBuffSkin, _buffDefine.effectList);
         }
+        public override void markUnsaved()
+        {
+            base.markUnsaved();
+            _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(BUFF_EDITOR_TITLE)));
+        }
+        public override void clearUnsaved()
+        {
+            base.clearUnsaved();
+            _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(BUFF_EDITOR_TITLE)));
+        }
         #endregion
         #region 私有方法
         #region 生命周期
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             if (_ui == null)
             {
                 _ui = GetComponentInChildren<BuffEditorPanel>();
             }
+            _ui.init(getBuffDefinePropertyTypes());
             var keywords = EditorManager.editorKeywords;
             var keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray();
-            var fieldProps = ValueInputFieldProperties.keyword(keywordNames, keywords.ToArray());
-            _ui.init(getBuffDefinePropertyTypes(), fieldProps);
+            var fieldProps = new ValueInputFieldProperties()
+            {
+                keywordNames = keywordNames,
+                keywordValues = keywords.ToArray(),
+
+                pileNames = game.editor.getAllPileNames(),
+                pileValues = game.editor.getAllPileValues()
+            };
+            _ui.initValueInputFields(fieldProps);
             _ui.onChangeSkin += onChangeSkin;
             _ui.onChangeSkinName += onChangeSkinName;
             _ui.onClickDeleteSkinButton += onDeleteSkin;
@@ -128,6 +149,15 @@ namespace Controllers
             _ui.onRemoveExistLimit += onRemoveExistLimitCallback;
             _ui.onChangeExistLimitEvent += onChangeExistLimitEventCallback;
             _ui.onChangeExistLimitCount += onChangeExistLimitCountCallback;
+
+            var customPropTypes = EditorManager.getCustomPropTypes();
+            var customPropTypeNames = game.editor.getCustomPropNames();
+            _ui.setCustomPropertyTypes(customPropTypes, customPropTypeNames);
+            _ui.onAddCustomProperty += onAddCustomPropertyCallback;
+            _ui.onConfirmCreateCustomProperty += onConfirmCreateCustomPropertyCallback;
+            _ui.onRemoveCustomProperty += onRemoveCustomPropertyCallback;
+            _ui.onClickCustomPropertyButton += onClickCustomPropertyButtonCallback;
+            _ui.onCustomPropertyChanged += onCustomPropertyChangedCallback;
 
             _effectEditorCtrl.onCreateEffect += onCreateEffect;
             _effectEditorCtrl.OnGraphEdited += onGraphEdited;
@@ -427,6 +457,119 @@ namespace Controllers
             markUnsaved();
         }
         #endregion
+
+        #region 自定义属性
+        private void onAddCustomPropertyCallback()
+        {
+            _ui.setCustomPropertyDialogVisible(true);
+        }
+        private void onConfirmCreateCustomPropertyCallback(PropertyItemInfo item)
+        {
+            if (string.IsNullOrEmpty(item.propertyName))
+            {
+                string errorMessage = game.lang._(BUFF_CUSTOM_PROP_NAME_EMPTY);
+                _ui.showCustomPropertyDialogError(errorMessage);
+                return;
+            }
+            if (isPropertyNameTaken(item.propertyName))
+            {
+                string errorMessage = game.lang._(BUFF_CUSTOM_PROP_NAME_TAKEN);
+                _ui.showCustomPropertyDialogError(errorMessage);
+                return;
+            }
+
+            if (item.value == null)
+            {
+                item.value = item.type.getDefaultValue();
+            }
+            setBuffProp(item.propertyName, item.value);
+
+            markUnsaved();
+            updateCustomProperties();
+            _ui.setCustomPropertyDialogVisible(false);
+        }
+        private void onRemoveCustomPropertyCallback(string name)
+        {
+            _buffDefine.removeProp(name);
+            updateCustomProperties();
+            markUnsaved();
+        }
+        private void onClickCustomPropertyButtonCallback(string name, int[] itemIndexes, ValueInputFieldButton button)
+        {
+            switch (button)
+            {
+                case ValueInputFieldButton.CardButton:
+                    onClickPropertyCardButtonCallback(name, itemIndexes);
+                    break;
+                case ValueInputFieldButton.CardEditButton:
+                    onClickPropertyCardEditButtonCallback(name, itemIndexes);
+                    break;
+                case ValueInputFieldButton.BuffEditButton:
+                    onClickPropertyBuffEditButtonCallback(name, itemIndexes);
+                    break;
+            }
+        }
+        private async void onClickPropertyCardButtonCallback(string name, int[] itemIndexes)
+        {
+            var prop = _buffDefine.getProp(name);
+            if (prop == null)
+                return;
+            //打开卡牌选择界面
+            long poolId = _curCardPoolId;
+            if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
+            {
+                if (defRef.defineId != 0)
+                {
+                    poolId = defRef.cardPoolId;
+                }
+            }
+            var source = new CardSelectSourceCustomProperty()
+            {
+                propName = name,
+                propIndexes = itemIndexes
+            };
+            await displayCardSelectPanel(source, cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
+        }
+        private async void onClickPropertyCardEditButtonCallback(string name, int[] itemIndexes)
+        {
+            var prop = _buffDefine.getProp(name);
+            if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
+            {
+                await scene.editor.openReferedCard(defRef, setPropAction);
+
+                async void setPropAction(CardDefine cardDefine)
+                {
+                    var newDefRef = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
+                    if (prop.replaceListElementByIndexes(itemIndexes, newDefRef, out var newValue))
+                    {
+                        _buffDefine.setProp(name, newValue);
+                        markUnsaved();
+                        await updatePropertyItem(name);
+                    }
+                }
+            }
+        }
+        private async void onClickPropertyBuffEditButtonCallback(string name, int[] itemIndexes)
+        {
+            var prop = _buffDefine.getProp(name);
+            if (prop == null)
+                return;
+            if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
+            {
+                var poolRef = getCardPoolReference(defRef.cardPoolId);
+                if (game.card.tryGetBuffDefine(poolRef, defRef.defineId, out GeneratedBuffDefine buffDefine))
+                {
+                    await scene.editor.openBuffEditor(buffDefine);
+                }
+            }
+        }
+        private async void onCustomPropertyChangedCallback(string name, object value)
+        {
+            setBuffProp(name, value);
+            markUnsaved();
+            await updatePropertyItem(name);
+        }
+        #endregion
         private void onClickDeleteButton()
         {
             //询问玩家
@@ -480,7 +623,30 @@ namespace Controllers
         }
         #endregion
 
-        #endregion
+        protected override async void onCardSelected(ICardSelectSource source, CardDefine cardDefine)
+        {
+            base.onCardSelected(source, cardDefine);
+            switch (source)
+            {
+                case CardSelectSourceCustomProperty customProp:
+                    var propName = customProp.propName;
+                    var itemIndexes = customProp.propIndexes;
+                    var prop = _buffDefine.getProp<object>(propName);
+                    var defineRef = cardDefine.getDefineRef();
+                    if (prop.replaceListElementByIndexes(itemIndexes, defineRef, out var newProp))
+                    {
+                        setBuffProp(propName, newProp);
+                    }
+                    await updatePropertyItem(propName);
+                    markUnsaved();
+                    break;
+            }
+        }
+        protected override void setUIEffects(string[] names, int activeIndex)
+        {
+            _ui.setEffects(names, activeIndex);
+        }
+
         private void updateSkinNames()
         {
             BuffSkin[] skins = getCurrentLangSkins();
@@ -819,10 +985,72 @@ namespace Controllers
             return existLimit.count;
         }
         #endregion
-        protected override void setUIEffects(string[] names, int activeIndex)
+
+        #region 自定义属性
+        private void updateCustomProperties()
         {
-            _ui.setEffects(names, activeIndex);
+            List<PropertyItemInfo> infos = new List<PropertyItemInfo>();
+            var propNames = _buffDefine.getPropNames();
+            foreach (var propName in propNames)
+            {
+                var prop = _buffDefine.getProp(propName);
+                Type type = prop.GetType();
+                var valueType = type.getNodeValueType();
+                infos.Add(new PropertyItemInfo(propName, valueType)
+                {
+                    value = prop
+                });
+            }
+            _ui.updateCustomProperties(infos.ToArray());
         }
+        /// <summary>
+        /// 更新一项属性。
+        /// </summary>
+        /// <param name="name">属性名称。</param>
+        private async Task updatePropertyItem(string name)
+        {
+            PropertyItemInfo itemInfo;
+            PropertyItemField propertyItemField;
+            itemInfo = getPropertyInfo(name);
+            propertyItemField = _ui.getCustomPropertyItemField(name);
+            propertyItemField.updateItem(itemInfo);
+            await propertyItemField.valueInputField.setInputFieldCardByValue(itemInfo.value, getCardPoolReferenceEnv(), game);
+        }
+        /// <summary>
+        /// 属性名是否已经被使用。
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private bool isPropertyNameTaken(string name)
+        {
+            if (_buffDefine.hasProp(name) && _buffDefine.getProp(name) != null)
+                return true;
+            return false;
+        }
+        private PropertyItemInfo getPropertyInfo(string name)
+        {
+            var value = _buffDefine.getProp(name);
+            if (value == null)
+                return null;
+
+            var valueType = value.GetType();
+            var type = valueType.getNodeValueType();
+            if (!EditorManager.isTypeCustomProp(type.type))
+                return null;
+
+            var item = new PropertyItemInfo(name, type)
+            {
+                value = value
+            };
+            return item;
+        }
+        private void setBuffProp(string name, object value)
+        {
+            _buffDefine.setProp(name, value);
+        }
+
+
+        #endregion
         private void saveBuff()
         {
             game.card.removeBuffDefine(_curCardPoolId, _buffDefine.id);
@@ -837,22 +1065,11 @@ namespace Controllers
             scene.editor.markCardPoolUnsaved(_curCardPoolId);
             clearUnsaved();
         }
-        public override void markUnsaved()
-        {
-            base.markUnsaved();
-            _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(BUFF_EDITOR_TITLE)));
-        }
-        public override void clearUnsaved()
-        {
-            base.clearUnsaved();
-            _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(BUFF_EDITOR_TITLE)));
-        }
+        #endregion
 
-        BuffEditorPanel _ui;
 
         #region 属性字段
-        [SerializeField]
-        Button _cancelCardPoolSelectButton;
+        BuffEditorPanel _ui;
 
         [TranslateMsg("游戏中卡牌的自定义属性的名称")]
         public const string GAME_CARD_PROP_NAME_CUSTOM_PROPERTY = "自定义属性";
@@ -868,6 +1085,10 @@ namespace Controllers
         public const string BUFF_WARNING_OPTION_DONT_SAVE = "不保存";
         [TranslateMsg("尝试退出一个增益的编辑页面，但没有保存情况下的按钮名称")]
         public const string BUFF_WARNING_OPTION_CANCEL = "取消";
+        [TranslateMsg("尝试添加重复名称的自定义属性的错误提示")]
+        public const string BUFF_CUSTOM_PROP_NAME_TAKEN = "该属性名已被使用！";
+        [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]
+        public const string BUFF_CUSTOM_PROP_NAME_EMPTY = "请输入属性名！";
 
         [TranslateMsg("尝试添加重复名称的特效引用的错误提示")]
         public const string ANIM_REF_KEY_TAKEN = "该名称已被使用！";

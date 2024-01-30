@@ -35,6 +35,14 @@ namespace UI
         {
             return getElement(index)?.GetComponent<T>();
         }
+        public RectTransform getTemplate()
+        {
+            return _template;
+        }
+        public T getTemplate<T>() where T : Component
+        {
+            return getTemplate()?.GetComponent<T>();
+        }
         public IEnumerable<RectTransform> getElements()
         {
             return _itemList;

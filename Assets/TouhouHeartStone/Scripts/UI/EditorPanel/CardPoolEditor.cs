@@ -1,10 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Controllers;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -13,6 +16,7 @@ namespace UI
     /// </summary>
     abstract class CardPoolEditor : GameObjectCtrl<MainSceneCtrl>
     {
+        #region 公有方法
         public abstract Task display(CardPoolDisplayPage info);
         public virtual void hide()
         {
@@ -30,8 +34,35 @@ namespace UI
             if (displayInfo != null)
                 displayInfo.unsaved = false;
         }
-        #region 事件回调
         #endregion
+
+        #region 私有方法
+
+        #region 生命周期
+        protected virtual void Awake()
+        {
+            _cardPoolViewPanelCtrl.onClickCard += onClickCardPoolViewCard;
+            _cancelCardPoolSelectButton.onClick.AddListener(onClickCancelCardPoolSelectButton);
+        }
+        #endregion
+
+        #region 事件回调
+        private void onClickCardPoolViewCard(CardDefine cardDefine)
+        {
+            _cardPoolViewPanelObj.SetActive(false);
+            if (_cardSelectSource == null)
+                return;
+            onCardSelected(_cardSelectSource, cardDefine);
+            _cardSelectSource = null;
+        }
+        private void onClickCancelCardPoolSelectButton()
+        {
+            //打开卡牌选择界面
+            _cardPoolViewPanelObj.SetActive(false);
+            _cardSelectSource = null;
+        }
+        #endregion
+
         #region 效果
         protected abstract void setUIEffects(string[] names, int activeIndex);
         protected void updateEffectList(GeneratedEffect[] effects)
@@ -77,6 +108,26 @@ namespace UI
         }
         #endregion
 
+        #region 选卡
+        protected virtual void onCardSelected(ICardSelectSource source, CardDefine cardDefine)
+        {
+
+        }
+        protected async Task displayCardSelectPanel(ICardSelectSource source, long[] cardPoolFiltersId = null, DefineReference[] characterRefs = null, Predicate<CardDefine> cardFilter = null)
+        {
+            _cardSelectSource = source;
+            var cardPoolsRange = getCardPoolReferenceEnv()
+                .Where(poolRef => game.card.isLocalCardPoolRefExists(poolRef))
+                .Select(r => r.CardPoolID)
+                .ToArray();
+            await _cardPoolViewPanelCtrl.display(cardPoolsRange, cardPoolFiltersId, characterRefs, cardFilter);
+            _cardPoolViewPanelObj.SetActive(true);
+        }
+        #endregion
+
+        #endregion
+
+        #region 属性字段
         public bool hasUnsavedChanges { get; protected set; }
         public CardPoolDisplayPage displayInfo { get; protected set; }
         [TranslateMsg("效果默认名称")]
@@ -87,8 +138,30 @@ namespace UI
         protected EffectEditorCtrl _effectEditorCtrl;
         [SerializeField]
         protected GraphEditorPanelCtrl _graphEditor;
+        [SerializeField]
+        GameObject _cardPoolViewPanelObj;
+        [SerializeField]
+        CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
+        [SerializeField]
+        Button _cancelCardPoolSelectButton;
+        private ICardSelectSource _cardSelectSource;
 
         protected long _curCardPoolId;
+        #endregion
+    }
+    public interface ICardSelectSource
+    {
+    }
+    public struct CardSelectSourceCustomProperty : ICardSelectSource
+    {
+        /// <summary>
+        /// 当前正在选择的卡牌引用属性的属性名称。
+        /// </summary>
+        public string propName;
+        /// <summary>
+        /// 当前正在选择的卡牌引用属性的列表索引。
+        /// </summary>
+        public int[] propIndexes;
     }
     public class CardPoolDisplayPage
     {

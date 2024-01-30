@@ -254,11 +254,6 @@ namespace UI
             _descEndEditButton.gameObject.SetActive(false);
             _descInputField.gameObject.SetActive(false);
         }
-
-        public void displayCardSelectPanel(bool display)
-        {
-            _cardPoolViewPanelObj.SetActive(display);
-        }
         public void showEffectListItemInputField(int index, string value)
         {
             _effectList.showItemInputField(index, value);
@@ -267,9 +262,9 @@ namespace UI
         {
             _effectList.hideItemInputField(index);
         }
-        public void setCustomPropertyTypes((ActionNodeValueType type, string name)[] types)
+        public void setCustomPropertyTypes(ActionNodeValueType[] types, string[] names)
         {
-            _createCustomPropDialog.setTypes(types);
+            _createCustomPropDialog.setTypes(types, names);
         }
         public void displayCustomPropertyDialog(bool display)
         {
@@ -817,8 +812,6 @@ namespace UI
         Dropdown _languageDropdown;
         [SerializeField]
         EffectList _effectList;
-        [SerializeField]
-        GameObject _cardPoolViewPanelObj;
 
 
         [Header("Edit Buttons")]

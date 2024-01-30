@@ -97,15 +97,12 @@ namespace Controllers
             base.hide();
             AnimationManager.cleanUnusedVisualEffects(_curCardSkin, _cardDefine.getGeneratedEffects());
         }
-        public static bool isTypeCustomProp(ActionNodeValueType type)
-        {
-            return customPropTypes.Contains(type);
-        }
         #endregion
         #region 私有方法
         #region 生命周期
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             if (_ui == null)
             {
                 _ui = GetComponentInChildren<CardEditorPanel>();
@@ -200,12 +197,10 @@ namespace Controllers
             _ui.onSkillRefEditButtonClicked += onSkillRefEditButtonClicked;
             _ui.onChangeTag += onChangeTag;
 
-            _cardPoolViewPanelCtrl.onClickCard += onClickCardPoolViewCard;
-            _cancelCardPoolSelectButton.onClick.AddListener(onClickCancelCardPoolSelectButton);
-
             // Card Properties.
-            var customPropTypes = CardEditorCtrl.customPropTypes.Select(t => (t, game.editor.getNameByValueType(t))).ToArray();
-            _ui.setCustomPropertyTypes(customPropTypes);
+            var customPropTypes = EditorManager.getCustomPropTypes();
+            var customPropTypeNames = game.editor.getCustomPropNames();
+            _ui.setCustomPropertyTypes(customPropTypes, customPropTypeNames);
             _ui.onConfirmCreateCustomProperty += onConfirmCreateCustomPropertyCallback;
             _ui.onDeleteCustomProperty += onDeleteCustomPropertyCallback;
 
@@ -589,8 +584,8 @@ namespace Controllers
             {
                 poolId = skillRef.cardPoolId;
             }
-            await displayCardSelectPanel(cardPoolFiltersId: new long[] { poolId }, cardFilter: card => card.isSkill());
-            _cardSelectTarget = CardSelectTarget.Skill;
+            var source = new CardSelectSourceSkill();
+            await displayCardSelectPanel(source, cardPoolFiltersId: new long[] { poolId }, cardFilter: card => card.isSkill());
         }
         private async void onSkillRefEditButtonClicked()
         {
@@ -602,43 +597,6 @@ namespace Controllers
                 await setSkillRef(cardDefine.getDefineRef());
             });
         }
-        private void onClickCancelCardPoolSelectButton()
-        {
-            //打开卡牌选择界面
-            _ui.displayCardSelectPanel(false);
-            _cardSelectTarget = CardSelectTarget.None;
-            _curCardSeekingPropName = null;
-            _curCardSeekingPropIndexes = null;
-            _curCardSeekingPropIsCustom = false;
-        }
-        private async void onClickCardPoolViewCard(CardDefine cardDefine)
-        {
-            switch (_cardSelectTarget)
-            {
-                case CardSelectTarget.Skill:
-                    markUnsaved();
-                    await setSkillRef(cardDefine.getDefineRef());
-                    break;
-                case CardSelectTarget.Property:
-                    if (_curCardSeekingPropName == null)
-                        break;
-                    var itemIndexes = _curCardSeekingPropIndexes;
-                    var prop = _cardDefine.getProp<object>(_curCardSeekingPropName);
-                    var defineRef = cardDefine.getDefineRef();
-                    if (prop.replaceListElementByIndexes(itemIndexes, defineRef, out var newProp))
-                    {
-                        setCardProp(_curCardSeekingPropIsCustom, _curCardSeekingPropName, newProp);
-                    }
-                    updatePropertyItem(_curCardSeekingPropIsCustom, _curCardSeekingPropName);
-                    _curCardSeekingPropName = null;
-                    _curCardSeekingPropIndexes = null;
-                    _curCardSeekingPropIsCustom = false;
-                    markUnsaved();
-                    break;
-            }
-            _ui.displayCardSelectPanel(false);
-        }
-
         private void onConfirmCreateCustomPropertyCallback(PropertyItemInfo item)
         {
             if (string.IsNullOrEmpty(item.propertyName))
@@ -699,11 +657,12 @@ namespace Controllers
                     poolId = defRef.cardPoolId;
                 }
             }
-            await displayCardSelectPanel(cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
-            _cardSelectTarget = CardSelectTarget.Property;
-            _curCardSeekingPropName = name;
-            _curCardSeekingPropIndexes = itemIndexes;
-            _curCardSeekingPropIsCustom = isCustom;
+            var source = new CardSelectSourceCustomProperty()
+            {
+                propName = name,
+                propIndexes = itemIndexes
+            };
+            await displayCardSelectPanel(source, cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
         }
         private async void onClickPropertyCardEditButtonCallback(bool isCustom, string name, int[] itemIndexes)
         {
@@ -764,6 +723,30 @@ namespace Controllers
         #endregion
 
         #endregion
+        protected override async void onCardSelected(ICardSelectSource source, CardDefine cardDefine)
+        {
+            base.onCardSelected(source, cardDefine);
+            switch (source)
+            {
+                case CardSelectSourceSkill:
+                    markUnsaved();
+                    await setSkillRef(cardDefine.getDefineRef());
+                    break;
+                case CardSelectSourceCustomProperty customProp:
+                    var propName = customProp.propName;
+                    var itemIndexes = customProp.propIndexes;
+                    var prop = _cardDefine.getProp<object>(propName);
+                    var defineRef = cardDefine.getDefineRef();
+                    var isCustom = !isPropertyNameBuiltin(propName);
+                    if (prop.replaceListElementByIndexes(itemIndexes, defineRef, out var newProp))
+                    {
+                        setCardProp(isCustom, propName, newProp);
+                    }
+                    updatePropertyItem(isCustom, propName);
+                    markUnsaved();
+                    break;
+            }
+        }
         private async Task<CardDefine[]> getSelectableCharacters()
         {
             List<CardDefine> cardList = new List<CardDefine>();
@@ -841,15 +824,6 @@ namespace Controllers
         {
             clearUnsaved();
             await scene.editor.closeEditor(forceSave);
-        }
-        private async Task displayCardSelectPanel(long[] cardPoolFiltersId = null, DefineReference[] characterRefs = null, Predicate<CardDefine> cardFilter = null)
-        {
-            var cardPoolsRange = getCardPoolReferenceEnv()
-                .Where(poolRef => game.card.isLocalCardPoolRefExists(poolRef))
-                .Select(r => r.CardPoolID)
-                .ToArray();
-            await _cardPoolViewPanelCtrl.display(cardPoolsRange, cardPoolFiltersId, characterRefs, cardFilter);
-            _ui.displayCardSelectPanel(true);
         }
         #endregion
 
@@ -1042,7 +1016,7 @@ namespace Controllers
 
             var valueType = value.GetType();
             var type = valueType.getNodeValueType();
-            if (!isTypeCustomProp(type.type))
+            if (!EditorManager.isTypeCustomProp(type.type))
                 return null;
 
             var item = new PropertyItemInfo(name, type)
@@ -1071,7 +1045,7 @@ namespace Controllers
                 return null;
             var type = info.type;
             NodeValueType valueType = new NodeValueType(ActionNodeValueType.boolean);
-            if (type.tryGetValueTypeByType(out var t) && isTypeCustomProp(t.type))
+            if (type.tryGetValueTypeByType(out var t) && EditorManager.isTypeCustomProp(t.type))
             {
                 valueType = t;
             }
@@ -1116,10 +1090,6 @@ namespace Controllers
         CardEditorPanel _ui;
         string[] _types;
 
-        [SerializeField]
-        CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
-        [SerializeField]
-        Button _cancelCardPoolSelectButton;
 
 
         [TranslateMsg("尝试删除卡牌的警告")]
@@ -1149,7 +1119,6 @@ namespace Controllers
         [TranslateMsg("尝试添加空名称的特效引用的错误提示")]
         public const string ANIM_REF_KEY_EMPTY = "请输入特效引用名！";
 
-        private CardSelectTarget _cardSelectTarget;
         private static readonly Dictionary<string, (Action<CardDefine, object> setter, Func<CardDefine, object> getter)> keywordActions =
             new Dictionary<string, (Action<CardDefine, object> setter, Func<CardDefine, object> getter)>()
         {
@@ -1164,15 +1133,6 @@ namespace Controllers
                 )
             }
 
-        };
-        public static readonly ActionNodeValueType[] customPropTypes = new ActionNodeValueType[]
-        {
-            ActionNodeValueType.integer,
-            ActionNodeValueType.boolean,
-            ActionNodeValueType.text,
-            ActionNodeValueType.cardReference,
-            ActionNodeValueType.pileNameCollection,
-            ActionNodeValueType.keywords,
         };
 
 
@@ -1229,18 +1189,6 @@ namespace Controllers
         string[] _races;
         string[] _tags;
         /// <summary>
-        /// 当前正在选择的卡牌引用属性的属性名称。
-        /// </summary>
-        string _curCardSeekingPropName;
-        /// <summary>
-        /// 当前正在选择的卡牌引用属性的列表索引。
-        /// </summary>
-        int[] _curCardSeekingPropIndexes;
-        /// <summary>
-        /// 当前正在选择的卡牌引用属性的卡牌属性，是否是自定义属性。
-        /// </summary>
-        bool _curCardSeekingPropIsCustom;
-        /// <summary>
         /// 正在编辑的卡牌定义。
         /// </summary>
         CardDefine _cardDefine;
@@ -1253,5 +1201,8 @@ namespace Controllers
         /// </summary>
         List<CardSkinData> _cardSkins = new List<CardSkinData>();
         CardDefine[] _selectableCharacters;
+    }
+    public struct CardSelectSourceSkill : ICardSelectSource
+    {
     }
 }
