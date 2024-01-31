@@ -9,7 +9,6 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Controllers
 {
@@ -21,53 +20,58 @@ namespace Controllers
         /// </summary>
         public async Task display(long cardPoolId, CardDefine cardDefine, CardSkinData[] skins)
         {
+            // 初始化属性。
             _selectableCharacters = await getSelectableCharacters();
             _curCardPoolId = cardPoolId;
             _cardDefine = cardDefine;
             _cardSkins.Clear();
             _cardSkins.AddRange(skins);
-            gameObject.SetActive(true);
-            updateSkinNames();
+
+            gameObject.SetActive(true); // 触发Awake。
             _ui.reset();
+
+            // 基础页面
             _ui.setId(cardDefine.id);
-            _ui.setType(Array.IndexOf(_types, cardDefine.type), cardDefine.type);
+            _ui.setType(Array.IndexOf(_cardTypes, cardDefine.type), cardDefine.type);
             _ui.setIsToken(cardDefine.isToken());
-            bool[] tagsValue = new bool[_tags.Length];
-            for (int i = 0; i < _tags.Length; i++)
-            {
-                tagsValue[i] = cardDefine.getTags().Contains(_tags[i]);
-            }
             _ui.setTags(cardDefine.getTags());
-            string[] charactersName = new string[_selectableCharacters.Length + 1];
-            charactersName[0] = StringTable.CARDVIEW_CHARACTER_NEUTRAL;
-            for (int i = 1; i < charactersName.Length; i++)
+            updateSkinNames();
+            // 人物，中立为0，有角色则为index+1
+            string[] charactersName = _selectableCharacters.Select(c => game.card.getCardSkin(c).name).Prepend(game.lang._(StringTable.CARDVIEW_CHARACTER_NEUTRAL)).ToArray();
+            int characterIndex = Array.FindIndex(_selectableCharacters, c =>
             {
-                charactersName[i] = game.card.getCardSkin(_selectableCharacters[i - 1]).name;
-            }
+                var charRef = cardDefine.getCharacterRef();
+                return c.cardPoolId == charRef.cardPoolId && c.id == charRef.defineId;
+            }) + 1;
             _ui.setSelectableCharacters(charactersName);
-            //中立为0，有角色则为index+1
-            _ui.setCharacter(Array.FindIndex(_selectableCharacters, c =>
-                c.cardPoolId == cardDefine.getCharacterRef().cardPoolId &&
-                c.id == cardDefine.getCharacterRef().defineId) + 1);
-            _ui.setCost(cardDefine.getProp<int>(DEFINE.COST).ToString());
-            _ui.setAttack(cardDefine.getProp<int>(DEFINE.ATTACK).ToString());
-            _ui.setLife(cardDefine.getProp<int>(DEFINE.LIFE).ToString());
-            string[] tags = cardDefine.getProp<string[]>(DEFINE.TAGS);
+            _ui.setCharacter(characterIndex);
+            // 卡牌面板
+            _ui.setCost(cardDefine.getCost().ToString());
+            _ui.setAttack(cardDefine.getAttack().ToString());
+            _ui.setLife(cardDefine.getLife().ToString());
+            // 标签
+            string[] tags = cardDefine.getTags();
+            var tagIndex = 0;
+            var tagName = string.Empty;
             if (tags != null && tags.Length > 0)
             {
-                int index = Array.IndexOf(_races, tags[0]);
-                if (index < 0)
-                    index = 0;
-                _ui.setRace(index, tags[0]);
+                tagIndex = Array.IndexOf(_races, tags[0]);
+                tagName = tags[0];
             }
-            else
-                _ui.setRace(0, _races[0]);
-            GeneratedEffect[] effects = cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
+            if (tagIndex < 0)
+                tagIndex = 0;
+            _ui.setRace(tagIndex, tagName);
+
             await updateCardType();
             await resetSkin();
+            // 自定义属性。
+            var buffProps = game.editor.getBuffInputProperties();
+            _ui.initValueInputFieldProperties(buffProps);
+            await updateCustomProperties();
+            await updateKeywords();
 
-            updateCustomProperties();
-            updateKeywords();
+            // 效果。
+            GeneratedEffect[] effects = cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
             _effectEditorCtrl.hideActionGraph();
             if (effects.Length > 0)
             {
@@ -75,9 +79,6 @@ namespace Controllers
             }
             _effectEditorCtrl.updateEventTriggerTimes();
             updateEffectList(effects);
-
-            var buffProps = game.editor.getBuffInputProperties();
-            _ui.initValueInputFieldProperties(buffProps);
 
             _graphEditor.display(_curCardPoolId);
         }
@@ -100,6 +101,16 @@ namespace Controllers
         {
             base.hide();
             AnimationManager.cleanUnusedVisualEffects(_curCardSkin, _cardDefine.getGeneratedEffects());
+        }
+        public override void markUnsaved()
+        {
+            base.markUnsaved();
+            _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(CARD_EDITOR_TITLE)));
+        }
+        public override void clearUnsaved()
+        {
+            base.clearUnsaved();
+            _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(CARD_EDITOR_TITLE)));
         }
         #endregion
 
@@ -124,39 +135,32 @@ namespace Controllers
                 pileValues = game.editor.getAllPileValues(),
             };
             _ui.initValueInputFieldProperties(fieldProps);
-
+            
             string[] typeNames = game.editor.getCardTypeNames();
-            _types = game.editor.getCardTypes();
+            _cardTypes = game.editor.getCardTypes();
             _ui.initTypes(typeNames);
+            var lanaguages = game.langManager.getLanguages();
+            var languageNames = lanaguages.Select(l => game.langManager.getString(game.ui.getTranslateNameForLanguage(l))).ToArray();
+            _ui.initLanguages(languageNames);
+            _ui.initTags(_raceNames.Select(n => game.lang._(n)).ToArray());
+            _ui.setEffectTypes(game.card.getEffectNames());
+            
+            var customPropTypes = EditorManager.getCustomPropTypes();
+            var customPropTypeNames = game.editor.getCustomPropNames();
+            _ui.setCustomPropertyTypes(customPropTypes, customPropTypeNames);
+
+            // 事件回调
+            // 基础页面
             _ui.onChangeSkin += onChangeSkin;
             _ui.onChangeSkinName += onChangeSkinName;
             _ui.onClickDeleteSkinButton += onDeleteSkin;
-            string[] languages = game.langManager.getLanguages();
-            for (int i = 0; i < languages.Length; i++)
-            {
-                languages[i] = game.langManager.getString(game.ui.getTranslateNameForLanguage(languages[i]));
-            }
-            _ui.initLanguages(languages);
             _ui.onChangeLanguage += onChangeLanguage;
             _ui.onChangeType += onChangeType;
             _ui.onIsTokenToggleValueChanged += onIsTokenToggleValueChanged;
-            string[] tagNames = new string[]
-            {
-                StringTable.GAME_TAG_METAL,
-                StringTable.GAME_TAG_WOOD,
-                StringTable.GAME_TAG_WATER,
-                StringTable.GAME_TAG_FIRE,
-                StringTable.GAME_TAG_EARTH,
-            };
-            _tags = new string[]
-            {
-                TAG.METAL,
-                TAG.WOOD,
-                TAG.WATER,
-                TAG.FIRE,
-                TAG.EARTH
-            };
             _ui.onChangeCharacter += onChangeCharacter;
+            _ui.onSaveCardFaceToImage += onSaveCardFaceToImage;
+
+            // 卡面。
             _ui.onChangeCost += onChangeCost;
             _ui.onChangeName += onChangeName;
             _ui.onChangeSubName += onChangeSubName;
@@ -164,68 +168,44 @@ namespace Controllers
             _ui.onChangeDesc += onChangeDesc;
             _ui.onChangeAttack += onChangeAttack;
             _ui.onChangeLife += onChangeLife;
-            _ui.onSaveCardFaceToImage += onSaveCardFaceToImage;
-            _races = new string[]
-            {
-                null,
-                TAG.BEAST,
-                TAG.DEMON,
-                TAG.ELEMENT,
-                TAG.FAIRY,
-                TAG.GOD,
-                TAG.MACHINE,
-                TAG.GHOST
-            };
-            string[] racesName = new string[]
-            {
-                string.Empty,
-                game.langManager.getString(StringTable.GAME_RACE_BEAST),
-                game.langManager.getString(StringTable.GAME_RACE_DEMON),
-                game.langManager.getString(StringTable.GAME_RACE_ELEMENT),
-                game.langManager.getString(StringTable.GAME_RACE_FAIRY),
-                game.langManager.getString(StringTable.GAME_RACE_GOD),
-                game.langManager.getString(StringTable.GAME_RACE_MACHINE),
-                game.langManager.getString(StringTable.GAME_RACE_GHOST)
-            };
-            _ui.initTags(racesName);
             _ui.onChangeRace += onChangeRace;
+
+            // 效果。
             _ui.onClickEditEffectButton += onClickEditEffectButton;
             _ui.onClickRemoveEffectButton += onClickRemoveEffectButton;
             _ui.onClickAddEffectMenu += onClickAddEffectMenu;
             _ui.onEffectListItemInputFieldEndEdit += onEffectListItemInputFieldEndEditCallback;
-            _ui.setEffectTypes(game.card.getEffectNames());
+            _effectEditorCtrl.onCreateEffect += onCreateEffect;
+            _effectEditorCtrl.OnGraphEdited += onGraphEdited;
 
+            // 侧边栏。
             _ui.onClickDeleteButton += onClickDeleteCardButton;
             _ui.onClickCopyCardButton += onClickCopyCardButton;
             _ui.onClickSaveButton += onClickSaveButton;
             _ui.onClickCloseButton += onClickCloseButton;
-            _ui.onClickSkillRefButton += onClickSkillRefButton;
-            _ui.onSkillRefEditButtonClicked += onSkillRefEditButtonClicked;
-            _ui.onChangeTag += onChangeTag;
 
-            // Card Properties.
-            var customPropTypes = EditorManager.getCustomPropTypes();
-            var customPropTypeNames = game.editor.getCustomPropNames();
+            // 属性页面。
+            _ui.onClickSkillRefButton += onClickSkillRefButton;
+            _ui.onChangeTag += onChangeTag;
+            _ui.onSkillRefEditButtonClicked += onSkillRefEditButtonClicked;
+
+            // 选卡。
+            // 卡牌属性。
             _ui.setCustomPropertyTypes(customPropTypes, customPropTypeNames);
             _ui.onConfirmCreateCustomProperty += onConfirmCreateCustomPropertyCallback;
             _ui.onDeleteCustomProperty += onDeleteCustomPropertyCallback;
-
             _ui.onPropertyValueChanged += onPropertyValueChangedCallback;
             _ui.onClickPropertyButton += onClickPropertyButtonCallback;
 
-            _effectEditorCtrl.onCreateEffect += onCreateEffect;
-            _effectEditorCtrl.OnGraphEdited += onGraphEdited;
-
+            // 节点图。
             _graphEditor.onOpenNodeAnimationDialog += onOpenNodeAnimationDialogCallback;
             _graphEditor.onAnimationPropChanged += onNodeAnimationPropChangedCallback;
         }
         #endregion
 
         #region 事件回调
-        private void onGraphEdited()
-        {
-            markUnsaved();
-        }
+
+        #region 基础页面
         private async void onChangeSkin(int skinIndex)
         {
             markUnsaved();
@@ -282,8 +262,8 @@ namespace Controllers
         private async void onChangeType(int typeIndex)
         {
             markUnsaved();
-            _cardDefine.type = _types[typeIndex];
-            _ui.setType(typeIndex, _types[typeIndex]);
+            _cardDefine.type = _cardTypes[typeIndex];
+            _ui.setType(typeIndex, _cardTypes[typeIndex]);
             await updateCardType();
         }
         private void onIsTokenToggleValueChanged(bool value)
@@ -305,6 +285,30 @@ namespace Controllers
                     _selectableCharacters[characterIndex - 1].id));
             }
         }
+        private async void onSaveCardFaceToImage()
+        {
+            //使用另一个摄像机对卡牌进行拍摄
+            try
+            {
+                var success = await game.ui.cardshot(_cardDefine, _curCardSkin);
+                if (success)
+                {
+                    var title = game.lang._(StringTable.HINT_TITLE);
+                    var content = game.lang._(CARD_PICTURE_EXPORTED);
+                    game.ui.dialog.ShowConfirm(title, content);
+                }
+            }
+            catch (Exception)
+            {
+                var title = game.lang._(StringTable.ERROR);
+                var content = game.lang._(CARD_PICTURE_EXPORT_FAILED);
+                game.ui.dialog.ShowConfirm(title, content);
+                throw;
+            }
+        }
+        #endregion
+
+        #region 卡面
         /// <summary>
         /// 当用户更改花费
         /// </summary>
@@ -414,7 +418,31 @@ namespace Controllers
             _ui.setTags(value);
             _ui.setRace(index, value.Length > 0 ? value[0] : string.Empty);
         }
+        #endregion
 
+        #region 属性页面
+        private async void onClickSkillRefButton()
+        {
+            //打开卡牌选择界面
+            long poolId = _curCardPoolId;
+            var skillRef = _cardDefine.getSkillRef();
+            if (skillRef.defineId != 0)
+            {
+                poolId = skillRef.cardPoolId;
+            }
+            var source = new CardSelectSourceSkill();
+            await displayCardSelectPanel(source, cardPoolFiltersId: new long[] { poolId }, cardFilter: card => card.isSkill());
+        }
+        private async void onSkillRefEditButtonClicked()
+        {
+            //打开卡牌选择界面
+            var skillRef = _cardDefine.getSkillRef();
+            await scene.editor.openReferedCard(skillRef, async (cardDefine) =>
+            {
+                markUnsaved();
+                await setSkillRef(cardDefine.getDefineRef());
+            });
+        }
         private void onChangeTag(string text)
         {
             markUnsaved();
@@ -433,28 +461,120 @@ namespace Controllers
                 _ui.setRace(-1, string.Empty);
             }
         }
-        private async void onSaveCardFaceToImage()
+        #endregion
+
+        #region 自定义属性
+        private async void onConfirmCreateCustomPropertyCallback(PropertyItemInfo item)
         {
-            //使用另一个摄像机对卡牌进行拍摄
-            try
+            if (string.IsNullOrEmpty(item.propertyName))
             {
-                var success = await game.ui.cardshot(_cardDefine, _curCardSkin);
-                if (success)
-                {
-                    var title = game.lang._(StringTable.HINT_TITLE);
-                    var content = game.lang._(CARD_PICTURE_EXPORTED);
-                    game.ui.dialog.ShowConfirm(title, content);
-                }
+                string errorMessage = game.lang._(CARD_CUSTOM_PROP_NAME_EMPTY);
+                _ui.showCustomPropertyDialogError(errorMessage);
+                return;
             }
-            catch (Exception)
+            if (isPropertyNameTaken(item.propertyName))
             {
-                var title = game.lang._(StringTable.ERROR);
-                var content = game.lang._(CARD_PICTURE_EXPORT_FAILED);
-                game.ui.dialog.ShowConfirm(title, content);
-                throw;
+                string errorMessage = game.lang._(CARD_CUSTOM_PROP_NAME_TAKEN);
+                _ui.showCustomPropertyDialogError(errorMessage);
+                return;
+            }
+            var value = item.value;
+            if (value == null)
+            {
+                value = item.type.getDefaultValue();
+            }
+            value = value.cloneValue();
+            setCardProp(true, item.propertyName, value);
+
+            markUnsaved();
+            _ui.displayCustomPropertyDialog(false);
+            await updateCustomProperties();
+        }
+        private void onPropertyValueChangedCallback(bool isCustom, string name, object value)
+        {
+            value = value.cloneValue();
+            setCardProp(isCustom, name, value);
+            markUnsaved();
+            updatePropertyItem(isCustom, name);
+        }
+        private void onClickPropertyButtonCallback(bool isCustom, string name, int[] itemIndexes, ValueInputFieldButton button)
+        {
+            switch (button)
+            {
+                case ValueInputFieldButton.CardButton:
+                    onClickPropertyCardButtonCallback(isCustom, name, itemIndexes);
+                    break;
+                case ValueInputFieldButton.CardEditButton:
+                    onClickPropertyCardEditButtonCallback(isCustom, name, itemIndexes);
+                    break;
+                case ValueInputFieldButton.BuffEditButton:
+                    onClickPropertyBuffEditButtonCallback(isCustom, name, itemIndexes);
+                    break;
             }
         }
-        #region Effects
+        private async void onClickPropertyCardButtonCallback(bool isCustom, string name, int[] itemIndexes)
+        {
+            var prop = _cardDefine.getProp<object>(name);
+            if (prop == null)
+                return;
+            //打开卡牌选择界面
+            long poolId = _curCardPoolId;
+            if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
+            {
+                if (defRef.defineId != 0)
+                {
+                    poolId = defRef.cardPoolId;
+                }
+            }
+            var source = new CardSelectSourceCustomProperty()
+            {
+                propName = name,
+                propIndexes = itemIndexes
+            };
+            await displayCardSelectPanel(source, cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);        
+        }
+        private async void onClickPropertyCardEditButtonCallback(bool isCustom, string name, int[] itemIndexes)
+        {
+            var prop = _cardDefine.getProp<object>(name);
+            if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
+            {
+                await scene.editor.openReferedCard(defRef, setPropAction);
+
+                void setPropAction(CardDefine cardDefine)
+                {
+                    var newDefRef = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
+                    if (prop.replaceListElementByIndexes(itemIndexes, newDefRef, out var newValue))
+                    {
+                        setCardProp(isCustom, name, newValue);
+                        markUnsaved();
+                        updatePropertyItem(isCustom, name);
+                    }
+                }
+            }
+        }
+        private async void onClickPropertyBuffEditButtonCallback(bool isCustom, string name, int[] itemIndexes)
+        {
+            var prop = _cardDefine.getProp<object>(name);
+            if (prop == null)
+                return;
+            if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
+            {
+                var poolRef = getCardPoolReference(defRef.cardPoolId);
+                if (game.card.tryGetBuffDefine(poolRef, defRef.defineId, out GeneratedBuffDefine buffDefine))
+                {
+                    await scene.editor.openBuffEditor(buffDefine);
+                }
+            }
+        }
+        private async void onDeleteCustomPropertyCallback(string name)
+        {
+            _cardDefine.removeProp(name);
+            markUnsaved();
+            await updateCustomProperties();
+        }
+        #endregion
+
+        #region 效果
         private async void onCreateEffect(GeneratedEffect effect)
         {
             markUnsaved();
@@ -524,9 +644,9 @@ namespace Controllers
             _ui.hideEffectListItemInputField(index);
             updateEffectList(effects.ToArray());
         }
-        #endregion Effects
+        #endregion
 
-
+        #region 侧边栏
         private void onClickDeleteCardButton()
         {
             //询问玩家
@@ -582,140 +702,16 @@ namespace Controllers
                 await exit();
             }
         }
-        private async void onClickSkillRefButton()
-        {
-            //打开卡牌选择界面
-            long poolId = _curCardPoolId;
-            var skillRef = _cardDefine.getSkillRef();
-            if (skillRef.defineId != 0)
-            {
-                poolId = skillRef.cardPoolId;
-            }
-            var source = new CardSelectSourceSkill();
-            await displayCardSelectPanel(source, cardPoolFiltersId: new long[] { poolId }, cardFilter: card => card.isSkill());
-        }
-        private async void onSkillRefEditButtonClicked()
-        {
-            //打开卡牌选择界面
-            var skillRef = _cardDefine.getSkillRef();
-            await scene.editor.openReferedCard(skillRef, async (cardDefine) =>
-            {
-                markUnsaved();
-                await setSkillRef(cardDefine.getDefineRef());
-            });
-        }
-        #region 自定义属性
-        private void onConfirmCreateCustomPropertyCallback(PropertyItemInfo item)
-        {
-            if (string.IsNullOrEmpty(item.propertyName))
-            {
-                string errorMessage = game.lang._(CARD_CUSTOM_PROP_NAME_EMPTY);
-                _ui.showCustomPropertyDialogError(errorMessage);
-                return;
-            }
-            if (isPropertyNameTaken(item.propertyName))
-            {
-                string errorMessage = game.lang._(CARD_CUSTOM_PROP_NAME_TAKEN);
-                _ui.showCustomPropertyDialogError(errorMessage);
-                return;
-            }
-            var value = item.value;
-            if (value == null)
-            {
-                value = item.type.getDefaultValue();
-            }
-            value = value.cloneValue();
-            setCardProp(true, item.propertyName, value);
 
-            markUnsaved();
-            updateCustomProperties();
-            _ui.displayCustomPropertyDialog(false);
-        }
-        private void onPropertyValueChangedCallback(bool isCustom, string name, object value)
-        {
-            value = value.cloneValue();
-            setCardProp(isCustom, name, value);
-            markUnsaved();
-            updatePropertyItem(isCustom, name);
-        }
-        private void onClickPropertyButtonCallback(bool isCustom, string name, int[] itemIndexes, ValueInputFieldButton button)
-        {
-            switch (button)
-            {
-                case ValueInputFieldButton.CardButton:
-                    onClickPropertyCardButtonCallback(isCustom, name, itemIndexes);
-                    break;
-                case ValueInputFieldButton.CardEditButton:
-                    onClickPropertyCardEditButtonCallback(isCustom, name, itemIndexes);
-                    break;
-                case ValueInputFieldButton.BuffEditButton:
-                    onClickPropertyBuffEditButtonCallback(isCustom, name, itemIndexes);
-                    break;
-            }
-        }
-        private async void onClickPropertyCardButtonCallback(bool isCustom, string name, int[] itemIndexes)
-        {
-            var prop = _cardDefine.getProp<object>(name);
-            if (prop == null)
-                return;
-            //打开卡牌选择界面
-            long poolId = _curCardPoolId;
-            if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
-            {
-                if (defRef.defineId != 0)
-                {
-                    poolId = defRef.cardPoolId;
-                }
-            }
-            var source = new CardSelectSourceCustomProperty()
-            {
-                propName = name,
-                propIndexes = itemIndexes
-            };
-            await displayCardSelectPanel(source, cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
-        }
-        private async void onClickPropertyCardEditButtonCallback(bool isCustom, string name, int[] itemIndexes)
-        {
-            var prop = _cardDefine.getProp<object>(name);
-            if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
-            {
-                await scene.editor.openReferedCard(defRef, setPropAction);
-
-                void setPropAction(CardDefine cardDefine)
-                {
-                    var newDefRef = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
-                    if (prop.replaceListElementByIndexes(itemIndexes, newDefRef, out var newValue))
-                    {
-                        setCardProp(isCustom, name, newValue);
-                        markUnsaved();
-                        updatePropertyItem(isCustom, name);
-                    }
-                }
-            }
-        }
-        private async void onClickPropertyBuffEditButtonCallback(bool isCustom, string name, int[] itemIndexes)
-        {
-            var prop = _cardDefine.getProp<object>(name);
-            if (prop == null)
-                return;
-            if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
-            {
-                var poolRef = getCardPoolReference(defRef.cardPoolId);
-                if (game.card.tryGetBuffDefine(poolRef, defRef.defineId, out GeneratedBuffDefine buffDefine))
-                {
-                    await scene.editor.openBuffEditor(buffDefine);
-                }
-            }
-        }
-        private void onDeleteCustomPropertyCallback(string name)
-        {
-            _cardDefine.removeProp(name);
-            markUnsaved();
-            updateCustomProperties();
-        }
         #endregion
 
-        #region 特效
+        #region 选卡
+        #endregion
+        #region 节点图
+        private void onGraphEdited()
+        {
+            markUnsaved();
+        }
         private void onOpenNodeAnimationDialogCallback(Node node)
         {
             var eventNames = game.anims.getNodeVisualEffectEventEditorNames(node);
@@ -759,60 +755,7 @@ namespace Controllers
             }
         }
 
-        #region 增益UI
-        /// <summary>
-        /// 更新所有增益引用，并重新设置UI的增益定义的选项。
-        /// </summary>
-        private void updateEditorBuffs()
-        {
-            game.editor.updateBuffDefines();
-            var fieldProps = game.editor.getBuffInputProperties();
-            _ui.initValueInputFieldProperties(fieldProps);
-        }
-        private object validatePropertyValue(object value)
-        {
-            if (value == null)
-                return value;
-            var type = value.GetType().getNodeValueType();
-            return validatePropertyValue(type, value);
-        }
-        private object validatePropertyValue(NodeValueType targetValueType, object value)
-        {
-            if (!targetValueType.isArray())
-            {
-                // 单个值。
-                var actualValueType = ActionNodeValueType.none;
-                if (value != null)
-                {
-                    actualValueType = value.GetType().getNodeValueType().type;
-                }
-                if (targetValueType.type == ActionNodeValueType.buffReference || actualValueType == ActionNodeValueType.buffReference)
-                {
-                    if (game.editor.validateSingleBuffReferenceValue(_curCardPoolId, value, out var newBuffRef, out var needUpdateBuffs))
-                        value = newBuffRef;
-                    if (needUpdateBuffs)
-                    {
-                        updateEditorBuffs();
-                    }
-                }
-            }
-            else if (value is IList list)
-            {
-                // 数组。
-                for (int i = 0; i < list.Count; i++)
-                {
-                    var listElement = list[i];
-                    if (listElement == null)
-                        continue;
-                    // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
-                    var elementTargetType = listElement.GetType().getNodeValueType();
-                    list[i] = validatePropertyValue(elementTargetType, listElement);
-                }
-                value = list;
-            }
-            return value;
-        }
-        #endregion
+        #region 基础页面
         private async Task<CardDefine[]> getSelectableCharacters()
         {
             List<CardDefine> cardList = new List<CardDefine>();
@@ -828,73 +771,20 @@ namespace Controllers
         private async Task updateCardType()
         {
             var cardDefine = _cardDefine;
-            _ui.setSkillRefVisible(cardDefine.isMaster());
-            if (cardDefine.isMaster())
-                await setSkillRef(cardDefine.getSkillRef());
-
             var cardFaceType = CardFaceType.Servant;
             if (cardDefine.isSpell() || cardDefine.isSkill())
                 cardFaceType = CardFaceType.Spell;
             else if (cardDefine.isItem())
                 cardFaceType = CardFaceType.Item;
             _ui.switchCardFace(cardFaceType);
-        }
 
-        private void setCardProp(bool isCustom, string name, object value)
-        {
-            value = validatePropertyValue(value);
-            if (isCustom)
-            {
-                _cardDefine.setProp(name, value);
-                return;
-            }
-
-            // 特殊属性设置方法。
-            if (keywordActions.TryGetValue(name, out var actions))
-            {
-                var setter = actions.setter;
-                setter?.Invoke(_cardDefine, value);
-                return;
-            }
-
-            // 默认属性设置方法。
-            // 设置关键词。
-            var keywords = _cardDefine.getKeywords();
-            if (value is bool boolValue && boolValue)
-            {
-                if (keywords == null)
-                {
-                    keywords = new string[] { name };
-                }
-                else if (!_cardDefine.hasKeyword(name))
-                {
-                    keywords = keywords.Append(name).Distinct().ToArray();
-                }
-            }
-            else if (keywords != null && _cardDefine.hasKeyword(name))
-            {
-                List<string> keywordList = new List<string>(keywords);
-                keywordList.Remove(name);
-                keywords = keywordList.ToArray();
-            }
-            _cardDefine.setKeywords(keywords);
-        }
-
-        protected override void setUIEffects(string[] names, int activeIndex)
-        {
-            _ui.setEffects(names, activeIndex);
-        }
-        /// <summary>
-        /// 返回上一个界面
-        /// </summary>
-        private async Task exit(bool forceSave = false)
-        {
-            clearUnsaved();
-            await scene.editor.closeEditor(forceSave);
+            _ui.setSkillRefVisible(cardDefine.isMaster());
+            if (cardDefine.isMaster())
+                await setSkillRef(cardDefine.getSkillRef());
         }
         #endregion
 
-
+        #region 皮肤
         private void updateSkinNames()
         {
             CardSkinData[] skins = getCurrentLangaugeSkins();
@@ -956,6 +846,9 @@ namespace Controllers
         }
         #endregion
 
+        #endregion
+
+        #region 属性页面
         private async Task setSkillRef(DefineReference defRef)
         {
             _cardDefine.setSkillRef(defRef);
@@ -975,40 +868,107 @@ namespace Controllers
             }
             _ui.setSkillRef(spr, name);
         }
+        #endregion
 
-        private void saveCard()
+        #region 增益属性UI
+        /// <summary>
+        /// 更新所有增益引用，并重新设置UI的增益定义的选项。
+        /// </summary>
+        private void updateEditorBuffs()
         {
-            var poolRef = getCurrentCardPoolRef();
-            if (game.card.getCardDefine(poolRef, _cardDefine.id) != null)
+            game.editor.updateBuffDefines();
+            var fieldProps = game.editor.getBuffInputProperties();
+            _ui.initValueInputFieldProperties(fieldProps);
+        }
+        private object validatePropertyValue(object value)
+        {
+            if (value == null)
+                return value;
+            var type = value.GetType().getNodeValueType();
+            return validatePropertyValue(type, value);
+        }
+        private object validatePropertyValue(NodeValueType targetValueType, object value)
+        {
+            if (!targetValueType.isArray())
             {
-                game.card.removeCard(_curCardPoolId, _cardDefine.id);
-                game.card.removeAllCardSkins(_curCardPoolId, _cardDefine.id);
+                // 单个值。
+                var actualValueType = ActionNodeValueType.none;
+                if (value != null)
+                {
+                    actualValueType = value.GetType().getNodeValueType().type;
+                }
+                if (targetValueType.type == ActionNodeValueType.buffReference || actualValueType == ActionNodeValueType.buffReference)
+                {
+                    if (game.editor.validateSingleBuffReferenceValue(_curCardPoolId, value, out var newBuffRef, out var needUpdateBuffs))
+                        value = newBuffRef;
+                    if (needUpdateBuffs)
+                    {
+                        updateEditorBuffs();
+                    }
+                }
             }
-            game.card.addCard(_curCardPoolId, _cardDefine);
-            foreach (var skin in _cardSkins)
+            else if (value is IList list)
             {
-                game.card.addCardSkin(_curCardPoolId, skin);
+                // 数组。
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var listElement = list[i];
+                    if (listElement == null)
+                        continue;
+                    // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
+                    var elementTargetType = listElement.GetType().getNodeValueType();
+                    list[i] = validatePropertyValue(elementTargetType, listElement);
+                }
+                value = list;
             }
-
-            scene.editor.markCardPoolUnsaved(_curCardPoolId);
-            clearUnsaved();
+            return value;
         }
-        public override void markUnsaved()
-        {
-            base.markUnsaved();
-            _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(CARD_EDITOR_TITLE)));
-        }
-        public override void clearUnsaved()
-        {
-            base.clearUnsaved();
-            _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(CARD_EDITOR_TITLE)));
-        }
+        #endregion
 
         #region 自定义属性
+        private void setCardProp(bool isCustom, string name, object value)
+        {
+            value = validatePropertyValue(value);
+            if (isCustom)
+            {
+                _cardDefine.setProp(name, value);
+                return;
+            }
+
+            // 特殊属性设置方法。
+            if (keywordActions.TryGetValue(name, out var actions))
+            {
+                var setter = actions.setter;
+                setter?.Invoke(_cardDefine, value);
+                return;
+            }
+
+            // 默认属性设置方法。
+            // 设置关键词。
+            var keywords = _cardDefine.getKeywords();
+            if (value is bool boolValue && boolValue)
+            {
+                if (keywords == null)
+                {
+                    keywords = new string[] { name };
+                }
+                else if (!_cardDefine.hasKeyword(name))
+                {
+                    keywords = keywords.Append(name).Distinct().ToArray();
+                }
+            }
+            else if (keywords != null && _cardDefine.hasKeyword(name))
+            {
+                List<string> keywordList = new List<string>(keywords);
+                keywordList.Remove(name);
+                keywords = keywordList.ToArray();
+            }
+            _cardDefine.setKeywords(keywords);
+        }
         /// <summary>
         /// 更新所有关键词。
         /// </summary>
-        private async void updateKeywords()
+        private async Task updateKeywords()
         {
             var itemInfos = GetCardDefineKeywordItems();
             _ui.keywordsFoldout.updateItems(itemInfos);
@@ -1023,7 +983,7 @@ namespace Controllers
         /// <summary>
         /// 更新所有自定义属性。
         /// </summary>
-        private async void updateCustomProperties()
+        private async Task updateCustomProperties()
         {
             var itemInfos = GetCardDefineCustomProps();
             _ui.updateCustomProperties(itemInfos);
@@ -1148,17 +1108,62 @@ namespace Controllers
             return takenPropNames.Contains(name);
         }
         #endregion
-        private enum CardSelectTarget
+
+        #region 效果
+        protected override void setUIEffects(string[] names, int activeIndex)
         {
-            None,
-            Skill,
-            Property
+            _ui.setEffects(names, activeIndex);
         }
-        CardEditorPanel _ui;
-        string[] _types;
+        #endregion
 
+        #region 侧边栏
+        private void saveCard()
+        {
+            var poolRef = getCurrentCardPoolRef();
+            if (game.card.getCardDefine(poolRef, _cardDefine.id) != null)
+            {
+                game.card.removeCard(_curCardPoolId, _cardDefine.id);
+                game.card.removeAllCardSkins(_curCardPoolId, _cardDefine.id);
+            }
+            game.card.addCard(_curCardPoolId, _cardDefine);
+            foreach (var skin in _cardSkins)
+            {
+                game.card.addCardSkin(_curCardPoolId, skin);
+            }
 
+            scene.editor.markCardPoolUnsaved(_curCardPoolId);
+            clearUnsaved();
+        }
+        /// <summary>
+        /// 返回上一个界面
+        /// </summary>
+        private async Task exit(bool forceSave = false)
+        {
+            clearUnsaved();
+            await scene.editor.closeEditor(forceSave);
+        }
+        #endregion
 
+        #endregion
+
+        #region 属性字段
+
+        /// <summary>
+        /// 正在编辑的卡牌定义。
+        /// </summary>
+        CardDefine _cardDefine;
+        /// <summary>
+        /// 正在编辑的卡牌定义的皮肤。
+        /// </summary>
+        CardSkinData _curCardSkin;
+        /// <summary>
+        /// 正在编辑的卡牌定义的所有的皮肤。
+        /// </summary>
+        List<CardSkinData> _cardSkins = new List<CardSkinData>();
+        CardDefine[] _selectableCharacters;
+        string[] _cardTypes;
+
+        #region 翻译文本
         [TranslateMsg("尝试删除卡牌的警告")]
         public const string EDITOR_WARNING_DELETE_CARD = "确认要删除这张卡牌吗？";
         [TranslateMsg("卡牌编辑器/标题")]
@@ -1180,12 +1185,26 @@ namespace Controllers
         [TranslateMsg("卡牌图片导出失败")]
         public const string CARD_PICTURE_EXPORT_FAILED = "卡牌图片导出失败。";
 
-
         [TranslateMsg("尝试添加重复名称的特效引用的错误提示")]
         public const string ANIM_REF_KEY_TAKEN = "该名称已被使用！";
         [TranslateMsg("尝试添加空名称的特效引用的错误提示")]
         public const string ANIM_REF_KEY_EMPTY = "请输入特效引用名！";
 
+        [TranslateMsg("卡牌属性名/濒死")]
+        public const string CARD_PROP_NAME_ISDEAD = "濒死";
+        [TranslateMsg("卡牌属性名/当前生命值")]
+        public const string CARD_PROP_NAME_CURRENT_LIFE = "当前生命值";
+        [TranslateMsg("卡牌属性名/护甲值")]
+        public const string CARD_PROP_NAME_ARMOR = "护甲值";
+        [TranslateMsg("卡牌属性名/被封印")]
+        public const string CARD_PROP_NAME_SILENCED = "被封印";
+        [TranslateMsg("卡牌属性名/已就绪")]
+        public const string CARD_PROP_NAME_ISREADY = "已就绪";
+        [TranslateMsg("卡牌属性名/攻击次数")]
+        public const string CARD_PROP_NAME_ATTACK_TIMES = "攻击次数";
+        #endregion
+
+        #region 静态集合
         private static readonly Dictionary<string, (Action<CardDefine, object> setter, Func<CardDefine, object> getter)> keywordActions =
             new Dictionary<string, (Action<CardDefine, object> setter, Func<CardDefine, object> getter)>()
         {
@@ -1201,7 +1220,30 @@ namespace Controllers
             }
         };
 
+        static readonly string[] _races = new string[]
+        {
+            null,
+            TAG.BEAST,
+            TAG.DEMON,
+            TAG.ELEMENT,
+            TAG.FAIRY,
+            TAG.GOD,
+            TAG.MACHINE,
+            TAG.GHOST
+        };
+        static readonly string[] _raceNames = new string[]
+        {
+            string.Empty,
+            StringTable.GAME_RACE_BEAST,
+            StringTable.GAME_RACE_DEMON,
+            StringTable.GAME_RACE_ELEMENT,
+            StringTable.GAME_RACE_FAIRY,
+            StringTable.GAME_RACE_GOD,
+            StringTable.GAME_RACE_MACHINE,
+            StringTable.GAME_RACE_GHOST
+        };
 
+        #region 自定义属性
         public static readonly string[] takenPropNames = new string[]
         {
             DEFINE.CHARACTER_ID,
@@ -1223,19 +1265,6 @@ namespace Controllers
             CARD.ISREADY,
             CARD.ATTACK_TIMES
         };
-
-        [TranslateMsg("卡牌属性名/濒死")]
-        public const string CARD_PROP_NAME_ISDEAD = "濒死";
-        [TranslateMsg("卡牌属性名/当前生命值")]
-        public const string CARD_PROP_NAME_CURRENT_LIFE = "当前生命值";
-        [TranslateMsg("卡牌属性名/护甲值")]
-        public const string CARD_PROP_NAME_ARMOR = "护甲值";
-        [TranslateMsg("卡牌属性名/被封印")]
-        public const string CARD_PROP_NAME_SILENCED = "被封印";
-        [TranslateMsg("卡牌属性名/已就绪")]
-        public const string CARD_PROP_NAME_ISREADY = "已就绪";
-        [TranslateMsg("卡牌属性名/攻击次数")]
-        public const string CARD_PROP_NAME_ATTACK_TIMES = "攻击次数";
         public static readonly List<CardPropertyNameItem> cardProps = new List<CardPropertyNameItem>
         {
             new CardPropertyNameItem(CARD.ISDEAD, CARD_PROP_NAME_ISDEAD, true, true, false),
@@ -1252,21 +1281,16 @@ namespace Controllers
             new CardPropertyNameItem(DEFINE.DAMAGE_REDUCE, StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE),
             new CardPropertyNameItem(DEFINE.SPELL_DAMAGE, StringTable.GAME_CARD_PROP_NAME_SPELL_DAMAGE),
         };
-        string[] _races;
-        string[] _tags;
-        /// <summary>
-        /// 正在编辑的卡牌定义。
-        /// </summary>
-        CardDefine _cardDefine;
-        /// <summary>
-        /// 正在编辑的卡牌定义的皮肤。
-        /// </summary>
-        CardSkinData _curCardSkin;
-        /// <summary>
-        /// 正在编辑的卡牌定义的所有的皮肤。
-        /// </summary>
-        List<CardSkinData> _cardSkins = new List<CardSkinData>();
-        CardDefine[] _selectableCharacters;
+        #endregion
+
+        #endregion
+
+        #region UI
+        [SerializeField]
+        CardEditorPanel _ui;
+        #endregion
+
+        #endregion
     }
     public struct CardSelectSourceSkill : ICardSelectSource
     {

@@ -1401,6 +1401,7 @@ MonoBehaviour:
   _effectEditorCtrl: {fileID: 8859534576409953091}
   _graphEditor: {fileID: 7506547896742505403}
   _cardPoolViewPanelObj: {fileID: 11768102114419643}
+  _ui: {fileID: 6359427082261538110}
   _cardPoolViewPanelCtrl: {fileID: 5564887323529923047}
   _cancelCardPoolSelectButton: {fileID: 218575620658938332}
 --- !u!114 &7506547896742505403
