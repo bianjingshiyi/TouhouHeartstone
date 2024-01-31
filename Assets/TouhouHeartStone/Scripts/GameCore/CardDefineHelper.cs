@@ -104,7 +104,7 @@ namespace TouhouHeartstone
             cardDefine.setProp(DEFINE.ISTOKEN, value);
         }
         /// <summary>
-        /// Í¨¹ıÎ»ÔËËã»ñÈ¡¿¨ÅÆIdÖĞµÄ¿¨³ØId¡£¿¨³ØIdµÄÑÚÂëÎª0x7FFF0000
+        /// é€šè¿‡ä½è¿ç®—è·å–å¡ç‰ŒIdä¸­çš„å¡æ± Idã€‚å¡æ± Idçš„æ©ç ä¸º0x7FFF0000
         /// </summary>
         /// <param name="cardId"></param>
         /// <returns></returns>
@@ -117,9 +117,9 @@ namespace TouhouHeartstone
             return getCardPoolId(card.id);
         }
         /// <summary>
-        /// Í¨¹ıÎ»ÔËËã»ñµÃ¿¨ÅÆIdÖĞ¿¨ÅÆĞòºÅ¡£¿¨ÅÆĞòºÅµÄÑÚÂëÎª0x0000FFFF
+        /// é€šè¿‡ä½è¿ç®—è·å¾—å¡ç‰ŒIdä¸­å¡ç‰Œåºå·ã€‚å¡ç‰Œåºå·çš„æ©ç ä¸º0x0000FFFF
         /// </summary>
-        /// <param name="cardId">²ÉÓÃ·ûºÅÎ»±íÊ¾ÊÇ·ñÎªÍâÀ´£¬0x7FFF0000×÷Îª¿¨³ØÑÚÂëµÄ¿¨ÅÆId</param>
+        /// <param name="cardId">é‡‡ç”¨ç¬¦å·ä½è¡¨ç¤ºæ˜¯å¦ä¸ºå¤–æ¥ï¼Œ0x7FFF0000ä½œä¸ºå¡æ± æ©ç çš„å¡ç‰ŒId</param>
         /// <returns></returns>
         public static int getCardNumber(int cardId)
         {
@@ -143,13 +143,9 @@ namespace TouhouHeartstone
                 return false;
             }).ToArray();
         }
-        public static Effect[] getSpellActiveEffects(this CardDefine card)
+        public static Effect[] getActiveEffects(this CardDefine card)
         {
-            if (card.isSpell() || card.isSkill())
-            {
-                return card.getEffects().Where(e => e.isSpellActiveEffect()).ToArray();
-            }
-            return Array.Empty<Effect>();
+            return card.getEffects().Where(e => e.isActiveEffect()).ToArray();
         }
         public static bool hasBattlecry(this CardDefine card)
         {
@@ -175,7 +171,7 @@ namespace TouhouHeartstone
 
 
         /// <summary>
-        /// ÕâÕÅ¿¨ÅÆ¶¨ÒåµÄÖ÷¶¯Ğ§¹ûµÄ¿ÉÑ¡Ä¿±ê
+        /// è¿™å¼ å¡ç‰Œå®šä¹‰çš„ä¸»åŠ¨æ•ˆæœçš„å¯é€‰ç›®æ ‡
         /// </summary>
         /// <param name="cardDefine"></param>
         /// <param name="game"></param>

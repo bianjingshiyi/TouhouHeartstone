@@ -839,20 +839,17 @@ namespace TouhouHeartstone
         #endregion
 
         #region 效果
-        public static (Effect effect, Buff buff)[] getSpellActiveEffects(this Card card, IGame game)
+        public static (Effect effect, Buff buff)[] getActiveEffects(this Card card, IGame game)
         {
             List<(Effect effect, Buff buff)> results = new List<(Effect effect, Buff buff)>();
-            if (card.isSpell() || card.isSkill())
+            if (!card.isSilenced(game))
             {
-                if (!card.isSilenced(game))
-                {
-                    results.AddRange(card.define.getSpellActiveEffects().Select<Effect, (Effect effect, Buff buff)>(e => (e, null)));
-                }
-                foreach (var buff in card.getBuffs())
-                {
-                    var effects = buff.getEffects();
-                    results.AddRange(effects.Where(e => e.isSpellActiveEffect()).Select<Effect, (Effect effect, Buff buff)>(e => (e, buff)));
-                }
+                results.AddRange(card.define.getActiveEffects().Select<Effect, (Effect effect, Buff buff)>(e => (e, null)));
+            }
+            foreach (var buff in card.getBuffs())
+            {
+                var effects = buff.getEffects();
+                results.AddRange(effects.Where(e => e.isActiveEffect()).Select<Effect, (Effect effect, Buff buff)>(e => (e, buff)));
             }
             return results.ToArray();
         }
@@ -951,32 +948,12 @@ namespace TouhouHeartstone
 
         #region 触发效果
         /// <summary>
-        /// 发动一张卡的主动效果
-        /// </summary>
-        /// <param name="card"></param>
-        /// <param name="game"></param>
-        /// <param name="player"></param>
-        /// <param name="targets"></param>
-        /// <returns></returns>
-        public static Task<EventArg[]> activeEffect(this Card card, CardEngine game, Card[] targets)
-        {
-            if (card.isServant() || card.isItem() || card.isMaster())
-            {
-                return triggerBattlecries(card, game, targets);
-            }
-            else if (card.isSpell() || card.isSkill())
-            {
-                return triggerSpellActiveEffect(card, game, targets);
-            }
-            return Task.FromResult(Array.Empty<EventArg>());
-        }
-        /// <summary>
         /// 发动特定法术或技能卡牌定义的主动效果
         /// </summary>
-        public static async Task<EventArg[]> triggerSpellCardDefineActiveEffect(this Card card, CardEngine game, CardDefine define, Card[] targets)
+        public static async Task<EventArg[]> triggerCardDefineActiveEffect(this Card card, CardEngine game, CardDefine define, Card[] targets)
         {
             List<EventArg> eventArgs = new List<EventArg>();
-            var effects = define.getSpellActiveEffects();
+            var effects = define.getActiveEffects();
             foreach (var effect in effects)
             {
                 var eventArg = await EffectTriggerEventDefine.doEventIfValid(game, card, null, effect, targets: targets);
@@ -986,10 +963,10 @@ namespace TouhouHeartstone
             }
             return eventArgs.ToArray();
         }
-        public static async Task<EventArg[]> triggerSpellActiveEffect(this Card card, CardEngine game, Card[] targets)
+        public static async Task<EventArg[]> triggerActiveEffect(this Card card, CardEngine game, Card[] targets)
         {
             List<EventArg> eventArgs = new List<EventArg>();
-            var effects = card.getSpellActiveEffects(game);
+            var effects = card.getActiveEffects(game);
             foreach (var (effect, buff) in effects)
             {
                 var eventArg = await EffectTriggerEventDefine.doEventIfValid(game, card, buff, effect, targets: targets);

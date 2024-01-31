@@ -1267,12 +1267,12 @@ namespace Game
                     }
                     else
                     {
-                        await card.triggerSpellActiveEffect(game, targets);
+                        await card.triggerActiveEffect(game, targets);
                     }
                 }
                 else if (card.isSkill())
                 {
-                    await card.triggerSpellActiveEffect(game, targets);
+                    await card.triggerActiveEffect(game, targets);
                 }
             }
         }

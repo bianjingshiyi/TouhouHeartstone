@@ -16,7 +16,7 @@ namespace TouhouHeartstone
             var targets = arg.getVar<Card[]>(EVENTVAR.TARGETS);
 
             await card.pile.moveTo(game, card, player.getWarp());
-            await card.activeEffect(game, targets);
+            await card.triggerActiveEffect(game, targets);
             await card.pile.moveTo(game, card, player.getGrave());
             await game.updateGameState();
             await player.draw(game);

@@ -22,7 +22,7 @@ namespace TouhouHeartstone
         {
             return effect is GeneratedActiveEffect active && active.hasTag(EFFECTTAG.ACTIVE_PLAYED);
         }
-        public static bool isSpellActiveEffect(this Effect effect)
+        public static bool isActiveEffect(this Effect effect)
         {
             return effect is GeneratedActiveEffect;
         }

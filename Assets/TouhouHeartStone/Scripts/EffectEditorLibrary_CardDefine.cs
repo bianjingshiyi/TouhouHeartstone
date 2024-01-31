@@ -470,7 +470,9 @@ namespace Game
             {
                 if (card == null)
                     continue;
-                await card.triggerSpellCardDefineActiveEffect(game, cardDefine, targets);
+                if (!card.isSpell() && !card.isSkill())
+                    continue;
+                await card.triggerCardDefineActiveEffect(game, cardDefine, targets);
             }
         }
         /// <summary>

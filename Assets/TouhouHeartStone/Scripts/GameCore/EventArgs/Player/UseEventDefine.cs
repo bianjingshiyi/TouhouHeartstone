@@ -49,11 +49,11 @@ namespace TouhouHeartstone
             if (card.isServant())
             {
                 await player.tryEnterField(game, player.getHand(), card, position);//随从卡，将卡置入战场
-                await card.activeEffect(game, targets);//执行随从效果
+                await card.triggerActiveEffect(game, targets);//执行随从效果
             }
             else if (card.isSkill())
             {
-                await card.activeEffect(game, targets);
+                await card.triggerActiveEffect(game, targets);
             }
             else if (card.isSpell())
             {
@@ -65,7 +65,7 @@ namespace TouhouHeartstone
                 }
                 else
                 {
-                    await card.activeEffect(game, targets);
+                    await card.triggerActiveEffect(game, targets);
                     await player.getWarp().moveTo(game, card, player.getGrave());//送入墓地
                 }
             }
@@ -73,7 +73,7 @@ namespace TouhouHeartstone
             {
                 //物品卡，置入物品栏
                 await player.equip(game, player.getHand(), card);
-                await card.activeEffect(game, targets);
+                await card.triggerActiveEffect(game, targets);
             }
         }
         public override string toString(EventArg arg)
