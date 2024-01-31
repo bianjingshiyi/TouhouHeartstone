@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +10,6 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Controllers
 {
@@ -21,36 +21,41 @@ namespace Controllers
         /// </summary>
         public async Task display(long cardPoolId, GeneratedBuffDefine buffDefine, BuffSkin[] skins)
         {
-            gameObject.SetActive(true);
-            _ui.reset();
+            // 设置数据。
             _curCardPoolId = cardPoolId;
             _buffDefine = buffDefine;
             _buffSkins.Clear();
             _buffSkins.AddRange(skins);
-
             _curLanguage = game.langManager.getLanguage();
-            string[] languages = game.langManager.getLanguages();
-            _ui.setLanguage(languages.indexOf(_curLanguage));
+            _persistentAnimRefs = game.anims.getAnimationDefinesForBuff().Select(def => new DefineReference(def.cardPoolId, def.id)).ToArray();
+
+            gameObject.SetActive(true); // 会触发Awake
+            _ui.reset();
+
+            // 初始化UI
+            _ui.initEventTriggerTimeNames(eventTriggerTimeEditorNames);
+
+            var buffProps = game.editor.getBuffInputProperties();
+            _ui.initValueFields(buffProps);
 
             var persistentAnimNames = game.anims.getAnimationEditorNamesForBuff();
             _ui.initPersistentAnims(persistentAnimNames);
 
-            _persistentAnimRefs = game.anims.getAnimationDefinesForBuff().Select(def => new DefineReference(def.cardPoolId, def.id)).ToArray();
-
-            updateSkinNames();
+            // 设置UI。
             _ui.setId(buffDefine.id);
-            GeneratedEffect[] effects = buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
+            string[] languages = game.langManager.getLanguages();
+            _ui.setLanguage(languages.indexOf(_curLanguage));
+
+            // 更新内容。
+            updateSkinNames();
             updateModifiers();
-            // 持续限制
-            _ui.initExistLimits(eventTriggerTimeEditorNames);
             updateExistLimits();
-            // 自定义属性
-            updateCustomProperties();
-            // 皮肤
+            await updateCustomProperties();
             await setCurSkinIndex(0);
 
+            // 效果。
             _effectEditorCtrl.hideActionGraph();
-
+            GeneratedEffect[] effects = buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
             if (effects.Length > 0)
             {
                 await _effectEditorCtrl.display(_curCardPoolId, effects[0]);
@@ -90,6 +95,7 @@ namespace Controllers
             _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(BUFF_EDITOR_TITLE)));
         }
         #endregion
+
         #region 私有方法
         #region 生命周期
         protected override void Awake()
@@ -99,7 +105,8 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<BuffEditorPanel>();
             }
-            _ui.init(getBuffDefinePropertyTypes());
+            _ui.initModifierPropertyTypes(getBuffDefinePropertyTypes());
+
             var keywords = EditorManager.editorKeywords;
             var keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray();
             var fieldProps = new ValueInputFieldProperties()
@@ -110,7 +117,7 @@ namespace Controllers
                 pileNames = game.editor.getAllPileNames(),
                 pileValues = game.editor.getAllPileValues()
             };
-            _ui.initValueInputFields(fieldProps);
+            _ui.initValueFields(fieldProps);
             _ui.onChangeSkin += onChangeSkin;
             _ui.onChangeSkinName += onChangeSkinName;
             _ui.onClickDeleteSkinButton += onDeleteSkin;
@@ -463,7 +470,7 @@ namespace Controllers
         {
             _ui.setCustomPropertyDialogVisible(true);
         }
-        private void onConfirmCreateCustomPropertyCallback(PropertyItemInfo item)
+        private async void onConfirmCreateCustomPropertyCallback(PropertyItemInfo item)
         {
             if (string.IsNullOrEmpty(item.propertyName))
             {
@@ -487,13 +494,13 @@ namespace Controllers
             setBuffProp(item.propertyName, value);
 
             markUnsaved();
-            updateCustomProperties();
+            await updateCustomProperties();
             _ui.setCustomPropertyDialogVisible(false);
         }
-        private void onRemoveCustomPropertyCallback(string name)
+        private async void onRemoveCustomPropertyCallback(string name)
         {
             _buffDefine.removeProp(name);
-            updateCustomProperties();
+            await updateCustomProperties();
             markUnsaved();
         }
         private void onClickCustomPropertyButtonCallback(string name, int[] itemIndexes, ValueInputFieldButton button)
@@ -558,6 +565,9 @@ namespace Controllers
                 return;
             if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
             {
+                // 不能跳转到自己
+                if (defRef.cardPoolId == _buffDefine.cardPoolId && defRef.defineId == _buffDefine.id)
+                    return;
                 var poolRef = getCardPoolReference(defRef.cardPoolId);
                 if (game.card.tryGetBuffDefine(poolRef, defRef.defineId, out GeneratedBuffDefine buffDefine))
                 {
@@ -1056,10 +1066,66 @@ namespace Controllers
         }
         private void setBuffProp(string name, object value)
         {
+            value = validatePropertyValue(value);
             _buffDefine.setProp(name, value);
         }
 
 
+        #endregion
+
+        #region 自定义属性的增益相关
+        /// <summary>
+        /// 更新所有增益引用，并重新设置UI的增益定义的选项。
+        /// </summary>
+        private void updateEditorBuffs()
+        {
+            game.editor.updateBuffDefines();
+            var fieldProps = game.editor.getBuffInputProperties();
+            _ui.initValueFields(fieldProps);
+        }
+        private object validatePropertyValue(object value)
+        {
+            if (value == null)
+                return value;
+            var type = value.GetType().getNodeValueType();
+            return validatePropertyValue(type, value);
+        }
+        private object validatePropertyValue(NodeValueType targetValueType, object value)
+        {
+            if (!targetValueType.isArray())
+            {
+                // 单个值。
+                var actualValueType = ActionNodeValueType.none;
+                if (value != null)
+                {
+                    actualValueType = value.GetType().getNodeValueType().type;
+                }
+                if (targetValueType.type == ActionNodeValueType.buffReference || actualValueType == ActionNodeValueType.buffReference)
+                {
+                    if (game.editor.validateSingleBuffReferenceValue(_curCardPoolId, value, out var newBuffRef, out var needUpdateBuffs))
+                        value = newBuffRef;
+                    if (needUpdateBuffs)
+                    {
+                        updateEditorBuffs();
+                    }
+                }
+            }
+            else if (value is IList list)
+            {
+                // 数组。
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var listElement = list[i];
+                    if (listElement == null)
+                        continue;
+                    // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
+                    var elementTargetType = listElement.GetType().getNodeValueType();
+                    list[i] = validatePropertyValue(elementTargetType, listElement);
+                }
+                value = list;
+            }
+            return value;
+        }
         #endregion
         private void saveBuff()
         {
@@ -1076,7 +1142,6 @@ namespace Controllers
             clearUnsaved();
         }
         #endregion
-
 
         #region 属性字段
         BuffEditorPanel _ui;

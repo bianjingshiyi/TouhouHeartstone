@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using BJSYGameCore;
 using Controllers;
 using MukioI18n;
@@ -11,7 +13,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class EditorManager : Manager
+    public partial class EditorManager : Manager
     {
         #region 公有方法
 
@@ -87,16 +89,22 @@ namespace Game
         }
 
         #region 编辑器环境
-        public void reloadCardPoolEnv(CardPoolInfo info)
+        public async Task reloadCardPoolEnv(CardPoolInfo info)
         {
-            clearCardPoolEnv();
+            cardPoolEnv.Clear();
             cardPoolEnv.Add(info.ToReference());
             if (info.dependencyRefs != null)
                 cardPoolEnv.AddRange(info.dependencyRefs);
+            foreach (var poolRef in cardPoolEnv)
+            {
+                await game.card.getOrLoadCardPool(poolRef, true);
+            }
+            updateBuffDefines();
         }
         public void clearCardPoolEnv()
         {
             cardPoolEnv.Clear();
+            updateBuffDefines();
         }
         public ICardPoolReference[] getEnvCardPoolRefs()
         {
@@ -193,6 +201,7 @@ namespace Game
             ActionNodeValueType.cardReference,
             ActionNodeValueType.pileNameCollection,
             ActionNodeValueType.keywords,
+            ActionNodeValueType.buffReference,
         };
 
         public static readonly List<string> editorKeywords = new List<string>

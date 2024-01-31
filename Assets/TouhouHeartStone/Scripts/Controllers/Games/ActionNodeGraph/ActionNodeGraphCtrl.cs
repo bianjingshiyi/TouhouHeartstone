@@ -1840,7 +1840,8 @@ namespace Controllers
                     value = game.editor.getAllPileValues()[0];
                     break;
                 case ActionNodeValueType.buffReference:
-                    value = _buffReferences.FirstOrDefault();
+                    var buffDefine = game.editor.getCurrentBuffDefines().FirstOrDefault();
+                    value = buffDefine != null ? new BuffReference(buffDefine.cardPoolId, buffDefine.id) : new BuffReference(0, 0);
                     break;
             }
             return value != null;

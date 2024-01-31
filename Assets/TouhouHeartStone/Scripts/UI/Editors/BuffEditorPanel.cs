@@ -23,6 +23,30 @@ namespace UI
         {
             _idText.text = id.ToString();
         }
+
+        public void initModifierPropertyTypes(string[] typeNames)
+        {
+            var item = _propertyModifierItemTemplate.GetComponent<PropertyModifierListItem>();
+            item.updateSelectableValues(typeNames);
+        }
+        public void initEventTriggerTimeNames(string[] eventTriggerTimeNames)
+        {
+            var item = _existLimitItemTemplate.GetComponent<ExistLimitListItem>();
+            item.initEvents(eventTriggerTimeNames);
+        }
+        public void initValueFields(ValueInputFieldProperties properties)
+        {
+            var modifierItem = _propertyModifierItemTemplate.GetComponent<PropertyModifierListItem>();
+            modifierItem.initInputFieldProperties(properties);
+
+            var propTemplate = _customPropertyList.getTemplate<PropertyItemField>();
+            propTemplate.initInputFieldProperties(properties);
+            foreach (var propItem in _customPropertyList.getElements<PropertyItemField>())
+            {
+                propItem.initInputFieldProperties(properties);
+            }
+        }
+
         #region 修改器
         public void updateModifiers(BuffModifierInfo[] modifierInfos)
         {
@@ -58,19 +82,6 @@ namespace UI
             }
             );
         }
-        public void init(string[] properties)
-        {
-            var item = _propertyModifierItemTemplate.GetComponent<PropertyModifierListItem>();
-            item.updateSelectableValues(properties);
-        }
-        public void initValueInputFields(ValueInputFieldProperties fieldProperties)
-        {
-            var modifierItem = _propertyModifierItemTemplate.GetComponent<PropertyModifierListItem>();
-            modifierItem.initInputFieldProperties(fieldProperties);
-
-            var propItem = _customPropertyList.getTemplate<PropertyItemField>();
-            propItem.initInputFieldProperties(fieldProperties);
-        }
         #endregion
 
         #region 持续限制
@@ -97,11 +108,6 @@ namespace UI
                 item.onCountValueChanged -= onExistLimitCountChanged;
             }
             );
-        }
-        public void initExistLimits(string[] eventNames)
-        {
-            var item = _existLimitItemTemplate.GetComponent<ExistLimitListItem>();
-            item.initEvents(eventNames);
         }
         #endregion
 

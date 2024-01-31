@@ -182,10 +182,15 @@ namespace UI
         {
             _effectList.setScrollValue(value);
         }
-        public void initValueInputFieldProperies(ValueInputFieldProperties props)
+        public void initValueInputFieldProperties(ValueInputFieldProperties props)
         {
-            var itemField = _customPropertyItemTemplate.GetComponent<PropertyItemField>();
-            itemField.initInputFieldProperties(props);
+            var tempField = _customPropertyItemTemplate.GetComponent<PropertyItemField>();
+            tempField.initInputFieldProperties(props);
+            foreach (var element in _customPropertyItemList)
+            {
+                var itemField = element.GetComponent<PropertyItemField>();
+                itemField.initInputFieldProperties(props);
+            }
         }
         /// <summary>
         /// 设置效果列表

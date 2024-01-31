@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -75,6 +76,9 @@ namespace Controllers
             _effectEditorCtrl.updateEventTriggerTimes();
             updateEffectList(effects);
 
+            var buffProps = game.editor.getBuffInputProperties();
+            _ui.initValueInputFieldProperties(buffProps);
+
             _graphEditor.display(_curCardPoolId);
         }
         public override async Task display(CardPoolDisplayPage info)
@@ -98,7 +102,9 @@ namespace Controllers
             AnimationManager.cleanUnusedVisualEffects(_curCardSkin, _cardDefine.getGeneratedEffects());
         }
         #endregion
+
         #region 私有方法
+
         #region 生命周期
         protected override void Awake()
         {
@@ -115,9 +121,9 @@ namespace Controllers
                 keywordValues = keywords.ToArray(),
 
                 pileNames = game.editor.getAllPileNames(),
-                pileValues = game.editor.getAllPileValues()
+                pileValues = game.editor.getAllPileValues(),
             };
-            _ui.initValueInputFieldProperies(fieldProps);
+            _ui.initValueInputFieldProperties(fieldProps);
 
             string[] typeNames = game.editor.getCardTypeNames();
             _types = game.editor.getCardTypes();
@@ -214,6 +220,7 @@ namespace Controllers
             _graphEditor.onAnimationPropChanged += onNodeAnimationPropChangedCallback;
         }
         #endregion
+
         #region 事件回调
         private void onGraphEdited()
         {
@@ -597,6 +604,7 @@ namespace Controllers
                 await setSkillRef(cardDefine.getDefineRef());
             });
         }
+        #region 自定义属性
         private void onConfirmCreateCustomPropertyCallback(PropertyItemInfo item)
         {
             if (string.IsNullOrEmpty(item.propertyName))
@@ -611,12 +619,13 @@ namespace Controllers
                 _ui.showCustomPropertyDialogError(errorMessage);
                 return;
             }
-
-            if (item.value == null)
+            var value = item.value;
+            if (value == null)
             {
-                item.value = item.type.getDefaultValue();
+                value = item.type.getDefaultValue();
             }
-            setCardProp(true, item.propertyName, item.value);
+            value = value.cloneValue();
+            setCardProp(true, item.propertyName, value);
 
             markUnsaved();
             updateCustomProperties();
@@ -624,6 +633,7 @@ namespace Controllers
         }
         private void onPropertyValueChangedCallback(bool isCustom, string name, object value)
         {
+            value = value.cloneValue();
             setCardProp(isCustom, name, value);
             markUnsaved();
             updatePropertyItem(isCustom, name);
@@ -676,7 +686,7 @@ namespace Controllers
                     var newDefRef = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
                     if (prop.replaceListElementByIndexes(itemIndexes, newDefRef, out var newValue))
                     {
-                        _cardDefine.setProp(name, newValue);
+                        setCardProp(isCustom, name, newValue);
                         markUnsaved();
                         updatePropertyItem(isCustom, name);
                     }
@@ -703,6 +713,7 @@ namespace Controllers
             markUnsaved();
             updateCustomProperties();
         }
+        #endregion
 
         #region 特效
         private void onOpenNodeAnimationDialogCallback(Node node)
@@ -747,6 +758,61 @@ namespace Controllers
                     break;
             }
         }
+
+        #region 增益UI
+        /// <summary>
+        /// 更新所有增益引用，并重新设置UI的增益定义的选项。
+        /// </summary>
+        private void updateEditorBuffs()
+        {
+            game.editor.updateBuffDefines();
+            var fieldProps = game.editor.getBuffInputProperties();
+            _ui.initValueInputFieldProperties(fieldProps);
+        }
+        private object validatePropertyValue(object value)
+        {
+            if (value == null)
+                return value;
+            var type = value.GetType().getNodeValueType();
+            return validatePropertyValue(type, value);
+        }
+        private object validatePropertyValue(NodeValueType targetValueType, object value)
+        {
+            if (!targetValueType.isArray())
+            {
+                // 单个值。
+                var actualValueType = ActionNodeValueType.none;
+                if (value != null)
+                {
+                    actualValueType = value.GetType().getNodeValueType().type;
+                }
+                if (targetValueType.type == ActionNodeValueType.buffReference || actualValueType == ActionNodeValueType.buffReference)
+                {
+                    if (game.editor.validateSingleBuffReferenceValue(_curCardPoolId, value, out var newBuffRef, out var needUpdateBuffs))
+                        value = newBuffRef;
+                    if (needUpdateBuffs)
+                    {
+                        updateEditorBuffs();
+                    }
+                }
+            }
+            else if (value is IList list)
+            {
+                // 数组。
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var listElement = list[i];
+                    if (listElement == null)
+                        continue;
+                    // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
+                    var elementTargetType = listElement.GetType().getNodeValueType();
+                    list[i] = validatePropertyValue(elementTargetType, listElement);
+                }
+                value = list;
+            }
+            return value;
+        }
+        #endregion
         private async Task<CardDefine[]> getSelectableCharacters()
         {
             List<CardDefine> cardList = new List<CardDefine>();
@@ -776,6 +842,7 @@ namespace Controllers
 
         private void setCardProp(bool isCustom, string name, object value)
         {
+            value = validatePropertyValue(value);
             if (isCustom)
             {
                 _cardDefine.setProp(name, value);
@@ -1132,7 +1199,6 @@ namespace Controllers
                     (card) => card.getDamageReduce()
                 )
             }
-
         };
 
 

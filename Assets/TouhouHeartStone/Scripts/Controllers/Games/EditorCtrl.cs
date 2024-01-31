@@ -63,7 +63,7 @@ namespace Controllers
                 }
                 //设置当前卡池
                 var poolInfo = getCardPoolInfo(poolId);
-                setCurrentCardPool(poolInfo);
+                await setCurrentCardPool(poolInfo);
                 if (_firstOpenedCardPoolId < 0)
                 {
                     _firstOpenedCardPoolId = poolId;
@@ -344,10 +344,10 @@ namespace Controllers
         /// <summary>
         /// 当点击新增卡池按钮，切换右侧栏到编辑卡池状态
         /// </summary>
-        private void onClickAddCardPoolButton()
+        private async void onClickAddCardPoolButton()
         {
             game.card.createCardPool(out var cardPoolInfo, out _);
-            setCurrentCardPool(cardPoolInfo);
+            await setCurrentCardPool(cardPoolInfo);
             markCardPoolUnsaved(_curCardPoolId);
             _cardPoolIdList.Add(_curCardPoolId);
 
@@ -861,7 +861,7 @@ namespace Controllers
             if (success)
             {
                 clearCardPoolUnsaved(_curCardPoolId);
-                game.editor.reloadCardPoolEnv(info);
+                await game.editor.reloadCardPoolEnv(info);
             }
             return success;
         }
@@ -1109,19 +1109,19 @@ namespace Controllers
             if (editor != null)
             {
                 var poolInfo = getCardPoolInfo(displayInfo.cardPoolId);
-                setCurrentCardPool(poolInfo);
+                await setCurrentCardPool(poolInfo);
                 await editor.display(displayInfo);
             }
             return editor;
         }
 
         #region 卡池环境
-        private void setCurrentCardPool(CardPoolInfo poolInfo)
+        private async Task setCurrentCardPool(CardPoolInfo poolInfo)
         {
             _curCardPoolId = poolInfo.cardPoolId;
             if (!_cardPoolInfoClones.Exists(c => c.cardPoolId == poolInfo.cardPoolId))
                 _cardPoolInfoClones.Add(cloneCardPoolInfo(poolInfo));
-            game.editor.reloadCardPoolEnv(poolInfo);
+            await game.editor.reloadCardPoolEnv(poolInfo);
         }
         private void clearCurrentCardPool()
         {
