@@ -18,11 +18,10 @@ namespace Controllers
         /// <summary>
         /// 打开一张卡片进行编辑
         /// </summary>
-        public async Task display(long cardPoolId, CardDefine cardDefine, CardSkinData[] skins)
+        public async Task display(CardDefine cardDefine, CardSkinData[] skins)
         {
             // 初始化属性。
             _selectableCharacters = await getSelectableCharacters();
-            _curCardPoolId = cardPoolId;
             _cardDefine = cardDefine;
             _cardSkins.Clear();
             _cardSkins.AddRange(skins);
@@ -75,12 +74,12 @@ namespace Controllers
             _effectEditorCtrl.hideActionGraph();
             if (effects.Length > 0)
             {
-                await _effectEditorCtrl.display(_curCardPoolId, effects[0]);
+                await _effectEditorCtrl.display(effects[0]);
             }
             _effectEditorCtrl.updateEventTriggerTimes();
             updateEffectList(effects);
 
-            _graphEditor.display(_curCardPoolId);
+            _graphEditor.display();
         }
         public override async Task display(CardPoolDisplayPage info)
         {
@@ -90,7 +89,7 @@ namespace Controllers
             if (info?.displayObj?.cardDefine is CardDefine cardDefine)
             {
                 var skins = info.skins as CardSkinData[] ?? Array.Empty<CardSkinData>();
-                await display(info.cardPoolId, cardDefine, skins);
+                await display(cardDefine, skins);
                 if (info.unsaved)
                     markUnsaved();
                 else
@@ -212,7 +211,7 @@ namespace Controllers
             if (skinIndex == getCurrentLangaugeSkins().Length)
             {
                 //新建皮肤
-                _curCardSkin = game.card.createSkin(_curCardPoolId, _cardDefine.id);
+                _curCardSkin = game.card.createSkin(curCardPoolId, _cardDefine.id);
                 _cardSkins.Add(_curCardSkin);
                 updateSkinNames();
             }
@@ -424,7 +423,7 @@ namespace Controllers
         private async void onClickSkillRefButton()
         {
             //打开卡牌选择界面
-            long poolId = _curCardPoolId;
+            long poolId = curCardPoolId;
             var skillRef = _cardDefine.getSkillRef();
             if (skillRef.defineId != 0)
             {
@@ -518,7 +517,7 @@ namespace Controllers
             if (prop == null)
                 return;
             //打开卡牌选择界面
-            long poolId = _curCardPoolId;
+            long poolId = curCardPoolId;
             if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
             {
                 if (defRef.defineId != 0)
@@ -586,7 +585,7 @@ namespace Controllers
             var effectArray = effects.Append(effect).ToArray();
             _cardDefine.setEffects(effectArray);
 
-            await _effectEditorCtrl.display(_curCardPoolId, effect);
+            await _effectEditorCtrl.display(effect);
             _graphEditor.updateUndoRedoButton();
             updateEffectList(effectArray);
 
@@ -602,7 +601,7 @@ namespace Controllers
             GeneratedEffect effect = effects.ElementAt(index);
             if (_effectEditorCtrl.getCurrentEffect() != effect)
             {
-                await _effectEditorCtrl.display(_curCardPoolId, effect);
+                await _effectEditorCtrl.display(effect);
                 updateEffectList(effects.ToArray());
                 _graphEditor.updateUndoRedoButton();
             }
@@ -657,7 +656,7 @@ namespace Controllers
                {
                    //删除当前卡牌
                    game.card.removeCard(_cardDefine);
-                   scene.editor.markCardPoolUnsaved(_curCardPoolId);
+                   scene.editor.markCardPoolUnsaved(curCardPoolId);
                    await exit(true);
                });
         }
@@ -790,7 +789,7 @@ namespace Controllers
             CardSkinData[] skins = getCurrentLangaugeSkins();
             if (skins.Length < 1)
             {
-                CardSkinData skin = game.card.createSkin(_curCardPoolId, _cardDefine.id);
+                CardSkinData skin = game.card.createSkin(curCardPoolId, _cardDefine.id);
                 skins = new CardSkinData[] { skin };
                 _cardSkins.Add(skin);
             }
@@ -880,55 +879,12 @@ namespace Controllers
             var fieldProps = game.editor.getBuffInputProperties();
             _ui.initValueInputFieldProperties(fieldProps);
         }
-        private object validatePropertyValue(object value)
-        {
-            if (value == null)
-                return value;
-            var type = value.GetType().getNodeValueType();
-            return validatePropertyValue(type, value);
-        }
-        private object validatePropertyValue(NodeValueType targetValueType, object value)
-        {
-            if (!targetValueType.isArray())
-            {
-                // 单个值。
-                var actualValueType = ActionNodeValueType.none;
-                if (value != null)
-                {
-                    actualValueType = value.GetType().getNodeValueType().type;
-                }
-                if (targetValueType.type == ActionNodeValueType.buffReference || actualValueType == ActionNodeValueType.buffReference)
-                {
-                    if (game.editor.validateSingleBuffReferenceValue(_curCardPoolId, value, out var newBuffRef, out var needUpdateBuffs))
-                        value = newBuffRef;
-                    if (needUpdateBuffs)
-                    {
-                        updateEditorBuffs();
-                    }
-                }
-            }
-            else if (value is IList list)
-            {
-                // 数组。
-                for (int i = 0; i < list.Count; i++)
-                {
-                    var listElement = list[i];
-                    if (listElement == null)
-                        continue;
-                    // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
-                    var elementTargetType = listElement.GetType().getNodeValueType();
-                    list[i] = validatePropertyValue(elementTargetType, listElement);
-                }
-                value = list;
-            }
-            return value;
-        }
         #endregion
 
         #region 自定义属性
         private void setCardProp(bool isCustom, string name, object value)
         {
-            value = validatePropertyValue(value);
+            value = game.editor.validatePropertyValue(value, updateEditorBuffs);
             if (isCustom)
             {
                 _cardDefine.setProp(name, value);
@@ -1122,16 +1078,16 @@ namespace Controllers
             var poolRef = getCurrentCardPoolRef();
             if (game.card.getCardDefine(poolRef, _cardDefine.id) != null)
             {
-                game.card.removeCard(_curCardPoolId, _cardDefine.id);
-                game.card.removeAllCardSkins(_curCardPoolId, _cardDefine.id);
+                game.card.removeCard(curCardPoolId, _cardDefine.id);
+                game.card.removeAllCardSkins(curCardPoolId, _cardDefine.id);
             }
-            game.card.addCard(_curCardPoolId, _cardDefine);
+            game.card.addCard(curCardPoolId, _cardDefine);
             foreach (var skin in _cardSkins)
             {
-                game.card.addCardSkin(_curCardPoolId, skin);
+                game.card.addCardSkin(curCardPoolId, skin);
             }
 
-            scene.editor.markCardPoolUnsaved(_curCardPoolId);
+            scene.editor.markCardPoolUnsaved(curCardPoolId);
             clearUnsaved();
         }
         /// <summary>
@@ -1162,6 +1118,7 @@ namespace Controllers
         List<CardSkinData> _cardSkins = new List<CardSkinData>();
         CardDefine[] _selectableCharacters;
         string[] _cardTypes;
+        private long curCardPoolId => game.editor.currentCardPoolId;
 
         #region 翻译文本
         [TranslateMsg("尝试删除卡牌的警告")]

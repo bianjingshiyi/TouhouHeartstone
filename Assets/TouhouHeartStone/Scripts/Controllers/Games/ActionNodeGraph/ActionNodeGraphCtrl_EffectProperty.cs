@@ -98,7 +98,7 @@ namespace Controllers
             if (prop == null)
                 return;
             //打开卡牌选择界面
-            long poolId = _curCardPoolId;
+            long poolId = curCardPoolId;
             if (prop.tryGetListElementByIndexes(itemIndexs, out DefineReference defRef))
             {
                 if (defRef.defineId != 0)

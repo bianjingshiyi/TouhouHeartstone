@@ -16,16 +16,15 @@ namespace Controllers
         /// <summary>
         /// 打开一个自定义规则进行编辑
         /// </summary>
-        public async Task display(long cardPoolId, GeneratedRuleLogic ruleLogic)
+        public async Task display(GeneratedRuleLogic ruleLogic)
         {
             gameObject.SetActive(true);
             _ui.reset();
             _ui.setName(ruleLogic.name);
-            _curCardPoolId = cardPoolId;
             _ruleLogic = ruleLogic;
 
-            await _actionNodeGraphCtrl.display(new ActionNodeGraphCtrl.DisplayInfo(cardPoolId, ruleLogic));
-            _graphEditor.display(_curCardPoolId);
+            await _actionNodeGraphCtrl.display(ruleLogic);
+            _graphEditor.display();
         }
         public override async Task display(CardPoolDisplayPage info)
         {
@@ -34,7 +33,7 @@ namespace Controllers
             displayInfo = info;
             if (info?.displayObj?.ruleLogic is GeneratedRuleLogic ruleLogic)
             {
-                await display(info.cardPoolId, ruleLogic);
+                await display(ruleLogic);
                 if (info.unsaved)
                     markUnsaved();
                 else
@@ -83,8 +82,8 @@ namespace Controllers
                async () =>
                {
                    //删除动作定义
-                   game.card.removeRuleLogic(_curCardPoolId, _ruleLogic.id);
-                   scene.editor.markCardPoolUnsaved(_curCardPoolId);
+                   game.card.removeRuleLogic(curCardPoolId, _ruleLogic.id);
+                   scene.editor.markCardPoolUnsaved(curCardPoolId);
                    //返回上个界面
                    await exit(true);
                });
@@ -150,9 +149,9 @@ namespace Controllers
             {
                 game.card.removeRuleLogic(gen);
             }
-            game.card.addRuleLogic(_curCardPoolId, _ruleLogic);
+            game.card.addRuleLogic(curCardPoolId, _ruleLogic);
 
-            scene.editor.markCardPoolUnsaved(_curCardPoolId);
+            scene.editor.markCardPoolUnsaved(curCardPoolId);
             clearUnsaved();
         }
         #endregion
@@ -177,6 +176,7 @@ namespace Controllers
         [TranslateMsg("尝试退出自定义规则的编辑页面，但没有保存情况下的按钮名称")]
         public const string RULE_WARNING_OPTION_CANCEL = "取消";
 
+        private long curCardPoolId => game.editor.currentCardPoolId;
         /// <summary>
         /// 正在编辑的动作定义。
         /// </summary>

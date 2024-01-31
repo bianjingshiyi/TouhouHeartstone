@@ -31,12 +31,12 @@ namespace Controllers
 
         private bool tryGetBuffDefine(object value, out GeneratedBuffDefine buffDefine)
         {
-            return game.editor.tryGetBuffDefine(_curCardPoolId, value, out buffDefine);
+            return game.editor.tryGetBuffDefine(curCardPoolId, value, out buffDefine);
         }
         /// <summary>
         /// 更新所有增益引用，并重新设置节点图内的增益定义的选项。
         /// </summary>
-        private void updateBuffReferences()
+        private void updateEditorBuffs()
         {
             game.editor.updateBuffDefines();
             var fieldProps = game.editor.getBuffInputProperties();
@@ -51,7 +51,7 @@ namespace Controllers
         /// <return>值是否发生改变？</return>
         private bool validateSingleBuffReferenceValue(object value, out BuffReference newValue, out bool needUpdateBuffs)
         {
-            return game.editor.validateSingleBuffReferenceValue(_curCardPoolId, value, out newValue, out needUpdateBuffs);
+            return game.editor.validateSingleBuffReferenceValue(curCardPoolId, value, out newValue, out needUpdateBuffs);
         }
         #endregion
     }

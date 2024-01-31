@@ -12,12 +12,11 @@ namespace Controllers
     partial class EffectEditorCtrl : GameObjectCtrl<MainSceneCtrl>
     {
         #region 公有方法
-        public async Task display(long cardPoolId, GeneratedEffect effect)
+        public async Task display(GeneratedEffect effect)
         {
-            _cardPoolId = cardPoolId;
             _effect = effect;
             gameObject.SetActive(true);
-            await _actionNodeGraphCtrl.display(new ActionNodeGraphCtrl.DisplayInfo(cardPoolId, effect));
+            await _actionNodeGraphCtrl.display(effect);
             updateEventTriggerTimes();
         }
         public void updateEventTriggerTimes()
@@ -30,7 +29,6 @@ namespace Controllers
         }
         public void hideActionGraph()
         {
-            _cardPoolId = 0;
             _effect = null;
             _actionNodeGraphCtrl.hide();
         }
@@ -95,35 +93,10 @@ namespace Controllers
         EffectEditorPanel _ui;
         [SerializeField]
         ActionNodeGraphCtrl _actionNodeGraphCtrl;
-        long _cardPoolId;
         GeneratedEffect _effect;
+        private long curCardPoolId => game.editor.currentCardPoolId;
         private EventTriggerTime[] eventTriggerTimes => scene.editor.eventTriggerTimes;
         private string[] eventTriggerTimeEditorNames => scene.editor.eventTriggerTimeEditorNames;
-        #endregion
-
-        #region 内部类
-        public class DisplayInfo : UIDisplayInfo
-        {
-            public DisplayInfo(long cardPoolId, CardDefine cardDefine, GeneratedEffect effect, ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo)
-            {
-                this.cardPoolId = cardPoolId;
-                this.cardDefine = cardDefine;
-                this.effect = effect;
-                this.actionNodeGraphDisplayInfo = actionNodeGraphDisplayInfo;
-            }
-            public DisplayInfo(long cardPoolId, GeneratedBuffDefine buffDefine, GeneratedEffect effect, ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo)
-            {
-                this.cardPoolId = cardPoolId;
-                this.buffDefine = buffDefine;
-                this.effect = effect;
-                this.actionNodeGraphDisplayInfo = actionNodeGraphDisplayInfo;
-            }
-            public long cardPoolId;
-            public CardDefine cardDefine;
-            public GeneratedBuffDefine buffDefine;
-            public GeneratedEffect effect;
-            public ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo;
-        }
         #endregion
     }
 }

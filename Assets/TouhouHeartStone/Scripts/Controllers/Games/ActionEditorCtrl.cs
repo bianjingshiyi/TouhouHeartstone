@@ -15,11 +15,10 @@ namespace Controllers
         /// <summary>
         /// 打开一个自定义动作进行编辑
         /// </summary>
-        public async Task display(long cardPoolId, GeneratedActionDefine actionDefine)
+        public async Task display(GeneratedActionDefine actionDefine)
         {
             gameObject.SetActive(true);
             _ui.reset();
-            _curCardPoolId = cardPoolId;
             _actionDefine = actionDefine;
 
             _ui.setName(actionDefine.editorName);
@@ -27,9 +26,9 @@ namespace Controllers
             _ui.setCategory(actionDefine.category);
             _ui.setDefineType(getDefineTypeName(actionDefine.type));
 
-            await _actionNodeGraphCtrl.display(new ActionNodeGraphCtrl.DisplayInfo(cardPoolId, actionDefine));
+            await _actionNodeGraphCtrl.display(actionDefine);
             updateProperties();
-            _graphEditor.display(_curCardPoolId);
+            _graphEditor.display();
         }
         public override async Task display(CardPoolDisplayPage info)
         {
@@ -38,7 +37,7 @@ namespace Controllers
             displayInfo = info;
             if (info?.displayObj?.actionDefine is GeneratedActionDefine actionDefine)
             {
-                await display(info.cardPoolId, actionDefine);
+                await display(actionDefine);
                 if (info.unsaved)
                     markUnsaved();
                 else
@@ -160,9 +159,9 @@ namespace Controllers
                async () =>
                {
                    //删除动作定义
-                   game.card.removeActionDefine(_curCardPoolId, _actionDefine.defineId);
+                   game.card.removeActionDefine(curCardPoolId, _actionDefine.defineId);
                    scene.editor.updateAllEvents();
-                   scene.editor.markCardPoolUnsaved(_curCardPoolId);
+                   scene.editor.markCardPoolUnsaved(curCardPoolId);
                    //返回上个界面
                    await exit(true);
                });
@@ -269,10 +268,10 @@ namespace Controllers
             {
                 game.card.removeActionDefine(gen);
             }
-            game.card.addActionDefine(_curCardPoolId, _actionDefine);
+            game.card.addActionDefine(curCardPoolId, _actionDefine);
             scene.editor.updateAllEvents();
 
-            scene.editor.markCardPoolUnsaved(_curCardPoolId);
+            scene.editor.markCardPoolUnsaved(curCardPoolId);
             clearUnsaved();
         }
 
@@ -414,6 +413,7 @@ namespace Controllers
         public const string ACTION_DEFINE_TYPE_FUNCTION = "函数";
         [TranslateMsg("节点动作类型/事件")]
         public const string ACTION_DEFINE_TYPE_EVENT = "事件";
+        private long curCardPoolId => game.editor.currentCardPoolId;
         /// <summary>
         /// 正在编辑的动作定义。
         /// </summary>

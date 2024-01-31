@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore;
-using Controllers;
 using MukioI18n;
-using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -88,29 +85,6 @@ namespace Game
             return game.lang._(RULE_NAME_UNKNOWN);
         }
 
-        #region 编辑器环境
-        public async Task reloadCardPoolEnv(CardPoolInfo info)
-        {
-            cardPoolEnv.Clear();
-            cardPoolEnv.Add(info.ToReference());
-            if (info.dependencyRefs != null)
-                cardPoolEnv.AddRange(info.dependencyRefs);
-            foreach (var poolRef in cardPoolEnv)
-            {
-                await game.card.getOrLoadCardPool(poolRef, true);
-            }
-            updateBuffDefines();
-        }
-        public void clearCardPoolEnv()
-        {
-            cardPoolEnv.Clear();
-            updateBuffDefines();
-        }
-        public ICardPoolReference[] getEnvCardPoolRefs()
-        {
-            return cardPoolEnv.ToArray();
-        }
-        #endregion
 
         #region 牌堆
         public string[] getAllPileNames()
@@ -176,8 +150,6 @@ namespace Game
         public string categoryFilter { get; set; }
         public bool[] outputFilter { get; set; }
         public string searchFilter { get; set; }
-
-        private List<ICardPoolReference> cardPoolEnv = new List<ICardPoolReference>();
 
         [SerializeField]
         MainManager _game;

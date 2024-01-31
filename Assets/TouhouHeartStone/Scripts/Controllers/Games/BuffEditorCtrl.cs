@@ -19,10 +19,9 @@ namespace Controllers
         /// <summary>
         /// 打开一个增益进行编辑
         /// </summary>
-        public async Task display(long cardPoolId, GeneratedBuffDefine buffDefine, BuffSkin[] skins)
+        public async Task display(GeneratedBuffDefine buffDefine, BuffSkin[] skins)
         {
             // 设置数据。
-            _curCardPoolId = cardPoolId;
             _buffDefine = buffDefine;
             _buffSkins.Clear();
             _buffSkins.AddRange(skins);
@@ -58,11 +57,11 @@ namespace Controllers
             GeneratedEffect[] effects = buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
             if (effects.Length > 0)
             {
-                await _effectEditorCtrl.display(_curCardPoolId, effects[0]);
+                await _effectEditorCtrl.display(effects[0]);
             }
             _effectEditorCtrl.updateEventTriggerTimes();
             updateEffectList(effects);
-            _graphEditor.display(_curCardPoolId);
+            _graphEditor.display();
         }
         public override async Task display(CardPoolDisplayPage info)
         {
@@ -72,7 +71,7 @@ namespace Controllers
             if (info?.displayObj?.buffDefine is GeneratedBuffDefine buffDefine)
             {
                 var skins = info.skins as BuffSkin[] ?? new BuffSkin[0];
-                await display(info.cardPoolId, buffDefine, skins);
+                await display(buffDefine, skins);
                 if (info.unsaved)
                     markUnsaved();
                 else
@@ -185,7 +184,7 @@ namespace Controllers
             if (skinIndex == getSkinCount())
             {
                 //新建皮肤
-                _curBuffSkin = game.card.createBuffSkin(_curCardPoolId, _buffDefine.id, _curLanguage);
+                _curBuffSkin = game.card.createBuffSkin(curCardPoolId, _buffDefine.id, _curLanguage);
                 _buffSkins.Add(_curBuffSkin);
                 updateSkinNames();
             }
@@ -263,7 +262,7 @@ namespace Controllers
             {
                 markUnsaved();
                 //不存在对应语言的皮肤，新建一个
-                targetSkin = game.card.createBuffSkin(_curCardPoolId, _buffDefine.id, language);
+                targetSkin = game.card.createBuffSkin(curCardPoolId, _buffDefine.id, language);
                 _buffSkins.Add(targetSkin);
             }
             updateSkinNames();
@@ -291,7 +290,7 @@ namespace Controllers
 
             _buffDefine.effectList.Add(effect);
 
-            await _effectEditorCtrl.display(_curCardPoolId, effect);
+            await _effectEditorCtrl.display(effect);
             updateEffectList(_buffDefine.effectList.ToArray());
             _graphEditor.updateUndoRedoButton();
 
@@ -306,7 +305,7 @@ namespace Controllers
             GeneratedEffect effect = effects.ElementAt(index);
             if (_effectEditorCtrl.getCurrentEffect() != effect)
             {
-                await _effectEditorCtrl.display(_curCardPoolId, effect);
+                await _effectEditorCtrl.display(effect);
                 updateEffectList(effects.ToArray());
                 _graphEditor.updateUndoRedoButton();
             }
@@ -524,7 +523,7 @@ namespace Controllers
             if (prop == null)
                 return;
             //打开卡牌选择界面
-            long poolId = _curCardPoolId;
+            long poolId = curCardPoolId;
             if (prop.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
             {
                 if (defRef.defineId != 0)
@@ -592,9 +591,9 @@ namespace Controllers
                async () =>
                {
                    //删除当前增益
-                   game.card.removeBuffDefine(_curCardPoolId, _buffDefine.id);
-                   game.card.removeAllBuffSkins(_curCardPoolId, _buffDefine.id);
-                   scene.editor.markCardPoolUnsaved(_curCardPoolId);
+                   game.card.removeBuffDefine(curCardPoolId, _buffDefine.id);
+                   game.card.removeAllBuffSkins(curCardPoolId, _buffDefine.id);
+                   scene.editor.markCardPoolUnsaved(curCardPoolId);
                    await exit(true);
                });
         }
@@ -665,7 +664,7 @@ namespace Controllers
             BuffSkin[] skins = getCurrentLangSkins();
             if (skins.Length < 1)
             {
-                BuffSkin skin = game.card.createBuffSkin(_curCardPoolId, _buffDefine.id, _curLanguage);
+                BuffSkin skin = game.card.createBuffSkin(curCardPoolId, _buffDefine.id, _curLanguage);
                 _buffSkins.Add(skin);
                 skins = new BuffSkin[] { skin };
             }
@@ -1066,7 +1065,7 @@ namespace Controllers
         }
         private void setBuffProp(string name, object value)
         {
-            value = validatePropertyValue(value);
+            value = game.editor.validatePropertyValue(value, updateEditorBuffs);
             _buffDefine.setProp(name, value);
         }
 
@@ -1083,62 +1082,19 @@ namespace Controllers
             var fieldProps = game.editor.getBuffInputProperties();
             _ui.initValueFields(fieldProps);
         }
-        private object validatePropertyValue(object value)
-        {
-            if (value == null)
-                return value;
-            var type = value.GetType().getNodeValueType();
-            return validatePropertyValue(type, value);
-        }
-        private object validatePropertyValue(NodeValueType targetValueType, object value)
-        {
-            if (!targetValueType.isArray())
-            {
-                // 单个值。
-                var actualValueType = ActionNodeValueType.none;
-                if (value != null)
-                {
-                    actualValueType = value.GetType().getNodeValueType().type;
-                }
-                if (targetValueType.type == ActionNodeValueType.buffReference || actualValueType == ActionNodeValueType.buffReference)
-                {
-                    if (game.editor.validateSingleBuffReferenceValue(_curCardPoolId, value, out var newBuffRef, out var needUpdateBuffs))
-                        value = newBuffRef;
-                    if (needUpdateBuffs)
-                    {
-                        updateEditorBuffs();
-                    }
-                }
-            }
-            else if (value is IList list)
-            {
-                // 数组。
-                for (int i = 0; i < list.Count; i++)
-                {
-                    var listElement = list[i];
-                    if (listElement == null)
-                        continue;
-                    // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
-                    var elementTargetType = listElement.GetType().getNodeValueType();
-                    list[i] = validatePropertyValue(elementTargetType, listElement);
-                }
-                value = list;
-            }
-            return value;
-        }
         #endregion
         private void saveBuff()
         {
-            game.card.removeBuffDefine(_curCardPoolId, _buffDefine.id);
-            game.card.addBuffDefine(_curCardPoolId, _buffDefine);
+            game.card.removeBuffDefine(curCardPoolId, _buffDefine.id);
+            game.card.addBuffDefine(curCardPoolId, _buffDefine);
 
-            game.card.removeAllBuffSkins(_curCardPoolId, _buffDefine.id);
+            game.card.removeAllBuffSkins(curCardPoolId, _buffDefine.id);
             foreach (var skin in _buffSkins)
             {
-                game.card.addBuffSkin(_curCardPoolId, skin);
+                game.card.addBuffSkin(curCardPoolId, skin);
             }
 
-            scene.editor.markCardPoolUnsaved(_curCardPoolId);
+            scene.editor.markCardPoolUnsaved(curCardPoolId);
             clearUnsaved();
         }
         #endregion
@@ -1213,6 +1169,7 @@ namespace Controllers
         List<BuffSkin> _buffSkins = new List<BuffSkin>();
         string _curLanguage;
         DefineReference[] _persistentAnimRefs;
+        private long curCardPoolId => game.editor.currentCardPoolId;
         private EventTriggerTime[] eventTriggerTimes => scene.editor.eventTriggerTimes;
         private string[] eventTriggerTimeEditorNames => scene.editor.eventTriggerTimeEditorNames;
         #endregion

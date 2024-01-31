@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Game;
 using Game.PVE;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
@@ -27,14 +26,9 @@ namespace Controllers
             _dataName = dataName;
             _saveData = data;
 
-            var env = new List<ICardPoolReference>()
-            {
-                game.card.getLocalCardPoolReference(CardManager.STANDARD_POOL_ID),
-                game.card.getLocalCardPoolReference(CardManager.PVE_POOL_ID),
-            };
             var (generatedPoolInfo, _) = await game.pve.getGeneratedCardPool(_dataName);
-            env.Add(generatedPoolInfo.ToReference());
-            _cardPoolEnv = env.ToArray();
+            game.editor.setCurrentCardPoolId(generatedPoolInfo.cardPoolId);
+            game.editor.reloadCardPoolEnv(generatedPoolInfo);
 
             _ui.setCardSelected(false);
             _ui.displayDeckPage();
@@ -464,7 +458,7 @@ namespace Controllers
                 }
                 destEffect.graph.connect(lastActionPort, firstEnterPort);
             }
-            await _effectEditor.display(_cardDefine.cardPoolId, destEffect);
+            await _effectEditor.display(destEffect);
         }
         public GeneratedEffect getGemGroupEffect(CardGemSlotGroup group)
         {
@@ -595,15 +589,15 @@ namespace Controllers
             if (effect == null)
                 _effectEditor.hideActionGraph();
             else
-                await _effectEditor.display(cardDefine.cardPoolId, effect);
+                await _effectEditor.display(effect);
             _slotGroups = PVEManager.getCardDefineSlots(_saveData, cardDefine) ?? new CardGemSlotGroup[0];
             _ui.displayCardPage();
         }
         #endregion
 
         #region 卡池环境
-        private ICardPoolReference[] getCardPoolEnv() => _cardPoolEnv;
-        private ICardPoolReference getCardPoolReference(long cardPoolId) => game.card.getCardPoolReferenceInEnv(cardPoolId, getCardPoolEnv());
+        private ICardPoolReference[] getCardPoolEnv() => game.editor.getEnvCardPoolRefs();
+        private ICardPoolReference getCardPoolReference(long cardPoolId) => game.editor.getCardPoolReference(cardPoolId);
         private INodeDefiner getNodeDefiner() => game.card.getNodeDefiner(getCardPoolEnv());
         #endregion
 
@@ -620,7 +614,6 @@ namespace Controllers
         private CardGem[] _inventoryGems;
         private string _dataName;
         private bool _hasUnsavedChanges;
-        private ICardPoolReference[] _cardPoolEnv;
         [SerializeField]
         private PVECardEditor _ui;
         [SerializeField]

@@ -94,18 +94,9 @@ namespace UI
         #endregion
 
         #region 卡池环境
-        protected ICardPoolReference[] getCardPoolReferenceEnv()
-        {
-            return game.editor.getEnvCardPoolRefs();
-        }
-        protected ICardPoolReference getCardPoolReference(long cardPoolId)
-        {
-            return game.card.getCardPoolReferenceInEnv(cardPoolId, getCardPoolReferenceEnv());
-        }
-        protected ICardPoolReference getCurrentCardPoolRef()
-        {
-            return getCardPoolReference(_curCardPoolId);
-        }
+        protected ICardPoolReference[] getCardPoolReferenceEnv() => game.editor.getEnvCardPoolRefs();
+        protected ICardPoolReference getCardPoolReference(long cardPoolId) => game.editor.getCardPoolReference(cardPoolId);
+        protected ICardPoolReference getCurrentCardPoolRef() => game.editor.getCurrentCardPoolReference();
         #endregion
 
         #region 选卡
@@ -145,8 +136,6 @@ namespace UI
         [SerializeField]
         Button _cancelCardPoolSelectButton;
         private ICardSelectSource _cardSelectSource;
-
-        protected long _curCardPoolId;
         #endregion
     }
     public interface ICardSelectSource

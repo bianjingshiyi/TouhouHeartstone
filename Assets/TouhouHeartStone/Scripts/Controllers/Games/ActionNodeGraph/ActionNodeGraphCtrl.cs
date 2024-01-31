@@ -26,45 +26,51 @@ namespace Controllers
         {
             _recordList.clear();
         }
+        public Task display(object editObject)
+        {
+            quitGraph();
+            // 更新类型名称列表
+            var typeInfos = GraphTypes.getAllPortTypeInfos();
+            var typeNames = game.editor.getEditorPortTypeNames();
+            typeValues = typeInfos.Select(i => i.type.Name).ToArray();
+                // 更新卡牌名称列表
+                var cardTypeNames = game.editor.getCardTypeNames();
+                cardTypeValues = game.editor.getCardTypes();
+            //更新UI
+            _ui.gameObject.SetActive(true);
+
+            var fieldProps = new ValueInputFieldProperties()
+            {
+                graphTypeNames = typeNames,
+                graphTypeValues = typeValues,
+
+                eventNames = eventEditorNames,
+                eventValues = eventReferences,
+                
+                cardTypeNames = cardTypeNames,
+                cardTypeValues = cardTypeValues,
+
+                buffNames = game.editor.getBuffNames(),
+                buffValues = game.editor.getBuffReferences()
+            };
+            _ui.initValueInputFieldProperties(fieldProps);
+            _ui.resetView();
+
+
+            if (editObject is GeneratedActionDefine actionDefine)
+                return openGeneratedActionDefine(actionDefine);
+            if (editObject is GeneratedRuleLogic ruleLogic)
+                return openGeneratedRuleLogic(ruleLogic);
+            else if (editObject is GeneratedEffect effect)
+                return openActionGraph(effect);
+            else
+                return Task.CompletedTask;
+        }
         public Task display(UIDisplayInfo uiDisplayInfo)
         {
             if (uiDisplayInfo is DisplayInfo info)
             {
-                quitGraph();
-                _curCardPoolId = info.cardPoolId;
-                // 获取事件定义列表
-                updateBuffReferences();
-                // 更新类型名称列表
-                var typeInfos = GraphTypes.getAllPortTypeInfos();
-                var typeNames = game.editor.getEditorPortTypeNames();
-                typeValues = typeInfos.Select(i => i.type.Name).ToArray();
-                // 更新卡牌名称列表
-                var cardTypeNames = game.editor.getCardTypeNames();
-                cardTypeValues = game.editor.getCardTypes();
-                //更新UI
-                _ui.gameObject.SetActive(true);
-
-                var fieldProps = new ValueInputFieldProperties()
-                {
-                    graphTypeNames = typeNames,
-                    graphTypeValues = typeValues,
-                    eventNames = eventEditorNames, 
-                    eventValues = eventReferences,
-                    cardTypeNames = cardTypeNames,
-                    cardTypeValues = cardTypeValues,
-                };
-                _ui.initValueInputFieldProperties(fieldProps);
-                _ui.resetView();
-
-
-                if (info.editObject is GeneratedActionDefine actionDefine)
-                    return openGeneratedActionDefine(actionDefine);
-                if (info.editObject is GeneratedRuleLogic ruleLogic)
-                    return openGeneratedRuleLogic(ruleLogic);
-                else if (info.editObject is GeneratedEffect effect)
-                    return openActionGraph(effect);
-                else
-                    return Task.CompletedTask;
+                return display(info.editObject);
             }
             throw new NotImplementedException();
         }
@@ -79,7 +85,7 @@ namespace Controllers
                 editObject = _generatedRuleLogic;
             else
                 editObject = null;
-            return new DisplayInfo(_curCardPoolId, editObject);
+            return new DisplayInfo(editObject);
         }
         public Task hide()
         {
@@ -739,7 +745,7 @@ namespace Controllers
             if (inputDefine == null)
                 return;
             var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
-            long cardPoolId = _curCardPoolId;
+            long cardPoolId = curCardPoolId;
             var defaultValue = actionNode.getInputDefaultValue(inputDefine.name, paramIndex);
             if (defaultValue.tryGetListElementByIndexes(itemIndexes, out DefineReference defRef))
             {
@@ -1736,7 +1742,7 @@ namespace Controllers
 
         #region 编辑器环境
         private ICardPoolReference[] getCardPoolEnv() => game.editor.getEnvCardPoolRefs();
-        private ICardPoolReference getCardPoolReference(long id) => game.card.getCardPoolReferenceInEnv(id, getCardPoolEnv());
+        private ICardPoolReference getCardPoolReference(long id) => game.editor.getCardPoolReference(id);
         private INodeDefiner getNodeDefiner() => game.card.getNodeDefiner(getCardPoolEnv());
         private EventDefine getEventDefine(EventReference eventRef, bool includeHidden = true)
         {
@@ -1874,7 +1880,7 @@ namespace Controllers
                         value = newBuffRef;
                     if (needUpdateBuffs)
                     {
-                        updateBuffReferences();
+                        updateEditorBuffs();
                     }
                 }
             }
@@ -2092,7 +2098,6 @@ namespace Controllers
         readonly List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
         private Dictionary<ActionNodeItem, Vector2> _movingNodeDict = new Dictionary<ActionNodeItem, Vector2>();
         ActionGraph graph;
-        long _curCardPoolId = 0;
         GeneratedEffect _effect;
         /// <summary>
         /// 当前正在进行连接的端口。
@@ -2283,6 +2288,7 @@ namespace Controllers
             StringTable.GAME_KEYWORD_DEATHRATTLE,
             StringTable.GAME_KEYWORD_SECRET,
         };
+        private long curCardPoolId => game.editor.currentCardPoolId;
         private string[] cardTypeValues;
         private string[] typeValues;
         private EventReference[] eventReferences => scene.editor.eventReferences;
@@ -2291,12 +2297,10 @@ namespace Controllers
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
         {
-            public DisplayInfo(long cardPoolId, object editObject)
+            public DisplayInfo(object editObject)
             {
-                this.cardPoolId = cardPoolId;
                 this.editObject = editObject;
             }
-            public long cardPoolId;
             public object editObject;
         }
         #endregion

@@ -16,9 +16,8 @@ namespace UI
 {
     internal class GraphEditorPanelCtrl : GameObjectCtrl<MainSceneCtrl>
     {
-        public void display(long cardPoolId)
+        public void display()
         {
-            _cardPoolId = cardPoolId;
             _nodesPanel.setCategoryFilter(categoryFilter);
             _nodesPanel.setOutputFilter(outputFilter);
             _nodesPanel.setSearchFilter(searchFilter);
@@ -245,8 +244,8 @@ namespace UI
 
             //新建自定义动作
             var type = defineTypes[typeIndex];
-            GeneratedActionDefine generatedActionDefine = game.card.createActionDefine(_cardPoolId, name, type);
-            game.card.addActionDefine(_cardPoolId, generatedActionDefine);
+            GeneratedActionDefine generatedActionDefine = game.card.createActionDefine(curCardPoolId, name, type);
+            game.card.addActionDefine(curCardPoolId, generatedActionDefine);
             scene.editor.updateAllEvents();
 
             generatedActionDefine.setCategory(category);
@@ -731,7 +730,6 @@ namespace UI
 
         #region 卡池环境
         private ICardPoolReference[] getCardPoolEnv() => game.editor.getEnvCardPoolRefs();
-        private ICardPoolReference getCardPoolReference(long cardPoolId) => game.card.getCardPoolReferenceInEnv(cardPoolId, getCardPoolEnv());
         #endregion
 
 
@@ -741,7 +739,6 @@ namespace UI
         public event Action<Node, VisualEffectDialogInfo> onAnimationPropChanged;
         #endregion
 
-        private long _cardPoolId;
         private bool _deleteButtonDirty;
         private Node _curEditingVisualEffectNode;
         [SerializeField]
@@ -880,6 +877,7 @@ namespace UI
             VISUAL_EFFECT_POSITION_TARGET_CARD,
             VISUAL_EFFECT_POSITION_TEMP_VAR
         };
+        private long curCardPoolId => game.editor.currentCardPoolId;
         private EventTriggerTime[] eventTriggerTimes => scene.editor.eventTriggerTimes;
     }
     public static class VisualEffectPosition

@@ -10,6 +10,7 @@ using MongoDB.Bson;
 using MukioI18n;
 using PVE;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UnityEngine;
 
@@ -87,6 +88,11 @@ namespace Game.PVE
         public void createGeneratedCardPool(string dataName, out CardPoolInfo info, out CardPool pool)
         {
             main.card.createCardPool(out info, out pool);
+            info.dependencyRefs = new CardPoolReference[]
+            {
+                main.card.getLocalCardPoolInfo(CardManager.STANDARD_POOL_ID).ToReference(),
+                main.card.getLocalCardPoolInfo(CardManager.PVE_POOL_ID).ToReference(),
+            };
             info.texturesDir = _generatedTexturesPath;
             info.cardPoolName = main.lang._(DEFAULT_GEN_POOL_NAME);
             _pvePoolDict.Add(dataName, info);

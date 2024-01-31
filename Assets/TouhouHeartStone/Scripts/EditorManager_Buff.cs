@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections;
+using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore;
 using MukioI18n;
@@ -148,6 +150,52 @@ namespace Game
             return newValue != null;
         }
 
+        public object validatePropertyValue(object value, Action updateBuffDefineAction)
+        {
+            if (value == null)
+                return value;
+            var type = value.GetType().getNodeValueType();
+            return validatePropertyValue(type, value, updateBuffDefineAction);
+        }
+        public object validatePropertyValue(NodeValueType targetValueType, object value, Action updateBuffDefineAction)
+        {
+            if (!targetValueType.isArray())
+            {
+                // 单个值。
+                var actualValueType = ActionNodeValueType.none;
+                if (value != null)
+                {
+                    actualValueType = value.GetType().getNodeValueType().type;
+                }
+                if (targetValueType.type == ActionNodeValueType.buffReference || actualValueType == ActionNodeValueType.buffReference)
+                {
+                    if (game.editor.validateSingleBuffReferenceValue(currentCardPoolId, value, out var newBuffRef, out var needUpdateBuffs))
+                        value = newBuffRef;
+                    if (needUpdateBuffs)
+                    {
+                        if (updateBuffDefineAction != null)
+                            updateBuffDefineAction();
+                        else
+                            updateBuffDefines();
+                    }
+                }
+            }
+            else if (value is IList list)
+            {
+                // 数组。
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var listElement = list[i];
+                    if (listElement == null)
+                        continue;
+                    // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
+                    var elementTargetType = listElement.GetType().getNodeValueType();
+                    list[i] = validatePropertyValue(elementTargetType, listElement, updateBuffDefineAction);
+                }
+                value = list;
+            }
+            return value;
+        }
 
         #region 属性字段
         [TranslateMsg("增益下拉选框/新建增益项")]
