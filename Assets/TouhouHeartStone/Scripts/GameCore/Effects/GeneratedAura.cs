@@ -190,10 +190,10 @@ namespace TouhouHeartstone
         private async Task<Dictionary<Card, Buff>> getBuffDic(CardEngine game, Card card, Buff buff)
         {
             var cardId = card.id;
-            var effectIndex = Array.IndexOf(card.define.getEffects(), this);
             Dictionary<Card, Buff> buffDict;
             if (buff != null)
             {
+                var effectIndex = Array.IndexOf(buff.getEffects(), this);
                 var propName = $"Card{cardId}/Buff{buff.instanceID}/Aura{effectIndex}/BuffDict";
                 buffDict = buff.getProp<Dictionary<Card, Buff>>(propName);
                 if (buffDict == null)
@@ -204,6 +204,7 @@ namespace TouhouHeartstone
             }
             else
             {
+                var effectIndex = Array.IndexOf(card.define.getEffects(), this);
                 var propName = $"Card{cardId}/Aura{effectIndex}/BuffDict";
                 buffDict = card.getProp<Dictionary<Card, Buff>>(game, propName);
                 if (buffDict == null)
