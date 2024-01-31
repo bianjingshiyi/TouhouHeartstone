@@ -53,6 +53,10 @@ namespace TouhouHeartstone
         {
             return getTags()?.Contains(tag) ?? false;
         }
+        public override int getPriority()
+        {
+            return passiveEntry?.getPriorty() ?? 0;
+        }
         public virtual void setPiles(params string[] tags)
         {
             passiveEntry?.setPiles(tags);
@@ -94,6 +98,7 @@ namespace TouhouHeartstone
         public override ControlOutput onEnableAction => entryNode?.getOutputPort<ControlOutput>(enableActionName);
         public override ControlOutput onDisableAction => entryNode?.getOutputPort<ControlOutput>(disableActionName);
         public override ControlOutput executePort => entryNode?.getOutputPort<ControlOutput>(PassiveEntryNode.actionPortName);
+        public override ValueInput priorityPort => entryNode?.getInputPort<ValueInput>(PassiveEntryNode.priorityPortName);
         public const string enableActionName = "enableAction";
         public const string disableActionName = "disableAction";
         public static readonly PortDefine enableActionPortDefine = PortDefine.Control(enableActionName, "EnableAction");

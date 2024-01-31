@@ -624,7 +624,7 @@ namespace Game.BattleTable
             servant.setTaunt(cardDefine.hasKeyword(KEYWORD.TAUNT));
             servant.setShield(cardDefine.hasKeyword(KEYWORD.SHIELD));
             servant.setStealth(cardDefine.hasKeyword(KEYWORD.STEALTH) || cardDefine.hasKeyword(KEYWORD.PERMANENTSTEALTH));
-            servant.setLastword(cardDefine.hasDeathRattles());
+            servant.setLastword(cardDefine.getEffects().hasDeathRattles());
             servant.setLethal(cardDefine.hasKeyword(KEYWORD.POISONOUS));
             servant.setLifeDrain(cardDefine.hasKeyword(KEYWORD.DRAIN));
             servant.setShackle(cardDefine.hasKeyword(KEYWORD.FROZEN) || cardDefine.hasKeyword(KEYWORD.PERMANENT_FROZEN));

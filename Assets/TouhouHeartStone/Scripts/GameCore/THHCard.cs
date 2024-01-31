@@ -844,12 +844,13 @@ namespace TouhouHeartstone
             List<(Effect effect, Buff buff)> results = new List<(Effect effect, Buff buff)>();
             if (!card.isSilenced(game))
             {
-                results.AddRange(card.define.getActiveEffects().Select<Effect, (Effect effect, Buff buff)>(e => (e, null)));
+                var effects = card.define.getEffects();
+                results.AddRange(effects.getActiveEffects().Select<Effect, (Effect effect, Buff buff)>(e => (e, null)));
             }
             foreach (var buff in card.getBuffs())
             {
                 var effects = buff.getEffects();
-                results.AddRange(effects.Where(e => e.isActiveEffect()).Select<Effect, (Effect effect, Buff buff)>(e => (e, buff)));
+                results.AddRange(effects.getActiveEffects().Select<Effect, (Effect effect, Buff buff)>(e => (e, buff)));
             }
             return results.ToArray();
         }
@@ -858,19 +859,11 @@ namespace TouhouHeartstone
             List<(Effect effect, Buff buff)> results = new List<(Effect effect, Buff buff)>();
             if (!card.isSilenced(game))
             {
-                results.AddRange(card.define.getBattlecries()
-                    .Select<Effect, (Effect effect, Buff buff)>(e => (e, null)));
+                results.AddRange(card.define.getEffects().getBattlecries().Select<Effect, (Effect effect, Buff buff)>(e => (e, null)));
             }
             foreach (var buff in card.getBuffs())
             {
-                var effects = buff.getEffects();
-                results.AddRange(effects.Where(e =>
-                {
-                    if (e.isBattlecry())
-                        return true;
-                    return false;
-                })
-                    .Select<Effect, (Effect effect, Buff buff)>(e => (e, buff)));
+                results.AddRange(buff.getEffects().getBattlecries().Select<Effect, (Effect effect, Buff buff)>(e => (e, buff)));
             }
             return results.ToArray();
         }
@@ -879,27 +872,28 @@ namespace TouhouHeartstone
             List<(Effect effect, Buff buff)> results = new List<(Effect effect, Buff buff)>();
             if (!card.isSilenced(game))
             {
-                results.AddRange(card.define.getDeathRattles()
-                    .Select<Effect, (Effect effect, Buff buff)>(e => (e, null)));
+                var effects = card.define.getEffects();
+                results.AddRange(effects.getDeathRattles().Select<Effect, (Effect effect, Buff buff)>(e => (e, null)));
             }
             foreach (var buff in card.getBuffs())
             {
                 var effects = buff.getEffects();
-                results.AddRange(effects.Where(e => e.isDeathRattle())
-                    .Select<Effect, (Effect effect, Buff buff)>(e => (e, buff)));
+                results.AddRange(effects.getDeathRattles().Select<Effect, (Effect effect, Buff buff)>(e => (e, buff)));
             }
             return results.ToArray();
         }
         public static (Effect effect, Buff buff)[] getAuras(this Card card, IGame game)
         {
             List<(Effect effect, Buff buff)> results = new List<(Effect effect, Buff buff)>();
-            results.AddRange(card.define.getAuras()
-                .Select<Effect, (Effect effect, Buff buff)>(e => (e, null)));
+            if (!card.isSilenced(game))
+            {
+                var effects = card.define.getEffects();
+                results.AddRange(effects.getAuras().Select<Effect, (Effect effect, Buff buff)>(e => (e, null)));
+            }
             foreach (var buff in card.getBuffs())
             {
                 var effects = buff.getEffects();
-                results.AddRange(effects.Where(e => e.isAura())
-                    .Select<Effect, (Effect effect, Buff buff)>(e => (e, buff)));
+                results.AddRange(effects.getAuras().Select<Effect, (Effect effect, Buff buff)>(e => (e, buff)));
             }
             return results.ToArray();
         }
@@ -907,13 +901,12 @@ namespace TouhouHeartstone
         {
             if (!card.isSilenced(game))
             {
-                if (card.define.hasBattlecry())
+                if (card.define.getEffects().hasBattlecry())
                     return true;
             }
             foreach (var buff in card.getBuffs())
             {
-                var effects = buff.getEffects();
-                if (effects.Any(e => e.isBattlecry()))
+                if (buff.getEffects().hasBattlecry())
                     return true;
             }
             return false;
@@ -922,18 +915,13 @@ namespace TouhouHeartstone
         {
             if (!card.isSilenced(game))
             {
-                if (card.define.hasDeathRattles())
-                {
+                if (card.define.getEffects().hasDeathRattles())
                     return true;
-                }
             }
             foreach (var buff in card.getBuffs())
             {
-                var effects = buff.getEffects();
-                if (effects.Any(e => e.isDeathRattle()))
-                {
+                if (buff.getEffects().hasDeathRattles())
                     return true;
-                }
             }
             return false;
         }
@@ -953,7 +941,7 @@ namespace TouhouHeartstone
         public static async Task<EventArg[]> triggerCardDefineActiveEffect(this Card card, CardEngine game, CardDefine define, Card[] targets)
         {
             List<EventArg> eventArgs = new List<EventArg>();
-            var effects = define.getActiveEffects();
+            var effects = define.getEffects().getActiveEffects();
             foreach (var effect in effects)
             {
                 var eventArg = await EffectTriggerEventDefine.doEventIfValid(game, card, null, effect, targets: targets);
@@ -988,7 +976,7 @@ namespace TouhouHeartstone
         public static async Task<EventArg[]> triggerCardDefineBattlecries(this Card card, CardEngine game, CardDefine define, Card[] targets)
         {
             List<EventArg> eventArgs = new List<EventArg>();
-            var effects = define.getBattlecries();
+            var effects = define.getEffects().getBattlecries();
             foreach (var effect in effects)
             {
                 var eventArg = await EffectTriggerEventDefine.doEventIfValid(game, card, null, effect, targets: targets);
@@ -1021,7 +1009,7 @@ namespace TouhouHeartstone
         public static async Task<EventArg[]> triggerCardDefineDeathRattles(this Card card, CardEngine game, CardDefine define)
         {
             List<EventArg> eventArgs = new List<EventArg>();
-            var deathrattles = define.getDeathRattles();
+            var deathrattles = define.getEffects().getDeathRattles();
             foreach (var effect in deathrattles)
             {
                 var eventArg = await EffectTriggerEventDefine.doEventIfValid(game, card, null, effect);

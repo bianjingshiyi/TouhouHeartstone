@@ -99,6 +99,10 @@ namespace TouhouHeartstone
         {
             return entryNode?.getTags()?.Contains(tag) ?? false;
         }
+        public override int getPriority()
+        {
+            return entryNode?.getPriorty() ?? 0;
+        }
         public override SerializableEffect Serialize()
         {
             return new SerializableActiveEffect(this);
@@ -124,6 +128,7 @@ namespace TouhouHeartstone
         #region 属性字段
         public virtual ActiveEntryNode entryNode => graph?.nodes?.OfType<ActiveEntryNode>().FirstOrDefault();
         public override ControlOutput executePort => entryNode?.getOutputPort<ControlOutput>(ActiveEntryNode.actionPortName);
+        public override ValueInput priorityPort => entryNode?.getInputPort<ValueInput>(ActiveEntryNode.priorityPortName);
         public IEnumerable<TargetChecker> targetCheckers => entryNode?.targetCheckerList;
         Node IEntryNodeEffect.entryNode => entryNode;
         #endregion

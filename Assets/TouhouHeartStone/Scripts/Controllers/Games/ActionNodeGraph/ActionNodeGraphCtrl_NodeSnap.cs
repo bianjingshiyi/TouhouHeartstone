@@ -65,8 +65,8 @@ namespace Controllers
                     var inputInfos = new InputPortInfo[]
                     {
                         new InputPortInfo(
-                            new PortItemInfo(game.lang._(PassiveEntryNode.triggerConditionPortName), boolColor, false),
-                            new ActionNodeValueInfo(PassiveEntryNode.triggerConditionPortName, new NodeValueType(ActionNodeValueType.boolean), true),
+                            new PortItemInfo(game.lang._(PassiveEntryNode.conditionPortDisplayName), boolColor, false),
+                            new ActionNodeValueInfo(PassiveEntryNode.conditionPortDisplayName, new NodeValueType(ActionNodeValueType.boolean), true),
                             true,
                             false),
                         new InputPortInfo(

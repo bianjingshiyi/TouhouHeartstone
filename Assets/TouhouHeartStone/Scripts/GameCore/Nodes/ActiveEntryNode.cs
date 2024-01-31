@@ -13,8 +13,9 @@ namespace TouhouHeartstone
         public ActiveEntryNode(int id)
         {
             this.id = id;
-            inputList.Add(new ValueInput(this, triggerConditionPortDefine));
+            inputList.Add(new ValueInput(this, conditionPortDefine));
             inputList.Add(new ValueInput(this, tagsPortDefine));
+            inputList.Add(new ValueInput(this, priorityPortDefine));
             outputList.Add(new ControlOutput(this, actionPortDefine));
         }
         public override Task<ControlOutput> run(Flow flow)
@@ -30,6 +31,8 @@ namespace TouhouHeartstone
             DefinitionConditions();
             DefinitionOutputs();
         }
+
+        #region 获取端口
         public ValueInput getTriggerCondtionValuePort()
         {
             return getInputPort<ValueInput>(conditionPortName);
@@ -50,25 +53,12 @@ namespace TouhouHeartstone
         {
             return getInputPorts<ValueInput>().Where(p => p.name == targetConditionName).ToArray();
         }
+        #endregion
+
+        #region 目标
         public int getTargetCheckerIndex(TargetChecker checker)
         {
             return targetCheckerList.IndexOf(checker);
-        }
-        public void setTags(params string[] value)
-        {
-            var tags = getInputDefaultValue<EffectTagCollection>(tagsPortName);
-            if (tags == null)
-            {
-                tags = new EffectTagCollection();
-                setInputDefaultValue(tagsPortName, tags);
-            }
-            tags.Clear();
-            if (value != null)
-                tags.AddRange(value);
-        }
-        public string[] getTags()
-        {
-            return getInputDefaultValue<EffectTagCollection>(tagsPortName)?.ToArray();
         }
         public void AddTargetChecker(TargetChecker checker)
         {
@@ -87,6 +77,30 @@ namespace TouhouHeartstone
             targetCheckerList.Remove(checker);
             DefinitionConditions();
         }
+        #endregion
+
+        #region 值
+        public void setTags(params string[] value)
+        {
+            var tags = getInputDefaultValue<EffectTagCollection>(tagsPortName);
+            if (tags == null)
+            {
+                tags = new EffectTagCollection();
+                setInputDefaultValue(tagsPortName, tags);
+            }
+            tags.Clear();
+            if (value != null)
+                tags.AddRange(value);
+        }
+        public string[] getTags()
+        {
+            return getInputDefaultValue<EffectTagCollection>(tagsPortName)?.ToArray();
+        }
+        public int getPriorty()
+        {
+            return getInputDefaultValue<int>(priorityPortName);
+        }
+        #endregion
         public override SerializableNode ToSerializableNode()
         {
             return new SerializableActiveEntryNode(this);
@@ -95,22 +109,16 @@ namespace TouhouHeartstone
 
         private void DefinitionConditions()
         {
-            ValueInput valueCondition()
-                 => inputList.OfType<ValueInput>().FirstOrDefault(d => d != null && d.define.Equals(triggerConditionPortDefine)) ??
-                 new ValueInput(this, triggerConditionPortDefine);
-            ValueInput valueTags()
-                 => inputList.OfType<ValueInput>().FirstOrDefault(d => d != null && d.define.Equals(tagsPortDefine)) ??
-                 new ValueInput(this, tagsPortDefine);
-            ValueInput targetCondition(int paramIndex)
-                 => inputList.OfType<ValueInput>().FirstOrDefault(d => d != null && d.define.Equals(targetConditionPortDefine) && d.paramIndex == paramIndex) ??
-                 new ValueInput(this, targetConditionPortDefine, paramIndex);
-
-
-            var inputs = new List<IPort> { valueCondition(), valueTags() };
+            var inputs = new List<IPort> 
+            { 
+                getOrCreateInputPort(conditionPortDefine),
+            };
             for (int i = 0; i < targetCheckerList.Count; i++)
             {
-                inputs.Add(targetCondition(i));
+                inputs.Add(getOrCreateParamsValueInput(targetConditionPortDefine, i));
             }
+            inputs.Add(getOrCreateInputPort(tagsPortDefine));
+            inputs.Add(getOrCreateInputPort(priorityPortDefine));
 
             foreach (var lostPort in inputList.Except(inputs))
             {
@@ -155,13 +163,16 @@ namespace TouhouHeartstone
         public const string cardPortName = EffectTriggerEventDefine.VAR_CARD;
         public const string targetsPortName = EffectTriggerEventDefine.VAR_TARGETS;
         public const string tagsPortName = "tags";
+        public const string priorityPortName = "priority";
+
+        private static PortDefine conditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, "触发条件");
         private static PortDefine targetConditionPortDefine = PortDefine.Value(typeof(bool), targetConditionName, "目标{0}条件");
-        private static PortDefine triggerConditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, "触发条件");
-        private static PortDefine tagsPortDefine = PortDefine.Value(typeof(EffectTagCollection), tagsPortName, "标签列表", isConst: true);
         private static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
         private static PortDefine playerPortDefine = PortDefine.Value(typeof(Player), playerPortName, "Player");
         private static PortDefine cardPortDefine = PortDefine.Value(typeof(Card), cardPortName, "Card");
         private static PortDefine targetsPortDefine = PortDefine.Value(typeof(Card[]), targetsPortName, "TargetCard");
+        private static PortDefine tagsPortDefine = PortDefine.Value(typeof(EffectTagCollection), tagsPortName, "标签列表", isConst: true);
+        private static PortDefine priorityPortDefine = PortDefine.Value(typeof(int), priorityPortName, "优先级", isConst: true);
     }
     public class SerializableActiveEntryNode : SerializableNode
     {

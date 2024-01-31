@@ -12,9 +12,10 @@ namespace TouhouCardEngine
         #region 公有方法
         public PassiveEntryNode()
         {
-            inputList.Add(new ValueInput(this, triggerConditionPortDefine));
+            inputList.Add(new ValueInput(this, conditionPortDefine));
             inputList.Add(new ValueInput(this, tagsPortDefine));
             inputList.Add(new ValueInput(this, pileListPortDefine));
+            inputList.Add(new ValueInput(this, priorityPortDefine));
             outputList.Add(new ControlOutput(this, actionPortDefine));
         }
         public virtual void Define()
@@ -86,21 +87,23 @@ namespace TouhouCardEngine
         }
         #endregion
 
+        #region 优先级
+        public int getPriorty()
+        {
+            return getInputDefaultValue<int>(priorityPortName);
+        }
+        #endregion
+
 
         private void DefinitionConditions()
         {
-            ValueInput valueCondition()
-                 => inputList.OfType<ValueInput>().FirstOrDefault(d => d != null && d.define.Equals(triggerConditionPortDefine)) ??
-                 new ValueInput(this, triggerConditionPortDefine);
-            ValueInput valueTags()
-                 => inputList.OfType<ValueInput>().FirstOrDefault(d => d != null && d.define.Equals(tagsPortDefine)) ??
-                 new ValueInput(this, tagsPortDefine);
-            ValueInput valuePiles()
-                 => inputList.OfType<ValueInput>().FirstOrDefault(d => d != null && d.define.Equals(pileListPortDefine)) ??
-                 new ValueInput(this, pileListPortDefine);
-
-
-            var inputs = new List<IPort> { valueCondition(), valueTags(), valuePiles() };
+            var inputs = new List<IPort> 
+            { 
+                getOrCreateInputPort(conditionPortDefine),
+                getOrCreateInputPort(tagsPortDefine),
+                getOrCreateInputPort(pileListPortDefine),
+                getOrCreateInputPort(priorityPortDefine),
+            };
 
             foreach (var lostPort in inputList.Except(inputs))
             {
@@ -162,17 +165,24 @@ namespace TouhouCardEngine
         public const string actionPortName = "action";
         public const string playerPortName = "玩家";
         public const string cardPortName = "卡牌";
-        public const string tagsPortDisplayName = "标签列表";
         public const string tagsPortName = "tags";
-        public const string pileListPortDisplayName = "生效区域";
         public const string pileListPortName = "pileList";
-        public const string triggerConditionPortName = "触发条件";
-        public static PortDefine triggerConditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, triggerConditionPortName);
+        public const string priorityPortName = "priority";
+
+        public const string conditionPortDisplayName = "触发条件";
+        public const string playerPortDisplayName = "玩家";
+        public const string cardPortDisplayName = "卡牌";
+        public const string tagsPortDisplayName = "标签列表";
+        public const string pileListPortDisplayName = "生效区域";
+        public const string priorityDisplayName = "优先级";
+
+        public static PortDefine conditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, conditionPortDisplayName);
         public static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
+        public static PortDefine playerPortDefine = PortDefine.Value(typeof(Player), playerPortName, playerPortDisplayName);
+        public static PortDefine cardPortDefine = PortDefine.Value(typeof(Card), cardPortName, cardPortDisplayName);
         public static PortDefine tagsPortDefine = PortDefine.Value(typeof(EffectTagCollection), tagsPortName, tagsPortDisplayName, isConst: true);
         public static PortDefine pileListPortDefine = PortDefine.Value(typeof(PileNameCollection), pileListPortName, pileListPortDisplayName, isConst: true);
-        protected static PortDefine playerPortDefine = PortDefine.Value(typeof(Player), playerPortName, "Player");
-        protected static PortDefine cardPortDefine = PortDefine.Value(typeof(Card), cardPortName, "Card");
+        public static PortDefine priorityPortDefine = PortDefine.Value(typeof(int), priorityPortName, priorityDisplayName, isConst: true);
     }
     [Serializable]
     public class SerializablePassiveEntryNode : SerializableNode

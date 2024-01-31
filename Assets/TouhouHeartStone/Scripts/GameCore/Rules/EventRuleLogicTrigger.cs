@@ -19,7 +19,9 @@ namespace TouhouHeartstone
         {
             return logic.execute(game, arg);
         }
+        public override int getPriority() => 0;
         public CardEngine game;
         public GeneratedRuleEventLogic logic;
+
     }
 }

@@ -59,7 +59,7 @@ namespace Controllers
             }
             else if (isEventEntry())
             {
-                return new PortDefine[] { PassiveEntryNode.triggerConditionPortDefine };
+                return new PortDefine[] { PassiveEntryNode.conditionPortDefine };
             }
             return null;
         }

@@ -25,6 +25,7 @@ namespace TouhouHeartstone
             return !card.isEffectEnabled(buff, this);
         }
         public string[] getPiles() => _piles;
+        public override int getPriority() => 0;
         #endregion
 
         protected override Task onEnable(EffectEnv env)

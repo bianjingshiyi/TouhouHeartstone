@@ -424,7 +424,7 @@ namespace Game
         {
             if (cardDefine == null)
                 return false;
-            return cardDefine.hasBattlecry();
+            return cardDefine.getEffects().hasBattlecry();
         }
         /// <summary>
         /// 触发卡牌遗言
@@ -453,7 +453,7 @@ namespace Game
         {
             if (cardDefine == null)
                 return false;
-            return cardDefine.hasDeathRattles();
+            return cardDefine.getEffects().hasDeathRattles();
         }
         /// <summary>
         /// 触发法术或技能卡牌定义效果
@@ -485,7 +485,7 @@ namespace Game
         {
             if (cardDefine == null)
                 return false;
-            return cardDefine.isTrap();
+            return cardDefine.getEffects().hasTrap();
         }
         /// <summary>
         /// 获取卡牌定义合法目标集合

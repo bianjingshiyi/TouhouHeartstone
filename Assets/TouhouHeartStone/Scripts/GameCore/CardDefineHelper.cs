@@ -130,45 +130,6 @@ namespace TouhouHeartstone
             return getCardNumber(card.id);
         }
 
-        public static Effect[] getAuras(this CardDefine card)
-        {
-            return card.getEffects().Where(e => e.isAura()).ToArray();
-        }
-        public static Effect[] getBattlecries(this CardDefine card)
-        {
-            return card.getEffects().Where(e => 
-            {
-                if (e.isBattlecry())
-                    return true;
-                return false;
-            }).ToArray();
-        }
-        public static Effect[] getActiveEffects(this CardDefine card)
-        {
-            return card.getEffects().Where(e => e.isActiveEffect()).ToArray();
-        }
-        public static bool hasBattlecry(this CardDefine card)
-        {
-            return card.getEffects().Any(e =>
-            {
-                if (e.isBattlecry())
-                    return true;
-                return false;
-            });
-        }
-        public static Effect[] getDeathRattles(this CardDefine card)
-        {
-            return card.getEffects().Where(e => e.isDeathRattle()).ToArray();
-        }
-        public static bool hasDeathRattles(this CardDefine card)
-        {
-            return card.getEffects().Any(e => e.isDeathRattle());
-        }
-        public static bool isTrap(this CardDefine cardDefine)
-        {
-            return cardDefine.getGeneratedEffects().Any(e => e.isTrap());
-        }
-
 
         /// <summary>
         /// 这张卡牌定义的主动效果的可选目标

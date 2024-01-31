@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 
@@ -26,6 +27,36 @@ namespace TouhouHeartstone
         {
             return effect is GeneratedActiveEffect;
         }
+
+        public static Effect[] getAuras(this IEnumerable<Effect> effects)
+        {
+            return effects.Where(e => e.isAura()).OrderByDescending(e => e.getPriority()).ToArray();
+        }
+        public static Effect[] getBattlecries(this IEnumerable<Effect> effects)
+        {
+            return effects.Where(e => e.isBattlecry()).OrderByDescending(e => e.getPriority()).ToArray();
+        }
+        public static Effect[] getActiveEffects(this IEnumerable<Effect> effects)
+        {
+            return effects.Where(e => e.isActiveEffect()).OrderByDescending(e => e.getPriority()).ToArray();
+        }
+        public static bool hasBattlecry(this IEnumerable<Effect> effects)
+        {
+            return effects.Any(e => e.isBattlecry());
+        }
+        public static Effect[] getDeathRattles(this IEnumerable<Effect> effects)
+        {
+            return effects.Where(e => e.isDeathRattle()).OrderByDescending(e => e.getPriority()).ToArray();
+        }
+        public static bool hasDeathRattles(this IEnumerable<Effect> effects)
+        {
+            return effects.Any(e => e.isDeathRattle());
+        }
+        public static bool hasTrap(this IEnumerable<Effect> effects)
+        {
+            return effects.Any(e => e.isTrap());
+        }
+
 
         /// <summary>
         /// 这个效果的可选目标
