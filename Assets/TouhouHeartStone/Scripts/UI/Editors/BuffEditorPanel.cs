@@ -148,6 +148,10 @@ namespace UI
             }
             );
         }
+        public PropertyItemField[] getCustomPropertyItemFields()
+        {
+            return _customPropertyList.getElements<PropertyItemField>().ToArray();
+        }
         public void setCustomPropertyTypes(ActionNodeValueType[] types, string[] names)
         {
             _customPropertyDialog.setTypes(types, names);

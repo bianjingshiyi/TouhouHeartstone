@@ -35,14 +35,8 @@ namespace Controllers
         public void setEffectProp(string name, object value)
         {
             var beforeValue = _effect.getProp(name);
-            if (beforeValue is ICloneable beforeCloneable)
-            {
-                beforeValue = beforeCloneable.Clone();
-            }
-            if (value is ICloneable valueCloneable)
-            {
-                value = valueCloneable.Clone();
-            }
+            beforeValue = beforeValue.cloneValue();
+            value = value.cloneValue();
             _effect.setProp(name, value);
             // 复制一份之前的值和新的值，存储在记录中，用以随时回退。
             addOperationRecord(new ChangeEffectPropertyValueOperation(this, name, beforeValue, value));
@@ -77,10 +71,7 @@ namespace Controllers
             if (isReadonly)
                 return;
             // 从UI传递到的效果属性要复制一份，免得UI的数据修改时，效果的属性也会同时更改。
-            if (value is ICloneable valueCloneable)
-            {
-                value = valueCloneable.Clone();
-            }
+            value = value.cloneValue();
             setEffectProp(name, value);
             addRecordBreakpoint();
         }
@@ -214,10 +205,7 @@ namespace Controllers
             if (value == null)
                 return null;
 
-            if (value is ICloneable cloneable)
-            {
-                value = cloneable.Clone();
-            }
+            value = value.cloneValue();
             var valueType = value.GetType();
             if (!valueType.tryGetValueTypeByType(out var type) || !EditorManager.isTypeCustomProp(type.type))
                 return null;
@@ -310,10 +298,7 @@ namespace Controllers
             }
             private void setValue(object value)
             {
-                if (value is ICloneable cloneable)
-                {
-                    value = cloneable.Clone();
-                }
+                value = value.cloneValue();
                 _graphCtrl._effect.setProp(_name, value);
                 _graphCtrl.updatePropertyItem(_name);
             }

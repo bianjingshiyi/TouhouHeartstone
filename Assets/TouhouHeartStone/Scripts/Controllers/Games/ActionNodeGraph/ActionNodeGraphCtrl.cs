@@ -365,14 +365,8 @@ namespace Controllers
                 var forceHasValue = inputPort?.define?.isConst ?? false;
                 value = validateInputFieldValue(valueType, value, forceHasValue);
             }
-            if (value is ICloneable clonable)
-            {
-                value = clonable.Clone();
-            }
-            if (beforeValue is ICloneable beforeClonable)
-            {
-                beforeValue = beforeClonable.Clone();
-            }
+            value = value.cloneValue();
+            beforeValue = beforeValue.cloneValue();
             node.setInputDefaultValue(name, paramIndex, value);
             addOperationRecord(new ChangeNodeDefaultValueOperation(this, node, name, paramIndex, beforeValue, value));
         }

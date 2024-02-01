@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 
 namespace Game
 {
@@ -69,5 +70,15 @@ namespace Game
             }
         }
         #endregion
+
+        public static T cloneValue<T>(this T value)
+        {
+            if (value is ICloneable clonable)
+            {
+                if (clonable.Clone() is T tValue)
+                    return tValue;
+            }
+            return value;
+        }
     }
 }

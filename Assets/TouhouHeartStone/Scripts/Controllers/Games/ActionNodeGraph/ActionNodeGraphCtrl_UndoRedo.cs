@@ -221,20 +221,12 @@ namespace Controllers
             }
             private object recordValue(object originValue)
             {
-                var value = originValue;
-                if (originValue is ICloneable cloneable)
-                {
-                    return cloneable.Clone();
-                }
-                return value;
+                return originValue.cloneValue();
             }
             private void setValue(object value)
             {
                 Node node = _graphCtrl.graph.findNodeById(_nodeId);
-                if (value is ICloneable cloneable)
-                {
-                    value = cloneable.Clone();
-                }
+                value = value.cloneValue();
                 if (value == null)
                     node.removeInputDefaultValue(_inputName, _paramIndex);
                 else

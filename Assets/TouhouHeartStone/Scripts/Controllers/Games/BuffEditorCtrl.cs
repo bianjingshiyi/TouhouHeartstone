@@ -478,11 +478,13 @@ namespace Controllers
                 return;
             }
 
-            if (item.value == null)
+            var value = item.value;
+            if (value == null)
             {
-                item.value = item.type.getDefaultValue();
+                value = item.type.getDefaultValue();
             }
-            setBuffProp(item.propertyName, item.value);
+            value = value.cloneValue();
+            setBuffProp(item.propertyName, value);
 
             markUnsaved();
             updateCustomProperties();
@@ -565,6 +567,7 @@ namespace Controllers
         }
         private async void onCustomPropertyChangedCallback(string name, object value)
         {
+            value = value.cloneValue();
             setBuffProp(name, value);
             markUnsaved();
             await updatePropertyItem(name);
@@ -631,7 +634,7 @@ namespace Controllers
                 case CardSelectSourceCustomProperty customProp:
                     var propName = customProp.propName;
                     var itemIndexes = customProp.propIndexes;
-                    var prop = _buffDefine.getProp<object>(propName);
+                    var prop = _buffDefine.getProp(propName);
                     var defineRef = cardDefine.getDefineRef();
                     if (prop.replaceListElementByIndexes(itemIndexes, defineRef, out var newProp))
                     {
@@ -987,7 +990,7 @@ namespace Controllers
         #endregion
 
         #region 自定义属性
-        private void updateCustomProperties()
+        private async Task updateCustomProperties()
         {
             List<PropertyItemInfo> infos = new List<PropertyItemInfo>();
             var propNames = _buffDefine.getPropNames();
@@ -1002,6 +1005,13 @@ namespace Controllers
                 });
             }
             _ui.updateCustomProperties(infos.ToArray());
+
+            var env = getCardPoolReferenceEnv();
+            var fields = _ui.getCustomPropertyItemFields();
+            for (int i = 0; i < infos.Count; i++)
+            {
+                await fields[i].valueInputField.setInputFieldCardByValue(infos[i].value, env, game);
+            }
         }
         /// <summary>
         /// 更新一项属性。
