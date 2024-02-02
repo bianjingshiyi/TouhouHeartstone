@@ -17,15 +17,6 @@ namespace TouhouHeartstone
         public GeneratedAura(ActionGraph graph) : base(graph)
         {
         }
-        public override bool isDisabled(IGame game, ICard card, IBuff buff)
-        {
-            // 被封印，禁用效果
-            if (buff == null && card.isSilenced(game))
-            {
-                return true;
-            }
-            return base.isDisabled(game, card, buff);
-        }
         public override bool checkCondition(EffectEnv env)
         {
             return true;
@@ -56,6 +47,7 @@ namespace TouhouHeartstone
             var pileList = getPileList();
             // 如果该光环已被禁用。
             if (isDisabled(game, card, buff) || 
+                (buff == null && card.isSilenced(game))||
                 (selfCard != null && (pileList == null || !pileList.Contains(selfCard.pile.name))))
             {
                 // 遍历已经记录的卡牌和增益列表。
