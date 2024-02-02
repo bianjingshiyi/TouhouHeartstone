@@ -5,29 +5,38 @@ namespace UI
 {
     public class GuideTip : MonoBehaviour
     {
-        public void show(RectTransform targetTransform, string text)
+        public void show(GuideTipViewData viewData)
         {
-            if (!targetTransform)
-            {
-                hide();
-                return;
-            }
-            transform.parent = targetTransform.parent;
-            transform.SetAsLastSibling();
+            var targetTransform = viewData.targetTransform;
+            var text = viewData.text;
+            var tipOnTop = viewData.tipOnTop;
             this.targetTransform = targetTransform;
+
+            var rect = targetTransform.rect;
+            var size = rect.size;
+
+            transform.parent = viewData.parent ?? defaultParent;
+            transform.SetAsLastSibling();
+
+            updateTransform(0);
+
             tipboxText.text = text;
-            gameObject.SetActive(true);
-            time = 0;
-            var selfTrans = transform as RectTransform;
-            selfTrans.sizeDelta = targetTransform.rect.size;
-            updateTransform();
+            tipboxTransform.pivot = new Vector2(0.5f, tipOnTop ? 0 : 1);
+            tipboxTransform.anchorMin =  new Vector2(0.5f, tipOnTop ? 1 : 0);
+            tipboxTransform.anchorMax = tipboxTransform.anchorMin;
+
+            dragRootObj.SetActive(viewData.drag);
+            if (viewData.drag)
+            {
+                dragRootTransform.anchoredPosition = size * (viewData.dragPosition * 0.5f);
+                dragArrowTransform.localEulerAngles = Vector3.forward * Vector2.Angle(viewData.dragDirection, Vector2.right);
+            }
         }
         public void hide()
         {
-            gameObject.SetActive(false);
             targetTransform = null;
         }
-        private void Update()
+        public void update(float time)
         {
             if (!targetTransform)
                 return;
@@ -40,42 +49,66 @@ namespace UI
             {
                 rootObj.SetActive(true);
             }
-            time += Time.deltaTime;
-            time %= interval;
-
-            updateTransform();
+            updateTransform(time);
         }
-        private void updateTransform()
+        private void updateTransform(float time)
         {
-            var center = targetTransform.localPosition;
-            var size = targetTransform.rect.size;
+            var center = targetTransform.position;
+            var rect = targetTransform.rect;
+            var pivot = targetTransform.pivot;
+            var size = rect.size;
 
-            center += (Vector3)((Vector2.one * 0.5f - targetTransform.pivot) * size);
-            var localPos = center;
-            localPos.z = 0;
-            transform.localPosition = localPos;
+            var pos = center;
+            pos.x += size.x * (0.5f - pivot.x) * targetTransform.lossyScale.x;
+            pos.y += size.y * (0.5f - pivot.y) * targetTransform.lossyScale.y;
+            pos.z = 0;
+            transform.position = pos;
             transform.localScale = Vector3.one;
 
-            var lerp = sizeCurve.Evaluate(time / interval);
+            var lerp = sizeCurve.Evaluate(time);
             frameTransform.sizeDelta = Vector2.Lerp(size, size + sizeDelta, lerp);
+
+            var selfTrans = transform as RectTransform;
+            selfTrans.sizeDelta = size;
         }
         [SerializeField]
         private GameObject rootObj;
+        [SerializeField]
+        private Transform defaultParent;
+
         [Header("Frame")]
         [SerializeField]
         private RectTransform targetTransform;
         [SerializeField]
         private Vector2 sizeDelta = new Vector2(50,50);
         [SerializeField]
-        private float interval = 1f;
-        [SerializeField]
         private AnimationCurve sizeCurve;
         [SerializeField]
         private RectTransform frameTransform;
 
-        [Header("Frame")]
+        [Header("Tipbox")]
         [SerializeField]
         private TextMeshProUGUI tipboxText;
-        private float time;
+        [SerializeField]
+        private RectTransform tipboxTransform;
+
+        [Header("Drag")]
+        [SerializeField]
+        private GameObject dragRootObj;
+        [SerializeField]
+        private RectTransform dragRootTransform;
+        [SerializeField]
+        private Transform dragArrowTransform;
+    }
+    public struct GuideTipViewData
+    {
+        public Transform parent;
+        public RectTransform targetTransform;
+        public string text;
+        public bool tipOnTop;
+        public bool drag;
+        public Vector2 dragPosition;
+        public Vector2 dragDirection;
+        public bool isValid() => targetTransform;
     }
 }

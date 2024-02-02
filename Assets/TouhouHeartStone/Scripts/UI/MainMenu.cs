@@ -124,7 +124,7 @@ namespace UI
             base.Awake();
             _vsBotButton.onClick.AddListener(onVsBotButtonClickCallback);
             _pveButton.button.onClick.AddListener(onPVEButtonClickCallback);
-            _buildCardButton.onClick.AddListener(onBuildCardButtonClickCallback);
+            _buildCardButton.button.onClick.AddListener(onBuildCardButtonClickCallback);
             _replayButton.onClick.AddListener(onReplayButtonClickCallback);
             _quitButton.onClick.AddListener(onQuitButtonClickCallback);
             _aboutButton.onClick.AddListener(onAboutButtonClickCallback);
@@ -323,6 +323,7 @@ namespace UI
         #endregion
 
         public ButtonIconGlass pveButton => _pveButton;
+        public ButtonIconGlass buildButton => _buildCardButton;
         [SerializeField]
         EULAPanel _eulaPanel;
         [SerializeField]
@@ -332,7 +333,7 @@ namespace UI
         [SerializeField]
         ButtonIconGlass _pveButton;
         [SerializeField]
-        Button _buildCardButton;
+        ButtonIconGlass _buildCardButton;
         [SerializeField]
         Button _replayButton;
         [SerializeField]

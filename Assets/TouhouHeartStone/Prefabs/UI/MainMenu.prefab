@@ -133,7 +133,7 @@ MonoBehaviour:
   _playerInfoEditPanel: {fileID: 2844184790891091073}
   _vsBotButton: {fileID: 4708996516089299843}
   _pveButton: {fileID: 4551490656008767447}
-  _buildCardButton: {fileID: 891836457452103603}
+  _buildCardButton: {fileID: 728125030081898947}
   _replayButton: {fileID: 1635658783445734929}
   _lanButton: {fileID: 6588916294860092879}
   _serverButton: {fileID: 7055642798281741891}
@@ -2935,16 +2935,16 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8c8c74bbb06b6ea40ad81817661f5a02, type: 3}
---- !u!114 &891836457452103603 stripped
+--- !u!114 &728125030081898947 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4672701324696096551, guid: 8c8c74bbb06b6ea40ad81817661f5a02,
+  m_CorrespondingSourceObject: {fileID: 5089740798110777687, guid: 8c8c74bbb06b6ea40ad81817661f5a02,
     type: 3}
   m_PrefabInstance: {fileID: 5528368178652965012}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 5a5136ded775f354a9d1b8930d39178c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &3360049825913444625 stripped

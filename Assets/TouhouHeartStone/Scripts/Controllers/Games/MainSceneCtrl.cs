@@ -55,6 +55,10 @@ namespace Controllers
             {
                 _replayCtrl = TransformHelper.findComponentInScene<ReplaySelectPanelCtrl>(gameObject.scene);
             }
+            if (_guideCtrl == null)
+            {
+                _guideCtrl = TransformHelper.findComponentInScene<GuideTipCtrl>(gameObject.scene);
+            }
             _menu.gameObject.SetActive(true);
             _room.gameObject.SetActive(false);
             _build.gameObject.SetActive(false);
@@ -67,6 +71,7 @@ namespace Controllers
             _chatCtrl.gameObject.SetActive(false);
             _lanCtrl.gameObject.SetActive(false);
             _replayCtrl.gameObject.SetActive(false);
+            _guideCtrl.gameObject.SetActive(false);
         }
         public MainMenuCtrl menu => _menu;
         public RoomCtrl room => _room;
@@ -80,6 +85,7 @@ namespace Controllers
         public ChatCtrl chatCtrl => _chatCtrl;
         public LANPanelCtrl lan => _lanCtrl;
         public ReplaySelectPanelCtrl replay => _replayCtrl;
+        public GuideTipCtrl guide => _guideCtrl;
         [SerializeField]
         MainMenuCtrl _menu;
         [SerializeField]
@@ -87,7 +93,7 @@ namespace Controllers
         [SerializeField]
         BuildCtrl _build;
         [SerializeField]
-        PVERoomCtrl _pveRoom; // 待手动关联UI
+        PVERoomCtrl _pveRoom;
         [SerializeField]
         EditorCtrl _editor;
         [SerializeField]
@@ -104,5 +110,7 @@ namespace Controllers
         LANPanelCtrl _lanCtrl;
         [SerializeField]
         ReplaySelectPanelCtrl _replayCtrl;
+        [SerializeField]
+        GuideTipCtrl _guideCtrl;
     }
 }

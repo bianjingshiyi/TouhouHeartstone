@@ -74,9 +74,14 @@ namespace UI
 
         #region 属性字段
 
-        [SerializeField] private RectTransform _deckListRoot;
-        [SerializeField] private RectTransform _deckListItemTemplate;
-        [SerializeField] List<RectTransform> _deckItemList = new List<RectTransform>();
+        public RectTransform deckListRoot => _deckListRoot;
+
+        [SerializeField] 
+        private RectTransform _deckListRoot;
+        [SerializeField] 
+        private RectTransform _deckListItemTemplate;
+        [SerializeField] 
+        List<RectTransform> _deckItemList = new List<RectTransform>();
 
         public List<RectTransform> DeckItemList => _deckItemList;
         #endregion

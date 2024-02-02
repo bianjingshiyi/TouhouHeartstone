@@ -686,6 +686,8 @@ namespace Controllers
         public event Func<CardDefine, PointerEventData, Task<bool>> onEndDragCard;
         #endregion
         #region 属性字段
+        public CardPoolViewPanel ui => _ui;
+
         [TranslateMsg("卡牌搜索栏所使用的关键词")]
         public const string SEARCH_KEYWORD_ATTACK = "攻击力";
         [TranslateMsg("卡牌搜索栏所使用的关键词")]

@@ -326,6 +326,9 @@ namespace UI
         public Card dragCard => _dragCard;
         public CardViewDeckCardListItem dragDeckListItem => _dragDeckListItem;
         public DeckCardList deckCardList => _deckCardList;
+        public Button addDeckButton => _addDeckButton;
+        public DeckViewPanel masterSelectionDeckViewPanel => _masterSelectionDeckViewPanel;
+        public Button saveDeckButton => _saveDeckButton;
 
 
         [SerializeField]

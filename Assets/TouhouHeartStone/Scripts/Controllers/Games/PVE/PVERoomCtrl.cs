@@ -330,7 +330,6 @@ namespace Controllers
                 {
                     game.tutorial.skipTutorial(TutorialID.PVE);
                 });
-                return;
             }
         }
         private async Task displayPlayerInfoPanel(PVECharacter character)
@@ -425,37 +424,36 @@ namespace Controllers
         }
         private void finishTutorial(int expectedStep)
         {
-            game.tutorial.finishTutorial(TutorialID.PVE, expectedStep);
+            if (game.tutorial.finishTutorial(TutorialID.PVE, expectedStep))
+            {
+                scene.guide.hide();
+            }
         }
         private void updateTutorialStep()
         {
             if (!game.tutorial.isTutorialActive(TutorialID.PVE))
                 return;
             var step = game.tutorial.getTutorialStep(TutorialID.PVE);
+            var viewData = new GuideTipViewData()
+            {
+                parent = transform
+            };
             switch (step)
             {
                 case PVETutorialSteps.PVEEntered:
-                    var playerItem = _ui.playerSelectPanel.getCharacterItem(0).getButtonTransform();
-                    if (playerItem)
-                    {
-                        game.tutorial.showGuideTip(playerItem.transform as RectTransform, game.lang._(TUTORIAL_STEP_SELECT_CHARACTER));
-                    }
+                    viewData.targetTransform = _ui.playerSelectPanel.getCharacterItem(0).getButtonTransform(); 
+                    viewData.text = game.lang._(TUTORIAL_STEP_SELECT_CHARACTER);
                     break;
                 case PVETutorialSteps.CharacterSelected:
-                    var confirmButton = _ui.playerInfoPanel.confirmButton;
-                    if (confirmButton)
-                    {
-                        game.tutorial.showGuideTip(confirmButton.transform as RectTransform, game.lang._(TUTORIAL_STEP_START_GAME));
-                    }
+                    viewData.targetTransform = _ui.playerInfoPanel.confirmButton.transform as RectTransform;
+                    viewData.text = game.lang._(TUTORIAL_STEP_START_GAME);
                     break;
                 case PVETutorialSteps.RunStarted:
-                    var enemyButton = _ui.enemyInfoPanel.confirmButton;
-                    if (enemyButton)
-                    {
-                        game.tutorial.showGuideTip(enemyButton.transform as RectTransform, game.lang._(TUTORIAL_STEP_START_FIGHT));
-                    }
+                    viewData.targetTransform = _ui.enemyInfoPanel.confirmButton.transform as RectTransform;
+                    viewData.text = game.lang._(TUTORIAL_STEP_START_FIGHT);
                     break;
             }
+            scene.guide.show(viewData);
         }
         #endregion
 
@@ -466,7 +464,7 @@ namespace Controllers
 
         #region 属性字段
         [TranslateMsg]
-        private const string TUTORIAL_QUESTION = "你似乎是第一次启动游戏，要开始新手教程吗？\n（之后也可以在XX位置重新游玩新手教程）";
+        private const string TUTORIAL_QUESTION = "您要进行闯关模式的新手引导吗？";
         [TranslateMsg("PVE教程-步骤")]
         private const string TUTORIAL_STEP_SELECT_CHARACTER = "点击以选择人物";
         [TranslateMsg("PVE教程-步骤")]

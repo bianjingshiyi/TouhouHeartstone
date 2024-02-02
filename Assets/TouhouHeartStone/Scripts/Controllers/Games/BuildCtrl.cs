@@ -21,10 +21,8 @@ namespace Controllers
         /// </summary>
         public async void display()
         {
-            //清理字段
-            _deck = null;
-            _isDeckChanged = false;
-            await _cardPoolViewPanelCtrl.display(cardFilter: cardFilter);
+            await enterCollectionMode();
+
             _selectableMasters = game.card.findCardDefines(c => {
                 if (c.isMaster())
                 {
@@ -40,6 +38,29 @@ namespace Controllers
                 return false;
             });
 
+            if (!game.tutorial.isTutorialClosed(TutorialID.Build) && !game.tutorial.isTutorialRunning(TutorialID.Build))
+            {
+                // 教程未完成，弹出对话框询问是否进入教程
+                var title = game.lang._(StringTable.HINT_TITLE);
+                var desc = game.lang._(TUTORIAL_QUESTION);
+                game.ui.dialog.ShowQuestion(title, desc, () =>
+                {
+                    nextTutorialStep(BuildTutorialSteps.NotStarted);
+                },
+                () =>
+                {
+                    game.tutorial.skipTutorial(TutorialID.Build);
+                });
+            }
+            updateTutorialStep();
+        }
+        private async Task enterCollectionMode()
+        {
+            //清理字段
+            _deck = null;
+            _isDeckChanged = false;
+            await _cardPoolViewPanelCtrl.display(cardFilter: cardFilter);
+
             //UI更新
             _ui.gameObject.SetActive(true);
             _ui.showErrorTip(false);
@@ -47,12 +68,14 @@ namespace Controllers
             _ui.setDeckListActive(true);
             _ui.setEditDeckPanelActive(false);
             await updateDeckListUI();
+
+            updateTutorialStep();
         }
         /// <summary>
         /// 进入构筑模式
         /// </summary>
         /// <param name="masterId"></param>
-        public async void display(Deck deck)
+        private async void enterBuildMode(Deck deck)
         {
             _deck = deck;
             _isDeckChanged = false;
@@ -78,6 +101,8 @@ namespace Controllers
             _ui.setDeckListActive(false);
             _ui.setEditDeckPanelActive(true);
             await updateDeckCardListUI();
+
+            updateTutorialStep();
         }
         #endregion
         #region 私有方法
@@ -208,7 +233,7 @@ namespace Controllers
         }
         private void onClickDeckListItem(int index)
         {
-            display(deckList[index]);
+            enterBuildMode(deckList[index]);
         }
 
         [TranslateMsg("{0} 为卡组名称")]
@@ -241,6 +266,7 @@ namespace Controllers
                 };
             }
             _ui.showMasterSelectPanel(viewData);
+            nextTutorialStep(BuildTutorialSteps.CreateNewDeck);
         }
         /// <summary>
         /// 点击新建卡组按钮选择角色之后
@@ -255,7 +281,8 @@ namespace Controllers
                 //id = (int)game.deck.CreateDeck(StringTable.BUILD_NEW_DECK_DEFAULT_NAME, _selectableMasters[index].id),
                 name = StringTable.BUILD_NEW_DECK_DEFAULT_NAME,
             };
-            display(newDeck);
+            enterBuildMode(newDeck);
+            nextTutorialStep(BuildTutorialSteps.SelectMaster);
         }
         /// <summary>
         /// 卡组重命名后
@@ -285,22 +312,23 @@ namespace Controllers
             {
                 saveDeck();
             }
+            finishTutorial(BuildTutorialSteps.SaveDeck);
         }
         /// <summary>
         /// 当玩家点击退出编辑模式按钮
         /// </summary>
-        private void onExitEditButtonClick()
+        private async void onExitEditButtonClick()
         {
             if (_isDeckChanged)
             {
-                game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), game.lang._(StringTable.BUILD_CONFIRM_EXIT_WITHOUT_SAVE), () =>
+                game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), game.lang._(StringTable.BUILD_CONFIRM_EXIT_WITHOUT_SAVE), async () =>
                 {
-                    quit();
+                    await quit();
                 });
             }
             else
             {
-                display();
+                await enterCollectionMode();
             }
         }
         private void onClickImportButton()
@@ -356,7 +384,7 @@ namespace Controllers
                 copiedDeck.addCards(cards.Skip(1));
 
                 // 进入编辑模式
-                display(copiedDeck);
+                enterBuildMode(copiedDeck);
             }
             catch (FormatException)
             {
@@ -449,6 +477,60 @@ namespace Controllers
         {
             _deck.name = value;
             await updateEditingDeck(_deck);
+        }
+        #endregion
+
+        #region 教程
+        private void nextTutorialStep(int expectedStep)
+        {
+            if (game.tutorial.nextTutorialStep(TutorialID.Build, expectedStep))
+            {
+                updateTutorialStep();
+            }
+        }
+        private void finishTutorial(int expectedStep)
+        {
+            if (game.tutorial.finishTutorial(TutorialID.Build, expectedStep))
+            {
+                scene.guide.hide();
+            }
+        }
+        private void updateTutorialStep()
+        {
+            if (!game.tutorial.isTutorialActive(TutorialID.Build))
+                return;
+            var step = game.tutorial.getTutorialStep(TutorialID.Build);
+            var viewData = new GuideTipViewData()
+            {
+                parent = transform
+            };
+            switch (step)
+            {
+                case BuildTutorialSteps.CreateNewDeck:
+                    viewData.targetTransform = _ui.addDeckButton.transform as RectTransform;
+                    viewData.text = game.lang._(TUTORIAL_STEP_CREATE_NEW_DECK);
+                    break;
+                case BuildTutorialSteps.SelectMaster:
+                    viewData.targetTransform = _ui.masterSelectionDeckViewPanel.deckListRoot;
+                    viewData.text = game.lang._(TUTORIAL_STEP_SELECT_MASTER);
+                    break;
+                case BuildTutorialSteps.DragCard:
+                    if (_deck != null)
+                    {
+                        viewData.targetTransform = _cardPoolViewPanelCtrl.ui.cardListScrollRect.transform as RectTransform;
+                        viewData.text = game.lang._(TUTORIAL_STEP_DRAG_CARD);
+                        viewData.tipOnTop = true;
+                        viewData.drag = true;
+                        viewData.dragPosition = Vector2.right;
+                        viewData.dragDirection = Vector2.right;
+                    }
+                    break;
+                case BuildTutorialSteps.SaveDeck:
+                    viewData.targetTransform = _ui.saveDeckButton.transform as RectTransform;
+                    viewData.text = game.lang._(TUTORIAL_STEP_SAVE_DECK);
+                    break;
+            }
+            scene.guide.show(viewData);
         }
         #endregion
         private bool cardFilter(CardDefine c)
@@ -780,6 +862,7 @@ namespace Controllers
                     {
                         //更新可用信息
                         _cardPoolViewPanelCtrl.updateContents();
+                        nextTutorialStep(BuildTutorialSteps.DragCard);
                     }
                     else
                         _ui.showErrorTip(errorTip);
@@ -796,18 +879,28 @@ namespace Controllers
             _isDraggingVertical = false;
             _isDraggingDeckListItem = false;
         }
-        private void quit()
+        private async Task quit()
         {
             if (_isDeckChanged)
             {
                 game.deck.reloadDeckList();
             }
-            display();
+            await enterCollectionMode();
         }
         #endregion
         #region 属性字段
         public const int masterNameMaxLength = 8;
         List<Deck> deckList => game.deck.getOrLoadDeckList();
+        [TranslateMsg("构筑教程")]
+        private const string TUTORIAL_QUESTION = "您要进行卡组构筑的新手引导吗？";
+        [TranslateMsg("构筑教程")]
+        public const string TUTORIAL_STEP_CREATE_NEW_DECK = "点击这里新建卡组";
+        [TranslateMsg("构筑教程")]
+        public const string TUTORIAL_STEP_SELECT_MASTER = "选择一个英雄";
+        [TranslateMsg("构筑教程")]
+        public const string TUTORIAL_STEP_DRAG_CARD = "将卡牌拖动到卡组中以加入卡牌";
+        [TranslateMsg("构筑教程")]
+        public const string TUTORIAL_STEP_SAVE_DECK = "点击这里保存卡组";
         [SerializeField]
         BuildCardPanel _ui;
         [SerializeField]
@@ -858,5 +951,13 @@ namespace Controllers
             public bool isEnabled;
         }
         #endregion
+    }
+    public static class BuildTutorialSteps
+    {
+        public const int NotStarted = 0;
+        public const int CreateNewDeck = 1;
+        public const int SelectMaster = 2;
+        public const int DragCard = 3;
+        public const int SaveDeck = 4;
     }
 }

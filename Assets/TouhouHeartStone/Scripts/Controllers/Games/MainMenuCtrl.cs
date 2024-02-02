@@ -22,6 +22,7 @@ namespace Controllers
             _ui.pveButton.gameObject.SetActive(false);
 #endif
             _ui.pveButton.setNewMarkVisible(!game.tutorial.isTutorialClosed(TutorialID.PVE));
+            _ui.buildButton.setNewMarkVisible(!game.tutorial.isTutorialClosed(TutorialID.Build));
         }
         public void hide()
         {

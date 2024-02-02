@@ -89,31 +89,8 @@ namespace Game
             if (step != expectedStep)
                 return false;
             finishTutorial(id);
-            hideGuideTip();
             return true;
         }
-
-        #region UI
-        public void showGuideTip(RectTransform targetTransform, string name)
-        {
-            if (!targetTransform)
-                return;
-            if (!_guideTipInstance)
-            {
-                _guideTipInstance = Instantiate(_guideTipPrefab);
-            }
-            _guideTipInstance.show(targetTransform, name);
-        }
-        public void hideGuideTip()
-        {
-            if (_guideTipInstance)
-            {
-                Destroy(_guideTipInstance.gameObject);
-                _guideTipInstance = null;
-            }
-        }
-        #endregion
-
         #endregion
 
         #region 私有方法
@@ -143,22 +120,21 @@ namespace Game
         #region 属性字段
         public MainManager main => getManager<MainManager>();
         const string keyTutorialFinishedTemplate = "TutorialFinished_{0}";
-        [SerializeField]
-        private GuideTip _guideTipPrefab;
-        private GuideTip _guideTipInstance;
         private Dictionary<TutorialID, int> tutorialStates = new Dictionary<TutorialID, int>();
         private const int SKIPPED_STATE_FLAG = 1 << 9;
         private const int FINISHED_STATE_FLAG = 1 << 8;
         private const int STEP_STATE_MASK = (1 << 8) - 1;
         private static readonly TutorialID[] tutorialID = new TutorialID[]
         {
-            TutorialID.PVE
+            TutorialID.PVE,
+            TutorialID.Build
         };
         #endregion
     }
 
     public enum TutorialID
     {
-        PVE = 1
+        PVE = 1,
+        Build = 2,
     }
 }
