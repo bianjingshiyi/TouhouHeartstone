@@ -55,13 +55,46 @@ namespace Game.BattleTable
         #endregion
 
         #region 当前位置
-        public void setPosition(Vector3 pos)
+        public void setWorldPosition(Vector3 pos)
         {
             transform.position = pos;
         }
-        public Vector3 getPosition()
+        public Vector3 getWorldPosition()
         {
             return transform.position;
+        }
+        public void setLocalPosition(Vector3 pos)
+        {
+            transform.localPosition = pos;
+        }
+        public Vector3 getLocalPosition()
+        {
+            return transform.localPosition;
+        }
+        public void setPositionByTime(float time)
+        {
+            Vector3 targetPosition = targetTransform ? targetTransform.position : _targetPosition;
+            Vector3 startPosition = _startPosition;
+            if (_isLocalMode)
+            {
+                var globalStartPosition = localToGlobalPoint(startPosition);
+                Vector3 stoppedPosition = Vector3.MoveTowards(targetPosition, globalStartPosition, _stopDistance);
+                stoppedPosition = globalToLocalPoint(stoppedPosition);
+
+                var position = Vector3.Lerp(startPosition, stoppedPosition, time);
+                setLocalPosition(position);
+            }
+            else
+            {
+                Vector3 stoppedPosition = Vector3.MoveTowards(targetPosition, startPosition, _stopDistance);
+
+                var position = Vector3.Lerp(startPosition, stoppedPosition, time);
+                setWorldPosition(position);
+            }
+        }
+        public void setPositionToStart()
+        {
+            setPositionByTime(0);
         }
         #endregion
 
@@ -76,34 +109,23 @@ namespace Game.BattleTable
         }
         protected void OnEnable()
         {
-            if (Application.isEditor) 
-            {
-                return;
-            }
-            setStartPositionToCurrent();
+            initStartPosition();
         }
         protected void LateUpdate()
         {
             //不能将位置的更新放在LateUpdate中，LateUpdate中TargetTransform的位置与Update中的不同，可能与动画和Layout有关，此时处于没有计算Layout的状态。
             //也不能在Update中获取位置，然后在LateUpdate中更新位置，更新的位置仍然是错的。
             // 不过在场景重做为Mesh之后好像就没有这个问题了
-            Vector3 targetPosition = targetTransform ? targetTransform.position : _targetPosition;
-            Vector3 startPosition = _startPosition;
-            if (_isLocalMode)
-            {
-                Vector3 globalStartPosition = localToGlobalPoint(startPosition);
-                Vector3 closePosition = Vector3.MoveTowards(targetPosition, globalStartPosition, _stopDistance);
-                closePosition = globalToLocalPoint(closePosition);
-                transform.localPosition = Vector3.Lerp(startPosition, closePosition, _time);
-            }
-            else
-            {
-                Vector3 closePosition = Vector3.MoveTowards(targetPosition, startPosition, _stopDistance);
-                transform.position = Vector3.Lerp(startPosition, closePosition, _time);
-            }
+            setPositionByTime(_time);
         }
         #endregion
 
+        private void initStartPosition()
+        {
+            if (!Application.isPlaying)
+                return;
+            setStartPositionToCurrent();
+        }
         private Vector3 globalToLocalPoint(Vector3 global)
         {
             if (!transform.parent)

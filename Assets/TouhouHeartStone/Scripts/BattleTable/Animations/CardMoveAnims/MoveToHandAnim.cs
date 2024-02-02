@@ -49,7 +49,7 @@ namespace Game.BattleTable
             }
 
             hand.transform.position = worldPos;
-            positionLerp.setPosition(worldPos);
+            positionLerp.setWorldPosition(worldPos);
             positionLerp.setStartPosition(worldPos);
             positionLerp.setTargetPosition(targetPosition);
 
@@ -109,7 +109,7 @@ namespace Game.BattleTable
             var handList = table.getHandList(_to);
             var handIndex = handList.indexOf(hand);
             var targetPos = handList.getHandTargetPosition(handIndex);
-            positionLerp.setPosition(worldPos);
+            positionLerp.setWorldPosition(worldPos);
             positionLerp.setStartPosition(worldPos);
             positionLerp.setTargetPosition(targetPos);
 

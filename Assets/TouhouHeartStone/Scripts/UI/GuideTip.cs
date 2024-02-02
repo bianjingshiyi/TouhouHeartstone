@@ -18,6 +18,7 @@ namespace UI
             transform.parent = viewData.parent ?? defaultParent;
             transform.SetAsLastSibling();
 
+            resetDragFingerPosition();
             updateTransform(0);
 
             tipboxText.text = text;
@@ -35,6 +36,7 @@ namespace UI
         public void hide()
         {
             targetTransform = null;
+            resetDragFingerPosition();
         }
         public void update(float time)
         {
@@ -50,6 +52,10 @@ namespace UI
                 rootObj.SetActive(true);
             }
             updateTransform(time);
+        }
+        private void resetDragFingerPosition()
+        {
+            dragFingerTransform.localPosition = Vector3.zero;
         }
         private void updateTransform(float time)
         {
@@ -99,6 +105,8 @@ namespace UI
         private RectTransform dragRootTransform;
         [SerializeField]
         private Transform dragArrowTransform;
+        [SerializeField]
+        private Transform dragFingerTransform;
     }
     public struct GuideTipViewData
     {

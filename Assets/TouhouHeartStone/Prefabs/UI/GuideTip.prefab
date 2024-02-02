@@ -473,6 +473,7 @@ MonoBehaviour:
   _stopDistance: 0
   _startPosition: {x: 0, y: 0, z: 0}
   _targetPosition: {x: 0, y: 0, z: 0}
+  _initTime: 2
 --- !u!1 &7556385750408562400
 GameObject:
   m_ObjectHideFlags: 0
@@ -535,6 +536,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rootObj: {fileID: 5803092553656358091}
+  defaultParent: {fileID: 0}
   targetTransform: {fileID: 0}
   sizeDelta: {x: 50, y: 50}
   sizeCurve:
@@ -576,6 +578,7 @@ MonoBehaviour:
   dragRootObj: {fileID: 3472866866264363237}
   dragRootTransform: {fileID: 88352984914302351}
   dragArrowTransform: {fileID: 70441315604382123}
+  dragFingerTransform: {fileID: 3019261313402689372}
 --- !u!225 &1668314892703975950
 CanvasGroup:
   m_ObjectHideFlags: 0

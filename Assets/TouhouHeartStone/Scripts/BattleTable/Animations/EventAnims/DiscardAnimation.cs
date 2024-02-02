@@ -42,7 +42,7 @@ namespace Game.BattleTable
             {
                 hand.onDiscard.invokeBeforeAnim();
                 anim = new AnimAnim(hand.animator, hand.onDiscard.animName);
-                var currentPos = hand.positionLerp.getPosition();
+                var currentPos = hand.positionLerp.getWorldPosition();
                 var targetZ = table.table.CenterDisplayTransform.transform.position.z;
                 var targetPos = currentPos + Mathf.Sign(targetZ - currentPos.z) * 2 * Vector3.forward;
                 hand.positionLerp.setStartPosition(currentPos);
