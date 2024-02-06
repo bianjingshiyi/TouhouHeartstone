@@ -16,7 +16,7 @@ namespace Game.BattleTable
         public static void setUnknownCard(this UICard ui, CardManager cardManager)
         {
             ui.setImageSprite(cardManager.getDefaultSprite());
-            ui.setName(StringTable.BUILD_UNKNOW_CARD_NAME);
+            ui.setName(StringTable.BUILD_UNKNOWN_CARD_NAME);
             ui.setSubname(string.Empty);
             ui.setDesc(string.Empty);
             ui.setHighlightColor(CardHighlightColor.None);
@@ -30,7 +30,7 @@ namespace Game.BattleTable
 
         public static void setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, CardManager cardManager)
         {
-            string name = StringTable.BUILD_UNKNOW_CARD_NAME;
+            string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
             string subName = string.Empty;
             string desc = string.Empty;
             if (skin != null)
@@ -56,7 +56,7 @@ namespace Game.BattleTable
         }
         public static void setCard(this UICard ui, CardEngine game, Card card, CardSkinData skin, BattleTableManager table)
         {
-            string name = StringTable.BUILD_UNKNOW_CARD_NAME;
+            string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
             string subName = string.Empty;
             string desc = string.Empty;
             if (skin != null)
@@ -90,7 +90,7 @@ namespace Game.BattleTable
         }
         public static void setCard(this UICard ui, CardDescriptor desc, CardSkinData skin, BattleTableManager table)
         {
-            string name = StringTable.BUILD_UNKNOW_CARD_NAME;
+            string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
             string subName = string.Empty;
             string description = string.Empty;
             if (skin != null)

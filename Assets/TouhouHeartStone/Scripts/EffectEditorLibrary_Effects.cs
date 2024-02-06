@@ -11,9 +11,8 @@ namespace Game
 
     public static partial class EffectEditorLibrary
     {
-        [TranslateMsg("编辑器-节点分类名称")]
-        public const string EDITOR_CATEGORY_NAME_EFFECTS = "效果";
-        [TranslateMsg("编辑器-参数名称")]
+
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_EFFECT = "效果";
         [TranslateMsg("编辑器-参数名称")]
         public const string EDITOR_PARAM_NAME_EFFECT_COLLECTION = "效果集合";
@@ -46,7 +45,7 @@ namespace Game
         /// <summary>
         /// 该效果
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.ThisEffect, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_THIS_EFFECT)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.ThisEffect, StringTable.EDITOR_NODE_CATEGORY_EFFECT, EDITOR_NODE_NAME_THIS_EFFECT)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)]
         public static Effect thisEffect(Effect effect)
         {
@@ -55,7 +54,7 @@ namespace Game
         /// <summary>
         /// 效果具有标签
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.EffectHasTag, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_EFFECT_HAS_TAG)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.EffectHasTag, StringTable.EDITOR_NODE_CATEGORY_EFFECT, EDITOR_NODE_NAME_EFFECT_HAS_TAG)]
         public static bool effectHasTag(
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_TAG)] EffectTag tag)
@@ -71,7 +70,7 @@ namespace Game
         /// <summary>
         /// 获取效果属性
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEffectProp, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_GET_EFFECT_PROPERTY)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEffectProp, StringTable.EDITOR_NODE_CATEGORY_EFFECT, EDITOR_NODE_NAME_GET_EFFECT_PROPERTY)]
         public static object getEffectProp(
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName)
@@ -85,7 +84,7 @@ namespace Game
         /// <summary>
         /// 获取卡牌的所有效果
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllCardEffects, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_GET_ALL_CARD_EFFECTS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllCardEffects, StringTable.EDITOR_NODE_CATEGORY_EFFECT, EDITOR_NODE_NAME_GET_ALL_CARD_EFFECTS)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_COLLECTION)]
         public static Effect[] getAllCardEffects(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -106,7 +105,7 @@ namespace Game
         /// <summary>
         /// 获取增益的所有效果
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllBuffEffects, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_GET_ALL_BUFF_EFFECTS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllBuffEffects, StringTable.EDITOR_NODE_CATEGORY_EFFECT, EDITOR_NODE_NAME_GET_ALL_BUFF_EFFECTS)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_COLLECTION)]
         public static Effect[] getAllBuffEffects(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff)
@@ -118,7 +117,7 @@ namespace Game
         /// <summary>
         /// 获取卡牌定义的所有效果
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllCardDefineEffects, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_GET_ALL_CARD_DEFINE_EFFECTS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllCardDefineEffects, StringTable.EDITOR_NODE_CATEGORY_EFFECT, EDITOR_NODE_NAME_GET_ALL_CARD_DEFINE_EFFECTS)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_COLLECTION)]
         public static Effect[] getAllCardDefineEffects(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
@@ -130,8 +129,8 @@ namespace Game
         /// <summary>
         /// 获取效果合法目标集合
         /// </summary>
-        [THHActionMethod(BuiltinActionDefineID.GetValidEffectTargets, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_GET_EFFECT_TARGETS)]
-        [return: ActionNodeParam(EDITOR_NODE_GET_CARD_TARGETS_TARGETS)]
+        [THHActionMethod(BuiltinActionDefineID.GetValidEffectTargets, StringTable.EDITOR_NODE_CATEGORY_EFFECT, EDITOR_NODE_GET_EFFECT_TARGETS)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_VALID_TARGETS)]
         public static Card[] getAllLegalEffectTargets(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
             [ActionNodeParam(EDITOR_PARAM_NAME_SOURCE_CARD)] Card source)
@@ -143,7 +142,7 @@ namespace Game
         /// <summary>
         /// 效果类型判断
         /// </summary>
-        [THHActionMethod(BuiltinActionDefineID.CheckEffectType, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_CHECK_EFFECT_TYPE)]
+        [THHActionMethod(BuiltinActionDefineID.CheckEffectType, StringTable.EDITOR_NODE_CATEGORY_EFFECT, EDITOR_NODE_CHECK_EFFECT_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool checkEffectType(
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
@@ -165,7 +164,7 @@ namespace Game
         /// <summary>
         /// 获取效果所属卡牌定义或增益定义
         /// </summary>
-        [THHActionMethod(BuiltinActionDefineID.GetEffectCardDefineOrBuffDefine, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_GET_EFFECT_CARD_DEFINE_OR_BUFF_DEFINE)]
+        [THHActionMethod(BuiltinActionDefineID.GetEffectCardDefineOrBuffDefine, StringTable.EDITOR_NODE_CATEGORY_EFFECT, EDITOR_NODE_GET_EFFECT_CARD_DEFINE_OR_BUFF_DEFINE)]
         public static void getEffectCardDefineOrBuffDefine(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] out CardDefine cardDefine,
@@ -208,18 +207,16 @@ namespace Game
         [TranslateMsg("编辑器-参数名称")]
         public const string EDITOR_PARAM_NAME_EFFECT_TRIGGER_EVENT = "发动效果事件";
         [TranslateMsg("编辑器-参数名称")]
-        public const string EDITOR_PARAM_NAME_TARGETS = "目标卡牌";
-        [TranslateMsg("编辑器-参数名称")]
         public const string EDITOR_PARAM_NAME_IGNORE_TRIGGER_CONDITION = "忽略触发条件";
         /// <summary>
         /// 发动效果
         /// </summary>
-        [THHActionMethod(BuiltinActionDefineID.TriggerEffect, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_TRIGGER_EFFECT)]
+        [THHActionMethod(BuiltinActionDefineID.TriggerEffect, StringTable.EDITOR_NODE_CATEGORY_EFFECT, EDITOR_NODE_TRIGGER_EFFECT)]
         public static async Task triggerEffect(Flow flow, ActionNode node, CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff,
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
-            [ActionNodeParam(EDITOR_PARAM_NAME_TARGETS)] Card[] targets,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGETS)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_IGNORE_TRIGGER_CONDITION)] bool ignoreTriggerCondition,
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_TRIGGER_EVENT, isOut: true)][NodeParamEventType(typeof(EffectTriggerEventDefine))] EventArg outEvent)
         {

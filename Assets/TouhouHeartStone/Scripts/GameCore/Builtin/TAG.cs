@@ -9,7 +9,6 @@ namespace TouhouHeartstone
         public const string DEMON = "Demon";
         public const string ELEMENT = "Element";
         public const string BEAST = "Beast";
-        public const string BUG = "Bug";
         public const string GOD = "God";
         public const string GHOST = "Ghost";
 

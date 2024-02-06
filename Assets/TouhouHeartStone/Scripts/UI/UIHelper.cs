@@ -19,7 +19,7 @@ namespace Game
             ui.type = CATEGORY.SERVANT;
             ui.isFaceup = isFaceUp;
             ui.setImage(null);
-            ui.setName(StringTable.BUILD_UNKNOW_CARD_NAME);
+            ui.setName(StringTable.BUILD_UNKNOWN_CARD_NAME);
             ui.setSubname(string.Empty);
             ui.setDesc(string.Empty);
             ui.setCostVisible(true);
@@ -35,7 +35,7 @@ namespace Game
         {
             ui.setTypeByName(card.type);
 
-            string name = StringTable.BUILD_UNKNOW_CARD_NAME;
+            string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
             string subName = string.Empty;
             string desc = string.Empty;
             if (skin != null)
@@ -84,7 +84,7 @@ namespace Game
                 ui.type = CATEGORY.ITEM;
             else
                 throw new NotImplementedException();
-            string name = StringTable.BUILD_UNKNOW_CARD_NAME;
+            string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
             string subName = string.Empty;
             string description = string.Empty;
             if (skin != null)

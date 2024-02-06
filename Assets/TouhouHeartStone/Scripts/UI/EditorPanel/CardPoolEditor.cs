@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Controllers;
+using Game;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
@@ -89,7 +90,8 @@ namespace UI
         {
             var names = game.card.getEffectNames();
             var index = game.card.getEffectTypeIndex(effect);
-            return game.lang._(CARD_EFFECT_DEFAULT_NAME_TEMPLATE, names?[index] ?? CARD_EFFECT_DEFAULT_NAME, num);
+            var effectName = names?[index] ?? game.lang._(StringTable.CONTEXT_EFFECT_NAME, StringTable.EDITOR_EFFECT_NAME_DEFAULT);
+            return game.lang._(CARD_EFFECT_DEFAULT_NAME_TEMPLATE, effectName, num);
         }
         #endregion
 
@@ -121,9 +123,9 @@ namespace UI
         #region 属性字段
         public bool hasUnsavedChanges { get; protected set; }
         public CardPoolDisplayPage displayInfo { get; protected set; }
-        [TranslateMsg("效果默认名称")]
-        public const string CARD_EFFECT_DEFAULT_NAME = "效果";
-        [TranslateMsg("效果默认名称的模板（{0}为效果名，{1}为效果序号）")]
+
+        public const string CONTEXT_EFFECT_EDITOR = "效果编辑器";
+        [TranslateMsg("效果默认名称的模板（{0}为效果名，{1}为效果序号）", CONTEXT_EFFECT_EDITOR)]
         public const string CARD_EFFECT_DEFAULT_NAME_TEMPLATE = "{0}{1}";
         [SerializeField]
         protected EffectEditorCtrl _effectEditorCtrl;

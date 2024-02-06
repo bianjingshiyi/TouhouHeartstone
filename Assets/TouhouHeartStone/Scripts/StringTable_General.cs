@@ -17,11 +17,9 @@ namespace Game
         public const string ERROR = "错误";
         [TranslateMsg("所有玩家非法操作的提示")]
         public const string INVALID_OPERATION = "非法操作";
-        [TranslateMsg("发现了新版本的游戏，询问玩家是否要打开一个外部链接进行下载")]
-        public const string WANNA_DOWNLOAD_NEW_VERSION = "发现了更新版本的游戏，是否下载？";
-        [TranslateMsg("发现了新版本的游戏，但是没有适合的下载链接")]
-        public const string INVALID_DOWNLOAD_URL = "发现了更新版本的游戏，但无法获取下载链接。请访问官网手动更新游戏。";
-        [TranslateMsg]
+        [TranslateMsg("通用的无")]
+        public const string NONE = "无";
+        [TranslateMsg("通用的对话框标题")]
         public const string HINT_TITLE = "提示";
         [TranslateMsg("在发现界面提示玩家选择一张卡牌")]
         public const string HINT_SELECT_A_CARD = "选择一张卡牌";
@@ -29,6 +27,13 @@ namespace Game
         public const string DELETE = "删除";
         [TranslateMsg("所有按钮通用的编辑")]
         public const string EDIT = "编辑";
+        [TranslateMsg("所有按钮通用的取消")]
+        public const string CANCEL = "取消";
+        [TranslateMsg("多个内容显示达到上限时的省略写法（{0}：内容列表）")]
+        public const string TRIMMED_COTENTS = "{0}...";
+        #endregion
+
+        #region 语言
         [TranslateMsg("语言选项，简体中文")]
         public const string LANGUAGE_ZH_HANS = "简体中文";
         [TranslateMsg("语言选项，英文")]

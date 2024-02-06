@@ -177,9 +177,9 @@ namespace Controllers
                 if (nameTemplate != null)
                 {
                     if (nameArgs != null)
-                        text = lang._(nameTemplate, nameArgs);
+                        text = lang._p(Translations.CONTEXT_GAME_LOG_NAME, nameTemplate, nameArgs);
                     else
-                        text = lang._(nameTemplate);
+                        text = lang._p(Translations.CONTEXT_GAME_LOG_NAME, nameTemplate);
                 }
             }
             switch (eventDefine)

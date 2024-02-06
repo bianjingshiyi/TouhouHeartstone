@@ -103,14 +103,54 @@ namespace Controllers
             }
             return false;
         }
+        #region 翻译文本
         public string tryTranslateWithDict(string input)
         {
+            if (string.IsNullOrEmpty(input))
+                return string.Empty;
             if (_nameTextDict.TryGetValue(input, out string text))
             {
                 return game.i18n._(text);
             }
             return game.i18n._(input);
         }
+        public string translateCategoryName(string category)
+        {
+            if (string.IsNullOrEmpty(category))
+                return string.Empty;
+            if (_nameTextDict.TryGetValue(category, out string text))
+            {
+                return game.lang._p(StringTable.CONTEXT_NODE_CATEGORY, text);
+            }
+            return game.lang._p(StringTable.CONTEXT_NODE_CATEGORY, category);
+        }
+        public string translateActionName(ActionDefine actionDefine)
+        {
+            return translateActionName(actionDefine?.editorName);
+        }
+        public string translateActionName(string actionName)
+        {
+            return tryTranslateWithDict(actionName);
+        }
+        public string translatePortName(IPort port)
+        {
+            return translatePortName(port?.define);
+        }
+        public string translatePortName(PortDefine portDefine)
+        {
+            return translatePortName(portDefine?.getDisplayName());
+        }
+        public string translatePortName(string portName)
+        {
+            if (string.IsNullOrEmpty(portName))
+                return string.Empty;
+            if (_nameTextDict.TryGetValue(portName, out string text))
+            {
+                return game.lang._p(StringTable.CONTEXT_NODE_PARAM_NAME, text);
+            }
+            return game.lang._p(StringTable.CONTEXT_NODE_PARAM_NAME, portName);
+        }
+        #endregion
         public Vector2 getViewportCenter()
         {
             return _ui.getViewCenterPosition();
@@ -402,13 +442,13 @@ namespace Controllers
         {
             if (define.actionDefine != null)
             {
-                return tryTranslateWithDict(define.actionDefine.editorName);
+                return translateActionName(define.actionDefine);
             }
             if (define.isEventEntry())
             {
                 return tryTranslateWithDict(game.eventManager.translateEventTriggerTimeNameForEditor(define.getEventTriggerTime()));
             }
-            return game.lang._(StringTable.EDITOR_NODE_NAME_UNKNOW);
+            return game.lang._(StringTable.EDITOR_NODE_NAME_UNKNOWN);
         }
         #endregion
         #region 私有方法
@@ -447,8 +487,9 @@ namespace Controllers
             _ui.onDeleteEffectProperty += onDeleteEffectPropertyCallback;
 
             var keywords = EditorManager.editorKeywords;
-            var effectTagNames = _activeEffectTagNames.Union(_passiveEffectTagNames).ToArray();
+            var effectTagNames = getAllEffectTagNames();
             var effectTagValues = getAllEffectTagValues();
+            var cardProperties = game.editor.getTranslatedCardProperties().ToArray();
             var properties = new ValueInputFieldProperties()
             {
                 pileNames = game.editor.getAllPileNames(),
@@ -460,7 +501,7 @@ namespace Controllers
                 effectTagNames = effectTagNames,
                 effectTagValues = effectTagValues,
 
-                cardPropertys = CardEditorCtrl.cardProps.ToArray(),
+                cardProperties = cardProperties,
 
                 defaultValueTypeName = game.editor.getDefaultValueTypeName(),
                 valueTypeNames = game.editor.getValueTypeNameMaps(),
@@ -934,7 +975,7 @@ namespace Controllers
                 actionNodeItem = _ui.createActionNode(
                     actionNode.posX,
                     actionNode.posY,
-                    game.langManager.getString(StringTable.EDITOR_NODE_NAME_UNKNOW),
+                    game.langManager.getString(StringTable.EDITOR_NODE_NAME_UNKNOWN),
                     inputViewDatas,
                     outputViewDatas);
             }
@@ -954,7 +995,8 @@ namespace Controllers
                 inputViewData,
                 targetTypes, checkers,
                 outputViewData);
-            var properties = ValueInputFieldProperties.effectTag(_activeEffectTagNames, _activeEffectTags);
+            var tagNames = _activeEffectTagNames.Select(n => game.lang._p(StringTable.CONTEXT_EFFECT_TAG, n)).ToArray();
+            var properties = ValueInputFieldProperties.effectTag(tagNames, _activeEffectTags);
             actionNodeItem.initNodeInputFields(properties);
 
             afterCreateNodeItem(activeEntry, actionNodeItem);
@@ -980,7 +1022,8 @@ namespace Controllers
                 inputViewData,
                 outputViewData,
                 visualEffect: true);
-            var properties = ValueInputFieldProperties.effectTag(_passiveEffectTagNames, _passiveEffectTags);
+            var tagNames = _passiveEffectTagNames.Select(n => game.lang._p(StringTable.CONTEXT_EFFECT_TAG, n)).ToArray();
+            var properties = ValueInputFieldProperties.effectTag(tagNames, _passiveEffectTags);
             actionNodeItem.initNodeInputFields(properties);
             actionNodeItem.switchToEventEntryNode();
 
@@ -1121,11 +1164,11 @@ namespace Controllers
             if (define == null)
             {
                 Debug.LogWarning($"没有找到动作{actionNode.defineRef}对应的名称");
-                return tryTranslateWithDict(StringTable.EDITOR_NODE_NAME_UNKNOW);
+                return translateActionName(StringTable.EDITOR_NODE_NAME_UNKNOWN);
             }
             else
             {
-                return tryTranslateWithDict(define.editorName);
+                return translateActionName(define);
             }
         }
 
@@ -1633,7 +1676,7 @@ namespace Controllers
         }
         private ActionNodeValueInfo getValueInfoFromPortDefine(PortDefine portDefine, object value)
         {
-            var name = tryTranslateWithDict(portDefine.getDisplayName());
+            var name = translatePortName(portDefine);
             Type type = portDefine.type;
 
             if (type.IsEnum)
@@ -1698,7 +1741,7 @@ namespace Controllers
             foreach (var inputPort in node.inputPorts)
             {
                 // 翻译输出节点
-                var inputName = tryTranslateWithDict(inputPort.define.getDisplayName());
+                var inputName = translatePortName(inputPort);
                 var portInfo = new PortItemInfo(inputName, game.editor.getColorByType(inputPort.define.type), inputPort.GetPortType() == PortType.Control);
                 var defaultValue = getDefaultValueInfoFromInput(inputPort);
                 var showPort = shouldInputPortShowPort(inputPort);
@@ -1706,18 +1749,6 @@ namespace Controllers
                 viewDataList.Add(new InputPortInfo(portInfo, defaultValue, showPort, showDefaultValue));
             }
             return viewDataList.ToArray();
-        }
-        private string[] getNodeOutputNames(Node node)
-        {
-            string[] outputNames = new string[node.outputPorts.Count()];
-            for (int i = 0; i < outputNames.Length; i++)
-            {
-                // 翻译输出节点
-                var outputName = node.outputPorts.ElementAt(i).define.getDisplayName();
-                outputNames[i] = tryTranslateWithDict(outputName);
-            }
-            return outputNames;
-
         }
         private PortItemInfo[] getNodeOutputViewData(Node node)
         {
@@ -1733,7 +1764,7 @@ namespace Controllers
             foreach (var output in node.outputPorts)
             {
                 // 翻译输出节点
-                var outputName = tryTranslateWithDict(output.define.getDisplayName());
+                var outputName = translatePortName(output);
                 outputList.Add(new PortItemInfo(outputName, game.editor.getColorByType(output.define.type), output.GetPortType() == PortType.Control));
             }
             return outputList.ToArray();
@@ -1822,13 +1853,13 @@ namespace Controllers
             switch (valueType)
             {
                 case ActionNodeValueType.cardDefinePropertyNameGet:
-                    value = CardEditorCtrl.cardProps.FirstOrDefault(p => p.canDefineGet).value;
+                    value = EditorManager.cardProps.FirstOrDefault(p => p.canDefineGet).value;
                     break;
                 case ActionNodeValueType.cardPropertyNameGet:
-                    value = CardEditorCtrl.cardProps.FirstOrDefault(p => p.canGet).value;
+                    value = EditorManager.cardProps.FirstOrDefault(p => p.canGet).value;
                     break;
                 case ActionNodeValueType.cardPropertyNameSet:
-                    value = CardEditorCtrl.cardProps.FirstOrDefault(p => p.canSet).value;
+                    value = EditorManager.cardProps.FirstOrDefault(p => p.canSet).value;
                     break;
                 case ActionNodeValueType.effectTag:
                     value = getAllEffectTagValues()[0];
@@ -2016,9 +2047,13 @@ namespace Controllers
                 }
             }
         }
+        private string[] getAllEffectTagNames()
+        {
+            return _activeEffectTagNames.Concat(_passiveEffectTagNames).Select(n => game.lang._p(StringTable.CONTEXT_EFFECT_TAG, n)).ToArray();
+        }
         private string[] getAllEffectTagValues()
         {
-            return _activeEffectTags.Union(_passiveEffectTags).ToArray();
+            return _activeEffectTags.Concat(_passiveEffectTags).ToArray();
         }
         private Task displayCardSelectPanel(long cardPoolId)
         {
@@ -2051,10 +2086,8 @@ namespace Controllers
         public const string EDITOR_CATEGORY_TEMPLATE = "{0} >";
         [TranslateMsg("编辑器-分类名称-事件入口节点")]
         public const string EDITOR_CATEGORY_EVENT_ENTRY_NODE = "事件入口";
-        [TranslateMsg("编辑器-参数名称-作用条件（自定义光环-作用条件-输出值）")]
-        public const string EDITOR_PARAM_NAME_AFFECT_CONDITION = "作用条件";
         [TranslateMsg("编辑器-参数名称-目标增益（自定义光环-更新动作-输出值）")]
-        public const string EDITOR_PARAM_NAME_TARGETS_BUFF = "目标增益";
+        public const string EDITOR_PARAM_NAME_TARGET_BUFF = "目标增益";
         [TranslateMsg("编辑器-节点名称-主动效果入口节点")]
         public const string EDITOR_NODE_NAME_ACTIVE_ENTRY_NODE = "主动效果入口";
         [TranslateMsg("编辑器-节点名称-被动效果入口节点")]
@@ -2146,8 +2179,6 @@ namespace Controllers
         const string EDITOR_PARAM_DAMAGE_AMOUNT = "伤害量";
         [TranslateMsg("节点参数 Target")]
         const string EDITOR_PARAM_TARGET = "目标";
-        [TranslateMsg("节点参数 TargetBuff")]
-        const string EDITOR_PARAM_TARGET_BUFF = "目标增益";
 
 
         [TranslateMsg("整数运算符，加法 +")]
@@ -2190,15 +2221,6 @@ namespace Controllers
             { DEFINE.TARGET_TYPE_CHARACTER, StringTable.GAME_TARGET_TYPE_CHARACTER },
             { DEFINE.TARGET_TYPE_SERVANT, StringTable.GAME_TARGET_TYPE_SERVANT },
             
-            //节点分类
-            { "Game", StringTable.EDITOR_NODE_CATEGORY_GAME },
-            { "Player", StringTable.EDITOR_NODE_CATEGORY_PLAYER },
-            { "Pile", StringTable.EDITOR_NODE_CATEGORY_PILE },
-            { "Card", StringTable.EDITOR_NODE_CATEGORY_CARD },
-            { "Const", StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST },
-            { "Modifier", StringTable.EDITOR_NODE_CATEGORY_MODIFIER },
-            { "Event", StringTable.EDITOR_NODE_CATEGORY_EVENT },
-            { "CollectionOperation", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION },
             //节点名称
             { "IntegerOperation", StringTable.EDITOR_NODE_NAME_INTEGER_OPERATION },
             { "LogicOperation", StringTable.EDIOTR_NODE_NAME_LOGIC_OPERATION },
@@ -2212,8 +2234,6 @@ namespace Controllers
             { "GetProperty", StringTable.EDITOR_NODE_NAME_GET_PROPERTY },
             { "SetProperty", StringTable.EDITOR_NODE_NAME_SET_PROPERTY },
             { "GetUniquePropertyName", StringTable.EDITOR_NODE_NAME_GET_UNIQUE_PROPERTY_NAME },
-            { "Damage", StringTable.EDITOR_NODE_NAME_DAMAGE },
-            { "SetIntPropModifierValue", StringTable.EDITOR_NODE_NAME_SET_INT_PROP_MODIFIER_VALUE },
             { "GetCount", StringTable.EDITOR_NODE_NAME_GET_COUNT },
             { "GeneratedEffectData", EDITOR_NODE_NAME_GENERATED_EFFECT_DATA },
             { "EventEffectData", EDITOR_NODE_NAME_EVENT_EFFECT_DATA },
@@ -2238,7 +2258,7 @@ namespace Controllers
             { "RangeList", StringTable.EDITOR_EFFECT_PROP_NAME_RANGE_LIST },
             { "AffectCondition", StringTable.EDITOR_EFFECT_PROP_NAME_AFFECT_CONDITION },
             { "TargetCard", StringTable.EDITOR_PARAM_NAME_TARGET_CARD },
-            { "TargetBuff", EDITOR_PARAM_TARGET_BUFF },
+            { "TargetBuff", EDITOR_PARAM_NAME_TARGET_BUFF },
             
             // Enum
             { "TouhouCardEngine.IntegerOperator.add", EDITOR_ENUM_INT_OPERATOR_ADD },
@@ -2259,11 +2279,11 @@ namespace Controllers
             { "TouhouCardEngine.CompareOperator.lessEquals", EDITOR_ENUM_CMP_OPERATOR_LESS_EQUAL },
 
 
-            { "Game.CardDefineSelect.Spell", StringTable.GAME_CARD_TYPE_SPELL },
-            { "Game.CardDefineSelect.Servant",  StringTable.GAME_CARD_TYPE_SERVANT },
-            { "Game.CardDefineSelect.Skill", StringTable.GAME_CARD_TYPE_SKILL },
-            { "Game.CardDefineSelect.Master", StringTable.GAME_CARD_TYPE_MASTER },
-            { "Game.CardDefineSelect.Item", StringTable.GAME_CARD_TYPE_ITEM },
+            { "Game.CardDefineSelect.Spell", StringTable.CARD_TYPE_SPELL },
+            { "Game.CardDefineSelect.Servant",  StringTable.CARD_TYPE_SERVANT },
+            { "Game.CardDefineSelect.Skill", StringTable.CARD_TYPE_SKILL },
+            { "Game.CardDefineSelect.Master", StringTable.CARD_TYPE_MASTER },
+            { "Game.CardDefineSelect.Item", StringTable.CARD_TYPE_ITEM },
 
             { "Game.EffectType.Active", EDITOR_ENUM_EFFECT_TYPE_ACTIVE },
             { "Game.EffectType.Passive", EDITOR_ENUM_EFFECT_TYPE_PASSIVE },
@@ -2276,7 +2296,7 @@ namespace Controllers
         };
         static readonly string[] _activeEffectTagNames = new string[]
         {
-            StringTable.GAME_KEYWORD_BATTLECRY
+            StringTable.EDITOR_EFFECT_TAG_NAME_PLAYED
         };
         static readonly string[] _passiveEffectTags = new string[]
         {
@@ -2285,8 +2305,8 @@ namespace Controllers
         };
         static readonly string[] _passiveEffectTagNames = new string[]
         {
-            StringTable.GAME_KEYWORD_DEATHRATTLE,
-            StringTable.GAME_KEYWORD_SECRET,
+            StringTable.EDITOR_EFFECT_TAG_NAME_LASTWORDS,
+            StringTable.EDITOR_EFFECT_TAG_NAME_TRAP,
         };
         private long curCardPoolId => game.editor.currentCardPoolId;
         private string[] cardTypeValues;

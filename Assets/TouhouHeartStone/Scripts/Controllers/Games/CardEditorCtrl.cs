@@ -467,13 +467,13 @@ namespace Controllers
         {
             if (string.IsNullOrEmpty(item.propertyName))
             {
-                string errorMessage = game.lang._(CARD_CUSTOM_PROP_NAME_EMPTY);
+                string errorMessage = game.lang._(StringTable.EDITOR_ERROR_NAME_EMPTY);
                 _ui.showCustomPropertyDialogError(errorMessage);
                 return;
             }
             if (isPropertyNameTaken(item.propertyName))
             {
-                string errorMessage = game.lang._(CARD_CUSTOM_PROP_NAME_TAKEN);
+                string errorMessage = game.lang._(StringTable.EDITOR_ERROR_NAME_TAKEN);
                 _ui.showCustomPropertyDialogError(errorMessage);
                 return;
             }
@@ -678,9 +678,9 @@ namespace Controllers
                 string desc = game.lang._(CARD_WARNING_UNSAVED_CHANGES);
                 string[] optNames = new string[]
                 {
-                    game.lang._(CARD_WARNING_OPTION_SAVE),
-                    game.lang._(CARD_WARNING_OPTION_DONT_SAVE),
-                    game.lang._(CARD_WARNING_OPTION_CANCEL)
+                    game.lang._(StringTable.SAVE),
+                    game.lang._(StringTable.DONT_SAVE),
+                    game.lang._(StringTable.CANCEL)
                 };
                 game.ui.dialog.ShowOptions(title, desc, optNames, async (index) =>
                 {
@@ -863,7 +863,7 @@ namespace Controllers
             else
             {
                 spr = game.card.getDefaultSprite();
-                name = game.lang._(StringTable.BUILD_UNKNOW_CARD_NAME);
+                name = game.lang._(StringTable.BUILD_UNKNOWN_CARD_NAME);
             }
             _ui.setSkillRef(spr, name);
         }
@@ -1127,38 +1127,10 @@ namespace Controllers
         public const string CARD_EDITOR_TITLE = "卡牌编辑器";
         [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的警告")]
         public const string CARD_WARNING_UNSAVED_CHANGES = "是否将更改保存到该卡牌中？";
-        [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的按钮名称")]
-        public const string CARD_WARNING_OPTION_SAVE = "保存";
-        [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的按钮名称")]
-        public const string CARD_WARNING_OPTION_DONT_SAVE = "不保存";
-        [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的按钮名称")]
-        public const string CARD_WARNING_OPTION_CANCEL = "取消";
-        [TranslateMsg("尝试添加重复名称的自定义属性的错误提示")]
-        public const string CARD_CUSTOM_PROP_NAME_TAKEN = "该属性名已被使用！";
-        [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]
-        public const string CARD_CUSTOM_PROP_NAME_EMPTY = "请输入属性名！";
         [TranslateMsg("卡牌图片导出成功")]
         public const string CARD_PICTURE_EXPORTED = "卡牌图片导出成功。";
         [TranslateMsg("卡牌图片导出失败")]
         public const string CARD_PICTURE_EXPORT_FAILED = "卡牌图片导出失败。";
-
-        [TranslateMsg("尝试添加重复名称的特效引用的错误提示")]
-        public const string ANIM_REF_KEY_TAKEN = "该名称已被使用！";
-        [TranslateMsg("尝试添加空名称的特效引用的错误提示")]
-        public const string ANIM_REF_KEY_EMPTY = "请输入特效引用名！";
-
-        [TranslateMsg("卡牌属性名/濒死")]
-        public const string CARD_PROP_NAME_ISDEAD = "濒死";
-        [TranslateMsg("卡牌属性名/当前生命值")]
-        public const string CARD_PROP_NAME_CURRENT_LIFE = "当前生命值";
-        [TranslateMsg("卡牌属性名/护甲值")]
-        public const string CARD_PROP_NAME_ARMOR = "护甲值";
-        [TranslateMsg("卡牌属性名/被封印")]
-        public const string CARD_PROP_NAME_SILENCED = "被封印";
-        [TranslateMsg("卡牌属性名/已就绪")]
-        public const string CARD_PROP_NAME_ISREADY = "已就绪";
-        [TranslateMsg("卡牌属性名/攻击次数")]
-        public const string CARD_PROP_NAME_ATTACK_TIMES = "攻击次数";
         #endregion
 
         #region 静态集合
@@ -1191,13 +1163,13 @@ namespace Controllers
         static readonly string[] _raceNames = new string[]
         {
             string.Empty,
-            StringTable.GAME_RACE_BEAST,
-            StringTable.GAME_RACE_DEMON,
-            StringTable.GAME_RACE_ELEMENT,
-            StringTable.GAME_RACE_FAIRY,
-            StringTable.GAME_RACE_GOD,
-            StringTable.GAME_RACE_MACHINE,
-            StringTable.GAME_RACE_GHOST
+            StringTable.CARD_TAG_BEAST,
+            StringTable.CARD_TAG_DEMON,
+            StringTable.CARD_TAG_ELEMENTAL,
+            StringTable.CARD_TAG_FAIRY,
+            StringTable.CARD_TAG_GOD,
+            StringTable.CARD_TAG_MECH,
+            StringTable.CARD_TAG_GHOST
         };
 
         #region 自定义属性
@@ -1221,22 +1193,6 @@ namespace Controllers
             CARD.ISDEAD,
             CARD.ISREADY,
             CARD.ATTACK_TIMES
-        };
-        public static readonly List<CardPropertyNameItem> cardProps = new List<CardPropertyNameItem>
-        {
-            new CardPropertyNameItem(CARD.ISDEAD, CARD_PROP_NAME_ISDEAD, true, true, false),
-            new CardPropertyNameItem(CARD.CURRENT_LIFE, CARD_PROP_NAME_CURRENT_LIFE, true, true, false),
-            new CardPropertyNameItem(CARD.ARMOR, CARD_PROP_NAME_ARMOR, true, true, false),
-            new CardPropertyNameItem(CARD.SILENCE, CARD_PROP_NAME_SILENCED, true, true, false),
-            new CardPropertyNameItem(CARD.ISREADY, CARD_PROP_NAME_ISREADY, true, true, false),
-            new CardPropertyNameItem(CARD.ATTACK_TIMES, CARD_PROP_NAME_ATTACK_TIMES, true, true, false),
-
-            // 只读
-            new CardPropertyNameItem(DEFINE.ATTACK, StringTable.GAME_CARD_PROP_NAME_ATTACK),
-            new CardPropertyNameItem(DEFINE.COST, StringTable.GAME_CARD_PROP_NAME_COST),
-            new CardPropertyNameItem(DEFINE.LIFE, StringTable.GAME_CARD_PROP_NAME_LIFE),
-            new CardPropertyNameItem(DEFINE.DAMAGE_REDUCE, StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE),
-            new CardPropertyNameItem(DEFINE.SPELL_DAMAGE, StringTable.GAME_CARD_PROP_NAME_SPELL_DAMAGE),
         };
         #endregion
 

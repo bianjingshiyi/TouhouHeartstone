@@ -26,10 +26,6 @@ namespace Game
         /// </summary>
         public const string EVENT_CAST_EVENT_TYPE_NODE_CAST_EVENT_PARAM_KEY = MethodActionDefine.returnValueName;
         //  事件处理
-        [TranslateMsg("编辑器/事件_事件_参数名称")]
-        public const string EDITOR_PARAM_NAME_EVENT = "事件";
-        [TranslateMsg("编辑器/事件_事件类型_参数名称")]
-        public const string EDITOR_PARAM_NAME_EVENT_TYPE = "事件类型";
         [TranslateMsg("编辑器/事件_事件集合_参数名称")]
         public const string EDITOR_PARAM_NAME_EVENTS = "事件集合";
         [TranslateMsg("编辑器/事件_回合数_参数名称")]
@@ -39,8 +35,6 @@ namespace Game
         [TranslateMsg("编辑器/参数名称")]
         public const string EDITOR_PARAM_NAME_REPEAT_TIMES = "重复次数";
 
-        [TranslateMsg("编辑器/事件_集合名称")]
-        public const string EDITOR_NODE_EVENT = "事件";
         [TranslateMsg("编辑器/事件_当前事件_节点名称")]
         public const string EDITOR_NODE_EVENT_THIS_EVENT = "当前事件";
         [TranslateMsg("编辑器/事件_阻止事件_节点名称")]
@@ -59,8 +53,6 @@ namespace Game
         public const string EDITOR_NODE_EVENT_DAMAGE_CHANGE_VALUE = "伤害/更改伤害值";
         [TranslateMsg("编辑器/事件-节点名称")]
         public const string EDITOR_NODE_EVENT_HEAL_CHANGE_VALUE = "治疗/更改治疗值";
-        [TranslateMsg("编辑器/事件_参数名称")]
-        public const string EDITOR_NODE_EVENT_TYPE = "事件类型";
         [TranslateMsg("编辑器/事件_前X回合开始_参数名称")]
         public const string EDITOR_PARAM_NAME_TURN_COUNT_START_BEFORE = "前X回合开始";
         [TranslateMsg("编辑器/事件_前Y回合结束_参数名称")]
@@ -89,17 +81,17 @@ namespace Game
 
         #region 事件
 
-        [ObsoletedKeyMethod(BuiltinActionDefineID.ThisEvent, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_THIS_EVENT)]
-        [return: ActionNodeParam(EDITOR_NODE_EVENT)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.ThisEvent, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_THIS_EVENT)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)]
         public static EventArg thisEvent(EventArg eventArg)
         {
             return eventArg;
         }
 
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEventVariable, EDITOR_NODE_EVENT, StringTable.EDITOR_NODE_NAME_GET_VARIABLE, "GetVariable")]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEventVariable, StringTable.EDITOR_NODE_CATEGORY_EVENT, StringTable.EDITOR_NODE_NAME_GET_VARIABLE, "GetVariable")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getVariable(
-            [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME)] EventVarName varName)
         {
             if (eventArg == null || varName == null)
@@ -107,11 +99,11 @@ namespace Game
             return eventArg.getVar(varName);
         }
 
-        [THHActionMethod(BuiltinActionDefineID.CastEventType, EDITOR_NODE_EVENT, EDITOR_NODE_NAME_CAST_EVENT_TYPE)]
-        [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT)]
+        [THHActionMethod(BuiltinActionDefineID.CastEventType, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_NAME_CAST_EVENT_TYPE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)]
         public static EventArg castEventType(
-            [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
-            [ActionNodeParam(EDITOR_NODE_EVENT_TYPE, isConst: true)] EventReference eventReference)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT_TYPE, isConst: true)] EventReference eventReference)
         {
             if (eventArg == null || eventReference == null)
                 return null;
@@ -121,9 +113,9 @@ namespace Game
         }
 
         [EventNode(typeof(SetEventVarEventDefine))]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.SetEventVariable, EDITOR_NODE_EVENT, StringTable.EDITOR_NODE_NAME_SET_VARIABLE, "SetVariable")]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.SetEventVariable, StringTable.EDITOR_NODE_CATEGORY_EVENT, StringTable.EDITOR_NODE_NAME_SET_VARIABLE, "SetVariable")]
         public static void setVariable(CardEngine game,
-            [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME)] EventVarName varName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
@@ -132,9 +124,9 @@ namespace Game
             eventArg.changeEventVar(game, varName, value);
         }
 
-        [ObsoletedKeyMethod(BuiltinActionDefineID.StopEvent, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_STOP_EVENT)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.StopEvent, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_STOP_EVENT)]
         public static void stopEvent(
-            [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg)
         {
             if (eventArg == null)
                 return;
@@ -142,9 +134,9 @@ namespace Game
         }
 
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.ChangeAttackTarget, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_CHANGE_ATTACK_TARGET)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.ChangeAttackTarget, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_CHANGE_ATTACK_TARGET)]
         public static void changeAttackTarget(CardEngine game,
-            [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card target)
         {
             if (eventArg.define is AttackEventDefine attackArg)
@@ -154,19 +146,19 @@ namespace Game
         }
 
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.ChangeUseTarget, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_CHANGE_USE_TARGET)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.ChangeUseTarget, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_CHANGE_USE_TARGET)]
         public static void changeUseTargets(CardEngine game,
-            [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Card[] target)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] Card[] target)
         {
             if (eventArg.getVar<Card[]>(EVENTVAR.TARGETS).Length > 0)
                 eventArg.changeEventVar(game, EVENTVAR.TARGETS, target);
         }
 
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.DamageEvent_ChangeTarget, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_TARGET)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DamageEvent_ChangeTarget, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_TARGET)]
         public static void damageEvent_changeTarget(CardEngine game,
-            [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card target)
         {
             if (eventArg.define is DamageEventDefine)
@@ -176,9 +168,9 @@ namespace Game
         }
 
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.DamageEvent_ChangeSource, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_SOURCE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DamageEvent_ChangeSource, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_SOURCE)]
         public static void damageEvent_changeSource(CardEngine game,
-            [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card source)
         {
             if (eventArg.define is DamageEventDefine)
@@ -188,9 +180,9 @@ namespace Game
         }
 
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.DamageEvent_ChangeValue, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_VALUE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DamageEvent_ChangeValue, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_VALUE)]
         public static void damageEvent_changeValue(CardEngine game,
-            [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
         {
             if (eventArg.define is DamageEventDefine)
@@ -200,9 +192,9 @@ namespace Game
         }
 
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.HealEvent_ChangeValue, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_HEAL_CHANGE_VALUE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.HealEvent_ChangeValue, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_HEAL_CHANGE_VALUE)]
         public static void healEvent_changeValue(CardEngine game,
-            [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
         {
             if (eventArg.define is HealEventDefine)
@@ -211,11 +203,11 @@ namespace Game
             }
         }
 
-        [THHActionMethod(BuiltinActionDefineID.CheckEventType, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_CHECK_EVENT_TYPE)]
+        [THHActionMethod(BuiltinActionDefineID.CheckEventType, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_CHECK_EVENT_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool checkEventType(
-            [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg,
-            [ActionNodeParam(EDITOR_NODE_EVENT_TYPE, isConst: true)] EventReference argRef)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT_TYPE, isConst: true)] EventReference argRef)
         {
             if (eventArg == null || argRef == null)
                 return false;
@@ -225,14 +217,14 @@ namespace Game
                 return true;
             return false;
         }
-        [THHActionMethod(BuiltinActionDefineID.GetEventsThisGame, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_GET_EVENTS_THIS_GAME)]
+        [THHActionMethod(BuiltinActionDefineID.GetEventsThisGame, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_GET_EVENTS_THIS_GAME)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENTS)]
         public static EventArg[] getEventsThisGame(CardEngine game)
         {
             return game.triggers.getRecordedEvents().OfType<EventArg>().ToArray();
         }
 
-        [THHActionMethod(BuiltinActionDefineID.GetEventsThisTurn, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_GET_EVENTS_THIS_TURN)]
+        [THHActionMethod(BuiltinActionDefineID.GetEventsThisTurn, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_GET_EVENTS_THIS_TURN)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENTS)]
         public static EventArg[] getEventsThisTurn(CardEngine game)
         {
@@ -240,7 +232,7 @@ namespace Game
         }
 
 
-        [THHActionMethod(BuiltinActionDefineID.GetEventsInTurnsBefore, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_GET_EVENTS_IN_TURNS_BEFORE)]
+        [THHActionMethod(BuiltinActionDefineID.GetEventsInTurnsBefore, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_GET_EVENTS_IN_TURNS_BEFORE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENTS)]
         public static EventArg[] getEventsInTurnsBefore(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT_START_BEFORE)] int farther,
@@ -266,40 +258,40 @@ namespace Game
             return results.ToArray();
         }
 
-        [THHActionMethod(BuiltinActionDefineID.GetCardSnapshotBeforeEvent, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_BEFORE_EVENT)]
-        [return: ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)]
+        [THHActionMethod(BuiltinActionDefineID.GetCardSnapshotBeforeEvent, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_BEFORE_EVENT)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_SNAPSHOT)]
         public static CardSnapshot getSnapshotOfCardBeforeEvent(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
-            [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg)
         {
             if (card == null || eventArg == null)
                 return null;
             return game.getCardSnapshotBeforeEvent(card, eventArg);
         }
 
-        [THHActionMethod(BuiltinActionDefineID.GetCardSnapshotAfterEvent, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_AFTER_EVENT)]
-        [return: ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)]
+        [THHActionMethod(BuiltinActionDefineID.GetCardSnapshotAfterEvent, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_AFTER_EVENT)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_SNAPSHOT)]
         public static CardSnapshot getSnapshotOfCardAfterEvent(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
-            [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg)
         {
             if (card == null || eventArg == null)
                 return null;
             return game.getCardSnapshotAfterEvent(card, eventArg);
         }
 
-        [THHActionMethod(BuiltinActionDefineID.GetEventRepeatTimes, EDITOR_NODE_EVENT, EDITOR_NODE_GET_EVENT_REPEAT_TIME)]
+        [THHActionMethod(BuiltinActionDefineID.GetEventRepeatTimes, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_GET_EVENT_REPEAT_TIME)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_REPEAT_TIMES)]
         public static int setEventRepeatTime(
-            [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg)
         {
             if (eventArg == null)
                 return 0;
             return eventArg.repeatTime;
         }
-        [THHActionMethod(BuiltinActionDefineID.SetEventRepeatTimes, EDITOR_NODE_EVENT, EDITOR_NODE_SET_EVENT_REPEAT_TIME)]
+        [THHActionMethod(BuiltinActionDefineID.SetEventRepeatTimes, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_SET_EVENT_REPEAT_TIME)]
         public static void setEventRepeatTime(
-            [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(EDITOR_PARAM_NAME_REPEAT_TIMES)] int times)
         {
             if (eventArg == null)
@@ -311,13 +303,13 @@ namespace Game
         #region 回合数
 
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetTurnCount_Obsolete, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_GET_TURN_COUNT_OBSOLETE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetTurnCount_Obsolete, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_GET_TURN_COUNT_OBSOLETE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT)]
         public static int getTurnCountObsolete(CardEngine game)
         {
             return game.getTurnCount() - 1;
         }
-        [THHActionMethod(BuiltinActionDefineID.GetTurnCount, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_GET_TURN_COUNT)]
+        [THHActionMethod(BuiltinActionDefineID.GetTurnCount, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_GET_TURN_COUNT)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT)]
         public static int getTurnCount(CardEngine game)
         {

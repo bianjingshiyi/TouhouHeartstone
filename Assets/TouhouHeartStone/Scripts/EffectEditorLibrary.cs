@@ -1395,10 +1395,10 @@ namespace Game
         /// <param name="outEventDraw"></param>
         /// <returns></returns>
         [EventNode(typeof(DrawEventDefine), typeof(BurnEventDefine))]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.SimpleDraw, StringTable.EDITOR_CATEGORY__ACTION__NAME, StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__NAME)]
-        [return: ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__DRAW_EVENT)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.SimpleDraw, StringTable.EDITOR_NODE_CATEGORY_ACTION, StringTable.EDITOR_NODE_NAME_SIMPLE_DRAW_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAWN_CARD)]
         public static Card simpleDrawCard(CardEngine game, 
-            [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)][NodeParamEventType(typeof(DrawEventDefine))] out EventArg outEventDraw,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BURN_EVENT)][NodeParamEventType(typeof(BurnEventDefine))] out EventArg outEventBurn)
         {
@@ -1414,7 +1414,7 @@ namespace Game
         /// 卡牌置入战场
         /// </summary>
         [EventNode(typeof(MassEnterFieldEventDefine))]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToField, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_FIELD)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToField, StringTable.EDITOR_NODE_CATEGORY_ACTION, EDITOR_NODE_NAME_CARD_MOVE_TO_FIELD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToField(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -1434,7 +1434,7 @@ namespace Game
         /// 卡牌移回手牌
         /// </summary>
         [EventNode(typeof(MassReturnHandEventDefine))]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToHand, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_HAND)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToHand, StringTable.EDITOR_NODE_CATEGORY_ACTION, EDITOR_NODE_NAME_CARD_MOVE_TO_HAND)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToHand(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -1454,7 +1454,7 @@ namespace Game
         /// 卡牌从洗入牌库
         /// </summary>
         [EventNode(typeof(MassShuffleToDeckEventDefine))]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToDeck, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_DECK)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToDeck, StringTable.EDITOR_NODE_CATEGORY_ACTION, EDITOR_NODE_NAME_CARD_MOVE_TO_DECK)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToDeck(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -1475,7 +1475,7 @@ namespace Game
         /// 卡牌从置入墓地
         /// </summary>
         [EventNode(typeof(MassMoveCardEventDefine))]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToGrave, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToGrave, StringTable.EDITOR_NODE_CATEGORY_ACTION, EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToGrave(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -1496,7 +1496,7 @@ namespace Game
         /// 卡牌置入延迟区
         /// </summary>
         [EventNode(typeof(MassMoveToHeadEventDefine))]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToHead, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_HEAD)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToHead, StringTable.EDITOR_NODE_CATEGORY_ACTION, EDITOR_NODE_NAME_CARD_MOVE_TO_HEAD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToHead(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -1517,7 +1517,7 @@ namespace Game
         /// 卡牌装备到道具栏(有显示问题）
         /// </summary>
         [EventNode(typeof(EquipItemEventDefine))]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToItem, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToItem, StringTable.EDITOR_NODE_CATEGORY_ACTION, EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EQUIP_EVENT)]
         [return: NodeParamEventType(typeof(EquipItemEventDefine))]
         public static async Task<EventArg> moveToItem(CardEngine game,
@@ -1535,7 +1535,7 @@ namespace Game
         /// 卡牌移动到暂存区(有显示问题）
         /// </summary>
         [EventNode(typeof(MassMoveCardEventDefine))]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToWarp, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_WARP)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToWarp, StringTable.EDITOR_NODE_CATEGORY_ACTION, EDITOR_NODE_NAME_CARD_MOVE_TO_WARP)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToWARP(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,

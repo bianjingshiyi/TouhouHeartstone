@@ -26,7 +26,7 @@ namespace Controllers
                     {
                         var portDefine = define.actionDefine.inputDefines.ElementAtOrDefault(i);
                         var color = game.editor.getColorByType(portDefine?.type);
-                        string name = tryTranslateWithDict(portDefine?.getDisplayName() ?? string.Empty);
+                        string name = translatePortName(portDefine);
                         var portInfo = new PortItemInfo(name, color, portDefine?.GetPortType() == PortType.Control);
                         var defaultValue = getValueInfoFromPortDefine(portDefine, null);
                         var showPort = !portDefine.isConst;
@@ -39,7 +39,7 @@ namespace Controllers
                     {
                         var portDefine = define.actionDefine.outputDefines.ElementAtOrDefault(i);
                         var color = game.editor.getColorByType(portDefine?.type);
-                        string name = tryTranslateWithDict(portDefine?.getDisplayName() ?? string.Empty);
+                        string name = translatePortName(portDefine);
                         outputInfos[i] = new PortItemInfo(name, color, portDefine?.GetPortType() == PortType.Control);
                     }
 
@@ -152,11 +152,11 @@ namespace Controllers
                 else if (node is ActionNode actionNode)
                 {
                     var define = actionNode.define;
-                    nodeName = tryTranslateWithDict(define.editorName);
+                    nodeName = translateActionName(define);
                     docKey = CanNodeOpenDocument(actionNode) ? actionNode.defineRef.defineId : -1;
                     visualEffect = game.anims.canActionAddEffect(actionNode.defineRef);
                 }
-                _ui.setPreviewNode(tryTranslateWithDict(nodeName),
+                _ui.setPreviewNode(nodeName,
                     inputViewDatas,
                     outputViewDatas,
                     obsoleteMsg,

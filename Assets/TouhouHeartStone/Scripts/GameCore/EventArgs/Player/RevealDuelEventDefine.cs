@@ -133,7 +133,7 @@ namespace TouhouHeartstone
         const string TEMPLATE = "{0}发动了对决，揭示了:{1}。 对手揭示了：{2}。 结果是 {3}";
         [TranslateMsg("{0}是玩家")]
         const string TEMPLATE_NULL = "{0}发动了对决 揭示了个寂寞，输掉了对决。";
-        [TranslateMsg("游戏事件日志项名称")]
+        [TranslateMsg("游戏事件日志项名称", Translations.CONTEXT_GAME_LOG_NAME)]
         private const string LOG_ITEM_NAME = "信仰对决";
         public const string VAR_SELF_CARDS = "己方可选卡牌";
         public const string VAR_OPPO_CARDS = "对方可选卡牌";

@@ -1,4 +1,5 @@
-﻿using TouhouCardEngine;
+﻿using System.Linq;
+using TouhouCardEngine;
 using TouhouHeartstone;
 
 namespace Game
@@ -35,22 +36,7 @@ namespace Game
         /// <returns></returns>
         public string[] getEffectNames()
         {
-            return _effectTypes;
-        }
-        /// <summary>
-        /// 获取所有给定效果类型的名称
-        /// </summary>
-        /// <param name="effects"></param>
-        /// <returns></returns>
-        public string[] getEffectNames(GeneratedEffect[] effects)
-        {
-            string[] effectNames = new string[effects.Length];
-            for (int i = 0; i < effectNames.Length; i++)
-            {
-                string effectName = _effectTypes[getEffectTypeIndex(effects[i])];
-                effectNames[i] = string.Format(game.langManager.getString(StringTable.EDITOR_EDIT_EFFECT), effectName);
-            }
-            return effectNames;
+            return _effectTypeNames.Select(n => game.lang._p(StringTable.CONTEXT_EFFECT_NAME, n)).ToArray();
         }
         public int getEffectTypeIndex(GeneratedEffect effect)
         {
@@ -72,7 +58,7 @@ namespace Game
         public const int PASSIVE_EFFECT_IDX = 1;
         public const int EVENT_EFFECT_IDX = 2;
         public const int AURA_EFFECT_IDX = 3;
-        readonly string[] _effectTypes = new string[]
+        readonly string[] _effectTypeNames = new string[]
         {
             StringTable.EDITOR_EFFECT_NAME_ACTIVE_EFFECT,
             StringTable.EDITOR_EFFECT_NAME_PASSIVE_EFFECT,

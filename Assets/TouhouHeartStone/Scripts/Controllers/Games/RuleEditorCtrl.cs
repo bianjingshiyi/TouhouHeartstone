@@ -101,9 +101,9 @@ namespace Controllers
                 string desc = game.lang._(RULE_WARNING_UNSAVED_CHANGES);
                 string[] optNames = new string[]
                 {
-                    game.lang._(RULE_WARNING_OPTION_SAVE),
-                    game.lang._(RULE_WARNING_OPTION_DONT_SAVE),
-                    game.lang._(RULE_WARNING_OPTION_CANCEL)
+                    game.lang._(StringTable.SAVE),
+                    game.lang._(StringTable.DONT_SAVE),
+                    game.lang._(StringTable.CANCEL)
                 };
                 game.ui.dialog.ShowOptions(title, desc, optNames, async (index) =>
                 {
@@ -169,12 +169,6 @@ namespace Controllers
         public const string EDITOR_WARNING_DELETE_RULE = "是否要删除该自定义规则？";
         [TranslateMsg("尝试退出自定义规则的编辑页面，但没有保存情况下的警告")]
         public const string RULE_WARNING_UNSAVED_CHANGES = "是否将更改保存到该自定义规则中？";
-        [TranslateMsg("尝试退出自定义规则的编辑页面，但没有保存情况下的按钮名称")]
-        public const string RULE_WARNING_OPTION_SAVE = "保存";
-        [TranslateMsg("尝试退出自定义规则的编辑页面，但没有保存情况下的按钮名称")]
-        public const string RULE_WARNING_OPTION_DONT_SAVE = "不保存";
-        [TranslateMsg("尝试退出自定义规则的编辑页面，但没有保存情况下的按钮名称")]
-        public const string RULE_WARNING_OPTION_CANCEL = "取消";
 
         private long curCardPoolId => game.editor.currentCardPoolId;
         /// <summary>

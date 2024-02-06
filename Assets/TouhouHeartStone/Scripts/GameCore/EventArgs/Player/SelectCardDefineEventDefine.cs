@@ -79,16 +79,16 @@ namespace TouhouHeartstone
         string IDescribableEventDefine.localizeTemplateString(IGame game, EventArg eventArg, IPlayer viewer) => localizeTemplateString(eventArg);
         object[] IDescribableEventDefine.localizeStringArgs(IGame game, EventArg eventArg, IPlayer viewer) => localizeStringArgs(eventArg);
         Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Player>(EVENTVAR.PLAYER);
-        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => LOG_ITEM_NAME;
+        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => Translations.EVENT_LOG_ITEM_NAME_SELECT_CARD;
         object[] IDescribableEventDefine.localizeLogItemNameArgs(IGame game, EventArg eventArg) => null;
         #endregion
         private string localizeTemplateString(EventArg eventArg)
         {
             var seen = eventArg.getVar<bool>(VAR_CARD_SEEN);
             if (seen)
-                return TEMPLATE;
+                return Translations.EVENT_LOG_DESC_TEMPLATE_SELECT;
             else
-                return TEMPLATE_NotShow;
+                return Translations.EVENT_LOG_DESC_TEMPLATE_SELECT_NOT_SHOW;
         }
         private object[] localizeStringArgs(EventArg eventArg)
         {
@@ -101,13 +101,6 @@ namespace TouhouHeartstone
             };
         }
         #endregion
-
-        [TranslateMsg("{0}是玩家，{1}是选项。")]
-        const string TEMPLATE = "{0} 选择了 {1}";
-        [TranslateMsg("{0}是玩家")]
-        const string TEMPLATE_NotShow = "{0} 进行了选择";
-        [TranslateMsg("游戏事件日志项名称")]
-        private const string LOG_ITEM_NAME = "选择";
 
         public const string VAR_OPTIONS = "选项";
         public const string VAR_CARD_SEEN = "明牌";

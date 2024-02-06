@@ -114,41 +114,6 @@ namespace UI
                 itemPropField.initInputFieldProperties(properties);
             }
         }
-
-        /// <summary>
-        /// 获取类型索引，用于输出颜色、
-        /// 这里可以添加各类字符串类型来控制最终的IO输出的颜色。
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public int GetTypeIndex(string type)
-        {
-            var index = 0;
-            switch (type)
-            {
-                case "Owner":
-                case "Player":
-                case "玩家":
-                    index = 1;
-                    break;
-                case "Value":
-                case "Card":
-                case "卡牌":
-                    index = 2;
-                    break;
-                case "目标卡牌":
-                    index = 3;
-                    break;
-                case "Buff":
-                    index = 4;
-                    break;
-                case "":
-                    index = 5;
-                    break; ;
-            }
-
-            return index;
-        }
         /// <summary>
         /// 新的设置输出点颜色的函数
         /// </summary>

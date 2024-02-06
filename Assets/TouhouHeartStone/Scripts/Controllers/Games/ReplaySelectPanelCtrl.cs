@@ -154,7 +154,7 @@ namespace Controllers
                     return skin.name;
                 }
             }
-            return game.lang._(StringTable.BUILD_UNKNOW_CARD_NAME);
+            return game.lang._(StringTable.BUILD_UNKNOWN_CARD_NAME);
         }
         private async Task deleteReplayItem(int index)
         {
@@ -231,7 +231,7 @@ namespace Controllers
             var cardPools = string.Join(",", poolStrings);
             if (pools.Length > 5)
             {
-                cardPools = game.lang._(REPLAY_CARDPOOL_NAME_OVERFLOW_TEMPLATE, cardPools);
+                cardPools = game.lang._(StringTable.TRIMMED_COTENTS, cardPools);
             }
             return game.lang._(REPLAY_CANNOT_PLAY_REPLAY_MISSING_CARDPOOL, cardPools);
         }
@@ -255,8 +255,6 @@ namespace Controllers
         public const string REPLAY_CARDPOOL_NAME_TEMPLATE = "·{0}(版本{1})";
         [TranslateMsg("回放无法播放错误中的卡池名模板，0为卡池名，1为卡池版本")]
         public const string REPLAY_MISSING_CARDPOOL_NAME_TEMPLATE = "{0}(版本{1})";
-        [TranslateMsg("回放无法播放错误中，卡池名数量超过最大显示量的模板，0为所有卡池名的组合")]
-        public const string REPLAY_CARDPOOL_NAME_OVERFLOW_TEMPLATE = "{0}...";
         private ReplayManager replayManager => main.replays;
         private GameManager gameManager => game.game;
         private FileManager fileManager => game.fileManager;

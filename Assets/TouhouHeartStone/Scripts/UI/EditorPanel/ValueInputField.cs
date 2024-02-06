@@ -72,7 +72,7 @@ namespace UI
             setProp(ref _buffNames, props.buffNames);
             setProp(ref _buffValues, props.buffValues);
 
-            setProp(ref _cardPropertyNameItems, props.cardPropertys);
+            setProp(ref _cardPropertyNameItems, props.cardProperties);
 
             setProp(ref _defaultValueTypeName, props.defaultValueTypeName);
             setProp(ref _valueTypeNames, props.valueTypeNames);
@@ -117,7 +117,7 @@ namespace UI
                 buffNames = _buffNames,
                 buffValues = _buffValues,
 
-                cardPropertys = _cardPropertyNameItems,
+                cardProperties = _cardPropertyNameItems,
 
                 defaultValueTypeName = _defaultValueTypeName,
                 valueTypeNames = _valueTypeNames,
@@ -975,12 +975,12 @@ namespace UI
                 if (cardDefine != null)
                 {
                     var cardSkin = game.card.getCardSkin(cardDefine);
-                    cardName = cardSkin != null ? cardSkin.name : game.lang._(StringTable.BUILD_UNKNOW_CARD_NAME);
+                    cardName = cardSkin != null ? cardSkin.name : game.lang._(StringTable.BUILD_UNKNOWN_CARD_NAME);
                     image = await game.card.loadCardImage(cardDefine, true);
                 }
                 else
                 {
-                    cardName = game.lang._(StringTable.BUILD_UNKNOW_CARD_NAME);
+                    cardName = game.lang._(StringTable.BUILD_UNKNOWN_CARD_NAME);
                     image = game.card.getDefaultSprite();
                 }
             }
@@ -1005,7 +1005,7 @@ namespace UI
         public string[] keywordNames;
         public string[] keywordValues;
 
-        public CardPropertyNameItem[] cardPropertys;
+        public CardPropertyNameItem[] cardProperties;
 
         public string[] eventNames;
         public EventReference[] eventValues;

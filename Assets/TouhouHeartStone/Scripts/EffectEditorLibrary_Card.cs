@@ -29,12 +29,8 @@ namespace Game
         public const string EDITOR_NODE_EXTRA_ATTACK = "本回合攻击次数增加一次";
         [TranslateMsg("编辑器/卡牌_获取合法卡牌使用目标")]
         public const string EDITOR_NODE_GET_CARD_TARGETS = "获取合法卡牌使用目标";
-        [TranslateMsg("编辑器/卡牌_获取合法卡牌使用目标_返回值_合法目标集合")]
-        public const string EDITOR_NODE_GET_CARD_TARGETS_TARGETS = "合法目标集合";
         [TranslateMsg("编辑器/卡牌_获取合法攻击目标")]
         public const string EDITOR_NODE_GET_ATTACK_TARGETS = "获取合法攻击目标";
-        [TranslateMsg("编辑器/卡牌_获取合法攻击目标_返回值_合法目标集合")]
-        public const string EDITOR_NODE_GET_ATTACK_TARGETS_TARGETS = "合法目标集合";
         [TranslateMsg("编辑器/卡牌-节点名称")]
         public const string EDITOR_NODE_REVEAL = "揭示卡牌";
         [TranslateMsg("编辑器/卡牌-节点名称")]
@@ -82,6 +78,9 @@ namespace Game
         public const string EDITOR_PARAM_NAME_IS_CHARGED = "已蓄力";
         [TranslateMsg("编辑器/卡牌-是否已蓄力节点-参数名称")]
         public const string EDITOR_PARAM_NAME_CHARGED_LEVEL = "蓄力层数";
+        [TranslateMsg("编辑器节点参数")]
+        public const string EDITOR_PARAM_NAME_VALID_TARGETS = "合法目标集合";
+
         [TranslateMsg("节点参数 isSet")]
         const string EDITOR_PARAM_IS_SET = "设置";
         [TranslateMsg("节点参数")]
@@ -111,7 +110,7 @@ namespace Game
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardOfType_Obs_CardType, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE__IS_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardOfType_Obs_CardType, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CHECK_CARD_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsCardDefineObsolete(
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD)] Card card,
@@ -139,7 +138,7 @@ namespace Game
         /// <param name="card">卡牌</param>
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
-        [THHActionMethod(BuiltinActionDefineID.IsCardOfType, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE__IS_DEFINE)]
+        [THHActionMethod(BuiltinActionDefineID.IsCardOfType, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CHECK_CARD_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsCardOfType(
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD)] Card card,
@@ -1371,7 +1370,7 @@ namespace Game
         /// 获取卡牌合法目标集合
         /// </summary>
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetValidCardTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_GET_CARD_TARGETS)]
-        [return: ActionNodeParam(EDITOR_NODE_GET_CARD_TARGETS_TARGETS)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_VALID_TARGETS)]
         public static Card[] getAllLegalCardTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
@@ -1385,7 +1384,7 @@ namespace Game
         /// 获取攻击目标集合
         /// </summary>
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetValidAttackTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_GET_ATTACK_TARGETS)]
-        [return: ActionNodeParam(EDITOR_NODE_GET_ATTACK_TARGETS_TARGETS)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_VALID_TARGETS)]
         public static Card[] getAllLegalAttackTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {

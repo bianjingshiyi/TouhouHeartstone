@@ -202,7 +202,7 @@ namespace UI
                 }
                 else
                 {
-                    name = langManager.getString(StringTable.BUILD_UNKNOW_CARD_NAME);
+                    name = langManager.getString(StringTable.BUILD_UNKNOWN_CARD_NAME);
                     image = cardManager.getDefaultSprite();
                 }
                 deckCardsViewData[i].name = name;
@@ -232,7 +232,7 @@ namespace UI
                 }
                 else
                 {
-                    name = langManager.getString(StringTable.BUILD_UNKNOW_CARD_NAME);
+                    name = langManager.getString(StringTable.BUILD_UNKNOWN_CARD_NAME);
                     image = cardManager.getDefaultSprite();
                 }
                 viewData[i].name = name;

@@ -17,8 +17,6 @@ namespace Game
         //  事件处理
         [TranslateMsg("编辑器/事件记录_参数名称")]
         public const string EDITOR_TYPE_NAME_EVENT_RECORD = "事件记录";
-        [TranslateMsg("编辑器/事件记录_参数名称")]
-        public const string EDITOR_TYPE_NAME_EVENT_TYPE = "事件类型";
 
         #region 事件记录
         [TranslateMsg("编辑器/事件记录_获取变量_节点名称")]
@@ -62,7 +60,7 @@ namespace Game
         [return: ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)]
         public static EventRecord castEventRecordType(
             [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord eventRecord,
-            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_TYPE, isConst: true)] EventReference eventReference)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT_TYPE, isConst: true)] EventReference eventReference)
         {
             if (eventRecord == null || eventReference == null)
                 return null;
@@ -75,7 +73,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool checkEventRecordType(CardEngine game,
             [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord evt,
-            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_TYPE, isConst: true)] EventReference argRef)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT_TYPE, isConst: true)] EventReference argRef)
         {
             if (evt == null || argRef == null)
                 return false;
@@ -129,7 +127,7 @@ namespace Game
 
         [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardSnapshotOfEvent, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_ON_EVENT)]
-        [return: ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_SNAPSHOT)]
         public static CardSnapshot getSnapshotOfCardAfterEvent(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord record)

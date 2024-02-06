@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using BJSYGameCore;
-using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using UnityEngine;
@@ -28,26 +27,26 @@ namespace Game
         {
             if (_eventNameTranslations.TryGetValue(eventName, out string editorName))
             {
-                return game.lang._(editorName);
+                return game.lang._p(StringTable.CONTEXT_EVENT_NAME, editorName);
             }
-            return game.lang._(eventName);
+            return game.lang._p(StringTable.CONTEXT_EVENT_NAME, eventName);
         }
         public string translateEventDefineNameForEditor(EventDefine define)
         {
             if (define == null)
-                return game.lang._(EDITOR_NODE_NAME_UNKNOWN_EVENT);
+                return game.lang._p(StringTable.CONTEXT_EVENT_NAME, StringTable.EDITOR_EVENT_NAME_UNKNOWN);
             if (define.cardPoolId == 0)
                 return translateBuiltinEventNameForEditor(define.eventName);
             if (define is GeneratedEventDefine gen)
             {
                 return game.card.getLocalActionDefine(gen.actionReference).editorName;
             }
-            return game.lang._(define.eventName);
+            return game.lang._p(StringTable.CONTEXT_EVENT_NAME, define.eventName);
         }
         public string translateEventReferenceNameForEditor(EventReference eventRef)
         {
             if (eventRef == null)
-                return game.lang._(EDITOR_NODE_NAME_UNKNOWN_EVENT);
+                return game.lang._p(StringTable.CONTEXT_EVENT_NAME, StringTable.EDITOR_EVENT_NAME_UNKNOWN);
             var eventDefine = game.card.getLocalEventDefine(eventRef);
             return translateEventDefineNameForEditor(eventDefine);
         }
@@ -57,11 +56,11 @@ namespace Game
             var name = translateEventReferenceNameForEditor(time.defineRef);
             if (time.type == EventTriggerTimeType.Before)
             {
-                return lang._(StringTable.EDITOR_EVENT_NAME_BEFORE_TEMPLATE, name);
+                return lang._p(StringTable.CONTEXT_EVENT_NAME, StringTable.EDITOR_EVENT_NAME_BEFORE_TEMPLATE, name);
             }
             else if (time.type == EventTriggerTimeType.After)
             {
-                return lang._(StringTable.EDITOR_EVENT_NAME_AFTER_TEMPLATE, name);
+                return lang._p(StringTable.CONTEXT_EVENT_NAME, StringTable.EDITOR_EVENT_NAME_AFTER_TEMPLATE, name);
             }
             return name;
         }
@@ -171,66 +170,6 @@ namespace Game
         }
         #endregion
         public MainManager game => _game;
-        [TranslateMsg("未知事件")]
-        public const string EDITOR_NODE_NAME_UNKNOWN_EVENT = "未知事件";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_ADD_BUFF = "添加增益";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_REMOVE_BUFF = "移除增益";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_SHACKLE = "禁锢";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_MOVE_CARD = "卡牌移动";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_CARD_PROP_CHANGE = "卡牌属性变动";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_CHANGE_CARD_VISIBILITY = "卡牌可见性变动";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_CHANGE_CARD_PROP_VISIBILITY = "卡牌属性可见性变动";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_CHANGE_BUFF_PROP_VISIBILITY = "增益属性可见性变动";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_REVEAL_CARD_DEFINE = "展示卡牌定义";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_SET_CARD_PROP = "修改卡牌属性";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_BE_CHARGED = "蓄力";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_SET_EVENT_VAR = "设置事件变量";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_AUTOCAST = "自动施放";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_MASS_ADD_BUFF = "群体添加增益";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_MASS_DAMAGE = "群体伤害";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_MASS_DISCARD = "群体弃牌";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_MASS_ENTER_FIELD = "群体入场";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_MASS_HEAL = "群体治疗";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_MASS_MOVE_CARD = "群体移动卡牌";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_MASS_MOVE_TO_HEAD = "群体移动至延迟区";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_MASS_RETURN_TO_HAND = "群体移回手牌";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_MASS_SEAL = "群体封印";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_MASS_SET_CARD_DEFINE = "群体变形";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_MASS_SHUFFLE_TO_DECK = "群体洗入牌库";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_MASS_SPLIT_DAMAGE = "分配伤害";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_SELECT_CARD = "选择卡牌";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_SELECT_CARD_DEFINE = "选择卡牌定义";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_LIFESTEAL = "吸血";
-        [TranslateMsg("事件名称")]
-        public const string EDITOR_EVENT_NAME_EFFECT_TRIGGER = "效果发动";
         static string[] _hiddenEvents =
         {
             "SecretTriggerEvent",
@@ -269,11 +208,11 @@ namespace Game
         };
         static Dictionary<string, string> _eventNameTranslations = new Dictionary<string, string>()
         {
-            { "AddBuffEvent", EDITOR_EVENT_NAME_ADD_BUFF },
-            { "RemoveBuffEvent", EDITOR_EVENT_NAME_REMOVE_BUFF },
-            { "MoveCardEvent", EDITOR_EVENT_NAME_MOVE_CARD },
-            { "CardPropChangeEvent", EDITOR_EVENT_NAME_CARD_PROP_CHANGE },
-            { "SetCardPropEvent", EDITOR_EVENT_NAME_SET_CARD_PROP },
+            { "AddBuffEvent", StringTable.EDITOR_EVENT_NAME_ADD_BUFF },
+            { "RemoveBuffEvent", StringTable.EDITOR_EVENT_NAME_REMOVE_BUFF },
+            { "MoveCardEvent", StringTable.EDITOR_EVENT_NAME_MOVE_CARD },
+            { "CardPropChangeEvent", StringTable.EDITOR_EVENT_NAME_CARD_PROP_CHANGE },
+            { "SetCardPropEvent", StringTable.EDITOR_EVENT_NAME_SET_CARD_PROP },
             { "TurnStartEvent", StringTable.EDITOR_EVENT_NAME_TURN_START },
             { "UseEvent", StringTable.EDITOR_EVENT_NAME_USE },
             { "SetArmorEvent", StringTable.EDITOR_EVENT_NAME_ARMOR_CHANGE },
@@ -293,18 +232,18 @@ namespace Game
             { "SetMaxGemEvent", StringTable.EDITOR_EVENT_NAME_SETMAXGEM },
             { "BurnEvent", StringTable.EDITOR_EVENT_NAME_BURN },
             { "EnterFieldEvent", StringTable.EDITOR_EVENT_NAME_ENTERFIELD },
-            { "SelectCardDefineEvent", EDITOR_EVENT_NAME_SELECT_CARD_DEFINE },
+            { "SelectCardDefineEvent", StringTable.EDITOR_EVENT_NAME_SELECT_CARD_DEFINE },
             { "RebornEvent", StringTable.EDITOR_EVENT_NAME_REBORN },
             { "RevealEvent", StringTable.EDITOR_EVENT_NAME_REVEAL },
             { "RevealDuelEvent", StringTable.EDITOR_EVENT_NAME_REVEALDUEL },
             { "SetGemEvent", StringTable.EDITOR_EVENT_NAME_SETGEM },
             { "DrawEvent", StringTable.EDITOR_EVENT_NAME_DRAW },
             { "FatigueEvent", StringTable.EDITOR_EVENT_NAME_FATIGUE },
-            { "SelectCardEvent", EDITOR_EVENT_NAME_SELECT_CARD },
+            { "SelectCardEvent", StringTable.EDITOR_EVENT_NAME_SELECT_CARD },
             { "DiscardEvent", StringTable.EDITOR_EVENT_NAME_DISCARD },
             { "CreateTokenEvent", StringTable.EDITOR_EVENT_NAME_CREATETOKEN },
             { "SetCardDefineEvent", StringTable.EDITOR_EVENT_NAME_SETDEFINE },
-            { "ShackleEvent", EDITOR_EVENT_NAME_SHACKLE },
+            { "ShackleEvent", StringTable.EDITOR_EVENT_NAME_SHACKLE },
             { "AddModiEvent", StringTable.EDITOR_EVENT_NAME_ADDMODI },
             { "RemoveModiEvent", StringTable.EDITOR_EVENT_NAME_REMOVEMODI },
             { "PropChangeEvent", StringTable.EDITOR_EVENT_NAME_PROPCHANGE },
@@ -313,28 +252,28 @@ namespace Game
             { "DiscoverEvent", StringTable.EDITOR_EVENT_NAME_DISCOVER },
             { "SelectEvent", StringTable.EDITOR_EVENT_NAME_SELECT },
             { "EquipItemEvent", StringTable.EDITOR_EVENT_NAME_EQUIP },
-            { "BeChargedEvent", EDITOR_EVENT_NAME_BE_CHARGED },
+            { "BeChargedEvent", StringTable.EDITOR_EVENT_NAME_BE_CHARGED },
             { "ElementMixEvent", StringTable.EDITOR_EVENT_NAME_ELEMENT },
-            { "SetEventVarEvent", EDITOR_EVENT_NAME_SET_EVENT_VAR },
-            { "AutocastEvent", EDITOR_EVENT_NAME_AUTOCAST },
-            { "MassAddBuffEvent", EDITOR_EVENT_NAME_MASS_ADD_BUFF },
-            { "MassDamageEvent", EDITOR_EVENT_NAME_MASS_DAMAGE },
-            { "MassDiscardEvent", EDITOR_EVENT_NAME_MASS_DISCARD },
-            { "MassEnterFieldEvent", EDITOR_EVENT_NAME_MASS_ENTER_FIELD },
-            { "MassHealEvent", EDITOR_EVENT_NAME_MASS_HEAL },
-            { "MassMoveCardEvent", EDITOR_EVENT_NAME_MASS_MOVE_CARD },
-            { "MassMoveToHeadEvent", EDITOR_EVENT_NAME_MASS_MOVE_TO_HEAD },
-            { "MassReturnHandEvent", EDITOR_EVENT_NAME_MASS_RETURN_TO_HAND },
-            { "MassSealEvent", EDITOR_EVENT_NAME_MASS_SEAL },
-            { "MassSetCardDefineEvent", EDITOR_EVENT_NAME_MASS_SET_CARD_DEFINE },
-            { "MassShuffleToDeckEvent", EDITOR_EVENT_NAME_MASS_SHUFFLE_TO_DECK },
-            { "SplitDamageEvent", EDITOR_EVENT_NAME_MASS_SPLIT_DAMAGE },
-            { "ChangeCardVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_CARD_VISIBILITY },
-            { "ChangeCardPropVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_CARD_PROP_VISIBILITY },
-            { "ChangeBuffPropVisibilityEvent", EDITOR_EVENT_NAME_CHANGE_BUFF_PROP_VISIBILITY },
-            { "RevealCardDefineEvent", EDITOR_EVENT_NAME_REVEAL_CARD_DEFINE },
-            { "LifestealEvent", EDITOR_EVENT_NAME_LIFESTEAL },
-            { "EffectTriggerEvent", EDITOR_EVENT_NAME_EFFECT_TRIGGER }
+            { "SetEventVarEvent", StringTable.EDITOR_EVENT_NAME_SET_EVENT_VAR },
+            { "AutocastEvent", StringTable.EDITOR_EVENT_NAME_AUTOCAST },
+            { "MassAddBuffEvent", StringTable.EDITOR_EVENT_NAME_MASS_ADD_BUFF },
+            { "MassDamageEvent", StringTable.EDITOR_EVENT_NAME_MASS_DAMAGE },
+            { "MassDiscardEvent", StringTable.EDITOR_EVENT_NAME_MASS_DISCARD },
+            { "MassEnterFieldEvent", StringTable.EDITOR_EVENT_NAME_MASS_ENTER_FIELD },
+            { "MassHealEvent", StringTable.EDITOR_EVENT_NAME_MASS_HEAL },
+            { "MassMoveCardEvent", StringTable.EDITOR_EVENT_NAME_MASS_MOVE_CARD },
+            { "MassMoveToHeadEvent", StringTable.EDITOR_EVENT_NAME_MASS_MOVE_TO_HEAD },
+            { "MassReturnHandEvent", StringTable.EDITOR_EVENT_NAME_MASS_RETURN_TO_HAND },
+            { "MassSealEvent", StringTable.EDITOR_EVENT_NAME_MASS_SEAL },
+            { "MassSetCardDefineEvent", StringTable.EDITOR_EVENT_NAME_MASS_SET_CARD_DEFINE },
+            { "MassShuffleToDeckEvent", StringTable.EDITOR_EVENT_NAME_MASS_SHUFFLE_TO_DECK },
+            { "SplitDamageEvent", StringTable.EDITOR_EVENT_NAME_MASS_SPLIT_DAMAGE },
+            { "ChangeCardVisibilityEvent", StringTable.EDITOR_EVENT_NAME_CHANGE_CARD_VISIBILITY },
+            { "ChangeCardPropVisibilityEvent", StringTable.EDITOR_EVENT_NAME_CHANGE_CARD_PROP_VISIBILITY },
+            { "ChangeBuffPropVisibilityEvent", StringTable.EDITOR_EVENT_NAME_CHANGE_BUFF_PROP_VISIBILITY },
+            { "RevealCardDefineEvent", StringTable.EDITOR_EVENT_NAME_REVEAL_CARD_DEFINE },
+            { "LifestealEvent", StringTable.EDITOR_EVENT_NAME_LIFESTEAL },
+            { "EffectTriggerEvent", StringTable.EDITOR_EVENT_NAME_EFFECT_TRIGGER }
         };
         List<EventDefine> _builtinEventDefineList = null;
         [SerializeField]

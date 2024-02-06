@@ -77,8 +77,6 @@ namespace Game
         Dictionary<int, AnimationDefine> builtinAnimationDic { get; set; } = new Dictionary<int, AnimationDefine>();
         [SerializeField]
         private BuiltinEffect[] builtinEffectList;
-        [TranslateMsg("特效动画的无特效引用选项")]
-        public const string VISUAL_EFFECT_NAME_NONE = "无";
         #endregion
     }
 }

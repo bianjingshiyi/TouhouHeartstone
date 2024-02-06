@@ -91,7 +91,7 @@ namespace TouhouHeartstone
 
         [TranslateMsg("{0}是卡牌列表")]
         const string TEMPLATE = "{0} 被封印";
-        [TranslateMsg("游戏事件日志项名称")]
+        [TranslateMsg("游戏事件日志项名称", Translations.CONTEXT_GAME_LOG_NAME)]
         private const string LOG_ITEM_NAME = "封印";
     }
 }

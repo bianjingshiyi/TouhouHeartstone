@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Game;
 using TouhouCardEngine;
 using UI;
 
@@ -125,7 +126,8 @@ namespace Controllers
             for (int i = 0; i < outputs.Count(); i++)
             {
                 var input = outputs.ElementAt(i);
-                viewData[i] = new PortItemInfo(input.define?.getDisplayName(), game.editor.getColorByType(input.define?.type), input.GetPortType() == PortType.Control);
+                var inputName = translatePortName(input);
+                viewData[i] = new PortItemInfo(inputName, game.editor.getColorByType(input.define?.type), input.GetPortType() == PortType.Control);
             }
             return viewData;
         }
@@ -137,7 +139,8 @@ namespace Controllers
             for (int i = 0; i < count; i++)
             {
                 var input = inputs.ElementAt(i);
-                var portInfo = new PortItemInfo(input.define?.getDisplayName(), game.editor.getColorByType(input.define?.type), input.GetPortType() == PortType.Control);
+                var inputName = translatePortName(input);
+                var portInfo = new PortItemInfo(inputName, game.editor.getColorByType(input.define?.type), input.GetPortType() == PortType.Control);
                 var defaultValue = getDefaultValueInfoFromInput(input);
                 var showPort = shouldInputPortShowPort(input);
                 var showDefaultValue = shouldInputPortShowDefaultValue(input);
@@ -153,7 +156,7 @@ namespace Controllers
                 var inputDefine = actionDefine.inputDefines.ElementAtOrDefault(i);
                 if (inputDefine == null)
                     continue;
-                var inputName = tryTranslateWithDict(inputDefine.getDisplayName());
+                var inputName = translatePortName(inputDefine);
                 inputs[i] = new PortItemInfo(inputName, game.editor.getColorByType(inputDefine.type), inputDefine.GetPortType() == PortType.Control);
             }
             return inputs;
@@ -166,7 +169,7 @@ namespace Controllers
                 var outputDefine = actionDefine.outputDefines.ElementAtOrDefault(i);
                 if (outputDefine == null)
                     continue;
-                var outputName = tryTranslateWithDict(outputDefine.getDisplayName());
+                var outputName = translatePortName(outputDefine);
                 outputs[i] = new PortItemInfo(outputName, game.editor.getColorByType(outputDefine.type), outputDefine.GetPortType() == PortType.Control);
             }
             return outputs;
@@ -174,68 +177,6 @@ namespace Controllers
         #region 动作定义
         private ActionDefine getActionDefine(ActionReference actRef) => game.card.getActionDefineInEnv(actRef, getCardPoolEnv());
         private ActionDefine[] getActionDefines() => game.card.getAllActionDefines(getCardPoolEnv());
-        private string getActionDefineCategory(ActionDefine actionDefine)
-        {
-            string name = string.Empty;
-            if (!string.IsNullOrEmpty(actionDefine.category))
-                name = actionDefine.category;
-            if (_nameTextDict.ContainsKey(name))
-                name = _nameTextDict[name];
-            var category = name;
-            category = category.Replace('\\', '/').Trim('/');
-            category = Regex.Replace(category, "/+", "/");
-            return category;
-        }
-        private string[] getActionDefineCategories(string parent)
-        {
-            if (parent == null)
-                parent = string.Empty;
-            parent = parent.Replace('\\', '/').Trim('/');
-            var categories = getActionDefines().Where(d => CanActionDefineBeCreated(d)).Select(actionDefine =>
-            {
-                var nodeCategory = getActionDefineCategory(actionDefine);
-                // 去掉父类别。
-                if (!string.IsNullOrEmpty(parent))
-                {
-                    string parentPath = $"{parent}/";
-                    int parentIndex = nodeCategory.IndexOf(parentPath);
-                    if (parentIndex == 0)
-                    {
-                        nodeCategory = nodeCategory.Substring(parentPath.Length, nodeCategory.Length - parentPath.Length).TrimStart('/');
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-                // 去掉子类别。
-                int childIndex = nodeCategory.IndexOf('/');
-                if (childIndex > 0)
-                {
-                    nodeCategory = nodeCategory.Substring(0, childIndex);
-                }
-                return nodeCategory;
-            }).Where(c => !string.IsNullOrEmpty(c)).ToList();
-
-            if (string.IsNullOrEmpty(parent))
-            {
-                categories.Add(game.lang._(EDITOR_CATEGORY_EVENT_ENTRY_NODE));
-            }
-            return categories.Distinct().OrderBy(g => g).ToArray();
-        }
-        private ActionDefine[] getActionDefinesInCategory(string parent)
-        {
-            if (parent == null)
-                parent = string.Empty;
-            parent = parent.Replace('\\', '/').Trim('/');
-            return getActionDefines().Where(actionDefine =>
-            {
-                if (!CanActionDefineBeCreated(actionDefine))
-                    return false;
-                var nodeCategory = getActionDefineCategory(actionDefine);
-                return nodeCategory == parent;
-            }).ToArray();
-        }
         #endregion
         #endregion
         #region 属性字段

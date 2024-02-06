@@ -104,7 +104,7 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<BuffEditorPanel>();
             }
-            _ui.initModifierPropertyTypes(getBuffDefinePropertyTypes());
+            _ui.initModifierPropertyTypes(getBuffDefinePropertyTypeNames());
 
             var keywords = EditorManager.editorKeywords;
             var keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray();
@@ -473,13 +473,13 @@ namespace Controllers
         {
             if (string.IsNullOrEmpty(item.propertyName))
             {
-                string errorMessage = game.lang._(BUFF_CUSTOM_PROP_NAME_EMPTY);
+                string errorMessage = game.lang._(StringTable.EDITOR_ERROR_NAME_EMPTY);
                 _ui.showCustomPropertyDialogError(errorMessage);
                 return;
             }
             if (isPropertyNameTaken(item.propertyName))
             {
-                string errorMessage = game.lang._(BUFF_CUSTOM_PROP_NAME_TAKEN);
+                string errorMessage = game.lang._(StringTable.EDITOR_ERROR_NAME_TAKEN);
                 _ui.showCustomPropertyDialogError(errorMessage);
                 return;
             }
@@ -610,9 +610,9 @@ namespace Controllers
                 string desc = game.lang._(BUFF_WARNING_UNSAVED_CHANGES);
                 string[] optNames = new string[]
                 {
-                    game.lang._(BUFF_WARNING_OPTION_SAVE),
-                    game.lang._(BUFF_WARNING_OPTION_DONT_SAVE),
-                    game.lang._(BUFF_WARNING_OPTION_CANCEL)
+                    game.lang._(StringTable.SAVE),
+                    game.lang._(StringTable.DONT_SAVE),
+                    game.lang._(StringTable.CANCEL)
                 };
                 game.ui.dialog.ShowOptions(title, desc, optNames, async (index) =>
                 {
@@ -718,8 +718,7 @@ namespace Controllers
                 var propModifier = _buffDefine.propModifierList[i];
                 int typeIndex = getPropertyModifierIndex(propModifier);
                 var customPropertyName = getPropertyModifierCustomPropName(propModifier);
-                var propertyTypes = getBuffDefinePropertyTypes();
-                var modifyTypes = getBuffDefineModifyTypes(typeIndex < 0 ? string.Empty : propertyTypes[typeIndex]);
+                var modifyTypeNames = getBuffDefineModifyTypeNames(typeIndex);
                 var modifyTypeIndex = getModifyTypeIndex(propModifier);
                 var valueType = getPropModifierValueType(propModifier);
                 var value = getPropModifierValue(propModifier);
@@ -728,7 +727,7 @@ namespace Controllers
                     propertyTypeIndex = typeIndex,
                     isCustomProperty = propModifier is CustomPropertyModifier,
                     customPropertyName = customPropertyName,
-                    modifyTypes = modifyTypes,
+                    modifyTypes = modifyTypeNames,
                     modifyTypeIndex = modifyTypeIndex,
                     valueType = valueType,
                     value = value,
@@ -736,16 +735,16 @@ namespace Controllers
             }
             _ui.updateModifiers(infos);
         }
-        private string[] getBuffDefinePropertyTypes()
+        private string[] getBuffDefinePropertyTypeNames()
         {
-            return Array.ConvertAll(propertyTypes, s => game.langManager.getString(s));
+            return Array.ConvertAll(propertyTypeNames, s => game.lang._p(StringTable.CONTEXT_CARD_PROPERTY, s));
         }
-        private string[] getBuffDefineModifyTypes(string propertyType)
+        private string[] getBuffDefineModifyTypeNames(int typeIndex)
         {
-            if (propertyType == StringTable.GAME_CARD_PROP_NAME_KEYWORDS)
-                return Array.ConvertAll(keywordModifierTypes, s => game.langManager.getString(s));
+            if (typeIndex == MODIFY_TYPE_KEYWORDS) // Keywords.
+                return Array.ConvertAll(keywordModifierTypeNames, s => game.langManager.getString(s));
             else
-                return Array.ConvertAll(intModifierTypes, s => game.langManager.getString(s));
+                return Array.ConvertAll(intModifierTypeNames, s => game.langManager.getString(s));
         }
         private int getModifyTypeIndex(PropModifier propModifier)
         {
@@ -919,7 +918,7 @@ namespace Controllers
                 return new CustomPropertyModifier(string.Empty, 0);
             if (index == 5)
                 return new SpellDamageModifier(0);
-            if (index == 4)
+            if (index == MODIFY_TYPE_KEYWORDS)
                 return new KeywordsModifier(KeywordsModifier.ModifyType.add);
             if (index == 3)
                 return new DamageReduceModifier(0);
@@ -1102,51 +1101,35 @@ namespace Controllers
         #region 属性字段
         BuffEditorPanel _ui;
 
-        [TranslateMsg("游戏中卡牌的自定义属性的名称")]
-        public const string GAME_CARD_PROP_NAME_CUSTOM_PROPERTY = "自定义属性";
         [TranslateMsg("尝试删除增益的警告")]
         public const string EDITOR_WARNING_DELETE_BUFF = "确认要删除这个增益吗？";
         [TranslateMsg("增益编辑器/标题")]
         public const string BUFF_EDITOR_TITLE = "增益编辑器";
         [TranslateMsg("尝试退出一个增益的编辑页面，但没有保存情况下的警告")]
         public const string BUFF_WARNING_UNSAVED_CHANGES = "是否将更改保存到该增益中？";
-        [TranslateMsg("尝试退出一个增益的编辑页面，但没有保存情况下的按钮名称")]
-        public const string BUFF_WARNING_OPTION_SAVE = "保存";
-        [TranslateMsg("尝试退出一个增益的编辑页面，但没有保存情况下的按钮名称")]
-        public const string BUFF_WARNING_OPTION_DONT_SAVE = "不保存";
-        [TranslateMsg("尝试退出一个增益的编辑页面，但没有保存情况下的按钮名称")]
-        public const string BUFF_WARNING_OPTION_CANCEL = "取消";
-        [TranslateMsg("尝试添加重复名称的自定义属性的错误提示")]
-        public const string BUFF_CUSTOM_PROP_NAME_TAKEN = "该属性名已被使用！";
-        [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]
-        public const string BUFF_CUSTOM_PROP_NAME_EMPTY = "请输入属性名！";
-
-        [TranslateMsg("尝试添加重复名称的特效引用的错误提示")]
-        public const string ANIM_REF_KEY_TAKEN = "该名称已被使用！";
-        [TranslateMsg("尝试添加空名称的特效引用的错误提示")]
-        public const string ANIM_REF_KEY_EMPTY = "请输入特效引用名！";
 
         [TranslateMsg("增益编辑器/持续限制/标题（{0}为序号）")]
         public const string BUFF_EXISTLIMIT_HEADER = "限制{0}";
 
-        public static string[] propertyTypes = new string[]
+        public const int MODIFY_TYPE_KEYWORDS = 4;
+        public static string[] propertyTypeNames = new string[]
         {
-            StringTable.GAME_CARD_PROP_NAME_COST,
-            StringTable.GAME_CARD_PROP_NAME_ATTACK,
-            StringTable.GAME_CARD_PROP_NAME_LIFE,
-            StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE,
-            StringTable.GAME_CARD_PROP_NAME_KEYWORDS,
-            StringTable.GAME_CARD_PROP_NAME_SPELL_DAMAGE,
-            GAME_CARD_PROP_NAME_CUSTOM_PROPERTY,
+            StringTable.CARD_PROP_NAME_COST,
+            StringTable.CARD_PROP_NAME_ATTACK,
+            StringTable.CARD_PROP_NAME_LIFE,
+            StringTable.CARD_PROP_NAME_DAMAGE_REDUCE,
+            StringTable.CARD_PROP_NAME_KEYWORDS,
+            StringTable.CARD_PROP_NAME_SPELL_DAMAGE,
+            StringTable.CARD_PROP_NAME_CUSTOM_PROPERTY,
         };
-        public static string[] intModifierTypes = new string[]
+        public static string[] intModifierTypeNames = new string[]
         {
             StringTable.GAME_CARD_PROP_MODIFY_ADD,
             StringTable.GAME_CARD_PROP_MODIFY_SETTO,
             StringTable.GAME_CARD_PROP_MODIFY_ADD_PROP,
             StringTable.GAME_CARD_PROP_MODIFY_SETTO_PROP
         };
-        public static string[] keywordModifierTypes = new string[]
+        public static string[] keywordModifierTypeNames = new string[]
         {
             StringTable.GAME_CARD_PROP_MODIFY_ADD,
             StringTable.GAME_CARD_PROP_MODIFY_SUB,

@@ -117,7 +117,7 @@ namespace Game
             new GraphTypeInfo() { type = typeof(Pile), typeName = StringTable.EDITOR_TYPE_NAME_PILE, portType = true, color = new Color(.6f, .2f, 1, 1) },
             new GraphTypeInfo() { type = typeof(CardDefine), typeName = StringTable.EDITOR_TYPE_NAME_CARD_DEFINE, portType = true, color = new Color(.1f, .4f, .8f, 1) },
             new GraphTypeInfo() { type = typeof(Card), typeName = StringTable.EDITOR_TYPE_NAME_CARD, portType = true, color = new Color(.2f, .6f, 1, 1) },
-            new GraphTypeInfo() { type = typeof(CardSnapshot), typeName = EffectEditorLibrary.EDITOR_VAR_TYPE_CARD_SNAPSHOT, portType = true, color = new Color(.5f, .6f, 7f, 1) },
+            new GraphTypeInfo() { type = typeof(CardSnapshot), typeName = StringTable.EDITOR_TYPE_NAME_CARD_SNAPSHOT, portType = true, color = new Color(.5f, .6f, 7f, 1) },
             new GraphTypeInfo() { type = typeof(BuffDefine), typeName = StringTable.EDITOR_TYPE_NAME_BUFF_DEFINE, portType = true, color = new Color(.1f, .5f, .6f, 1) },
             new GraphTypeInfo() { type = typeof(Buff), typeName = StringTable.EDITOR_TYPE_NAME_BUFF, portType = true, color = new Color(.2f, .8f, 1, 1) },
             new GraphTypeInfo() { type = typeof(Effect), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT, portType = true, color = new Color(.2f, 1, 1, 1) },
@@ -128,15 +128,15 @@ namespace Game
             #endregion
 
             #region 类型代理
-            new GraphTypeInfo() { type = typeof(CardPropertyGetterName), typeName = EDITOR_TYPE_NAME_CARD_PROP_GETTER_NAME, color = new Color(.7f, .8f, .2f, 1) },
-            new GraphTypeInfo() { type = typeof(CardPropertySetterName), typeName = EDITOR_TYPE_NAME_CARD_PROP_SETTER_NAME, color = new Color(.7f, .8f, .2f, 1) },
-            new GraphTypeInfo() { type = typeof(CardDefinePropertyGetterName), typeName = EDITOR_TYPE_NAME_CARD_DEFINE_PROP_GETTER_NAME, color = new Color(.7f, .8f, .2f, 1) },
-            new GraphTypeInfo() { type = typeof(EffectTag), typeName = EDITOR_TYPE_NAME_EFFECT_TAG, color = new Color(.7f, .8f, .2f, 1) },
-            new GraphTypeInfo() { type = typeof(EventVarName), typeName = EDITOR_TYPE_NAME_EVENT_VAR_NAME, color = new Color(.7f, .8f, .2f, 1) },
-            new GraphTypeInfo() { type = typeof(PileName), typeName = EDITOR_TYPE_NAME_PILE_NAME, color = new Color(.7f, .8f, .2f, 1) },
-            new GraphTypeInfo() { type = typeof(CardType), typeName = EDITOR_TYPE_NAME_CARD_TYPE, color = new Color(.7f, .8f, .2f, 1) },
+            new GraphTypeInfo() { type = typeof(CardPropertyGetterName), typeName = StringTable.EDITOR_TYPE_NAME_CARD_PROP_GETTER_NAME, color = new Color(.7f, .8f, .2f, 1) },
+            new GraphTypeInfo() { type = typeof(CardPropertySetterName), typeName = StringTable.EDITOR_TYPE_NAME_CARD_PROP_SETTER_NAME, color = new Color(.7f, .8f, .2f, 1) },
+            new GraphTypeInfo() { type = typeof(CardDefinePropertyGetterName), typeName = StringTable.EDITOR_TYPE_NAME_CARD_DEFINE_PROP_GETTER_NAME, color = new Color(.7f, .8f, .2f, 1) },
+            new GraphTypeInfo() { type = typeof(EffectTag), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT_TAG, color = new Color(.7f, .8f, .2f, 1) },
+            new GraphTypeInfo() { type = typeof(EventVarName), typeName = StringTable.EDITOR_TYPE_NAME_EVENT_VAR_NAME, color = new Color(.7f, .8f, .2f, 1) },
+            new GraphTypeInfo() { type = typeof(PileName), typeName = StringTable.EDITOR_TYPE_NAME_PILE_NAME, color = new Color(.7f, .8f, .2f, 1) },
+            new GraphTypeInfo() { type = typeof(CardType), typeName = StringTable.EDITOR_TYPE_NAME_CARD_TYPE, color = new Color(.7f, .8f, .2f, 1) },
 
-            new GraphTypeInfo() { type = typeof(EventReference), typeName = EffectEditorLibrary.EDITOR_TYPE_NAME_EVENT_TYPE, color = new Color(1, 1, .2f, 1) },
+            new GraphTypeInfo() { type = typeof(EventReference), typeName = StringTable.EDITOR_TYPE_NAME_EVENT_TYPE, color = new Color(1, 1, .2f, 1) },
             #endregion
 
             #region 隐藏类型
@@ -157,21 +157,6 @@ namespace Game
             #endregion
 
         };
-
-        [TranslateMsg("编辑器类型名称")]
-        public const string EDITOR_TYPE_NAME_CARD_PROP_GETTER_NAME = "卡牌属性名（获取）";
-        [TranslateMsg("编辑器类型名称")]
-        public const string EDITOR_TYPE_NAME_CARD_PROP_SETTER_NAME = "卡牌属性名（设置）";
-        [TranslateMsg("编辑器类型名称")]
-        public const string EDITOR_TYPE_NAME_CARD_DEFINE_PROP_GETTER_NAME = "卡牌定义属性名（获取）";
-        [TranslateMsg("编辑器类型名称")]
-        public const string EDITOR_TYPE_NAME_EFFECT_TAG = "效果标签";
-        [TranslateMsg("编辑器类型名称")]
-        public const string EDITOR_TYPE_NAME_EVENT_VAR_NAME = "事件变量名";
-        [TranslateMsg("编辑器类型名称")]
-        public const string EDITOR_TYPE_NAME_PILE_NAME = "牌堆名";
-        [TranslateMsg("编辑器类型名称")]
-        public const string EDITOR_TYPE_NAME_CARD_TYPE = "卡牌类型";
         #endregion
     }
     public struct GraphTypeInfo

@@ -351,22 +351,6 @@ namespace Game
         #endregion
 
         #region 属性字段
-        [TranslateMsg("卡牌标签")]
-        public const string CARD_TAG_FAIRY = "妖精";
-        [TranslateMsg("卡牌标签")]
-        public const string CARD_TAG_MECH = "机械";
-        [TranslateMsg("卡牌标签")]
-        public const string CARD_TAG_DEMON = "恶魔";
-        [TranslateMsg("卡牌标签")]
-        public const string CARD_TAG_ELEMENTAL = "元素";
-        [TranslateMsg("卡牌标签")]
-        public const string CARD_TAG_BEAST = "野兽";
-        [TranslateMsg("卡牌标签")]
-        public const string CARD_TAG_BUG = "昆虫";
-        [TranslateMsg("卡牌标签")]
-        public const string CARD_TAG_GOD = "神明";
-        [TranslateMsg("卡牌标签")]
-        public const string CARD_TAG_GHOST = "幽灵";
         public MainManager game
         {
             get { return _game; }
@@ -374,14 +358,13 @@ namespace Game
         }
         private static Dictionary<string, string> _translateTagDic = new Dictionary<string, string>
         {
-            { TAG.FAIRY, CARD_TAG_FAIRY },
-            { TAG.MACHINE, CARD_TAG_MECH },
-            { TAG.DEMON, CARD_TAG_DEMON },
-            { TAG.ELEMENT, CARD_TAG_ELEMENTAL },
-            { TAG.BEAST, CARD_TAG_BEAST },
-            { TAG.BUG, CARD_TAG_BUG },
-            { TAG.GOD, CARD_TAG_GOD },
-            { TAG.GHOST, CARD_TAG_GHOST },
+            { TAG.FAIRY, StringTable.CARD_TAG_FAIRY },
+            { TAG.MACHINE, StringTable.CARD_TAG_MECH },
+            { TAG.DEMON, StringTable.CARD_TAG_DEMON },
+            { TAG.ELEMENT, StringTable.CARD_TAG_ELEMENTAL },
+            { TAG.BEAST, StringTable.CARD_TAG_BEAST },
+            { TAG.GOD, StringTable.CARD_TAG_GOD },
+            { TAG.GHOST, StringTable.CARD_TAG_GHOST },
         };
         [SerializeField]
         private MainManager _game;

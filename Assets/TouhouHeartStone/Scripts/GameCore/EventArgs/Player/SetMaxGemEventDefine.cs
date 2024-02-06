@@ -65,7 +65,7 @@ namespace TouhouHeartstone
         string IDescribableEventDefine.localizeTemplateString(IGame game, EventArg eventArg, IPlayer viewer) => localizeTemplateString();
         object[] IDescribableEventDefine.localizeStringArgs(IGame game, EventArg eventArg, IPlayer viewer) => localizeStringArgs(eventArg);
         Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Player>(EVENTVAR.PLAYER);
-        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => LOG_ITEM_NAME;
+        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => Translations.EVENT_LOG_ITEM_NAME_SET_GEM;
         object[] IDescribableEventDefine.localizeLogItemNameArgs(IGame game, EventArg eventArg) => null;
         #endregion
         private string localizeTemplateString() => TEMPLATE;
@@ -82,7 +82,5 @@ namespace TouhouHeartstone
         #endregion
         [MukioI18n.TranslateMsg("{0}是玩家名称，{1}是灵力值")]
         const string TEMPLATE = "{0}的最大灵力值变为{1}";
-        [TranslateMsg("游戏事件日志项名称")]
-        const string LOG_ITEM_NAME = "灵力变化";
     }
 }

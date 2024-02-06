@@ -29,7 +29,7 @@ namespace UI
             updateNodesList();
 
             var animations = game.anims.getAnimationEditorNamesForNode();
-            var positions = visualEffectPositions.Select(p => game.lang._(p)).ToArray();
+            var positions = visualEffectPositionNames.Select(p => game.lang._p(CONTEXT_VISUAL_EFFECT, p)).ToArray();
             initNodeAnimationDialog(animations, positions);
 
             hideErrorTip();
@@ -132,7 +132,7 @@ namespace UI
             _actionGraphCtrl.onOpenNodeInputDefaultValueCardDefine += onOpenActionNodeConstCardDefineCallback;
             _actionGraphCtrl.onOpenEffectPropertyCardDefine += onOpenEffectPropertyCardDefineCallback;
 
-            var categoryNames = categories.Select(c => _actionGraphCtrl.tryTranslateWithDict(c)).ToArray();
+            var categoryNames = categories.Select(c => _actionGraphCtrl.translateCategoryName(c)).ToArray();
             _nodesPanel.initCategories(categoryNames, categories);
             _nodesPanel.initTypes(game.editor.getEditorPortTypeNames());
             _nodesPanel.onItemBeginDrag += OnNodeItemBeginDrag;
@@ -413,13 +413,13 @@ namespace UI
                 return;
             if (string.IsNullOrEmpty(item.propertyName))
             {
-                string errorMessage = game.lang._(NODE_EFFECT_PROP_NAME_EMPTY);
+                string errorMessage = game.lang._(StringTable.EDITOR_ERROR_NAME_EMPTY);
                 showEffectPropertyDialogError(errorMessage);
                 return;
             }
             if (_actionGraphCtrl.isPropertyNameTaken(item.propertyName))
             {
-                string errorMessage = game.lang._(NODE_EFFECT_PROP_NAME_TAKEN);
+                string errorMessage = game.lang._(StringTable.EDITOR_ERROR_NAME_TAKEN);
                 showEffectPropertyDialogError(errorMessage);
                 return;
             }
@@ -602,10 +602,10 @@ namespace UI
             {
                 if (categoryFilter != ACTION_CATEGORY_NAME_NONE)
                 {
-                    string category = _actionGraphCtrl.tryTranslateWithDict(define.getCategory());
+                    string category = define.getCategory();
                     if (string.IsNullOrEmpty(category))
                         return false;
-                    if (!($"{category}/").Contains($"{categoryFilter}/"))
+                    if (!$"{category}/".Contains($"{categoryFilter}/"))
                     {
                         return false;
                     }
@@ -817,27 +817,22 @@ namespace UI
         }
         private NodeDefine[] _nodeDefines;
         private NodeDefine[] _filteredDefines;
+        public static string ACTION_CATEGORY_NAME_NONE => StringTable.NONE;
+        public const string CONTEXT_VISUAL_EFFECT = "画面特效";
 
-        [TranslateMsg("尝试添加重复名称的自定义属性的错误提示")]
-        public const string NODE_EFFECT_PROP_NAME_TAKEN = "该属性名已被使用！";
-        [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]
-        public const string NODE_EFFECT_PROP_NAME_EMPTY = "请输入属性名！";
-
-        [TranslateMsg("没有分类的动作的分类")]
-        public const string ACTION_CATEGORY_NAME_NONE = "无";
         [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]
         public const string EDITOR_ERROR_ACTION_DEFINE_NAME_EMPTY = "请输入动作名称";
 
 
-        [TranslateMsg("特效动画的始末位置选项")]
+        [TranslateMsg("特效动画的始末位置选项", CONTEXT_VISUAL_EFFECT)]
         public const string VISUAL_EFFECT_POSITION_SELF_MASTER = "己方英雄";
-        [TranslateMsg("特效动画的始末位置选项")]
+        [TranslateMsg("特效动画的始末位置选项", CONTEXT_VISUAL_EFFECT)]
         public const string VISUAL_EFFECT_POSITION_ENEMY_MASTER = "敌方英雄";
-        [TranslateMsg("特效动画的始末位置选项")]
+        [TranslateMsg("特效动画的始末位置选项", CONTEXT_VISUAL_EFFECT)]
         public const string VISUAL_EFFECT_POSITION_THIS_CARD = "这张卡牌";
-        [TranslateMsg("特效动画的始末位置选项")]
+        [TranslateMsg("特效动画的始末位置选项", CONTEXT_VISUAL_EFFECT)]
         public const string VISUAL_EFFECT_POSITION_TARGET_CARD = "目标卡牌";
-        [TranslateMsg("特效动画的始末位置选项")]
+        [TranslateMsg("特效动画的始末位置选项", CONTEXT_VISUAL_EFFECT)]
         public const string VISUAL_EFFECT_POSITION_TEMP_VAR = "临时变量";
 
         public static readonly string[] categories = new string[]
@@ -846,13 +841,13 @@ namespace UI
             StringTable.EDITOR_NODE_CATEGORY_PLAYER, // 玩家
             StringTable.EDITOR_NODE_CATEGORY_CARD, // 卡牌
             EffectEditorLibrary.EDITOR_NODE_CATEGORY_CARD_DEFINE, // 卡牌定义
-            EffectEditorLibrary.EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, // 卡牌快照
+            StringTable.EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, // 卡牌快照
             StringTable.EDITOR_NODE_CATEGORY_PILE, // 牌堆
             StringTable.EDITOR_NODE_CATEGORY_BUFF, //增益
-            EffectEditorLibrary.EDITOR_CATEGORY_NAME_EFFECTS, // 效果
+            StringTable.EDITOR_NODE_CATEGORY_EFFECT, // 效果
             StringTable.EDITOR_NODE_CATEGORY_EVENT, // 事件
             ActionNodeGraphCtrl.EDITOR_CATEGORY_EVENT_ENTRY_NODE, // 事件入口
-            StringTable.EDITOR_CATEGORY__ACTION__NAME, // 行动
+            StringTable.EDITOR_NODE_CATEGORY_ACTION, // 行动
             StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, // 集合运算
             EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER, // 其他
         };
@@ -864,12 +859,12 @@ namespace UI
         };
         public static readonly string[] defineTypeNames = new string[]
         {
-            ActionEditorCtrl.ACTION_DEFINE_TYPE_ACTION,
-            ActionEditorCtrl.ACTION_DEFINE_TYPE_FUNCTION,
-            ActionEditorCtrl.ACTION_DEFINE_TYPE_EVENT,
+            StringTable.NODE_TYPE_ACTION,
+            StringTable.NODE_TYPE_FUNCTION,
+            StringTable.NODE_TYPE_EVENT,
         };
 
-        public static readonly string[] visualEffectPositions = new string[]
+        public static readonly string[] visualEffectPositionNames = new string[]
         {
             VISUAL_EFFECT_POSITION_SELF_MASTER,
             VISUAL_EFFECT_POSITION_ENEMY_MASTER,

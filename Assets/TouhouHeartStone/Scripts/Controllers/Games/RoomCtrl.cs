@@ -365,7 +365,7 @@ namespace Controllers
                     string removePoolsString = PoolsToString(removedCardPools.ToArray(), false, 5);
                     removeString = game.lang._(ROOM_EDIT_CARD_POOL_REMOVE, removePoolsString);
                 }
-                string desc = game.lang._(ROOM_EDIT_CARD_POOL_TEMPLATE, addString, removeString, ROOM_EDIT_CARD_POOL_CONTINUE);
+                string desc = game.lang._(ROOM_EDIT_CARD_POOL_TEMPLATE, addString, removeString);
                 if (isRoomOwner)
                 {
                     List<(CardPoolInfoPack roomPool, CardPoolInfoPack comingPool)> conflictPools;
@@ -1367,7 +1367,7 @@ namespace Controllers
                 string[] options = new string[]
                 {
                     game.lang._(ROOM_CARD_POOLS_USE_POOL_BUTTON, roomPool.version),
-                    game.lang._(ROOM_CARD_POOL_CANCEL),
+                    game.lang._(StringTable.CANCEL),
                     game.lang._(ROOM_CARD_POOLS_USE_POOL_BUTTON, comingPool.version)
                 };
                 game.ui.dialog.ShowOptions(game.lang._(ROOM_CARD_POOLS_CONFLICTED_TITLE), conflictDesc, options, (index) =>
@@ -1498,17 +1498,13 @@ namespace Controllers
         public const string ROOM_CARD_POOLS_CONFLICTED = "尝试加入卡池“{0}”的版本{1}，与当前已设置的卡池{0}版本{2}冲突，请选择要使用的版本。";
         [TranslateMsg("房间-卡池冲突警告-选择使用的版本的按钮文字（{0}：要使用的版本号）")]
         public const string ROOM_CARD_POOLS_USE_POOL_BUTTON = "使用版本{0}";
-        [TranslateMsg("房间-卡池冲突警告-取消按钮")]
-        public const string ROOM_CARD_POOL_CANCEL = "取消";
 
-        [TranslateMsg("房间-卡池编辑-添加卡池提示模板（{0}：添加卡池提醒，{1}：移除卡池提醒，{2}：是否继续提醒）")]
-        public const string ROOM_EDIT_CARD_POOL_TEMPLATE = "{0}{1}{2}";
+        [TranslateMsg("房间-卡池编辑-添加卡池提示模板（{0}：添加卡池提醒，{1}：移除卡池提醒）")]
+        public const string ROOM_EDIT_CARD_POOL_TEMPLATE = "{0}{1}是否继续？";
         [TranslateMsg("房间-卡池编辑-添加卡池提示（{0}：卡池名列表）")]
         public const string ROOM_EDIT_CARD_POOL_ADD = "即将添加卡池：{0}\n";
         [TranslateMsg("房间-卡池编辑-移除卡池提示（{0}：卡池名列表）")]
         public const string ROOM_EDIT_CARD_POOL_REMOVE = "即将移除卡池：{0}\n";
-        [TranslateMsg("房间-卡池编辑-是否继续提醒")]
-        public const string ROOM_EDIT_CARD_POOL_CONTINUE = "是否继续？";
         [TranslateMsg("房间-卡池编辑-编辑卡池按钮的文字")]
         public const string ROOM_BUTTON_EDIT_CARD_POOL = "编辑卡池";
 

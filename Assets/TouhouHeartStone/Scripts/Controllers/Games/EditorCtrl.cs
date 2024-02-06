@@ -798,9 +798,9 @@ namespace Controllers
         {
             string[] options = new string[3]
             {
-                game.lang._(EDITOR_OPTION_SAVE),
-                game.lang._(EDITOR_OPTION_DONT_SAVE),
-                game.lang._(EDITOR_OPTION_CANCEL),
+                game.lang._(StringTable.SAVE),
+                game.lang._(StringTable.DONT_SAVE),
+                game.lang._(StringTable.CANCEL),
             };
             game.ui.dialog.ShowOptions(game.langManager.getString(StringTable.WARNING), game.langManager.getString(StringTable.EDITOR_WARNING_UNSAVED_CHANGES),
                 options,
@@ -898,7 +898,7 @@ namespace Controllers
                 if (nodeInfo.cardId != 0)
                 {
                     var cardName = game.card.getCardSkin(cardPoolRef, nodeInfo.cardId)?.name;
-                    descs.Add(cardName ?? StringTable.BUILD_UNKNOW_CARD_NAME);
+                    descs.Add(cardName ?? StringTable.BUILD_UNKNOWN_CARD_NAME);
                 }
                 else if (nodeInfo.buffId != 0)
                 {
@@ -907,7 +907,7 @@ namespace Controllers
                     {
                         buffName = game.card.getBuffSkin(buffDefine)?.name;
                     }
-                    descs.Add(buffName ?? EDITOR_UNKNOWN_BUFF_NAME);
+                    descs.Add(buffName ?? StringTable.BUFF_NAME_UNKNOWN);
                 }
                 else if (nodeInfo.actionId != 0)
                 {
@@ -925,7 +925,7 @@ namespace Controllers
             string obsoleteString = string.Join(",", descs);
             if (obsoleteGraphs.Length > MAX_DISPLAY_COUNT)
             {
-                obsoleteString = game.lang._(EDITOR_WARNING_OBSOLETE_NODES_DESC_MAX, obsoleteString);
+                obsoleteString = game.lang._(StringTable.TRIMMED_COTENTS, obsoleteString);
             }
             desc = game.lang._(EDITOR_WARNING_OBSOLETE_NODES_TEMPLATE, obsoleteString);
             return true;
@@ -1214,7 +1214,7 @@ namespace Controllers
                 options = new string[2]
                 {
                         game.lang._(StringTable.CONFIRM),
-                        game.lang._(EDITOR_OPTION_CANCEL)
+                        game.lang._(StringTable.CANCEL)
                 };
                 clickButtonAction = async (index) =>
                 {
@@ -1234,8 +1234,8 @@ namespace Controllers
                     // 强制保存或不保存
                     options = new string[2]
                     {
-                        game.lang._(EDITOR_OPTION_SAVE),
-                        game.lang._(EDITOR_OPTION_DONT_SAVE)
+                        game.lang._(StringTable.SAVE),
+                        game.lang._(StringTable.DONT_SAVE)
                     };
                     clickButtonAction = async (index) =>
                     {
@@ -1254,9 +1254,9 @@ namespace Controllers
                     // 不强制保存
                     options = new string[3]
                     {
-                            game.lang._(EDITOR_OPTION_SAVE),
-                            game.lang._(EDITOR_OPTION_DONT_SAVE),
-                            game.lang._(EDITOR_OPTION_CANCEL)
+                            game.lang._(StringTable.SAVE),
+                            game.lang._(StringTable.DONT_SAVE),
+                            game.lang._(StringTable.CANCEL)
                     };
                     clickButtonAction = async (index) =>
                     {
@@ -1347,30 +1347,20 @@ namespace Controllers
         public const string EDITOR_TRY_TO_SAVE_STANDARD_CARDPOOL = "您对经典卡池进行了更改，但该卡池无法被修改。\n是否要离开该卡池？";
         [TranslateMsg("卡池编辑器/退出跨卡池编辑器/提示要求保存卡池（{0}是卡池名）")]
         public const string EDITOR_NEED_TO_SAVE_CARDPOOL = "您对卡池({0})进行了更改，是否要保存该卡池？";
-        [TranslateMsg("卡池编辑器/退出未保存卡池/选项名")]
-        public const string EDITOR_OPTION_SAVE = "保存";
-        [TranslateMsg("卡池编辑器/退出未保存卡池/选项名")]
-        public const string EDITOR_OPTION_DONT_SAVE = "不保存";
-        [TranslateMsg("卡池编辑器/退出未保存卡池/选项名")]
-        public const string EDITOR_OPTION_CANCEL = "取消";
         [TranslateMsg("编辑器/标题模板，{0}为编辑器名称，{1}为未保存标识（星号）")]
         public const string EDITOR_TITLE_TEMPLATE = "· {0}{1} ·";
         [TranslateMsg("编辑器/未保存标识（星号）")]
         public const string EDITOR_UNSAVED_MARK = "*";
         [TranslateMsg("卡池编辑器/标题")]
-        public const string EDITOR_TITLE = "卡牌编辑器";
+        public const string EDITOR_TITLE = "编辑器";
         [TranslateMsg]
         const string EXPORT_BEFORE_SAVE = "当前卡池含有未保存的修改，请在导出前保存修改";
-        [TranslateMsg]
-        const string EDITOR_UNKNOWN_BUFF_NAME = "未知增益";
         [TranslateMsg]
         const string EDITOR_UNKNOWN_ACTION_NAME = "未知自定义动作";
         [TranslateMsg]
         const string EDITOR_UNKNOWN_RULE_NAME = "未知自定义规则";
         [TranslateMsg("尝试保存具有过时节点的卡池时的警告。（{0}：过时节点列表）")]
         const string EDITOR_WARNING_OBSOLETE_NODES_TEMPLATE = "以下内容包含过时的节点：\n{0}\n是否保存卡池？";
-        [TranslateMsg("尝试保存具有过时节点的卡池，并且显示达到上限时的警告。（{0}：过时节点列表）")]
-        const string EDITOR_WARNING_OBSOLETE_NODES_DESC_MAX = "{0}...";
         [TranslateMsg("{0}是路径")]
         const string EXPORT_SUCCESS = "卡池已导出至 {0}";
         [TranslateMsg]

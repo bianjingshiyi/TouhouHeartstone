@@ -101,7 +101,7 @@ namespace Controllers
             string displayName = name;
             if (string.IsNullOrEmpty(name))
             {
-                string errorTip = game.lang._(ACTION_ERROR_NEW_PORT_NAME_EMPTY);
+                string errorTip = game.lang._(StringTable.EDITOR_ERROR_NAME_EMPTY);
                 _ui.showCreatePortDefineDialogErrorTip(errorTip);
                 return;
             }
@@ -118,7 +118,7 @@ namespace Controllers
             }
             if (duplicateName)
             {
-                string errorTip = game.lang._(ACTION_ERROR_NEW_PORT_NAME_TAKEN);
+                string errorTip = game.lang._(StringTable.EDITOR_ERROR_NAME_TAKEN);
                 _ui.showCreatePortDefineDialogErrorTip(errorTip);
                 return;
             }
@@ -179,9 +179,9 @@ namespace Controllers
                 string desc = game.lang._(ACTION_WARNING_UNSAVED_CHANGES);
                 string[] optNames = new string[]
                 {
-                    game.lang._(ACTION_WARNING_OPTION_SAVE),
-                    game.lang._(ACTION_WARNING_OPTION_DONT_SAVE),
-                    game.lang._(ACTION_WARNING_OPTION_CANCEL)
+                    game.lang._(StringTable.SAVE),
+                    game.lang._(StringTable.DONT_SAVE),
+                    game.lang._(StringTable.CANCEL)
                 };
                 game.ui.dialog.ShowOptions(title, desc, optNames, async (index) =>
                 {
@@ -353,17 +353,17 @@ namespace Controllers
         }
         private string getDefineTypeName(NodeDefineType type)
         {
-            var defineTypeName = ACTION_DEFINE_TYPE_ACTION;
+            var defineTypeName = StringTable.NODE_TYPE_ACTION;
             switch (type)
             {
                 case NodeDefineType.Function:
-                    defineTypeName = ACTION_DEFINE_TYPE_FUNCTION;
+                    defineTypeName = StringTable.NODE_TYPE_FUNCTION;
                     break;
                 case NodeDefineType.Event:
-                    defineTypeName = ACTION_DEFINE_TYPE_EVENT;
+                    defineTypeName = StringTable.NODE_TYPE_EVENT;
                     break;
             }
-            return game.lang._(defineTypeName);
+            return game.lang._p(StringTable.CONTEXT_NODE_TYPE, defineTypeName);
         }
         #endregion
 
@@ -372,6 +372,7 @@ namespace Controllers
         [SerializeField]
         ActionNodeGraphCtrl _actionNodeGraphCtrl;
 
+        public const string CONTEXT_ACTION_EDITOR = "动作编辑器";
 
         [TranslateMsg("动作编辑器/标题")]
         public const string ACTION_EDITOR_TITLE = "动作编辑器";
@@ -381,10 +382,6 @@ namespace Controllers
         public const string ACTION_NEW_CONST_DIALOG_TITLE = "添加输入常量";
         [TranslateMsg("动作编辑器/添加变量对话框/标题")]
         public const string ACTION_NEW_OUTPUT_DIALOG_TITLE = "添加输出变量";
-        [TranslateMsg("动作编辑器/添加变量对话框/错误提示")]
-        public const string ACTION_ERROR_NEW_PORT_NAME_TAKEN = "该名称已被使用！";
-        [TranslateMsg("动作编辑器/添加变量对话框/错误提示")]
-        public const string ACTION_ERROR_NEW_PORT_NAME_EMPTY = "请输入名称！";
         [TranslateMsg("动作编辑器/变量/数组变量的后缀")]
         public const string ACTION_VARIABLE_IS_ARRAY = "[数组]";
         [TranslateMsg("动作编辑器/变量/输入变量的可变长度后缀")]
@@ -393,26 +390,10 @@ namespace Controllers
         public const string ACTION_VARIABLE_TYPE_NAME_TEMPLATE = "{0}{1}{2}";
 
 
-        [TranslateMsg("自定义动作的端口名称模板（{0}：端口类型（输入/常量/输出），{1}：序号）")]
-        public const string EDITOR_ACTION_DEFINE_PORT_NAME_TEMPLATE = "{0}{1}";
         [TranslateMsg("自定义动作的默认输出值名称前缀")]
         public const string EDITOR_ACTION_DEFINE_OUTPUT_NAME_DEFAULT = "输出值";
         [TranslateMsg("尝试退出自定义动作的编辑页面，但没有保存情况下的警告")]
         public const string ACTION_WARNING_UNSAVED_CHANGES = "是否将更改保存到该自定义动作中？";
-        [TranslateMsg("尝试退出自定义动作的编辑页面，但没有保存情况下的按钮名称")]
-        public const string ACTION_WARNING_OPTION_SAVE = "保存";
-        [TranslateMsg("尝试退出自定义动作的编辑页面，但没有保存情况下的按钮名称")]
-        public const string ACTION_WARNING_OPTION_DONT_SAVE = "不保存";
-        [TranslateMsg("尝试退出自定义动作的编辑页面，但没有保存情况下的按钮名称")]
-        public const string ACTION_WARNING_OPTION_CANCEL = "取消";
-        [TranslateMsg("没有分类的动作的分类")]
-        public const string ACTION_CATEGORY_NAME_NONE = "无";
-        [TranslateMsg("节点动作类型/动作")]
-        public const string ACTION_DEFINE_TYPE_ACTION = "动作";
-        [TranslateMsg("节点动作类型/函数")]
-        public const string ACTION_DEFINE_TYPE_FUNCTION = "函数";
-        [TranslateMsg("节点动作类型/事件")]
-        public const string ACTION_DEFINE_TYPE_EVENT = "事件";
         private long curCardPoolId => game.editor.currentCardPoolId;
         /// <summary>
         /// 正在编辑的动作定义。

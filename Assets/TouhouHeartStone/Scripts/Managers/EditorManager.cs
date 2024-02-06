@@ -17,7 +17,7 @@ namespace Game
         #region 类型
         public string[] getEditorPortTypeNames()
         {
-            return GraphTypes.getAllPortTypeInfos().Select(i => game.langManager.getString(i.typeName)).ToArray();
+            return GraphTypes.getAllPortTypeInfos().Select(i => game.lang._p(StringTable.CONTEXT_EDITOR_TYPE, i.typeName)).ToArray();
         }
         public Color getColorByType(Type type) => GraphTypes.getColorByType(type);
         #endregion
@@ -25,19 +25,19 @@ namespace Game
         #region 值类型
         public string getDefaultValueTypeName()
         {
-            return game.lang._(EDITOR_TYPE_NAME_UNKNOWN);
+            return game.lang._p(StringTable.CONTEXT_EDITOR_TYPE, StringTable.EDITOR_TYPE_NAME_UNKNOWN);
         }
         public string getNameByValueType(ActionNodeValueType type)
         {
             if (valueTypeNames.TryGetValue(type, out var str))
             {
-                return game.lang._(str);
+                return game.lang._p(StringTable.CONTEXT_EDITOR_TYPE, str);
             }
             return getDefaultValueTypeName();
         }
         public ValueTypeNameMap[] getValueTypeNameMaps()
         {
-            return valueTypeNames.Select(p => new ValueTypeNameMap(p.Key, game.lang._(p.Value))).ToArray();
+            return valueTypeNames.Select(p => new ValueTypeNameMap(p.Key, game.lang._p(StringTable.CONTEXT_EDITOR_TYPE, p.Value))).ToArray();
         }
         #endregion
 
@@ -48,13 +48,13 @@ namespace Game
         }
         public string[] getCardTypeNames()
         {
-            return cardTypes.Values.Select(v => game.lang._(v)).ToArray();
+            return cardTypes.Values.Select(v => game.lang._p(StringTable.CONTEXT_CARD_TYPE_NAME, v)).ToArray();
         }
         public string getCardTypeName(string value)
         {
             if (cardTypes.TryGetValue(value, out var name))
             {
-                return game.lang._(name);
+                return game.lang._p(StringTable.CONTEXT_CARD_TYPE_NAME, name);
             }
             return value;
         }
@@ -85,11 +85,19 @@ namespace Game
             return game.lang._(RULE_NAME_UNKNOWN);
         }
 
+        public CardPropertyNameItem[] getTranslatedCardProperties()
+        {
+            return cardProps.Select(i =>
+            {
+                i.name = game.lang._p(i.name, StringTable.CONTEXT_CARD_PROPERTY);
+                return i;
+            }).ToArray();
+        }
 
         #region 牌堆
         public string[] getAllPileNames()
         {
-            return piles.Select(p => game.lang._(p.Value)).ToArray();
+            return piles.Select(p => game.lang._p(StringTable.CONTEXT_PILE_NAME, p.Value)).ToArray();
         }
         public string[] getAllPileValues()
         {
@@ -99,9 +107,9 @@ namespace Game
         {
             if (piles.TryGetValue(value, out var name))
             {
-                return game.lang._(name);
+                return game.lang._p(StringTable.CONTEXT_PILE_NAME, name);
             }
-            return game.lang._(EDITOR_PILE_NAME_UNKNOWN);
+            return game.lang._p(StringTable.CONTEXT_PILE_NAME, EDITOR_PILE_NAME_UNKNOWN);
         }
         #endregion
 
@@ -124,10 +132,6 @@ namespace Game
         #region 私有方法
         #endregion
         #region 属性字段
-        [TranslateMsg("编辑器类型名称")]
-        public const string EDITOR_TYPE_NAME_BUFF_REFERENCE = "增益定义引用";
-        [TranslateMsg("编辑器类型名称")]
-        public const string EDITOR_TYPE_NAME_UNKNOWN = "未知类型";
 
         [TranslateMsg("游戏规则逻辑类型")]
         public const string RULE_NAME_POST_GAME_START = "游戏开始后";
@@ -160,7 +164,7 @@ namespace Game
             { ActionNodeValueType.integer, StringTable.EDITOR_TYPE_NAME_INT },
             { ActionNodeValueType.text, StringTable.EDITOR_TYPE_NAME_STRING },
             { ActionNodeValueType.cardReference, StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE },
-            { ActionNodeValueType.buffReference, EDITOR_TYPE_NAME_BUFF_REFERENCE },
+            { ActionNodeValueType.buffReference, StringTable.EDITOR_TYPE_NAME_BUFF_REFERENCE },
             { ActionNodeValueType.pileNameCollection, StringTable.EDITOR_TYPE_NAME_PILE },
             { ActionNodeValueType.keywords, StringTable.EDITOR_TYPE_NAME_KEYWORDS_TYPE }
         };
@@ -200,25 +204,41 @@ namespace Game
             DEFINE.SPELL_DAMAGE,
             DEFINE.DAMAGE_REDUCE,
         };
+        public static readonly List<CardPropertyNameItem> cardProps = new List<CardPropertyNameItem>
+        {
+            new CardPropertyNameItem(CARD.ISDEAD, StringTable.CARD_PROP_NAME_ISDEAD, true, true, false),
+            new CardPropertyNameItem(CARD.CURRENT_LIFE, StringTable.CARD_PROP_NAME_CURRENT_LIFE, true, true, false),
+            new CardPropertyNameItem(CARD.ARMOR, StringTable.CARD_PROP_NAME_ARMOR, true, true, false),
+            new CardPropertyNameItem(CARD.SILENCE, StringTable.CARD_PROP_NAME_SILENCED, true, true, false),
+            new CardPropertyNameItem(CARD.ISREADY, StringTable.CARD_PROP_NAME_ISREADY, true, true, false),
+            new CardPropertyNameItem(CARD.ATTACK_TIMES, StringTable.CARD_PROP_NAME_ATTACK_TIMES, true, true, false),
+
+            // 只读
+            new CardPropertyNameItem(DEFINE.ATTACK, StringTable.CARD_PROP_NAME_ATTACK),
+            new CardPropertyNameItem(DEFINE.COST, StringTable.CARD_PROP_NAME_COST),
+            new CardPropertyNameItem(DEFINE.LIFE, StringTable.CARD_PROP_NAME_LIFE),
+            new CardPropertyNameItem(DEFINE.DAMAGE_REDUCE, StringTable.CARD_PROP_NAME_DAMAGE_REDUCE),
+            new CardPropertyNameItem(DEFINE.SPELL_DAMAGE, StringTable.CARD_PROP_NAME_SPELL_DAMAGE),
+        };
 
         private static readonly Dictionary<string, string> piles = new Dictionary<string, string>
         {
-            { PILE.FIELD, StringTable.GAME_FIELD },
-            { PILE.HAND, StringTable.GAME_HAND },
-            { PILE.DECK, StringTable.GAME_DECK },
-            { PILE.GRAVE, StringTable.GAME_GRAVE},
-            { PILE.MASTER, StringTable.GAME_MASTER },
-            { PILE.SKILL, StringTable.GAME_SKILL },
-            { PILE.ITEM, StringTable.GAME_ITEM },
-            { PILE.HEAD, StringTable.GAME_DELAY }
+            { PILE.FIELD, StringTable.PILE_NAME_FIELD },
+            { PILE.HAND, StringTable.PILE_NAME_HAND },
+            { PILE.DECK, StringTable.PILE_NAME_DECK },
+            { PILE.GRAVE, StringTable.PILE_NAME_GRAVE},
+            { PILE.MASTER, StringTable.PILE_NAME_MASTER },
+            { PILE.SKILL, StringTable.PILE_NAME_SKILL },
+            { PILE.ITEM, StringTable.PILE_NAME_ITEM },
+            { PILE.HEAD, StringTable.PILE_NAME_DELAY }
         };
         private static readonly Dictionary<string, string> cardTypes = new Dictionary<string, string>
         {
-            { DEFINE.SERVANT, StringTable.GAME_CARD_TYPE_SERVANT },
-            { DEFINE.SPELL, StringTable.GAME_CARD_TYPE_SPELL },
-            { DEFINE.ITEM, StringTable.GAME_CARD_TYPE_ITEM },
-            { DEFINE.MASTER, StringTable.GAME_CARD_TYPE_MASTER },
-            { DEFINE.SKILL, StringTable.GAME_CARD_TYPE_SKILL },
+            { DEFINE.SERVANT, StringTable.CARD_TYPE_SERVANT },
+            { DEFINE.SPELL, StringTable.CARD_TYPE_SPELL },
+            { DEFINE.ITEM, StringTable.CARD_TYPE_ITEM },
+            { DEFINE.MASTER, StringTable.CARD_TYPE_MASTER },
+            { DEFINE.SKILL, StringTable.CARD_TYPE_SKILL },
         };
         #endregion
     }

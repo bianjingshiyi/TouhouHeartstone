@@ -17,7 +17,7 @@ namespace Game
         }
         public string[] getAnimationEditorNamesForNode()
         {
-            return getAnimationDefinesForNode().Select(d => main.lang._(d.name)).Prepend(main.lang._(VISUAL_EFFECT_NAME_NONE)).ToArray();
+            return getAnimationDefinesForNode().Select(d => main.lang._(d.name)).Prepend(main.lang._(StringTable.NONE)).ToArray();
         }
         public static void cleanUnusedVisualEffects(ISkin skin, IEnumerable<GeneratedEffect> effects)
         {

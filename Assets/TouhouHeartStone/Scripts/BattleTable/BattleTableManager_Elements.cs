@@ -2500,8 +2500,8 @@ namespace Game.BattleTable
                 if (buffDefine == null)
                 {
                     sprite = cardManager.getDefaultSprite();
-                    name = lang._(CARD_BUFF_UNKNOWN_NAME);
-                    desc = lang._(CARD_BUFF_UNKNOWN_DESC);
+                    name = lang._(StringTable.BUFF_NAME_UNKNOWN);
+                    desc = lang._(StringTable.BUFF_DESC_UNKNOWN);
                 }
                 else
                 {
@@ -2511,9 +2511,9 @@ namespace Game.BattleTable
                     desc = skin.desc ?? string.Empty;
                 }
                 if (name.Length > _maxBuffNameLength)
-                    name = lang._(CARD_BUFF_LIST_TRIM_TEMPLATE, name.Substring(0, _maxBuffNameLength));
+                    name = lang._(StringTable.TRIMMED_COTENTS, name.Substring(0, _maxBuffNameLength));
                 if (desc.Length > _maxBuffDescLength)
-                    desc = lang._(CARD_BUFF_LIST_TRIM_TEMPLATE, desc.Substring(0, _maxBuffDescLength));
+                    desc = lang._(StringTable.TRIMMED_COTENTS, desc.Substring(0, _maxBuffDescLength));
                 if (count > 1)
                     name = lang._(CARD_BUFF_LIST_MULTIPLE_TEMPLATE, name, count);
 
@@ -2753,14 +2753,8 @@ namespace Game.BattleTable
         private const string TAB_YOUR_NO_HAVE_CARD = "你已经没有卡牌了";
         [TranslateMsg]
         private const string TAB_OPPONENT_OUT_OF_CARDS = "你的对手已经没有卡牌了";
-        [TranslateMsg("游戏中的增益列表项的未知增益名称")]
-        public const string CARD_BUFF_UNKNOWN_NAME = "未知增益";
-        [TranslateMsg("游戏中的增益列表项的未知增益描述")]
-        public const string CARD_BUFF_UNKNOWN_DESC = "不知道这是干什么的……";
         [TranslateMsg("游戏中的增益列表项的增益名称模板，在同样的增益属性多于1时显示（{0}：增益名称；{1}：增益数量）")]
         public const string CARD_BUFF_LIST_MULTIPLE_TEMPLATE = "{0}×{1}";
-        [TranslateMsg("游戏中的增益列表项的增益文本模板，在过长时显示（{0}：被截断的增益文字）")]
-        public const string CARD_BUFF_LIST_TRIM_TEMPLATE = "{0}...";
 
         /// <summary>
         /// 当前是否可以控制（是否是自己的回合）

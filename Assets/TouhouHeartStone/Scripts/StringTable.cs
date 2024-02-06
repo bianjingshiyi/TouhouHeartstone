@@ -4,6 +4,13 @@ namespace Game
 {
     public partial class StringTable
     {
+        #region 主界面
+        [TranslateMsg("发现了新版本的游戏，询问玩家是否要打开一个外部链接进行下载")]
+        public const string WANNA_DOWNLOAD_NEW_VERSION = "发现了更新版本的游戏，是否下载？";
+        [TranslateMsg("发现了新版本的游戏，但是没有适合的下载链接")]
+        public const string INVALID_DOWNLOAD_URL = "发现了更新版本的游戏，但无法获取下载链接。请访问官网手动更新游戏。";
+        #endregion
+
         #region 收藏
         [TranslateMsg("浏览卡牌界面中按费用排序选项")]
         public const string CARDVIEW_SORTTYPE_COST = "费用";
@@ -34,41 +41,38 @@ namespace Game
         [TranslateMsg]
         public const string BUILD_CONFIRM_EXIT_WITHOUT_SAVE = "卡组尚未保存，退出后现有变更将丢失。\n是否退出？";
         [TranslateMsg("未知卡牌的名字")]
-        public const string BUILD_UNKNOW_CARD_NAME = "未知卡牌";
+        public const string BUILD_UNKNOWN_CARD_NAME = "未知卡牌";
         #endregion
+
+        #region 牌堆
+        public const string CONTEXT_PILE_NAME = "牌堆名";
+
+        [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
+        public const string PILE_NAME_FIELD = "战场";
+        [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
+        public const string PILE_NAME_HAND = "手牌";
+        [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
+        public const string PILE_NAME_DECK = "牌库";
+        [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
+        public const string PILE_NAME_GRAVE = "墓地";
+        [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
+        public const string PILE_NAME_MASTER = "英雄";
+        [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
+        public const string PILE_NAME_SKILL = "技能";
+        [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
+        public const string PILE_NAME_ITEM = "物品";
+        [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
+        public const string PILE_NAME_DELAY = "延迟";
+        #endregion
+
         #region 游戏
-        [TranslateMsg("游戏中战场概念的名称")]
-        public const string GAME_FIELD = "战场";
-        [TranslateMsg("游戏中手牌概念的名称")]
-        public const string GAME_HAND = "手牌";
-        [TranslateMsg("游戏中牌库概念的名称")]
-        public const string GAME_DECK = "牌库";
-        [TranslateMsg("游戏中墓地概念的名称")]
-        public const string GAME_GRAVE = "墓地";
-        [TranslateMsg("游戏中玩家角色概念的名称")]
-        public const string GAME_MASTER = "英雄";
-        [TranslateMsg("游戏中技能概念的名称")]
-        public const string GAME_SKILL = "技能";
-        [TranslateMsg("游戏中物品概念的名称")]
-        public const string GAME_ITEM = "物品";
-        [TranslateMsg("游戏中延迟区概念的名称")]
-        public const string GAME_DELAY = "延迟";
         [TranslateMsg("游戏中卡牌可选的目标类型之角色")]
         public const string GAME_TARGET_TYPE_CHARACTER = "角色";
         [TranslateMsg("游戏中卡牌可选的目标类型之随从")]
         public const string GAME_TARGET_TYPE_SERVANT = "随从";
-        [TranslateMsg("游戏中卡牌的费用属性的名称")]
-        public const string GAME_CARD_PROP_NAME_COST = "花费";
-        [TranslateMsg("游戏中卡牌的攻击力属性的名称")]
-        public const string GAME_CARD_PROP_NAME_ATTACK = "攻击力";
-        [TranslateMsg("游戏中卡牌的生命值属性的名称")]
-        public const string GAME_CARD_PROP_NAME_LIFE = "生命值";
-        [TranslateMsg("游戏中卡牌的法术伤害属性的名称")]
-        public const string GAME_CARD_PROP_NAME_SPELL_DAMAGE = "法术伤害";
-        [TranslateMsg("游戏中卡牌的减伤属性的名称")]
-        public const string GAME_CARD_PROP_NAME_DAMAGE_REDUCE = "减伤";
-        [TranslateMsg("游戏中卡牌的关键词属性的名称")]
-        public const string GAME_CARD_PROP_NAME_KEYWORDS = "关键词";
+        #endregion
+
+        #region 修改器运算
         [TranslateMsg("游戏中卡牌的属性修改类型之增加")]
         public const string GAME_CARD_PROP_MODIFY_ADD = "增加";
         [TranslateMsg("游戏中卡牌的属性修改类型之减少")]
@@ -85,74 +89,110 @@ namespace Game
         public const string GAME_CARD_PROP_MODIFY_SUB_PROP = "减少属性";
         [TranslateMsg("游戏中卡牌的属性修改类型之变为属性")]
         public const string GAME_CARD_PROP_MODIFY_SETTO_PROP = "变为属性";
-        [TranslateMsg("游戏中卡牌的类型之仆从")]
-        public const string GAME_CARD_TYPE_SERVANT = "仆从";
-        [TranslateMsg("游戏中卡牌的类型之法术")]
-        public const string GAME_CARD_TYPE_SPELL = "法术";
-        [TranslateMsg("游戏中卡牌的类型之道具")]
-        public const string GAME_CARD_TYPE_ITEM = "道具";
-        [TranslateMsg("游戏中卡牌的类型之英雄")]
-        public const string GAME_CARD_TYPE_MASTER = "英雄";
-        [TranslateMsg("游戏中卡牌的类型之技能")]
-        public const string GAME_CARD_TYPE_SKILL = "技能";
-        #region 关键词
-        [TranslateMsg("游戏中的关键词守卫")]
-        public const string GAME_KEYWORD_TAUNT = "守卫";
-        [TranslateMsg("游戏中的关键词冲锋")]
-        public const string GAME_KEYWORD_CHARGE = "先攻";
-        [TranslateMsg("游戏中的关键词速攻")]
-        public const string GAME_KEYWORD_RUSH = "速攻";
-        [TranslateMsg("游戏中的关键词护盾")]
-        public const string GAME_KEYWORD_SHIELD = "护盾";
-        [TranslateMsg("游戏中的关键词隐匿")]
-        public const string GAME_KEYWORD_STEALTH = "隐匿";
-        [TranslateMsg("游戏中的关键词永久隐匿")]
-        public const string GAME_KEYWORD_PERMANENT_STEALTH = "永久隐匿";
-        [TranslateMsg("游戏中的关键词吸血")]
-        public const string GAME_KEYWORD_DRAIN = "吸血";
-        [TranslateMsg("游戏中的关键词致命")]
-        public const string GAME_KEYWORD_POISONOUS = "致命";
-        [TranslateMsg("游戏中的关键词魔免")]
-        public const string GAME_KEYWORD_ELUSIVE = "魔免";
-        [TranslateMsg("游戏中的关键词被禁锢")]
-        public const string GAME_KEYWORD_FREEZE = "被禁锢";
-        [TranslateMsg("游戏中的关键词永久禁锢")]
-        public const string GAME_KEYWORD_PERMANENT_FROZEN = "永久禁锢";
-        [TranslateMsg("游戏中的关键词可蓄力")]
-        public const string GAME_KEYWORD_CAN_BE_CHARGED = "可蓄力";
-        [TranslateMsg("游戏中的关键词唯一")]
-        public const string GAME_KEYWORD_UNIQUE = "唯一";
-        [TranslateMsg("游戏中的关键词自动施放")]
-        public const string GAME_KEYWORD_AUTOCAST = "自动施放";
-        [TranslateMsg("游戏中的关键词无法攻击")]
-        public const string GAME_KEYWORD_CANTATTACK = "无法攻击";
-        [TranslateMsg("游戏中的关键词双击")]
-        public const string GAME_KEYWORD_WINDFURY = "双击";
-        [TranslateMsg("游戏中的关键词无敌")]
-        public const string GAME_KEYWORD_IMMUNITY = "无敌";
-        [TranslateMsg("游戏中的关键词陷阱")]
-        public const string GAME_KEYWORD_SECRET = "陷阱";
-        [TranslateMsg("游戏中的关键词委托")]
-        public const string GAME_KEYWORD_MISSION = "委托";
-        [TranslateMsg("游戏中的关键词宣言")]
-        public const string GAME_KEYWORD_BATTLECRY = "宣言";
-        [TranslateMsg("游戏中的关键词遗言")]
-        public const string GAME_KEYWORD_DEATHRATTLE = "遗言";
-        [TranslateMsg("游戏中的种族妖兽")]
-        public const string GAME_RACE_BEAST = "妖兽";
-        [TranslateMsg("游戏中的种族恶魔")]
-        public const string GAME_RACE_DEMON = "恶魔";
-        [TranslateMsg("游戏中的种族元素")]
-        public const string GAME_RACE_ELEMENT = "元素";
-        [TranslateMsg("游戏中的种族妖精")]
-        public const string GAME_RACE_FAIRY = "妖精";
-        [TranslateMsg("游戏中的种族神明")]
-        public const string GAME_RACE_GOD = "神明";
-        [TranslateMsg("游戏中的种族机械")]
-        public const string GAME_RACE_MACHINE = "机械";
-        [TranslateMsg("游戏中的种族幽灵")]
-        public const string GAME_RACE_GHOST = "幽灵";
         #endregion
+
+        #region 卡牌类型
+        public const string CONTEXT_CARD_TYPE_NAME = "卡牌类型名";
+
+        [TranslateMsg("卡牌类型名", CONTEXT_CARD_TYPE_NAME)]
+        public const string CARD_TYPE_SERVANT = "仆从";
+        [TranslateMsg("卡牌类型名", CONTEXT_CARD_TYPE_NAME)]
+        public const string CARD_TYPE_SPELL = "法术";
+        [TranslateMsg("卡牌类型名", CONTEXT_CARD_TYPE_NAME)]
+        public const string CARD_TYPE_ITEM = "道具";
+        [TranslateMsg("卡牌类型名", CONTEXT_CARD_TYPE_NAME)]
+        public const string CARD_TYPE_MASTER = "英雄";
+        [TranslateMsg("卡牌类型名", CONTEXT_CARD_TYPE_NAME)]
+        public const string CARD_TYPE_SKILL = "技能";
+        #endregion
+
+        #region 增益
+        [TranslateMsg("增益名称")]
+        public const string BUFF_NAME_UNKNOWN = "未知增益";
+        [TranslateMsg("未知增益的描述")]
+        public const string BUFF_DESC_UNKNOWN = "不知道这是干什么的……";
+        #endregion
+
+        #region 关键词名称
+        public const string CONTEXT_KEYWORD_NAME = "关键词名称";
+
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_TAUNT = "守卫";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_CHARGE = "先攻";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_RUSH = "速攻";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_SHIELD = "护盾";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_STEALTH = "隐匿";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_PERMANENT_STEALTH = "永久隐匿";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_DRAIN = "吸血";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_POISONOUS = "致命";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_ELUSIVE = "魔免";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_FREEZE = "被禁锢";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_PERMANENT_FROZEN = "永久禁锢";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_CAN_BE_CHARGED = "可蓄力";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_UNIQUE = "唯一";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_AUTOCAST = "自动施放";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_CANTATTACK = "无法攻击";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_WINDFURY = "双击";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_IMMUNITY = "无敌";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_SECRET = "陷阱";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_MISSION = "委托";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_BATTLECRY = "宣言";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_DEATHRATTLE = "遗言";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_UNKNOWN = "未知关键词";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_CHARGED = "蓄力";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_SHACKLE = "禁锢";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_SEAL = "封印";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_FAITHDUEL = "信仰对决";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_UNPLAYABLE = "无法使用";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_SPELL_DAMAGE = "法术伤害";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_DAMAGE_REDUCTION = "减伤";
+        #endregion
+
+        #region 种族
+        [TranslateMsg("仆从种族")]
+        public const string CARD_TAG_FAIRY = "妖精";
+        [TranslateMsg("仆从种族")]
+        public const string CARD_TAG_MECH = "机械";
+        [TranslateMsg("仆从种族")]
+        public const string CARD_TAG_DEMON = "恶魔";
+        [TranslateMsg("仆从种族")]
+        public const string CARD_TAG_ELEMENTAL = "元素";
+        [TranslateMsg("仆从种族")]
+        public const string CARD_TAG_BEAST = "妖兽";
+        [TranslateMsg("仆从种族")]
+        public const string CARD_TAG_GOD = "神明";
+        [TranslateMsg("仆从种族")]
+        public const string CARD_TAG_GHOST = "幽灵";
+        #endregion
+
         #region 标签
         [TranslateMsg("游戏中的法术标签火")]
         public const string GAME_TAG_FIRE = "火";
@@ -169,7 +209,37 @@ namespace Game
         [TranslateMsg("游戏中的法术标签月")]
         public const string GAME_TAG_MOON = "月";
         #endregion
+
+        #region 卡牌属性
+        public const string CONTEXT_CARD_PROPERTY = "卡牌属性";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_ISDEAD = "濒死";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_CURRENT_LIFE = "当前生命值";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_ARMOR = "护甲值";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_SILENCED = "被封印";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_ISREADY = "已就绪";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_ATTACK_TIMES = "攻击次数";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_COST = "花费";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_ATTACK = "攻击力";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_LIFE = "生命值";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_SPELL_DAMAGE = "法术伤害";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_DAMAGE_REDUCE = "减伤";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_KEYWORDS = "关键词";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_CUSTOM_PROPERTY = "自定义属性";
         #endregion
+
         #region 错误
         [TranslateMsg]
         public const string ERROR_CARD_WITH_ID_NOT_EXISTS = "不存在ID为{0}的卡。";

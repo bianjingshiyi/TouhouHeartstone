@@ -48,7 +48,7 @@ namespace Game
         /// <param name="elements">元素列表</param>
         /// <returns></returns>
         [ObsoletedKeyMethod(BuiltinActionDefineID.CreateArray, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, StringTable.EDITOR_NODE_NAME_CREATE_ARRAY)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array createArray([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isParams: true)] object[] elements)
         {
             if (elements == null)
@@ -56,9 +56,9 @@ namespace Game
             return elements;
         }
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddElementToArray, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, StringTable.EDITOR_NODE_NAME_ADD_ELEMENT_TO_ARRAY)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array addElementToArray(
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isParams: true)] object[] elements)
         {
             if (array == null)
@@ -79,7 +79,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.Where_Obsolete, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, "筛选（过时）", StringTable.EDITOR_NODE_NAME_WHERE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_ARRAY_MATCHED)]
         public static async Task<object[]> where(CardEngine game, Flow flow, ActionNode node,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] ControlInput condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
@@ -124,7 +124,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.Where, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, StringTable.EDITOR_NODE_NAME_WHERE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_ARRAY_MATCHED)]
         public static async Task<object[]> where(CardEngine game, Flow flow, ActionNode node,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] NodeValueRef<bool> condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
@@ -189,7 +189,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array orderBy(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(EDITOR_PARAM_NAME_DESCENDING)] bool descending,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
             [ActionNodeParam(EDITOR_PARAM_NAME_ORDER_KEY)] ControlInput condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
@@ -230,7 +230,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array orderBy(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(EDITOR_PARAM_NAME_DESCENDING)] bool descending,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
             [ActionNodeParam(EDITOR_PARAM_NAME_ORDER_KEY)] NodeValueRef<object> condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
@@ -269,7 +269,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetElementByIndex, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_GET_ELEMENT_BY_INDEX)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT)]
         public static object getElementByIndex(
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
             [ActionNodeParam(EDITOR_PARAM_NAME_INDEX)] int index)
         {
             if (index >= 0 && index < array.Length)
@@ -281,7 +281,7 @@ namespace Game
         /// </summary>
         [ObsoletedKeyMethod(BuiltinActionDefineID.ForeachAction, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_FOREACH)]
         public static async Task foreachAction(CardEngine game, Flow flow, ActionNode node,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION)] ControlInput action,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
@@ -322,7 +322,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.ReverseCollection, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_REVERSE_COLLECTION)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static object[] reverseCollection(
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array)
         {
             if (array == null)
                 return null;
@@ -334,7 +334,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.Distinct, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_DISTINCT_COLLECTION)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array distinct(
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array)
         {
             if (array == null)
                 return null;
@@ -551,7 +551,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.All, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_ALL)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool all(Flow flow, ActionNode node,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] NodeValueRef<bool> condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
@@ -578,7 +578,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.Any, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_ANY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool any(Flow flow, ActionNode node,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] NodeValueRef<bool> condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
@@ -624,7 +624,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.First, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_FIRST)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT)]
         public static object first(
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array)
         {
             if (array == null)
                 return null;
@@ -638,7 +638,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.Last, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_LAST)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT)]
         public static object last(
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array)
         {
             if (array == null)
                 return null;
@@ -653,7 +653,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.Take, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_TAKE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array take(
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
             [ActionNodeParam(EDITOR_PARAM_NAME_COUNT_X)] int count)
         {
             if (array == null)
@@ -669,7 +669,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.Skip, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_SKIP)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array skip(
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
             [ActionNodeParam(EDITOR_PARAM_NAME_COUNT_X)] int count)
         {
             if (array == null)
@@ -685,7 +685,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.TakeWhile, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_TAKE_WHILE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array takeWhile(CardEngine game, Flow flow, ActionNode node,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] NodeValueRef<bool> condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
@@ -715,7 +715,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.SkipWhile, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_SKIP_WHILE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array skipWhile(CardEngine game, Flow flow, ActionNode node,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] NodeValueRef<bool> condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
@@ -745,7 +745,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.RandomTake, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_RANDOM_TAKE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array randomTake(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
             [ActionNodeParam(EDITOR_PARAM_NAME_COUNT_X)] int count)
         {
             if (array == null)
@@ -791,7 +791,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.Select, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_SELECT)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array select(Flow flow, ActionNode node,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
             [ActionNodeParam(EDITOR_PARAM_NAME_SELECTOR)] NodeValueRef<object> selector,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
@@ -819,7 +819,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.Randomize, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_RANDOMIZE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array randomize(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array)
         {
             if (array == null)
                 return Array.Empty<object>();
@@ -856,7 +856,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.IndexOf, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_GET_INDEX_OF_ELEMENT)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_INDEX)]
         public static int indexOf(Flow flow, ActionNode node,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Array array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] Array array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT)] object element)
         {
             if (array == null || element == null)
@@ -898,7 +898,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.CastCollectionType, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_CAST_COLLECTION_TYPE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_SPECIFIC_TYPE_COLLECTION)]
         public static Array castCollectionType(
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Array array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] Array array,
             [ActionNodeParam(EDITOR_PARAM_NAME_TYPE, isConst: true)] TypeName typeName)
         {
             if (array == null || typeName == null)

@@ -11,7 +11,7 @@ namespace Game
         }
         public string[] getAnimationEditorNamesForBuff()
         {
-            return getAnimationDefinesForBuff().Select(d => main.lang._(d.name)).Prepend(main.lang._(VISUAL_EFFECT_NAME_NONE)).ToArray();
+            return getAnimationDefinesForBuff().Select(d => main.lang._(d.name)).Prepend(main.lang._(StringTable.NONE)).ToArray();
         }
     }
 }

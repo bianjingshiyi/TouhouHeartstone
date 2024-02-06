@@ -491,7 +491,7 @@ namespace Game
         /// 获取卡牌定义合法目标集合
         /// </summary>
         [THHActionMethod(BuiltinActionDefineID.GetValidCardDefineTargets, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_GET_CARD_DEFINE_TARGETS)]
-        [return: ActionNodeParam(EDITOR_NODE_GET_CARD_TARGETS_TARGETS)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_VALID_TARGETS)]
         public static Card[] getAllLegalCardDefineTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
             [ActionNodeParam(EDITOR_PARAM_NAME_SOURCE_CARD)] Card source)

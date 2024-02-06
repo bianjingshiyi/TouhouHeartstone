@@ -35,6 +35,8 @@ namespace Game
         {
             gameObject.SetActive(false);
         }
+        const string CONTEXT_NODE_DOC_SUMMARY = "节点文档说明";
+        const string CONTEXT_NODE_DOC_EXAMPLE = "节点文档示例";
 
         [TranslateMsg("节点帮助的标题，{0}是节点名称")]
         const string TitleTemplate = "<h2>{0}</h2>";
@@ -46,7 +48,7 @@ namespace Game
         const string OutputParameter = "<p>输出参数</p>";
         [TranslateMsg("参数模板。{0}: 参数名称, {1}: 参数类型, {2}: 数组, {3}: 参数, {4}: 注释")]
         const string ParameterTemplate = "<li>{0}({1}): {4}</li>";
-        [TranslateMsg("节点说明模板, {0} 为节点自带说明")]
+        [TranslateMsg("节点说明模板, {0} 为节点自带说明", CONTEXT_NODE_DOC_SUMMARY)]
         const string SummaryTemplate = "<p>{0}</p>";
         [TranslateMsg("节点分类模板, {0} 为分类名称")]
         const string CategoryTemplate = "<p><b>分类</b>: {0}</p>";
@@ -54,7 +56,7 @@ namespace Game
         const string ObsoleteTemplate = "<p><b>此节点已被废弃，可能在后续版本中删除。</b>{0}</p>";
         [TranslateMsg("节点示例标题")]
         const string ExampleTitle = "<h3>示例</h3>";
-        [TranslateMsg("节点示例模板, {0} 为节点自带说明")]
+        [TranslateMsg("节点示例模板, {0} 为节点自带说明", CONTEXT_NODE_DOC_EXAMPLE)]
         const string ExampleTemplate = "<p>{0}</p>";
 
         public void Show(int id)
@@ -70,7 +72,7 @@ namespace Game
                 str += lang._(CategoryTemplate, lang._(doc.category)); // 分类
             if (doc.obsoleteMsg != null)
                 str += lang._(ObsoleteTemplate, lang._(doc.obsoleteMsg)); // 过期节点
-            str += lang._(SummaryTemplate, lang._(doc.summaryString)); // 说明
+            str += lang._p(CONTEXT_NODE_DOC_SUMMARY, SummaryTemplate, lang._(doc.summaryString)); // 说明
 
             // 参数文档
             str += lang._(ParameterTitle);
@@ -89,7 +91,7 @@ namespace Game
             if (!string.IsNullOrEmpty(doc.exampleString))
             {
                 str += lang._(ExampleTitle);
-                str += lang._(ExampleTemplate, lang._(doc.exampleString));
+                str += lang._p(CONTEXT_NODE_DOC_EXAMPLE, ExampleTemplate, lang._(doc.exampleString));
             }
 
             _html.Html = str;

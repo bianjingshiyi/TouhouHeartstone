@@ -91,7 +91,7 @@ namespace Controllers
             await updateEditingDeck(deck);
             var masterName = masterSkin.name;
             if (masterName.Length > masterNameMaxLength)
-                masterName = game.lang._(MASTER_NAME_OVERFLOW_TEMPLATE, masterName.Substring(0, masterNameMaxLength));
+                masterName = game.lang._(StringTable.TRIMMED_COTENTS, masterName.Substring(0, masterNameMaxLength));
             _ui.setCharacterName(masterName);
             _ui.setDeckListActive(false);
             _ui.setEditCardListActive(true);
@@ -759,7 +759,7 @@ namespace Controllers
                 {
                     var image = game.card.getDefaultSprite();
                     if (isDeckListItem)
-                        _ui.dragDeckListItem.updateView(game.langManager.getString(StringTable.BUILD_UNKNOW_CARD_NAME), image);
+                        _ui.dragDeckListItem.updateView(game.langManager.getString(StringTable.BUILD_UNKNOWN_CARD_NAME), image);
                     else
                     {
                         _ui.dragCard.setUnknownCard(true);
@@ -934,8 +934,6 @@ namespace Controllers
         const string NO_PILE_AVALIABLE = "剪贴板中没有可导入的卡组";
         [TranslateMsg]
         const string PILE_NOT_COMPLETE_EXPORT = "当前卡组不完整，无法在游戏中使用。\n是否要导出？";
-        [TranslateMsg("卡组中英雄名称超过上限之后，省略后续内容的文字模板，参数0为裁切的文本")]
-        const string MASTER_NAME_OVERFLOW_TEMPLATE = "{0}..."; 
         #endregion
         #region 内部类
         class CardPoolRuntimeData
