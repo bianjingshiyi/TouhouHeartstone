@@ -291,7 +291,7 @@ namespace Game
         [TranslateMsg]
         const string ERROR_SIGNATURE_NOT_MATCH = "卡池签名错误";
         [TranslateMsg]
-        const string ERROR_BUILTIN_CARDPOOL = "无法导出内置卡池";
+        const string ERROR_BUILTIN_CARDPOOL = "无法导出经典卡池";
         [TranslateMsg("{0}是默认导入路径")]
         const string ERROR_FILE_NOT_FOUND = "无法找到需要导入的卡池。请将需要导入的卡池放置于{0}";
         const string CardPoolPackExt = "dcpp";

@@ -377,11 +377,9 @@ namespace Controllers
         [TranslateMsg("动作编辑器/标题")]
         public const string ACTION_EDITOR_TITLE = "动作编辑器";
         [TranslateMsg("动作编辑器/添加变量对话框/标题")]
-        public const string ACTION_NEW_INPUT_DIALOG_TITLE = "添加输入变量";
+        public const string ACTION_NEW_INPUT_DIALOG_TITLE = "添加输入";
         [TranslateMsg("动作编辑器/添加变量对话框/标题")]
-        public const string ACTION_NEW_CONST_DIALOG_TITLE = "添加输入常量";
-        [TranslateMsg("动作编辑器/添加变量对话框/标题")]
-        public const string ACTION_NEW_OUTPUT_DIALOG_TITLE = "添加输出变量";
+        public const string ACTION_NEW_OUTPUT_DIALOG_TITLE = "添加输出";
         [TranslateMsg("动作编辑器/变量/数组变量的后缀")]
         public const string ACTION_VARIABLE_IS_ARRAY = "[数组]";
         [TranslateMsg("动作编辑器/变量/输入变量的可变长度后缀")]

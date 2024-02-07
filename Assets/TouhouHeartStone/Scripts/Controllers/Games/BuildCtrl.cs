@@ -896,7 +896,7 @@ namespace Controllers
         [TranslateMsg("构筑教程")]
         public const string TUTORIAL_STEP_CREATE_NEW_DECK = "点击这里新建卡组";
         [TranslateMsg("构筑教程")]
-        public const string TUTORIAL_STEP_SELECT_MASTER = "选择一个英雄";
+        public const string TUTORIAL_STEP_SELECT_MASTER = "选择一个人物";
         [TranslateMsg("构筑教程")]
         public const string TUTORIAL_STEP_DRAG_CARD = "将卡牌拖动到卡组中以加入卡牌";
         [TranslateMsg("构筑教程")]

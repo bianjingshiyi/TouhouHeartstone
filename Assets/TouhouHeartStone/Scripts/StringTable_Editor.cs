@@ -19,7 +19,7 @@ namespace Game
         [TranslateMsg("尝试退出编辑页面，但没有保存情况下的按钮名称")]
         public const string DONT_SAVE = "不保存";
         [TranslateMsg("编辑器中当玩家删除一个节点的时候发出的警告")]
-        public const string EDITOR_WARNING_DELETE_ACTION_DFINE = "删除一个动作定义会导致所有使用到它的卡牌效果无效，确定要这么做吗？";
+        public const string EDITOR_WARNING_DELETE_ACTION_DFINE = "删除一个动作定义会导致所有使用它的节点无效，确定要这么做吗？";
         [TranslateMsg("编辑器中当玩家离开编辑界面但是还有没保存的更改的时候的警告")]
         public const string EDITOR_WARNING_UNSAVED_CHANGES = "你有未保存的改动，是否先保存卡池再离开编辑界面？";
         [TranslateMsg("编辑器中询问玩家是否要删除卡池")]
@@ -97,8 +97,6 @@ namespace Game
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_OPPONENT_PLAYER = "对手玩家";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
-        public const string EDITOR_PARAM_NAME_EFFECT_PLAYER = "生效玩家";
-        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_MOVED_CARD = "移动的卡牌";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_PILE = "牌堆";
@@ -115,10 +113,6 @@ namespace Game
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_HANDS = "手牌";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
-        public const string EDITOR_PARAM_NAME_OPTIONS = "选项";
-        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
-        public const string EDITOR_PARAM_NAME_SELECTED_OPTION = "所选选项";
-        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_SELECTED_CARD = "所选卡牌";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_CARD = "卡牌";
@@ -128,7 +122,7 @@ namespace Game
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_PROP_CHANGE_EVENT = "属性更改事件";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
-        public const string EDITOR_PARAM_NAME_SILENCE_EVENT = "沉默事件";
+        public const string EDITOR_PARAM_NAME_SILENCE_EVENT = "封印事件";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_DRAW_EVENT = "抽牌事件";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
@@ -217,21 +211,21 @@ namespace Game
         public const string EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_CARDS = "从一定数量的卡牌中选择一张";
         [TranslateMsg("编辑器中的节点名称")]
         public const string EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_DEFINES = "从一定数量的卡牌定义中选择一张";
-        [TranslateMsg("编辑器中的节点参数名称")]
+        [TranslateMsg("编辑器中的节点名称")]
         public const string EDITOR_NODE_NAME_GET_PLAYER_HAND_CARDS = "获取玩家的手牌";
-        [TranslateMsg("编辑器中的节点参数名称")]
+        [TranslateMsg("编辑器中的节点名称")]
         public const string EDITOR_NODE_NAME_GET_PLAYER_GRAVE_CARDS = "获取玩家的墓地卡牌";
-        [TranslateMsg("编辑器中的节点参数名称")]
+        [TranslateMsg("编辑器中的节点名称")]
         public const string EDITOR_NODE_NAME_GET_PLAYER_DECK_CARDS = "获取玩家牌库中的卡牌";
-        [TranslateMsg("编辑器中的节点参数名称")]
+        [TranslateMsg("编辑器中的节点名称")]
         public const string EDITOR_NODE_NAME_SET_PLAYER_PROP = "设置玩家属性";
-        [TranslateMsg("编辑器中的节点参数名称")]
+        [TranslateMsg("编辑器中的节点名称")]
         public const string EDITOR_NODE_NAME_GET_PLAYER_PROP = "获取玩家属性";
-        [TranslateMsg("编辑器中的节点参数名称")]
+        [TranslateMsg("编辑器中的节点名称")]
         public const string EDITOR_NODE_NAME_GET_MASTER = "获取玩家英雄";
-        [TranslateMsg("编辑器中的节点参数名称")]
+        [TranslateMsg("编辑器中的节点名称")]
         public const string EDITOR_NODE_NAME_GET_PLAYER_OPPONENT = "获取玩家对手";
-        [TranslateMsg("编辑器中的节点参数名称")]
+        [TranslateMsg("编辑器中的节点名称")]
         public const string EDITOR_NODE_NAME_DISCARD = "丢弃卡牌";
         #endregion
 
@@ -278,7 +272,7 @@ namespace Game
         [TranslateMsg("编辑器中的节点名称")]
         public const string EDITOR_NODE_NAME_THIS_BUFF = "该增益";
         [TranslateMsg("编辑器中的参数名称")]
-        public const string EDITOR_NODE_NAME_IS_DECK_TOP = "是否至于牌库顶";
+        public const string EDITOR_NODE_NAME_IS_DECK_TOP = "是否置于牌库顶";
         [TranslateMsg("编辑器/卡牌/卡牌类型判断/节点名称")]
         public const string EDITOR_NODE_NAME_CHECK_CARD_TYPE = "卡牌类型判断";
         [TranslateMsg("编辑器中的节点名称")]
@@ -302,9 +296,9 @@ namespace Game
         [TranslateMsg("编辑器中的节点名称")]
         public const string EDITOR_NODE_NAME_HEAL_SPECIFIC_AMOUNT_TO_TARGETS = "对目标卡牌造成固定治疗";
         [TranslateMsg("编辑器中的节点名称")]
-        public const string EDITOR_NODE_NAME_GET_ALL_SERVANTS = "获取所有随从";
+        public const string EDITOR_NODE_NAME_GET_ALL_SERVANTS = "获取所有仆从";
         [TranslateMsg("编辑器中的节点名称")]
-        public const string EDITOR_NODE_NAME_GET_ENEMY_SERVANTS = "获取敌方随从";
+        public const string EDITOR_NODE_NAME_GET_ENEMY_SERVANTS = "获取敌方仆从";
         [TranslateMsg("编辑器中的节点名称")]
         public const string EDITOR_NODE_NAME_GET_FRIEND_CHARACTERS = "获取友方角色";
         [TranslateMsg("编辑器中的节点名称")]
@@ -406,7 +400,7 @@ namespace Game
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_TURN_END = "回合结束";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
-        public const string EDITOR_EVENT_NAME_SILENCE = "沉默";
+        public const string EDITOR_EVENT_NAME_SILENCE = "封印";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_ATTACK = "攻击";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
@@ -416,7 +410,7 @@ namespace Game
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_DEATH = "死亡/摧毀";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
-        public const string EDITOR_EVENT_NAME_SECRETTRIGGER = "奥秘触发";
+        public const string EDITOR_EVENT_NAME_SECRETTRIGGER = "陷阱触发";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_MISSIONCOMPLETE = "任务完成";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
@@ -434,9 +428,7 @@ namespace Game
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_BURN = "爆牌";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
-        public const string EDITOR_EVENT_NAME_CHOOSEONE = "选择一项";
-        [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
-        public const string EDITOR_EVENT_NAME_REBORN = "复生";
+        public const string EDITOR_EVENT_NAME_REBORN = "复活";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_ENTERFIELD = "入场";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
@@ -446,31 +438,13 @@ namespace Game
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_FATIGUE = "疲劳";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
-        public const string EDITOR_EVENT_NAME_SEARCHPILE = "检视";
-        [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_DISCARD = "弃牌";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_SETGEM = "设置灵力";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
-        public const string EDITOR_EVENT_NAME_CREATETOKEN = "召唤衍生物";
-        [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
-        public const string EDITOR_EVENT_NAME_ADDMODI = "添加修改器";
-        [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_SETDEFINE = "变形";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
-        public const string EDITOR_EVENT_NAME_REMOVEMODI = "移除修改器";
-        [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
-        public const string EDITOR_EVENT_NAME_PROPCHANGE = "属性修改";
-        [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
-        public const string EDITOR_EVENT_NAME_COMMAND = "指令";
-        [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
-        public const string EDITOR_EVENT_NAME_TEST = "测试";
-        [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_REVEALDUEL = "信仰对决";
-        [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
-        public const string EDITOR_EVENT_NAME_DISCOVER = "发现";
-        [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
-        public const string EDITOR_EVENT_NAME_SELECT = "选择";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_ELEMENT = "元素融合";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
@@ -565,7 +539,7 @@ namespace Game
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_PILE = "牌堆";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
-        public const string EDITOR_TYPE_NAME_PILE_NAME_COLLECTION = "牌堆范围";
+        public const string EDITOR_TYPE_NAME_PILE_NAME_COLLECTION = "牌堆名集合";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_CARD_DEFINE = "卡牌定义";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
@@ -577,7 +551,7 @@ namespace Game
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_CARD_TYPE = "卡牌类型";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
-        public const string EDITOR_TYPE_NAME_KEYWORDS_TYPE = "关键词类型";
+        public const string EDITOR_TYPE_NAME_KEYWORD = "关键词";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_BUFF_DEFINE = "增益定义";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]

@@ -13,7 +13,7 @@ namespace Game
 
         #region 收藏
         [TranslateMsg("浏览卡牌界面中按费用排序选项")]
-        public const string CARDVIEW_SORTTYPE_COST = "费用";
+        public const string CARDVIEW_SORTTYPE_COST = "灵力";
         [TranslateMsg("浏览卡牌界面中按名称排序选项")]
         public const string CARDVIEW_SORTTYPE_NAME = "名称";
         [TranslateMsg("浏览卡牌界面中的中立卡牌筛选选项")]
@@ -60,7 +60,7 @@ namespace Game
         [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
         public const string PILE_NAME_SKILL = "技能";
         [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
-        public const string PILE_NAME_ITEM = "物品";
+        public const string PILE_NAME_ITEM = "道具";
         [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
         public const string PILE_NAME_DELAY = "延迟";
         #endregion
@@ -68,8 +68,8 @@ namespace Game
         #region 游戏
         [TranslateMsg("游戏中卡牌可选的目标类型之角色")]
         public const string GAME_TARGET_TYPE_CHARACTER = "角色";
-        [TranslateMsg("游戏中卡牌可选的目标类型之随从")]
-        public const string GAME_TARGET_TYPE_SERVANT = "随从";
+        [TranslateMsg("游戏中卡牌可选的目标类型之仆从")]
+        public const string GAME_TARGET_TYPE_SERVANT = "仆从";
         #endregion
 
         #region 修改器运算
@@ -225,7 +225,7 @@ namespace Game
         [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
         public const string CARD_PROP_NAME_ATTACK_TIMES = "攻击次数";
         [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
-        public const string CARD_PROP_NAME_COST = "花费";
+        public const string CARD_PROP_NAME_COST = "灵力值消耗";
         [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
         public const string CARD_PROP_NAME_ATTACK = "攻击力";
         [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]

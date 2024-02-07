@@ -42,7 +42,7 @@ namespace Game
         [TranslateMsg("编辑器/卡牌-节点名称")]
         public const string EDITOR_NODE_SET_CHARGED_LEVEL = "设置蓄力层数";
         [TranslateMsg("编辑器-节点名称")]
-        private const string EDITOR_NODE_NAME_UPDATE_CARDS_STATE = "强制更新所有卡牌状态";
+        private const string EDITOR_NODE_NAME_UPDATE_CARDS_STATE = "强制更新游戏状态";
         [TranslateMsg("节点名称")]
         private const string EDITOR_NODE_NAME_IS_DEAD = "是否濒死";
         [TranslateMsg("动作图编辑器中动作节点名称之获取护甲值")]
@@ -158,7 +158,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsKeywords(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD)] Card card,
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_KEYWORDS_TYPE)] string select)
+            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_KEYWORD)] string select)
         {
             if (card == null)
                 return false;
@@ -1028,8 +1028,8 @@ namespace Game
         /// <param name="game"></param>
         /// <param name="card"></param>
         /// <returns></returns>
-        [TranslateMsg("动作图编辑器中动作节点名称之获取友方随从")]
-        public const string EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS = "获取友方随从";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS = "获取友方仆从";
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetFriendlyServants, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getFriendlyServants(CardEngine game, Card card)
@@ -1423,7 +1423,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.TakeControl, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CARD_TAKE_CONTRL)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task takeControl(CardEngine game, Flow flow, ActionNode node,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card card,
             [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)][NodeParamEventType(typeof(MoveCardEventDefine))] EventArg outEvent,
             [ActionNodeParam(EDITOR_PARAM_NAME_POSITION)] int position = -1)

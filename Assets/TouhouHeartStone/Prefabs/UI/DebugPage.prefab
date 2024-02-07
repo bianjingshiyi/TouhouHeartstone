@@ -942,7 +942,7 @@ PrefabInstance:
     - target: {fileID: 8653644337906267227, guid: 86e69600efd1f0845a7f7349704e6dd4,
         type: 3}
       propertyPath: m_Text
-      value: https://serv.igsk.fun
+      value: "\u670D\u52A1\u5668\u5730\u5740..."
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

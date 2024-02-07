@@ -206,7 +206,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool CardDefineHasKeywords(
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_DEFINE)] CardDefine card,
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_KEYWORDS_TYPE)] string select)
+            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_KEYWORD)] string select)
         {
             if (card == null)
                 return false;

@@ -2080,10 +2080,6 @@ namespace Controllers
         public event Action<Node, string, int, int[]> onOpenNodeInputDefaultValueCardDefine;
         #endregion
         #region 属性字段
-        [TranslateMsg("编辑器-在分类中返回上一层的按钮({0}为按钮文本)")]
-        public const string EDITOR_CATEGORY_BACK_TEMPLATE = "< {0}";
-        [TranslateMsg("编辑器-分类模板({0}为分类名称)")]
-        public const string EDITOR_CATEGORY_TEMPLATE = "{0} >";
         [TranslateMsg("编辑器-分类名称-事件入口节点")]
         public const string EDITOR_CATEGORY_EVENT_ENTRY_NODE = "事件入口";
         [TranslateMsg("编辑器-参数名称-目标增益（自定义光环-更新动作-输出值）")]
@@ -2158,13 +2154,6 @@ namespace Controllers
             DEFINE.TARGET_TYPE_SERVANT
         };
 
-        [TranslateMsg("内置节点名称，用于通用效果设置属性")]
-        const string EDITOR_NODE_NAME_GENERATED_EFFECT_DATA = "通用效果属性";
-        [TranslateMsg("内置节点名称，用于事件效果设置属性")]
-        const string EDITOR_NODE_NAME_EVENT_EFFECT_DATA = "事件效果属性";
-        [TranslateMsg("内置节点名称，用于光环效果设置属性")]
-        const string EDITOR_NODE_NAME_AURA_DATA = "光环效果属性";
-
         [TranslateMsg("内置节点参数，通常用于比较和操作，表示操作符，如加、减、或、异或等")]
         const string EDITOR_PARAM_OPERATOR = "运算符";
         [TranslateMsg("内置节点参数，通常用于表示计算结果")]
@@ -2235,9 +2224,6 @@ namespace Controllers
             { "SetProperty", StringTable.EDITOR_NODE_NAME_SET_PROPERTY },
             { "GetUniquePropertyName", StringTable.EDITOR_NODE_NAME_GET_UNIQUE_PROPERTY_NAME },
             { "GetCount", StringTable.EDITOR_NODE_NAME_GET_COUNT },
-            { "GeneratedEffectData", EDITOR_NODE_NAME_GENERATED_EFFECT_DATA },
-            { "EventEffectData", EDITOR_NODE_NAME_EVENT_EFFECT_DATA },
-            { "AuraData", EDITOR_NODE_NAME_AURA_DATA },
             // 内置参数
             { "value", StringTable.EDITOR_PARAM_NAME_VALUE },
             { "Value", StringTable.EDITOR_PARAM_NAME_VALUE },

@@ -32,8 +32,6 @@ namespace Game
         public const string EDITOR_PARAM_NAME_TURN_COUNT = "回合数";
         [TranslateMsg("编辑器/参数名称")]
         public const string EDITOR_PARAM_NAME_VARIABLE_NAME = "变量名";
-        [TranslateMsg("编辑器/参数名称")]
-        public const string EDITOR_PARAM_NAME_REPEAT_TIMES = "重复次数";
 
         [TranslateMsg("编辑器/事件_当前事件_节点名称")]
         public const string EDITOR_NODE_EVENT_THIS_EVENT = "当前事件";
@@ -281,7 +279,7 @@ namespace Game
         }
 
         [THHActionMethod(BuiltinActionDefineID.GetEventRepeatTimes, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_GET_EVENT_REPEAT_TIME)]
-        [return: ActionNodeParam(EDITOR_PARAM_NAME_REPEAT_TIMES)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_REPEAT_TIME)]
         public static int setEventRepeatTime(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg)
         {
@@ -292,7 +290,7 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.SetEventRepeatTimes, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_SET_EVENT_REPEAT_TIME)]
         public static void setEventRepeatTime(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
-            [ActionNodeParam(EDITOR_PARAM_NAME_REPEAT_TIMES)] int times)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_REPEAT_TIME)] int times)
         {
             if (eventArg == null)
                 return;
