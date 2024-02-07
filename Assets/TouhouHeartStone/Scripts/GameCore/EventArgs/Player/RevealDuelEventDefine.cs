@@ -111,26 +111,32 @@ namespace TouhouHeartstone
         private string localizeTemplateString(EventArg eventArg)
         {
             var youCard = eventArg.getVar<Card>(VAR_SELF_CARD);
-            return youCard != null ? TEMPLATE : TEMPLATE_NULL;
+            var result = eventArg.getVar<bool>(VAR_RESULT);
+            if (youCard == null)
+                return TEMPLATE_NULL;
+            if (result)
+                return TEMPLATE_WIN;
+            else
+                return TEMPLATE_LOSE;
         }
         private object[] localizeStringArgs(EventArg eventArg)
         {
             var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
-            var result = eventArg.getVar<bool>(VAR_RESULT);
             var youCard = eventArg.getVar<Card>(VAR_SELF_CARD);
             var oppoCard = eventArg.getVar<Card>(VAR_OPPO_CARD);
             return new object[] {
                     player.name,
                     youCard?.getFormatString(),
-                    oppoCard?.getFormatString(),
-                    result?"胜利":"失败"
+                    oppoCard?.getFormatString()
                 };
         }
 
         #endregion
 
-        [TranslateMsg("{0}是玩家，{1}是自己的卡，{2}是对手的卡，{3}是结果")]
-        const string TEMPLATE = "{0}发动了对决，揭示了:{1}。 对手揭示了：{2}。 结果是 {3}";
+        [TranslateMsg("{0}是玩家，{1}是自己的卡，{2}是对手的卡")]
+        const string TEMPLATE_WIN = "{0}发动了对决，揭示了:{1}。 对手揭示了：{2}。结果是胜利！";
+        [TranslateMsg("{0}是玩家，{1}是自己的卡，{2}是对手的卡")]
+        const string TEMPLATE_LOSE = "{0}发动了对决，揭示了:{1}。 对手揭示了：{2}。结果是失败。";
         [TranslateMsg("{0}是玩家")]
         const string TEMPLATE_NULL = "{0}发动了对决 揭示了个寂寞，输掉了对决。";
         [TranslateMsg("游戏事件日志项名称", Translations.CONTEXT_GAME_LOG_NAME)]
