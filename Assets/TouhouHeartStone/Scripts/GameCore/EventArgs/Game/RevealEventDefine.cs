@@ -12,19 +12,19 @@ namespace TouhouHeartstone
         {
             beforeVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
+                new EventVariableInfo(){name = VAR_PLAYER,type=typeof(Player)},
                 new EventVariableInfo(){name = VAR_CARD,type=typeof(Card)}
             };
             afterVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
+                new EventVariableInfo(){name = VAR_PLAYER,type=typeof(Player)},
                 new EventVariableInfo(){name = VAR_CARD,type=typeof(Card)}
             };
         }
         [Obsolete]
         public override void Record(CardEngine game, EventArg arg, EventRecord record)
         {
-            record.setVar(EVENTVAR.PLAYER, arg);
+            record.setVar(VAR_PLAYER, arg);
             record.setCardState(VAR_CARD, arg);
             record.setVar(VAR_ANIMATE, arg);
         }
@@ -43,7 +43,7 @@ namespace TouhouHeartstone
         {
             var define = game.getEventDefine<RevealEventDefine>();
             var arg = new EventArg(game, define);
-            arg.setVar(EVENTVAR.PLAYER, player);
+            arg.setVar(VAR_PLAYER, player);
             arg.setVar(VAR_CARD, card);
             arg.setVar(VAR_ANIMATE, animate);
             return game.triggers.doEvent(arg);
@@ -64,8 +64,8 @@ namespace TouhouHeartstone
         string IDescribableEventDefine.toString(IGame game, EventArg eventArg, IPlayer viewer) => toString(eventArg);
         string IDescribableEventDefine.localizeTemplateString(IGame game, EventArg eventArg, IPlayer viewer) => localizeTemplateString(eventArg);
         object[] IDescribableEventDefine.localizeStringArgs(IGame game, EventArg eventArg, IPlayer viewer) => localizeStringArgs(eventArg);
-        Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Player>(EVENTVAR.PLAYER);
-        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => LOG_ITEM_NAME;
+        Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Player>(VAR_PLAYER);
+        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => Translations.EVENT_LOG_ITEM_NAME_REVEAL;
         object[] IDescribableEventDefine.localizeLogItemNameArgs(IGame game, EventArg eventArg) => null;
         #endregion
         private string localizeTemplateString(EventArg eventArg)
@@ -76,7 +76,7 @@ namespace TouhouHeartstone
 
         private object[] localizeStringArgs(EventArg eventArg)
         {
-            var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
+            var player = eventArg.getVar<Player>(VAR_PLAYER);
             var card = eventArg.getVar<Card>(VAR_CARD);
             return new object[] { player.name, card?.getFormatString() };
         }
@@ -86,9 +86,8 @@ namespace TouhouHeartstone
         const string TEMPLATE_VALID = "{0} 揭示了 {1}";
         [TranslateMsg("{0}是玩家")]
         const string TEMPLATE_INVALID = "{0} 揭示了个寂寞";
-        [TranslateMsg("游戏事件日志项名称")]
-        private const string LOG_ITEM_NAME = "揭示";
-        public const string VAR_ANIMATE = "播放动画";
-        public static string VAR_CARD => EVENTVAR.CARD;
+        public const string VAR_ANIMATE = EVENTVAR.PLAY_ANIMATION;
+        public const string VAR_CARD = EVENTVAR.CARD;
+        public const string VAR_PLAYER = EVENTVAR.PLAYER;
     }
 }

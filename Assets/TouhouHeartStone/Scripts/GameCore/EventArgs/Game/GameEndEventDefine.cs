@@ -29,6 +29,6 @@ namespace TouhouHeartstone
             arg.setVar(VAR_WINNERS, winners);
             return game.triggers.doEvent(arg);
         }
-        public const string VAR_WINNERS = "获胜玩家";
+        public const string VAR_WINNERS = EVENTVAR.WINNERS;
     }
 }

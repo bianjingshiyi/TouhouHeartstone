@@ -196,7 +196,7 @@ namespace Controllers
             var cardManager = game.card;
             var selfMaster = await getMasterRefName(meta.playerAMasterDefRef, pools);
             var enemyMaster = await getMasterRefName(meta.playerBMasterDefRef, pools);
-            var poolStrings = pools.Select(p => game.lang._(REPLAY_CARDPOOL_NAME_TEMPLATE, p.cardPoolName, p.version));
+            var poolStrings = pools.Select(p => game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, p.cardPoolName, p.version));
             var cardPools = string.Join("\n", poolStrings);
             return game.lang._(REPLAY_DESC_TEMPLATE, selfMaster, enemyMaster, cardPools);
         }
@@ -227,7 +227,7 @@ namespace Controllers
             var poolStrings = pools
                 .Where(p => !cardManager.isCardPoolInfoLoaded(p))
                 .Take(maxDisplayPoolCount)
-                .Select(p => game.lang._(REPLAY_MISSING_CARDPOOL_NAME_TEMPLATE, p.cardPoolName, p.version));
+                .Select(p => game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE, p.cardPoolName, p.version));
             var cardPools = string.Join(",", poolStrings);
             if (pools.Length > 5)
             {
@@ -251,10 +251,6 @@ namespace Controllers
         public const string REPLAY_DESC_REPLAY_CORRUPTED = "回放已损坏";
         [TranslateMsg("回放描述模板，0为己方英雄的卡牌名，1为对方英雄的卡牌名，2为所需的卡池列表")]
         public const string REPLAY_DESC_TEMPLATE = "己方英雄：{0}\n对方英雄：{1}\n所需卡池：\n{2}";
-        [TranslateMsg("回放描述的卡池名模板，0为卡池名，1为卡池版本")]
-        public const string REPLAY_CARDPOOL_NAME_TEMPLATE = "·{0}(版本{1})";
-        [TranslateMsg("回放无法播放错误中的卡池名模板，0为卡池名，1为卡池版本")]
-        public const string REPLAY_MISSING_CARDPOOL_NAME_TEMPLATE = "{0}(版本{1})";
         private ReplayManager replayManager => main.replays;
         private GameManager gameManager => game.game;
         private FileManager fileManager => game.fileManager;

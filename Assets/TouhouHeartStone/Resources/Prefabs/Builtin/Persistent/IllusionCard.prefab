@@ -49,6 +49,7 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 0
   testMode: 0
   _useSourceScale: 1
 --- !u!114 &7469736703990675199
@@ -63,7 +64,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd656a649e239d246b70718fa65d2d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defineName: "\u5E7B\u8C61_\u5361\u724C"
+  defineName: "\u5E7B\u8C61\u5361\u724C"
   duration: -1
   blockTime: 0
   isPersistent: 1

@@ -1,4 +1,5 @@
 ﻿using MukioI18n;
+using TouhouHeartstone;
 
 namespace Game
 {
@@ -11,6 +12,10 @@ namespace Game
         public const string EDITOR_NEW_SKIN_DEFAULT_NAME = "新建皮肤";
         [TranslateMsg("编辑器的动作流程图中的增益节点的属性修整器关联属性默认名称")]
         public const string EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT = "属性名称";
+        [TranslateMsg("卡池名模板，{0}为卡池名，{1}为卡池版本")]
+        public const string EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE = "{0}（版本{1}）";
+        [TranslateMsg("卡池名模板，{0}为卡池名，{1}为卡池版本")]
+        public const string EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT = "·{0}（版本{1}）";
         #endregion
 
         #region 对话框
@@ -58,6 +63,8 @@ namespace Game
         public const string CONTEXT_NODE_CATEGORY = "节点分类";
 
         [TranslateMsg("编辑器/节点分类", CONTEXT_NODE_CATEGORY)]
+        public const string EDITOR_NODE_CATEGORY_NONE = "无";
+        [TranslateMsg("编辑器/节点分类", CONTEXT_NODE_CATEGORY)]
         public const string EDITOR_NODE_CATEGORY_GAME = "游戏";
         [TranslateMsg("编辑器/节点分类", CONTEXT_NODE_CATEGORY)]
         public const string EDITOR_NODE_CATEGORY_PLAYER = "玩家";
@@ -70,6 +77,8 @@ namespace Game
         [TranslateMsg("编辑器/节点分类", CONTEXT_NODE_CATEGORY)]
         public const string EDITOR_NODE_CATEGORY_EVENT = "事件";
         [TranslateMsg("编辑器/节点分类", CONTEXT_NODE_CATEGORY)]
+        public const string EDITOR_NODE_CATEGORY_EVENT_RECORD = "事件记录";
+        [TranslateMsg("编辑器/节点分类", CONTEXT_NODE_CATEGORY)]
         public const string EDITOR_NODE_CATEGORY_COLLECTION_OPERATION = "集合运算";
         [TranslateMsg("编辑器/节点分类", CONTEXT_NODE_CATEGORY)]
         public const string EDITOR_NODE_CATEGORY_ACTION = "行动";
@@ -77,21 +86,29 @@ namespace Game
         public const string EDITOR_NODE_CATEGORY_EFFECT = "效果";
         [TranslateMsg("编辑器/节点分类", CONTEXT_NODE_CATEGORY)]
         public const string EDITOR_NODE_CATEGORY_CARD_SNAPSHOT = "卡牌快照";
+        [TranslateMsg("编辑器/节点分类", CONTEXT_NODE_CATEGORY)]
+        public const string EDITOR_NODE_CATEGORY_CARD_DEFINE = "卡牌定义";
+        [TranslateMsg("编辑器/节点分类", CONTEXT_NODE_CATEGORY)]
+        public const string EDITOR_NODE_CATEGORY_EVENT_ENTRY_NODE = "事件入口";
+        [TranslateMsg("编辑器/节点分类", CONTEXT_NODE_CATEGORY)]
+        public const string EDITOR_NODE_CATEGORY_OTHER = "其他";
         #endregion
 
         #region 节点参数
-        public const string CONTEXT_NODE_PARAM_NAME = "节点参数名称";
+        public const string CONTEXT_NODE_PARAM_NAME = Translations.CONTEXT_NODE_PARAM_NAME;
 
-        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
-        public const string EDITOR_PARAM_NAME_BUFF_DEFINE = "增益定义";
+        public const string EDITOR_PARAM_NAME_PLAYER = Translations.EDITOR_PARAM_NAME_PLAYER;
+        public const string EDITOR_PARAM_NAME_CARD = Translations.EDITOR_PARAM_NAME_CARD;
+        public const string EDITOR_PARAM_NAME_TARGET_CARD = Translations.EDITOR_PARAM_NAME_TARGET_CARD;
+        public const string EDITOR_PARAM_NAME_BUFF_DEFINE = Translations.EDITOR_PARAM_NAME_BUFF_DEFINE;
+        public const string EDITOR_PARAM_NAME_TAG_LIST = Translations.EDITOR_PARAM_NAME_TAG_LIST;
+
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_BUFF = "增益";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_IS_BUFF_REMOVED = "增益是否移除";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_CARD_SNAPSHOT = "卡牌快照";
-        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
-        public const string EDITOR_PARAM_NAME_PLAYER = "玩家";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_DRAWN_CARD = "抽到的卡";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
@@ -114,11 +131,11 @@ namespace Game
         public const string EDITOR_PARAM_NAME_HANDS = "手牌";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_SELECTED_CARD = "所选卡牌";
-        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
-        public const string EDITOR_PARAM_NAME_CARD = "卡牌";
 
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_EVENT = "事件";
+        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_EVENT_RECORD = "事件记录";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_PROP_CHANGE_EVENT = "属性更改事件";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
@@ -146,13 +163,19 @@ namespace Game
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_VALUE = "值";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_OPERATOR = "运算符";
+        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_RESULT = "结果";
+        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_A = "A";
+        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_B = "B";
+        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_BOOLEAN = "真值";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_ACTION = "动作";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_ELSE_ACTION = "否则动作";
-        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
-        public const string EDITOR_PARAM_NAME_TARGET_CARD = "目标卡牌";
         [TranslateMsg("编辑器-参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_TARGETS = "目标卡牌集合";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
@@ -163,6 +186,12 @@ namespace Game
         public const string EDITOR_PARAM_NAME_TAG = "标签";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_ELEMENT = "元素";
+        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_IS_DECK_TOP = "是否置于牌库顶";
+        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_KEYWORD = "关键词";
+        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_CARD_TYPE = "卡牌类型";
 
         #endregion
 
@@ -178,19 +207,19 @@ namespace Game
         [TranslateMsg("编辑器中的节点名称")]
         public const string EDITOR_NODE_NAME_INTEGER_OPERATION = "整数运算";
         [TranslateMsg("编辑器中的节点名称")]
-        public const string EDIOTR_NODE_NAME_LOGIC_OPERATION = "逻辑运算";
+        public const string EDITOR_NODE_NAME_LOGIC_OPERATION = "逻辑运算";
         [TranslateMsg("编辑器中的节点名称")]
-        public const string EDIOTR_NODE_NAME_COMPARE = "比较";
+        public const string EDITOR_NODE_NAME_COMPARE = "比较";
         [TranslateMsg("编辑器中的节点名称")]
-        public const string EDIOTR_NODE_NAME_BRANCH_ACTION = "分支动作";
+        public const string EDITOR_NODE_NAME_BRANCH_ACTION = "分支动作";
         [TranslateMsg("编辑器中的节点名称")]
-        public const string EDIOTR_NODE_NAME_FOR_ACTION = "重复动作";
+        public const string EDITOR_NODE_NAME_FOR_ACTION = "重复动作";
         [TranslateMsg("编辑器中的节点名称")]
-        public const string EDIOTR_NODE_NAME_INTEGER_CONST = "固定整数";
+        public const string EDITOR_NODE_NAME_INTEGER_CONST = "固定整数";
         [TranslateMsg("编辑器中的节点名称")]
-        public const string EDIOTR_NODE_NAME_STRING_CONST = "固定字符串";
+        public const string EDITOR_NODE_NAME_STRING_CONST = "固定字符串";
         [TranslateMsg("编辑器中的节点名称")]
-        public const string EDIOTR_NODE_NAME_BOOLEAN_CONST = "固定真值";
+        public const string EDITOR_NODE_NAME_BOOLEAN_CONST = "固定真值";
         #endregion
 
         #region 游戏
@@ -271,8 +300,6 @@ namespace Game
         public const string EDITOR_NODE_NAME_SET_BUFF_PROP = "设置增益属性";
         [TranslateMsg("编辑器中的节点名称")]
         public const string EDITOR_NODE_NAME_THIS_BUFF = "该增益";
-        [TranslateMsg("编辑器中的参数名称")]
-        public const string EDITOR_NODE_NAME_IS_DECK_TOP = "是否置于牌库顶";
         [TranslateMsg("编辑器/卡牌/卡牌类型判断/节点名称")]
         public const string EDITOR_NODE_NAME_CHECK_CARD_TYPE = "卡牌类型判断";
         [TranslateMsg("编辑器中的节点名称")]
@@ -564,6 +591,8 @@ namespace Game
         public const string EDITOR_TYPE_NAME_EFFECT_TAG_COLLECTION = "效果标签集合";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_EVENT_ARG = "事件";
+        [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
+        public const string EDITOR_TYPE_NAME_EVENT_RECORD = "事件记录"; 
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_PROP_MODIFIER = "属性修改器";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]

@@ -61,7 +61,7 @@ namespace TouhouHeartstone
         object[] IDescribableEventDefine.localizeStringArgs(IGame game, EventArg arg, IPlayer viewer) => localizeStringArgs(arg);
         string IDescribableEventDefine.localizeTemplateString(IGame game, EventArg arg, IPlayer viewer) => localizeTemplateString();
         Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Player>(VAR_PLAYER);
-        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => LOG_ITEM_NAME;
+        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => Translations.EVENT_LOG_ITEM_NAME_DISPLAY;
         object[] IDescribableEventDefine.localizeLogItemNameArgs(IGame game, EventArg eventArg) => null;
         private object[] localizeStringArgs(EventArg arg)
         {
@@ -80,11 +80,9 @@ namespace TouhouHeartstone
 
         [TranslateMsg("{0}是玩家，{1}是卡")]
         const string TEMPLATE_VALID = "{0} 展示了 {1}";
-        [TranslateMsg("游戏事件日志项名称")]
-        private const string LOG_ITEM_NAME = "展示";
-        public static string VAR_CARD_DEFINE => EVENTVAR.CARD_DEFINE;
-        public static string VAR_PLAYER => EVENTVAR.PLAYER;
-        public const string VAR_INVISIBLE_FOR_SELF = "自己不可见";
-        public const string VAR_INVISIBLE_FOR_OPPO = "对手不可见";
+        public const string VAR_CARD_DEFINE = EVENTVAR.CARD_DEFINE;
+        public const string VAR_PLAYER = EVENTVAR.PLAYER;
+        public const string VAR_INVISIBLE_FOR_SELF = EVENTVAR.INVISIBLE_TO_SELF;
+        public const string VAR_INVISIBLE_FOR_OPPO = EVENTVAR.INVISIBLE_TO_OPPO;
     }
 }

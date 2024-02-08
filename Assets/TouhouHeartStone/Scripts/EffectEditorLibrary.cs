@@ -44,38 +44,38 @@ namespace Game
         [TranslateMsg("动作图编辑器中动作节点名称之X到Y之间的随机数")]
         public const string EDITOR_NODE_NAME_GET_RANDOM_INT = "X到Y之间的随机整数";
         [TranslateMsg("动作图编辑器中动作节点名称之重复动作直到动作")]
-        private const string EDIOTR_NODE_NAME_DO_UNTIL_ACTION = "重复动作直到";
+        private const string EDITOR_NODE_NAME_DO_UNTIL_ACTION = "重复动作直到";
         [TranslateMsg("节点名称")]
         public const string EDITOR_NODE_NAME_IS_NOT_EXISTS = "是否不存在";
 
-        [TranslateMsg("动作图编辑器中动作节点参数名称之最多重复次数参数")]
-        private const string EDIOTR_PARAM_NAME_MAX_REPEAT_TIME = "最多重复次数";
-        [TranslateMsg("动作图编辑器中动作节点参数名称之结束条件参数")]
-        private const string EDIOTR_PARAM_NAME_STOP_CONDITION = "结束条件";
-        [TranslateMsg("节点参数-是否不存在/输出值")]
+        [TranslateMsg("动作图编辑器中动作节点参数名称之最多重复次数参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        private const string EDITOR_PARAM_NAME_MAX_REPEAT_TIME = "最多重复次数";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之结束条件参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        private const string EDITOR_PARAM_NAME_STOP_CONDITION = "结束条件";
+        [TranslateMsg("节点参数-是否不存在/输出值", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_NOT_EXISTS = "不存在";
 
         [TranslateMsg("编辑器-节点分类名")]
         public const string EDITOR_CATEGORY_NAME_OTHER = "其他";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_GET_INT_X = "整数X";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_GET_INT_Y = "整数Y";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_TRUE_VALUE = "成立值";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_ELSE_VALUE = "否则值";
 
         [TranslateMsg("编辑器-节点名称")]
-        private const string EDIOTR_NODE_NAME_SET_TEMP_VARIABLE = "设置临时变量";
+        private const string EDITOR_NODE_NAME_SET_TEMP_VARIABLE = "设置临时变量";
         [TranslateMsg("编辑器-节点名称")]
-        private const string EDIOTR_NODE_NAME_GET_TEMP_VARIABLE = "获取临时变量";
+        private const string EDITOR_NODE_NAME_GET_TEMP_VARIABLE = "获取临时变量";
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_BREAK = "停止重复动作";
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_CONTINUE = "跳过重复动作";
         [TranslateMsg("编辑器-节点名称")]
-        private const string EDIOTR_NODE_NAME_CHOOSE_IF = "根据条件选择值";
+        private const string EDITOR_NODE_NAME_CHOOSE_IF = "根据条件选择值";
         
         /// <summary>
         /// 设置临时变量
@@ -83,7 +83,7 @@ namespace Game
         /// <param name="scope"></param>
         /// <param name="variableName"></param>
         /// <param name="value"></param>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.SetTempVar, EDITOR_CATEGORY_NAME_OTHER, EDIOTR_NODE_NAME_SET_TEMP_VARIABLE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.SetTempVar, EDITOR_CATEGORY_NAME_OTHER, EDITOR_NODE_NAME_SET_TEMP_VARIABLE)]
         public static void setTempVariable(Flow flow,
             [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME)] string variableName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
@@ -97,7 +97,7 @@ namespace Game
         /// <param name="scope"></param>
         /// <param name="variableName"></param>
         /// <param name="value"></param>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetTempVar, EDITOR_CATEGORY_NAME_OTHER, EDIOTR_NODE_NAME_GET_TEMP_VARIABLE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetTempVar, EDITOR_CATEGORY_NAME_OTHER, EDITOR_NODE_NAME_GET_TEMP_VARIABLE)]
         public static object getTempVariable(Flow flow,
             [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME)] string variableName)
         {
@@ -105,7 +105,7 @@ namespace Game
             return flow.getFlowVariable(key);
         }
 
-        [ObsoletedKeyMethod(BuiltinActionDefineID.BranchAction, EDITOR_CATEGORY_NAME_OTHER, StringTable.EDIOTR_NODE_NAME_BRANCH_ACTION)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.BranchAction, EDITOR_CATEGORY_NAME_OTHER, StringTable.EDITOR_NODE_NAME_BRANCH_ACTION)]
         public static async Task branchAction(CardEngine game, Flow flow,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)] bool isTrue,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ControlInput thenAction,
@@ -120,7 +120,7 @@ namespace Game
         }
 
 
-        [ObsoletedKeyMethod(BuiltinActionDefineID.ForAction, EDITOR_CATEGORY_NAME_OTHER, StringTable.EDIOTR_NODE_NAME_FOR_ACTION)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.ForAction, EDITOR_CATEGORY_NAME_OTHER, StringTable.EDITOR_NODE_NAME_FOR_ACTION)]
         public static async Task forAction(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ControlInput action,
@@ -146,10 +146,10 @@ namespace Game
         }
 
         [Obsolete]
-        [THHActionMethod(BuiltinActionDefineID.DoUntilAction_Obsolete, EDITOR_CATEGORY_NAME_OTHER, "重复动作直到（过时）", EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
+        [THHActionMethod(BuiltinActionDefineID.DoUntilAction_Obsolete, EDITOR_CATEGORY_NAME_OTHER, "重复动作直到（过时）", EDITOR_NODE_NAME_DO_UNTIL_ACTION)]
         public static async Task doUntilAction(CardEngine game, Flow flow, ActionNode node,
-            [ActionNodeParam(EDIOTR_PARAM_NAME_STOP_CONDITION, isOut: false)] ControlInput condition,
-            [ActionNodeParam(EDIOTR_PARAM_NAME_MAX_REPEAT_TIME)] int maxRepeatTime,
+            [ActionNodeParam(EDITOR_PARAM_NAME_STOP_CONDITION, isOut: false)] ControlInput condition,
+            [ActionNodeParam(EDITOR_PARAM_NAME_MAX_REPEAT_TIME)] int maxRepeatTime,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ControlInput action,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_REPEAT_TIME, isOut: true)] int repeatTime)
         {
@@ -179,10 +179,10 @@ namespace Game
             while (times < maxRepeatTime && !finished);
         }
 
-        [THHActionMethod(BuiltinActionDefineID.DoUntilAction, EDITOR_CATEGORY_NAME_OTHER, EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
+        [THHActionMethod(BuiltinActionDefineID.DoUntilAction, EDITOR_CATEGORY_NAME_OTHER, EDITOR_NODE_NAME_DO_UNTIL_ACTION)]
         public static async Task doUntilAction(CardEngine game, Flow flow, ActionNode node,
-            [ActionNodeParam(EDIOTR_PARAM_NAME_STOP_CONDITION, isOut: false)] NodeValueRef<bool> condition,
-            [ActionNodeParam(EDIOTR_PARAM_NAME_MAX_REPEAT_TIME)] int maxRepeatTime,
+            [ActionNodeParam(EDITOR_PARAM_NAME_STOP_CONDITION, isOut: false)] NodeValueRef<bool> condition,
+            [ActionNodeParam(EDITOR_PARAM_NAME_MAX_REPEAT_TIME)] int maxRepeatTime,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ControlInput action,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_REPEAT_TIME, isOut: true)] int repeatTime)
         {
@@ -291,7 +291,7 @@ namespace Game
         /// <param name="value"></param>
         /// <param name="elseValue"></param>
         /// <returns></returns>
-        [THHActionMethod(BuiltinActionDefineID.ChooseIf, EDITOR_CATEGORY_NAME_OTHER, EDIOTR_NODE_NAME_CHOOSE_IF)]
+        [THHActionMethod(BuiltinActionDefineID.ChooseIf, EDITOR_CATEGORY_NAME_OTHER, EDITOR_NODE_NAME_CHOOSE_IF)]
         public static object chooseIf(CardEngine game, 
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] bool isTrue,
             [ActionNodeParam(EDITOR_PARAM_NAME_TRUE_VALUE)] object value,
@@ -315,20 +315,20 @@ namespace Game
         [TranslateMsg("节点名称")]
         private const string EDITOR_NODE_MOVE_CARD_FROM_PILE_TO_PILE = "从牌堆将卡牌移动到目标牌堆";
 
-        [TranslateMsg("节点参数-创建牌堆/容量")]
+        [TranslateMsg("节点参数-创建牌堆/容量", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_CAPACITY = "容量";
-        [TranslateMsg("节点参数-删除牌堆/成功删除")]
+        [TranslateMsg("节点参数-删除牌堆/成功删除", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_PILE_REMOVED = "成功删除";
-        [TranslateMsg("节点参数-删除牌堆/从牌堆将卡牌移动到目标牌堆")]
+        [TranslateMsg("节点参数-删除牌堆/从牌堆将卡牌移动到目标牌堆", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_TO_PILE = "目标牌堆";
-        [TranslateMsg("节点参数-删除牌堆/从牌堆将卡牌移动到目标牌堆")]
+        [TranslateMsg("节点参数-删除牌堆/从牌堆将卡牌移动到目标牌堆", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_FROM_PILE = "源牌堆";
-        [TranslateMsg("节点参数-删除牌堆/成功移动")]
+        [TranslateMsg("节点参数-删除牌堆/成功移动", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_CARD_MOVED = "成功移动";
 
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_GAME_END_EVENT = "游戏结束事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_MOVE_CARD_EVENT = "卡牌移动事件";
         /// <summary>
         /// 使玩家获胜
@@ -450,16 +450,6 @@ namespace Game
         public const string EDITOR_NODE_ADD_MAX_GEM = "增加灵力上限";
         [TranslateMsg("编辑器/卡牌-节点名称")]
         public const string EDITOR_NODE_FAITHDUEL = "信仰对决";
-        [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
-        public const string EDITOR_NODE_FAITHDUEL_WIN = "是否胜利";
-        [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
-        public const string EDITOR_NODE_FAITHDUEL_FILTER = "筛选条件";
-        [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
-        public const string EDITOR_NODE_FAITHDUEL_FILTER_CARD = "筛选卡牌";
-        [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
-        public const string EDITOR_NODE_FAITHDUEL_SELF_CARD = "己方卡牌";
-        [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
-        public const string EDITOR_NODE_FAITHDUEL_OPPONENT_CARD = "对方卡牌";
         [TranslateMsg("编辑器/卡牌-节点名称")]
         public const string EDITOR_NODE_NAME_GET_PILE_OBSOLETE = "获取牌堆（过时）";
         [TranslateMsg("节点名称")]
@@ -478,20 +468,30 @@ namespace Game
         public const string EDITOR_NODE_TAKE_FATIGUE_DAMAGE = "受到疲劳伤害";
 
 
-        [TranslateMsg("节点参数 TargetName")]
-        const string EDITOR_PARAM_TARGET_NAME = "目标名";
-        [TranslateMsg("节点参数-获取法术伤害/输入")]
-        const string EDITOR_PARAM_NAME_SPELL_CARD = "法术牌";
-        [TranslateMsg("节点参数")]
-        const string EDITOR_PARAM_NAME_SET_GEM_EVENT = "设置灵力值事件";
-        [TranslateMsg("节点参数")]
-        const string EDITOR_PARAM_NAME_SET_MAX_GEM_EVENT = "设置最大灵力值事件";
-        [TranslateMsg("节点参数")]
-        const string EDITOR_PARAM_NAME_FAITH_DUEL_EVENT = "信仰对决事件";
-        [TranslateMsg("节点参数")]
-        const string EDITOR_PARAM_NAME_FATIGUE_EVENT = "疲劳事件";
-        [TranslateMsg("节点参数")]
-        const string EDITOR_PARAM_FATIGUE_COUNT = "疲劳层数"; 
+        [TranslateMsg("节点参数 TargetName", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_TARGET_NAME = "目标名";
+        [TranslateMsg("节点参数-获取法术伤害/输入", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_SPELL_CARD = "法术牌";
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_SET_GEM_EVENT = "设置灵力值事件";
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_SET_MAX_GEM_EVENT = "设置最大灵力值事件";
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_FAITH_DUEL_EVENT = "信仰对决事件";
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_FATIGUE_EVENT = "疲劳事件";
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_FATIGUE_COUNT = "疲劳层数";
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_FAITHDUEL_WIN = "是否胜利";
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_FAITHDUEL_FILTER = "筛选条件";
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_FAITHDUEL_FILTER_CARD = "筛选卡牌";
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_FAITHDUEL_SELF_CARD = "己方卡牌";
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_FAITHDUEL_OPPONENT_CARD = "对方卡牌";
 
 
         /// <summary>
@@ -841,13 +841,13 @@ namespace Game
         /// </summary>
         [Obsolete]
         [THHActionMethod(BuiltinActionDefineID.FaithDuel_Obsolete, StringTable.EDITOR_NODE_CATEGORY_PLAYER, "信仰对决（过时）", EDITOR_NODE_FAITHDUEL)]
-        [return: ActionNodeParam(EDITOR_NODE_FAITHDUEL_WIN)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_FAITHDUEL_WIN)]
         public static bool faithduel(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER)] ControlInput filter,
-            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER_CARD, isOut: true)] Card element,
-            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_SELF_CARD, isOut: true)] Card selfCard,
-            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_OPPONENT_CARD, isOut: true)] Card opponentCard)
+            [ActionNodeParam(EDITOR_PARAM_NAME_FAITHDUEL_FILTER)] ControlInput filter,
+            [ActionNodeParam(EDITOR_PARAM_NAME_FAITHDUEL_FILTER_CARD, isOut: true)] Card element,
+            [ActionNodeParam(EDITOR_PARAM_NAME_FAITHDUEL_SELF_CARD, isOut: true)] Card selfCard,
+            [ActionNodeParam(EDITOR_PARAM_NAME_FAITHDUEL_OPPONENT_CARD, isOut: true)] Card opponentCard)
         {
             if (player == null)
                 return false;
@@ -877,13 +877,13 @@ namespace Game
         /// </summary>
         [EventNode(typeof(RevealDuelEventDefine))]
         [THHActionMethod(BuiltinActionDefineID.FaithDuel, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_FAITHDUEL)]
-        [return: ActionNodeParam(EDITOR_NODE_FAITHDUEL_WIN)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_FAITHDUEL_WIN)]
         public static async Task<bool> faithduel(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER)] NodeValueRef<bool> filter,
-            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER_CARD, isOut: true)] Card element,
-            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_SELF_CARD, isOut: true)] Card selfCard,
-            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_OPPONENT_CARD, isOut: true)] Card opponentCard,
+            [ActionNodeParam(EDITOR_PARAM_NAME_FAITHDUEL_FILTER)] NodeValueRef<bool> filter,
+            [ActionNodeParam(EDITOR_PARAM_NAME_FAITHDUEL_FILTER_CARD, isOut: true)] Card element,
+            [ActionNodeParam(EDITOR_PARAM_NAME_FAITHDUEL_SELF_CARD, isOut: true)] Card selfCard,
+            [ActionNodeParam(EDITOR_PARAM_NAME_FAITHDUEL_OPPONENT_CARD, isOut: true)] Card opponentCard,
             [ActionNodeParam(EDITOR_PARAM_NAME_FAITH_DUEL_EVENT, isOut: true)][NodeParamEventType(typeof(RevealDuelEventDefine))] EventArg outEvent)
         {
             if (player == null)
@@ -983,7 +983,7 @@ namespace Game
 
 
         [THHActionMethod(BuiltinActionDefineID.GetFatigue, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_GET_FATIGUE)]
-        [return: ActionNodeParam(EDITOR_PARAM_FATIGUE_COUNT)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_FATIGUE_COUNT)]
         public static int getFatigue(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
@@ -1033,9 +1033,9 @@ namespace Game
         private const string EDITOR_NODE_NAME_GET_PILE_NAME = "获取牌堆名";
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_GET_OWNER_OF_PILE = "获取牌堆所属玩家";
-        [TranslateMsg("编辑器-参数名称 PileName")]
+        [TranslateMsg("编辑器-参数名称 PileName", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_PILE_NAME = "牌堆名";
-        [TranslateMsg("编辑器-参数名称 IsChanged")]
+        [TranslateMsg("编辑器-参数名称 IsChanged", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_IS_CHANGED = "是否已改变";
         /// <summary>
         /// 获取牌堆中的卡牌
@@ -1199,27 +1199,27 @@ namespace Game
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_IS_BUFF_PROP_VISIBLE_TO = "增益属性是否可见";
 
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_REMOVE_BUFF_EVENT = "移除增益事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_ENTER_FIELD_EVENT = "入场事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_MASS_ADD_BUFF_EVENT = "群体添加增益事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_MASS_ENTER_FIELD_EVENT = "群体入场事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_MASS_RETURN_HAND_EVENT = "群体进入手牌事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_MASS_SHUFFLE_TO_DECK_EVENT = "群体洗入牌库事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_MASS_MOVE_TO_HEAD_EVENT = "群体置入延迟区事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_MASS_MOVE_CARD_EVENT = "群体移动卡牌事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_VISIBLE = "可见";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         const string EDITOR_PARAM_NAME_BUFF_PROP_CHANGED_EVENT = "增益属性更改事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         const string EDITOR_PARAM_NAME_BUFF_PROP_VISIBILITY_CHANGED_EVENT = "增益属性可见性更改事件";
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.ThisBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_THIS_BUFF)]
@@ -1381,7 +1381,7 @@ namespace Game
         public const string EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE = "卡牌置入墓地";
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_NAME_CARD_MOVE_TO_WARP = "卡牌移动到暂存区";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_EQUIP_EVENT = "装备事件";
 
 
@@ -1459,7 +1459,7 @@ namespace Game
         public static async Task<Card[]> moveToDeck(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
-            [ActionNodeParam(StringTable.EDITOR_NODE_NAME_IS_DECK_TOP)] bool top,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_IS_DECK_TOP)] bool top,
             [ActionNodeParam(EDITOR_PARAM_NAME_MASS_SHUFFLE_TO_DECK_EVENT, isOut: true)][NodeParamEventType(typeof(MassShuffleToDeckEventDefine))] EventArg outEvent)
         {
             if (cards == null)

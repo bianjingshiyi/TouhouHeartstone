@@ -588,7 +588,8 @@ namespace Controllers
             var depName = depInfo?.cardPoolName ?? game.lang._(EDITOR_UNKNOWN_CARD_POOL);
 
             var title = game.lang._(StringTable.WARNING);
-            var content = game.lang._(EDITOR_WARNING_DELETE_DEPENDENCY, depName, depRef.version);
+            var depFullName = game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE, depName, depRef.version);
+            var content = game.lang._(EDITOR_WARNING_DELETE_DEPENDENCY, depFullName);
             game.ui.dialog.ShowQuestion(title, content, () =>
             {
                 markCardPoolUnsaved(curCardPoolId);
@@ -728,14 +729,14 @@ namespace Controllers
                 var refInfo = game.card.getCardPoolInfo(depRef);
                 if (refInfo != null)
                 {
-                    names[i] = game.lang._(EDITOR_CARD_POOL_DEPENDENCY_TEMPLATE, refInfo.cardPoolName, depRef.version);
+                    names[i] = game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, refInfo.cardPoolName, depRef.version);
                 }
                 else
                 {
                     var localInfo = depRef != null ? game.card.getLocalCardPoolInfo(depRef.cardPoolId) : null;
                     if (localInfo != null)
                     {
-                        names[i] = game.lang._(EDITOR_CARD_POOL_DEPENDENCY_TEMPLATE, localInfo.cardPoolName, depRef.version);
+                        names[i] = game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, localInfo.cardPoolName, depRef.version);
                     }
                     else
                     {
@@ -1370,10 +1371,8 @@ namespace Controllers
         public const string RULE_NAME_EVENT_LOGIC = "事件规则";
         [TranslateMsg("卡池编辑器-删除规则警告，{0}为规则的名字")]
         public const string EDITOR_WARNING_DELETE_RULE = "确定要删除自定义规则“{0}”？";
-        [TranslateMsg("卡池编辑器-删除卡池依赖警告，{0}为卡池的名字，{1}为卡池版本")]
-        public const string EDITOR_WARNING_DELETE_DEPENDENCY = "确定要删除卡池依赖“{0}（版本{1}）”？";
-        [TranslateMsg("卡池编辑器-卡池依赖名称模板（{0}为卡池名称，{1}为卡池版本）")]
-        public const string EDITOR_CARD_POOL_DEPENDENCY_TEMPLATE = "·{0}（版本{1}）";
+        [TranslateMsg("卡池编辑器-删除卡池依赖警告，{0}为卡池的名字+卡池版本")]
+        public const string EDITOR_WARNING_DELETE_DEPENDENCY = "确定要删除卡池依赖“{0}”？";
         [TranslateMsg("卡池编辑器-丢失的卡池依赖名称")]
         public const string EDITOR_UNKNOWN_CARD_POOL = "未知卡池";
 

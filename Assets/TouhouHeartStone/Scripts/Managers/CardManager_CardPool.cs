@@ -32,7 +32,7 @@ namespace Game
             long cardPoolId = game.NewSnowflakeId();
             cardPoolInfo = new CardPoolInfo();
             cardPoolInfo.cardPoolId = cardPoolId;
-            cardPoolInfo.cardPoolName = StringTable.EDITOR_NEW_CARDPOOL_DEFAULT_NAME;
+            cardPoolInfo.cardPoolName = game.lang._(StringTable.EDITOR_NEW_CARDPOOL_DEFAULT_NAME);
             cardPoolInfo.imageResPath = null;
             cardPoolInfo.versionNumber = CURRENT_CARD_POOL_VERSION;
             cardPool = new CardPool();

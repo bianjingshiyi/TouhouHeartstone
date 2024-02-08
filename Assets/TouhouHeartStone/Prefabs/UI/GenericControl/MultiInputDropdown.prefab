@@ -610,6 +610,7 @@ GameObject:
   - component: {fileID: 454272076873476665}
   - component: {fileID: 4695239991452022640}
   - component: {fileID: 7015001356144435018}
+  - component: {fileID: 2139373297302176355}
   m_Layer: 5
   m_Name: Placeholder
   m_TagString: Untagged
@@ -678,6 +679,20 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "\u81EA\u5B9A\u4E49..."
+--- !u!114 &2139373297302176355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3923879879924170762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comment: "\u53EF\u81EA\u5B9A\u4E49\u4E0B\u62C9\u5217\u8868/\u8F93\u5165\u6846\u5360\u4F4D\u7B26"
+  context: 
 --- !u!1 &4721043698709052713
 GameObject:
   m_ObjectHideFlags: 0

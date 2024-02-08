@@ -11,11 +11,11 @@ namespace TouhouCardEngine
             type = NodeDefineType.Function;
             _inputs = new PortDefine[]
             {
-                PortDefine.Value(typeof(DefineReference), constName, "BuffDefine", isConst: true)
+                PortDefine.Value(typeof(DefineReference), constName, StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE, isConst: true)
             };
             _outputs = new PortDefine[]
             {
-                PortDefine.Value(typeof(BuffDefine), outputName, "BuffDefine")
+                PortDefine.Value(typeof(BuffDefine), outputName, StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)
             };
             obsoleteMsg = "";
             category = "Buff";

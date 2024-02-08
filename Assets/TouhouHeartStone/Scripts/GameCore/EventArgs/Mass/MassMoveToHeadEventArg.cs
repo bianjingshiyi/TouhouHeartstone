@@ -16,41 +16,41 @@ namespace TouhouHeartstone
         {
             beforeVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card[]) },
-                new EventVariableInfo() { name = EVENTVAR.PLAYER, type = typeof(Player) },
+                new EventVariableInfo() { name = VAR_CARD, type = typeof(Card[]) },
+                new EventVariableInfo() { name = VAR_PLAYER, type = typeof(Player) },
             };
             afterVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card[]) },
-                new EventVariableInfo() { name = EVENTVAR.PLAYER, type = typeof(Player) },
+                new EventVariableInfo() { name = VAR_CARD, type = typeof(Card[]) },
+                new EventVariableInfo() { name = VAR_PLAYER, type = typeof(Player) },
                 new EventVariableInfo() { name = VAR_MOVED_CARDS, type = typeof(Card[]) },
             };
         }
         [Obsolete]
         public override void Record(CardEngine game, EventArg arg, EventRecord record)
         {
-            record.setCardStates(EVENTVAR.CARD, arg);
-            record.setVar(EVENTVAR.PLAYER, arg);
+            record.setCardStates(VAR_CARD, arg);
+            record.setVar(VAR_PLAYER, arg);
             record.setCardStates(VAR_MOVED_CARDS, arg);
         }
         public override async Task execute(IEventArg arg)
         {
             var game = arg.game;
-            var cards = arg.getVar<Card[]>(EVENTVAR.CARD);
-            var player = arg.getVar<Player>(EVENTVAR.PLAYER);
+            var cards = arg.getVar<Card[]>(VAR_CARD);
+            var player = arg.getVar<Player>(VAR_PLAYER);
             List<Card> movedCards = new List<Card>();
             foreach (var card in cards)
             {
                 var moveArg = await card.moveToHead(game, player);
                 if (moveArg != null && moveArg.getVar<bool>(MoveCardEventDefine.VAR_SUCCESS))
-                    movedCards.Add(moveArg.getVar<Card>(EVENTVAR.CARD));
+                    movedCards.Add(moveArg.getVar<Card>(VAR_CARD));
             }
             arg.setVar(VAR_MOVED_CARDS, movedCards.ToArray());
         }
         public override string toString(EventArg arg)
         {
-            var cards = arg.getVar<Card[]>(EVENTVAR.CARD);
-            var player = arg.getVar<Player>(EVENTVAR.PLAYER);
+            var cards = arg.getVar<Card[]>(VAR_CARD);
+            var player = arg.getVar<Player>(VAR_PLAYER);
             var cardString = string.Join<Card>(",", cards);
             return $"将 {cardString} 置入 {player} 的延迟区";
         }
@@ -58,14 +58,16 @@ namespace TouhouHeartstone
         {
             var define = game.getEventDefine<MassEnterFieldEventDefine>();
             var arg = new EventArg(game, define);
-            arg.setVar(EVENTVAR.CARD, targets);
-            arg.setVar(EVENTVAR.PLAYER, player);
+            arg.setVar(VAR_CARD, targets);
+            arg.setVar(VAR_PLAYER, player);
             return game.triggers.doEvent(arg);
         }
         ICard[] IMassCardEventDefine.getCards(IEventArg eventArg)
         {
             return eventArg.getVar<Card[]>(VAR_MOVED_CARDS);
         }
-        public const string VAR_MOVED_CARDS = "移动的卡牌";
+        public const string VAR_MOVED_CARDS = EVENTVAR.MOVED_CARDS;
+        public const string VAR_CARD = EVENTVAR.CARD;
+        public const string VAR_PLAYER = EVENTVAR.PLAYER;
     }
 }

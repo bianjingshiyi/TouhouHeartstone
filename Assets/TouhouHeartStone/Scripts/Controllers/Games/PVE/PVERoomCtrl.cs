@@ -229,7 +229,8 @@ namespace Controllers
         }
         private async Task startFight()
         {
-            await scene.game.network.logic.CreateLocalRoom();
+            var playerName = game.lang._(StringTable.LOCAL_PLAYER);
+            await scene.game.network.logic.CreateLocalRoom(playerName);
             await scene.game.network.logic.AddAIPlayer();
             RoomData currentRoomData = scene.game.network.logic.CurrentRoom;
             currentRoomData.maxPlayerCount = 2;

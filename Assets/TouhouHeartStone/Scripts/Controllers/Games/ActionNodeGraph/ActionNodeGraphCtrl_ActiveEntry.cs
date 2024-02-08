@@ -137,7 +137,7 @@ namespace Controllers
             foreach (var port in conditionPorts)
             {
                 // 翻译输出节点
-                var inputName = game.lang._(port.define.getDisplayName(), port.paramIndex + 1);
+                var inputName = game.lang._p(StringTable.CONTEXT_NODE_PARAM_NAME, port.define.getDisplayName(), port.paramIndex + 1);
                 var portInfo = new PortItemInfo(inputName, game.editor.getColorByType(port.define.type), port.GetPortType() == PortType.Control);
                 var defaultValue = getDefaultValueInfoFromInput(port);
                 var showPort = shouldInputPortShowPort(port);

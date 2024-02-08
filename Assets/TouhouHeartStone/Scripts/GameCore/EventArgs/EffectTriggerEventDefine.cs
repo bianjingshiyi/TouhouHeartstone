@@ -81,11 +81,11 @@ namespace TouhouHeartstone
             var envArg = effectTriggerArg.getVar<EventArg>(VAR_EVENT);
             return new EffectEnv(game, card, buff, envArg, effect);
         }
-        public const string VAR_PLAYER = "玩家";
-        public const string VAR_CARD = "卡牌";
-        public const string VAR_BUFF = "增益";
-        public const string VAR_EFFECT = "效果";
-        public const string VAR_EVENT = "事件";
-        public const string VAR_TARGETS = "目标卡牌";
+        public const string VAR_PLAYER = EVENTVAR.PLAYER;
+        public const string VAR_CARD = EVENTVAR.CARD;
+        public const string VAR_BUFF = EVENTVAR.BUFF;
+        public const string VAR_EFFECT = EVENTVAR.EFFECT;
+        public const string VAR_EVENT = EVENTVAR.EVENT;
+        public const string VAR_TARGETS = EVENTVAR.TARGETS;
     }
 }

@@ -165,14 +165,14 @@ namespace TouhouHeartstone
         public const string tagsPortName = "tags";
         public const string priorityPortName = "priority";
 
-        private static PortDefine conditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, "触发条件");
-        private static PortDefine targetConditionPortDefine = PortDefine.Value(typeof(bool), targetConditionName, "目标{0}条件");
+        private static PortDefine conditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, Translations.EDITOR_PARAM_NAME_TRIGGER_CONDITION);
+        private static PortDefine targetConditionPortDefine = PortDefine.Value(typeof(bool), targetConditionName, Translations.EDITOR_PARAM_NAME_TARGET_CONDITION);
         private static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
-        private static PortDefine playerPortDefine = PortDefine.Value(typeof(Player), playerPortName, "Player");
-        private static PortDefine cardPortDefine = PortDefine.Value(typeof(Card), cardPortName, "Card");
-        private static PortDefine targetsPortDefine = PortDefine.Value(typeof(Card[]), targetsPortName, "TargetCard");
-        private static PortDefine tagsPortDefine = PortDefine.Value(typeof(EffectTagCollection), tagsPortName, "标签列表", isConst: true);
-        private static PortDefine priorityPortDefine = PortDefine.Value(typeof(int), priorityPortName, "优先级", isConst: true);
+        private static PortDefine playerPortDefine = PortDefine.Value(typeof(Player), playerPortName, Translations.EDITOR_PARAM_NAME_PLAYER);
+        private static PortDefine cardPortDefine = PortDefine.Value(typeof(Card), cardPortName, Translations.EDITOR_PARAM_NAME_CARD);
+        private static PortDefine targetsPortDefine = PortDefine.Value(typeof(Card[]), targetsPortName, Translations.EDITOR_PARAM_NAME_TARGET_CARD);
+        private static PortDefine tagsPortDefine = PortDefine.Value(typeof(EffectTagCollection), tagsPortName, Translations.EDITOR_PARAM_NAME_TAG_LIST, isConst: true);
+        private static PortDefine priorityPortDefine = PortDefine.Value(typeof(int), priorityPortName, Translations.EDITOR_PARAM_NAME_PRIORITY, isConst: true);
     }
     public class SerializableActiveEntryNode : SerializableNode
     {

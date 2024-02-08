@@ -13,26 +13,26 @@ namespace TouhouHeartstone
         {
             beforeVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
-                new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
+                new EventVariableInfo(){name = VAR_PLAYER,type=typeof(Player)},
+                new EventVariableInfo(){name = VAR_CARD,type=typeof(Card)}
             };
             afterVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
-                new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
+                new EventVariableInfo(){name = VAR_PLAYER,type=typeof(Player)},
+                new EventVariableInfo(){name = VAR_CARD,type=typeof(Card)}
             };
         }
         [Obsolete]
         public override void Record(CardEngine game, EventArg arg, EventRecord record)
         {
-            record.setCardState(EVENTVAR.CARD, arg);
-            record.setVar(EVENTVAR.PLAYER, arg);
+            record.setCardState(VAR_CARD, arg);
+            record.setVar(VAR_PLAYER, arg);
         }
         public override Task execute(IEventArg arg)
         {
             var game = arg.game;
-            var player = arg.getVar<Player>(EVENTVAR.PLAYER);
-            var card = arg.getVar<Card>(EVENTVAR.CARD);
+            var player = arg.getVar<Player>(VAR_PLAYER);
+            var card = arg.getVar<Card>(VAR_CARD);
             if (player == null || card == null)
                 return Task.CompletedTask;
             return player.getHand().moveTo(game, card, player.getGrave());
@@ -45,8 +45,8 @@ namespace TouhouHeartstone
         {
             var define = game.getEventDefine<DiscardEventDefine>();
             var arg = new EventArg(game, define);
-            arg.setVar(EVENTVAR.CARD, card);
-            arg.setVar(EVENTVAR.PLAYER, card.getOwner());
+            arg.setVar(VAR_CARD, card);
+            arg.setVar(VAR_PLAYER, card.getOwner());
             return game.triggers.doEvent(arg);
         }
         #region 私有方法
@@ -55,7 +55,7 @@ namespace TouhouHeartstone
 
         DescribableCard IDescribableEventDefine.getCard(IGame game, EventArg eventArg, IPlayer viewer)
         {
-            return eventArg.getVar<Card>(EVENTVAR.CARD);
+            return eventArg.getVar<Card>(VAR_CARD);
         }
 
         DescribableCard[] IDescribableEventDefine.getTargets(IGame game, EventArg eventArg, IPlayer viewer)
@@ -64,13 +64,13 @@ namespace TouhouHeartstone
         }
         ICard ICardEventDefine.getCard(IEventArg eventArg)
         {
-            return eventArg.getVar<Card>(EVENTVAR.CARD);
+            return eventArg.getVar<Card>(VAR_CARD);
         }
         string IDescribableEventDefine.toString(IGame game, EventArg eventArg, IPlayer viewer) => toString(eventArg);
         string IDescribableEventDefine.localizeTemplateString(IGame game, EventArg eventArg, IPlayer viewer) => localizeTemplateString();
         object[] IDescribableEventDefine.localizeStringArgs(IGame game, EventArg eventArg, IPlayer viewer) => localizeStringArgs(eventArg);
-        Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Player>(EVENTVAR.PLAYER);
-        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => LOG_ITEM_NAME;
+        Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Player>(VAR_PLAYER);
+        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => Translations.EVENT_LOG_ITEM_NAME_DISCARD;
         object[] IDescribableEventDefine.localizeLogItemNameArgs(IGame game, EventArg eventArg) => null;
         #endregion
 
@@ -80,8 +80,8 @@ namespace TouhouHeartstone
         }
         private object[] localizeStringArgs(EventArg eventArg)
         {
-            var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
-            var card = eventArg.getVar<Card>(EVENTVAR.CARD);
+            var player = eventArg.getVar<Player>(VAR_PLAYER);
+            var card = eventArg.getVar<Card>(VAR_CARD);
             return new object[] { player.name, card.getFormatString() };
         }
 
@@ -89,7 +89,7 @@ namespace TouhouHeartstone
 
         [TranslateMsg("{0}是玩家，{1}是卡牌列表")]
         const string TEMPLATE = "{0} 丢弃 {1}";
-        [TranslateMsg("游戏事件日志项名称")]
-        private const string LOG_ITEM_NAME = "弃牌";
+        public const string VAR_CARD = EVENTVAR.CARD;
+        public const string VAR_PLAYER = EVENTVAR.PLAYER;
     }
 }

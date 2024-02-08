@@ -134,7 +134,7 @@ namespace TouhouHeartstone
         string IDescribableEventDefine.localizeTemplateString(IGame game, EventArg eventArg, IPlayer viewer) => localizeTemplateString(eventArg);
         object[] IDescribableEventDefine.localizeStringArgs(IGame game, EventArg eventArg, IPlayer viewer) => localizeStringArgs(eventArg);
         Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Card>(VAR_TARGET).getOwner();
-        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => LOG_ITEM_NAME;
+        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => Translations.EVENT_LOG_ITEM_NAME_DAMAGE;
         object[] IDescribableEventDefine.localizeLogItemNameArgs(IGame game, EventArg eventArg) => new object[] { eventArg.getVar<int>(VAR_DAMAGED_VALUE) };
         #endregion
 
@@ -191,12 +191,10 @@ namespace TouhouHeartstone
         const string TEMPLATE_RECV = "{0} 受到 {1} 点伤害";
         [TranslateMsg("{0}{1}是卡，{2}是伤害值")]
         const string TEMPLATE_ATK = "{0} 对 {1} 造成 {2} 点伤害";
-        [TranslateMsg("游戏事件日志项名称-伤害事件（{0}为失去的生命值）")]
-        private const string LOG_ITEM_NAME = "-{0}";
 
-        public static string VAR_TARGET => EVENTVAR.CARD;
-        public const string VAR_DAMAGE_SOURCE = "伤害来源";
-        public const string VAR_DAMAGE_VALUE = "伤害值";
-        public const string VAR_DAMAGED_VALUE = "实际伤害值";
+        public const string VAR_TARGET = EVENTVAR.CARD;
+        public const string VAR_DAMAGE_SOURCE = EVENTVAR.DAMAGE_SOURCE;
+        public const string VAR_DAMAGE_VALUE = EVENTVAR.DAMAGE_VALUE;
+        public const string VAR_DAMAGED_VALUE = EVENTVAR.DAMAGED_VALUE;
     }
 }

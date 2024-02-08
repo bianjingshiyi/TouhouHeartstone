@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Game;
 using TouhouCardEngine;
 
 namespace Controllers
@@ -34,7 +35,7 @@ namespace Controllers
             }
             if (eventDefine != null)
             {
-                return ActionNodeGraphCtrl.EDITOR_CATEGORY_EVENT_ENTRY_NODE;
+                return StringTable.EDITOR_NODE_CATEGORY_EVENT_ENTRY_NODE;
             }
             return string.Empty;
         }

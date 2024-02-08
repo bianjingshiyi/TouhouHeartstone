@@ -81,7 +81,7 @@ namespace TouhouHeartstone
         string IDescribableEventDefine.localizeTemplateString(IGame game, EventArg eventArg, IPlayer viewer) => localizeTemplateString();
         object[] IDescribableEventDefine.localizeStringArgs(IGame game, EventArg eventArg, IPlayer viewer) => localizeStringArgs(eventArg);
         Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Player>(VAR_PLAYER);
-        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => LOG_ITEM_NAME;
+        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => Translations.EVENT_LOG_ITEM_NAME_FATIGUE;
         object[] IDescribableEventDefine.localizeLogItemNameArgs(IGame game, EventArg eventArg) => null;
         #endregion
         private string localizeTemplateString()
@@ -98,9 +98,7 @@ namespace TouhouHeartstone
 
         [TranslateMsg("{0}是玩家")]
         const string TEMPLATE = "{0}已经无牌可抽，即将受到疲劳伤害";
-        [TranslateMsg("游戏事件日志项名称")]
-        private const string LOG_ITEM_NAME = "疲劳";
-        public static string VAR_PLAYER => EVENTVAR.PLAYER;
-        public const string VAR_DAMAGE = "伤害";
+        public const string VAR_PLAYER = EVENTVAR.PLAYER;
+        public const string VAR_DAMAGE = EVENTVAR.DAMAGE_VALUE;
     }
 }

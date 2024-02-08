@@ -15,27 +15,27 @@ namespace TouhouHeartstone
         {
             beforeVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card[]) },
+                new EventVariableInfo() { name = VAR_CARD, type = typeof(Card[]) },
             };
             afterVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card[]) },
+                new EventVariableInfo() { name = VAR_CARD, type = typeof(Card[]) },
             };
         }
         [Obsolete]
         public override void Record(CardEngine game, EventArg arg, EventRecord record)
         {
-            record.setCardStates(EVENTVAR.CARD, arg);
+            record.setCardStates(VAR_CARD, arg);
         }
         ICard[] IMassCardEventDefine.getCards(IEventArg arg)
         {
-            return arg.getVar<Card[]>(EVENTVAR.CARD);
+            return arg.getVar<Card[]>(VAR_CARD);
         }
 
         public override async Task execute(IEventArg arg)
         {
             var game = arg.game;
-            var argCards = arg.getVar<Card[]>(EVENTVAR.CARD);
+            var argCards = arg.getVar<Card[]>(VAR_CARD);
             foreach (var card in argCards)
             {
                 await card.silence(game);
@@ -44,7 +44,7 @@ namespace TouhouHeartstone
 
         public override string toString(EventArg arg)
         {
-            var cards = arg.getVar<Card[]>(EVENTVAR.CARD);
+            var cards = arg.getVar<Card[]>(VAR_CARD);
             var cardString = string.Join<Card>(",", cards);
             return $"封印 {cardString}";
         }
@@ -52,8 +52,9 @@ namespace TouhouHeartstone
         {
             var define = game.getEventDefine<MassSealEventDefine>();
             var arg = new EventArg(game, define);
-            arg.setVar(EVENTVAR.CARD, targets);
+            arg.setVar(VAR_CARD, targets);
             return game.triggers.doEvent(arg);
         }
+        public const string VAR_CARD = EVENTVAR.CARD;
     }
 }

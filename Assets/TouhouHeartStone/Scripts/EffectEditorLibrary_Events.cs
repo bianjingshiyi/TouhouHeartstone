@@ -26,11 +26,11 @@ namespace Game
         /// </summary>
         public const string EVENT_CAST_EVENT_TYPE_NODE_CAST_EVENT_PARAM_KEY = MethodActionDefine.returnValueName;
         //  事件处理
-        [TranslateMsg("编辑器/事件_事件集合_参数名称")]
+        [TranslateMsg("编辑器/事件_事件集合_参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_EVENTS = "事件集合";
-        [TranslateMsg("编辑器/事件_回合数_参数名称")]
+        [TranslateMsg("编辑器/事件_回合数_参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_TURN_COUNT = "回合数";
-        [TranslateMsg("编辑器/参数名称")]
+        [TranslateMsg("编辑器/参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_VARIABLE_NAME = "变量名";
 
         [TranslateMsg("编辑器/事件_当前事件_节点名称")]
@@ -51,9 +51,9 @@ namespace Game
         public const string EDITOR_NODE_EVENT_DAMAGE_CHANGE_VALUE = "伤害/更改伤害值";
         [TranslateMsg("编辑器/事件-节点名称")]
         public const string EDITOR_NODE_EVENT_HEAL_CHANGE_VALUE = "治疗/更改治疗值";
-        [TranslateMsg("编辑器/事件_前X回合开始_参数名称")]
+        [TranslateMsg("编辑器/事件_前X回合开始_参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_TURN_COUNT_START_BEFORE = "前X回合开始";
-        [TranslateMsg("编辑器/事件_前Y回合结束_参数名称")]
+        [TranslateMsg("编辑器/事件_前Y回合结束_参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_TURN_COUNT_END_BEFORE = "前Y回合结束";
         [TranslateMsg("编辑器/事件_获取当前回合数_节点名称")]
         public const string EDITOR_NODE_EVENT_GET_TURN_COUNT_OBSOLETE = "获取当前回合数（过时）";

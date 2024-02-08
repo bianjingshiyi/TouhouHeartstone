@@ -232,9 +232,9 @@ namespace Game
         /// 创建一个本地房间
         /// </summary>
         /// <returns></returns>
-        public async Task CreateLocalRoom()
+        public async Task CreateLocalRoom(string playerName)
         {
-            await clientLogic.createLocalRoom();
+            await clientLogic.createLocalRoom(playerName);
         }
 
         /// <summary>

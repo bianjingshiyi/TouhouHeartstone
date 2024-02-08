@@ -12,26 +12,26 @@ namespace TouhouHeartstone
         {
             beforeVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() {name = EVENTVAR.PLAYER,type=typeof(Player)},
-                new EventVariableInfo() {name = EVENTVAR.VALUE,type=typeof(int)}
+                new EventVariableInfo() {name = VAR_PLAYER,type=typeof(Player)},
+                new EventVariableInfo() {name = VAR_VALUE,type=typeof(int)}
             };
             afterVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() {name = EVENTVAR.PLAYER,type=typeof(Player)},
-                new EventVariableInfo() {name = EVENTVAR.VALUE,type=typeof(int)}
+                new EventVariableInfo() {name = VAR_PLAYER,type=typeof(Player)},
+                new EventVariableInfo() {name = VAR_VALUE,type=typeof(int)}
             };
         }
         [Obsolete]
         public override void Record(CardEngine game, EventArg arg, EventRecord record)
         {
-            record.setVar(EVENTVAR.PLAYER, arg);
-            record.setVar(EVENTVAR.VALUE, arg);
+            record.setVar(VAR_PLAYER, arg);
+            record.setVar(VAR_VALUE, arg);
         }
         public override Task execute(IEventArg arg)
         {
             var game = arg.game;
-            var value = arg.getVar<int>(EVENTVAR.VALUE);
-            var player = arg.getVar<Player>(EVENTVAR.PLAYER);
+            var value = arg.getVar<int>(VAR_VALUE);
+            var player = arg.getVar<Player>(VAR_PLAYER);
 
             value = Math.Clamp(value, 0, 10);
             player.setProp(game, PLAYER.MAXGEM, value);
@@ -46,8 +46,8 @@ namespace TouhouHeartstone
         {
             var define = game.getEventDefine<SetMaxGemEventDefine>();
             var arg = new EventArg(game, define);
-            arg.setVar(EVENTVAR.PLAYER, player);
-            arg.setVar(EVENTVAR.VALUE, value);
+            arg.setVar(VAR_PLAYER, player);
+            arg.setVar(VAR_VALUE, value);
             return game.triggers.doEvent(arg);
         }
         #region 私有方法
@@ -64,15 +64,15 @@ namespace TouhouHeartstone
         string IDescribableEventDefine.toString(IGame game, EventArg eventArg, IPlayer viewer) => toString(eventArg);
         string IDescribableEventDefine.localizeTemplateString(IGame game, EventArg eventArg, IPlayer viewer) => localizeTemplateString();
         object[] IDescribableEventDefine.localizeStringArgs(IGame game, EventArg eventArg, IPlayer viewer) => localizeStringArgs(eventArg);
-        Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Player>(EVENTVAR.PLAYER);
+        Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Player>(VAR_PLAYER);
         string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => Translations.EVENT_LOG_ITEM_NAME_SET_GEM;
         object[] IDescribableEventDefine.localizeLogItemNameArgs(IGame game, EventArg eventArg) => null;
         #endregion
         private string localizeTemplateString() => TEMPLATE;
         private object[] localizeStringArgs(EventArg eventArg)
         {
-            var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
-            var value = eventArg.getVar<int>(EVENTVAR.VALUE);
+            var player = eventArg.getVar<Player>(VAR_PLAYER);
+            var value = eventArg.getVar<int>(VAR_VALUE);
             return new object[] {
                 player.name,
                 value
@@ -82,5 +82,8 @@ namespace TouhouHeartstone
         #endregion
         [MukioI18n.TranslateMsg("{0}是玩家名称，{1}是灵力值")]
         const string TEMPLATE = "{0}的最大灵力值变为{1}";
+
+        public const string VAR_PLAYER = EVENTVAR.PLAYER;
+        public const string VAR_VALUE = EVENTVAR.VALUE;
     }
 }

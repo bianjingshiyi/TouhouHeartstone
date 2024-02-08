@@ -15,8 +15,6 @@ namespace Game
         /// </summary>
         public const string EVENT_RECORD_VARIABLE_NODE_EVENT_PARAM_KEY = "record";
         //  事件处理
-        [TranslateMsg("编辑器/事件记录_参数名称")]
-        public const string EDITOR_TYPE_NAME_EVENT_RECORD = "事件记录";
 
         #region 事件记录
         [TranslateMsg("编辑器/事件记录_获取变量_节点名称")]
@@ -33,15 +31,15 @@ namespace Game
         public const string EDITOR_NODE_EVENT_GET_EVENT_RECORDS_IN_TURNS_BEFORE = "获取前X-Y回合内的事件记录";
         [TranslateMsg("编辑器/事件记录_获取卡牌在某事件时的快照_节点名称")]
         public const string EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_ON_EVENT = "获取卡牌在某事件时的快照";
-        [TranslateMsg("编辑器/事件记录_参数名称")]
+        [TranslateMsg("编辑器/事件记录_参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_EVENT_RECORDS = "事件记录集合";
 
 
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEventRecordVariable, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_RECORD_GET_VARIABLE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEventRecordVariable, StringTable.EDITOR_NODE_CATEGORY_EVENT_RECORD, EDITOR_NODE_EVENT_RECORD_GET_VARIABLE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getRecordVariable(CardEngine game,
-            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord record,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT_RECORD)] EventRecord record,
             [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME)] EventVarName varName)
         {
             if (record == null)
@@ -56,10 +54,10 @@ namespace Game
             return value;
         }
         [Obsolete]
-        [THHActionMethod(BuiltinActionDefineID.CastEventRecordType, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_NAME_CAST_EVENT_RECORD_TYPE)]
-        [return: ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)]
+        [THHActionMethod(BuiltinActionDefineID.CastEventRecordType, StringTable.EDITOR_NODE_CATEGORY_EVENT_RECORD, EDITOR_NODE_NAME_CAST_EVENT_RECORD_TYPE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT_RECORD)]
         public static EventRecord castEventRecordType(
-            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord eventRecord,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT_RECORD)] EventRecord eventRecord,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT_TYPE, isConst: true)] EventReference eventReference)
         {
             if (eventRecord == null || eventReference == null)
@@ -69,10 +67,10 @@ namespace Game
             return equals ? eventRecord : null;
         }
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.CheckEventRecordType, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_CHECK_EVENT_RECORD_TYPE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CheckEventRecordType, StringTable.EDITOR_NODE_CATEGORY_EVENT_RECORD, EDITOR_NODE_EVENT_CHECK_EVENT_RECORD_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool checkEventRecordType(CardEngine game,
-            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord evt,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT_RECORD)] EventRecord evt,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT_TYPE, isConst: true)] EventReference argRef)
         {
             if (evt == null || argRef == null)
@@ -84,7 +82,7 @@ namespace Game
             return false;
         }
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEventRecordsThisGame, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_EVENT_RECORDS_THIS_GAME)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEventRecordsThisGame, StringTable.EDITOR_NODE_CATEGORY_EVENT_RECORD, EDITOR_NODE_EVENT_GET_EVENT_RECORDS_THIS_GAME)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT_RECORDS)]
         public static EventRecord[] getEventRecordsThisGame(CardEngine game)
         {
@@ -92,7 +90,7 @@ namespace Game
         }
 
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEventRecordsThisTurn, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_EVENT_RECORDS_THIS_TURN)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEventRecordsThisTurn, StringTable.EDITOR_NODE_CATEGORY_EVENT_RECORD, EDITOR_NODE_EVENT_GET_EVENT_RECORDS_THIS_TURN)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT_RECORDS)]
         public static EventRecord[] getEventRecordsThisTurn(CardEngine game)
         {
@@ -101,7 +99,7 @@ namespace Game
 
 
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEventRecordsInTurnsBefore, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_EVENT_RECORDS_IN_TURNS_BEFORE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEventRecordsInTurnsBefore, StringTable.EDITOR_NODE_CATEGORY_EVENT_RECORD, EDITOR_NODE_EVENT_GET_EVENT_RECORDS_IN_TURNS_BEFORE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT_RECORDS)]
         public static EventRecord[] getEventRecordsInTurnsBefore(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT_START_BEFORE)] int farther,
@@ -126,11 +124,11 @@ namespace Game
         }
 
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardSnapshotOfEvent, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_ON_EVENT)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardSnapshotOfEvent, StringTable.EDITOR_NODE_CATEGORY_EVENT_RECORD, EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_ON_EVENT)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_SNAPSHOT)]
         public static CardSnapshot getSnapshotOfCardAfterEvent(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
-            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord record)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT_RECORD)] EventRecord record)
         {
             if (card == null || record == null)
                 return null;

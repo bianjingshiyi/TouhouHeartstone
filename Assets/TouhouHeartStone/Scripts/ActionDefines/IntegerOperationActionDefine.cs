@@ -12,12 +12,12 @@ namespace TouhouCardEngine
             type = NodeDefineType.Function;
             inputs = new PortDefine[]
             {
-                PortDefine.Value(typeof(IntegerOperator), "operator", isConst: true),
-                PortDefine.Value(typeof(int), paramName, "Value", isParams: true),
+                PortDefine.Value(typeof(IntegerOperator), "operator", StringTable.EDITOR_PARAM_NAME_OPERATOR, isConst: true),
+                PortDefine.Value(typeof(int), paramName, StringTable.EDITOR_PARAM_NAME_VALUE, isParams: true),
             };
             outputs = new PortDefine[]
             {
-                PortDefine.Value(typeof(int), resultName, "Value")
+                PortDefine.Value(typeof(int), resultName, StringTable.EDITOR_PARAM_NAME_RESULT)
             };
             category = EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER;
         }

@@ -14,13 +14,13 @@ namespace Game
 
         [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_EFFECT = "效果";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_EFFECT_COLLECTION = "效果集合";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_EFFECT_TAG = "效果标签";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_EFFECT_TYPE = "效果类型";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_BELONGS_TO_CARD_DEFINE = "属于卡牌定义";
 
         #region 函数
@@ -204,9 +204,9 @@ namespace Game
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_TRIGGER_EFFECT = "发动效果";
 
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_EFFECT_TRIGGER_EVENT = "发动效果事件";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_IGNORE_TRIGGER_CONDITION = "忽略触发条件";
         /// <summary>
         /// 发动效果

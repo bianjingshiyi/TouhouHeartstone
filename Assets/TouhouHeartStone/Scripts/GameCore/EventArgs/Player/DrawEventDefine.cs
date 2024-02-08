@@ -13,25 +13,25 @@ namespace TouhouHeartstone
         {
             beforeVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() {name = EVENTVAR.PLAYER,type=typeof(Player)},
+                new EventVariableInfo() {name = VAR_PLAYER,type=typeof(Player)},
                 new EventVariableInfo() {name = VAR_CARD,type=typeof(Card)}
             };
             afterVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() {name = EVENTVAR.PLAYER,type=typeof(Player)},
+                new EventVariableInfo() {name = VAR_PLAYER,type=typeof(Player)},
                 new EventVariableInfo() {name = VAR_CARD,type=typeof(Card)}
             };
         }
         [Obsolete]
         public override void Record(CardEngine game, EventArg arg, EventRecord record)
         {
-            record.setVar(EVENTVAR.PLAYER, arg);
+            record.setVar(VAR_PLAYER, arg);
             record.setCardState(VAR_CARD, arg);
         }
         public override async Task execute(IEventArg arg)
         {
             var game = arg.game;
-            var player = arg.getVar<Player>(EVENTVAR.PLAYER);
+            var player = arg.getVar<Player>(VAR_PLAYER);
             var card = arg.getVar<Card>(VAR_CARD);
             if (card.isSpell() && card.hasKeyword(game, KEYWORD.AUTOCAST))
             {
@@ -48,7 +48,7 @@ namespace TouhouHeartstone
 
         public override string toString(EventArg arg)
         {
-            var player = arg.getVar<Player>(EVENTVAR.PLAYER);
+            var player = arg.getVar<Player>(VAR_PLAYER);
             var card = arg.getVar<Card>(VAR_CARD);
             return string.Format(TEMPLATE_SELF, player, card);
         }
@@ -56,7 +56,7 @@ namespace TouhouHeartstone
         {
             var define = game.getEventDefine<DrawEventDefine>();
             var arg = new EventArg(game, define);
-            arg.setVar(EVENTVAR.PLAYER, player);
+            arg.setVar(VAR_PLAYER, player);
             arg.setVar(VAR_CARD, card);
             return arg;
         }
@@ -66,7 +66,7 @@ namespace TouhouHeartstone
         #region 接口实现
         DescribableCard IDescribableEventDefine.getCard(IGame game, EventArg eventArg, IPlayer viewer)
         {
-            var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
+            var player = eventArg.getVar<Player>(VAR_PLAYER);
             var card = eventArg.getVar<Card>(VAR_CARD);
             return viewer == player ? card : player.getMaster();
         }
@@ -90,7 +90,7 @@ namespace TouhouHeartstone
         {
             if (!eventArg.isCanceled)
             {
-                var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
+                var player = eventArg.getVar<Player>(VAR_PLAYER);
                 return viewer == player ? TEMPLATE_SELF : TEMPLATE_OTHER;
             }
             else
@@ -100,15 +100,15 @@ namespace TouhouHeartstone
         }
         object[] IDescribableEventDefine.localizeStringArgs(IGame game, EventArg eventArg, IPlayer viewer)
         {
-            var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
+            var player = eventArg.getVar<Player>(VAR_PLAYER);
             var card = eventArg.getVar<Card>(VAR_CARD);
             return new object[] {
                     player.name,
                     card.getFormatString()
                 };
         }
-        Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Player>(EVENTVAR.PLAYER);
-        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => LOG_ITEM_NAME;
+        Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Player>(VAR_PLAYER);
+        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => Translations.EVENT_LOG_ITEM_NAME_DRAW;
         object[] IDescribableEventDefine.localizeLogItemNameArgs(IGame game, EventArg eventArg) => null;
         #endregion
 
@@ -118,8 +118,7 @@ namespace TouhouHeartstone
         const string TEMPLATE_SELF = "{0}抽{1}";
         [MukioI18n.TranslateMsg("{0}玩家")]
         const string TEMPLATE_OTHER = "抽了一张牌";
-        [TranslateMsg("游戏事件日志项名称")]
-        private const string LOG_ITEM_NAME = "抽牌";
-        public static string VAR_CARD => EVENTVAR.CARD;
+        public const string VAR_CARD = EVENTVAR.CARD;
+        public const string VAR_PLAYER = EVENTVAR.PLAYER;
     }
 }

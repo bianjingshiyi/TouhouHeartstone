@@ -105,7 +105,9 @@ namespace Game
         }
         private void onGameQuitButtonCallback()
         {
-            main.ui.dialog?.ShowQuestion(StringTable.HINT_TITLE, QUIT_GAME_QUESTION, () =>
+            var title = main.lang._(StringTable.HINT_TITLE);
+            var desc = main.lang._(QUIT_GAME_QUESTION);
+            main.ui.dialog?.ShowQuestion(title, desc, () =>
             {
                 quitGame();
             });
@@ -116,7 +118,9 @@ namespace Game
         }
         private void onSurrenderCallback()
         {
-            main.ui.dialog?.ShowQuestion(StringTable.HINT_TITLE, SURRENDER_QUESTION, () =>
+            var title = main.lang._(StringTable.HINT_TITLE);
+            var desc = main.lang._(SURRENDER_QUESTION);
+            main.ui.dialog?.ShowQuestion(title, desc, () =>
             {
                 localPlayer.cmdSurrender(game);
             });

@@ -8,8 +8,6 @@ namespace Game
 {
     partial class EffectEditorLibrary
     {
-        [TranslateMsg("编辑器-节点类型-卡牌定义")]
-        public const string EDITOR_NODE_CATEGORY_CARD_DEFINE = "卡牌定义";
         [TranslateMsg("编辑器-动作节点-卡牌定义类型判断")]
         private const string EDITOR_NODE_NAME_IS_CARD_DEFINE_OF_TYPE = "卡牌定义类型判断";
         [TranslateMsg("编辑器-动作节点-卡牌定义关键词判断")]
@@ -20,8 +18,6 @@ namespace Game
         public const string EDITOR_NODE_SPECIFIC_CARD_DEFINE = "获取单张卡牌的定义";
         [TranslateMsg("动作图编辑器中动作节点名称之变形为卡牌定义")]
         public const string EDITOR_NODE_CARD_SET_DEFINE = "变形为卡牌定义";
-        [TranslateMsg("动作图编辑器中动作节点参数名称之是否重置卡牌")]
-        public const string EDITOR_NODE_CARD_IS_RESET = "是否重置卡牌";
         [TranslateMsg("编辑器-动作节点-获取卡牌定义属性（过时）")]
         public const string EDITOR_NODE_CARD_DEFINE_GET_PROP_OBSOLETE = "获取卡牌定义属性（过时）";
         [TranslateMsg("编辑器-动作节点-获取卡牌定义属性")]
@@ -62,18 +58,19 @@ namespace Game
         public const string EDITOR_NODE_GET_CARD_DEFINE_TARGETS = "获取卡牌定义的合法使用目标";
         [TranslateMsg("节点名称")]
         public const string EDITOR_NODE_GET_CARD_DEFINE_TYPE = "获取卡牌定义的类型";
-        [TranslateMsg("编辑器-参数名称-标签列表")]
-        public const string EDITOR_PARAM_NAME_TAG_LIST = "标签列表";
-        [TranslateMsg("编辑器-参数名称-源卡牌")]
+
+        [TranslateMsg("编辑器-参数名称-源卡牌", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_SOURCE_CARD = "源卡牌";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_INVISIBLE_FOR_SELF = "自己不可见";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_INVISIBLE_FOR_OPPONENT = "对手不可见";
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_CARD_IS_RESET = "是否重置卡牌";
 
 
         /// 获取全部卡牌定义
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllCardDefines, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_ALL_CARD_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllCardDefines, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_ALL_CARD_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine[] getAllCardDefines(CardEngine game)
         {
@@ -83,7 +80,7 @@ namespace Game
 
         /// 获取单个卡牌定义
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefine, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefine, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine getCardDefine(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, isConst: true)] DefineReference cardRef)
@@ -95,7 +92,7 @@ namespace Game
 
 
         /// 获取卡牌定义列表
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineArray, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE_ARRAY)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineArray, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE_ARRAY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine[] getCardDefineArray(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, isConst: true)] DefineReference[] cardRefs)
@@ -112,7 +109,7 @@ namespace Game
 
 
         /// 是否具有标签
-        [ObsoletedKeyMethod(BuiltinActionDefineID.CardDefineHasTag, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_CARD_DEFINE_HAS_TAG)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CardDefineHasTag, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_CARD_DEFINE_HAS_TAG)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool cardDefineHasTag(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
@@ -124,8 +121,8 @@ namespace Game
         }
 
         /// 获取卡牌定义标签列表
-        [THHActionMethod(BuiltinActionDefineID.GetCardDefineTagList, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_NAME_GET_CARD_DEFINE_TAG_LIST)]
-        [return: ActionNodeParam(EDITOR_PARAM_NAME_TAG_LIST)]
+        [THHActionMethod(BuiltinActionDefineID.GetCardDefineTagList, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_NAME_GET_CARD_DEFINE_TAG_LIST)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TAG_LIST)]
         public static string[] getCardDefineTagList(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
         {
@@ -135,7 +132,7 @@ namespace Game
         }
 
         ///获取随机卡牌定义
-        [ObsoletedKeyMethod(ObsoletedActionDefineID.GetRandomCardDefine, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD_DEFINE)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.GetRandomCardDefine, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         [Obsolete]
         public static CardDefine getRandomCardDefine(CardEngine game,
@@ -156,11 +153,11 @@ namespace Game
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardDefineOfType_Obs_CardType, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_NAME_IS_CARD_DEFINE_OF_TYPE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardDefineOfType_Obs_CardType, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_NAME_IS_CARD_DEFINE_OF_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsCardDefineOfTypeObsolete(
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_DEFINE)] CardDefine card,
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE, isConst: true)] CardDefineSelect select)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_TYPE, isConst: true)] CardDefineSelect select)
         {
             if (card == null)
                 return false;
@@ -184,11 +181,11 @@ namespace Game
         /// <param name="card">卡牌</param>
         /// <param name="type">选项</param>
         /// <returns>bool,是否属于该类型</returns>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardDefineOfType, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_NAME_IS_CARD_DEFINE_OF_TYPE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardDefineOfType, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_NAME_IS_CARD_DEFINE_OF_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsCardDefineOfType(
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_DEFINE)] CardDefine card,
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE)] CardType type)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_TYPE)] CardType type)
         {
             if (card == null || type == null)
                 return false;
@@ -202,11 +199,11 @@ namespace Game
         /// <param name="card">卡牌</param>
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.CardDefineHasKeyword, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_HAS_KEYWORDS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CardDefineHasKeyword, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_HAS_KEYWORDS)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool CardDefineHasKeywords(
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_DEFINE)] CardDefine card,
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_KEYWORD)] string select)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_KEYWORD)] string select)
         {
             if (card == null)
                 return false;
@@ -219,7 +216,7 @@ namespace Game
         /// </summary>
         /// <param name="cards"></param>
         /// <returns></returns>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefinesOfCardArray, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TARGET_CARD_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefinesOfCardArray, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TARGET_CARD_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine[] getTagetCardDefineArray(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
@@ -238,7 +235,7 @@ namespace Game
         /// <summary>
         /// 获取单张卡牌的定义
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineOfCard, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_SPECIFIC_CARD_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineOfCard, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_SPECIFIC_CARD_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine getSpecificCardDefine(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -251,12 +248,12 @@ namespace Game
         /// 变形为卡牌定义
         /// </summary>
         [EventNode(typeof(SetCardDefineEventDefine))]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.SetCardDefineOfCard, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_SET_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.SetCardDefineOfCard, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_SET_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> cardSetDefine(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine define,
-            [ActionNodeParam(EDITOR_NODE_CARD_IS_RESET)] bool isreset,
+            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_IS_RESET)] bool isreset,
             [ActionNodeParam(EDITOR_PARAM_NAME_SET_CARD_DEFINE_EVENT, isOut: true)][NodeParamEventType(typeof(SetCardDefineEventDefine))] EventArg outEvent)
         {
             if (define == null)
@@ -271,7 +268,7 @@ namespace Game
         /// 获取属性
         /// </summary>
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineProp_Obsolete, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_PROP_OBSOLETE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineProp_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_PROP_OBSOLETE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getCardDefineProp(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card,
@@ -282,7 +279,7 @@ namespace Game
         /// <summary>
         /// 获取属性
         /// </summary>
-        [THHActionMethod(BuiltinActionDefineID.GetCardDefineProp, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_PROP)]
+        [THHActionMethod(BuiltinActionDefineID.GetCardDefineProp, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_PROP)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getCardDefinePropByPropertyName(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card,
@@ -293,7 +290,7 @@ namespace Game
         /// <summary>
         /// 获取花费
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineCost, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_COST)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineCost, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_COST)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int getCardDefineCost(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
@@ -305,7 +302,7 @@ namespace Game
         /// <summary>
         /// 获取攻击
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineAttack, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_ATTACK)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineAttack, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_ATTACK)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int getCardDefineAttack(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
@@ -317,7 +314,7 @@ namespace Game
         /// <summary>
         /// 获取最大生命值
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineMaxLife, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_LIFE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineMaxLife, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_LIFE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int getCardDefineMaxLife(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
@@ -327,7 +324,7 @@ namespace Game
             return card.getLife();
         }
 
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineSpellDamage, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_SPELL_DAMAGE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineSpellDamage, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_SPELL_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)]
         public static int getCardDefineSpellDamage(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
@@ -339,7 +336,7 @@ namespace Game
         /// <summary>
         /// 是否是衍生牌
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardDefineToken, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_IS_TOKEN)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardDefineToken, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_IS_TOKEN)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool isToken([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
         {
@@ -350,7 +347,7 @@ namespace Game
         /// <summary>
         /// 获取技能
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineSkill, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_SKILL)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineSkill, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_SKILL)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine getSkill(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
@@ -370,7 +367,7 @@ namespace Game
         /// <summary>
         /// 获取对应角色（职业）
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineCharacter, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_CHARACTER)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineCharacter, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_CHARACTER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine getCardDefineCharacter(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
@@ -388,7 +385,7 @@ namespace Game
             }
         }
 
-        [ObsoletedKeyMethod(ObsoletedActionDefineID.IsCardDefineCollectible, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_COLLECTIBLE)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.IsCardDefineCollectible, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_COLLECTIBLE)]
         [return: ActionNodeParam(EDITOR_NODE_PARAM_NAME_COLLECTIBLE)]
         [Obsolete]
         public static bool isCardDefineCollectible(
@@ -399,7 +396,7 @@ namespace Game
         /// <summary>
         /// 触发卡牌宣言
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.TriggerCardDefineBattlecries, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TRIGGER_CARD_DEFINE_BATTLECRY)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.TriggerCardDefineBattlecries, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TRIGGER_CARD_DEFINE_BATTLECRY)]
         public static async Task triggerCardDefineBattlecry(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
@@ -417,7 +414,7 @@ namespace Game
         /// <summary>
         /// 卡牌定义具有宣言
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.CardDefineHasBattlecry, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_HAS_BATTLECRY)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CardDefineHasBattlecry, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_HAS_BATTLECRY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool cardDefineHasBattlecry(
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
@@ -429,7 +426,7 @@ namespace Game
         /// <summary>
         /// 触发卡牌遗言
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.TriggerCardDefineDeathrattles, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TRIGGER_CARD_DEFINE_DEATHRATTLE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.TriggerCardDefineDeathrattles, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TRIGGER_CARD_DEFINE_DEATHRATTLE)]
         public static async Task triggerCardDefineDeathRattles(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
@@ -446,7 +443,7 @@ namespace Game
         /// <summary>
         /// 卡牌定义具有遗言
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.CardDefineHasDeathrattle, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_HAS_DEATHRATTLE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CardDefineHasDeathrattle, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_HAS_DEATHRATTLE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool cardDefineHasDeathrattle(
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
@@ -458,7 +455,7 @@ namespace Game
         /// <summary>
         /// 触发法术或技能卡牌定义效果
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.TriggerCardDefineActiveEffect, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TRIGGER_SPELL_CARD_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.TriggerCardDefineActiveEffect, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TRIGGER_SPELL_CARD_DEFINE)]
         public static async Task activeSpellCardDefineEffect(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
@@ -478,7 +475,7 @@ namespace Game
         /// <summary>
         /// 卡牌定义是否是陷阱
         /// </summary>
-        [THHActionMethod(BuiltinActionDefineID.CardDefineIsTrap, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_IS_TRAP)]
+        [THHActionMethod(BuiltinActionDefineID.CardDefineIsTrap, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_IS_TRAP)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool cardDefineIsTrap(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
@@ -490,7 +487,7 @@ namespace Game
         /// <summary>
         /// 获取卡牌定义合法目标集合
         /// </summary>
-        [THHActionMethod(BuiltinActionDefineID.GetValidCardDefineTargets, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_GET_CARD_DEFINE_TARGETS)]
+        [THHActionMethod(BuiltinActionDefineID.GetValidCardDefineTargets, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_GET_CARD_DEFINE_TARGETS)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_VALID_TARGETS)]
         public static Card[] getAllLegalCardDefineTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
@@ -503,7 +500,7 @@ namespace Game
         /// <summary>
         /// 获取卡牌定义类型
         /// </summary>
-        [THHActionMethod(BuiltinActionDefineID.GetCardDefineType, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_GET_CARD_DEFINE_TYPE)]
+        [THHActionMethod(BuiltinActionDefineID.GetCardDefineType, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_GET_CARD_DEFINE_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE)]
         public static string getCardDefineType(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
@@ -515,10 +512,10 @@ namespace Game
         /// <summary>
         /// 展示卡牌定义
         /// </summary>
-        [THHActionMethod(BuiltinActionDefineID.RevealCardDefine, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_REVEAL_CARD_DEFINE)]
+        [THHActionMethod(BuiltinActionDefineID.RevealCardDefine, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_REVEAL_CARD_DEFINE)]
         public static Task revealCardDefine(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(EDITOR_PARAM_NAME_INVISIBLE_FOR_SELF)] bool invisibleForSelf,
             [ActionNodeParam(EDITOR_PARAM_NAME_INVISIBLE_FOR_OPPONENT)] bool invisibleForOppo)
         {

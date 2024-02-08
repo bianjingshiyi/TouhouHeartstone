@@ -16,31 +16,31 @@ namespace TouhouHeartstone
         {
             beforeVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card[]) },
+                new EventVariableInfo() { name = VAR_CARD, type = typeof(Card[]) },
                 new EventVariableInfo() { name = VAR_BUFF_DEFINE, type = typeof(BuffDefine) },
             };
             afterVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card[]) },
+                new EventVariableInfo() { name = VAR_CARD, type = typeof(Card[]) },
                 new EventVariableInfo() { name = VAR_BUFF_DEFINE, type = typeof(BuffDefine) },
                 new EventVariableInfo() { name = VAR_BUFF, type = typeof(Buff[]) },
             };
         }
         ICard[] IMassCardEventDefine.getCards(IEventArg arg)
         {
-            return arg.getVar<Card[]>(EVENTVAR.CARD);
+            return arg.getVar<Card[]>(VAR_CARD);
         }
         [Obsolete]
         public override void Record(CardEngine game, EventArg arg, EventRecord record)
         {
-            record.setCardStates(EVENTVAR.CARD, arg);
+            record.setCardStates(VAR_CARD, arg);
             record.setVar(VAR_BUFF_DEFINE, arg);
             record.setVar(VAR_BUFF, arg);
         }
         public override async Task execute(IEventArg arg)
         {
             var game = arg.game;
-            var cards = arg.getVar<Card[]>(EVENTVAR.CARD);
+            var cards = arg.getVar<Card[]>(VAR_CARD);
             var buffDefine = arg.getVar<BuffDefine>(VAR_BUFF_DEFINE);
             List<Buff> buffList = new List<Buff>();
             foreach (var card in cards)
@@ -55,7 +55,7 @@ namespace TouhouHeartstone
         }
         public override string toString(EventArg arg)
         {
-            var cards = arg.getVar<Card[]>(EVENTVAR.CARD);
+            var cards = arg.getVar<Card[]>(VAR_CARD);
             var buffDefine = arg.getVar<BuffDefine>(VAR_BUFF_DEFINE);
             var cardString = string.Join<Card>(",", cards);
             return $"为{cardString}添加增益{buffDefine}";
@@ -64,11 +64,12 @@ namespace TouhouHeartstone
         {
             var define = game.getEventDefine<MassAddBuffEventDefine>();
             var arg = new EventArg(game, define);
-            arg.setVar(EVENTVAR.CARD, cards);
+            arg.setVar(VAR_CARD, cards);
             arg.setVar(VAR_BUFF_DEFINE, buffDefine);
             return game.triggers.doEvent(arg);
         }
-        public const string VAR_BUFF = "增益";
-        public const string VAR_BUFF_DEFINE = "增益定义";
+        public const string VAR_CARD = EVENTVAR.CARD;
+        public const string VAR_BUFF = EVENTVAR.BUFF;
+        public const string VAR_BUFF_DEFINE = EVENTVAR.BUFF_DEFINE;
     }
 }

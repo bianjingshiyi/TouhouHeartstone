@@ -13,30 +13,30 @@ namespace TouhouHeartstone
         {
             beforeVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)},
-                new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
-                new EventVariableInfo(){name = EVENTVAR.POSITION,type=typeof(int)}
+                new EventVariableInfo(){name = VAR_CARD,type=typeof(Card)},
+                new EventVariableInfo(){name = VAR_PLAYER,type=typeof(Player)},
+                new EventVariableInfo(){name = VAR_POSITION,type=typeof(int)}
             };
             afterVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)},
-                new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
-                new EventVariableInfo(){name = EVENTVAR.POSITION,type=typeof(int)}
+                new EventVariableInfo(){name = VAR_CARD,type=typeof(Card)},
+                new EventVariableInfo(){name = VAR_PLAYER,type=typeof(Player)},
+                new EventVariableInfo(){name = VAR_POSITION,type=typeof(int)}
             };
         }
         [Obsolete]
         public override void Record(CardEngine game, EventArg arg, EventRecord record)
         {
-            record.setCardState(EVENTVAR.CARD, arg);
-            record.setVar(EVENTVAR.PLAYER, arg);
-            record.setVar(EVENTVAR.POSITION, arg);
+            record.setCardState(VAR_CARD, arg);
+            record.setVar(VAR_PLAYER, arg);
+            record.setVar(VAR_POSITION, arg);
             record.setVar(VAR_DEATHRATTLE_BUFFS, arg);
             record.setVar(VAR_DEATHRATTLE_EFFECTS, arg);
         }
         public override async Task execute(IEventArg arg)
         {
             var game = arg.game;
-            Card card = arg.getVar<Card>(EVENTVAR.CARD);
+            Card card = arg.getVar<Card>(VAR_CARD);
 
             var deathrattles = card.getDeathRattles(game);
             Buff[] deathrattleBuffs = new Buff[deathrattles.Length];
@@ -69,9 +69,9 @@ namespace TouhouHeartstone
         {
             var define = game.getEventDefine<DeathEventDefine>();
             var arg = new EventArg(game, define);
-            arg.setVar(EVENTVAR.CARD, card);
-            arg.setVar(EVENTVAR.PLAYER, card.getOwner());
-            arg.setVar(EVENTVAR.POSITION, card.pile.indexOf(card));
+            arg.setVar(VAR_CARD, card);
+            arg.setVar(VAR_PLAYER, card.getOwner());
+            arg.setVar(VAR_POSITION, card.pile.indexOf(card));
             return game.triggers.doEvent(arg);
         }
         #region 私有方法
@@ -79,11 +79,11 @@ namespace TouhouHeartstone
         #region 接口实现
         ICard ICardEventDefine.getCard(IEventArg arg)
         {
-            return arg.getVar<Card>(EVENTVAR.CARD);
+            return arg.getVar<Card>(VAR_CARD);
         }
         DescribableCard IDescribableEventDefine.getCard(IGame game, EventArg eventArg, IPlayer viewer)
         {
-            return eventArg.getVar<Card>(EVENTVAR.CARD);
+            return eventArg.getVar<Card>(VAR_CARD);
         }
 
         DescribableCard[] IDescribableEventDefine.getTargets(IGame game, EventArg eventArg, IPlayer viewer)
@@ -94,8 +94,8 @@ namespace TouhouHeartstone
         string IDescribableEventDefine.toString(IGame game, EventArg eventArg, IPlayer viewer) => toString(eventArg);
         string IDescribableEventDefine.localizeTemplateString(IGame game, EventArg eventArg, IPlayer viewer) => localizeTemplateString();
         object[] IDescribableEventDefine.localizeStringArgs(IGame game, EventArg eventArg, IPlayer viewer) => localizeStringArgs(eventArg);
-        Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Card>(EVENTVAR.CARD).getOwner();
-        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => LOG_ITEM_NAME;
+        Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Card>(VAR_CARD).getOwner();
+        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => Translations.EVENT_LOG_ITEM_NAME_DEATH;
         object[] IDescribableEventDefine.localizeLogItemNameArgs(IGame game, EventArg eventArg) => null;
 
         #endregion
@@ -106,16 +106,17 @@ namespace TouhouHeartstone
         }
         private object[] localizeStringArgs(EventArg eventArg)
         {
-            var card = eventArg.getVar<Card>(EVENTVAR.CARD);
+            var card = eventArg.getVar<Card>(VAR_CARD);
             return new object[] { card.getFormatString() };
         }
 
         #endregion
         [TranslateMsg("{0}是卡牌列表")]
         const string TEMPLATE = "{0} 死亡";
-        [TranslateMsg("游戏事件日志项名称")]
-        private const string LOG_ITEM_NAME = "死亡";
-        public const string VAR_DEATHRATTLE_BUFFS = "遗言增益列表";
-        public const string VAR_DEATHRATTLE_EFFECTS = "遗言效果列表";
+        public const string VAR_CARD = EVENTVAR.CARD;
+        public const string VAR_PLAYER = EVENTVAR.PLAYER;
+        public const string VAR_POSITION = EVENTVAR.POSITION;
+        public const string VAR_DEATHRATTLE_BUFFS = EVENTVAR.LASTWORD_BUFFS;
+        public const string VAR_DEATHRATTLE_EFFECTS = EVENTVAR.LASTWORD_EFFECTS;
     }
 }

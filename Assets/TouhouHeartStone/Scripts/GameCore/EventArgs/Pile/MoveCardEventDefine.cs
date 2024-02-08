@@ -79,11 +79,11 @@ namespace TouhouHeartstone
         {
             return eventArg.getVar<Card>(VAR_CARD);
         }
-        public static string VAR_CARD => EVENTVAR.CARD;
-        public static string VAR_FROM_PILE => EVENTVAR.FROM_PILE;
-        public static string VAR_POSITION => EVENTVAR.POSITION;
-        public const string VAR_TO_PILE = "目标牌堆";
-        public const string VAR_SUCCESS = "是否成功";
-        public const string VAR_RESET_PROPS = "重置属性";
+        public const string VAR_CARD = EVENTVAR.CARD;
+        public const string VAR_FROM_PILE = EVENTVAR.FROM_PILE;
+        public const string VAR_POSITION = EVENTVAR.POSITION;
+        public const string VAR_SUCCESS = EVENTVAR.SUCCESS;
+        public const string VAR_TO_PILE = EVENTVAR.TO_PILE;
+        public const string VAR_RESET_PROPS = EVENTVAR.RESET_PROPS;
     }
 }

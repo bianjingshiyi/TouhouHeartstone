@@ -102,9 +102,8 @@ namespace TouhouHeartstone
         public EventTriggerTime triggerTime { get; private set; }
         public const string actionPortName = "action";
         public const string conditionPortName = "condition";
-        public const string conditionPortEditorName = "触发条件";
         public static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
-        public static PortDefine conditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, conditionPortEditorName);
+        public static PortDefine conditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, Translations.EDITOR_PARAM_NAME_TRIGGER_CONDITION);
     }
     [Serializable]
     public class SerializableEventRuleEntryNode : SerializableNode

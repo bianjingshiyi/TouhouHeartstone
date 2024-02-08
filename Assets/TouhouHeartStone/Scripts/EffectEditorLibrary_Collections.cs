@@ -26,19 +26,19 @@ namespace Game
         [TranslateMsg("编辑器_动作节点_遍历")]
         public const string EDITOR_NODE_NAME_FOREACH = "遍历";
 
-        [TranslateMsg("编辑器_参数名称_降序")]
+        [TranslateMsg("编辑器_参数名称_降序", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_DESCENDING = "降序";
-        [TranslateMsg("编辑器_参数名称_排序依据")]
+        [TranslateMsg("编辑器_参数名称_排序依据", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_ORDER_KEY = "排序依据";
-        [TranslateMsg("编辑器-包含节点-参数名称")]
+        [TranslateMsg("编辑器-包含节点-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_CONTAINS_ELEMENT = "是否包含元素";
-        [TranslateMsg("动作图编辑器中参数节点名称之匹配的集合")]
+        [TranslateMsg("动作图编辑器中参数节点名称之匹配的集合", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_ARRAY_MATCHED = "匹配的集合";
-        [TranslateMsg("动作图编辑器中参数节点名称之集合")]
+        [TranslateMsg("动作图编辑器中参数节点名称之集合", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_ARRAY_MISMATCHED = "不匹配的集合";
-        [TranslateMsg("编辑器_参数名称_元素位置")]
+        [TranslateMsg("编辑器_参数名称_元素位置", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_INDEX = "元素位置";
-        [TranslateMsg("编辑器-集合相减-参数名称")]
+        [TranslateMsg("编辑器-集合相减-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_EXCEPTED_COLLECTION = "减去的集合";
 
 
@@ -370,15 +370,15 @@ namespace Game
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_NAME_AVERAGE = "获取平均值";
 
-        [TranslateMsg("编辑器-求和-参数名称")]
+        [TranslateMsg("编辑器-求和-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_SUM = "和";
-        [TranslateMsg("编辑器-求和-参数名称")]
+        [TranslateMsg("编辑器-求和-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_VALUE_TO_BE_SUMMED = "参与求和的值";
-        [TranslateMsg("编辑器-获取最小值-参数名称")]
+        [TranslateMsg("编辑器-获取最小值-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_MIN_VALUE = "最小值";
-        [TranslateMsg("编辑器-获取最大值-参数名称")]
+        [TranslateMsg("编辑器-获取最大值-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_MAX_VALUE = "最大值";
-        [TranslateMsg("编辑器-获取最大值-参数名称")]
+        [TranslateMsg("编辑器-获取最大值-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_AVERAGE = "平均值";
 
         /// <summary>
@@ -460,15 +460,15 @@ namespace Game
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_NAME_IS_SUBSET = "是否是某集合的子集";
 
-        [TranslateMsg("编辑器-集合相加-参数名称")]
+        [TranslateMsg("编辑器-集合相加-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_CONCATING_COLLECTION = "相加的集合";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_COLLECTION_A = "集合A";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_COLLECTION_B = "集合B";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_SUBSET = "子集";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_IS_SUBSET = "是否是子集";
 
         /// <summary>
@@ -614,7 +614,7 @@ namespace Game
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_NAME_RANDOM_TAKE = "获取集合内的随机X个元素";
 
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_COUNT_X = "数量X";
         /// <summary>
         /// 获取第一个元素
@@ -768,17 +768,17 @@ namespace Game
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_NAME_CAST_COLLECTION_TYPE = "转换集合类型"; 
 
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_SELECTOR = "选择的属性";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_IGNORE_ORDER = "忽略顺序";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_MANY_COLLECTIONS = "多个集合";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_MERGED_COLLECTION = "合并的集合";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_SPECIFIC_TYPE_COLLECTION = "特定类型的集合";
-        [TranslateMsg("编辑器-参数名称")]
+        [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_TYPE = "类型";
 
         /// <summary>

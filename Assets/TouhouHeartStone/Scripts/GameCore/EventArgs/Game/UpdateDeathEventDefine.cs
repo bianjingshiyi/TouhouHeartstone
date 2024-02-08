@@ -47,6 +47,6 @@ namespace TouhouHeartstone
             var arg = new EventArg(game, define);
             return game.triggers.doEvent(arg);
         }
-        public const string VAR_CLEARED_CARDS = "清理的卡牌";
+        public const string VAR_CLEARED_CARDS = EVENTVAR.CLEARED_CARDS;
     }
 }

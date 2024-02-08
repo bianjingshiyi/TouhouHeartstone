@@ -13,13 +13,11 @@ namespace TouhouHeartstone
         {
             beforeVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() { name = EVENTVAR.PLAYER, type = typeof(Player) },
-                new EventVariableInfo() { name = VAR_SELF_CARD, type = typeof(Card) },
-                new EventVariableInfo() { name = VAR_OPPO_CARD, type = typeof(Card) },
+                new EventVariableInfo() { name = VAR_PLAYER, type = typeof(Player) },
             };
             afterVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() { name = EVENTVAR.PLAYER, type = typeof(Player) },
+                new EventVariableInfo() { name = VAR_PLAYER, type = typeof(Player) },
                 new EventVariableInfo() { name = VAR_SELF_CARD, type = typeof(Card) },
                 new EventVariableInfo() { name = VAR_OPPO_CARD, type = typeof(Card) },
                 new EventVariableInfo() { name = VAR_RESULT, type = typeof(bool) },
@@ -28,7 +26,7 @@ namespace TouhouHeartstone
         [Obsolete]
         public override void Record(CardEngine game, EventArg arg, EventRecord record)
         {
-            record.setVar(EVENTVAR.PLAYER, arg);
+            record.setVar(VAR_PLAYER, arg);
             record.setVar(VAR_SELF_CARDS, arg);
             record.setVar(VAR_OPPO_CARDS, arg);
             record.setCardState(VAR_SELF_CARD, arg);
@@ -38,7 +36,7 @@ namespace TouhouHeartstone
         public override async Task execute(IEventArg arg)
         {
             var game = arg.game;
-            var duelPlayer = arg.getVar<Player>(EVENTVAR.PLAYER);
+            var duelPlayer = arg.getVar<Player>(VAR_PLAYER);
             var selfCards = arg.getVar<Card[]>(VAR_SELF_CARDS);
             var oppoCards = arg.getVar<Card[]>(VAR_OPPO_CARDS);
             var selfCard = selfCards.random(game);
@@ -70,7 +68,7 @@ namespace TouhouHeartstone
         {
             var define = game.getEventDefine<RevealDuelEventDefine>();
             var arg = new EventArg(game, define);
-            arg.setVar(EVENTVAR.PLAYER, player);
+            arg.setVar(VAR_PLAYER, player);
             arg.setVar(VAR_SELF_CARDS, selfCards);
             arg.setVar(VAR_OPPO_CARDS, enemyCards);
             return game.triggers.doEvent(arg);
@@ -82,7 +80,7 @@ namespace TouhouHeartstone
         #region 接口实现
         DescribableCard IDescribableEventDefine.getCard(IGame game, EventArg arg, IPlayer viewer)
         {
-            var player = arg.getVar<Player>(EVENTVAR.PLAYER);
+            var player = arg.getVar<Player>(VAR_PLAYER);
             return player.getMaster();
         }
         DescribableCard[] IDescribableEventDefine.getTargets(IGame game, EventArg arg, IPlayer viewer)
@@ -104,8 +102,8 @@ namespace TouhouHeartstone
         {
             return localizeStringArgs(eventArg);
         }
-        Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Player>(EVENTVAR.PLAYER);
-        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => LOG_ITEM_NAME;
+        Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Player>(VAR_PLAYER);
+        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => Translations.EVENT_LOG_ITEM_NAME_FAITHDUEL;
         object[] IDescribableEventDefine.localizeLogItemNameArgs(IGame game, EventArg eventArg) => null;
         #endregion
         private string localizeTemplateString(EventArg eventArg)
@@ -121,7 +119,7 @@ namespace TouhouHeartstone
         }
         private object[] localizeStringArgs(EventArg eventArg)
         {
-            var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
+            var player = eventArg.getVar<Player>(VAR_PLAYER);
             var youCard = eventArg.getVar<Card>(VAR_SELF_CARD);
             var oppoCard = eventArg.getVar<Card>(VAR_OPPO_CARD);
             return new object[] {
@@ -139,12 +137,11 @@ namespace TouhouHeartstone
         const string TEMPLATE_LOSE = "{0}发动了对决，揭示了:{1}。 对手揭示了：{2}。结果是失败。";
         [TranslateMsg("{0}是玩家")]
         const string TEMPLATE_NULL = "{0}发动了对决 揭示了个寂寞，输掉了对决。";
-        [TranslateMsg("游戏事件日志项名称", Translations.CONTEXT_GAME_LOG_NAME)]
-        private const string LOG_ITEM_NAME = "信仰对决";
-        public const string VAR_SELF_CARDS = "己方可选卡牌";
-        public const string VAR_OPPO_CARDS = "对方可选卡牌";
-        public const string VAR_SELF_CARD = "己方卡牌";
-        public const string VAR_OPPO_CARD = "对方卡牌";
-        public const string VAR_RESULT = "是否胜利";
+        public const string VAR_PLAYER = EVENTVAR.PLAYER;
+        public const string VAR_SELF_CARD = EVENTVAR.SELF_CARD;
+        public const string VAR_OPPO_CARD = EVENTVAR.OPPO_CARD;
+        public const string VAR_RESULT = EVENTVAR.WIN;
+        public const string VAR_SELF_CARDS = EVENTVAR.SELF_VALID_CARDS;
+        public const string VAR_OPPO_CARDS = EVENTVAR.OPPO_VALID_CARDS;
     }
 }

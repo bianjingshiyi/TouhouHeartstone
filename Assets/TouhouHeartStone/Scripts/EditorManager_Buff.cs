@@ -72,7 +72,7 @@ namespace Game
         public string[] getBuffNames()
         {
             var newBuffName = game.lang._(DROPDOWN_NEW_BUFF);
-            return _currentBuffDefines.Select(b => game.card.getDefaultBuffSkin(b)?.name ?? b.ToString()).Prepend(newBuffName).ToArray();
+            return _currentBuffDefines.Select(b => game.card.getBuffSkin(b)?.name ?? b.ToString()).Prepend(newBuffName).ToArray();
         }
         /// <summary>
         /// 获取当前卡池环境下的所有增益引用。

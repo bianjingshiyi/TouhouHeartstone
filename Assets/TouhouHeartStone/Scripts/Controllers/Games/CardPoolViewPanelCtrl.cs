@@ -74,7 +74,7 @@ namespace Controllers
             _ui.setCardPoolValues(_cardPoolFilterValue);
             _ui.setCharacterFilters(getCharacterNames());
             _ui.setCharacterFilter(_characterFiltersValue);
-            _ui.setSortTypes(_sortTypes);
+            _ui.setSortTypes(getSortTypeNames());
             _ui.setSortType(_sortType);
             _ui.setCostFilters(_costFilters);
             _ui.setCostFilter(_costFiltersValue);
@@ -643,6 +643,14 @@ namespace Controllers
             return _typeFilters.Select(t => game.editor.getCardTypeName(t)).ToArray();
         }
         /// <summary>
+        /// 获取排序类型的名称。
+        /// </summary>
+        /// <returns>排序类型名称数组。</returns>
+        private string[] getSortTypeNames()
+        {
+            return _sortTypes.Select(t => game.lang._(t)).ToArray();
+        } 
+        /// <summary>
         /// 获取所有人物的名称。
         /// </summary>
         /// <returns>人物名称数组。</returns>
@@ -651,7 +659,7 @@ namespace Controllers
         {
             List<string> characterNameList = new List<string>
             {
-                StringTable.CARDVIEW_CHARACTER_NEUTRAL
+                game.lang._(StringTable.CARDVIEW_CHARACTER_NEUTRAL)
             };
             for (int i = 1; i < _characterFilters.Length; i++)
             {

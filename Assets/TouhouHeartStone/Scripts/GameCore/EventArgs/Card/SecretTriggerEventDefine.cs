@@ -72,7 +72,7 @@ namespace TouhouHeartstone
         string IDescribableEventDefine.localizeTemplateString(IGame game, EventArg eventArg, IPlayer viewer) => localizeTemplateString();
         object[] IDescribableEventDefine.localizeStringArgs(IGame game, EventArg eventArg, IPlayer viewer) => localizeStringArgs(eventArg);
         Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Card>(VAR_CARD).getOwner();
-        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => LOG_ITEM_NAME;
+        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => Translations.EVENT_LOG_ITEM_NAME_TRAP;
         object[] IDescribableEventDefine.localizeLogItemNameArgs(IGame game, EventArg eventArg) => null;
         #endregion
 
@@ -90,12 +90,9 @@ namespace TouhouHeartstone
 
         [TranslateMsg("{0}是卡")]
         const string TEMPLATE = "陷阱 {0} 被触发";
-        [TranslateMsg("游戏事件日志项名称")]
-        private const string LOG_ITEM_NAME = "陷阱";
-        public static string VAR_CARD => EVENTVAR.CARD;
-
-        public const string VAR_BUFF = "增益";
-        public const string VAR_EFFECT = "效果";
-        public const string VAR_EVENT = "事件";
+        public const string VAR_CARD = EVENTVAR.CARD;
+        public const string VAR_BUFF = EVENTVAR.BUFF;
+        public const string VAR_EFFECT = EVENTVAR.EFFECT;
+        public const string VAR_EVENT = EVENTVAR.EVENT;
     }
 }

@@ -837,19 +837,19 @@ namespace UI
 
         public static readonly string[] categories = new string[]
         {
-            ACTION_CATEGORY_NAME_NONE,
+            StringTable.EDITOR_NODE_CATEGORY_NONE,
             StringTable.EDITOR_NODE_CATEGORY_PLAYER, // 玩家
             StringTable.EDITOR_NODE_CATEGORY_CARD, // 卡牌
-            EffectEditorLibrary.EDITOR_NODE_CATEGORY_CARD_DEFINE, // 卡牌定义
+            StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, // 卡牌定义
             StringTable.EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, // 卡牌快照
             StringTable.EDITOR_NODE_CATEGORY_PILE, // 牌堆
             StringTable.EDITOR_NODE_CATEGORY_BUFF, //增益
             StringTable.EDITOR_NODE_CATEGORY_EFFECT, // 效果
             StringTable.EDITOR_NODE_CATEGORY_EVENT, // 事件
-            ActionNodeGraphCtrl.EDITOR_CATEGORY_EVENT_ENTRY_NODE, // 事件入口
+            StringTable.EDITOR_NODE_CATEGORY_EVENT_ENTRY_NODE, // 事件入口
             StringTable.EDITOR_NODE_CATEGORY_ACTION, // 行动
             StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, // 集合运算
-            EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER, // 其他
+            StringTable.EDITOR_NODE_CATEGORY_OTHER, // 其他
         };
         public static readonly NodeDefineType[] defineTypes = new NodeDefineType[]
         {

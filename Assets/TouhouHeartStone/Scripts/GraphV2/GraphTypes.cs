@@ -124,7 +124,7 @@ namespace Game
             
             // 事件
             new GraphTypeInfo() { type = typeof(EventArg), typeName = StringTable.EDITOR_TYPE_NAME_EVENT_ARG, portType = true, color = new Color(1, 1, .2f, 1) },
-            new GraphTypeInfo() { type = typeof(EventRecord), typeName = EffectEditorLibrary.EDITOR_TYPE_NAME_EVENT_RECORD, color = new Color(.9f, .9f, .4f, 1) },
+            new GraphTypeInfo() { type = typeof(EventRecord), typeName = StringTable.EDITOR_TYPE_NAME_EVENT_RECORD, color = new Color(.9f, .9f, .4f, 1) },
             #endregion
 
             #region 类型代理

@@ -163,6 +163,6 @@ namespace TouhouHeartstone
         [TranslateMsg("游戏事件日志项名称")]
         private const string LOG_ITEM_NAME = "使用";
 
-        public static string VAR_TARGETS => EVENTVAR.TARGET_CARD;
+        public const string VAR_TARGETS = EVENTVAR.TARGET_CARD;
     }
 }

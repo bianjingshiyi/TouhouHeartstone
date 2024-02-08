@@ -150,6 +150,16 @@ namespace Controllers
             }
             return game.lang._p(StringTable.CONTEXT_NODE_PARAM_NAME, portName);
         }
+        public string translateEventVarName(string eventVarName)
+        {
+            if (string.IsNullOrEmpty(eventVarName))
+                return string.Empty;
+            if (_nameTextDict.TryGetValue(eventVarName, out string text))
+            {
+                return game.lang._p(EVENTVAR.CONTEXT_EVENT_VAR, text);
+            }
+            return game.lang._p(EVENTVAR.CONTEXT_EVENT_VAR, eventVarName);
+        }
         #endregion
         public Vector2 getViewportCenter()
         {
@@ -1740,7 +1750,7 @@ namespace Controllers
             //值输入
             foreach (var inputPort in node.inputPorts)
             {
-                // 翻译输出节点
+                // 翻译输入节点
                 var inputName = translatePortName(inputPort);
                 var portInfo = new PortItemInfo(inputName, game.editor.getColorByType(inputPort.define.type), inputPort.GetPortType() == PortType.Control);
                 var defaultValue = getDefaultValueInfoFromInput(inputPort);
@@ -1760,11 +1770,30 @@ namespace Controllers
             {
                 return Array.Empty<PortItemInfo>();
             }
+            else if (node is EventEntryNode eventEntry)
+            {
+                return getEventEntryNodeOutputViewData(eventEntry);
+            }
+            else if (node is EventRuleEntryNode eventRuleEntry)
+            {
+                return getEventEntryNodeOutputViewData(eventRuleEntry);
+            }
             List<PortItemInfo> outputList = new List<PortItemInfo>();
             foreach (var output in node.outputPorts)
             {
                 // 翻译输出节点
                 var outputName = translatePortName(output);
+                outputList.Add(new PortItemInfo(outputName, game.editor.getColorByType(output.define.type), output.GetPortType() == PortType.Control));
+            }
+            return outputList.ToArray();
+        }
+        private PortItemInfo[] getEventEntryNodeOutputViewData(Node node)
+        {
+            List<PortItemInfo> outputList = new List<PortItemInfo>();
+            foreach (var output in node.outputPorts)
+            {
+                // 翻译输出节点
+                var outputName = translateEventVarName(output?.define?.getDisplayName());
                 outputList.Add(new PortItemInfo(outputName, game.editor.getColorByType(output.define.type), output.GetPortType() == PortType.Control));
             }
             return outputList.ToArray();
@@ -2080,8 +2109,6 @@ namespace Controllers
         public event Action<Node, string, int, int[]> onOpenNodeInputDefaultValueCardDefine;
         #endregion
         #region 属性字段
-        [TranslateMsg("编辑器-分类名称-事件入口节点")]
-        public const string EDITOR_CATEGORY_EVENT_ENTRY_NODE = "事件入口";
         [TranslateMsg("编辑器-参数名称-目标增益（自定义光环-更新动作-输出值）")]
         public const string EDITOR_PARAM_NAME_TARGET_BUFF = "目标增益";
         [TranslateMsg("编辑器-节点名称-主动效果入口节点")]
@@ -2154,10 +2181,6 @@ namespace Controllers
             DEFINE.TARGET_TYPE_SERVANT
         };
 
-        [TranslateMsg("内置节点参数，通常用于比较和操作，表示操作符，如加、减、或、异或等")]
-        const string EDITOR_PARAM_OPERATOR = "运算符";
-        [TranslateMsg("内置节点参数，通常用于表示计算结果")]
-        const string EDITOR_PARAM_RESULT = "结果";
         [TranslateMsg("节点参数 PropertyName")]
         const string EDITOR_PARAM_PROPERTY_NAME = "属性名";
         [TranslateMsg("节点参数 DamageEvent")]
@@ -2212,11 +2235,11 @@ namespace Controllers
             
             //节点名称
             { "IntegerOperation", StringTable.EDITOR_NODE_NAME_INTEGER_OPERATION },
-            { "LogicOperation", StringTable.EDIOTR_NODE_NAME_LOGIC_OPERATION },
-            { "Compare", StringTable.EDIOTR_NODE_NAME_COMPARE },
-            { "IntegerConst", StringTable.EDIOTR_NODE_NAME_INTEGER_CONST },
-            { "StringConst", StringTable.EDIOTR_NODE_NAME_STRING_CONST },
-            { "BooleanConst", StringTable.EDIOTR_NODE_NAME_BOOLEAN_CONST },
+            { "LogicOperation", StringTable.EDITOR_NODE_NAME_LOGIC_OPERATION },
+            { "Compare", StringTable.EDITOR_NODE_NAME_COMPARE },
+            { "IntegerConst", StringTable.EDITOR_NODE_NAME_INTEGER_CONST },
+            { "StringConst", StringTable.EDITOR_NODE_NAME_STRING_CONST },
+            { "BooleanConst", StringTable.EDITOR_NODE_NAME_BOOLEAN_CONST },
             { "ThisCard", StringTable.EDITOR_NODE_NAME_THIS_CARD },
             { "GetSpellDamage", StringTable.EDITOR_NODE_NAME_GET_SPELL_DAMAGE },
             { "GetOwner", StringTable.EDITOR_NODE_NAME_GET_OWNER },
@@ -2227,8 +2250,6 @@ namespace Controllers
             // 内置参数
             { "value", StringTable.EDITOR_PARAM_NAME_VALUE },
             { "Value", StringTable.EDITOR_PARAM_NAME_VALUE },
-            { "operator", EDITOR_PARAM_OPERATOR },
-            { "result", EDITOR_PARAM_RESULT },
             { "PropertyName", EDITOR_PARAM_PROPERTY_NAME },
             { "RemoveModifierEvent", EDITOR_PARAM_PROPERTY_NAME },
             { "Collection", StringTable.EDITOR_PARAM_NAME_COLLECTION },

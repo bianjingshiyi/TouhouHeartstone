@@ -967,7 +967,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u8D39\u7528"
+  m_Text: "\u7075\u529B\u503C\u6D88\u8017"
 --- !u!114 &8107214290752667775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -980,7 +980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  comment: 
+  comment: "\u5361\u724C\u9009\u62E9\u9875\u9762\u7684\u7B5B\u9009\u9879"
   context: 
 --- !u!1 &6760345342129206396
 GameObject:
@@ -1605,6 +1605,7 @@ MonoBehaviour:
   _characterFilters: []
   _characterFiltersValue: 
   _costFiltersValue: 
+  _typeFilters: []
   _typeFiltersValue: 
   _searchFilterString: 
 --- !u!1001 &963496571326571996
@@ -2883,6 +2884,11 @@ PrefabInstance:
     - target: {fileID: 5953344439004416454, guid: 92b5566bce81a774fb9bb22f1b342b2e,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8605357779530813616, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8786675441958387207, guid: 92b5566bce81a774fb9bb22f1b342b2e,

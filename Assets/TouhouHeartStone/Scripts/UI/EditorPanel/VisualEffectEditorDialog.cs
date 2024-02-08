@@ -16,7 +16,10 @@ namespace UI
         }
         public void initEvents(string[] eventNames)
         {
-            _eventDropdownFieldObj.SetActive(eventNames != null);
+            foreach (var obj in _eventDropdownFieldObjects)
+            {
+                obj.SetActive(eventNames != null);
+            }
             _eventDropdown.ClearOptions();
             if (eventNames != null)
                 _eventDropdown.AddOptions(new List<string>(eventNames));
@@ -34,10 +37,16 @@ namespace UI
             setAnimation(viewData.animIndex);
             setSourcePosition(viewData.sourcePosition);
             setSourcePositionVarName(viewData.sourcePositionVarName);
-            _sourcePositionVarNameObject.SetActive(viewData.sourcePositionVarNameVisible);
+            foreach (var obj in _sourcePositionVarNameObjects)
+            {
+                obj.SetActive(viewData.sourcePositionVarNameVisible);
+            }
             setTargetPosition(viewData.targetPosition);
             setTargetPositionVarName(viewData.targetPositionVarName);
-            _targetPositionVarNameObject.SetActive(viewData.targetPositionVarNameVisible);
+            foreach (var obj in _targetPositionVarNameObjects)
+            {
+                obj.SetActive(viewData.targetPositionVarNameVisible);
+            }
         }
         public void setEvent(int index)
         {
@@ -102,8 +111,6 @@ namespace UI
         #endregion
         #region 属性字段
         [SerializeField]
-        private GameObject _eventDropdownFieldObj;
-        [SerializeField]
         private Dropdown _eventDropdown;
         [SerializeField]
         private Dropdown _effectDropdown;
@@ -112,9 +119,11 @@ namespace UI
         [SerializeField]
         private Dropdown _targetPositionDropdown;
         [SerializeField]
-        private GameObject _sourcePositionVarNameObject;
+        private GameObject[] _eventDropdownFieldObjects;
         [SerializeField]
-        private GameObject _targetPositionVarNameObject;
+        private GameObject[] _sourcePositionVarNameObjects;
+        [SerializeField]
+        private GameObject[] _targetPositionVarNameObjects;
         [SerializeField]
         private InputField _sourcePositionVarNameField;
         [SerializeField]

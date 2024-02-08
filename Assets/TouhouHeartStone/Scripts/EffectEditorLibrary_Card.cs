@@ -66,41 +66,39 @@ namespace Game
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_IS_CARD_VISIBLE_TO = "卡牌是否可见";
 
-        [TranslateMsg("是否濒死节点-常量")]
+        [TranslateMsg("是否濒死节点-常量", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_CHECK_HEALTH_ZERO = "检查生命值<=0";
-        [TranslateMsg("是否濒死节点-常量")]
+        [TranslateMsg("是否濒死节点-常量", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_CHECK_DESTROYED = "检查待摧毁";
-        [TranslateMsg("是否濒死节点-返回值")]
+        [TranslateMsg("是否濒死节点-返回值", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_IS_DEAD = "濒死";
-        [TranslateMsg("编辑器/参数名称")]
+        [TranslateMsg("编辑器/参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_FORCE_ATTACKER = "发动攻击的卡牌";
-        [TranslateMsg("编辑器/卡牌-是否已蓄力节点-参数名称")]
+        [TranslateMsg("编辑器/卡牌-是否已蓄力节点-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_IS_CHARGED = "已蓄力";
-        [TranslateMsg("编辑器/卡牌-是否已蓄力节点-参数名称")]
+        [TranslateMsg("编辑器/卡牌-是否已蓄力节点-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_CHARGED_LEVEL = "蓄力层数";
-        [TranslateMsg("编辑器节点参数")]
+        [TranslateMsg("编辑器节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_VALID_TARGETS = "合法目标集合";
 
-        [TranslateMsg("节点参数 isSet")]
-        const string EDITOR_PARAM_IS_SET = "设置";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         const string EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT = "卡牌属性更改事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         const string EDITOR_PARAM_NAME_SET_CARD_DEFINE_EVENT = "设置卡牌定义事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         const string EDITOR_PARAM_NAME_BE_CHARGED_EVENT = "蓄力事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_POSITION = "位置";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         const string EDITOR_PARAM_NAME_CARD_PROP_VISIBILITY_CHANGED_EVENT = "卡牌属性可见性更改事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         const string EDITOR_PARAM_NAME_CARD_VISIBILITY_CHANGED_EVENT = "卡牌可见性更改事件";
 
-        [TranslateMsg("编辑器-卡牌-参数名称")]
+        [TranslateMsg("编辑器-卡牌-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_MASS_DISCARD_EVENT = "群体弃牌事件";
-        [TranslateMsg("编辑器-卡牌-参数名称")]
+        [TranslateMsg("编辑器-卡牌-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_MASS_HEAL_EVENT = "群体治疗事件";
-        [TranslateMsg("编辑器-卡牌-参数名称")]
+        [TranslateMsg("编辑器-卡牌-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_MASS_SEAL_EVENT = "群体封印事件";
 
         /// <summary>
@@ -113,8 +111,8 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardOfType_Obs_CardType, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CHECK_CARD_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsCardDefineObsolete(
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD)] Card card,
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE, isConst: true)] CardDefineSelect select)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_TYPE, isConst: true)] CardDefineSelect select)
         {
             if (card == null)
                 return false;
@@ -141,8 +139,8 @@ namespace Game
         [THHActionMethod(BuiltinActionDefineID.IsCardOfType, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CHECK_CARD_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsCardOfType(
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD)] Card card,
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE)] CardType type)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_TYPE)] CardType type)
         {
             if (card == null || type == null)
                 return false;
@@ -157,8 +155,8 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.CardHasKeyword, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_IS_KEYWORDS)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsKeywords(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD)] Card card,
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_KEYWORD)] string select)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_KEYWORD)] string select)
         {
             if (card == null)
                 return false;
@@ -579,10 +577,6 @@ namespace Game
         }
         #region 伤害类节点
         [TranslateMsg("编辑器/伤害分类/节点名称")]
-        public const string EDITOR_NODE_IS_SPELL_DAMAGE = "是否为法术伤害";
-        [TranslateMsg("编辑器/伤害分类/节点名称")]
-        public const string EDITOR_TYPE_NAME_VALUE_COMPENSATION = "+";
-        [TranslateMsg("编辑器/伤害分类/节点名称")]
         public const string EDITOR_NODE_NAME_DEAL_DAMAGE = "造成伤害";
         [TranslateMsg("编辑器/伤害分类/节点名称")]
         public const string EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE = "造成伤害或法伤";
@@ -592,24 +586,31 @@ namespace Game
         public const string EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS = "对固定数量的随机目标造成伤害或法伤";
         [TranslateMsg("动作图编辑器中动作节点名称之造成法术伤害")]
         public const string EDITOR_NODE_NAME_DEAL_SPELL_DAMAGE = "造成法术伤害";
-        [TranslateMsg("编辑器/伤害分类/节点名称")]
+
+
+        [TranslateMsg("编辑器/伤害分类/节点名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_VALUE_COMPENSATION = "+";
+        [TranslateMsg("编辑器/伤害分类/节点名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_DAMAGE_SOURCE = "伤害源";
-        [TranslateMsg("编辑器/伤害分类/节点名称")]
+        [TranslateMsg("编辑器/伤害分类/节点名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_HEAL_SOURCE = "治疗源";
 
-        [TranslateMsg("编辑器-伤害-参数名称")]
+        [TranslateMsg("编辑器-伤害-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_MASS_DAMAGE_EVENT = "群体伤害事件";
-        [TranslateMsg("编辑器-伤害-参数名称")]
+        [TranslateMsg("编辑器-伤害-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_SPLIT_DAMAGE_EVENT = "分配伤害事件";
 
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_ATTACK_EVENT = "攻击事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_SET_ARMOR_EVENT = "护甲改变事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_SHACKLE_EVENT = "禁锢事件";
-        [TranslateMsg("节点参数")]
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_REVEAL_EVENT = "揭示事件";
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_IS_SPELL_DAMAGE = "是否为法术伤害";
+
         [ObsoletedKeyMethod(BuiltinActionDefineID.Damage, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE, "Damage")]
         [Obsolete]
         public static Task damage(
@@ -631,8 +632,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
-            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE)] bool damagetype,
-            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION)] int damage2)
+            [ActionNodeParam(EDITOR_PARAM_NAME_IS_SPELL_DAMAGE)] bool damagetype,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VALUE_COMPENSATION)] int damage2)
         {
             if (targets == null)
                 return default;
@@ -655,8 +656,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
-            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE)] bool damagetype,
-            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION)] int damage2)
+            [ActionNodeParam(EDITOR_PARAM_NAME_IS_SPELL_DAMAGE)] bool damagetype,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VALUE_COMPENSATION)] int damage2)
         {
             if (targets == null)
                 return Task.FromResult(Array.Empty<EventArg>());
@@ -680,9 +681,9 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
-            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE)] bool damagetype,
-            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION)] int count2,
-            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION)] int damage2)
+            [ActionNodeParam(EDITOR_PARAM_NAME_IS_SPELL_DAMAGE)] bool damagetype,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VALUE_COMPENSATION)] int count2,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VALUE_COMPENSATION)] int damage2)
         {
             if (targets == null)
                 return default;
@@ -706,8 +707,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
-            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE)] bool damagetype,
-            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION)] int damage2)
+            [ActionNodeParam(EDITOR_PARAM_NAME_IS_SPELL_DAMAGE)] bool damagetype,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VALUE_COMPENSATION)] int damage2)
         {
             if (targets == null)
                 return default;
@@ -727,10 +728,10 @@ namespace Game
         [return: ActionNodeParam(EDITOR_PARAM_NAME_MASS_DAMAGE_EVENT)][return: NodeParamEventType(typeof(MassDamageEventDefine))]
         public static Task<EventArg> dealDamageOrSpellDamage(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)] int damage,
-            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION)] int damage2,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VALUE_COMPENSATION)] int damage2,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
-            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE)] bool damagetype)
+            [ActionNodeParam(EDITOR_PARAM_NAME_IS_SPELL_DAMAGE)] bool damagetype)
         {
             if (targets == null)
                 return default;
@@ -753,8 +754,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
-            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE)] bool damagetype,
-            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION)] int damage2)
+            [ActionNodeParam(EDITOR_PARAM_NAME_IS_SPELL_DAMAGE)] bool damagetype,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VALUE_COMPENSATION)] int damage2)
         {
             if (targets == null)
                 return Task.FromResult(Array.Empty<EventArg>());
@@ -774,10 +775,10 @@ namespace Game
         [return: ActionNodeParam(EDITOR_PARAM_NAME_SPLIT_DAMAGE_EVENT)][return: NodeParamEventType(typeof(SplitDamageEventDefine))]
         public static Task<EventArg> dealDamageOrSpellDamageSplitToTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)] int damage,
-            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION)] int damage2,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VALUE_COMPENSATION)] int damage2,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
-            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE)] bool damagetype)
+            [ActionNodeParam(EDITOR_PARAM_NAME_IS_SPELL_DAMAGE)] bool damagetype)
         {
             if (targets == null)
                 return Task.FromResult<EventArg>(null);
@@ -801,9 +802,9 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
-            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE)] bool damagetype,
-            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION)] int count2,
-            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION)] int damage2)
+            [ActionNodeParam(EDITOR_PARAM_NAME_IS_SPELL_DAMAGE)] bool damagetype,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VALUE_COMPENSATION)] int count2,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VALUE_COMPENSATION)] int damage2)
         {
             if (targets == null)
                 return default;
@@ -823,12 +824,12 @@ namespace Game
         [return: ActionNodeParam(EDITOR_PARAM_NAME_MASS_DAMAGE_EVENT)][return: NodeParamEventType(typeof(MassDamageEventDefine))]
         public static Task<EventArg> dealDamageOrSpellDamageToSpecificNumberOfTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count,
-            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION)] int count2,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VALUE_COMPENSATION)] int count2,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)] int damage,
-            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION)] int damage2,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VALUE_COMPENSATION)] int damage2,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
-            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE)] bool damagetype)
+            [ActionNodeParam(EDITOR_PARAM_NAME_IS_SPELL_DAMAGE)] bool damagetype)
         {
             if (targets == null)
                 return default;
@@ -999,7 +1000,7 @@ namespace Game
 
 
         #region 获取场上的卡牌
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllServants, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_ALL_SERVANTS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllServants, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_ALL_SERVANTS, "获取所有随从")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getAllServants(CardEngine game)
         {
@@ -1030,7 +1031,7 @@ namespace Game
         /// <returns></returns>
         [TranslateMsg("节点名称")]
         public const string EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS = "获取友方仆从";
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetFriendlyServants, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetFriendlyServants, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS, "获取友方随从")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getFriendlyServants(CardEngine game, Card card)
         {
@@ -1054,7 +1055,7 @@ namespace Game
         /// <param name="game"></param>
         /// <param name="card"></param>
         /// <returns></returns>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEnemyServants, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_ENEMY_SERVANTS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEnemyServants, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_ENEMY_SERVANTS, "获取敌方随从")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getEnemyServants(CardEngine game, Card card)
         {
@@ -1162,7 +1163,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetNearbyCards, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_NEARBY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getNearbyCards(CardEngine game,
-           [ActionNodeParam(StringTable.EDITOR_NODE_CATEGORY_CARD)] Card card)
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
             if (card == null)
                 return Array.Empty<Card>();

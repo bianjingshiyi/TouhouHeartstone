@@ -90,7 +90,7 @@ namespace Controllers
                     {
                         var eventVar = variableInfos[i];
                         var color = game.editor.getColorByType(eventVar?.type);
-                        string name = tryTranslateWithDict(eventVar?.name ?? string.Empty);
+                        string name = translateEventVarName(eventVar?.name ?? string.Empty);
                         outputInfos[i + 1] = new PortItemInfo(name, color, false);
                     }
 

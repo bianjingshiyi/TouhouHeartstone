@@ -15,20 +15,20 @@ namespace TouhouHeartstone
         {
             beforeVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card[]) },
-                new EventVariableInfo() { name = VAR_AFTER_DEFINE, type = typeof(CardDefine) },
+                new EventVariableInfo() { name = VAR_CARD, type = typeof(Card[]) },
+                new EventVariableInfo() { name = VAR_TARGET_CARD_DEFINE, type = typeof(CardDefine) },
             };
             afterVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card[]) },
-                new EventVariableInfo() { name = VAR_AFTER_DEFINE, type = typeof(CardDefine) },
+                new EventVariableInfo() { name = VAR_CARD, type = typeof(Card[]) },
+                new EventVariableInfo() { name = VAR_TARGET_CARD_DEFINE, type = typeof(CardDefine) },
             };
         }
         public override async Task execute(IEventArg arg)
         {
             var game = arg.game;
-            var cards = arg.getVar<Card[]>(EVENTVAR.CARD);
-            var cardDefine = arg.getVar<CardDefine>(VAR_AFTER_DEFINE);
+            var cards = arg.getVar<Card[]>(VAR_CARD);
+            var cardDefine = arg.getVar<CardDefine>(VAR_TARGET_CARD_DEFINE);
             foreach (var card in cards)
             {
                 await card.setDefine(game, cardDefine, true);
@@ -36,21 +36,22 @@ namespace TouhouHeartstone
         }
         public override string toString(EventArg arg)
         {
-            var cards = arg.getVar<Card[]>(EVENTVAR.CARD);
-            var cardDefine = arg.getVar<CardDefine>(VAR_AFTER_DEFINE);
+            var cards = arg.getVar<Card[]>(VAR_CARD);
+            var cardDefine = arg.getVar<CardDefine>(VAR_TARGET_CARD_DEFINE);
             var cardString = string.Join<Card>(",", cards);
             return $"{cardString} 变形为 {cardDefine}";
         }
         [Obsolete]
         public override void Record(CardEngine game, EventArg arg, EventRecord record)
         {
-            record.setCardStates(EVENTVAR.CARD, arg);
-            record.setVar(VAR_AFTER_DEFINE, arg);
+            record.setCardStates(VAR_CARD, arg);
+            record.setVar(VAR_TARGET_CARD_DEFINE, arg);
         }
         ICard[] IMassCardEventDefine.getCards(IEventArg eventArg)
         {
-            return eventArg.getVar<Card[]>(EVENTVAR.CARD);
+            return eventArg.getVar<Card[]>(VAR_CARD);
         }
-        public const string VAR_AFTER_DEFINE = "目标卡牌定义";
+        public const string VAR_CARD = EVENTVAR.CARD;
+        public const string VAR_TARGET_CARD_DEFINE = EVENTVAR.TARGET_CARD_DEFINE;
     }
 }

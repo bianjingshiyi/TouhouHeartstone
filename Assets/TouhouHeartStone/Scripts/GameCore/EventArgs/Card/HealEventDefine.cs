@@ -13,31 +13,31 @@ namespace TouhouHeartstone
         {
             beforeVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)},
+                new EventVariableInfo(){name = VAR_CARD,type=typeof(Card)},
                 new EventVariableInfo(){name = VAR_HEAL_SOURCE,type=typeof(Card)},
-                new EventVariableInfo(){name = EVENTVAR.VALUE,type=typeof(int)},
+                new EventVariableInfo(){name = VAR_VALUE,type=typeof(int)},
             };
             afterVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)},
+                new EventVariableInfo(){name = VAR_CARD,type=typeof(Card)},
                 new EventVariableInfo(){name = VAR_HEAL_SOURCE,type=typeof(Card)},
-                new EventVariableInfo(){name = EVENTVAR.VALUE,type=typeof(int)},
+                new EventVariableInfo(){name = VAR_VALUE,type=typeof(int)},
                 new EventVariableInfo(){name = VAR_HEALED_VALUE,type=typeof(int)},
             };
         }
         [Obsolete]
         public override void Record(CardEngine game, EventArg arg, EventRecord record)
         {
-            record.setCardState(EVENTVAR.CARD, arg);
+            record.setCardState(VAR_CARD, arg);
             record.setCardState(VAR_HEAL_SOURCE, arg);
-            record.setVar(EVENTVAR.VALUE, arg);
+            record.setVar(VAR_VALUE, arg);
             record.setVar(VAR_HEALED_VALUE, arg);
         }
         public override async Task execute(IEventArg arg)
         {
             var game = arg.game;
-            var card = arg.getVar<Card>(EVENTVAR.CARD);
-            var value = arg.getVar<int>(EVENTVAR.VALUE);
+            var card = arg.getVar<Card>(VAR_CARD);
+            var value = arg.getVar<int>(VAR_VALUE);
             if (card == null)
                 return;
             int healedValue = Math.Min(value, card.getLife(game) - card.getCurrentLife(game));
@@ -61,9 +61,9 @@ namespace TouhouHeartstone
         {
             var define = game.getEventDefine<HealEventDefine>();
             var arg = new EventArg(game, define);
-            arg.setVar(EVENTVAR.CARD, card);
+            arg.setVar(VAR_CARD, card);
             arg.setVar(VAR_HEAL_SOURCE, source);
-            arg.setVar(EVENTVAR.VALUE, value);
+            arg.setVar(VAR_VALUE, value);
             return game.triggers.doEvent(arg);
         }
         #region 私有方法
@@ -71,7 +71,7 @@ namespace TouhouHeartstone
         #region 接口实现
         DescribableCard IDescribableEventDefine.getCard(IGame game, EventArg eventArg, IPlayer viewer)
         {
-            return eventArg.getVar<Card>(EVENTVAR.CARD);
+            return eventArg.getVar<Card>(VAR_CARD);
         }
 
         DescribableCard[] IDescribableEventDefine.getTargets(IGame game, EventArg eventArg, IPlayer viewer)
@@ -80,13 +80,13 @@ namespace TouhouHeartstone
         }
         ICard ICardEventDefine.getCard(IEventArg eventArg)
         {
-            return eventArg.getVar<Card>(EVENTVAR.CARD);
+            return eventArg.getVar<Card>(VAR_CARD);
         }
         string IDescribableEventDefine.toString(IGame game, EventArg eventArg, IPlayer viewer) => toString(eventArg);
         string IDescribableEventDefine.localizeTemplateString(IGame game, EventArg eventArg, IPlayer viewer) => localizeTemplateString();
         object[] IDescribableEventDefine.localizeStringArgs(IGame game, EventArg eventArg, IPlayer viewer) => localizeStringArgs(eventArg);
-        Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Card>(EVENTVAR.CARD).getOwner();
-        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => LOG_ITEM_NAME;
+        Player IDescribableEventDefine.getPlayer(IGame game, EventArg eventArg) => eventArg.getVar<Card>(VAR_CARD).getOwner();
+        string IDescribableEventDefine.localizeLogItemNameTemplate(IGame game, EventArg eventArg) => Translations.EVENT_LOG_ITEM_NAME_HEAL;
         object[] IDescribableEventDefine.localizeLogItemNameArgs(IGame game, EventArg eventArg) => new object[] { eventArg.getVar<int>(VAR_HEALED_VALUE) };
         #endregion
         private string localizeTemplateString()
@@ -95,7 +95,7 @@ namespace TouhouHeartstone
         }
         private object[] localizeStringArgs(EventArg eventArg)
         {
-            var card = eventArg.getVar<Card>(EVENTVAR.CARD);
+            var card = eventArg.getVar<Card>(VAR_CARD);
             var healedValue = eventArg.getVar<int>(VAR_HEALED_VALUE);
             return new object[] { card.getFormatString(), healedValue };
         }
@@ -103,9 +103,9 @@ namespace TouhouHeartstone
         #endregion
         [TranslateMsg("{0}是卡，{1}是治疗量")]
         const string TEMPLATE = "治疗 {0} {1} 点生命值";
-        public const string VAR_HEAL_SOURCE = "治疗来源";
-        public const string VAR_HEALED_VALUE = "实际治疗值";
-        [TranslateMsg("游戏事件日志项名称-治疗事件（{0}为获得的生命值）")]
-        private const string LOG_ITEM_NAME = "+{0}";
+        public const string VAR_CARD = EVENTVAR.CARD;
+        public const string VAR_VALUE = EVENTVAR.VALUE;
+        public const string VAR_HEAL_SOURCE = EVENTVAR.HEAL_SOURCE;
+        public const string VAR_HEALED_VALUE = EVENTVAR.HEALED_VALUE;
     }
 }

@@ -96,13 +96,14 @@ namespace TouhouHeartstone
         public const string buffDefineName = "buffDefine";
         public const string targetCardName = "targetCard";
         public const string targetBuffName = "targetBuff";
-        protected static PortDefine conditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, "作用条件");
-        protected static PortDefine buffDefinePortDefine = PortDefine.Value(typeof(BuffDefine), buffDefineName, "增益定义");
-        protected static PortDefine pileListPortDefine = PortDefine.Value(typeof(PileNameCollection), pileListPortName, "生效区域", isConst: true);
-        protected static PortDefine rangeListPortDefine = PortDefine.Value(typeof(PileNameCollection), rangeListPortName, "作用区域", isConst: true);
+
+        protected static PortDefine conditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, Translations.EDITOR_PARAM_NAME_AFFECT_CONDITION);
+        protected static PortDefine buffDefinePortDefine = PortDefine.Value(typeof(BuffDefine), buffDefineName, Translations.EDITOR_PARAM_NAME_BUFF_DEFINE);
+        protected static PortDefine pileListPortDefine = PortDefine.Value(typeof(PileNameCollection), pileListPortName, Translations.EDITOR_PARAM_NAME_ACTIVE_PILES, isConst: true);
+        protected static PortDefine rangeListPortDefine = PortDefine.Value(typeof(PileNameCollection), rangeListPortName, Translations.EDITOR_PARAM_NAME_AFFECT_PILES, isConst: true);
         protected static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
-        protected static PortDefine targetCardPortDefine = PortDefine.Value(typeof(Card), targetCardName, "目标卡牌");
-        protected static PortDefine targetBuffPortDefine = PortDefine.Value(typeof(Buff), targetBuffName, "目标增益");
+        protected static PortDefine targetCardPortDefine = PortDefine.Value(typeof(Card), targetCardName, Translations.EDITOR_PARAM_NAME_TARGET_CARD);
+        protected static PortDefine targetBuffPortDefine = PortDefine.Value(typeof(Buff), targetBuffName, Translations.EDITOR_PARAM_NAME_TARGET_BUFF);
     }
 
 

@@ -10,11 +10,11 @@ namespace TouhouCardEngine
             type = NodeDefineType.Function;
             inputs = new PortDefine[1]
             {
-                PortDefine.Value(typeof(int), "value", isConst: true)
+                PortDefine.Value(typeof(int), "value", StringTable.EDITOR_PARAM_NAME_VALUE, isConst: true)
             };
             outputs = new PortDefine[]
             {
-                PortDefine.Value(typeof(int), "result", "value")
+                PortDefine.Value(typeof(int), "result", StringTable.EDITOR_PARAM_NAME_RESULT)
             };
             obsoleteMsg = "";
             category = EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER;

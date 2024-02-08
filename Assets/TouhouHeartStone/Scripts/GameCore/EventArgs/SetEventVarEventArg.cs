@@ -55,9 +55,9 @@ namespace TouhouHeartstone
             var afterValue = arg.getVar<object>(VAR_AFTER_VALUE);
             return $"将事件({eventArg})的变量{varName}从{beforeValue}变为{afterValue}";
         }
-        public const string VAR_EVENT = "事件";
-        public const string VAR_VAR_NAME = "变量名";
-        public const string VAR_BEFORE_VALUE = "原值";
-        public const string VAR_AFTER_VALUE = "值";
+        public const string VAR_EVENT = EVENTVAR.EVENT;
+        public const string VAR_VAR_NAME = EVENTVAR.EVENT_VAR_NAME;
+        public const string VAR_BEFORE_VALUE = EVENTVAR.BEFORE_VALUE;
+        public const string VAR_AFTER_VALUE = EVENTVAR.VALUE;
     }
 }

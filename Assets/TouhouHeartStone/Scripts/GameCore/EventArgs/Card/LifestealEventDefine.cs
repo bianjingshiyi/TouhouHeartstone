@@ -68,8 +68,9 @@ namespace TouhouHeartstone
         [TranslateMsg("吸血事件描述，{0}是吸血卡牌，{1}是治疗值")]
         public const string TEMPLATE = "{0} 触发吸血，为英雄恢复 {1} 点生命值";
 
-        public const string VAR_HEAL_SOURCE = "吸血卡牌";
-        public const string VAR_HEAL_VALUE = "治疗值";
-        public const string VAR_HEALED_VALUE = "实际治疗值";
+
+        public const string VAR_HEAL_SOURCE = EVENTVAR.DRAIN_CARD;
+        public const string VAR_HEAL_VALUE = EVENTVAR.VALUE;
+        public const string VAR_HEALED_VALUE = EVENTVAR.HEALED_VALUE;
     }
 }

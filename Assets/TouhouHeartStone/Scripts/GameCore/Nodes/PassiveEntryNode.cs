@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MukioI18n;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 
@@ -35,10 +36,6 @@ namespace TouhouCardEngine
         {
             return getInputPort<ValueInput>(conditionPortName);
         }
-        public ControlOutput getActionOutputPort()
-        {
-            return outputList?.FirstOrDefault() as ControlOutput;
-        }
         public ValueInput getTagsPort()
         {
             return getInputPort<ValueInput>(tagsPortName);
@@ -46,6 +43,18 @@ namespace TouhouCardEngine
         public ValueInput getPilesPort()
         {
             return getInputPort<ValueInput>(pileListPortName);
+        }
+        public ControlOutput getActionOutputPort()
+        {
+            return getOutputPort<ControlOutput>(actionPortName);
+        }
+        public ControlOutput getEnableActionPort()
+        {
+            return getOutputPort<ControlOutput>(enableActionName);
+        }
+        public ControlOutput getDisableActionPort()
+        {
+            return getOutputPort<ControlOutput>(disableActionName);
         }
         #endregion
 
@@ -140,8 +149,8 @@ namespace TouhouCardEngine
         protected virtual IEnumerable<PortDefine> GetControlOutputDefines()
         {
             yield return actionPortDefine;
-            yield return GeneratedPassiveEffect.enableActionPortDefine;
-            yield return GeneratedPassiveEffect.disableActionPortDefine;
+            yield return enableActionPortDefine;
+            yield return disableActionPortDefine;
             yield break;
         }
         protected ValueOutput DefineValueOutput(PortDefine portDefine)
@@ -168,21 +177,22 @@ namespace TouhouCardEngine
         public const string tagsPortName = "tags";
         public const string pileListPortName = "pileList";
         public const string priorityPortName = "priority";
+        public const string enableActionName = "enableAction";
+        public const string disableActionName = "disableAction";
 
-        public const string conditionPortDisplayName = "触发条件";
-        public const string playerPortDisplayName = "玩家";
-        public const string cardPortDisplayName = "卡牌";
-        public const string tagsPortDisplayName = "标签列表";
-        public const string pileListPortDisplayName = "生效区域";
-        public const string priorityDisplayName = "优先级";
+        public const string conditionPortDisplayName = Translations.EDITOR_PARAM_NAME_TRIGGER_CONDITION;
+        public const string tagsPortDisplayName = Translations.EDITOR_PARAM_NAME_TAG_LIST;
+        public const string pileListPortDisplayName = Translations.EDITOR_PARAM_NAME_ACTIVE_PILES;
 
+        public static PortDefine enableActionPortDefine = PortDefine.Control(enableActionName, Translations.EDITOR_PARAM_NAME_ENABLE_ACTION);
+        public static PortDefine disableActionPortDefine = PortDefine.Control(disableActionName, Translations.EDITOR_PARAM_NAME_DISABLE_ACTION);
         public static PortDefine conditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, conditionPortDisplayName);
         public static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
-        public static PortDefine playerPortDefine = PortDefine.Value(typeof(Player), playerPortName, playerPortDisplayName);
-        public static PortDefine cardPortDefine = PortDefine.Value(typeof(Card), cardPortName, cardPortDisplayName);
+        public static PortDefine playerPortDefine = PortDefine.Value(typeof(Player), playerPortName, Translations.EDITOR_PARAM_NAME_PLAYER);
+        public static PortDefine cardPortDefine = PortDefine.Value(typeof(Card), cardPortName, Translations.EDITOR_PARAM_NAME_CARD);
         public static PortDefine tagsPortDefine = PortDefine.Value(typeof(EffectTagCollection), tagsPortName, tagsPortDisplayName, isConst: true);
-        public static PortDefine pileListPortDefine = PortDefine.Value(typeof(PileNameCollection), pileListPortName, pileListPortDisplayName, isConst: true);
-        public static PortDefine priorityPortDefine = PortDefine.Value(typeof(int), priorityPortName, priorityDisplayName, isConst: true);
+        public static PortDefine pileListPortDefine = PortDefine.Value(typeof(PileNameCollection), pileListPortName, Translations.EDITOR_PARAM_NAME_ACTIVE_PILES, isConst: true);
+        public static PortDefine priorityPortDefine = PortDefine.Value(typeof(int), priorityPortName, Translations.EDITOR_PARAM_NAME_PRIORITY, isConst: true);
     }
     [Serializable]
     public class SerializablePassiveEntryNode : SerializableNode

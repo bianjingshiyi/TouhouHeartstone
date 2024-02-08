@@ -11,6 +11,11 @@ namespace Game
         public const string INVALID_DOWNLOAD_URL = "发现了更新版本的游戏，但无法获取下载链接。请访问官网手动更新游戏。";
         #endregion
 
+        #region 房间
+        [TranslateMsg("人机的玩家名")]
+        public const string LOCAL_PLAYER = "本地玩家";
+        #endregion
+
         #region 收藏
         [TranslateMsg("浏览卡牌界面中按费用排序选项")]
         public const string CARDVIEW_SORTTYPE_COST = "灵力";

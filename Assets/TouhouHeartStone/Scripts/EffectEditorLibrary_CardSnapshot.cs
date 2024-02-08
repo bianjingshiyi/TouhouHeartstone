@@ -79,7 +79,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsTypeOfCardSnapshotObsolete(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_SNAPSHOT)] CardSnapshot card,
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE, isConst: true)] CardDefineSelect select)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_TYPE, isConst: true)] CardDefineSelect select)
         {
             if (card == null)
                 return false;
@@ -107,7 +107,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsTypeOfCardSnapshot(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_SNAPSHOT)] CardSnapshot card,
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE)] CardType type)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_TYPE)] CardType type)
         {
             if (card == null || type == null)
                 return false;
@@ -123,7 +123,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool CardSnapshotHasKeywords(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_SNAPSHOT)] CardSnapshot card,
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_KEYWORD)] string select)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_KEYWORD)] string select)
         {
             if (card == null)
                 return false;

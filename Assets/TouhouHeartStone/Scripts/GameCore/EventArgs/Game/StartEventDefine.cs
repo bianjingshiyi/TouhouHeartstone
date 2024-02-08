@@ -46,7 +46,7 @@ namespace TouhouHeartstone
             var arg = new EventArg(game, define);
             return game.triggers.doEvent(arg);
         }
-        public const string VAR_START_HAND_OFFENSIVE = "先手起始手牌";
-        public const string VAR_START_HAND_DEFENSIVE = "后手起始手牌";
+        public const string VAR_START_HAND_OFFENSIVE = EVENTVAR.START_HAND_OFFENSIVE;
+        public const string VAR_START_HAND_DEFENSIVE = EVENTVAR.START_HAND_DEFENSIVE;
     }
 }

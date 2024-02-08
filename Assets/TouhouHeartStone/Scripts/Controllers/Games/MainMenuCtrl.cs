@@ -88,7 +88,8 @@ namespace Controllers
         private async void onClickVsBotButton()
         {
             //Main main = _ui.getObject<Main>();
-            await scene.game.network.logic.CreateLocalRoom();
+            var playerName = game.lang._(StringTable.LOCAL_PLAYER);
+            await scene.game.network.logic.CreateLocalRoom(playerName);
             RoomData currentRoomData = scene.game.network.logic.CurrentRoom;
             currentRoomData.maxPlayerCount = 2; // 炉石两个人
 

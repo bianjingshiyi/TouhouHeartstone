@@ -784,7 +784,7 @@ namespace Controllers
                 string str = p == null ? game.lang._(ROOM_UNKNOWN_DECK) : p.cardPoolName;
                 if (showVersion)
                 {
-                    str += game.lang._(ROOM_CARD_POOL_VERSION, p.version);
+                    str += game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE, p.version);
                 }
                 return str;
             }).ToArray(), 0, count);
@@ -1512,8 +1512,6 @@ namespace Controllers
         public const string ROOM_CARD_POOL_MODIFY_FAILED = "卡池操作失败";
         [TranslateMsg("房间-卡池操作失败-卡池依赖不存在（{0}为丢失的必需卡池）")]
         public const string ROOM_CARD_POOL_DEPENDENCY_MISSING = "修改后的卡池内不包含以下必须包含的卡池：\n{0}";
-        [TranslateMsg("房间-卡池版本后缀（{0}为版本号）")]
-        public const string ROOM_CARD_POOL_VERSION = "（版本{0}）";
         #endregion
 
         #endregion

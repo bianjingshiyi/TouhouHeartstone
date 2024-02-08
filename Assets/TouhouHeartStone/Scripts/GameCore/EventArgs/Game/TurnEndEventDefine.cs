@@ -75,6 +75,6 @@ namespace TouhouHeartstone
             arg.setVar(VAR_PLAYER, player);
             return game.triggers.doEvent(arg);
         }
-        public static string VAR_PLAYER => EVENTVAR.PLAYER;
+        public const string VAR_PLAYER = EVENTVAR.PLAYER;
     }
 }
