@@ -1,14 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using BJSYGameCore;
+using Controllers;
+using Game;
+using MukioI18n;
+using TouhouCardEngine;
+using UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using MukioI18n;
+using static UnityEditor.PlayerSettings.Switch;
 
-namespace TouhouHeartstone {
+namespace TouhouHeartstone
+{
     public class UITranslateExporter
     {
+        #region 菜单项
         [MenuItem("Custom/Translate/导出UI翻译")]
         public static void Generate()
         {
@@ -41,30 +52,92 @@ namespace TouhouHeartstone {
             MukioPotGenerator potGenerator = new MukioPotGenerator("ZMCS", "Translation Team");
             TranslateMsgAttributeFinder.FindAll(potGenerator);
         }
+        [MenuItem("Custom/Translate/导出经典卡池翻译")]
+        public static void ExportClassicCardPool()
+        {
+            MukioPotGenerator potGenerator = new MukioPotGenerator("ZMCS", "Translation Team");
 
+            var cardPoolPath = Path.Combine(FileLoader.FolderPath, "CardPools", "经典卡池.ddcp");
+            ExportFromCardPool(potGenerator, cardPoolPath);
+
+            potGenerator.WriteOut(cardPoolPotPath);
+            Debug.Log("翻译文件导出完毕");
+        }
+        #endregion
+
+        #region UI
         static void SearchObject(Transform tr, MukioPotGenerator pot)
         {
             var cp = tr.GetComponent<ITranslateComponent>();
-            if (cp != null)
-            {
-                if (cp.Key != null)
-                {
-                    pot.AddString(new PotTranslate(cp.Key, cp.Path, cp.Comment));
-
-                }
-                if (cp.Keys != null)
-                {
-                    foreach (var key in cp.Keys)
-                    {
-                        pot.AddString(new PotTranslate(key, cp.Path, cp.Comment));
-                    }
-                }
-            }
+            addTranslate(pot, cp);
 
             for (int i = 0; i < tr.childCount; i++)
             {
                 SearchObject(tr.GetChild(i), pot);
             }
         }
+        private static void addTranslate(MukioPotGenerator pot, ITranslateComponent cp)
+        {
+            if (cp == null)
+                return;
+            if (cp.Key != null)
+            {
+                PotTranslate translate = new PotTranslate(cp.Key, cp.Path, cp.Comment, cp.Context);
+                pot.AddString(translate);
+            }
+            if (cp.Keys != null)
+            {
+                foreach (var key in cp.Keys)
+                {
+                    PotTranslate translate = new PotTranslate(key, cp.Path, cp.Comment, cp.Context);
+                    pot.AddString(translate);
+                }
+            }
+        }
+        #endregion
+
+        #region 卡池
+        private static void ExportFromCardPool(MukioPotGenerator pot, string path)
+        {
+            string infoJson = null;
+            string json = null;
+            using (var reader = new StreamReader(path))
+            {
+                infoJson = reader.ReadLine();
+                json = reader.ReadToEnd();
+            }
+            JsonHelper.init();
+
+            var cardPoolInfo = JsonHelper.fromJson<SerializableCardPoolInfo>(infoJson);
+            var cardPool = JsonHelper.fromJson<SerializableCardPool>(json);
+
+            var sourceLanaguage = CardManager.sourceLanaguage;
+            var cardNameContext = CardManager.cardNameContext;
+            var cardSubnameContext = CardManager.cardSubnameContext;
+            var cardDescContext = CardManager.cardDescContext;
+            var buffNameContext = CardManager.buffNameContext;
+            var buffDescContext = CardManager.buffDescContext;
+            foreach (var skin in cardPool.cardSkinList)
+            {
+                if (skin._language != sourceLanaguage)
+                    continue;
+                var reference = $"{cardPoolInfo.cardPoolName}/卡牌/{skin._name}";
+                var cardComment = $"卡牌“{skin._name}”";
+                if (!string.IsNullOrEmpty(skin._name)) pot.AddString(new PotTranslate(skin._name, reference, cardComment, cardNameContext));
+                if (!string.IsNullOrEmpty(skin._subname)) pot.AddString(new PotTranslate(skin._subname, reference, cardComment, cardSubnameContext));
+                if (!string.IsNullOrEmpty(skin._desc)) pot.AddString(new PotTranslate(skin._desc, reference, cardComment, cardDescContext));
+            }
+            foreach (var skin in cardPool.buffSkinList)
+            {
+                if (skin.language != sourceLanaguage)
+                    continue;
+                var reference = $"{cardPoolInfo.cardPoolName}/增益/{skin.name}";
+                var buffComment = $"增益{skin.name}";
+                if (!string.IsNullOrEmpty(skin.name)) pot.AddString(new PotTranslate(skin.name, reference, buffComment, buffNameContext));
+                if (!string.IsNullOrEmpty(skin.desc)) pot.AddString(new PotTranslate(skin.desc, reference, buffComment, buffDescContext));
+            }
+        }
+        const string cardPoolPotPath = "ExternalData/i18n/cards/classic.pot";
+        #endregion
     }
 }

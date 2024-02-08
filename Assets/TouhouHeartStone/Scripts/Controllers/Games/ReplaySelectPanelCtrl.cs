@@ -196,7 +196,7 @@ namespace Controllers
             var cardManager = game.card;
             var selfMaster = await getMasterRefName(meta.playerAMasterDefRef, pools);
             var enemyMaster = await getMasterRefName(meta.playerBMasterDefRef, pools);
-            var poolStrings = pools.Select(p => game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, p.cardPoolName, p.version));
+            var poolStrings = pools.Select(p => game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, game.card.getCardPoolName(p), p.version));
             var cardPools = string.Join("\n", poolStrings);
             return game.lang._(REPLAY_DESC_TEMPLATE, selfMaster, enemyMaster, cardPools);
         }
@@ -227,7 +227,7 @@ namespace Controllers
             var poolStrings = pools
                 .Where(p => !cardManager.isCardPoolInfoLoaded(p))
                 .Take(maxDisplayPoolCount)
-                .Select(p => game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE, p.cardPoolName, p.version));
+                .Select(p => game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE, game.card.getCardPoolName(p), p.version));
             var cardPools = string.Join(",", poolStrings);
             if (pools.Length > 5)
             {

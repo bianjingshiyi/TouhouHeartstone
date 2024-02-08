@@ -90,7 +90,8 @@ namespace Controllers
                 gameObject.SetActive(true);
                 _ui.setCardPoolListActive(false);
                 _ui.setEditCardPoolPanelActive(true);
-                _ui.updateCurCardPoolInfo(poolInfo.cardPoolName, image);
+                var poolName = game.card.getCardPoolName(poolInfo);
+                _ui.updateCurCardPoolInfo(poolName, image);
                 updatePasteButton();
                 await _cardPoolViewPanelCtrl.display(cardPoolsRange: new long[] { poolId }, cardFilter: c =>
                 {
@@ -497,7 +498,8 @@ namespace Controllers
                 markCardPoolUnsaved(curCardPoolId);
                 var poolInfo = getCurrentCardPoolInfo();
                 poolInfo.imageResPath = game.card.getSpritePath(sprite);
-                _ui.updateCurCardPoolInfo(poolInfo.cardPoolName, sprite);
+                var poolName = game.card.getCardPoolName(poolInfo);
+                _ui.updateCurCardPoolInfo(poolName, sprite);
             }
         }
         private void onCardPoolNameInputFieldValueChanged(string value)
@@ -585,7 +587,7 @@ namespace Controllers
 
             var depRef = depRefs[index];
             var depInfo = game.card.getCardPoolInfo(depRef) ?? getLocalCardPoolInfo(depRef.cardPoolId);
-            var depName = depInfo?.cardPoolName ?? game.lang._(EDITOR_UNKNOWN_CARD_POOL);
+            var depName = game.card.getCardPoolName(depInfo);
 
             var title = game.lang._(StringTable.WARNING);
             var depFullName = game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE, depName, depRef.version);
@@ -706,9 +708,10 @@ namespace Controllers
             {
                 var dep = deps[i];
                 var info = game.card.getCardPoolInfo(dep);
+                var cardPoolName = game.card.getCardPoolName(info);
                 viewDatas[i] = new DeckListItemViewData()
                 {
-                    name = info.cardPoolName,
+                    name = cardPoolName,
                     image = await game.card.loadCardPoolImage(info),
                     selected = _selectedAddingCardPoolDependencies.Contains(dep),
                     mode = DeckListItem.Mode.CanSelect
@@ -729,18 +732,20 @@ namespace Controllers
                 var refInfo = game.card.getCardPoolInfo(depRef);
                 if (refInfo != null)
                 {
-                    names[i] = game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, refInfo.cardPoolName, depRef.version);
+                    var refInfoName = game.card.getCardPoolName(refInfo);
+                    names[i] = game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, refInfoName, depRef.version);
                 }
                 else
                 {
                     var localInfo = depRef != null ? game.card.getLocalCardPoolInfo(depRef.cardPoolId) : null;
                     if (localInfo != null)
                     {
-                        names[i] = game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, localInfo.cardPoolName, depRef.version);
+                        var cardPoolName = game.card.getCardPoolName(localInfo);
+                        names[i] = game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, cardPoolName, depRef.version);
                     }
                     else
                     {
-                        names[i] = game.lang._(EDITOR_UNKNOWN_CARD_POOL);
+                        names[i] = game.lang._(StringTable.EDITOR_UNKNOWN_CARD_POOL);
                     }
                     outdated[i] = true;
                 }
@@ -990,9 +995,10 @@ namespace Controllers
             {
                 var cardPoolId = _cardPoolIdList[i];
                 var cardPoolInfo = getLocalCardPoolInfo(cardPoolId);
+                var cardPoolName = game.card.getCardPoolName(cardPoolInfo);
                 viewData[i] = new DeckListItemViewData()
                 {
-                    name = cardPoolInfo.cardPoolName,
+                    name = cardPoolName,
                     image = await game.card.loadCardPoolImage(cardPoolInfo),
                     mode = DeckListItem.Mode.CanDelete
                 };
@@ -1229,7 +1235,8 @@ namespace Controllers
             else
             {
                 // 经典卡池以外的卡池
-                content = game.lang._(EDITOR_NEED_TO_SAVE_CARDPOOL, cardPoolInfo.cardPoolName);
+                var cardPoolName = game.card.getCardPoolName(cardPoolInfo);
+                content = game.lang._(EDITOR_NEED_TO_SAVE_CARDPOOL, cardPoolName);
                 if (forceSave)
                 {
                     // 强制保存或不保存
@@ -1373,8 +1380,6 @@ namespace Controllers
         public const string EDITOR_WARNING_DELETE_RULE = "确定要删除自定义规则“{0}”？";
         [TranslateMsg("卡池编辑器-删除卡池依赖警告，{0}为卡池的名字+卡池版本")]
         public const string EDITOR_WARNING_DELETE_DEPENDENCY = "确定要删除卡池依赖“{0}”？";
-        [TranslateMsg("卡池编辑器-丢失的卡池依赖名称")]
-        public const string EDITOR_UNKNOWN_CARD_POOL = "未知卡池";
 
         public string nodeClipboard { get; set; }
         private long curCardPoolId => game.editor.currentCardPoolId;

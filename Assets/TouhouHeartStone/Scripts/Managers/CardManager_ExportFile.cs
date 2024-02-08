@@ -47,7 +47,8 @@ namespace Game
             if (cardPoolDefineFile == null)
                 return null;
 
-            var defaultFileName = $"{cardPoolInfo.cardPoolName}.{CardPoolPackExt}";
+            var cardPoolName = getCardPoolName(cardPoolInfo);
+            var defaultFileName = $"{cardPoolName}.{CardPoolPackExt}";
 
 #if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX 
             var exportPath = StandaloneFileBrowser.SaveFilePanel("", "", defaultFileName, CardPoolPackExt);
@@ -213,7 +214,8 @@ namespace Game
                     if (oldPoolInfo.Count() > 0)
                     {
                         // 已存在相同卡池的不同版本，不允许导入
-                        game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), game.i18n._(ERROR_ALREADY_EXISTS, manifest.Name, oldPoolInfo.First().Value.cardPoolName));
+                        var cardPoolName = getCardPoolName(oldPoolInfo.First().Value);
+                        game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), game.i18n._(ERROR_ALREADY_EXISTS, manifest.Name, cardPoolName));
                         return false;
                     }
 

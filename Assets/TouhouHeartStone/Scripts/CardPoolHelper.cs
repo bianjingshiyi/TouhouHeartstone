@@ -3,6 +3,7 @@ using System.Linq;
 using Controllers;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
+using TouhouHeartstone;
 
 namespace Game
 {

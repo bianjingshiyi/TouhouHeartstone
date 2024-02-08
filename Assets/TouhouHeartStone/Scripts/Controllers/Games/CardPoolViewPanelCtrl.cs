@@ -474,27 +474,28 @@ namespace Controllers
         }
         private bool isCardFitsSearchString(CardDefine define, CardSkinData skin, string str)
         {
+            var upperStr = str.ToUpper();
             // 名称
-            if (!string.IsNullOrEmpty(skin.name) && skin.name.Contains(str))
+            if (!string.IsNullOrEmpty(skin.name) && skin.name.ToUpper().Contains(upperStr))
                 return true;
             // 描述
-            if (!string.IsNullOrEmpty(skin.desc) && skin.desc.Contains(str))
+            if (!string.IsNullOrEmpty(skin.desc) && skin.desc.ToUpper().Contains(upperStr))
                 return true;
 
             // 种族
             var tags = define.getTags();
             var tagTexts = tags
-                .Select(t => game.card.tryGetTranslatedTag(t, out string text) ? text : t)
-                .Where(t => !string.IsNullOrEmpty(t));
-            if (tagTexts.Contains(_searchFilterString))
+                .Where(t => !string.IsNullOrEmpty(t))
+                .Select(t => (game.card.tryGetTranslatedTag(t, out string text) ? text : t).ToUpper());
+            if (tagTexts.Contains(upperStr))
                 return true;
 
             // 搜索关键词
             foreach (var keyword in _searchKeywords)
             {
-                var keywordText = game.lang._(keyword);
+                var keywordText = game.lang._(keyword).ToUpper();
                 var keywordPattern = $"({keywordText})[:：]([^ ]+)";
-                var keywordMatches = Regex.Matches(str, keywordPattern);
+                var keywordMatches = Regex.Matches(upperStr, keywordPattern);
                 for (int i = 0; i < keywordMatches.Count; i++)
                 {
                     var match = keywordMatches[i];
@@ -630,7 +631,8 @@ namespace Controllers
                 var cardPoolId = cardPools[i];
                 var localPoolRef = getCardPoolReference(cardPoolId);
                 var poolInfo = game.card.getCardPoolInfo(localPoolRef);
-                cardPoolNames[i] = poolInfo.cardPoolName;
+                var cardPoolName = game.card.getCardPoolName(poolInfo);
+                cardPoolNames[i] = cardPoolName;
             }
             return cardPoolNames;
         }

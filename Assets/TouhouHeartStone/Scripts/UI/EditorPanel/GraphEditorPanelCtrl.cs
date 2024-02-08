@@ -633,7 +633,7 @@ namespace UI
                 string name = getNodeDefineName(define);
                 if (string.IsNullOrEmpty(name))
                     return false;
-                if (!name.Contains(searchFilter))
+                if (!name.ToUpper().Contains(searchFilter.ToUpper()))
                 {
                     return false;
                 }

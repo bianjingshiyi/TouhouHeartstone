@@ -137,7 +137,9 @@ namespace Game
             if (!Application.isEditor && isInnateCardPool(cardPoolInfo.cardPoolId))
             {
                 //不能修改标准卡池，虽然其实玩家想改也没人能阻止就是了，最多是和别人玩会失去同步吧。
-                game.ui.dialog.ShowConfirm(StringTable.INVALID_OPERATION, StringTable.EDITOR_DIALOG_CANNOT_MODIFY_STANDARD_CARDPOOL, null);
+                var title = game.lang._(StringTable.INVALID_OPERATION);
+                var desc = game.lang._(StringTable.EDITOR_DIALOG_CANNOT_MODIFY_STANDARD_CARDPOOL);
+                game.ui.dialog.ShowConfirm(title, desc, null);
                 return false;
             }
             var cardPoolRef = cardPoolInfo.ToReference();
@@ -149,7 +151,8 @@ namespace Game
             if (isInnateCardPool(cardPoolInfo))
             {
                 //官方卡池只能保存到指定路径下面，也就是工程文件
-                path = Path.Combine(editorCardPoolDirName, $"{cardPoolInfo.cardPoolName}.{cardPoolFilePostfix}");
+                var cardPoolName = cardPoolInfo.cardPoolName;
+                path = Path.Combine(editorCardPoolDirName, $"{cardPoolName}.{cardPoolFilePostfix}");
                 path = Path.GetFullPath(path);
             }
             else if (path.isStreamingAssetsPath(out var streamingPath))
@@ -575,6 +578,26 @@ namespace Game
             }
 
             return imageFiles.ToArray();
+        }
+        public string getCardPoolName(CardPoolInfo info)
+        {
+            if (info == null)
+                return null;
+            if (info.cardPoolId == CardManager.STANDARD_POOL_ID)
+            {
+                return game.lang._(STANDARD_POOL_NAME);
+            }
+            return info.cardPoolName ?? game.lang._(StringTable.EDITOR_UNKNOWN_CARD_POOL);
+        }
+        public string getCardPoolName(CardPoolInfoPack info)
+        {
+            if (info == null)
+                return null;
+            if (info.cardPoolId == CardManager.STANDARD_POOL_ID)
+            {
+                return game.lang._(STANDARD_POOL_NAME);
+            }
+            return info.cardPoolName ?? game.lang._(StringTable.EDITOR_UNKNOWN_CARD_POOL);
         }
         #endregion
 
@@ -1690,7 +1713,8 @@ namespace Game
 
         private string allocCardPoolPath(CardPoolInfo cardPool)
         {
-            string path = Path.Combine(Application.persistentDataPath, cardPoolDirName, $"{cardPool.cardPoolName}.{cardPoolFilePostfix}");
+            var cardPoolName = cardPool.cardPoolName;
+            string path = Path.Combine(Application.persistentDataPath, cardPoolDirName, $"{cardPoolName}.{cardPoolFilePostfix}");
             for (int i = 0; i < 100 && File.Exists(path); i++)
             {
                 if (i == 99)
@@ -1840,6 +1864,8 @@ namespace Game
 
                 //错误信息修复
                 await fixCardPool(cardPoolInfo, cardPool);
+
+                importCardPoolI18n(cardPoolInfo, cardPool);
                 return (cardPoolInfo, cardPool);
             }
             catch (Exception e)
@@ -1857,6 +1883,8 @@ namespace Game
         #region 属性字段
         [TranslateMsg]
         public const string CARD_POOL_LOAD_ERROR_DESC = "卡池加载失败，卡池文件可能已损坏。";
+        [TranslateMsg]
+        public const string STANDARD_POOL_NAME = "经典卡池";
         public const long BUILTIN_POOL_ID = 0;
         public const long STANDARD_POOL_ID = 1;
         public const long PVE_POOL_ID = 2;

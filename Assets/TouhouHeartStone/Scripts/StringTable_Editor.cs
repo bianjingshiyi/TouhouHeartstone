@@ -16,6 +16,8 @@ namespace Game
         public const string EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE = "{0}（版本{1}）";
         [TranslateMsg("卡池名模板，{0}为卡池名，{1}为卡池版本")]
         public const string EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT = "·{0}（版本{1}）";
+        [TranslateMsg("丢失的卡池名称")]
+        public const string EDITOR_UNKNOWN_CARD_POOL = "未知卡池";
         #endregion
 
         #region 对话框

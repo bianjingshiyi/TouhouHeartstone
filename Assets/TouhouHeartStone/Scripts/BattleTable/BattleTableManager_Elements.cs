@@ -1003,7 +1003,7 @@ namespace Game.BattleTable
         public void displayDiscoverDialog(DefineReference[] cardRefs, string title)
         {
             table.Discover.setActive(true);
-            table.Discover.setTitleText(string.IsNullOrEmpty(title) ? StringTable.HINT_SELECT_A_CARD : title);
+            table.Discover.setTitleText(string.IsNullOrEmpty(title) ? lang._(StringTable.HINT_SELECT_A_CARD) : title);
             table.Discover.clearChoices();
             _cardChooseMode = CardChooseMode.CardDefine;
             _choosingCardDefineRefs = cardRefs;
@@ -1019,7 +1019,7 @@ namespace Game.BattleTable
         public void displayDiscoverDialog(int[] cardIds, string title)
         {
             table.Discover.setActive(true);
-            table.Discover.setTitleText(string.IsNullOrEmpty(title) ? StringTable.HINT_SELECT_A_CARD : title);
+            table.Discover.setTitleText(string.IsNullOrEmpty(title) ? lang._(StringTable.HINT_SELECT_A_CARD) : title);
             table.Discover.clearChoices();
             _cardChooseMode = CardChooseMode.Card;
             _choosingCards = cardIds;

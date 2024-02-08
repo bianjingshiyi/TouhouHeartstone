@@ -781,7 +781,7 @@ namespace Controllers
             int count = Mathf.Min(packs.Length, maxCount);
             string poolsString = string.Join(", ", packs.Select(p =>
             {
-                string str = p == null ? game.lang._(ROOM_UNKNOWN_DECK) : p.cardPoolName;
+                string str = p == null ? game.lang._(ROOM_UNKNOWN_DECK) : game.card.getCardPoolName(p);
                 if (showVersion)
                 {
                     str += game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE, p.version);
@@ -1030,9 +1030,10 @@ namespace Controllers
             {
                 var poolRef = game.card.getLocalCardPoolReference(pool.cardPoolId);
                 var (_, cardPool) = await game.card.getOrLoadCardPool(poolRef, true);
+                var poolName = game.card.getCardPoolName(pool);
                 if (cardPool == null)
                 {
-                    Debug.LogError($"无法在添加房间卡池时加载卡池，存在被忽略的卡池：{pool.cardPoolName}");
+                    Debug.LogError($"无法在添加房间卡池时加载卡池，存在被忽略的卡池：{poolName}");
                     ignoredCardPools.Add(pool);
                 }
             }
@@ -1122,9 +1123,10 @@ namespace Controllers
                 else
                 {
                     var pool = _viewingCardPools[i];
+                    var poolName = game.card.getCardPoolName(pool);
                     viewDatas[i] = new DeckListItemViewData()
                     {
-                        name = pool.cardPoolName,
+                        name = poolName,
                         image = await game.card.loadCardPoolImage(pool),
                         mode = DeckListItem.Mode.Default
                     };
@@ -1141,7 +1143,7 @@ namespace Controllers
                 var pool = _editingCardPools[i];
                 bool selected = _selectedEditCardPools.Any(pack => pack.CompareCardPool(pool));
                 Color color = selected ? Color.grey : Color.white;
-                string name = pool.cardPoolName;
+                string name = game.card.getCardPoolName(pool);
                 if (_editingCardPools.Count(p => p.cardPoolId == pool.cardPoolId) >= 2)
                 {
                     name = game.lang._(ROOM_CARD_POOL_VERSION_TEMPLATE, name, pool.version);
@@ -1363,7 +1365,8 @@ namespace Controllers
                 var pools = conflictPools[0];
                 CardPoolInfoPack roomPool = pools.roomPool;
                 CardPoolInfoPack comingPool = pools.comingPool;
-                string conflictDesc = game.lang._(ROOM_CARD_POOLS_CONFLICTED, roomPool.cardPoolName, comingPool.version, roomPool.version);
+                var poolName = game.card.getCardPoolName(roomPool);
+                string conflictDesc = game.lang._(ROOM_CARD_POOLS_CONFLICTED, poolName, comingPool.version, roomPool.version);
                 string[] options = new string[]
                 {
                     game.lang._(ROOM_CARD_POOLS_USE_POOL_BUTTON, roomPool.version),

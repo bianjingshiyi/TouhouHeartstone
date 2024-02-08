@@ -15,6 +15,24 @@ namespace UI
         public string imagePath;
         List<SkinAnimationRef> _animationRefs = new List<SkinAnimationRef>();
         public DefineReference persistentAnimRef;
+
+        public BuffSkin()
+        {
+
+        }
+        public BuffSkin(BuffSkin other)
+        {
+            buffId = other.buffId;
+            language = other.language;
+            name = other.name;
+            desc = other.desc;
+            imagePath = other.imagePath;
+            persistentAnimRef = other.persistentAnimRef;
+            foreach (var animRef in other._animationRefs)
+            {
+                _animationRefs.Add(animRef);
+            }
+        }
         int ISkin.skinId 
         {
             get => buffId;

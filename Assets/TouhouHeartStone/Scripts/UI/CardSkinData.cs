@@ -190,20 +190,20 @@ namespace UI
     [Serializable]
     public class SerializableCardSkinData
     {
-        public SerializableCardSkinData(CardSkinData other)
+        public SerializableCardSkinData(CardSkinData skin)
         {
-            _id = other.id;
-            _skinId = other.skinId;
-            _illustrator = other.illustrator;
-            _skinName = other.skinName;
-            _name = other.name;
-            _subname = other.subname;
-            _imagePath = other.imagePath;
-            _desc = other.desc;
-            _soundPath_onUse = other.soundPath_onUse;
-            _projectilePath = other.projectilePath;
-            _language = other.language;
-            foreach (var animRef in other.getAllAnimRefs())
+            _id = skin.id;
+            _skinId = skin.skinId;
+            _illustrator = skin.illustrator;
+            _skinName = skin.skinName;
+            _name = skin.name;
+            _subname = skin.subname;
+            _imagePath = skin.imagePath;
+            _desc = skin.desc;
+            _soundPath_onUse = skin.soundPath_onUse;
+            _projectilePath = skin.projectilePath;
+            _language = skin.language;
+            foreach (var animRef in skin.getAllAnimRefs())
             {
                 _animationRefs.Add(new SerializableSkinAnimationRef(animRef));
             }

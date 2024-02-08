@@ -6478,6 +6478,7 @@ GameObject:
   - component: {fileID: 1227819911}
   - component: {fileID: 1227819914}
   - component: {fileID: 1227819913}
+  - component: {fileID: 1227819915}
   m_Layer: 5
   m_Name: LoadingText
   m_TagString: Untagged
@@ -6593,6 +6594,20 @@ MonoBehaviour:
   m_UseGraphicAlpha: 1
   m_EffectColor: {r: 1, g: 1, b: 1, a: 1}
   m_AdditionalShadows: []
+--- !u!114 &1227819915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1227819909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comment: "\u4E3B\u573A\u666F\u7684\u52A0\u8F7D\u9875\u9762\u7684\u52A0\u8F7D\u6587\u672C"
+  context: 
 --- !u!114 &1284133833 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8829363909235060947, guid: 778a84d3066a09b43b655095c1855cf3,
@@ -11160,6 +11175,7 @@ GameObject:
   - component: {fileID: 1744200394}
   - component: {fileID: 1744200398}
   - component: {fileID: 1744200397}
+  - component: {fileID: 1744200399}
   m_Layer: 5
   m_Name: Logger
   m_TagString: Untagged
@@ -11287,6 +11303,20 @@ MonoBehaviour:
   m_UseGraphicAlpha: 1
   m_EffectColor: {r: 1, g: 1, b: 1, a: 1}
   m_AdditionalShadows: []
+--- !u!114 &1744200399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1744200392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comment: "\u4E3B\u573A\u666F\u7684\u52A0\u8F7D\u9875\u9762\u7684\u52A0\u8F7D\u6587\u672C"
+  context: 
 --- !u!1 &1745007002
 GameObject:
   m_ObjectHideFlags: 0

@@ -2000,7 +2000,9 @@ namespace Controllers
 
             var varInfos = eventDefine?.afterVariableInfos;
 
-            string[] eventVarNames = varInfos != null ? eventVarNames = varInfos.Select(v => v.name).ToArray() : Array.Empty<string>();
+            string[] eventVarNames = varInfos != null 
+                ? eventVarNames = varInfos.Select(v => translateEventVarName(v.name)).ToArray() 
+                : Array.Empty<string>();
             var eventVarNamesEditor = eventVarNames.Select(n => game.lang._(n)).ToArray();
 
             var properties = ValueInputFieldProperties.eventVar(eventVarNamesEditor, eventVarNames);

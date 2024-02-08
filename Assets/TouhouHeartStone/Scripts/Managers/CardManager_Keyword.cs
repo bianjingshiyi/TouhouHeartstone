@@ -150,57 +150,57 @@ namespace Game
 
         [TranslateMsg("关键词描述", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_UNKNOWN = "不知道这是干什么的……";
-        [TranslateMsg("关键词描述-守卫")]
+        [TranslateMsg("关键词描述-守卫", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_TAUNT = "敌人必须优先攻击具有<b>守卫</b>的角色。";
-        [TranslateMsg("关键词描述-先攻")]
+        [TranslateMsg("关键词描述-先攻", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_CHARGE = "可以立即发起攻击。";
-        [TranslateMsg("关键词描述-速攻")]
+        [TranslateMsg("关键词描述-速攻", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_RUSH = "可以立即对仆从发起攻击。";
-        [TranslateMsg("关键词描述-护盾")]
+        [TranslateMsg("关键词描述-护盾", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_SHIELD = "阻挡一次受到的伤害。";
-        [TranslateMsg("关键词描述-隐匿")]
+        [TranslateMsg("关键词描述-隐匿", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_STEALTH = "直到发起一次攻击，无法成为敌人的目标。";
-        [TranslateMsg("关键词描述-永久隐匿")]
+        [TranslateMsg("关键词描述-永久隐匿", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_PERMANENTSTEALTH = "无法成为敌人的目标。";
-        [TranslateMsg("关键词描述-吸血")]
+        [TranslateMsg("关键词描述-吸血", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_DRAIN = "造成伤害后，为你的英雄恢复等量生命值。";
-        [TranslateMsg("关键词描述-致命")]
+        [TranslateMsg("关键词描述-致命", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_POISONOUS = "对仆从造成伤害后，直接将其消灭。";
-        [TranslateMsg("关键词描述-魔免")]
+        [TranslateMsg("关键词描述-魔免", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_ELUSIVE = "无法成为法术或英雄技能的目标。";
-        [TranslateMsg("关键词描述-禁锢")]
+        [TranslateMsg("关键词描述-禁锢", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_FROZEN = "被<b>禁锢</b>的角色失去下一次攻击机会。";
-        [TranslateMsg("关键词描述-唯一")]
+        [TranslateMsg("关键词描述-唯一", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_UNIQUE = "只能在套牌中携带一张<b>唯一</b>卡牌。";
-        [TranslateMsg("关键词描述-自动施放")]
+        [TranslateMsg("关键词描述-自动施放", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_AUTOCAST = "抽到该牌后立即施放，并抽一张牌。";
-        [TranslateMsg("关键词描述-无法攻击")]
+        [TranslateMsg("关键词描述-无法攻击", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_CANTATTACK = "无法发起攻击。";
-        [TranslateMsg("关键词描述-双击")]
+        [TranslateMsg("关键词描述-双击", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_WINDFURY = "一回合内可以发起两次攻击。";
-        [TranslateMsg("关键词描述-无敌")]
+        [TranslateMsg("关键词描述-无敌", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_IMMUNITY = "无法受到伤害或成为敌人的目标。";
-        [TranslateMsg("关键词描述-陷阱")]
+        [TranslateMsg("关键词描述-陷阱", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_TRAP = "在敌方回合内因某些条件触发后，产生某些效果。";
-        [TranslateMsg("关键词描述-委托")]
+        [TranslateMsg("关键词描述-委托", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_MISSION = "必定出现在初始手牌中。完成某些条件后，产生某些效果。";
-        [TranslateMsg("关键词描述-宣言")]
+        [TranslateMsg("关键词描述-宣言", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_BATTLECRY = "使用该牌后，产生某些效果。";
-        [TranslateMsg("关键词描述-遗言")]
+        [TranslateMsg("关键词描述-遗言", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_DEATHRATTLE = "在仆从死亡或道具被摧毁后，产生某些效果。";
-        [TranslateMsg("关键词描述-永久禁锢")]
+        [TranslateMsg("关键词描述-永久禁锢", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_PERMANENT_FROZEN = "失去所有攻击机会。";
-        [TranslateMsg("关键词描述-无法使用")]
+        [TranslateMsg("关键词描述-无法使用", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_UNPLAYABLE = "无法从手牌中被主动使用。";
-        [TranslateMsg("关键词描述-蓄力")]
+        [TranslateMsg("关键词描述-蓄力", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_CAN_BE_CHARGED = "你的回合结束后，为手牌中所有灵力值消耗小于或等于你灵力珠数量的<b>蓄力</b>牌进行蓄力。";
-        [TranslateMsg("关键词描述-法术伤害")]
+        [TranslateMsg("关键词描述-法术伤害", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_SPELL_DAMAGE = "你的法术额外造成伤害。";
-        [TranslateMsg("关键词描述-减伤")]
+        [TranslateMsg("关键词描述-减伤", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_DAMAGE_REDUCE = "受到的伤害减少。";
-        [TranslateMsg("关键词描述-封印")]
+        [TranslateMsg("关键词描述-封印", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_SEAL = "被<b>封印</b>的角色失去所有强化效果。";
-        [TranslateMsg("关键词描述-信仰对决")]
+        [TranslateMsg("关键词描述-信仰对决", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_FAITHDUEL = "揭示双方牌库里的一张牌，灵力值消耗更高的一方赢得<b>信仰对决</b>。";
         #endregion
 

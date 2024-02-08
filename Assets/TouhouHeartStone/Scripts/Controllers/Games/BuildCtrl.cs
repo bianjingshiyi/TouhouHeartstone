@@ -279,7 +279,7 @@ namespace Controllers
             Deck newDeck = new Deck(new DefineReference(_selectableMasters[index].cardPoolId, _selectableMasters[index].id), Enumerable.Empty<DefineReference>())
             {
                 //id = (int)game.deck.CreateDeck(StringTable.BUILD_NEW_DECK_DEFAULT_NAME, _selectableMasters[index].id),
-                name = StringTable.BUILD_NEW_DECK_DEFAULT_NAME,
+                name = game.lang._(StringTable.BUILD_NEW_DECK_DEFAULT_NAME),
             };
             enterBuildMode(newDeck);
             nextTutorialStep(BuildTutorialSteps.SelectMaster);

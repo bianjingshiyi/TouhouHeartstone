@@ -39,7 +39,7 @@ namespace Game
             {
                 foreach (var key in keys)
                 {
-                    options.Add(new Dropdown.OptionData(provider._p(key, Context)));
+                    options.Add(new Dropdown.OptionData(provider._p(Context, key)));
                 }
             }
             Component.options = options;
