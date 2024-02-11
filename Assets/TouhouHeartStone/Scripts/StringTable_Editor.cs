@@ -197,6 +197,12 @@ namespace Game
 
         #endregion
 
+        #region 节点文档
+        public const string CONTEXT_NODE_DOC_SUMMARY = "节点文档说明";
+        public const string CONTEXT_NODE_DOC_EXAMPLE = "节点文档示例";
+        public const string CONTEXT_NODE_DOC_PORT_SUMMARY = "节点端口说明";
+        #endregion
+
         #region 节点名
         [TranslateMsg("编辑器中的节点图里输入节点的名字")]
         public const string EDITOR_NODE_NAME_INPUT = "输入节点";

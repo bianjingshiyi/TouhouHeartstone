@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.Serialization;
-using BJSYGameCore;
-using IGensoukyo;
-using MukioI18n;
-using TouhouCardEngine;
+﻿using IGensoukyo;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,368 +6,37 @@ namespace Game
 {
     public class NodeDocument : MonoBehaviour
     {
-        public const string FileName = "NodeDoc.xml";
-
-        [SerializeField]
-        HTMLRenderer _html;
-
-        [SerializeField]
-        Button _closeBtn;
-
-        List<ActionComment> comments = null;
-        LangManager lang => this.findInstance<LangManager>();
-
-        private void Awake()
+        #region 公有方法
+        public void Show(string str)
         {
-            _closeBtn.onClick.AddListener(Hide);
+            _html.Html = str;
+
+            gameObject.SetActive(true);
         }
 
         public void Hide()
         {
             gameObject.SetActive(false);
         }
-        const string CONTEXT_NODE_DOC_SUMMARY = "节点文档说明";
-        const string CONTEXT_NODE_DOC_EXAMPLE = "节点文档示例";
+        #endregion
 
-        [TranslateMsg("节点帮助的标题，{0}是节点名称")]
-        const string TitleTemplate = "<h2>{0}</h2>";
-        [TranslateMsg("节点参数列表的标题")]
-        const string ParameterTitle = "<h3>参数列表</h3>";
-        [TranslateMsg("节点输入参数")]
-        const string InputParameter = "<p>输入参数</p>";
-        [TranslateMsg("节点输出参数")]
-        const string OutputParameter = "<p>输出参数</p>";
-        [TranslateMsg("参数模板。{0}: 参数名称, {1}: 参数类型, {2}: 数组, {3}: 参数, {4}: 注释")]
-        const string ParameterTemplate = "<li>{0}({1}): {4}</li>";
-        [TranslateMsg("节点说明模板, {0} 为节点自带说明", CONTEXT_NODE_DOC_SUMMARY)]
-        const string SummaryTemplate = "<p>{0}</p>";
-        [TranslateMsg("节点分类模板, {0} 为分类名称")]
-        const string CategoryTemplate = "<p><b>分类</b>: {0}</p>";
-        [TranslateMsg("节点过期模板")]
-        const string ObsoleteTemplate = "<p><b>此节点已被废弃，可能在后续版本中删除。</b>{0}</p>";
-        [TranslateMsg("节点示例标题")]
-        const string ExampleTitle = "<h3>示例</h3>";
-        [TranslateMsg("节点示例模板, {0} 为节点自带说明", CONTEXT_NODE_DOC_EXAMPLE)]
-        const string ExampleTemplate = "<p>{0}</p>";
+        #region 私有方法
 
-        public void Show(int id)
+        #region 生命周期
+        private void Awake()
         {
-            if (comments == null) comments = LoadDocument();
-            var doc = comments.FirstOrDefault(d => id == d.defineId);
-            if (doc == null)
-                return;
-
-            string str = "";
-            str += lang._(TitleTemplate, lang._(doc.editorName)); // 标题
-            if (!string.IsNullOrEmpty(doc.category))
-                str += lang._(CategoryTemplate, lang._(doc.category)); // 分类
-            if (doc.obsoleteMsg != null)
-                str += lang._(ObsoleteTemplate, lang._(doc.obsoleteMsg)); // 过期节点
-            str += lang._p(CONTEXT_NODE_DOC_SUMMARY, SummaryTemplate, lang._(doc.summaryString)); // 说明
-
-            // 参数文档
-            str += lang._(ParameterTitle);
-            if (doc.inputs.Length > 0)
-            {
-                str += lang._(InputParameter);
-                str += GetParametersStr(doc.inputs);
-            }
-            if (doc.outputs.Length > 0)
-            {
-                str += lang._(OutputParameter);
-                str += GetParametersStr(doc.outputs);
-            }
-
-            // 示例
-            if (!string.IsNullOrEmpty(doc.exampleString))
-            {
-                str += lang._(ExampleTitle);
-                str += lang._p(CONTEXT_NODE_DOC_EXAMPLE, ExampleTemplate, lang._(doc.exampleString));
-            }
-
-            _html.Html = str;
-
-            gameObject.SetActive(true);
+            _closeBtn.onClick.AddListener(Hide);
         }
+        #endregion
 
-        string GetParameterStr(ActionParameterComment item)
-        {
-            var dotIndex = item.type.LastIndexOf(".");
-            string type = dotIndex > 0 ? item.type.Substring(dotIndex + 1) : item.type;
-            type = type.Replace("<", "&lt;").Replace(">", "&gt;");
-            string displayName = lang._(item.displayName ?? item.name);
-            return lang._(ParameterTemplate, displayName, type, item.isArray, item.isParams, lang._(item.summaryString));
-        }
-        string GetParametersStr(ActionParameterComment[] items)
-        {
-            string str = "";
-            str += "<ul>";
-            foreach (var item in items)
-            {
-                str += GetParameterStr(item);
-            }
-            str += "</ul>";
-            return str;
-        }
+        #endregion
 
-        /// <summary>
-        /// 载入节点文档
-        /// </summary>
-        /// <returns></returns>
-        public static List<ActionComment> LoadDocument()
-        {
-            List<ActionComment> commentDict = new List<ActionComment>();
-
-            XmlSerializer deserializer = new XmlSerializer(typeof(ActionComment[]));
-            using (var fs = MukioI18n.FileLoader.ReadStreamingAsset(FileName))
-            {
-                var obj = deserializer.Deserialize(fs);
-                if (obj is ActionComment[] comments)
-                {
-                    commentDict.AddRange(comments);
-                }
-            }
-
-            return commentDict;
-        }
-    }
-
-    /// <summary>
-    /// 动作注释类
-    /// </summary>
-    [SerializeField]
-    public class ActionComment
-    {
-        /// <summary>
-        /// 定义ID
-        /// </summary>
-        public int defineId;
-
-        /// <summary>
-        /// 过期名称（替换Key）
-        /// </summary>
-        [XmlArray]
-        public string[] obsoleteNames;
-
-        /// <summary>
-        /// 编辑器名称
-        /// </summary>
-        public string editorName;
-
-        /// <summary>
-        /// 节点过期提示。不为null则说明过期
-        /// </summary>
-        public string obsoleteMsg;
-
-        /// <summary>
-        /// 节点分类
-        /// </summary>
-        public string category;
-
-        /// <summary>
-        /// 节点简介
-        /// </summary>
-        [XmlIgnore]
-        public string summaryString = "";
-
-        /// <summary>
-        /// 节点简介
-        /// </summary>
-        [XmlElement]
-        public XmlCDataSection summary
-        {
-            get
-            {
-                XmlDocument doc = new XmlDocument();
-                return doc.CreateCDataSection(summaryString);
-            }
-            set
-            {
-                summaryString = value.Value;
-            }
-        }
-
-        /// <summary>
-        /// 节点示例
-        /// </summary>
-        [XmlIgnore]
-        public string exampleString = "";
-
-        /// <summary>
-        /// 节点示例
-        /// </summary>
-        [XmlElement]
-        public XmlCDataSection example
-        {
-            get
-            {
-                XmlDocument doc = new XmlDocument();
-                return doc.CreateCDataSection(exampleString);
-            }
-            set
-            {
-                exampleString = value.Value;
-            }
-        }
-        public ActionParameterComment[] inputs;
-        public ActionParameterComment[] outputs;
-        public ActionParameterComment[] consts;
-
-        public ActionComment() { }
-
-        public ActionComment(ActionDefine act)
-        {
-            Update(act);
-        }
-
-        /// <summary>
-        /// 更新 ActionDefine
-        /// </summary>
-        /// <param name="act"></param>
-        public void Update(ActionDefine act)
-        {
-            defineId = act.defineId;
-            editorName = act.editorName;
-            obsoleteNames = act.obsoleteNames.Where(n => n != editorName).ToArray();
-            obsoleteMsg = act.obsoleteMsg;
-
-            var origInputs = consts != null ? inputs.Concat(consts).ToArray() : inputs;
-            inputs = ActionParameterComment.GetArray(origInputs, act.inputDefines.ToArray());
-            outputs = ActionParameterComment.GetArray(outputs, act.outputDefines.ToArray());
-            consts = null;
-
-            category = act.category;
-        }
-    }
-
-    /// <summary>
-    /// 参数注释类
-    /// </summary>
-    [Serializable]
-    public class ActionParameterComment
-    {
-        /// <summary>
-        /// 数据类型
-        /// </summary>
-        public string type;
-        /// <summary>
-        /// 名称
-        /// </summary>
-        public string name;
-        /// <summary>
-        /// 显示名称
-        /// </summary>
-        public string displayName;
-        /// <summary>
-        /// 参数
-        /// </summary>
-        public bool isParams;
-        /// <summary>
-        /// 是否为数组
-        /// </summary>
-        public bool isArray;
-
-        [XmlIgnore]
-        public string summaryString = "";
-
-        /// <summary>
-        /// 注释
-        /// </summary>
-        [XmlElement]
-        public XmlCDataSection summary
-        {
-            get
-            {
-                XmlDocument doc = new XmlDocument();
-                return doc.CreateCDataSection(summaryString);
-            }
-            set
-            {
-                summaryString = value.Value;
-            }
-        }
-
-        public ActionParameterComment() { }
-
-        public ActionParameterComment(PortDefine valueDefine)
-        {
-            Update(valueDefine);
-        }
-
-        /// <summary>
-        /// 更新 ValueDefine
-        /// </summary>
-        /// <param name="val"></param>
-        public void Update(PortDefine val)
-        {
-            var portType = val.type.IsArray ? val.type.GetElementType() : val.type;
-            type = getTypeName(portType);
-            name = val.name;
-            displayName = val.getDisplayName();
-            isParams = val.isParams;
-            isArray = val.type.IsArray;
-        }
-
-        /// <summary>
-        /// 将 ValueDefine 转换为 ActionParameterComment
-        /// </summary>
-        /// <param name="orig">原文档</param>
-        /// <param name="defines">新的valueDefine</param>
-        /// <returns></returns>
-        public static ActionParameterComment[] GetArray(ActionParameterComment[] orig, PortDefine[] defines)
-        {
-            List<ActionParameterComment> list = new List<ActionParameterComment>();
-            for (int i = 0; i < defines.Length; i++)
-            {
-                var input = defines[i];
-                if (input.name == ActionDefine.enterPortName || input.name == ActionDefine.exitPortName)
-                {
-                    // 跳过第一个动作端口。
-                    continue;
-                }
-                if (orig == null)
-                {
-                    list.Add(new ActionParameterComment(input));
-                    continue;
-                }
-
-                bool hasOld = false;
-                foreach (var item in orig)
-                {
-                    if (item.name == defines[i].name || item.name == defines[i].getDisplayName())
-                    {
-                        item.Update(input);
-                        list.Add(item);
-                        hasOld = true;
-                        break;
-                    }
-                }
-                if (!hasOld)
-                {
-                    list.Add(new ActionParameterComment(input));
-                }
-            }
-            return list.ToArray();
-        }
-
-        private static string getTypeName(Type portType)
-        {
-            string typeStr = null;
-            if (portType.IsGenericType)
-            {
-                var definition = portType.GetGenericTypeDefinition();
-                var genericArgs = portType.GenericTypeArguments;
-                var fullName = definition.Name;
-                var index = fullName.IndexOf('`');
-                var trueName = fullName.Substring(0, index);
-                typeStr = $"{trueName}<{string.Join(",", genericArgs.Select(a => getTypeName(a)))}>";
-            }
-            else
-            {
-                typeStr = portType.Name;
-            }
-            return typeStr;
-        }
+        #region 属性字段
+        [SerializeField]
+        HTMLRenderer _html;
+        [SerializeField]
+        Button _closeBtn;
+        #endregion
     }
 }
 

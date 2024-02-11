@@ -49,6 +49,14 @@ namespace UI
         }
         #endregion
 
+        #region 节点说明
+        public void showNodeDocument(string str)
+        {
+            if (_nodeDocument)
+                _nodeDocument.Show(str);
+        }
+        #endregion
+
         /// <summary>
         /// 将节点的指定输出连接到目标节点的输入上
         /// </summary>
@@ -982,13 +990,13 @@ namespace UI
 
         private void onActionNodeClickObsoleteButtonCallback(string value)
         {
+            setFocused();
             onClickActionNodeObsoleteButton?.Invoke(value);
         }
         private void onActionNodeClickHelpButton(int key)
         {
             setFocused();
-            if (_nodeDocument != null)
-                _nodeDocument.Show(key);
+            onClickActionNodeHelpButton?.Invoke(key);
         }
         private void onActionNodeVisualEffectButtonClickedCallback(ActionNodeItem item)
         {
@@ -1285,6 +1293,7 @@ namespace UI
         /// </summary>
         public event Action<ActionNodeItem, int> onClickOutputPort;
         public event Action<string> onClickActionNodeObsoleteButton;
+        public event Action<int> onClickActionNodeHelpButton;
 
         #region 效果属性
         /// <summary>

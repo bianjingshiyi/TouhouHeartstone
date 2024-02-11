@@ -484,6 +484,7 @@ namespace Controllers
             _ui.onNodeDeselected += onNodeDeselected;
             _ui.onNodeVisualEffectButtonClicked += onNodeVisualEffectButtonClickedCallback;
             _ui.onClickActionNodeObsoleteButton += onClickActionNodeObsoleteButtonCallback;
+            _ui.onClickActionNodeHelpButton += onClickActionNodeHelpButtonCallback;
             //触发
             _ui.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
             _ui.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChanged;
@@ -833,6 +834,78 @@ namespace Controllers
         private void onClickActionNodeObsoleteButtonCallback(string msg)
         {
             game.ui.dialog?.ShowConfirm(game.lang._(TITLE_NODE_OBSOLETE), game.lang._(MESSAGE_NODE_OBSOLETE, msg));
+        }
+        private void onClickActionNodeHelpButtonCallback(int id)
+        {
+            var doc = game.editor.getNodeComment(id);
+            if (doc == null)
+                return;
+                
+            var lang = game.lang;
+            string str = "";
+            // 标题
+            var editorNameStr = lang._(doc.editorName);
+            str += lang._(EDITOR_NODE_DOC_TITLE_TEMPLATE, editorNameStr); 
+            // 分类
+            if (!string.IsNullOrEmpty(doc.category))
+            {
+                var categoryStr = lang._p(StringTable.CONTEXT_NODE_CATEGORY, doc.category);
+                str += lang._(EDITOR_NODE_DOC_CATEGORY_TEMPLATE, categoryStr); 
+            }
+            // 过期节点
+            if (doc.obsoleteMsg != null)
+            {
+                var obsoleteMsgStr = lang._(doc.obsoleteMsg);
+                str += lang._(EDITOR_NODE_DOC_OBSOLETE_TEMPLATE, obsoleteMsgStr); 
+            }
+            // 说明
+            var summaryStr = lang.nodeDoc._p(StringTable.CONTEXT_NODE_DOC_SUMMARY, doc.summaryString);
+            str += lang._p(StringTable.CONTEXT_NODE_DOC_SUMMARY, EDITOR_NODE_DOC_SUMMARY_TEMPLATE, summaryStr); 
+
+            // 参数文档
+            str += lang._(EDITOR_NODE_DOC_PARAMETER_TITLE);
+            if (doc.inputs.Length > 0)
+            {
+                str += lang._(EDITOR_NODE_DOC_INPUT_PARAMETERS);
+                str += GetParametersStr(doc.inputs);
+            }
+            if (doc.outputs.Length > 0)
+            {
+                str += lang._(EDITOR_NODE_DOC_OUTPUT_PARAMETERS);
+                str += GetParametersStr(doc.outputs);
+            }
+
+            // 示例
+            if (!string.IsNullOrEmpty(doc.exampleString))
+            {
+                str += lang._(EDITOR_NODE_DOC_EXAMPLE_TITLE);
+                var exampleStr = lang.nodeDoc._p(StringTable.CONTEXT_NODE_DOC_EXAMPLE, doc.exampleString);
+                str += lang._p(StringTable.CONTEXT_NODE_DOC_EXAMPLE, EDITOR_NODE_DOC_EXAMPLE_TEMPLATE, exampleStr);
+            }
+            _ui.showNodeDocument(str);
+
+            
+
+            string GetParameterStr(ActionParameterComment item)
+            {
+                var dotIndex = item.type.LastIndexOf(".");
+                string type = dotIndex > 0 ? item.type.Substring(dotIndex + 1) : item.type;
+                type = type.Replace("<", "&lt;").Replace(">", "&gt;");
+                string displayName = lang._p(StringTable.CONTEXT_NODE_PARAM_NAME, item.displayName ?? item.name);
+                string summary = lang.nodeDoc._p(StringTable.CONTEXT_NODE_DOC_PORT_SUMMARY, item.summaryString);
+                return lang._(EDITOR_NODE_DOC_PARAMETER_TEMPLATE, displayName, type, item.isArray, item.isParams, summary);
+            }
+            string GetParametersStr(ActionParameterComment[] items)
+            {
+                string str = "";
+                str += "<ul>";
+                foreach (var item in items)
+                {
+                    str += GetParameterStr(item);
+                }
+                str += "</ul>";
+                return str;
+            }
         }
         #endregion
         #region 打开节点图界面
@@ -2111,6 +2184,31 @@ namespace Controllers
         public event Action<Node, string, int, int[]> onOpenNodeInputDefaultValueCardDefine;
         #endregion
         #region 属性字段
+        
+        #region 节点文档
+        [TranslateMsg("节点帮助的标题，{0}是节点名称")]
+        const string EDITOR_NODE_DOC_TITLE_TEMPLATE = "<h2>{0}</h2>";
+        [TranslateMsg("节点参数列表的标题")]
+        const string EDITOR_NODE_DOC_PARAMETER_TITLE = "<h3>参数列表</h3>";
+        [TranslateMsg("节点输入参数")]
+        const string EDITOR_NODE_DOC_INPUT_PARAMETERS = "<p>输入参数</p>";
+        [TranslateMsg("节点输出参数")]
+        const string EDITOR_NODE_DOC_OUTPUT_PARAMETERS = "<p>输出参数</p>";
+        [TranslateMsg("参数模板。{0}: 参数名称, {1}: 参数类型, {2}: 数组, {3}: 参数, {4}: 注释")]
+        const string EDITOR_NODE_DOC_PARAMETER_TEMPLATE = "<li>{0}({1}): {4}</li>";
+        [TranslateMsg("节点说明模板, {0} 为节点自带说明", StringTable.CONTEXT_NODE_DOC_SUMMARY)]
+        const string EDITOR_NODE_DOC_SUMMARY_TEMPLATE = "<p>{0}</p>";
+        [TranslateMsg("节点分类模板, {0} 为分类名称")]
+        const string EDITOR_NODE_DOC_CATEGORY_TEMPLATE = "<p><b>分类</b>: {0}</p>";
+        [TranslateMsg("节点过期模板")]
+        const string EDITOR_NODE_DOC_OBSOLETE_TEMPLATE = "<p><b>此节点已被废弃，可能在后续版本中删除。</b>{0}</p>";
+        [TranslateMsg("节点示例标题")]
+        const string EDITOR_NODE_DOC_EXAMPLE_TITLE = "<h3>示例</h3>";
+        [TranslateMsg("节点示例模板, {0} 为节点自带说明", StringTable.CONTEXT_NODE_DOC_EXAMPLE)]
+        const string EDITOR_NODE_DOC_EXAMPLE_TEMPLATE = "<p>{0}</p>";
+        #endregion
+
+
         [TranslateMsg("编辑器-参数名称-目标增益（自定义光环-更新动作-输出值）")]
         public const string EDITOR_PARAM_NAME_TARGET_BUFF = "目标增益";
         [TranslateMsg("编辑器-节点名称-主动效果入口节点")]

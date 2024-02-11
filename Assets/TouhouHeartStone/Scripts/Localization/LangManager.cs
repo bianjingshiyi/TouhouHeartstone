@@ -14,7 +14,9 @@ namespace Game
     /// </summary>
     public partial class LangManager : Manager, ITranslationProvider, ILanguageManager
     {
-        #region 公共成员
+        #region 公共方法
+
+        #region 语言
         public string[] getLanguages()
         {
             //返回副本，避免被更改
@@ -37,38 +39,9 @@ namespace Game
         {
             CurrentCulture = new CultureInfo(cultureName);
         }
-        /// <summary>
-        /// 加载初始语言
-        /// </summary>
-        /// <param name="cultureInfo"></param>
-        /// <returns></returns>
-        public Task initLanguage(CultureInfo cultureInfo)
-        {
-            return switchLanguage(cultureInfo);
-        }
+        #endregion
 
-        /// <summary>
-        /// 切换语言
-        /// </summary>
-        /// <param name="cultureInfo"></param>
-        /// <returns></returns>
-        public async Task switchLanguage(CultureInfo cultureInfo)
-        {
-            var lastCulture = i18n.CurrentLang;
-            if (lastCulture == cultureInfo) return;
-
-            // 加载语言资源
-            await i18n.LoadFileAsync(folderPath, cultureInfo);
-
-            // 触发事件来通知UI进行更改。
-            Task changeCultureTask = OnCultureChange?.Invoke(cultureInfo);
-            if (changeCultureTask != null)
-                await changeCultureTask;
-
-            // 卸载已经加载的资源
-            i18n.Unload(lastCulture);
-        }
-
+        #region 翻译代理
         /// <summary>
         /// 获取当前语言对应字符串
         /// </summary>
@@ -79,68 +52,74 @@ namespace Game
         {
             return _(sourceString);
         }
-
-        /// <summary>
-        /// 当语言切换
-        /// </summary>
-        public event Func<CultureInfo, Task> OnCultureChange;
-        #endregion
-        public const string CN = "zh-CN";
-        public const string EN = "en-US";
-        /// <summary>
-        /// 默认载入路径
-        /// </summary>
-        [SerializeField]
-        string folderPath = "i18n";
-        /// <summary>
-        /// 载入的语言
-        /// </summary>
-        [SerializeField]
-        string[] langs = { CN, EN };
-
-        /// <summary>
-        /// 默认语言
-        /// </summary>
-        [SerializeField]
-        string defaultLang = CN;
-
-        /// <summary>
-        /// 不要加载默认语言
-        /// </summary>
-        [SerializeField]
-        bool dontLoadDefaultLang = true;
-
-        List<CultureInfo> cultures = new List<CultureInfo>();
-
-        /// <summary>
-        /// 可用的语言
-        /// </summary>
-        public IEnumerable<CultureInfo> Cultures => cultures;
-
-        CultureInfo currentCulture;
-
-        /// <summary>
-        /// 当前语言
-        /// </summary>
-        public CultureInfo CurrentCulture
+        public string _(string text)
         {
-            get => currentCulture;
-            set
-            {
-                currentCulture = value;
-                i18n.SetLang(currentCulture);
-
-                OnCultureChange?.Invoke(CurrentCulture);
-            }
+            return ui._(text);
         }
 
-        public I18n i18n { get; } = new I18n();
+        public string _(string text, params object[] args)
+        {
+            return ui._(text, args);
+        }
 
+        public string _n(string text, string pluralText, long n)
+        {
+            return ui._n(text, pluralText, n);
+        }
+
+        public string _n(string text, string pluralText, long n, params object[] args)
+        {
+            return ui._n(text, pluralText, n, args);
+        }
+
+        public string _p(string context, string text)
+        {
+            return ui._p(context, text);
+        }
+
+        public string _p(string context, string text, params object[] args)
+        {
+            return ui._p(context, text, args);
+        }
+
+        public string _pn(string context, string text, string pluralText, long n)
+        {
+            return ui._pn(context, text, pluralText, n);
+        }
+
+        public string _pn(string context, string text, string pluralText, long n, params object[] args)
+        {
+            return ui._pn(context, text, pluralText, n, args);
+        }
+        public event Action OnLanguageChange
+        {
+            add
+            {
+                ui.OnLanguageChange += value;
+                nodeDoc.OnLanguageChange += value;
+                
+            }
+            remove
+            {
+                ui.OnLanguageChange -= value;
+                nodeDoc.OnLanguageChange -= value;
+            }
+        }
+        #endregion
+
+        #endregion
+
+        #region 私有方法
+
+        #region 生命周期
         protected override void onAwake()
         {
             base.onAwake();
             loadAll();
         }
+        #endregion
+
+        #region 加载
 
         private void loadAll()
         {
@@ -154,7 +133,8 @@ namespace Game
                 if (lang == defaultLang && dontLoadDefaultLang)
                 {
                     cultures.Add(defaultCulture);
-                    i18n.AddEmpty(defaultCulture);
+                    ui.AddEmpty(defaultCulture);
+                    nodeDoc.AddEmpty(defaultCulture);
                     continue;
                 }
                 loadLang(lang);
@@ -163,73 +143,93 @@ namespace Game
 
         private void loadLang(string lang)
         {
+            var culture = new CultureInfo(lang);
+            cultures.Add(culture);
+            UberDebug.Log($"加载语言{lang}的翻译");
+            loadI18N(culture, ui, uiFilePath, "UI");
+            loadI18N(culture, nodeDoc, nodeDocFilePath, "节点文档");
+        }
+        private static void loadI18N(CultureInfo culture, I18n i18n, string pathTemplate, string part)
+        {
+            var lang = culture.Name;
+            UberDebug.Log($"加载语言{lang}的{part}翻译");
+            var langName = lang.Replace("-", "_");
             try
             {
-                UberDebug.Log($"加载语言{lang}的翻译");
-                var culture = new CultureInfo(lang);
-                cultures.Add(culture);
-                i18n.Load(folderPath, culture);
+                var path = string.Format(pathTemplate, langName);
+                i18n.LoadFile(path, culture);
             }
-            catch (FileNotFoundException e)
+            catch(Exception e)
             {
-                UberDebug.LogError($"无法载入语言{lang}的翻译文件, {e.Message}");
-
+                UberDebug.LogError($"无法载入语言{lang}的{part}翻译文件, {e.Message}");
                 // 为没有翻译文件的加载一个默认空翻译
-                if (lang == defaultLang)
-                    i18n.AddEmpty(new CultureInfo(defaultLang));
+                i18n.AddEmpty(culture);
             }
         }
-        #region TranslationProxy
-        public string _(string text)
-        {
-            return i18n._(text);
-        }
+        #endregion
 
-        public string _(string text, params object[] args)
-        {
-            return i18n._(text, args);
-        }
+        #endregion
 
-        public string _n(string text, string pluralText, long n)
-        {
-            return i18n._n(text, pluralText, n);
-        }
+        #region 事件
+        /// <summary>
+        /// 当语言切换
+        /// </summary>
+        public event Func<CultureInfo, Task> OnCultureChange;
+        #endregion
 
-        public string _n(string text, string pluralText, long n, params object[] args)
+        #region 属性字段
+        public const string CN = "zh-CN";
+        public const string EN = "en-US";
+        /// <summary>
+        /// 可用的语言
+        /// </summary>
+        public IEnumerable<CultureInfo> Cultures => cultures;
+        /// <summary>
+        /// 当前语言
+        /// </summary>
+        public CultureInfo CurrentCulture
         {
-            return i18n._n(text, pluralText, n, args);
-        }
-
-        public string _p(string context, string text)
-        {
-            return i18n._p(context, text);
-        }
-
-        public string _p(string context, string text, params object[] args)
-        {
-            return i18n._p(context, text, args);
-        }
-
-        public string _pn(string context, string text, string pluralText, long n)
-        {
-            return i18n._pn(context, text, pluralText, n);
-        }
-
-        public string _pn(string context, string text, string pluralText, long n, params object[] args)
-        {
-            return i18n._pn(context, text, pluralText, n, args);
-        }
-        public event Action OnLanguageChange
-        {
-            add
+            get => currentCulture;
+            set
             {
-                i18n.OnLanguageChange += value;
-            }
-            remove
-            {
-                i18n.OnLanguageChange -= value;
+                currentCulture = value;
+                ui.SetLang(currentCulture);
+                nodeDoc.SetLang(currentCulture);
+
+                OnCultureChange?.Invoke(CurrentCulture);
             }
         }
+        public I18n ui { get; } = new I18n();
+        public I18n nodeDoc { get; } = new I18n();
+        [Obsolete]
+        I18n ITranslationProvider.i18n => ui;
+        CultureInfo currentCulture;
+        List<CultureInfo> cultures = new List<CultureInfo>();
+        /// <summary>
+        /// 默认载入路径
+        /// </summary>
+        [SerializeField]
+        string uiFilePath = "i18n/ui/{0}.mo";
+        /// <summary>
+        /// 默认载入路径
+        /// </summary>
+        [SerializeField]
+        string nodeDocFilePath = "i18n/docs/node.{0}.mo";
+        /// <summary>
+        /// 载入的语言
+        /// </summary>
+        [SerializeField]
+        string[] langs = { CN, EN };
+        /// <summary>
+        /// 默认语言
+        /// </summary>
+        [SerializeField]
+        string defaultLang = CN;
+        /// <summary>
+        /// 不要加载默认语言
+        /// </summary>
+        [SerializeField]
+        bool dontLoadDefaultLang = true;
         #endregion
     }
 }
