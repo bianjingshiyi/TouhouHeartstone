@@ -49,7 +49,7 @@ namespace Game
         #endregion
 
         #region 属性字段
-        public long currentCardPoolId { get; private set; }
+        public long currentCardPoolId { get; private set; } = -1;
         private List<ICardPoolReference> cardPoolEnv = new List<ICardPoolReference>();
         #endregion
     }

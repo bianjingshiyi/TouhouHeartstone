@@ -5,7 +5,11 @@ namespace UI
     [ExecuteAlways]
     public class DropdownListSizeController : MonoBehaviour
     {
-        private void Update()
+        private void LateUpdate()
+        {
+            updateRectTransform();
+        }
+        private void updateRectTransform()
         {
             var parent = rectTransform.parent as RectTransform;
 
@@ -15,8 +19,15 @@ namespace UI
             var anchorSize = parent.rect.size * (anchorMax - anchorMin);
 
             var sizeDelta = rectTransform.sizeDelta;
+            sizeDelta.x = 0;
             if (minWidth > 0)
-                sizeDelta.x = Mathf.Max(0, minWidth - anchorSize.x);
+                sizeDelta.x = Mathf.Max(sizeDelta.x, minWidth - anchorSize.x);
+            if (flexible && _content)
+            {
+                sizeDelta.x = Mathf.Max(sizeDelta.x, _content.rect.width - anchorSize.x + extraFlexibleWidth);
+                if (maxWidth > 0)
+                    sizeDelta.x = Mathf.Min(sizeDelta.x, maxWidth - anchorSize.x);
+            }
             rectTransform.sizeDelta = sizeDelta;
         }
         public RectTransform rectTransform
@@ -29,6 +40,11 @@ namespace UI
             }
         }
         public float minWidth = 0;
+        public float maxWidth = 0;
+        public bool flexible = false;
+        public float extraFlexibleWidth = 0;
+        [SerializeField]
+        private RectTransform _content;
         private RectTransform _rectTrans;
     }
 }
