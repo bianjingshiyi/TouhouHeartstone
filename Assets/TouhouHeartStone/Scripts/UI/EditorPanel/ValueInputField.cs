@@ -9,6 +9,7 @@ using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements.Experimental;
 using EventArgReference = Game.EventArgReference;
 
 namespace UI
@@ -121,6 +122,12 @@ namespace UI
 
                 defaultValueTypeName = _defaultValueTypeName,
                 valueTypeNames = _valueTypeNames,
+
+                graphTypeNames = _typeNames,
+                graphTypeValues = _typeValues,
+
+                cardTypeNames = _cardTypeNames,
+                cardTypeValues = _cardTypeValues,
             };
         }
         public void setReadonly(bool isReadonly)

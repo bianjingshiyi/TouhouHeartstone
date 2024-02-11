@@ -2073,21 +2073,19 @@ namespace Controllers
 
             var varInfos = eventDefine?.afterVariableInfos;
 
-            string[] eventVarNames = varInfos != null 
-                ? eventVarNames = varInfos.Select(v => translateEventVarName(v.name)).ToArray() 
-                : Array.Empty<string>();
-            var eventVarNamesEditor = eventVarNames.Select(n => game.lang._(n)).ToArray();
+            string[] eventVarNameValues = varInfos != null ? varInfos.Select(v => v.name).ToArray() : Array.Empty<string>();
+            string[] eventVarNameNames = eventVarNameValues.Select(n => translateEventVarName(n)).ToArray();
 
-            var properties = ValueInputFieldProperties.eventVar(eventVarNamesEditor, eventVarNames);
+            var properties = ValueInputFieldProperties.eventVar(eventVarNameNames, eventVarNameValues);
             item.initNodeInputFields(properties);
             var inputViewDatas = getNodeInputViewData(node);
             item.setInputs(inputViewDatas);
 
             // 如果该节点的该常量的值是null，则设置为名称列表的第一个值。
             var defaultValue = node.getInputDefaultValue<string>(EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY);
-            if (string.IsNullOrEmpty(defaultValue) && eventVarNames != null && eventVarNames.Count() > 0)
+            if (string.IsNullOrEmpty(defaultValue) && eventVarNameValues.Count() > 0)
             {
-                setNodeDefaultValue(node, EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY, -1, eventVarNames.FirstOrDefault());
+                setNodeDefaultValue(node, EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY, -1, eventVarNameValues.FirstOrDefault());
             }
         }
         /// <summary>
