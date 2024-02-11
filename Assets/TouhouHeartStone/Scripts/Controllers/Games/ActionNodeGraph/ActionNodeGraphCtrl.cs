@@ -620,8 +620,11 @@ namespace Controllers
                         defaultValue = valueType.getDefaultValue();
                     }
                     setNodeDefaultValue(node, name, paramIndex, defaultValue);
+                    // 更新事件变量节点的事件变量名。
                     checkEventVariableNodeItemVarNames(item, node);
-                    updateNodeItemInputPorts(node);
+                    // 更新转换事件类型节点相连的节点的事件变量名。
+                    checkCastEventTypeNodeOutputs(node);
+                    updateUINodeItemInputPorts(node);
                     addRecordBreakpoint();
                 }
 
@@ -746,8 +749,10 @@ namespace Controllers
                 var port = node.getInputPortAt(index);
                 // 移除端口的输入默认值。
                 removeInputPortDefaultValue(port);
+                // 更新转换事件类型节点相连的节点的事件变量名。
+                checkCastEventTypeNodeOutputs(node);
                 // 更新节点的输入端口列表
-                updateNodeItemInputPorts(node);
+                updateUINodeItemInputPorts(node);
                 addRecordBreakpoint();
             }
             resetConnectingPort();
@@ -767,7 +772,9 @@ namespace Controllers
             var name = inputPort.name;
             var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
             setNodeDefaultValue(node, name, paramIndex, value);
-            updateNodeItemInputPorts(node);
+            // 更新转换事件类型节点相连的节点的事件变量名。
+            checkCastEventTypeNodeOutputs(node);
+            updateUINodeItemInputPorts(node);
             addRecordBreakpoint();
         }
         private void onClickActionNodeDefaultValueButton(ActionNodeItem actionNodeItem, int inputIndex, int[] itemIndexes, ValueInputFieldButton type)
@@ -1188,7 +1195,7 @@ namespace Controllers
         private void afterCreateNodeItem(Node node, ActionNodeItem actionNodeItem)
         {
             _actionNodeItemList.Add(actionNodeItem);
-            updateNodeItemInputPorts(node);
+            updateUINodeItemInputPorts(node);
             updateNodePortModes(node, _connectingPort);
         }
         #endregion
@@ -1282,7 +1289,7 @@ namespace Controllers
             {
                 setNodeDefaultValue(_curEditNode, name, paramIndex, newDefValue);
                 // 更新UI.
-                updateNodeItemInputPorts(_curEditNode);
+                updateUINodeItemInputPorts(_curEditNode);
                 addRecordBreakpoint();
             }
         }
@@ -1359,7 +1366,7 @@ namespace Controllers
             // 更新事件变量节点的事件变量名。
             checkEventVariableNodeItemVarNames(inputNodeItem, inputPort.node);
             // 更新节点的输入端口列表
-            updateNodeItemInputPorts(inputPort.node);
+            updateUINodeItemInputPorts(inputPort.node);
         }
 
         private void connectControlPorts(ControlOutput outputPort, ControlInput inputPort)
@@ -1653,7 +1660,7 @@ namespace Controllers
                 updateInputParamsPort(inputPort);
                 // 更新事件变量节点的事件变量名。
                 checkEventVariableNodeItemVarNames(inputNodeItem, inputPort.node);
-                updateNodeItemInputPorts(inputPort.node);
+                updateUINodeItemInputPorts(inputPort.node);
             }
 
             if (outputPort != null && inputPort != null)
@@ -1922,7 +1929,7 @@ namespace Controllers
                 addOperationRecord(new ChangeNodeDefaultValueOperation(this, port.node, port.name, vi.paramIndex, beforeValue, null));
             }
         }
-        private async void updateNodeItemInputPorts(Node node)
+        private async void updateUINodeItemInputPorts(Node node)
         {
             var item = getActionNodeItem(node);
             var inputViewDatas = getNodeInputViewData(node);
@@ -1933,8 +1940,6 @@ namespace Controllers
             {
                 await updateCardDefineDefaultValue(item, node, defValue.name, defValue.paramIndex, defValue.value);
             }
-            // 更新“转换事件类型”连接的输出端口。
-            checkCastEventTypeNodeOutputs(node);
         }
         private Task updateCardDefineDefaultValue(ActionNodeItem item, Node node, string name, int paramIndex, object value)
         {
@@ -2051,9 +2056,17 @@ namespace Controllers
                     var destNode = connection?.destination?.node;
                     if (destNode == null)
                         continue;
-                    checkEventVariableNodeItemVarNames(getActionNodeItem(destNode), destNode);
+                    checkEventVariableNodeItemVarNames(destNode);
                 }
             }
+        }
+        /// <summary>
+        /// 根据设置/获取事件变量节点的连接端口，更新该节点的事件变量名列表。
+        /// </summary>
+        /// <param name="node">节点。</param>
+        private void checkEventVariableNodeItemVarNames(Node node)
+        {
+            checkEventVariableNodeItemVarNames(getActionNodeItem(node), node);
         }
         /// <summary>
         /// 根据设置/获取事件变量节点的连接端口，更新该节点的事件变量名列表。

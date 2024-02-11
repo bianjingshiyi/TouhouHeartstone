@@ -149,7 +149,8 @@ namespace Controllers
                     }
                     inputPort = inputActionNode.getParamInputPort(_destName, _destParamIndex);
                     _graphCtrl.updateInputParamsPort(inputPort);
-                    _graphCtrl.updateNodeItemInputPorts(inputActionNode);
+                    _graphCtrl.checkEventVariableNodeItemVarNames(inputActionNode);
+                    _graphCtrl.updateUINodeItemInputPorts(inputActionNode);
                 }
                 _graphCtrl.connectPorts(outputPort, inputPort);
             }
@@ -189,7 +190,8 @@ namespace Controllers
                     }
                     inputPort = inputActionNode.getParamInputPort(_destName, _destParamIndex);
                     _graphCtrl.updateInputParamsPort(inputPort);
-                    _graphCtrl.updateNodeItemInputPorts(inputActionNode);
+                    _graphCtrl.checkEventVariableNodeItemVarNames(inputActionNode);
+                    _graphCtrl.updateUINodeItemInputPorts(inputActionNode);
                 }
                 _graphCtrl.connectPorts(outputPort, inputPort);
             }
@@ -231,7 +233,9 @@ namespace Controllers
                     node.removeInputDefaultValue(_inputName, _paramIndex);
                 else
                     node.setInputDefaultValue(_inputName, _paramIndex, value);
-                _graphCtrl.updateNodeItemInputPorts(node);
+                // 更新转换事件类型节点相连的节点的事件变量名。
+                _graphCtrl.checkCastEventTypeNodeOutputs(node);
+                _graphCtrl.updateUINodeItemInputPorts(node);
             }
             public override void undo()
             {
