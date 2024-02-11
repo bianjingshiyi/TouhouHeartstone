@@ -86,6 +86,6 @@ namespace TouhouHeartstone
         public const string VAR_BUFF = EVENTVAR.BUFF;
         public const string VAR_EFFECT = EVENTVAR.EFFECT;
         public const string VAR_EVENT = EVENTVAR.EVENT;
-        public const string VAR_TARGETS = EVENTVAR.TARGETS;
+        public const string VAR_TARGETS = EVENTVAR.TARGET_CARD;
     }
 }
