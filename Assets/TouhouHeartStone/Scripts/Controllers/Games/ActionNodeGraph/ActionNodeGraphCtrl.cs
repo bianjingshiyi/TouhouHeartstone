@@ -842,6 +842,7 @@ namespace Controllers
                 return;
                 
             var lang = game.lang;
+            var editor = game.editor;
             string str = "";
             // 标题
             var editorNameStr = lang._(doc.editorName);
@@ -859,7 +860,7 @@ namespace Controllers
                 str += lang._(EDITOR_NODE_DOC_OBSOLETE_TEMPLATE, obsoleteMsgStr); 
             }
             // 说明
-            var summaryStr = lang.nodeDoc._p(StringTable.CONTEXT_NODE_DOC_SUMMARY, doc.summaryString);
+            var summaryStr = editor.getNodeDocParticularString(StringTable.CONTEXT_NODE_DOC_SUMMARY, doc.summaryString);
             str += lang._p(StringTable.CONTEXT_NODE_DOC_SUMMARY, EDITOR_NODE_DOC_SUMMARY_TEMPLATE, summaryStr); 
 
             // 参数文档
@@ -879,7 +880,7 @@ namespace Controllers
             if (!string.IsNullOrEmpty(doc.exampleString))
             {
                 str += lang._(EDITOR_NODE_DOC_EXAMPLE_TITLE);
-                var exampleStr = lang.nodeDoc._p(StringTable.CONTEXT_NODE_DOC_EXAMPLE, doc.exampleString);
+                var exampleStr = editor.getNodeDocParticularString(StringTable.CONTEXT_NODE_DOC_EXAMPLE, doc.exampleString);
                 str += lang._p(StringTable.CONTEXT_NODE_DOC_EXAMPLE, EDITOR_NODE_DOC_EXAMPLE_TEMPLATE, exampleStr);
             }
             _ui.showNodeDocument(str);
@@ -892,7 +893,7 @@ namespace Controllers
                 string type = dotIndex > 0 ? item.type.Substring(dotIndex + 1) : item.type;
                 type = type.Replace("<", "&lt;").Replace(">", "&gt;");
                 string displayName = lang._p(StringTable.CONTEXT_NODE_PARAM_NAME, item.displayName ?? item.name);
-                string summary = lang.nodeDoc._p(StringTable.CONTEXT_NODE_DOC_PORT_SUMMARY, item.summaryString);
+                string summary = editor.getNodeDocParticularString(StringTable.CONTEXT_NODE_DOC_PORT_SUMMARY, item.summaryString);
                 return lang._(EDITOR_NODE_DOC_PARAMETER_TEMPLATE, displayName, type, item.isArray, item.isParams, summary);
             }
             string GetParametersStr(ActionParameterComment[] items)

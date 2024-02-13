@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Game
 {
@@ -24,20 +25,55 @@ namespace Game
             Array.Copy(langs, 0, languages, 0, langs.Length);
             return languages;
         }
-
         public string getDefaultLanguage()
         {
             return defaultLang;
         }
-
         public string getLanguage()
         {
             return CurrentCulture.Name;
         }
-
+        public string getSystemLanguage()
+        {
+            switch (Application.systemLanguage)
+            {
+                case SystemLanguage.English:
+                    return EN;
+                default:
+                    return CN;
+            }
+        }
         public void setLanguage(string cultureName)
         {
             CurrentCulture = new CultureInfo(cultureName);
+        }
+        public void loadI18n(I18n i18n, string pathTemplate, string part)
+        {
+            foreach (var culture in cultures)
+            {
+                var lang = culture.Name;
+                // 在部分情况下，可能想要使用程序内的源文本作为翻译文本
+                if (lang == getDefaultLanguage() && dontLoadDefaultLang)
+                {
+                    i18n.AddEmpty(culture);
+                }
+                else
+                {
+                    UberDebug.Log($"加载语言{culture.Name}的{part}翻译文件");
+                    var langName = lang.Replace("-", "_");
+                    try
+                    {
+                        var path = string.Format(pathTemplate, langName);
+                        i18n.LoadFile(path, culture);
+                    }
+                    catch (Exception e)
+                    {
+                        UberDebug.LogError($"无法载入语言{lang}的{part}翻译文件, {e.Message}");
+                        // 为没有翻译文件的加载一个默认空翻译
+                        i18n.AddEmpty(culture);
+                    }
+                }
+            }
         }
         #endregion
 
@@ -54,56 +90,42 @@ namespace Game
         }
         public string _(string text)
         {
-            return ui._(text);
+            return i18n._(text);
         }
 
         public string _(string text, params object[] args)
         {
-            return ui._(text, args);
+            return i18n._(text, args);
         }
 
         public string _n(string text, string pluralText, long n)
         {
-            return ui._n(text, pluralText, n);
+            return i18n._n(text, pluralText, n);
         }
 
         public string _n(string text, string pluralText, long n, params object[] args)
         {
-            return ui._n(text, pluralText, n, args);
+            return i18n._n(text, pluralText, n, args);
         }
 
         public string _p(string context, string text)
         {
-            return ui._p(context, text);
+            return i18n._p(context, text);
         }
 
         public string _p(string context, string text, params object[] args)
         {
-            return ui._p(context, text, args);
+            return i18n._p(context, text, args);
         }
 
         public string _pn(string context, string text, string pluralText, long n)
         {
-            return ui._pn(context, text, pluralText, n);
+            return i18n._pn(context, text, pluralText, n);
         }
 
         public string _pn(string context, string text, string pluralText, long n, params object[] args)
         {
-            return ui._pn(context, text, pluralText, n, args);
-        }
-        public event Action OnLanguageChange
-        {
-            add
-            {
-                ui.OnLanguageChange += value;
-                nodeDoc.OnLanguageChange += value;
-                
-            }
-            remove
-            {
-                ui.OnLanguageChange -= value;
-                nodeDoc.OnLanguageChange -= value;
-            }
+            return i18n._pn(context, text, pluralText, n, args);
         }
         #endregion
 
@@ -115,7 +137,15 @@ namespace Game
         protected override void onAwake()
         {
             base.onAwake();
+            i18n.OnLanguageChange += OnLanguageChangeCallback;
             loadAll();
+        }
+        #endregion
+
+        #region 事件回调
+        public void OnLanguageChangeCallback()
+        {
+            OnLanguageChange?.Invoke();
         }
         #endregion
 
@@ -123,48 +153,12 @@ namespace Game
 
         private void loadAll()
         {
-            var defaultCulture = new CultureInfo(defaultLang);
             // 设置当前的默认语言
-            CurrentCulture = defaultCulture;
+            var systemCulture = new CultureInfo(getSystemLanguage());
+            CurrentCulture = systemCulture;
+            cultures.AddRange(langs.Select(l => new CultureInfo(l)));
 
-            foreach (var lang in langs)
-            {
-                // 在部分情况下，可能想要使用程序内的源文本作为翻译文本
-                if (lang == defaultLang && dontLoadDefaultLang)
-                {
-                    cultures.Add(defaultCulture);
-                    ui.AddEmpty(defaultCulture);
-                    nodeDoc.AddEmpty(defaultCulture);
-                    continue;
-                }
-                loadLang(lang);
-            }
-        }
-
-        private void loadLang(string lang)
-        {
-            var culture = new CultureInfo(lang);
-            cultures.Add(culture);
-            UberDebug.Log($"加载语言{lang}的翻译");
-            loadI18N(culture, ui, uiFilePath, "UI");
-            loadI18N(culture, nodeDoc, nodeDocFilePath, "节点文档");
-        }
-        private static void loadI18N(CultureInfo culture, I18n i18n, string pathTemplate, string part)
-        {
-            var lang = culture.Name;
-            UberDebug.Log($"加载语言{lang}的{part}翻译");
-            var langName = lang.Replace("-", "_");
-            try
-            {
-                var path = string.Format(pathTemplate, langName);
-                i18n.LoadFile(path, culture);
-            }
-            catch(Exception e)
-            {
-                UberDebug.LogError($"无法载入语言{lang}的{part}翻译文件, {e.Message}");
-                // 为没有翻译文件的加载一个默认空翻译
-                i18n.AddEmpty(culture);
-            }
+            loadI18n(i18n, uiFilePath, "UI");
         }
         #endregion
 
@@ -174,11 +168,12 @@ namespace Game
         /// <summary>
         /// 当语言切换
         /// </summary>
-        public event Func<CultureInfo, Task> OnCultureChange;
+        public event Action<CultureInfo> OnCultureChange;
+        public event Action OnLanguageChange;
         #endregion
 
         #region 属性字段
-        public const string CN = "zh-CN";
+        public const string CN = "zh-Hans";
         public const string EN = "en-US";
         /// <summary>
         /// 可用的语言
@@ -193,16 +188,13 @@ namespace Game
             set
             {
                 currentCulture = value;
-                ui.SetLang(currentCulture);
-                nodeDoc.SetLang(currentCulture);
-
+                i18n.SetLang(currentCulture);
                 OnCultureChange?.Invoke(CurrentCulture);
             }
         }
-        public I18n ui { get; } = new I18n();
-        public I18n nodeDoc { get; } = new I18n();
+        public I18n i18n { get; } = new I18n();
         [Obsolete]
-        I18n ITranslationProvider.i18n => ui;
+        I18n ITranslationProvider.i18n => i18n;
         CultureInfo currentCulture;
         List<CultureInfo> cultures = new List<CultureInfo>();
         /// <summary>
@@ -210,11 +202,6 @@ namespace Game
         /// </summary>
         [SerializeField]
         string uiFilePath = "i18n/ui/{0}.mo";
-        /// <summary>
-        /// 默认载入路径
-        /// </summary>
-        [SerializeField]
-        string nodeDocFilePath = "i18n/docs/node.{0}.mo";
         /// <summary>
         /// 载入的语言
         /// </summary>

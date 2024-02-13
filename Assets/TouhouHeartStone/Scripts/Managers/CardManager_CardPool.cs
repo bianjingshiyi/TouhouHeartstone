@@ -1120,16 +1120,16 @@ namespace Game
                 {
                     if (string.IsNullOrEmpty(skin.language))
                     {
-                        //皮肤不能没有对应语言信息，如果没有那么至少设置为默认语言
-                        skin.language = game.langManager.getDefaultLanguage();
+                        //皮肤不能没有对应语言信息，如果没有那么至少设置为当前语言
+                        skin.language = game.langManager.getLanguage();
                     }
                 }
                 foreach (var skin in cardPool.buffSkinList)
                 {
                     if (string.IsNullOrEmpty(skin.language))
                     {
-                        //皮肤不能没有对应语言信息，如果没有那么至少设置为默认语言
-                        skin.language = game.langManager.getDefaultLanguage();
+                        //皮肤不能没有对应语言信息，如果没有那么至少设置为当前语言
+                        skin.language = game.langManager.getLanguage();
                     }
                 }
             }

@@ -23,7 +23,7 @@ namespace Game
         public void MarkChange()
         {
             updateVolumeMixer();
-            lang.CurrentCulture = new CultureInfo(Config.Language);
+            lang.setLanguage(Config.Language);
             Screen.fullScreen = Config.FullScreen;
             OnConfigChange?.Invoke(Config);
         }
@@ -62,7 +62,7 @@ namespace Game
             Config.BGM = PlayerPrefs.HasKey(keyBGM) ? PlayerPrefs.GetFloat(keyBGM) : 1;
             Config.SE = PlayerPrefs.HasKey(keySE) ? PlayerPrefs.GetFloat(keySE) : 1;
             Config.FullScreen = (PlayerPrefs.HasKey(keyFullScreen) ? PlayerPrefs.GetInt(keyFullScreen, 0) : 0) == 1;
-            Config.Language = PlayerPrefs.HasKey(keyLanguage) ? PlayerPrefs.GetString(keyLanguage) : lang.CurrentCulture.Name;
+            Config.Language = PlayerPrefs.HasKey(keyLanguage) ? PlayerPrefs.GetString(keyLanguage) : lang.getSystemLanguage();
             Config.CacheSize = PlayerPrefs.HasKey(keyCache) ? PlayerPrefs.GetFloat(keyCache) : 0.5f;
             Config.NodeSnap = (PlayerPrefs.HasKey(keyNodeSnap) ? PlayerPrefs.GetInt(keyNodeSnap, 0) : 1) == 1;
             MarkChange();

@@ -130,6 +130,10 @@ namespace Game
 
         #endregion
         #region 私有方法
+        private void Awake()
+        {
+            Awake_Nodes();
+        }
         #endregion
         #region 属性字段
 

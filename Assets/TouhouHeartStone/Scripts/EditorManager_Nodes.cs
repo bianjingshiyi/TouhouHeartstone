@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
 using BJSYGameCore;
+using MukioI18n;
 using TouhouCardEngine;
 using UnityEngine;
 
@@ -11,9 +13,14 @@ namespace Game
 {
     public partial class EditorManager : Manager
     {
+        #region 公有方法
         public ActionComment getNodeComment(int defineId)
         {
             return LoadOrGetNodeDocument().FirstOrDefault(d => defineId == d.defineId);
+        }
+        public string getNodeDocParticularString(string context, string keyId, params string[] parameters)
+        {
+            return i18n._p(context, keyId, parameters);
         }
         /// <summary>
         /// 载入节点文档
@@ -34,6 +41,23 @@ namespace Game
             }
             return commentDict;
         }
+        #endregion
+
+        #region 私有方法
+
+        #region 生命周期
+        private void Awake_Nodes()
+        {
+            game.lang.OnCultureChange += onCultureChangedCallback;
+        }
+        #endregion
+
+        #region 事件回调
+        private void onCultureChangedCallback(CultureInfo culture)
+        {
+            i18n.SetLang(culture);
+        }
+        #endregion
         /// <summary>
         /// 载入节点文档
         /// </summary>
@@ -42,12 +66,25 @@ namespace Game
         {
             if (comments == null)
                 comments = LoadNodeDocument();
+            if (!i18nLoaded)
+            {
+                i18nLoaded = true;
+                game.lang.loadI18n(i18n, nodeDocTranslationFilePath, "节点文档");
+            }
             return comments;
         }
+        #endregion
 
         #region 属性字段
         public const string nodeDocFileName = "NodeDoc.xml";
+        private bool i18nLoaded;
+        private I18n i18n = new I18n();
         List<ActionComment> comments = null;
+        /// <summary>
+        /// 节点文档翻译文件默认载入路径
+        /// </summary>
+        [SerializeField]
+        string nodeDocTranslationFilePath = "i18n/docs/node.{0}.mo";
         #endregion
     }
 
