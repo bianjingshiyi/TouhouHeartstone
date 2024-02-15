@@ -155,8 +155,10 @@ namespace Game
         /// <returns></returns>
         public async Task ChangeUserInfo(string nick, string newPass)
         {
-            await ServerClient.ChangeUserInfoAsync(nick);
-            await ServerClient.ChangePassword(newPass);
+            if (!string.IsNullOrEmpty(nick))
+                await ServerClient.ChangeUserInfoAsync(nick);
+            if (!string.IsNullOrEmpty(newPass))
+                await ServerClient.ChangePassword(newPass);
             userInfo = await ServerClient.GetUserInfoAsync();
         }
 
@@ -278,6 +280,11 @@ namespace Game
         public void update()
         {
             clientLogic.update();
+        }
+        public void setServerAddress(string address)
+        {
+            ServerClient.SetClientBaseUri(address);
+            userInfo = null;
         }
         public async Task<bool> NewKratosClient()
         {

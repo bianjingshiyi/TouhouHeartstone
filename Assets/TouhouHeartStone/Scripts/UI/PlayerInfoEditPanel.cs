@@ -72,6 +72,16 @@ namespace UI
         {
             _hintText.transform.parent.gameObject.SetActive(false);
         }
+        public void setInteractable(bool interactable)
+        {
+            _nicknameField.interactable = interactable;
+            _oldPassField.interactable = interactable;
+            _newPassField.interactable = interactable;
+            _repeatPassField.interactable = interactable;
+            _confirmBtn.interactable = interactable;
+            _cancelBtn.interactable = interactable;
+            _closeBtn.interactable = interactable;
+        }
 
         public void Commit()
         {

@@ -17,6 +17,11 @@ namespace UI
         {
             _playerInfoPanel.SetPlayerInfo(info);
         }
+        public void setPlayerInfoInteractable(bool interactable)
+        {
+            _playerInfoPanel.setInteractable(interactable);
+        }
+
         #region 注册面板
         public void setRegisterPanelVisible(bool visible)
         {
@@ -24,6 +29,10 @@ namespace UI
                 _registerPanel.Display();
             else
                 _registerPanel.hide();
+        }
+        public void setRegisterPanelInteractable(bool interactable)
+        {
+            _registerPanel.setInteractable(interactable);
         }
         public void showRegisterMessage(string message)
         {
@@ -42,6 +51,7 @@ namespace UI
             _eulaPanel.Show(eula);
         }
         #endregion
+
         #region 登陆面板
         public void setLoginPanelVisible(bool visible)
         {
@@ -49,6 +59,10 @@ namespace UI
                 _loginPanel.Display();
             else
                 _loginPanel.hide();
+        }
+        public void setLoginPanelInteractable(bool interactable)
+        {
+            _loginPanel.setInteractable(interactable);
         }
         public void showLoginMessage(string message)
         {
@@ -67,6 +81,7 @@ namespace UI
             _loginPanel.setCaptcha(image);
         }
         #endregion
+
         #region 找回密码面板
         public void setRecoverPanelVisible(bool visible)
         {
@@ -74,6 +89,10 @@ namespace UI
                 _recoverPanel.Display();
             else
                 _recoverPanel.hide();
+        }
+        public void setRecoverPanelInteractable(bool interactable)
+        {
+            _recoverPanel.setInteractable(interactable);
         }
         public void showRecoverMessage(string message)
         {
@@ -100,6 +119,10 @@ namespace UI
                 _playerInfoEditPanel.Show();
             else
                 _playerInfoEditPanel.Hide();
+        }
+        public void setPlayerEditPanelInteractable(bool interactable)
+        {
+            _playerInfoEditPanel.setInteractable(interactable);
         }
         public void showPlayerEditMessage(string message)
         {
@@ -133,6 +156,8 @@ namespace UI
             _lanButton.onClick.AddListener(onLanButtonClickCallback);
             _serverButton.onClick.AddListener(onServerButtonClickCallback);
             _editorButton.onClick.AddListener(onEditorButtonClickCallback);
+
+            _playerInfoEditPanel.onClickConfirmBtn += onPlayerInfoEditConfirmClickCallback;
 
             _registerPanel.onCaptchaClick += onRegisterCaptchaClickCallback;
             _registerPanel.onRegisterClick += onRegisterConfirmClickCallback;
@@ -200,6 +225,7 @@ namespace UI
         {
             onServerButtonClick?.Invoke();
         }
+
         #region 注册页面
         private void onRegisterCaptchaClickCallback()
         {
@@ -219,6 +245,7 @@ namespace UI
             onRegisterBackClick?.Invoke();
         }
         #endregion
+
         #region 登陆页面
         private void onLoginRegisterClickCallback()
         {
@@ -324,6 +351,7 @@ namespace UI
 
         public ButtonIconGlass pveButton => _pveButton;
         public ButtonIconGlass buildButton => _buildCardButton;
+        public PlayerInfoPanel playerInfoPanel => _playerInfoPanel;
         [SerializeField]
         EULAPanel _eulaPanel;
         [SerializeField]
@@ -351,7 +379,7 @@ namespace UI
         [SerializeField]
         public NewsPanel _newsPanel;
         [SerializeField]
-        public PlayerInfoPanel _playerInfoPanel;
+        PlayerInfoPanel _playerInfoPanel;
         [SerializeField]
         Button _settingButton;
         [SerializeField]

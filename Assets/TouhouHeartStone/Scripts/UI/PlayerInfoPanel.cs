@@ -58,6 +58,11 @@ namespace UI
             // todo: 加载头像
             toggleLoginStatus(LoginState.Logined, isGuest);
         }
+        public void setInteractable(bool interactable)
+        {
+            logoutButton.interactable = interactable;
+            _editBtn.interactable = interactable;
+        }
         private void toggleLoginStatus(LoginState state, bool isGuest = false)
         {
             loginButton.gameObject.SetActive(state == LoginState.NotLogin);

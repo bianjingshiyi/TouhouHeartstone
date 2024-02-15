@@ -39,6 +39,14 @@ namespace UI
                 email = _emailInput.text
             };
         }
+        public void setInteractable(bool interactable)
+        {
+            _captchaButton.interactable = interactable;
+            _backButton.interactable = interactable;
+            _backButton2.interactable = interactable;
+            _commitButton.interactable = interactable;
+            _closeButton.interactable = interactable;
+        }
 
         protected override void Awake()
         {
@@ -46,6 +54,7 @@ namespace UI
             _closeButton.onClick.AddListener(onCloseClickedCallback);
             _captchaButton.onClick.AddListener(onCaptchaButtonClickCallback);
             _backButton.onClick.AddListener(onBackButtonClickCallback);
+            _backButton2.onClick.AddListener(onBackButtonClickCallback);
             _commitButton.onClick.AddListener(onCommitButtonClickCallback);
         }
         private void onCloseClickedCallback()
@@ -83,6 +92,8 @@ namespace UI
         private Button _captchaButton;
         [SerializeField]
         private Button _backButton;
+        [SerializeField]
+        private Button _backButton2;
         [SerializeField]
         private Button _commitButton;
         [SerializeField]

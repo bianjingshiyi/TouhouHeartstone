@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Game;
 using IGensoukyo.Utilities;
 using MukioI18n;
@@ -188,6 +189,7 @@ namespace Controllers
 
             try
             {
+                _ui.setRegisterPanelInteractable(false);
                 // 注册完毕，切换到登录界面
                 await game.network.logic.register(new AccountInfo(password, email, nickName));
                 game.network.loadRememberAccount(out var rememberUserName, out var userName, out var rememberPassword, out password);
@@ -198,6 +200,10 @@ namespace Controllers
             {
                 _ui.showRegisterMessage(e.Message);
                 _ui.setRegisterCaptcha(await game.network.getCaptchaImage());
+            }
+            finally
+            {
+                _ui.setRegisterPanelInteractable(true);
             }
         }
         private async void onRegisterPanelBackClickedCallback()
@@ -242,6 +248,7 @@ namespace Controllers
             }
             try
             {
+                _ui.setLoginPanelInteractable(false);
                 bool success = await game.network.logic.login(username, password);
                 if (success)
                 {
@@ -261,12 +268,17 @@ namespace Controllers
                 _ui.showLoginMessage(e.Message);
                 _ui.setLoginCaptcha(await game.network.getCaptchaImage());
             }
+            finally
+            {
+                _ui.setLoginPanelInteractable(true);
+            }
         }
         private async void onLoginPanelGuestLoginClickedCallback()
         {
             _ui.hideLoginMessage();
             try
             {
+                _ui.setLoginPanelInteractable(false);
                 bool success = await game.network.logic.GuestLogin();
                 if (success)
                 {
@@ -283,6 +295,10 @@ namespace Controllers
                 Debug.LogError(e);
                 _ui.showLoginMessage(e.Message);
             }
+            finally
+            {
+                _ui.setLoginPanelInteractable(true);
+            }
         }
         private async void onLoginPanelRecoverClickedCallback()
         {
@@ -297,10 +313,22 @@ namespace Controllers
             _ui.setLoginContent(rememberUserName, userName, rememberPassword, password);
             await showPanel(Panel.Login);
         }
-        private void onPlayerInfoLogoutClickedCallback()
+        private async void onPlayerInfoLogoutClickedCallback()
         {
-            _ui.setPlayerInfo(null);
-            _ = game.network.logic.logout();
+            try
+            {
+                _ui.setPlayerInfoInteractable(false);
+                await game.network.logic.logout();
+                _ui.setPlayerInfo(null);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"登出失败：{e}");
+            }
+            finally
+            {
+                _ui.setPlayerInfoInteractable(true);
+            }
         }
         private void onPlayerInfoEditClickedCallback()
         {
@@ -321,6 +349,7 @@ namespace Controllers
             }
             try
             {
+                _ui.setRecoverPanelInteractable(false);
                 var serverClient = game.network.logic.ServerClient;
                 if (await serverClient.RecoveryRequest(mail))
                 {
@@ -331,6 +360,10 @@ namespace Controllers
             {
                 Debug.Log(e);
                 _ui.showRecoverMessage(e.Message);
+            }
+            finally
+            {
+                _ui.setRecoverPanelInteractable(true);
             }
             _ui.setRecoverCaptcha(await game.network.getCaptchaImage());
         }
@@ -363,6 +396,7 @@ namespace Controllers
 
             try
             {
+                _ui.setPlayerEditPanelInteractable(false);
                 await game.network.logic.ChangeUserInfo(nickname, newPassword);
                 updateAccountPanel();
                 _ui.setPlayerEditPanelVisible(false);
@@ -371,6 +405,10 @@ namespace Controllers
             {
                 Debug.Log(e);
                 _ui.showPlayerEditMessage(e.Message);
+            }
+            finally
+            {
+                _ui.setPlayerEditPanelInteractable(true);
             }
         }
         private void onAutoLoginCallback()

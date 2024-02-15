@@ -62,7 +62,7 @@ namespace Game
         /// <param name="addr"></param>
         public async Task SetServerAddr(string addr)
         {
-            logic.ServerClient.SetClientBaseUri(addr);
+            logic.setServerAddress(addr);
             await logic.NewKratosClient();
             _ = startSequence();
         }

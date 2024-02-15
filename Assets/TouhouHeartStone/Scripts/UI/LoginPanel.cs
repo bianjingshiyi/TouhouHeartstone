@@ -54,6 +54,20 @@ namespace UI
                 rememberPassword = _rememberPasswordToggle.isOn
             };
         }
+        public void setInteractable(bool interactable)
+        {
+            _usernameInputField.interactable = interactable;
+            _passwordInputField.interactable = interactable;
+            _captchaInputField.interactable = interactable;
+            _captchaButton.interactable = interactable;
+            _rememberAccountToggle.interactable = interactable;
+            _rememberPasswordToggle.interactable = interactable;
+            _loginButton.interactable = interactable;
+            _guestLoginBtn.interactable = interactable;
+            _registerButton.interactable = interactable;
+            _recoverButton.interactable = interactable;
+            _closeButton.interactable = interactable;
+        }
         protected override void Awake()
         {
             base.Awake();

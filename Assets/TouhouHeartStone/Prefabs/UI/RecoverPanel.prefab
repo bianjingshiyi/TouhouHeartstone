@@ -1,5 +1,17 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &6833151873712526416 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1286695113556157963, guid: 8f87f95af032014448691606aece594a,
+    type: 3}
+  m_PrefabInstance: {fileID: 5696905161282220635}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &64442496084339877
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -431,8 +443,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4216344117612978245}
   - {fileID: 3821355924392992755}
+  - {fileID: 4216344117612978245}
   m_Father: {fileID: 718451394791201394}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2989,6 +3001,7 @@ MonoBehaviour:
   _captchaImage: {fileID: 1416806349680389147}
   _captchaButton: {fileID: 433489404606740121}
   _backButton: {fileID: 1368321297335539912}
+  _backButton2: {fileID: 6833151873712526416}
   _commitButton: {fileID: 2122911406309189502}
   _container2RectTransform: {fileID: 983956764373862650}
   _container1RectTransform: {fileID: 718451394791201394}

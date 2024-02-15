@@ -25,6 +25,21 @@ namespace UI
         {
             _captchaImage.sprite = sprite;
         }
+        public void setInteractable(bool interactable)
+        {
+            _usernameInputField.interactable = interactable;
+            _passwordInputField.interactable = interactable;
+            _repeatPasswordInputField.interactable = interactable;
+            _emailInputField.interactable = interactable;
+            _nickNameInputField.interactable = interactable;
+            _inviteInputField.interactable = interactable;
+            _captchaInputField.interactable = interactable;
+            _registerButton.interactable = interactable;
+            _loginButton.interactable = interactable;
+            _closeButton.interactable = interactable;
+            _eulaButton.interactable = interactable;
+            _captchaButton.interactable = interactable;
+        }
         public RegisterInfo getRegisterInfo()
         {
             return new RegisterInfo
