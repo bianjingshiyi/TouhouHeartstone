@@ -60,9 +60,10 @@ namespace Game
         /// 设置服务器地址
         /// </summary>
         /// <param name="addr"></param>
-        public void SetServerAddr(string addr)
+        public async Task SetServerAddr(string addr)
         {
             logic.ServerClient.SetClientBaseUri(addr);
+            await logic.NewKratosClient();
             _ = startSequence();
         }
         /// <summary>
@@ -139,9 +140,12 @@ namespace Game
 
         #region 生命周期
 
-        protected override void onAwake()
+        protected override async void onAwake()
         {
             base.onAwake();
+            _logic = new NetworkingLogic(serverBaseUri, version, cacheManager, _ports);
+            await _logic.NewKratosClient();
+
             gameManager.nwLogic = logic;
 
             logic.onRoomListChange += NetworkingLogic_onRoomListChange;
@@ -277,15 +281,7 @@ namespace Game
 
         public GameManager gameManager => getManager<GameManager>();
 
-        public NetworkingLogic logic
-        {
-            get
-            {
-                if (_logic == null)
-                    _logic = new NetworkingLogic(serverBaseUri, version, cacheManager, _ports);
-                return _logic;
-            }
-        }
+        public NetworkingLogic logic => _logic;
 
         public IRoomClient roomClient => logic.roomClient;
         private int LANPort => logic.Port;

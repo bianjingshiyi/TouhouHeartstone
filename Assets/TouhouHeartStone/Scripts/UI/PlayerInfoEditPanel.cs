@@ -50,7 +50,6 @@ namespace UI
             return new PlayerInfoEditInfo()
             {
                 nickname = _nicknameField.text,
-                oldPassword = _oldPassField.text,
                 newPassword = _newPassField.text,
                 repeatPassword = _repeatPassField.text
             };
@@ -82,7 +81,6 @@ namespace UI
     public struct PlayerInfoEditInfo
     {
         public string nickname;
-        public string oldPassword;
         public string newPassword;
         public string repeatPassword;
 

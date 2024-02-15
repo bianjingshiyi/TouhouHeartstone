@@ -72,7 +72,7 @@ namespace Game
         {
             if (ServerClient == null)
                 return;
-            await ServerClient.LogoutAsync();
+            await ServerClient.LogoutKratos();
             userInfo = null;
         }
 
@@ -84,19 +84,20 @@ namespace Game
         /// <param name="account"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public async Task<bool> login(string account, string password, string captcha)
+        public async Task<bool> login(string email, string password)
         {
-            bool success = await ServerClient.LoginAsync(account, password, captcha);
-            if (success)
+            string sessionToken = await ServerClient.LoginViaPassword(email, password);
+            if (!string.IsNullOrEmpty(sessionToken))
             {
-                userInfo = await ServerClient.GetUserInfoAsync();
-                isGuest = false;
+                if (await ServerClient.LoginByKratosAsync(sessionToken))
+                {
+                    userInfo = await ServerClient.GetUserInfoAsync();
+                    isGuest = false;
+                    return true;
+                }
             }
-            else
-            {
-                userInfo = null;
-            }
-            return success;
+            userInfo = null;
+            return false;
         }
 
         /// <summary>
@@ -105,15 +106,12 @@ namespace Game
         /// <param name="account"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public Task register(AccountInfo account, string captcha)
+        public Task register(AccountInfo account)
         {
-            return ServerClient.RegisterAsync(
-                account.userName,
+            return ServerClient.RegisterViaPassword(
                 account.mail,
                 account.password,
-                account.nickName,
-                account.invite,
-                captcha
+                account.nickName
             );
         }
 
@@ -155,9 +153,10 @@ namespace Game
         /// <param name="oldPass">旧密码</param>
         /// <param name="newPass">新密码</param>
         /// <returns></returns>
-        public async Task ChangeUserInfo(string nick, string oldPass, string newPass)
+        public async Task ChangeUserInfo(string nick, string newPass)
         {
-            await ServerClient.PatchUserInfoAsync(nick, oldPass, newPass);
+            await ServerClient.ChangeUserInfoAsync(nick);
+            await ServerClient.ChangePassword(newPass);
             userInfo = await ServerClient.GetUserInfoAsync();
         }
 
@@ -279,6 +278,10 @@ namespace Game
         public void update()
         {
             clientLogic.update();
+        }
+        public async Task<bool> NewKratosClient()
+        {
+            return await ServerClient.NewKratosClient();
         }
         #endregion
         #region 私有方法
@@ -412,12 +415,10 @@ namespace Game
     [Serializable]
     public class AccountInfo
     {
-        public string userName;
         public string password;
         public string mail;
         public string nickName;
         public int uid;
-        public string invite;
         public bool guest = false;
 
         /// <summary>
@@ -428,7 +429,7 @@ namespace Game
         /// <param name="nickName"></param>
         /// <param name="uid"></param>
         /// <param name="guest"></param>
-        public AccountInfo(string userName, string password, string nickName, int uid, bool guest = false) : this(userName, password, null, nickName, uid, null)
+        public AccountInfo(string password, string nickName, int uid, bool guest = false) : this(password, null, nickName, uid)
         {
             this.guest = guest;
         }
@@ -439,17 +440,15 @@ namespace Game
         /// <param name="password"></param>
         /// <param name="mail"></param>
         /// <param name="nickName"></param>
-        public AccountInfo(string userName, string password, string mail, string nickName, string key) : this(userName, password, mail, nickName, 0, key)
+        public AccountInfo(string password, string mail, string nickName) : this(password, mail, nickName, 0)
         {
         }
-        public AccountInfo(string userName, string password, string mail, string nickName, int uid, string key)
+        public AccountInfo(string password, string mail, string nickName, int uid)
         {
-            this.userName = userName;
             this.password = password;
             this.mail = mail;
             this.nickName = nickName;
             this.uid = uid;
-            this.invite = key;
         }
     }
 

@@ -166,36 +166,20 @@ namespace Controllers
         private async void onRegisterPanelConfirmClickedCallback(RegisterInfo info)
         {
             _ui.hideRegisterMessage();
-            var userName = info.username;
             var password = info.password;
             var email = info.email;
             var repeatPassword = info.repeatPassword;
-            var invite = info.invite;
             var nickName = info.nickName;
-            var captcha = info.captcha;
-            if (string.IsNullOrEmpty(userName))
-            {
-                _ui.showRegisterMessage(lang._(NETMANAGER_USERNAME_NULL));
-                return;
-            }
-
             if (string.IsNullOrEmpty(email))
             {
                 _ui.showRegisterMessage(lang._(NETMANAGER_EMAIL_NULL));
                 return;
             }
-            if (string.IsNullOrEmpty(captcha))
-            {
-                _ui.showRegisterMessage(lang._(NETMANAGER_CHECK_CODE_NULL));
-                return;
-            }
-
             if (string.IsNullOrEmpty(nickName))
             {
                 _ui.showRegisterMessage(lang._(NETMANAGER_NICKNAME_NULL));
                 return;
             }
-
             if (password != repeatPassword)
             {
                 _ui.showRegisterMessage(lang._(NETMANAGER_PASSWORD_ERROR));
@@ -205,8 +189,8 @@ namespace Controllers
             try
             {
                 // 注册完毕，切换到登录界面
-                await game.network.logic.register(new AccountInfo(userName, password, email, nickName, invite), captcha);
-                game.network.loadRememberAccount(out var rememberUserName, out userName, out var rememberPassword, out password);
+                await game.network.logic.register(new AccountInfo(password, email, nickName));
+                game.network.loadRememberAccount(out var rememberUserName, out var userName, out var rememberPassword, out password);
                 _ui.setLoginContent(rememberUserName, userName, rememberPassword, password);
                 await showPanel(Panel.Login);
             }
@@ -244,7 +228,6 @@ namespace Controllers
             _ui.hideLoginMessage();
             var username = info.username;
             var password = info.password;
-            var captcha = info.captcha;
             var rememberUsername = info.rememberUsername;
             var rememberPassword = info.rememberPassword;
             if (string.IsNullOrEmpty(username))
@@ -259,7 +242,7 @@ namespace Controllers
             }
             try
             {
-                bool success = await game.network.logic.login(username, password, captcha);
+                bool success = await game.network.logic.login(username, password);
                 if (success)
                 {
                     game.network.saveRemeberAccount(rememberUsername, username, rememberPassword, password);
@@ -329,92 +312,36 @@ namespace Controllers
         private async void onRecoverPanelCommitClickedCallback(RecoverInfo info)
         {
             _ui.hideRecoverMessage();
-            if (!_recoverEmailSent)
-            {
-                var mail = info.email;
-                var captcha = info.captcha1;
+            var mail = info.email;
 
-                if (string.IsNullOrEmpty(mail))
+            if (string.IsNullOrEmpty(mail))
+            {
+                _ui.showRecoverMessage(lang._(NETMANAGER_EMAIL_NULL));
+                return;
+            }
+            try
+            {
+                var serverClient = game.network.logic.ServerClient;
+                if (await serverClient.RecoveryRequest(mail))
                 {
-                    _ui.showRecoverMessage(lang._(NETMANAGER_EMAIL_NULL));
-                    return;
-                }
-                if (string.IsNullOrEmpty(captcha))
-                {
-                    _ui.showRecoverMessage(lang._(NETMANAGER_CHECK_CODE_NULL));
-                    return;
-                }
-                try
-                {
-                    await game.network.logic.ServerClient.RecoverRequestAsync(mail, captcha);
                     _ui.switchRecoverStage(true);
-                    _recoverEmailSent = true;
                 }
-                catch (NetClientException e)
-                {
-                    Debug.Log(e);
-                    _ui.showRecoverMessage(e.Message);
-                }
-                _ui.setRecoverCaptcha(await game.network.getCaptchaImage());
             }
-            else
+            catch (NetClientException e)
             {
-                var mail = info.email;
-                var captcha = info.captcha2;
-                var password = info.password;
-                var repeatPassword = info.repeatPassword;
-                var code = info.code.Trim();
-
-                if (string.IsNullOrEmpty(mail))
-                {
-                    _ui.showRecoverMessage(lang._(NETMANAGER_EMAIL_NULL));
-                    return;
-                }
-                if (string.IsNullOrEmpty(code))
-                {
-                    _ui.showRecoverMessage(lang._(NETMANAGER_RECOVER_CODE_NULL));
-                    return;
-                }
-                if (string.IsNullOrEmpty(captcha))
-                {
-                    _ui.showRecoverMessage(lang._(NETMANAGER_CHECK_CODE_NULL));
-                    return;
-                }
-                if (password != repeatPassword)
-                {
-                    _ui.showRecoverMessage(lang._(NETMANAGER_PASSWORD_ERROR));
-                    return;
-                }
-                try
-                {
-                    await game.network.logic.ServerClient.RecoverPasswordAsync(mail, code, password, captcha);
-                    _ui.setRecoverPanelVisible(false);
-                    _ui.setLoginPanelVisible(true);
-                    _recoverEmailSent = false;
-                }
-                catch (NetClientException e)
-                {
-                    Debug.Log(e);
-                    _ui.showRecoverMessage(e.Message);
-                    _ui.setRecoverCaptcha(await game.network.getCaptchaImage());
-                }
+                Debug.Log(e);
+                _ui.showRecoverMessage(e.Message);
             }
+            _ui.setRecoverCaptcha(await game.network.getCaptchaImage());
         }
         private void onRecoverPanelCloseClickedCallback()
         {
             _ui.setRecoverPanelVisible(false);
-            _recoverEmailSent = false;
         }
         private void onRecoverPanelBackClickedCallback()
         {
-            if (_recoverEmailSent)
-                _ui.switchRecoverStage(false);
-            else
-            {
-                _ui.setRecoverPanelVisible(false);
-                _ui.setLoginPanelVisible(true);
-            }
-            _recoverEmailSent = false;
+            _ui.setRecoverPanelVisible(false);
+            _ui.setLoginPanelVisible(true);
         }
         private async void onRecoverPanelCaptchaClickedCallback()
         {
@@ -425,7 +352,6 @@ namespace Controllers
         private async void onPlayerInfoEditConfirmClickedCallback(PlayerInfoEditInfo info)
         {
             var nickname = info.nickname;
-            var oldPassword = info.oldPassword;
             var newPassword = info.newPassword;
             var repeatNewPassword = info.repeatPassword;
             _ui.hidePlayerEditMessage();
@@ -437,7 +363,7 @@ namespace Controllers
 
             try
             {
-                await game.network.logic.ChangeUserInfo(nickname, oldPassword, newPassword);
+                await game.network.logic.ChangeUserInfo(nickname, newPassword);
                 updateAccountPanel();
                 _ui.setPlayerEditPanelVisible(false);
             }
@@ -511,7 +437,6 @@ namespace Controllers
         private const string NETMANAGER_USERNAME_NULL = "用户名不能为空";
         private LangManager lang => game.lang;
         private Main main => game.ui.getObject<Main>();
-        private bool _recoverEmailSent;
         [SerializeField]
         private DebugLabelEntrance debugEntrance;
         [SerializeField]

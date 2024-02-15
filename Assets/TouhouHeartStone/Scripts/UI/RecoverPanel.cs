@@ -30,19 +30,13 @@ namespace UI
         }
         public void setCaptcha(Sprite sprite)
         {
-            _captchaImage1.sprite = sprite;
-            _captchaImage2.sprite = sprite;
+            _captchaImage.sprite = sprite;
         }
         public RecoverInfo getRecoverInfo()
         {
             return new RecoverInfo()
             {
-                email = _emailInput.text,
-                code = _codeInput.text,
-                captcha1 = _captchaInput1.text,
-                password = _passwordInput.text,
-                repeatPassword = _repeatPasswordInput.text,
-                captcha2 = _captchaInput2.text,
+                email = _emailInput.text
             };
         }
 
@@ -50,8 +44,7 @@ namespace UI
         {
             base.Awake();
             _closeButton.onClick.AddListener(onCloseClickedCallback);
-            _captchaButton1.onClick.AddListener(onCaptchaButtonClickCallback);
-            _captchaButton2.onClick.AddListener(onCaptchaButtonClickCallback);
+            _captchaButton.onClick.AddListener(onCaptchaButtonClickCallback);
             _backButton.onClick.AddListener(onBackButtonClickCallback);
             _commitButton.onClick.AddListener(onCommitButtonClickCallback);
         }
@@ -83,23 +76,11 @@ namespace UI
         [SerializeField]
         private InputField _emailInput;
         [SerializeField]
-        private InputField _captchaInput1;
+        private InputField _captchaInput;
         [SerializeField]
-        private Image _captchaImage1;
+        private Image _captchaImage;
         [SerializeField]
-        private Button _captchaButton1;
-        [SerializeField]
-        private InputField _codeInput;
-        [SerializeField]
-        private InputField _passwordInput;
-        [SerializeField]
-        private InputField _repeatPasswordInput;
-        [SerializeField]
-        private InputField _captchaInput2;
-        [SerializeField]
-        private Image _captchaImage2;
-        [SerializeField]
-        private Button _captchaButton2;
+        private Button _captchaButton;
         [SerializeField]
         private Button _backButton;
         [SerializeField]
@@ -112,10 +93,5 @@ namespace UI
     public struct RecoverInfo
     {
         public string email;
-        public string code;
-        public string captcha1;
-        public string password;
-        public string repeatPassword;
-        public string captcha2;
     }
 }

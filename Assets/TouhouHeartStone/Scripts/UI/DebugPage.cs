@@ -23,11 +23,11 @@ namespace UI
             skipCardNumCheckField.isOn = debug.SkipCardNumberCheck;
         }
 
-        void onBack()
+        async void onBack()
         {
             if (serverAddrField.text != net.logic.ServerClient.baseUri)
             {
-                net.SetServerAddr(serverAddrField.text);
+                await net.SetServerAddr(serverAddrField.text);
             }
             debug.SkipCardNumberCheck = skipCardNumCheckField.isOn;
 
