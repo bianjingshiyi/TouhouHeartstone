@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using NitoriNetwork.Common;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
-using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UnityEngine;
 
@@ -35,21 +34,62 @@ namespace Game
 
         #region 用户登录
         /// <summary>
-        /// 尝试使用之前登录的用户信息自动登录，如果不成功则尝试使用游客身份登录。
+        /// 尝试使用之前登录的用户信息自动登录。
         /// </summary>
-        public async Task AutoLogin()
+        public async Task<bool> AutoLogin()
         {
+            bool loginSuccess = false;
+            // 尝试直接获取用户数据。
             try
             {
-                userInfo = await ServerClient.GetUserInfoAsync();
+                await success();
 
                 // 更新Session，防止Session太旧没更新导致无法连接服务器
                 await ServerClient.GetSessionAsync();
-                isGuest = false;
             }
             catch (NetClientException e1)
             {
                 Debug.Log($"自动登录失败: {e1}");
+            }
+
+            if (loginSuccess)
+                return true;
+
+            // 尝试使用缓存的token进行自动登录。
+            try
+            {
+                if (await ServerClient.LoginByKratosAsync())
+                {
+                    await success();
+                }
+            }
+            catch (NetClientException e1)
+            {
+                Debug.Log($"使用缓存的token自动登录失败: {e1}");
+            }
+
+            if (loginSuccess)
+                return true;
+
+            // 尝试通过Steam自动登录。
+            try
+            {
+                if (await steamLogin())
+                {
+                    loginSuccess = true;
+                }
+            }
+            catch (Exception e1)
+            {
+                Debug.Log($"Steam自动登录失败: {e1}");
+            }
+            return loginSuccess;
+
+            async Task success()
+            {
+                userInfo = await ServerClient.GetUserInfoAsync();
+                isGuest = false;
+                loginSuccess = true;
             }
         }
 
@@ -89,14 +129,13 @@ namespace Game
             string sessionToken = await ServerClient.LoginViaPassword(email, password);
             if (!string.IsNullOrEmpty(sessionToken))
             {
-                if (await ServerClient.LoginByKratosAsync(sessionToken))
+                if (await ServerClient.LoginByKratosAsync())
                 {
                     userInfo = await ServerClient.GetUserInfoAsync();
                     isGuest = false;
                     return true;
                 }
             }
-            userInfo = null;
             return false;
         }
 
@@ -138,10 +177,6 @@ namespace Game
                 // 游客不需要手动更新Session，因为在登录的时候默认换取的是Session
                 isGuest = true;
             }
-            else
-            {
-                userInfo = null;
-            }
 
             return success;
         }
@@ -162,6 +197,10 @@ namespace Game
             userInfo = await ServerClient.GetUserInfoAsync();
         }
 
+        public Task<bool> recoverRequest(string mail)
+        {
+            return ServerClient.RecoveryRequest(mail);
+        }
 
         public RoomPlayerData GetSelfInfo()
         {
@@ -274,6 +313,57 @@ namespace Game
             clientLogic.refreshRoomList();
         }
         #endregion
+
+        #region Steam
+        public async Task<bool> steamLogin()
+        {
+            if (!SteamManager.isValid)
+            {
+                return false;
+            }
+            var ticket = await SteamManager.getAuthTicketForWebApi();
+            string sessionToken = await ServerClient.LoginViaSteam(SteamManager.client, ticket);
+            if (!string.IsNullOrEmpty(sessionToken))
+            {
+                if (await ServerClient.LoginByKratosAsync())
+                {
+                    userInfo = await ServerClient.GetUserInfoAsync();
+                    isGuest = false;
+                    return true;
+                }
+            }
+            return false;
+        }
+        public async Task<bool> steamRegister(string email, string nickname)
+        {
+            var ticket = await SteamManager.getAuthTicketForWebApi();
+            var sessionTicket = await ServerClient.RegisterViaSteam(SteamManager.client, ticket, email, nickname);
+            return !string.IsNullOrEmpty(sessionTicket);
+        }
+        public async Task<bool> linkSteam()
+        {
+            var ticket = await SteamManager.getAuthTicketForWebApi();
+            return await ServerClient.LinkSteam(SteamManager.client, ticket);
+        }
+        public async Task<bool> unlinkSteam()
+        {
+            return await ServerClient.UnlinkSteam();
+        }
+        public async Task<bool> isAccountSteamLinked()
+        {
+            try
+            {
+                var session = await ServerClient.Kratos.WhoAmI();
+                return !string.IsNullOrEmpty(session.identity.metadata_public.steamid);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"获取帐号状态失败：{e}");
+            }
+            return false;
+        }
+        #endregion
+
         /// <summary>
         /// 周期事件
         /// </summary>

@@ -30,6 +30,10 @@ namespace UI
             _usernameInputField.text = userName;
             _passwordInputField.text = password;
         }
+        public void setSteamButtonsValid(bool valid)
+        {
+            _steamButtonsObj.SetActive(valid);
+        }
         public void ShowMessage(string msg)
         {
             _hintText.text = msg;
@@ -67,34 +71,18 @@ namespace UI
             _registerButton.interactable = interactable;
             _recoverButton.interactable = interactable;
             _closeButton.interactable = interactable;
+            _steamLoginButton.interactable = interactable;
         }
         protected override void Awake()
         {
             base.Awake();
-            _registerButton.onClick.AddListener(() =>
-            {
-                onRegisterClick?.Invoke();
-            });
-            _guestLoginBtn.onClick.AddListener(() =>
-            {
-                onGuestLoginClick?.Invoke();
-            });
-            _loginButton.onClick.AddListener(() =>
-            {
-                onLoginClick?.Invoke();
-            });
-            _recoverButton.onClick.AddListener(() =>
-            {
-                onRecoverClick?.Invoke();
-            });
-            _captchaButton.onClick.AddListener(() =>
-            {
-                onCaptchaClick?.Invoke();
-            });
-            _closeButton.onClick.AddListener(() =>
-            {
-                hide();
-            });
+            _registerButton.onClick.AddListener(() => onRegisterClick?.Invoke());
+            _guestLoginBtn.onClick.AddListener(() => onGuestLoginClick?.Invoke());
+            _loginButton.onClick.AddListener(() => onLoginClick?.Invoke());
+            _recoverButton.onClick.AddListener(() => onRecoverClick?.Invoke());
+            _captchaButton.onClick.AddListener(() => onCaptchaClick?.Invoke());
+            _closeButton.onClick.AddListener(() => onCloseClick?.Invoke());
+            _steamLoginButton.onClick.AddListener(() => onSteamLoginClick?.Invoke());
         }
 
         public event Action onRegisterClick;
@@ -102,6 +90,11 @@ namespace UI
         public event Action onCaptchaClick;
         public event Action onLoginClick;
         public event Action onRecoverClick;
+        public event Action onCloseClick;
+        public event Action onSteamLoginClick;
+
+        [SerializeField]
+        private GameObject _steamButtonsObj;
 
         [SerializeField]
         private Button _guestLoginBtn;
@@ -131,6 +124,8 @@ namespace UI
         private Button _registerButton;
         [SerializeField]
         private Button _loginButton;
+        [SerializeField]
+        private Button _steamLoginButton;
     }
     public struct LoginInfo
     {

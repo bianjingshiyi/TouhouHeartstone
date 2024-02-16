@@ -17,8 +17,9 @@ namespace Game
     public class NetworkingManager : Manager
     {
         #region 公有方法
-        public void start()
+        public async void start()
         {
+            await _logic.NewKratosClient();
             _ = startSequence();
         }
         /// <summary>
@@ -144,7 +145,6 @@ namespace Game
         {
             base.onAwake();
             _logic = new NetworkingLogic(serverBaseUri, version, cacheManager, _ports);
-            await _logic.NewKratosClient();
 
             gameManager.nwLogic = logic;
 
@@ -246,8 +246,8 @@ namespace Game
         {
             // 更新Panel状态，进入加载模式
             onAutoLogin?.Invoke();
-            await logic.AutoLogin();
-            onAutoLoginFinished?.Invoke();
+            bool autoLoginSuccess = await logic.AutoLogin();
+            onAutoLoginFinished?.Invoke(autoLoginSuccess);
         }
         #region UI
 
@@ -271,7 +271,7 @@ namespace Game
         public event Action<CardPoolSuggestion, bool> onReceiveCardPoolSuggestionAnwser;
         public event Action<LobbyRoomDataList> onRoomListChanged;
         public event Action onAutoLogin;
-        public event Action onAutoLoginFinished;
+        public event Action<bool> onAutoLoginFinished;
         #endregion
 
         #region 属性字段

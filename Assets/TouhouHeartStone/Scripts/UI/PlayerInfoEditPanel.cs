@@ -6,29 +6,6 @@ namespace UI
 {
     public partial class PlayerInfoEditPanel: MonoBehaviour
     {
-        [SerializeField]
-        Button _closeBtn;
-
-        [SerializeField]
-        Text _hintText;
-
-        [SerializeField]
-        InputField _nicknameField;
-
-        [SerializeField]
-        InputField _oldPassField;
-
-        [SerializeField]
-        InputField _newPassField;
-
-        [SerializeField]
-        InputField _repeatPassField;
-
-        [SerializeField]
-        Button _cancelBtn;
-
-        [SerializeField]
-        Button _confirmBtn;
 
         public void Show()
         {
@@ -45,6 +22,18 @@ namespace UI
         {
             gameObject.SetActive(false);
         }
+        public void setSteamValid(bool valid)
+        {
+            _steamObject.SetActive(valid);
+        }
+        public void setSteamState(string text, bool binded, bool interactable)
+        {
+            _steamStateText.text = text;
+            _steamBindButton.gameObject.SetActive(!binded);
+            _steamUnbindButton.gameObject.SetActive(binded);
+            _steamInteractable = interactable;
+            updateInteractable();
+        }
         public PlayerInfoEditInfo getPlayerInfoEditInfo()
         {
             return new PlayerInfoEditInfo()
@@ -56,13 +45,12 @@ namespace UI
         }
         private void Awake()
         {
-            _closeBtn?.onClick.AddListener(() => Hide());
-            _cancelBtn?.onClick.AddListener(() => Hide());
-            _confirmBtn?.onClick.AddListener(() => Commit());
+            _closeBtn?.onClick.AddListener(Hide);
+            _cancelBtn?.onClick.AddListener(Hide);
+            _confirmBtn?.onClick.AddListener(() => onClickConfirmBtn?.Invoke());
+            _steamBindButton?.onClick.AddListener(() => onClickSteamBindBtn?.Invoke(false));
+            _steamUnbindButton?.onClick.AddListener(() => onClickSteamBindBtn?.Invoke(true));
         }
-
-        public event Action onClickConfirmBtn;
-
         public void ShowMessage(string msg)
         {
             _hintText.text = msg;
@@ -74,19 +62,59 @@ namespace UI
         }
         public void setInteractable(bool interactable)
         {
-            _nicknameField.interactable = interactable;
-            _oldPassField.interactable = interactable;
-            _newPassField.interactable = interactable;
-            _repeatPassField.interactable = interactable;
-            _confirmBtn.interactable = interactable;
-            _cancelBtn.interactable = interactable;
-            _closeBtn.interactable = interactable;
+            _globalInteractable = interactable;
+            updateInteractable();
         }
-
-        public void Commit()
+        private void updateInteractable()
         {
-            onClickConfirmBtn?.Invoke();
+            var global = _globalInteractable;
+            var steam = _steamInteractable;
+            _nicknameField.interactable = global;
+            _oldPassField.interactable = global;
+            _newPassField.interactable = global;
+            _repeatPassField.interactable = global;
+
+            _steamBindButton.interactable = global && steam;
+            _steamUnbindButton.interactable = global && steam;
+
+            _confirmBtn.interactable = global;
+            _cancelBtn.interactable = global;
+            _closeBtn.interactable = global;
         }
+        public event Action onClickConfirmBtn;
+        public event Action<bool> onClickSteamBindBtn;
+
+        private bool _steamInteractable = true;
+        private bool _globalInteractable = true;
+
+        [SerializeField]
+        Button _closeBtn;
+        [SerializeField]
+        Text _hintText;
+        [SerializeField]
+        InputField _nicknameField;
+        [SerializeField]
+        InputField _oldPassField;
+        [SerializeField]
+        InputField _newPassField;
+        [SerializeField]
+        InputField _repeatPassField;
+
+        [Header("Steam")]
+        [SerializeField]
+        GameObject _steamObject;
+        [SerializeField]
+        Text _steamStateText;
+        [SerializeField]
+        Button _steamBindButton;
+        [SerializeField]
+        Button _steamUnbindButton;
+
+        [Header("Buttons")]
+        [SerializeField]
+        Button _cancelBtn;
+        [SerializeField]
+        Button _confirmBtn;
     }
     public struct PlayerInfoEditInfo
     {

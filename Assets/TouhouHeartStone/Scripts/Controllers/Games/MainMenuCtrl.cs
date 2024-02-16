@@ -24,6 +24,8 @@ namespace Controllers
 #endif
             _ui.pveButton.setNewMarkVisible(!game.tutorial.isTutorialClosed(TutorialID.PVE));
             _ui.buildButton.setNewMarkVisible(!game.tutorial.isTutorialClosed(TutorialID.Build));
+            _ui.setLoginSteamButtonsValid(SteamManager.isValid);
+            _ui.setPlayerEditPanelSteamValid(SteamManager.isValid);
         }
         public void hide()
         {
@@ -35,8 +37,7 @@ namespace Controllers
         protected void Awake()
         {
             //登录与注册界面初始化
-            _ui.setRegisterPanelVisible(false);
-            _ui.setLoginPanelVisible(false);
+            hideAccountPanels();
             _ui.setPlayerInfo(null);
 
             _ui.onPVEButtonClick += onEntryPVEMode;
@@ -56,12 +57,14 @@ namespace Controllers
             _ui.onRegisterConfirmClick += onRegisterPanelConfirmClickedCallback;
             _ui.onRegisterEULAClick += onRegisterPanelEULAClickedCallback;
             _ui.onRegisterBackClick += onRegisterPanelBackClickedCallback;
+            _ui.onRegisterViaSteamConfirmClick += onRegisterViaSteamPanelConfirmClickedCallback;
 
             _ui.onLoginRegisterClick += onLoginPanelRegisterClickedCallback;
             _ui.onLoginCaptchaClick += onLoginPanelCaptchaClickedCallback;
             _ui.onLoginClick += onLoginPanelLoginClickedCallback;
             _ui.onLoginGuestLoginClick += onLoginPanelGuestLoginClickedCallback;
             _ui.onLoginRecoverClick += onLoginPanelRecoverClickedCallback;
+            _ui.onLoginSteamLoginClick += onLoginPanelSteamLoginClickedCallback;
 
             _ui.onPlayerInfoLoginClick += onPlayerInfoLoginClickedCallback;
             _ui.onPlayerInfoLogoutClick += onPlayerInfoLogoutClickedCallback;
@@ -73,6 +76,7 @@ namespace Controllers
             _ui.onRecoverCaptchaClick += onRecoverPanelCaptchaClickedCallback;
 
             _ui.onPlayerInfoEditConfirmClick += onPlayerInfoEditConfirmClickedCallback;
+            _ui.onPlayerInfoEditSteamBindClick += onPlayerInfoEditSteamBindClickedCallback;
             game.network.onAutoLogin += onAutoLoginCallback;
             game.network.onAutoLoginFinished += onAutoLoginFinishedCallback;
         }
@@ -115,7 +119,7 @@ namespace Controllers
             main.display(main.NetworkingPage);
             scene.lan.display(false);
         }
-        private void onServerButtonClickedCallback()
+        private async void onServerButtonClickedCallback()
         {
             if (game.network.logic.Logined)
             {
@@ -124,8 +128,7 @@ namespace Controllers
             }
             else
             {
-                _ui.setRegisterPanelVisible(false);
-                _ui.setLoginPanelVisible(true);
+                await showAccountPanel(AccountPanel.Login);
             }
         }
         private void onQuitButtonClickedCallback()
@@ -194,7 +197,7 @@ namespace Controllers
                 await game.network.logic.register(new AccountInfo(password, email, nickName));
                 game.network.loadRememberAccount(out var rememberUserName, out var userName, out var rememberPassword, out password);
                 _ui.setLoginContent(rememberUserName, userName, rememberPassword, password);
-                await showPanel(Panel.Login);
+                await showAccountPanel(AccountPanel.Login);
             }
             catch (NetClientException e)
             {
@@ -206,9 +209,49 @@ namespace Controllers
                 _ui.setRegisterPanelInteractable(true);
             }
         }
+        private async void onRegisterViaSteamPanelConfirmClickedCallback(RegisterViaSteamInfo info)
+        {
+            _ui.hideRegisterMessage();
+            var nickName = info.nickName;
+            var email = info.email;
+            if (string.IsNullOrEmpty(nickName))
+            {
+                _ui.showRegisterMessage(lang._(NETMANAGER_NICKNAME_NULL));
+                return;
+            }
+            if (string.IsNullOrEmpty(email))
+            {
+                _ui.showRegisterMessage(lang._(NETMANAGER_EMAIL_NULL));
+                return;
+            }
+
+            try
+            {
+                _ui.setRegisterViaSteamPanelInteractable(false);
+                var ticket = await SteamManager.getAuthTicketForWebApi();
+                if (await game.network.logic.steamRegister(email, nickName))
+                {
+                    // 注册完毕，登录
+                    if (await game.network.logic.steamLogin())
+                    {
+                        // 登陆完毕
+                        updatePlayerInfo();
+                        hideAccountPanels();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _ui.showRegisterViaSteamMessage(e.Message);
+            }
+            finally
+            {
+                _ui.setRegisterViaSteamPanelInteractable(true);
+            }
+        }
         private async void onRegisterPanelBackClickedCallback()
         {
-            await showPanel(Panel.Login);
+            await showAccountPanel(AccountPanel.Login);
         }
         private async void onRegisterPanelEULAClickedCallback()
         {
@@ -223,7 +266,7 @@ namespace Controllers
         #region 登录界面
         private async void onLoginPanelRegisterClickedCallback()
         {
-            await showPanel(Panel.Register);
+            await showAccountPanel(AccountPanel.Register);
         }
         private async void onLoginPanelCaptchaClickedCallback()
         {
@@ -253,8 +296,8 @@ namespace Controllers
                 if (success)
                 {
                     game.network.saveRemeberAccount(rememberUsername, username, rememberPassword, password);
-                    _ui.setLoginPanelVisible(false);
-                    updateAccountPanel();
+                    updatePlayerInfo();
+                    hideAccountPanels();
                 }
                 else
                 {
@@ -282,8 +325,8 @@ namespace Controllers
                 bool success = await game.network.logic.GuestLogin();
                 if (success)
                 {
-                    _ui.setLoginPanelVisible(false);
-                    updateAccountPanel();
+                    updatePlayerInfo();
+                    hideAccountPanels();
                 }
                 else
                 {
@@ -302,7 +345,40 @@ namespace Controllers
         }
         private async void onLoginPanelRecoverClickedCallback()
         {
-            await showPanel(Panel.Recover);
+            await showAccountPanel(AccountPanel.Recover);
+        }
+        private async void onLoginPanelSteamLoginClickedCallback()
+        {
+            try
+            {
+                _ui.setLoginPanelInteractable(false);
+                if (await game.network.logic.steamLogin())
+                {
+                    updatePlayerInfo();
+                    hideAccountPanels();
+                }
+            }
+            catch (Exception e)
+            {
+                if (e is NetClientException && e.Message == "steamid is not associated")
+                {
+                    var title = game.lang._(StringTable.HINT_TITLE);
+                    var desc = game.lang._(STEAMBINDING_NOT_REGISTERED);
+                    game.ui.dialog.ShowQuestion(title, desc, async () =>
+                    {
+                        await showAccountPanel(AccountPanel.RegisterViaSteam);
+                    });
+                }
+                else
+                {
+                    Debug.Log(e);
+                    _ui.showLoginMessage(e.Message);
+                }
+            }
+            finally
+            {
+                _ui.setLoginPanelInteractable(true);
+            }
         }
         #endregion
 
@@ -311,7 +387,7 @@ namespace Controllers
         {
             game.network.loadRememberAccount(out var rememberUserName, out var userName, out var rememberPassword, out var password);
             _ui.setLoginContent(rememberUserName, userName, rememberPassword, password);
-            await showPanel(Panel.Login);
+            await showAccountPanel(AccountPanel.Login);
         }
         private async void onPlayerInfoLogoutClickedCallback()
         {
@@ -319,7 +395,7 @@ namespace Controllers
             {
                 _ui.setPlayerInfoInteractable(false);
                 await game.network.logic.logout();
-                _ui.setPlayerInfo(null);
+                updatePlayerInfo();
             }
             catch (Exception e)
             {
@@ -330,9 +406,9 @@ namespace Controllers
                 _ui.setPlayerInfoInteractable(true);
             }
         }
-        private void onPlayerInfoEditClickedCallback()
+        private async void onPlayerInfoEditClickedCallback()
         {
-            _ui.setPlayerEditPanelVisible(true);
+            await showAccountPanel(AccountPanel.PlayerInfoEdit);
         }
         #endregion
 
@@ -350,8 +426,7 @@ namespace Controllers
             try
             {
                 _ui.setRecoverPanelInteractable(false);
-                var serverClient = game.network.logic.ServerClient;
-                if (await serverClient.RecoveryRequest(mail))
+                if (await game.network.logic.recoverRequest(mail))
                 {
                     _ui.switchRecoverStage(true);
                 }
@@ -369,12 +444,11 @@ namespace Controllers
         }
         private void onRecoverPanelCloseClickedCallback()
         {
-            _ui.setRecoverPanelVisible(false);
+            hideAccountPanels();
         }
-        private void onRecoverPanelBackClickedCallback()
+        private async void onRecoverPanelBackClickedCallback()
         {
-            _ui.setRecoverPanelVisible(false);
-            _ui.setLoginPanelVisible(true);
+            await showAccountPanel(AccountPanel.Login);
         }
         private async void onRecoverPanelCaptchaClickedCallback()
         {
@@ -398,10 +472,40 @@ namespace Controllers
             {
                 _ui.setPlayerEditPanelInteractable(false);
                 await game.network.logic.ChangeUserInfo(nickname, newPassword);
-                updateAccountPanel();
-                _ui.setPlayerEditPanelVisible(false);
+                updatePlayerInfo();
+                hideAccountPanels();
             }
             catch (NetClientException e)
+            {
+                Debug.Log(e);
+                _ui.showPlayerEditMessage(e.Message);
+            }
+            finally
+            {
+                _ui.setPlayerEditPanelInteractable(true);
+            }
+        }
+        private async void onPlayerInfoEditSteamBindClickedCallback(bool unbind)
+        {
+            try
+            {
+                _ui.setPlayerEditPanelInteractable(false);
+                bool success;
+                if (unbind)
+                    success = await game.network.logic.unlinkSteam();
+                else
+                {
+                    var ticket = await SteamManager.getAuthTicketForWebApi();
+                    success = await game.network.logic.linkSteam();
+                }
+                if (success)
+                {
+                    var message = game.lang._(unbind ? STEAMBINDING_UNBOND_SUCCESSFULLY : STEAMBINDING_BOND_SUCCESSFULLY);
+                    _ui.showPlayerEditMessage(message);
+                    updatePlayerInfo();
+                }
+            }
+            catch (Exception e)
             {
                 Debug.Log(e);
                 _ui.showPlayerEditMessage(e.Message);
@@ -415,46 +519,90 @@ namespace Controllers
         {
             _ui.enterAutoLoginState();
         }
-        private void onAutoLoginFinishedCallback()
+        private void onAutoLoginFinishedCallback(bool success)
         {
-            updateAccountPanel();
+            updatePlayerInfo();
+            if (!success && SteamManager.isValid && PlayerPrefs.GetInt(KEY_STEAM_ACCOUNT_NOTED, 0) <= 0)
+            {
+                PlayerPrefs.SetInt(KEY_STEAM_ACCOUNT_NOTED, 1);
+                // 自动登录没成功，并且Steam有效
+                string title = game.lang._(StringTable.HINT_TITLE);
+                string desc = game.lang._(STEAMBINDING_DESC);
+                string[] options = new string[]
+                {
+                    game.lang._(STEAMBINDING_CREATE_ACCOUNT),
+                    game.lang._(StringTable.ASK_LATER)
+                };
+                game.ui.dialog.ShowOptions(title, desc, options, async index =>
+                {
+                    switch (index)
+                    {
+                        case 0: // 创建
+                            await showAccountPanel(AccountPanel.RegisterViaSteam);
+                            break;
+                    }
+                });
+            }
         }
         #endregion
-        private async Task showPanel(Panel panel)
+
+        #region 用户帐号
+        private void hideAccountPanels()
         {
-            _ui.setLoginPanelVisible(panel == Panel.Login);
-            _ui.setRegisterPanelVisible(panel == Panel.Register);
-            _ui.setRecoverPanelVisible(panel == Panel.Recover);
+            _ui.setRegisterPanelVisible(false);
+            _ui.setLoginPanelVisible(false);
+            _ui.setRecoverPanelVisible(false);
+            _ui.setRegisterViaSteamPanelVisible(false);
+            _ui.setPlayerEditPanelVisible(false);
+        }
+        private async Task showAccountPanel(AccountPanel panel)
+        {
+            _ui.setLoginPanelVisible(panel == AccountPanel.Login);
+            _ui.setRegisterPanelVisible(panel == AccountPanel.Register);
+            _ui.setRecoverPanelVisible(panel == AccountPanel.Recover);
+            _ui.setPlayerEditPanelVisible(panel == AccountPanel.PlayerInfoEdit);
+            _ui.setRegisterViaSteamPanelVisible(panel == AccountPanel.RegisterViaSteam);
 
             switch (panel)
             {
-                case Panel.Login:
+                case AccountPanel.Login:
                     _ui.setLoginCaptcha(await game.network.getCaptchaImage());
                     break;
 
-                case Panel.Register:
+                case AccountPanel.Register:
                     _ui.setRegisterCaptcha(await game.network.getCaptchaImage());
                     break;
 
-                case Panel.Recover:
+                case AccountPanel.Recover:
                     _ui.setRecoverCaptcha(await game.network.getCaptchaImage());
-                    break;
-
-                default:
                     break;
             }
         }
-        private void updateAccountPanel()
+        private async Task updatePlayerEditPanelSteamState()
+        {
+            if (!game.network.logic.Logined)
+                return;
+            var gettingText = game.lang._(STEAMBINDING_GETTING_STATE);
+            _ui.setPlayerEditPanelSteamState(gettingText, false, false);
+
+            bool bond = await game.network.logic.isAccountSteamLinked();
+            var stateText = game.lang._(bond ? STEAMBINDING_BOND : STEAMBINDING_UNBOND);
+            _ui.setPlayerEditPanelSteamState(stateText, bond, true);
+        }
+        private void updatePlayerInfo()
         {
             try
             {
                 _ui.setPlayerInfo(game.network.logic.UserInfo);
+                _ = updatePlayerEditPanelSteamState();
             }
             catch (NetClientException)
             {
                 _ui.setPlayerInfo(null);
             }
         }
+        #endregion
+
         #endregion
         #region 属性字段
         [TranslateMsg]
@@ -473,6 +621,24 @@ namespace Controllers
         private const string NETMANAGER_RECOVER_CODE_NULL = "密码找回代码不能为空";
         [TranslateMsg]
         private const string NETMANAGER_USERNAME_NULL = "用户名不能为空";
+        [TranslateMsg]
+        private const string STEAMBINDING_DESC = "当前Steam账号并未与IGensoukyo帐号绑定，使用Steam账号信息注册一个帐号吗？（您也可以在登录IGensoukyo账号后在帐号编辑页面中绑定Steam帐号。）";
+        [TranslateMsg]
+        private const string STEAMBINDING_CREATE_ACCOUNT = "创建账号";
+        [TranslateMsg]
+        private const string STEAMBINDING_NOT_REGISTERED = "当前Steam账号并未注册IGensoukyo帐号，使用Steam账号信息注册一个帐号吗？\n";
+        [TranslateMsg]
+        private const string STEAMBINDING_BOND = "已绑定";
+        [TranslateMsg]
+        private const string STEAMBINDING_UNBOND = "未绑定";
+        [TranslateMsg]
+        private const string STEAMBINDING_BOND_SUCCESSFULLY = "成功绑定Steam帐号。";
+        [TranslateMsg]
+        private const string STEAMBINDING_UNBOND_SUCCESSFULLY = "成功解绑Steam帐号。";
+        [TranslateMsg]
+        private const string STEAMBINDING_GETTING_STATE = "获取中...";
+
+        private const string KEY_STEAM_ACCOUNT_NOTED = "SteamAccountNoted";
         private LangManager lang => game.lang;
         private Main main => game.ui.getObject<Main>();
         [SerializeField]
@@ -482,11 +648,13 @@ namespace Controllers
         #endregion
         #region 内嵌类
 
-        private enum Panel
+        private enum AccountPanel
         {
             Login,
             Register,
-            Recover
+            Recover,
+            PlayerInfoEdit,
+            RegisterViaSteam,
         }
 
         #endregion 内嵌类

@@ -40,6 +40,8 @@ namespace Game
         public const string LANGUAGE_EN_US = "英文";
         [TranslateMsg("语言选项，日文")]
         public const string LANGUAGE_JA = "日文";
+        [TranslateMsg]
+        public const string ASK_LATER = "稍后再说";
         #endregion
     }
 }

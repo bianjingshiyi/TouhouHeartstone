@@ -80,6 +80,10 @@ namespace UI
         {
             _loginPanel.setCaptcha(image);
         }
+        public void setLoginSteamButtonsValid(bool valid)
+        {
+            _loginPanel.setSteamButtonsValid(valid);
+        }
         #endregion
 
         #region 找回密码面板
@@ -132,8 +136,37 @@ namespace UI
         {
             _playerInfoEditPanel.HideMessage();
         }
+        public void setPlayerEditPanelSteamValid(bool valid)
+        {
+            _playerInfoEditPanel.setSteamValid(valid);
+        }
+        public void setPlayerEditPanelSteamState(string text, bool binded, bool interactable)
+        {
+            _playerInfoEditPanel.setSteamState(text, binded, interactable);
+        }
         #endregion
 
+        #region 通过Steam注册面板
+        public void setRegisterViaSteamPanelVisible(bool visible)
+        {
+            if (visible)
+                _registerViaSteamPanel.Display();
+            else
+                _registerViaSteamPanel.hide();
+        }
+        public void setRegisterViaSteamPanelInteractable(bool interactable)
+        {
+            _registerViaSteamPanel.setInteractable(interactable);
+        }
+        public void showRegisterViaSteamMessage(string message)
+        {
+            _registerViaSteamPanel.ShowMessage(message);
+        }
+        public void hideRegisterViaSteamMessage()
+        {
+            _registerViaSteamPanel.HideMessage();
+        }
+        #endregion
         public void enterAutoLoginState()
         {
             _playerInfoPanel.EnterAutoLoginState();
@@ -158,6 +191,7 @@ namespace UI
             _editorButton.onClick.AddListener(onEditorButtonClickCallback);
 
             _playerInfoEditPanel.onClickConfirmBtn += onPlayerInfoEditConfirmClickCallback;
+            _playerInfoEditPanel.onClickSteamBindBtn += onPlayerInfoEditSteamBindClickCallback;
 
             _registerPanel.onCaptchaClick += onRegisterCaptchaClickCallback;
             _registerPanel.onRegisterClick += onRegisterConfirmClickCallback;
@@ -169,6 +203,8 @@ namespace UI
             _loginPanel.onLoginClick += onLoginClickCallback;
             _loginPanel.onGuestLoginClick += onLoginGuestLoginClickCallback;
             _loginPanel.onRecoverClick += onLoginRecoverClickCallback;
+            _loginPanel.onCloseClick += _loginPanel.hide;
+            _loginPanel.onSteamLoginClick += onLoginSteamLoginClickCallback;
 
             _recoverPanel.onCommitButtonClick += onRecoverCommitClickCallback;
             _recoverPanel.onCaptchaClick += onRecoverCaptchaClickCallback;
@@ -178,6 +214,9 @@ namespace UI
             _playerInfoPanel.onLoginButtonClick += onPlayerInfoLoginClickCallback;
             _playerInfoPanel.onLogoutButtonClick += onPlayerInfoLogoutClickCallback;
             _playerInfoPanel.onEditBtnClick += onPlayerInfoEditClickCallback;
+
+            _registerViaSteamPanel.onRegisterClick += onRegisterViaSteamConfirmClickCallback;
+            _registerViaSteamPanel.onShowEULAClick += onRegisterEULAClickCallback;
         }
         #endregion
         #region 事件回调
@@ -244,6 +283,11 @@ namespace UI
         {
             onRegisterBackClick?.Invoke();
         }
+        private void onRegisterViaSteamConfirmClickCallback()
+        {
+            var info = _registerViaSteamPanel.getRegisterInfo();
+            onRegisterViaSteamConfirmClick?.Invoke(info);
+        }
         #endregion
 
         #region 登陆页面
@@ -267,6 +311,10 @@ namespace UI
         private void onLoginRecoverClickCallback()
         {
             onLoginRecoverClick?.Invoke();
+        }
+        private void onLoginSteamLoginClickCallback()
+        {
+            onLoginSteamLoginClick?.Invoke();
         }
         #endregion
 
@@ -310,6 +358,10 @@ namespace UI
             PlayerInfoEditInfo info = _playerInfoEditPanel.getPlayerInfoEditInfo();
             onPlayerInfoEditConfirmClick?.Invoke(info);
         }
+        private void onPlayerInfoEditSteamBindClickCallback(bool unbind)
+        {
+            onPlayerInfoEditSteamBindClick?.Invoke(unbind);
+        }
         #endregion
         #endregion
         #region 事件
@@ -330,12 +382,14 @@ namespace UI
         public event Action<RegisterInfo> onRegisterConfirmClick;
         public event Action onRegisterEULAClick;
         public event Action onRegisterBackClick;
+        public event Action<RegisterViaSteamInfo> onRegisterViaSteamConfirmClick;
 
         public event Action onLoginRegisterClick;
         public event Action onLoginCaptchaClick;
         public event Action<LoginInfo> onLoginClick;
         public event Action onLoginGuestLoginClick;
         public event Action onLoginRecoverClick;
+        public event Action onLoginSteamLoginClick;
 
         public event Action onPlayerInfoLoginClick;
         public event Action onPlayerInfoLogoutClick;
@@ -347,6 +401,7 @@ namespace UI
         public event Action onRecoverCaptchaClick;
 
         public event Action<PlayerInfoEditInfo> onPlayerInfoEditConfirmClick;
+        public event Action<bool> onPlayerInfoEditSteamBindClick;
         #endregion
 
         public ButtonIconGlass pveButton => _pveButton;
@@ -386,6 +441,8 @@ namespace UI
         Button _quitButton;
         [SerializeField]
         Button _editorButton;
+        [SerializeField]
+        RegisterViaSteamPanel _registerViaSteamPanel;
         public RecoverPanel _recoverPanel;
     }
 
