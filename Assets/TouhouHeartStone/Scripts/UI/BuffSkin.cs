@@ -30,7 +30,7 @@ namespace UI
             persistentAnimRef = other.persistentAnimRef;
             foreach (var animRef in other._animationRefs)
             {
-                _animationRefs.Add(animRef);
+                _animationRefs.Add(new SkinAnimationRef(animRef));
             }
         }
         int ISkin.skinId 

@@ -17,6 +17,11 @@ namespace UI
         {
             key = other.key;
             animRef = other.animRef;
+            sourcePosition = other.sourcePosition;
+            targetPosition = other.targetPosition;
+            sourcePositionVarName = other.sourcePositionVarName;
+            targetPositionVarName = other.targetPositionVarName;
+            eventReference = other.eventReference;
         }
         public static string getNodeKey(Node node)
         {
