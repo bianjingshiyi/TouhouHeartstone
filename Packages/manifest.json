@@ -9,6 +9,7 @@
     }
   ],
   "dependencies": {
+    "com.rlabrecque.steamworks.net": "https://github.com/rlabrecque/Steamworks.NET.git?path=/com.rlabrecque.steamworks.net",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "1.1.5",
     "com.unity.assetbundlebrowser": "1.7.0",
