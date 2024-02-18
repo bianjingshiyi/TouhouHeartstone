@@ -1340,7 +1340,7 @@ namespace Game
                 {
                     if (target == null)
                         continue;
-                    eventList.Add(await card.forceAttack(game, card.getOwner(), target));
+                    eventList.Add(await card.forceAttack(game, target));
                 }
             }
             outEvent = eventList.ToArray();
@@ -1391,9 +1391,10 @@ namespace Game
         {
             if (card == null)
                 return Array.Empty<Card>();
-            var oppo = game.getOpponent(card.getOwner());
-            var legalTargets = oppo.getField().ToList().Append(oppo.getMaster())
-                .Where(c => !c.isStealth(game)).ToArray();
+            var legalTargets = game.players
+                .SelectMany(p => p.getField().Append(p.getMaster()))
+                .Where(c => card.isAttackable(game, c, out _))
+                .ToArray();
 
             return legalTargets;
         }

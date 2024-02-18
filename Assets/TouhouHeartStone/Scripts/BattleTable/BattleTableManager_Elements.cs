@@ -1677,7 +1677,7 @@ namespace Game.BattleTable
             var masterPos = WorldToTablePosition(master.transform.position);
             if (Vector3.Distance(masterPos, pos) > masterAttackThreshold)
             {
-                var targets = game.findAllCardsInField(c => card.isAttackable(game, player, c, out _));
+                var targets = game.findAllCardsInField(c => card.isAttackable(game, c, out _));
                 enterTargetSelectMode(TargetSelectMode.Attack, card, targets);
             }
             else
@@ -1702,7 +1702,7 @@ namespace Game.BattleTable
             //如果在随从上面
             if (isOnTarget(pointer, out var target))
             {
-                if (card.isAttackable(game, player, target, out var tip))
+                if (card.isAttackable(game, target, out var tip))
                 {
                     player.cmdAttack(game, card, target);
                     resetUse(finishSelectTarget: true);
@@ -1871,7 +1871,7 @@ namespace Game.BattleTable
             var servantPos = WorldToTablePosition(servant.transform.position);
             if (Vector3.Distance(servantPos, pos) > servantAttackThreshold)
             {
-                var targets = game.findAllCardsInField(c => card.isAttackable(game, player, c, out _));
+                var targets = game.findAllCardsInField(c => card.isAttackable(game, c, out _));
                 enterTargetSelectMode(TargetSelectMode.Attack, card, targets);
             }
             else
@@ -1896,7 +1896,7 @@ namespace Game.BattleTable
             //如果在随从或英雄上面
             if (isOnTarget(pointer, out var target))
             {
-                if (card.isAttackable(game, player, target, out var tip))
+                if (card.isAttackable(game, target, out var tip))
                 {
                     player.cmdAttack(game, card, target);
                     resetUse(finishSelectTarget: true);

@@ -652,7 +652,7 @@ namespace TouhouHeartstone
                     case AttackResponse attack:
                         card = game.getCard(attack.cardId);
                         Card target = game.getCard(attack.targetId);
-                        Task<EventArg> task = card.tryAttack(game, player, target);
+                        Task<EventArg> task = card.tryAttack(game, target);
                         await task;
                         break;
                     case TurnEndResponse _:

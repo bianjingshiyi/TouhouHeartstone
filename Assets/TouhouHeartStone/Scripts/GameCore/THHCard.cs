@@ -6,6 +6,7 @@ using TouhouCardEngine.Interfaces;
 using System;
 using MukioI18n;
 using System.IO;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TouhouHeartstone
 {
@@ -371,6 +372,7 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static bool canAttack(this Card card, CardEngine game)
         {
+            var player = card.getOwner();
             if (card.hasKeyword(game, KEYWORD.CANTATTACK))//不能攻击
                 return false;
             if (card.getAttack(game) <= 0)//没有攻击力
@@ -383,10 +385,10 @@ namespace TouhouHeartstone
             if (card.pile?.name == PILE.FIELD)
             {
                 //随从限定
-                if (!card.isReady(game)//还没准备好
-                && !card.isCharge(game)//且没有冲锋
-                && !(card.isRush(game) && game.getOpponent(card.getOwner()).getField().Any(c => card.isAttackable(game, card.getOwner(), c, out _)))//且并非有突袭且有可以攻击的敌方随从
-                )
+                if (!card.isReady(game) && //还没准备好
+                    !card.isCharge(game) && //且没有冲锋
+                    !(card.isRush(game) && game.getOpponent(player).getField().Any(c => c.isAttackable(game, card, out _)))// 没有速攻，或者对手没有可以作为攻击目标的仆从。
+                ) 
                     return false;
             }
             if (card.getAttackTimes(game) >= card.getMaxAttackTimes(game))//已经攻击过了
@@ -406,14 +408,14 @@ namespace TouhouHeartstone
         /// <summary>
         /// 这个角色能否对目标进行攻击？
         /// </summary>
-        /// <param name="card"></param>
+        /// <param name="card">攻击的卡牌。</param>
         /// <param name="game"></param>
-        /// <param name="player"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public static bool isAttackable(this Card card, CardEngine game, Player player, Card target, out string tip)
+        public static bool isAttackable(this Card card, CardEngine game, Card target, out string tip)
         {
-            // 速攻，没有准备好，没有先攻，并且目标是英雄。
+            var player = card.getOwner();
+            // 速攻，并且没有准备好，没有先攻，并且目标是英雄。
             if (card.isRush(game) &&
                 !card.isReady(game) &&
                 !card.isCharge(game) &&
@@ -447,7 +449,7 @@ namespace TouhouHeartstone
                 return false;
             }
             // 不可强制攻击
-            if (!card.isForceAttackable(game, player, target))
+            if (!card.isForceAttackable(game, target))
             {
                 tip = INFO_INVALID_TARGET;
                 return false;
@@ -455,7 +457,7 @@ namespace TouhouHeartstone
             tip = null;
             return true;
         }
-        public static bool isForceAttackable(this Card card, CardEngine game, Player player, Card target)
+        public static bool isForceAttackable(this Card card, CardEngine game, Card target)
         {
             if (card == target)//是自己
                 return false;
@@ -466,14 +468,14 @@ namespace TouhouHeartstone
             return true;
         }
 
-        public static async Task<EventArg> tryAttack(this Card card, CardEngine game, Player player, Card target)
+        public static async Task<EventArg> tryAttack(this Card card, CardEngine game, Card target)
         {
             if (!card.canAttack(game))
             {
                 game.logger.logTrace($"{card}无法进行攻击");
                 return null;
             }
-            if (!card.isAttackable(game, player, target, out var reason))
+            if (!card.isAttackable(game, target, out var reason))
             {
                 game.logger.logTrace($"{card}无法攻击{target}，因为{reason}");
                 return null;
@@ -481,14 +483,14 @@ namespace TouhouHeartstone
             await card.setAttackTimes(game, card.getAttackTimes(game) + 1);
             return await card.attack(game, target);
         }
-        public static Task<EventArg> forceAttack(this Card card, CardEngine game, Player player, Card target)
+        public static Task<EventArg> forceAttack(this Card card, CardEngine game, Card target)
         {
             if (!card.canForceAttack(game))
             {
                 game.logger.logTrace($"{card}无法进行强制攻击");
                 return Task.FromResult<EventArg>(null);
             }
-            if (!card.isForceAttackable(game, player, target))
+            if (!card.isForceAttackable(game, target))
             {
                 game.logger.logTrace($"{card}无法对{target}进行强制攻击");
                 return Task.FromResult<EventArg>(null);
