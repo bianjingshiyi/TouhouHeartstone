@@ -88,7 +88,6 @@ namespace Game
             async Task success()
             {
                 userInfo = await ServerClient.GetUserInfoAsync();
-                isGuest = false;
                 loginSuccess = true;
             }
         }
@@ -132,7 +131,6 @@ namespace Game
                 if (await ServerClient.LoginByKratosAsync())
                 {
                     userInfo = await ServerClient.GetUserInfoAsync();
-                    isGuest = false;
                     return true;
                 }
             }
@@ -175,7 +173,6 @@ namespace Game
             {
                 userInfo = await ServerClient.GetUserInfoAsync();
                 // 游客不需要手动更新Session，因为在登录的时候默认换取的是Session
-                isGuest = true;
             }
 
             return success;
@@ -328,7 +325,6 @@ namespace Game
                 if (await ServerClient.LoginByKratosAsync())
                 {
                     userInfo = await ServerClient.GetUserInfoAsync();
-                    isGuest = false;
                     return true;
                 }
             }
@@ -351,10 +347,12 @@ namespace Game
         }
         public async Task<bool> isAccountSteamLinked()
         {
+            if (isGuest)
+                return false;
             try
             {
                 var session = await ServerClient.Kratos.WhoAmI();
-                return !string.IsNullOrEmpty(session.identity.metadata_public.steamid);
+                return !string.IsNullOrEmpty(session?.identity?.metadata_public?.steamid);
             }
             catch (Exception e)
             {
@@ -499,7 +497,7 @@ namespace Game
         /// <summary>
         /// 是否为游客状态
         /// </summary>
-        bool isGuest { get; set; }
+        bool isGuest => userInfo != null && userInfo.UID >= 1000000000;
         int IClient.id => localPlayer.id;
         /// <summary>
         /// 本地联网游戏逻辑

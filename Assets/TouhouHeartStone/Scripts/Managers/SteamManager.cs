@@ -208,9 +208,9 @@ namespace Game
             get
             {
 #if STEAM_VALID
-                return true;
-#else
                 return false;
+#else
+                return true;
 #endif
             }
         }
