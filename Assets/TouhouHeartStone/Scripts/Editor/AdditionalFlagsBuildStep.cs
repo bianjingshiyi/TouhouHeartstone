@@ -1,38 +1,55 @@
 ﻿using CustomBuilder;
 using System;
+using System.Linq;
 using UnityEditor;
 
 namespace TouhouHeartstone
 {
     [BuilderStep(4)]
-    public class SnapshotBuildStep : IBuilderStep
+    public class AdditionalFlagsBuildStep : IBuilderStep
     {
         string savedProductName, savedAndroidID, savedSymbol;
-        bool shouldRestore = false;
+        bool symbolChanged = false;
+        bool productChanged = false;
         void IBuilderStep.ActionAfter()
         {
-            if (shouldRestore)
+            if (productChanged)
             {
                 PlayerSettings.productName = savedProductName;
                 PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, savedAndroidID);
+            }
+            if (symbolChanged)
+            {
                 PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, savedSymbol);
             }
         }
 
         void IBuilderStep.ActionBefore(object opt)
         {
-            var isSnapshot = Environment.GetEnvironmentVariable("SNAPSHOT_BUILD");
-            if (!string.IsNullOrWhiteSpace(isSnapshot))
+            var flags = Environment.GetEnvironmentVariable("ADDITIONAL_BUILD_FLAGS");
+            var symbol = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
+            if (!string.IsNullOrWhiteSpace(flags))
+            {
+                savedSymbol = symbol;
+                if (!flags.StartsWith(';'))
+                    flags = ';' + flags;
+                symbol = savedSymbol + flags;
+                symbolChanged = true;
+            }
+
+            var symbolList = symbol.Split(';');
+            if (symbolList.Contains("SNAPSHOT_BUILD"))
             {
                 savedProductName = PlayerSettings.productName;
                 savedAndroidID = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.Android);
-                shouldRestore = true;
+                productChanged = true;
 
                 PlayerSettings.productName = $"{savedProductName}Snapshot";
                 PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, savedAndroidID + ".snapshot");
-                
-                savedSymbol = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
-                var symbol = savedSymbol + ";SNAPSHOT_BUILD";
+            }
+
+            if (symbolChanged)
+            {
                 PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, symbol);
             }
         }

@@ -39,6 +39,7 @@ pipeline {
                         env.BUILD_RELEASE = 'true'
                         env.SNAPSHOT_BUILD = 'true'
                         env.UPLOAD_FOLDER = 'nightly'
+                        env.GLOBAL_BUILD_FLAGS = ';SNAPSHOT_BUILD'
                     }
                     if (env.BUILD_RELEASE == 'false') {
                         try {
@@ -123,6 +124,7 @@ pipeline {
         stage('Build Windows Debug') {
             steps {
                 script {
+					env.ADDITIONAL_BUILD_FLAGS = env.GLOBAL_BUILD_FLAGS + ';STEAM_BUILD'
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
                     unitybuilder.buildPlatform('2022.3.11f1-windows-mono-3', 'win64-debug')
                 }
@@ -134,6 +136,7 @@ pipeline {
             }
             steps {
                 script {
+					env.ADDITIONAL_BUILD_FLAGS = env.GLOBAL_BUILD_FLAGS + ';STEAM_BUILD'
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
                     unitybuilder.buildPlatform('2022.3.11f1-windows-mono-3', 'win64-release;win32-release')
                 }
@@ -164,6 +167,7 @@ pipeline {
             }
             steps {
                 script {
+					env.ADDITIONAL_BUILD_FLAGS = env.GLOBAL_BUILD_FLAGS + ';STEAM_BUILD'
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
                     unitybuilder.buildPlatform('2022.3.11f1-android-3', 'linux-debug;linux-release')
                 }
