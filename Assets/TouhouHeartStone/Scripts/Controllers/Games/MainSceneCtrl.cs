@@ -1,4 +1,5 @@
 ﻿using BJSYGameCore;
+using UI;
 using UnityEngine;
 
 namespace Controllers
@@ -59,6 +60,10 @@ namespace Controllers
             {
                 _guideCtrl = TransformHelper.findComponentInScene<GuideTipCtrl>(gameObject.scene);
             }
+            if (_waitingBlocker == null)
+            {
+                _waitingBlocker = TransformHelper.findComponentInScene<WaitingBlocker>(gameObject.scene);
+            }
             _menu.gameObject.SetActive(true);
             _room.gameObject.SetActive(false);
             _build.gameObject.SetActive(false);
@@ -72,6 +77,7 @@ namespace Controllers
             _lanCtrl.gameObject.SetActive(false);
             _replayCtrl.gameObject.SetActive(false);
             _guideCtrl.gameObject.SetActive(false);
+            _waitingBlocker.gameObject.SetActive(false);
         }
         public MainMenuCtrl menu => _menu;
         public RoomCtrl room => _room;
@@ -86,6 +92,7 @@ namespace Controllers
         public LANPanelCtrl lan => _lanCtrl;
         public ReplaySelectPanelCtrl replay => _replayCtrl;
         public GuideTipCtrl guide => _guideCtrl;
+        public WaitingBlocker waitingBlocker => _waitingBlocker;
         [SerializeField]
         MainMenuCtrl _menu;
         [SerializeField]
@@ -112,5 +119,7 @@ namespace Controllers
         ReplaySelectPanelCtrl _replayCtrl;
         [SerializeField]
         GuideTipCtrl _guideCtrl;
+        [SerializeField]
+        WaitingBlocker _waitingBlocker;
     }
 }

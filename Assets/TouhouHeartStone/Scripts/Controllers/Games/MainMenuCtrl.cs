@@ -192,7 +192,7 @@ namespace Controllers
 
             try
             {
-                _ui.setRegisterPanelInteractable(false);
+                startWaiting(AccountPanel.Register);
                 // 注册完毕，切换到登录界面
                 await game.network.logic.register(new AccountInfo(password, email, nickName));
                 game.network.loadRememberAccount(out var rememberUserName, out var userName, out var rememberPassword, out password);
@@ -206,7 +206,7 @@ namespace Controllers
             }
             finally
             {
-                _ui.setRegisterPanelInteractable(true);
+                stopWaiting(AccountPanel.Register);
             }
         }
         private async void onRegisterViaSteamPanelConfirmClickedCallback(RegisterViaSteamInfo info)
@@ -227,7 +227,7 @@ namespace Controllers
 
             try
             {
-                _ui.setRegisterViaSteamPanelInteractable(false);
+                startWaiting(AccountPanel.RegisterViaSteam);
                 var ticket = await SteamManager.getAuthTicketForWebApi();
                 if (await game.network.logic.steamRegister(email, nickName))
                 {
@@ -246,7 +246,7 @@ namespace Controllers
             }
             finally
             {
-                _ui.setRegisterViaSteamPanelInteractable(true);
+                stopWaiting(AccountPanel.RegisterViaSteam);
             }
         }
         private async void onRegisterPanelBackClickedCallback()
@@ -291,7 +291,7 @@ namespace Controllers
             }
             try
             {
-                _ui.setLoginPanelInteractable(false);
+                startWaiting(AccountPanel.Login);
                 bool success = await game.network.logic.login(username, password);
                 if (success)
                 {
@@ -313,7 +313,7 @@ namespace Controllers
             }
             finally
             {
-                _ui.setLoginPanelInteractable(true);
+                stopWaiting(AccountPanel.Login);
             }
         }
         private async void onLoginPanelGuestLoginClickedCallback()
@@ -321,7 +321,7 @@ namespace Controllers
             _ui.hideLoginMessage();
             try
             {
-                _ui.setLoginPanelInteractable(false);
+                startWaiting(AccountPanel.Login);
                 bool success = await game.network.logic.GuestLogin();
                 if (success)
                 {
@@ -340,7 +340,7 @@ namespace Controllers
             }
             finally
             {
-                _ui.setLoginPanelInteractable(true);
+                stopWaiting(AccountPanel.Login);
             }
         }
         private async void onLoginPanelRecoverClickedCallback()
@@ -351,7 +351,7 @@ namespace Controllers
         {
             try
             {
-                _ui.setLoginPanelInteractable(false);
+                startWaiting(AccountPanel.Login);
                 if (await game.network.logic.steamLogin())
                 {
                     updatePlayerInfo();
@@ -377,7 +377,7 @@ namespace Controllers
             }
             finally
             {
-                _ui.setLoginPanelInteractable(true);
+                stopWaiting(AccountPanel.Login);
             }
         }
         #endregion
@@ -393,7 +393,7 @@ namespace Controllers
         {
             try
             {
-                _ui.setPlayerInfoInteractable(false);
+                startWaiting(AccountPanel.PlayerInfo);
                 await game.network.logic.logout();
                 updatePlayerInfo();
             }
@@ -403,7 +403,7 @@ namespace Controllers
             }
             finally
             {
-                _ui.setPlayerInfoInteractable(true);
+                stopWaiting(AccountPanel.PlayerInfo);
             }
         }
         private async void onPlayerInfoEditClickedCallback()
@@ -425,7 +425,7 @@ namespace Controllers
             }
             try
             {
-                _ui.setRecoverPanelInteractable(false);
+                startWaiting(AccountPanel.Recover);
                 if (await game.network.logic.recoverRequest(mail))
                 {
                     _ui.switchRecoverStage(true);
@@ -438,7 +438,7 @@ namespace Controllers
             }
             finally
             {
-                _ui.setRecoverPanelInteractable(true);
+                stopWaiting(AccountPanel.Recover);
             }
             _ui.setRecoverCaptcha(await game.network.getCaptchaImage());
         }
@@ -470,7 +470,7 @@ namespace Controllers
 
             try
             {
-                _ui.setPlayerEditPanelInteractable(false);
+                startWaiting(AccountPanel.PlayerInfoEdit);
                 await game.network.logic.ChangeUserInfo(nickname, newPassword);
                 updatePlayerInfo();
                 hideAccountPanels();
@@ -482,14 +482,14 @@ namespace Controllers
             }
             finally
             {
-                _ui.setPlayerEditPanelInteractable(true);
+                stopWaiting(AccountPanel.PlayerInfoEdit);
             }
         }
         private async void onPlayerInfoEditSteamBindClickedCallback(bool unbind)
         {
             try
             {
-                _ui.setPlayerEditPanelInteractable(false);
+                startWaiting(AccountPanel.PlayerInfoEdit);
                 bool success;
                 if (unbind)
                     success = await game.network.logic.unlinkSteam();
@@ -512,7 +512,7 @@ namespace Controllers
             }
             finally
             {
-                _ui.setPlayerEditPanelInteractable(true);
+                stopWaiting(AccountPanel.PlayerInfoEdit);
             }
         }
         private void onAutoLoginCallback()
@@ -603,6 +603,41 @@ namespace Controllers
         }
         #endregion
 
+        private void startWaiting(AccountPanel panel)
+        {
+            scene.waitingBlocker.addWaitingTask(WaitingTask.UserAccount);
+            setPanelInteractable(panel, false);
+        }
+        private void stopWaiting(AccountPanel panel)
+        {
+            scene.waitingBlocker.removeWaitingTask(WaitingTask.UserAccount);
+            setPanelInteractable(panel, true);
+        }
+        private void setPanelInteractable(AccountPanel panel, bool interactable)
+        {
+            switch (panel)
+            {
+                case AccountPanel.Login:
+                    _ui.setLoginPanelInteractable(interactable);
+                    break;
+                case AccountPanel.Register:
+                    _ui.setRegisterPanelInteractable(interactable);
+                    break;
+                case AccountPanel.Recover:
+                    _ui.setRecoverPanelInteractable(interactable);
+                    break;
+                case AccountPanel.RegisterViaSteam:
+                    _ui.setRegisterViaSteamPanelInteractable(interactable);
+                    break;
+                case AccountPanel.PlayerInfo:
+                    _ui.setPlayerInfoInteractable(interactable);
+                    break;
+                case AccountPanel.PlayerInfoEdit:
+                    _ui.setPlayerEditPanelInteractable(interactable);
+                    break;
+            }
+        }
+
         #endregion
         #region 属性字段
         [TranslateMsg]
@@ -653,6 +688,7 @@ namespace Controllers
             Login,
             Register,
             Recover,
+            PlayerInfo,
             PlayerInfoEdit,
             RegisterViaSteam,
         }
