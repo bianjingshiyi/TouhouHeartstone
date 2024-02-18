@@ -1,4 +1,12 @@
 ﻿#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX || STEAMWORKS_WIN || STEAMWORKS_LIN_OSX
+#define STEAM_PLATFORM
+#endif
+
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+#define STEAM_DEVELOPMENT
+#endif
+
+#if STEAM_PLATFORM && (STEAM_DEVELOPMENT || STEAM_BUILD)
 #define STEAM_VALID
 #endif
 
@@ -20,9 +28,9 @@ namespace Game
     {
         #region 公有方法
 
+#if STEAM_VALID
         public async static Task<string> getAuthTicketForWebApi()
         {
-#if STEAM_VALID
             TaskCompletionSource<string> tcs = new TaskCompletionSource<string>();
             TicketCallback callback = null;
             callback = TicketCallback.Create(data =>
@@ -34,10 +42,10 @@ namespace Game
             });
             var authTicket = SteamUser.GetAuthTicketForWebApi(SteamManager.client);
             return await tcs.Task;
-#else
-            throw new SteamworksNotValidException();
-#endif
         }
+#else
+        public static Task<string> getAuthTicketForWebApi() => throw new SteamworksNotValidException();
+#endif
 
         #endregion
 
@@ -134,6 +142,7 @@ namespace Game
                 Debug.LogError("[Steamworks.NET] DllCheck Test returned false, One or more of the Steamworks binaries seems to be the wrong version.", this);
             }
 
+#if !STEAM_DEVELOPMENT
             try
             {
                 if (SteamAPI.RestartAppIfNecessary((AppId_t)appId))
@@ -148,6 +157,7 @@ namespace Game
                 Debug.LogError("[Steamworks.NET] Could not find steam dll.", this);
                 return;
             }
+#endif
 
             // Initializes the Steamworks API.
             // If this returns false then this indicates one of the following conditions:
