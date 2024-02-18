@@ -315,8 +315,17 @@ namespace TouhouHeartstone
             if (target.pile?.name != PILE.FIELD && target.pile?.name != PILE.MASTER)
                 return false;
             //目标不可作为效果目标
-            if (target.isStealth(game) && target.getOwner() != card.getOwner())
-                return false;
+            if (target.getOwner() != card.getOwner())
+            {
+                if (target.isStealth(game))
+                {
+                    return false;
+                }
+                else if (target.isImmunity(game))
+                {
+                    return false;
+                }
+            }
             //目标是魔免
             if (target.isElusive(game) && (card.isSpell() || card.isSkill()))
             {
@@ -404,26 +413,40 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static bool isAttackable(this Card card, CardEngine game, Player player, Card target, out string tip)
         {
+            // 速攻，没有准备好，没有先攻，并且目标是英雄。
+            if (card.isRush(game) &&
+                !card.isReady(game) &&
+                !card.isCharge(game) &&
+                game.players.Any(p => p.getMaster() == target))
+            {
+                tip = INFO_HASTE_NOT_PREPARED;
+                return false;
+            }
+            // 不能攻击友方角色
             if (target == player.getMaster() || player.getField().Contains(target))
             {
                 tip = INFO_CANNOT_ATTACK_SELF;
                 return false;
             }
+            // 必须先攻击具有守卫的仆从
             if (game.getOpponent(player).getField().Any(c => c.isTaunt(game) && !c.isStealth(game) && !c.isImmunity(game)) && !target.isTaunt(game))
             {
                 tip = INFO_GUARD_SERVANT;
                 return false;
             }
-            if (card.isRush(game) && !card.isReady(game) && game.players.Any(p => p.getMaster() == target) && !card.isCharge(game))
-            {
-                tip = INFO_HASTE_NOT_PREPARED;//除非你具有冲锋
-                return false;
-            }
+            // 目标具有隐匿
             if (target.isStealth(game))
             {
                 tip = INFO_TARGET_IS_STEALTH;
                 return false;
             }
+            // 目标具有无敌
+            if (target.isImmunity(game))
+            {
+                tip = INFO_TARGET_IS_INVULNERABLE;
+                return false;
+            }
+            // 不可强制攻击
             if (!card.isForceAttackable(game, player, target))
             {
                 tip = INFO_INVALID_TARGET;
@@ -1476,7 +1499,9 @@ namespace TouhouHeartstone
         [TranslateMsg]
         const string INFO_HASTE_NOT_PREPARED = "具有速攻的仆从在没有准备好的情况下不能攻击敌方英雄";
         [TranslateMsg]
-        const string INFO_TARGET_IS_STEALTH = "无法攻击隐匿的目标";
+        const string INFO_TARGET_IS_STEALTH = "目标具有隐匿";
+        [TranslateMsg]
+        const string INFO_TARGET_IS_INVULNERABLE = "目标具有无敌"; 
         [TranslateMsg]
         const string INFO_INVALID_TARGET = "无法攻击目标";
         [TranslateMsg("目标选择的错误信息")]
