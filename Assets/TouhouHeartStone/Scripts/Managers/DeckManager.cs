@@ -733,7 +733,9 @@ namespace Game
             return new DefineReference(cardPoolId, id);
         }
         #endregion
-
+        #region 属性字段
+        public MainManager main => this.findInstance<MainManager>();
+        #endregion
     }
 
     public struct DeckDefine
