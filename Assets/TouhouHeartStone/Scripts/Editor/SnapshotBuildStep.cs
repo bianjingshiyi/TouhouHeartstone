@@ -28,7 +28,7 @@ namespace TouhouHeartstone
                 savedAndroidID = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.Android);
                 shouldRestore = true;
 
-                PlayerSettings.productName = savedProductName + "快照";
+                PlayerSettings.productName = $"{savedProductName}Snapshot";
                 PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, savedAndroidID + ".snapshot");
                 
                 savedSymbol = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
