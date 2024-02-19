@@ -51,6 +51,10 @@ namespace UI
         {
             _deckListObj.SetActive(value);
         }
+        public void setDeckListScrollValue(float value)
+        {
+            _deckListScrollRect.verticalNormalizedPosition = value;
+        }
         /// <summary>
         /// 更新卡组列表
         /// </summary>
@@ -131,7 +135,7 @@ namespace UI
         /// <returns></returns>
         public bool isPositionOverDeckCardList(Vector2 position)
         {
-            return _deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(position));
+            return _deckCardListViewportRect.rect.Contains(_deckCardListViewportRect.InverseTransformPoint(position));
         }
         #endregion
 
@@ -345,6 +349,8 @@ namespace UI
         ElementList _deckList;
         [SerializeField]
         Button _addDeckButton;
+        [SerializeField]
+        ScrollRect _deckListScrollRect;
 
         [Header("新建套牌")]
         [SerializeField]
@@ -377,7 +383,7 @@ namespace UI
         [SerializeField]
         GameObject _editCardListRightPanel;
         [SerializeField]
-        RectTransform _deckListViewportRect;
+        RectTransform _deckCardListViewportRect;
 
         [Header("Buttons")]
         [SerializeField]

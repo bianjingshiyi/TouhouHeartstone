@@ -509,6 +509,9 @@ namespace Controllers
                 case BuildTutorialSteps.CreateNewDeck:
                     viewData.targetTransform = _ui.addDeckButton.transform as RectTransform;
                     viewData.text = game.lang._(TUTORIAL_STEP_CREATE_NEW_DECK);
+                    viewData.tipHorizontalPos = -1;
+                    viewData.tipOnTop = true;
+                    _ui.setDeckListScrollValue(0);
                     break;
                 case BuildTutorialSteps.SelectMaster:
                     viewData.targetTransform = _ui.masterSelectionDeckViewPanel.deckListRoot;
@@ -528,6 +531,7 @@ namespace Controllers
                 case BuildTutorialSteps.SaveDeck:
                     viewData.targetTransform = _ui.saveDeckButton.transform as RectTransform;
                     viewData.text = game.lang._(TUTORIAL_STEP_SAVE_DECK);
+                    viewData.tipHorizontalPos = -1;
                     break;
             }
             scene.guide.show(viewData);

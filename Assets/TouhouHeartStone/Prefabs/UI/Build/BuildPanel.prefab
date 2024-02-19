@@ -907,6 +907,7 @@ MonoBehaviour:
   _deckListObj: {fileID: 364963207483395320}
   _deckList: {fileID: 7913565316297889317}
   _addDeckButton: {fileID: 8683360232661378333}
+  _deckListScrollRect: {fileID: 3879115454153741689}
   _masterSelectionPanel: {fileID: 9114754491187251632}
   _masterSelectionCloseButton: {fileID: 4648963294439811301}
   _masterSelectionDeckViewPanel: {fileID: 6243800423834397466}
@@ -918,7 +919,7 @@ MonoBehaviour:
   _dragCard: {fileID: 2687843559556911165}
   _dragDeckListItem: {fileID: 1445402813763428810}
   _editCardListRightPanel: {fileID: 3879115452516319064}
-  _deckListViewportRect: {fileID: 3879115452320181790}
+  _deckCardListViewportRect: {fileID: 3879115453409865812}
   _exitEditButton: {fileID: 6835868563013034219}
   _exportDeckButton: {fileID: 8515615924541493297}
   _saveDeckButton: {fileID: 7608124180014604736}
@@ -3357,6 +3358,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 55b714b65f0b90142af80804c7252981, type: 3}
+--- !u!224 &3879115453409865812 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1047240028412867076, guid: 55b714b65f0b90142af80804c7252981,
+    type: 3}
+  m_PrefabInstance: {fileID: 4277832172643500624}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &3879115453495238182 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1047240028602276982, guid: 55b714b65f0b90142af80804c7252981,

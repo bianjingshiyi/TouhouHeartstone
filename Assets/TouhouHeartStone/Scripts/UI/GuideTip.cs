@@ -10,6 +10,7 @@ namespace UI
             var targetTransform = viewData.targetTransform;
             var text = viewData.text;
             var tipOnTop = viewData.tipOnTop;
+            var tipHorizontalPos = viewData.tipHorizontalPos;
             this.targetTransform = targetTransform;
 
             var rect = targetTransform.rect;
@@ -22,8 +23,8 @@ namespace UI
             updateTransform(0);
 
             tipboxText.text = text;
-            tipboxTransform.pivot = new Vector2(0.5f, tipOnTop ? 0 : 1);
-            tipboxTransform.anchorMin =  new Vector2(0.5f, tipOnTop ? 1 : 0);
+            tipboxTransform.pivot = new Vector2(0.5f - tipHorizontalPos * 0.5f, tipOnTop ? 0 : 1);
+            tipboxTransform.anchorMin =  new Vector2(0.5f - tipHorizontalPos * 0.5f, tipOnTop ? 1 : 0);
             tipboxTransform.anchorMax = tipboxTransform.anchorMin;
 
             dragRootObj.SetActive(viewData.drag);
@@ -114,6 +115,7 @@ namespace UI
         public RectTransform targetTransform;
         public string text;
         public bool tipOnTop;
+        public float tipHorizontalPos;
         public bool drag;
         public Vector2 dragPosition;
         public Vector2 dragDirection;
