@@ -113,10 +113,17 @@ namespace Game
                         var dialog = getManager<UIManager>().getObject<UIDialog>();
                         if (downloadURL != null)
                         {
-                            dialog.ShowQuestion(StringTable.HINT_TITLE, lang._(StringTable.WANNA_DOWNLOAD_NEW_VERSION), () =>
+                            if (SteamManager.isValid)
                             {
-                                Application.OpenURL(downloadURL);
-                            });
+                                dialog.ShowQuestion(StringTable.HINT_TITLE, lang._(StringTable.NEWER_VERSION_FOUND_STEAM), null);
+                            }
+                            else
+                            {
+                                dialog.ShowQuestion(StringTable.HINT_TITLE, lang._(StringTable.WANNA_DOWNLOAD_NEW_VERSION), () =>
+                                {
+                                    Application.OpenURL(downloadURL);
+                                });
+                            }
                         }
                         else
                         {
