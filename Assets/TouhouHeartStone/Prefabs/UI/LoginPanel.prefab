@@ -399,7 +399,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u7528\u6237\u540D"
+  m_Text: "\u90AE\u7BB1"
 --- !u!114 &7735443887603411552
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2026,7 +2026,7 @@ PrefabInstance:
     - target: {fileID: 2085164224098065606, guid: 4e0d5fda7cc24a1409761ed61aafaf8d,
         type: 3}
       propertyPath: m_Text
-      value: "\u7528\u6237\u540D\u6216\u90AE\u7BB1"
+      value: "\u4F60\u7684\u90AE\u7BB1"
       objectReference: {fileID: 0}
     - target: {fileID: 2085164224098065606, guid: 4e0d5fda7cc24a1409761ed61aafaf8d,
         type: 3}

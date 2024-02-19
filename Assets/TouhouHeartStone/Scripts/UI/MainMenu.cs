@@ -190,8 +190,9 @@ namespace UI
             _serverButton.onClick.AddListener(onServerButtonClickCallback);
             _editorButton.onClick.AddListener(onEditorButtonClickCallback);
 
-            _playerInfoEditPanel.onClickConfirmBtn += onPlayerInfoEditConfirmClickCallback;
-            _playerInfoEditPanel.onClickSteamBindBtn += onPlayerInfoEditSteamBindClickCallback;
+            _playerInfoEditPanel.onClickNicknameConfirmBtn += nickname => onPlayerInfoEditNicknameConfirmClick?.Invoke(nickname);
+            _playerInfoEditPanel.onClickPasswordConfirmBtn += (newPassword, repeatPassword) => onPlayerInfoEditPasswordConfirmClick?.Invoke(newPassword, repeatPassword);
+            _playerInfoEditPanel.onClickSteamBindBtn += unbind => onPlayerInfoEditSteamBindClick?.Invoke(unbind);
 
             _registerPanel.onCaptchaClick += onRegisterCaptchaClickCallback;
             _registerPanel.onRegisterClick += onRegisterConfirmClickCallback;
@@ -353,15 +354,6 @@ namespace UI
         }
         #endregion
 
-        private void onPlayerInfoEditConfirmClickCallback()
-        {
-            PlayerInfoEditInfo info = _playerInfoEditPanel.getPlayerInfoEditInfo();
-            onPlayerInfoEditConfirmClick?.Invoke(info);
-        }
-        private void onPlayerInfoEditSteamBindClickCallback(bool unbind)
-        {
-            onPlayerInfoEditSteamBindClick?.Invoke(unbind);
-        }
         #endregion
         #endregion
         #region 事件
@@ -400,7 +392,8 @@ namespace UI
         public event Action onRecoverBackClick;
         public event Action onRecoverCaptchaClick;
 
-        public event Action<PlayerInfoEditInfo> onPlayerInfoEditConfirmClick;
+        public event Action<string> onPlayerInfoEditNicknameConfirmClick;
+        public event Action<string, string> onPlayerInfoEditPasswordConfirmClick;
         public event Action<bool> onPlayerInfoEditSteamBindClick;
         #endregion
 

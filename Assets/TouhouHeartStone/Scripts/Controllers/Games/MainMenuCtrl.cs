@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Game;
 using IGensoukyo.Utilities;
@@ -75,7 +76,8 @@ namespace Controllers
             _ui.onRecoverBackClick += onRecoverPanelBackClickedCallback;
             _ui.onRecoverCaptchaClick += onRecoverPanelCaptchaClickedCallback;
 
-            _ui.onPlayerInfoEditConfirmClick += onPlayerInfoEditConfirmClickedCallback;
+            _ui.onPlayerInfoEditNicknameConfirmClick += onPlayerInfoEditNicknameConfirmClickedCallback;
+            _ui.onPlayerInfoEditPasswordConfirmClick += onPlayerInfoEditPasswordConfirmClickedCallback;
             _ui.onPlayerInfoEditSteamBindClick += onPlayerInfoEditSteamBindClickedCallback;
             game.network.onAutoLogin += onAutoLoginCallback;
             game.network.onAutoLoginFinished += onAutoLoginFinishedCallback;
@@ -184,15 +186,21 @@ namespace Controllers
                 _ui.showRegisterMessage(lang._(NETMANAGER_NICKNAME_NULL));
                 return;
             }
+            if (string.IsNullOrEmpty(password))
+            {
+                _ui.showRegisterMessage(lang._(StringTable.ACCOUNT_PASSWORD_NULL));
+                return;
+            }
             if (password != repeatPassword)
             {
                 _ui.showRegisterMessage(lang._(NETMANAGER_PASSWORD_ERROR));
                 return;
             }
 
+            var panel = AccountPanel.Register;
             try
             {
-                startWaiting(AccountPanel.Register);
+                startWaiting(panel);
                 // 注册完毕，切换到登录界面
                 await game.network.logic.register(new AccountInfo(password, email, nickName));
                 game.network.loadRememberAccount(out var rememberUserName, out var userName, out var rememberPassword, out password);
@@ -201,12 +209,12 @@ namespace Controllers
             }
             catch (NetClientException e)
             {
-                _ui.showRegisterMessage(e.Message);
+                showErrorMessage(panel, e);
                 _ui.setRegisterCaptcha(await game.network.getCaptchaImage());
             }
             finally
             {
-                stopWaiting(AccountPanel.Register);
+                stopWaiting(panel);
             }
         }
         private async void onRegisterViaSteamPanelConfirmClickedCallback(RegisterViaSteamInfo info)
@@ -216,37 +224,36 @@ namespace Controllers
             var email = info.email;
             if (string.IsNullOrEmpty(nickName))
             {
-                _ui.showRegisterMessage(lang._(NETMANAGER_NICKNAME_NULL));
+                _ui.showRegisterViaSteamMessage(lang._(NETMANAGER_NICKNAME_NULL));
                 return;
             }
             if (string.IsNullOrEmpty(email))
             {
-                _ui.showRegisterMessage(lang._(NETMANAGER_EMAIL_NULL));
+                _ui.showRegisterViaSteamMessage(lang._(NETMANAGER_EMAIL_NULL));
                 return;
             }
 
+            var panel = AccountPanel.RegisterViaSteam;
             try
             {
-                startWaiting(AccountPanel.RegisterViaSteam);
+                startWaiting(panel);
                 var ticket = await SteamManager.getAuthTicketForWebApi();
-                if (await game.network.logic.steamRegister(email, nickName))
+                await game.network.logic.steamRegister(email, nickName);
+                // 注册完毕，登录
+                if (await game.network.logic.steamLogin())
                 {
-                    // 注册完毕，登录
-                    if (await game.network.logic.steamLogin())
-                    {
-                        // 登陆完毕
-                        updatePlayerInfo();
-                        hideAccountPanels();
-                    }
+                    // 登陆完毕
+                    updatePlayerInfo();
+                    hideAccountPanels();
                 }
             }
             catch (Exception e)
             {
-                _ui.showRegisterViaSteamMessage(e.Message);
+                showErrorMessage(panel, e);
             }
             finally
             {
-                stopWaiting(AccountPanel.RegisterViaSteam);
+                stopWaiting(panel);
             }
         }
         private async void onRegisterPanelBackClickedCallback()
@@ -286,12 +293,13 @@ namespace Controllers
             }
             if (string.IsNullOrEmpty(password))
             {
-                _ui.showLoginMessage(lang._(NETMANAGER_CHECK_CODE_NULL));
+                _ui.showLoginMessage(lang._(StringTable.ACCOUNT_PASSWORD_NULL));
                 return;
             }
+            var panel = AccountPanel.Login;
             try
             {
-                startWaiting(AccountPanel.Login);
+                startWaiting(panel);
                 bool success = await game.network.logic.login(username, password);
                 if (success)
                 {
@@ -301,27 +309,28 @@ namespace Controllers
                 }
                 else
                 {
-                    _ui.showLoginMessage(lang._(INVALID_USERNAME_OR_PASSWORD));
+                    _ui.showLoginMessage(lang._(StringTable.ACCOUNT_EMAIL_OR_PASSWORD_WRONG));
                     _ui.setLoginCaptcha(await game.network.getCaptchaImage());
                 }
             }
             catch (NetClientException e)
             {
-                Debug.Log(e);
-                _ui.showLoginMessage(e.Message);
+                showErrorMessage(panel, e, true);
                 _ui.setLoginCaptcha(await game.network.getCaptchaImage());
             }
             finally
             {
-                stopWaiting(AccountPanel.Login);
+                stopWaiting(panel);
             }
         }
         private async void onLoginPanelGuestLoginClickedCallback()
         {
             _ui.hideLoginMessage();
+
+            var panel = AccountPanel.Login;
             try
             {
-                startWaiting(AccountPanel.Login);
+                startWaiting(panel);
                 bool success = await game.network.logic.GuestLogin();
                 if (success)
                 {
@@ -335,12 +344,11 @@ namespace Controllers
             }
             catch (NetClientException e)
             {
-                Debug.LogError(e);
-                _ui.showLoginMessage(e.Message);
+                showErrorMessage(panel, e, true);
             }
             finally
             {
-                stopWaiting(AccountPanel.Login);
+                stopWaiting(panel);
             }
         }
         private async void onLoginPanelRecoverClickedCallback()
@@ -349,9 +357,10 @@ namespace Controllers
         }
         private async void onLoginPanelSteamLoginClickedCallback()
         {
+            var panel = AccountPanel.Login;
             try
             {
-                startWaiting(AccountPanel.Login);
+                startWaiting(panel);
                 if (await game.network.logic.steamLogin())
                 {
                     updatePlayerInfo();
@@ -371,13 +380,12 @@ namespace Controllers
                 }
                 else
                 {
-                    Debug.Log(e);
-                    _ui.showLoginMessage(e.Message);
+                    showErrorMessage(panel, e, true);
                 }
             }
             finally
             {
-                stopWaiting(AccountPanel.Login);
+                stopWaiting(panel);
             }
         }
         #endregion
@@ -391,9 +399,10 @@ namespace Controllers
         }
         private async void onPlayerInfoLogoutClickedCallback()
         {
+            var panel = AccountPanel.PlayerInfo;
             try
             {
-                startWaiting(AccountPanel.PlayerInfo);
+                startWaiting(panel);
                 await game.network.logic.logout();
                 updatePlayerInfo();
             }
@@ -403,7 +412,7 @@ namespace Controllers
             }
             finally
             {
-                stopWaiting(AccountPanel.PlayerInfo);
+                stopWaiting(panel);
             }
         }
         private async void onPlayerInfoEditClickedCallback()
@@ -423,9 +432,10 @@ namespace Controllers
                 _ui.showRecoverMessage(lang._(NETMANAGER_EMAIL_NULL));
                 return;
             }
+            var panel = AccountPanel.Recover;
             try
             {
-                startWaiting(AccountPanel.Recover);
+                startWaiting(panel);
                 if (await game.network.logic.recoverRequest(mail))
                 {
                     _ui.switchRecoverStage(true);
@@ -433,12 +443,11 @@ namespace Controllers
             }
             catch (NetClientException e)
             {
-                Debug.Log(e);
-                _ui.showRecoverMessage(e.Message);
+                showErrorMessage(panel, e);
             }
             finally
             {
-                stopWaiting(AccountPanel.Recover);
+                stopWaiting(panel);
             }
             _ui.setRecoverCaptcha(await game.network.getCaptchaImage());
         }
@@ -456,40 +465,71 @@ namespace Controllers
         }
 
         #endregion
-        private async void onPlayerInfoEditConfirmClickedCallback(PlayerInfoEditInfo info)
+        private async void onPlayerInfoEditNicknameConfirmClickedCallback(string nickname)
         {
-            var nickname = info.nickname;
-            var newPassword = info.newPassword;
-            var repeatNewPassword = info.repeatPassword;
             _ui.hidePlayerEditMessage();
-            if (newPassword != repeatNewPassword)
+            if (string.IsNullOrEmpty(nickname))
+            {
+                _ui.showPlayerEditMessage(lang._(NETMANAGER_NICKNAME_NULL));
+                return;
+            }
+
+            var panel = AccountPanel.PlayerInfoEdit;
+            try
+            {
+                startWaiting(panel);
+                await game.network.logic.ChangeUserNickname(nickname);
+                var message = game.lang._(NETMANAGER_EDIT_NICKNAME_SUCCESSFULLY);
+                _ui.showPlayerEditMessage(message);
+                updatePlayerInfo();
+            }
+            catch (NetClientException e)
+            {
+                showErrorMessage(panel, e);
+            }
+            finally
+            {
+                stopWaiting(panel);
+            }
+        }
+        private async void onPlayerInfoEditPasswordConfirmClickedCallback(string newPassword, string repeatPassword)
+        {
+            _ui.hidePlayerEditMessage();
+            if (string.IsNullOrEmpty(newPassword))
+            {
+                _ui.showPlayerEditMessage(lang._(StringTable.ACCOUNT_PASSWORD_NULL));
+                return;
+            }
+            if (newPassword != repeatPassword)
             {
                 _ui.showPlayerEditMessage(lang._(NETMANAGER_PASSWORD_ERROR));
                 return;
             }
 
+            var panel = AccountPanel.PlayerInfoEdit;
             try
             {
-                startWaiting(AccountPanel.PlayerInfoEdit);
-                await game.network.logic.ChangeUserInfo(nickname, newPassword);
+                startWaiting(panel);
+                await game.network.logic.ChangeUserPassword(newPassword);
+                var message = game.lang._(NETMANAGER_EDIT_PASSWORD_SUCCESSFULLY);
+                _ui.showPlayerEditMessage(message);
                 updatePlayerInfo();
-                hideAccountPanels();
             }
             catch (NetClientException e)
             {
-                Debug.Log(e);
-                _ui.showPlayerEditMessage(e.Message);
+                showErrorMessage(panel, e);
             }
             finally
             {
-                stopWaiting(AccountPanel.PlayerInfoEdit);
+                stopWaiting(panel);
             }
         }
         private async void onPlayerInfoEditSteamBindClickedCallback(bool unbind)
         {
+            var panel = AccountPanel.PlayerInfoEdit;
             try
             {
-                startWaiting(AccountPanel.PlayerInfoEdit);
+                startWaiting(panel);
                 bool success;
                 if (unbind)
                     success = await game.network.logic.unlinkSteam();
@@ -507,12 +547,11 @@ namespace Controllers
             }
             catch (Exception e)
             {
-                Debug.Log(e);
-                _ui.showPlayerEditMessage(e.Message);
+                showErrorMessage(panel, e);
             }
             finally
             {
-                stopWaiting(AccountPanel.PlayerInfoEdit);
+                stopWaiting(panel);
             }
         }
         private void onAutoLoginCallback()
@@ -637,15 +676,37 @@ namespace Controllers
                     break;
             }
         }
+        private void showErrorMessage(AccountPanel panel, Exception e, bool logError = false)
+        {
+            if (logError)
+                Debug.LogError(e);
+            else
+                Debug.Log(e);
+            string msg = game.network.translateNetErrorMessage(e);
+            switch (panel)
+            {
+                case AccountPanel.Login:
+                    _ui.showLoginMessage(msg);
+                    break;
+                case AccountPanel.Register:
+                    _ui.showRegisterMessage(msg);
+                    break;
+                case AccountPanel.Recover:
+                    _ui.showRecoverMessage(msg);
+                    break;
+                case AccountPanel.RegisterViaSteam:
+                    _ui.showRegisterViaSteamMessage(msg);
+                    break;
+                case AccountPanel.PlayerInfoEdit:
+                    _ui.showPlayerEditMessage(msg);
+                    break;
+            }
+        }
 
         #endregion
         #region 属性字段
         [TranslateMsg]
-        private const string INVALID_USERNAME_OR_PASSWORD = "用户名或密码不正确";
-        [TranslateMsg]
         private const string GUEST_LOGIN_FAILED = "游客登录失败，服务器压力过大";
-        [TranslateMsg]
-        private const string NETMANAGER_CHECK_CODE_NULL = "校验码不能为空";
         [TranslateMsg]
         private const string NETMANAGER_EMAIL_NULL = "邮箱不能为空";
         [TranslateMsg]
@@ -656,6 +717,10 @@ namespace Controllers
         private const string NETMANAGER_RECOVER_CODE_NULL = "密码找回代码不能为空";
         [TranslateMsg]
         private const string NETMANAGER_USERNAME_NULL = "用户名不能为空";
+        [TranslateMsg]
+        private const string NETMANAGER_EDIT_NICKNAME_SUCCESSFULLY = "修改昵称成功。";
+        [TranslateMsg]
+        private const string NETMANAGER_EDIT_PASSWORD_SUCCESSFULLY = "修改密码成功。";
         [TranslateMsg]
         private const string STEAMBINDING_DESC = "当前Steam账号并未与IGensoukyo帐号绑定，使用Steam账号信息注册一个帐号吗？（您也可以在登录IGensoukyo账号后在帐号编辑页面中绑定Steam帐号。）";
         [TranslateMsg]

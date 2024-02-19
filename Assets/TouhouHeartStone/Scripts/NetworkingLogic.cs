@@ -179,18 +179,23 @@ namespace Game
         }
 
         /// <summary>
-        /// 修改玩家信息
+        /// 修改玩家昵称
         /// </summary>
         /// <param name="nick"></param>
-        /// <param name="oldPass">旧密码</param>
+        /// <returns></returns>
+        public async Task ChangeUserNickname(string nick)
+        {
+            await ServerClient.ChangeUserInfoAsync(nick);
+            userInfo = await ServerClient.GetUserInfoAsync();
+        }
+        /// <summary>
+        /// 修改玩家密码
+        /// </summary>
         /// <param name="newPass">新密码</param>
         /// <returns></returns>
-        public async Task ChangeUserInfo(string nick, string newPass)
+        public async Task ChangeUserPassword(string newPass)
         {
-            if (!string.IsNullOrEmpty(nick))
-                await ServerClient.ChangeUserInfoAsync(nick);
-            if (!string.IsNullOrEmpty(newPass))
-                await ServerClient.ChangePassword(newPass);
+            await ServerClient.ChangePassword(newPass);
             userInfo = await ServerClient.GetUserInfoAsync();
         }
 
@@ -330,11 +335,10 @@ namespace Game
             }
             return false;
         }
-        public async Task<bool> steamRegister(string email, string nickname)
+        public async Task steamRegister(string email, string nickname)
         {
             var ticket = await SteamManager.getAuthTicketForWebApi();
-            var sessionTicket = await ServerClient.RegisterViaSteam(SteamManager.client, ticket, email, nickname);
-            return !string.IsNullOrEmpty(sessionTicket);
+            await ServerClient.RegisterViaSteam(SteamManager.client, ticket, email, nickname);
         }
         public async Task<bool> linkSteam()
         {

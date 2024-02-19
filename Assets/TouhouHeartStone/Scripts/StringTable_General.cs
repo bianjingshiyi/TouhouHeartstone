@@ -33,6 +33,13 @@ namespace Game
         public const string TRIMMED_COTENTS = "{0}...";
         #endregion
 
+        #region 帐号
+        [TranslateMsg("网络错误")]
+        public const string ACCOUNT_EMAIL_OR_PASSWORD_WRONG = "邮箱或密码错误";
+        [TranslateMsg("网络错误")]
+        public const string ACCOUNT_PASSWORD_NULL = "密码不能为空";
+        #endregion
+
         #region 语言
         [TranslateMsg("语言选项，简体中文")]
         public const string LANGUAGE_ZH_HANS = "简体中文";

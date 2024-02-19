@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class NetworkingManager : Manager
+    public partial class NetworkingManager : Manager
     {
         #region 公有方法
         public async void start()
@@ -276,10 +276,10 @@ namespace Game
 
         #region 属性字段
 
+        public MainManager main => getManager<MainManager>();
+        public CacheManager cacheManager => main.cache;
 
-        public CacheManager cacheManager => getManager<CacheManager>();
-
-        public GameManager gameManager => getManager<GameManager>();
+        public GameManager gameManager => main.game;
 
         public NetworkingLogic logic => _logic;
 
