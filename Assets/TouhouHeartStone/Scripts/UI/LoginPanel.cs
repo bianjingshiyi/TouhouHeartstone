@@ -8,27 +8,18 @@ namespace UI
 {
     public class LoginPanel : UIObject
     {
-        [Obsolete("Use Display + SetContent instead")]
-        public void display(bool rememberUserName, string userName, bool rememberPassword, string password, Sprite captcha)
-        {
-            HideMessage();
-            SetContent(rememberUserName, userName, rememberPassword, password, captcha);
-            display();
-        }
         public void Display()
         {
             HideMessage();
             display();
         }
-        public void SetContent(bool rememberUserName, string userName, bool rememberPassword, string password, Sprite captcha = null)
+        public void SetContent(bool rememberUserName, string userName, Sprite captcha = null)
         {
             if (captcha != null)
                 _captchaImage.sprite = captcha;
 
             _rememberAccountToggle.isOn = rememberUserName;
-            _rememberPasswordToggle.isOn = rememberPassword;
             _usernameInputField.text = userName;
-            _passwordInputField.text = password;
         }
         public void setSteamButtonsValid(bool valid)
         {
@@ -55,7 +46,6 @@ namespace UI
                 password = _passwordInputField.text,
                 captcha = _captchaInputField.text,
                 rememberUsername = _rememberAccountToggle.isOn,
-                rememberPassword = _rememberPasswordToggle.isOn
             };
         }
         public void setInteractable(bool interactable)
@@ -65,7 +55,6 @@ namespace UI
             _captchaInputField.interactable = interactable;
             _captchaButton.interactable = interactable;
             _rememberAccountToggle.interactable = interactable;
-            _rememberPasswordToggle.interactable = interactable;
             _loginButton.interactable = interactable;
             _guestLoginBtn.interactable = interactable;
             _registerButton.interactable = interactable;
@@ -117,8 +106,6 @@ namespace UI
         [SerializeField]
         private Toggle _rememberAccountToggle;
         [SerializeField]
-        private Toggle _rememberPasswordToggle;
-        [SerializeField]
         private Button _recoverButton;
         [SerializeField]
         private Button _registerButton;
@@ -133,6 +120,5 @@ namespace UI
         public string password;
         public string captcha;
         public bool rememberUsername;
-        public bool rememberPassword;
     }
 }

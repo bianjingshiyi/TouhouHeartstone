@@ -39,22 +39,6 @@ namespace Game
         public async Task<bool> AutoLogin()
         {
             bool loginSuccess = false;
-            // 尝试直接获取用户数据。
-            try
-            {
-                await success();
-
-                // 更新Session，防止Session太旧没更新导致无法连接服务器
-                await ServerClient.GetSessionAsync();
-            }
-            catch (NetClientException e1)
-            {
-                Debug.Log($"自动登录失败: {e1}");
-            }
-
-            if (loginSuccess)
-                return true;
-
             // 尝试使用缓存的token进行自动登录。
             try
             {

@@ -72,9 +72,9 @@ namespace UI
         {
             _loginPanel.HideMessage();
         }
-        public void setLoginContent(bool rememberUsername, string username, bool rememberPassword, string password)
+        public void setLoginContent(bool rememberUsername, string username)
         {
-            _loginPanel.SetContent(rememberUsername, username, rememberPassword, password);
+            _loginPanel.SetContent(rememberUsername, username);
         }
         public void setLoginCaptcha(Sprite image)
         {

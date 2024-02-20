@@ -119,19 +119,15 @@ namespace Game
         {
             return _ports;
         }
-        public void loadRememberAccount(out bool rememberUserName, out string userName, out bool rememberPassword, out string password)
+        public void loadRememberAccount(out bool rememberUserName, out string userName)
         {
             rememberUserName = PlayerPrefs.GetInt("RememberAccount", 0) > 0;
-            rememberPassword = PlayerPrefs.GetInt("RememberPassword", 0) > 0;
             userName = PlayerPrefs.GetString("UserName", null);
-            password = PlayerPrefs.GetString("Password", null);
         }
-        public void saveRemeberAccount(bool rememeberUserName, string userName, bool rememberPassword, string password)
+        public void saveRemeberAccount(bool rememeberUserName, string userName)
         {
             PlayerPrefs.SetInt("RememberAccount", rememeberUserName ? 1 : 0);
-            PlayerPrefs.SetInt("RememberPassword", rememberPassword ? 1 : 0);
             PlayerPrefs.SetString("UserName", rememeberUserName ? userName : null);
-            PlayerPrefs.SetString("Password", rememberPassword ? password : null);
             PlayerPrefs.Save();
             // todo: 使用一种更安全的方式存储密码
         }

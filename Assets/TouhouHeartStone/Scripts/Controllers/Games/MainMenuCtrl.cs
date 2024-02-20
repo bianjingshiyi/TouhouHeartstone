@@ -203,8 +203,8 @@ namespace Controllers
                 startWaiting(panel);
                 // 注册完毕，切换到登录界面
                 await game.network.logic.register(new AccountInfo(password, email, nickName));
-                game.network.loadRememberAccount(out var rememberUserName, out var userName, out var rememberPassword, out password);
-                _ui.setLoginContent(rememberUserName, userName, rememberPassword, password);
+                game.network.loadRememberAccount(out var rememberUserName, out var userName);
+                _ui.setLoginContent(rememberUserName, userName);
                 await showAccountPanel(AccountPanel.Login);
             }
             catch (NetClientException e)
@@ -285,7 +285,6 @@ namespace Controllers
             var username = info.username;
             var password = info.password;
             var rememberUsername = info.rememberUsername;
-            var rememberPassword = info.rememberPassword;
             if (string.IsNullOrEmpty(username))
             {
                 _ui.showLoginMessage(lang._(NETMANAGER_USERNAME_NULL));
@@ -303,7 +302,7 @@ namespace Controllers
                 bool success = await game.network.logic.login(username, password);
                 if (success)
                 {
-                    game.network.saveRemeberAccount(rememberUsername, username, rememberPassword, password);
+                    game.network.saveRemeberAccount(rememberUsername, username);
                     updatePlayerInfo();
                     hideAccountPanels();
                 }
@@ -393,8 +392,8 @@ namespace Controllers
         #region 玩家信息
         private async void onPlayerInfoLoginClickedCallback()
         {
-            game.network.loadRememberAccount(out var rememberUserName, out var userName, out var rememberPassword, out var password);
-            _ui.setLoginContent(rememberUserName, userName, rememberPassword, password);
+            game.network.loadRememberAccount(out var rememberUserName, out var userName);
+            _ui.setLoginContent(rememberUserName, userName);
             await showAccountPanel(AccountPanel.Login);
         }
         private async void onPlayerInfoLogoutClickedCallback()
