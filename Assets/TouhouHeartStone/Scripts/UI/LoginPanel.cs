@@ -21,6 +21,7 @@ namespace UI
             _rememberAccountToggle.isOn = rememberUserName;
             _usernameInputField.text = userName;
         }
+
         public void setSteamButtonsValid(bool valid)
         {
             _steamButtonsObj.SetActive(valid);
@@ -28,11 +29,11 @@ namespace UI
         public void ShowMessage(string msg)
         {
             _hintText.text = msg;
-            _hintImage.gameObject.SetActive(true);
+            _hintObj.SetActive(true);
         }
         public void HideMessage()
         {
-            _hintImage.gameObject.SetActive(false);
+            _hintObj.SetActive(false);
         }
         public void setCaptcha(Sprite sprite)
         {
@@ -72,8 +73,10 @@ namespace UI
             _captchaButton.onClick.AddListener(() => onCaptchaClick?.Invoke());
             _closeButton.onClick.AddListener(() => onCloseClick?.Invoke());
             _steamLoginButton.onClick.AddListener(() => onSteamLoginClick?.Invoke());
+            _rememberAccountToggle.onValueChanged.AddListener(value => onRememberAccountValueChanged?.Invoke(value));
         }
 
+        public event Action<bool> onRememberAccountValueChanged;
         public event Action onRegisterClick;
         public event Action onGuestLoginClick;
         public event Action onCaptchaClick;
@@ -90,7 +93,7 @@ namespace UI
         [SerializeField]
         private Button _closeButton;
         [SerializeField]
-        private Image _hintImage;
+        private GameObject _hintObj;
         [SerializeField]
         private Text _hintText;
         [SerializeField]

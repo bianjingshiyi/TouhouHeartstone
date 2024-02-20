@@ -27,6 +27,9 @@ namespace Controllers
             _ui.buildButton.setNewMarkVisible(!game.tutorial.isTutorialClosed(TutorialID.Build));
             _ui.setLoginSteamButtonsValid(SteamManager.isValid);
             _ui.setPlayerEditPanelSteamValid(SteamManager.isValid);
+
+            game.network.loadRememberAccount(out var rememberUserName, out var userName);
+            _ui.setLoginContent(rememberUserName, userName);
         }
         public void hide()
         {
@@ -60,6 +63,7 @@ namespace Controllers
             _ui.onRegisterBackClick += onRegisterPanelBackClickedCallback;
             _ui.onRegisterViaSteamConfirmClick += onRegisterViaSteamPanelConfirmClickedCallback;
 
+            _ui.onLoginRememberAccountValueChanged += onLoginPanelRememberAccountValueChangedCallback;
             _ui.onLoginRegisterClick += onLoginPanelRegisterClickedCallback;
             _ui.onLoginCaptchaClick += onLoginPanelCaptchaClickedCallback;
             _ui.onLoginClick += onLoginPanelLoginClickedCallback;
@@ -203,8 +207,6 @@ namespace Controllers
                 startWaiting(panel);
                 // 注册完毕，切换到登录界面
                 await game.network.logic.register(new AccountInfo(password, email, nickName));
-                game.network.loadRememberAccount(out var rememberUserName, out var userName);
-                _ui.setLoginContent(rememberUserName, userName);
                 await showAccountPanel(AccountPanel.Login);
             }
             catch (NetClientException e)
@@ -271,6 +273,10 @@ namespace Controllers
         }
         #endregion
         #region 登录界面
+        private void onLoginPanelRememberAccountValueChangedCallback(bool value)
+        {
+            game.network.saveRememberAccount(value);
+        }
         private async void onLoginPanelRegisterClickedCallback()
         {
             await showAccountPanel(AccountPanel.Register);
@@ -302,7 +308,7 @@ namespace Controllers
                 bool success = await game.network.logic.login(username, password);
                 if (success)
                 {
-                    game.network.saveRemeberAccount(rememberUsername, username);
+                    game.network.saveRememberedAccount(rememberUsername ? username : null);
                     updatePlayerInfo();
                     hideAccountPanels();
                 }
@@ -392,8 +398,6 @@ namespace Controllers
         #region 玩家信息
         private async void onPlayerInfoLoginClickedCallback()
         {
-            game.network.loadRememberAccount(out var rememberUserName, out var userName);
-            _ui.setLoginContent(rememberUserName, userName);
             await showAccountPanel(AccountPanel.Login);
         }
         private async void onPlayerInfoLogoutClickedCallback()

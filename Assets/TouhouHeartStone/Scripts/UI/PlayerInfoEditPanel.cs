@@ -45,11 +45,11 @@ namespace UI
         public void ShowMessage(string msg)
         {
             _hintText.text = msg;
-            _hintText.transform.parent.gameObject.SetActive(true);
+            _hintObj.SetActive(true);
         }
         public void HideMessage()
         {
-            _hintText.transform.parent.gameObject.SetActive(false);
+            _hintObj.SetActive(false);
         }
         public void setInteractable(bool interactable)
         {
@@ -81,6 +81,8 @@ namespace UI
 
         [SerializeField]
         Button _closeBtn;
+        [SerializeField]
+        GameObject _hintObj;
         [SerializeField]
         Text _hintText;
 

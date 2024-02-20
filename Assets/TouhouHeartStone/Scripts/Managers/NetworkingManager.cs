@@ -122,14 +122,15 @@ namespace Game
         public void loadRememberAccount(out bool rememberUserName, out string userName)
         {
             rememberUserName = PlayerPrefs.GetInt("RememberAccount", 0) > 0;
-            userName = PlayerPrefs.GetString("UserName", null);
+            userName = rememberUserName ? PlayerPrefs.GetString("UserName", null) : null;
         }
-        public void saveRemeberAccount(bool rememeberUserName, string userName)
+        public void saveRememberAccount(bool rememeberUserName)
         {
             PlayerPrefs.SetInt("RememberAccount", rememeberUserName ? 1 : 0);
-            PlayerPrefs.SetString("UserName", rememeberUserName ? userName : null);
-            PlayerPrefs.Save();
-            // todo: 使用一种更安全的方式存储密码
+        }
+        public void saveRememberedAccount(string userName)
+        {
+            PlayerPrefs.SetString("UserName", userName);
         }
         #endregion 公有方法
 

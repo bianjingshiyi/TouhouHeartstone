@@ -199,6 +199,7 @@ namespace UI
             _registerPanel.onShowEULAClick += onRegisterEULAClickCallback;
             _registerPanel.onLoginClick += onRegisterBackClickCallback;
 
+            _loginPanel.onRememberAccountValueChanged += onLoginRememberAccountValueChangedCallback;
             _loginPanel.onRegisterClick += onLoginRegisterClickCallback;
             _loginPanel.onCaptchaClick += onLoginCaptchaClickCallback;
             _loginPanel.onLoginClick += onLoginClickCallback;
@@ -292,6 +293,10 @@ namespace UI
         #endregion
 
         #region 登陆页面
+        private void onLoginRememberAccountValueChangedCallback(bool value)
+        {
+            onLoginRememberAccountValueChanged?.Invoke(value);
+        }
         private void onLoginRegisterClickCallback()
         {
             onLoginRegisterClick?.Invoke();
@@ -376,6 +381,7 @@ namespace UI
         public event Action onRegisterBackClick;
         public event Action<RegisterViaSteamInfo> onRegisterViaSteamConfirmClick;
 
+        public event Action<bool> onLoginRememberAccountValueChanged;
         public event Action onLoginRegisterClick;
         public event Action onLoginCaptchaClick;
         public event Action<LoginInfo> onLoginClick;
