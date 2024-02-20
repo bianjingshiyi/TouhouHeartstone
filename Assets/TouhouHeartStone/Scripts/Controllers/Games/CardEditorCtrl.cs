@@ -29,6 +29,41 @@ namespace Controllers
             gameObject.SetActive(true); // 触发Awake。
             _ui.reset();
 
+            // 初始化UI。
+            // 卡牌类型。
+            string[] typeNames = game.editor.getCardTypeNames();
+            _cardTypes = game.editor.getCardTypes();
+            _ui.initTypes(typeNames);
+            // 语言。
+            var lanaguages = game.langManager.getLanguages();
+            var languageNames = lanaguages.Select(l => game.langManager.getString(game.ui.getTranslateNameForLanguage(l))).ToArray();
+            _ui.initLanguages(languageNames);
+            // 标签
+            _ui.initTags(_raceNames.Select(n => game.lang._(n)).ToArray());
+            // 效果类型
+            _ui.setEffectTypes(game.card.getEffectNames());
+            // 自定义属性。
+            var customPropTypes = EditorManager.getCustomPropTypes();
+            var customPropTypeNames = game.editor.getCustomPropNames();
+            _ui.setCustomPropertyTypes(customPropTypes, customPropTypeNames);
+            // 输入控件。
+            var keywords = EditorManager.editorKeywords;
+            var keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray();
+            var fieldProps = new ValueInputFieldProperties()
+            {
+                keywordNames = keywordNames,
+                keywordValues = keywords.ToArray(),
+
+                pileNames = game.editor.getAllPileNames(),
+                pileValues = game.editor.getAllPileValues(),
+
+                buffNames = game.editor.getBuffNames(),
+                buffValues = game.editor.getBuffReferences(),
+            };
+            _ui.initValueInputFieldProperties(fieldProps);
+            
+            
+
             // 基础页面
             _ui.setId(cardDefine.id);
             _ui.setType(Array.IndexOf(_cardTypes, cardDefine.type), cardDefine.type);
@@ -63,9 +98,6 @@ namespace Controllers
 
             await updateCardType();
             await resetSkin();
-            // 自定义属性。
-            var buffProps = game.editor.getBuffInputProperties();
-            _ui.initValueInputFieldProperties(buffProps);
             await updateCustomProperties();
             await updateKeywords();
 
@@ -123,30 +155,6 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<CardEditorPanel>();
             }
-            var keywords = EditorManager.editorKeywords;
-            var keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray();
-            var fieldProps = new ValueInputFieldProperties()
-            {
-                keywordNames = keywordNames,
-                keywordValues = keywords.ToArray(),
-
-                pileNames = game.editor.getAllPileNames(),
-                pileValues = game.editor.getAllPileValues(),
-            };
-            _ui.initValueInputFieldProperties(fieldProps);
-            
-            string[] typeNames = game.editor.getCardTypeNames();
-            _cardTypes = game.editor.getCardTypes();
-            _ui.initTypes(typeNames);
-            var lanaguages = game.langManager.getLanguages();
-            var languageNames = lanaguages.Select(l => game.langManager.getString(game.ui.getTranslateNameForLanguage(l))).ToArray();
-            _ui.initLanguages(languageNames);
-            _ui.initTags(_raceNames.Select(n => game.lang._(n)).ToArray());
-            _ui.setEffectTypes(game.card.getEffectNames());
-            
-            var customPropTypes = EditorManager.getCustomPropTypes();
-            var customPropTypeNames = game.editor.getCustomPropNames();
-            _ui.setCustomPropertyTypes(customPropTypes, customPropTypeNames);
 
             // 事件回调
             // 基础页面
@@ -190,7 +198,6 @@ namespace Controllers
 
             // 选卡。
             // 卡牌属性。
-            _ui.setCustomPropertyTypes(customPropTypes, customPropTypeNames);
             _ui.onConfirmCreateCustomProperty += onConfirmCreateCustomPropertyCallback;
             _ui.onDeleteCustomProperty += onDeleteCustomPropertyCallback;
             _ui.onPropertyValueChanged += onPropertyValueChangedCallback;

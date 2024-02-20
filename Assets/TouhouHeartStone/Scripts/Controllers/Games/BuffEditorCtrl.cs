@@ -32,17 +32,40 @@ namespace Controllers
             _ui.reset();
 
             // 初始化UI
+            // 事件触发时机
             _ui.initEventTriggerTimeNames(eventTriggerTimeEditorNames);
-
-            var buffProps = game.editor.getBuffInputProperties();
-            _ui.initValueFields(buffProps);
-
+            // 持续特效
             var persistentAnimNames = game.anims.getAnimationEditorNamesForBuff();
             _ui.initPersistentAnims(persistentAnimNames);
+            // 修改器属性类型
+            _ui.initModifierPropertyTypes(getBuffDefinePropertyTypeNames());
+            // 语言
+            string[] languages = game.langManager.getLanguages();
+            var languageNames = languages.Select(l => game.langManager.getString(game.ui.getTranslateNameForLanguage(l))).ToArray();
+            _ui.initLanguages(languageNames);
+            // 效果类型
+            _ui.setEffectTypes(game.card.getEffectNames());
+            // 自定义属性
+            var customPropTypes = EditorManager.getCustomPropTypes();
+            var customPropTypeNames = game.editor.getCustomPropNames();
+            _ui.setCustomPropertyTypes(customPropTypes, customPropTypeNames);
+            // UI输入控件
+            var keywords = EditorManager.editorKeywords;
+            var fieldProps = new ValueInputFieldProperties()
+            {
+                keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray(),
+                keywordValues = keywords.ToArray(),
+
+                pileNames = game.editor.getAllPileNames(),
+                pileValues = game.editor.getAllPileValues(),
+
+                buffNames = game.editor.getBuffNames(),
+                buffValues = game.editor.getBuffReferences(),
+            };
+            _ui.initValueFields(fieldProps);
 
             // 设置UI。
             _ui.setId(buffDefine.id);
-            string[] languages = game.langManager.getLanguages();
             _ui.setLanguage(languages.indexOf(_curLanguage));
 
             // 更新内容。
@@ -104,19 +127,7 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<BuffEditorPanel>();
             }
-            _ui.initModifierPropertyTypes(getBuffDefinePropertyTypeNames());
 
-            var keywords = EditorManager.editorKeywords;
-            var keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray();
-            var fieldProps = new ValueInputFieldProperties()
-            {
-                keywordNames = keywordNames,
-                keywordValues = keywords.ToArray(),
-
-                pileNames = game.editor.getAllPileNames(),
-                pileValues = game.editor.getAllPileValues()
-            };
-            _ui.initValueFields(fieldProps);
             _ui.onChangeSkin += onChangeSkin;
             _ui.onChangeSkinName += onChangeSkinName;
             _ui.onClickDeleteSkinButton += onDeleteSkin;
@@ -125,19 +136,13 @@ namespace Controllers
             _ui.onChangeDesc += onChangeDesc;
             _ui.onChangeBuffImage += onChangeBuffImage;
 
-            string[] languages = game.langManager.getLanguages();
-            for (int i = 0; i < languages.Length; i++)
-            {
-                languages[i] = game.langManager.getString(game.ui.getTranslateNameForLanguage(languages[i]));
-            }
-            _ui.initLanguages(languages);
+
             _ui.onChangeLanguage += onChangeLanguage;
             _ui.onChangePersistentAnim += onChangePersistentAnimCallback;
 
 
             _ui.onClickEditEffectButton += onClickEditEffectButton;
             _ui.onClickRemoveEffectButton += onClickRemoveEffectButton;
-            _ui.setEffectTypes(game.card.getEffectNames());
             _ui.onClickAddEffectMenu += onClickAddEffectMenu;
             _ui.onEffectListItemInputFieldEndEdit += onEffectListItemInputFieldEndEditCallback;
             _ui.onClickDeleteButton += onClickDeleteButton;
@@ -156,9 +161,6 @@ namespace Controllers
             _ui.onChangeExistLimitEvent += onChangeExistLimitEventCallback;
             _ui.onChangeExistLimitCount += onChangeExistLimitCountCallback;
 
-            var customPropTypes = EditorManager.getCustomPropTypes();
-            var customPropTypeNames = game.editor.getCustomPropNames();
-            _ui.setCustomPropertyTypes(customPropTypes, customPropTypeNames);
             _ui.onAddCustomProperty += onAddCustomPropertyCallback;
             _ui.onConfirmCreateCustomProperty += onConfirmCreateCustomPropertyCallback;
             _ui.onRemoveCustomProperty += onRemoveCustomPropertyCallback;

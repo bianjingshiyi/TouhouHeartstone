@@ -18,6 +18,9 @@ namespace UI
     {
         public void display()
         {
+            var categoryNames = categories.Select(c => _actionGraphCtrl.translateCategoryName(c)).ToArray();
+            _nodesPanel.initCategories(categoryNames, categories);
+            _nodesPanel.initTypes(game.editor.getEditorPortTypeNames());
             _nodesPanel.setCategoryFilter(categoryFilter);
             _nodesPanel.setOutputFilter(outputFilter);
             _nodesPanel.setSearchFilter(searchFilter);
@@ -132,9 +135,6 @@ namespace UI
             _actionGraphCtrl.onOpenNodeInputDefaultValueCardDefine += onOpenActionNodeConstCardDefineCallback;
             _actionGraphCtrl.onOpenEffectPropertyCardDefine += onOpenEffectPropertyCardDefineCallback;
 
-            var categoryNames = categories.Select(c => _actionGraphCtrl.translateCategoryName(c)).ToArray();
-            _nodesPanel.initCategories(categoryNames, categories);
-            _nodesPanel.initTypes(game.editor.getEditorPortTypeNames());
             _nodesPanel.onItemBeginDrag += OnNodeItemBeginDrag;
             _nodesPanel.onItemDrag += OnNodeItemDrag;
             _nodesPanel.onItemEndDrag += OnNodeItemEndDrag;

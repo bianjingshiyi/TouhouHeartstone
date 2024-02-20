@@ -28,11 +28,21 @@ namespace UI
         {
             var item = _propertyModifierItemTemplate.GetComponent<PropertyModifierListItem>();
             item.updateSelectableValues(typeNames);
+            foreach (var modiItem in _propertyModifierList)
+            {
+                var modiListItem = modiItem.GetComponent<PropertyModifierListItem>();
+                modiListItem.updateSelectableValues(typeNames);
+            }
         }
         public void initEventTriggerTimeNames(string[] eventTriggerTimeNames)
         {
             var item = _existLimitItemTemplate.GetComponent<ExistLimitListItem>();
             item.initEvents(eventTriggerTimeNames);
+            foreach (var limitItemRect in _existLimitList)
+            {
+                var limitItem = limitItemRect.GetComponent<ExistLimitListItem>();
+                limitItem.initEvents(eventTriggerTimeNames);
+            }
         }
         public void initValueFields(ValueInputFieldProperties properties)
         {

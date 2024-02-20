@@ -581,9 +581,15 @@ namespace Game
         [TranslateMsg("编辑器/伤害分类/节点名称")]
         public const string EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE = "造成伤害或法伤";
         [TranslateMsg("编辑器/伤害分类/节点名称")]
+        public const string EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_OBSOLETE = "造成伤害或法伤（过时）";
+        [TranslateMsg("编辑器/伤害分类/节点名称")]
         public const string EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS = "造成伤害或法伤并分配给目标";
         [TranslateMsg("编辑器/伤害分类/节点名称")]
+        public const string EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS_OBSOLETE = "造成伤害或法伤并分配给目标（过时）";
+        [TranslateMsg("编辑器/伤害分类/节点名称")]
         public const string EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS = "对固定数量的随机目标造成伤害或法伤";
+        [TranslateMsg("编辑器/伤害分类/节点名称")]
+        public const string EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS_OBSOLETE = "对固定数量的随机目标造成伤害或法伤（过时）";
         [TranslateMsg("动作图编辑器中动作节点名称之造成法术伤害")]
         public const string EDITOR_NODE_NAME_DEAL_SPELL_DAMAGE = "造成法术伤害";
 
@@ -625,7 +631,7 @@ namespace Game
         /// <summary>
         /// 造成伤害或法术伤害
         /// </summary>
-        [THHActionMethod(BuiltinActionDefineID.DealDamageOrSpellDamage_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, "造成伤害或法伤（过时）", EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE)]
+        [THHActionMethod(BuiltinActionDefineID.DealDamageOrSpellDamage_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_OBSOLETE, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)][return: NodeParamEventType(typeof(DamageEventDefine))]
         [Obsolete]
         public static Task<EventArg[]> dealDamageOrSpellDamageObsolete(CardEngine game, Card card,
@@ -649,7 +655,7 @@ namespace Game
         /// <summary>
         /// 造成伤害或法术伤害并分配给目标
         /// </summary>
-        [THHActionMethod(BuiltinActionDefineID.DealDamageSplitAmong_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, "造成伤害或法伤并分配给目标（过时）", EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS)]
+        [THHActionMethod(BuiltinActionDefineID.DealDamageSplitAmong_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS_OBSOLETE, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)][return: NodeParamEventType(typeof(DamageEventDefine))]
         [Obsolete]
         public static Task<EventArg[]> dealDamageOrSpellDamageSplitToTargetsObsolete(CardEngine game, Card card,
@@ -673,7 +679,7 @@ namespace Game
         /// <summary>
         /// 对固定数量的随机目标造成伤害或法术伤害
         /// </summary>
-        [THHActionMethod(BuiltinActionDefineID.DealDamageToRandomTargets_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, "对固定数量的随机目标造成伤害或法伤（过时）", EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS)]
+        [THHActionMethod(BuiltinActionDefineID.DealDamageToRandomTargets_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS_OBSOLETE, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)][return: NodeParamEventType(typeof(DamageEventDefine))]
         [Obsolete]
         public static Task<EventArg[]> dealDamageOrSpellDamageToSpecificNumberOfTargetsObsolete(CardEngine game, Card card,

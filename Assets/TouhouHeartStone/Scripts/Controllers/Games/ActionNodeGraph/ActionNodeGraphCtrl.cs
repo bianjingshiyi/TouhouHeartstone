@@ -29,31 +29,43 @@ namespace Controllers
         public Task display(object editObject)
         {
             quitGraph();
-            // 更新类型名称列表
-            var typeInfos = GraphTypes.getAllPortTypeInfos();
-            var typeNames = game.editor.getEditorPortTypeNames();
-            typeValues = typeInfos.Select(i => i.type.Name).ToArray();
-                // 更新卡牌名称列表
-                var cardTypeNames = game.editor.getCardTypeNames();
-                cardTypeValues = game.editor.getCardTypes();
-            //更新UI
-            _ui.gameObject.SetActive(true);
 
+            // 初始化输入
+            var typeInfos = GraphTypes.getAllPortTypeInfos();
+            var keywords = EditorManager.editorKeywords;
             var fieldProps = new ValueInputFieldProperties()
             {
-                graphTypeNames = typeNames,
-                graphTypeValues = typeValues,
+                graphTypeNames = game.editor.getEditorPortTypeNames(),
+                graphTypeValues = typeInfos.Select(i => i.type.Name).ToArray(),
 
                 eventNames = eventEditorNames,
                 eventValues = eventReferences,
                 
-                cardTypeNames = cardTypeNames,
-                cardTypeValues = cardTypeValues,
+                cardTypeNames = game.editor.getCardTypeNames(),
+                cardTypeValues = game.editor.getCardTypes(),
 
                 buffNames = game.editor.getBuffNames(),
-                buffValues = game.editor.getBuffReferences()
+                buffValues = game.editor.getBuffReferences(),
+
+                pileNames = game.editor.getAllPileNames(),
+                pileValues = game.editor.getAllPileValues(),
+
+                keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray(),
+                keywordValues = keywords.ToArray(),
+
+                effectTagNames = getAllEffectTagNames(),
+                effectTagValues = getAllEffectTagValues(),
+
+                cardProperties = game.editor.getTranslatedCardProperties().ToArray(),
+
+                defaultValueTypeName = game.editor.getDefaultValueTypeName(),
+                valueTypeNames = game.editor.getValueTypeNameMaps(),
             };
             _ui.initValueInputFieldProperties(fieldProps);
+
+            //更新UI
+            _ui.gameObject.SetActive(true);
+
             _ui.resetView();
 
 
@@ -496,28 +508,6 @@ namespace Controllers
             _ui.onClickEffectPropertyButton += onClickEffectPropertyButtonCallback;
             _ui.onEffectPropertyValueChanged += onEffectPropertyValueChangedCallback;
             _ui.onDeleteEffectProperty += onDeleteEffectPropertyCallback;
-
-            var keywords = EditorManager.editorKeywords;
-            var effectTagNames = getAllEffectTagNames();
-            var effectTagValues = getAllEffectTagValues();
-            var cardProperties = game.editor.getTranslatedCardProperties().ToArray();
-            var properties = new ValueInputFieldProperties()
-            {
-                pileNames = game.editor.getAllPileNames(),
-                pileValues = game.editor.getAllPileValues(),
-
-                keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray(),
-                keywordValues = keywords.ToArray(),
-
-                effectTagNames = effectTagNames,
-                effectTagValues = effectTagValues,
-
-                cardProperties = cardProperties,
-
-                defaultValueTypeName = game.editor.getDefaultValueTypeName(),
-                valueTypeNames = game.editor.getValueTypeNameMaps(),
-            };
-            _ui.initValueInputFieldProperties(properties);
         }
         #endregion
         #region 事件回调
