@@ -57,7 +57,7 @@ namespace TouhouHeartstone
         {
             MukioPotGenerator potGenerator = new MukioPotGenerator("ZMCS", "Translation Team");
 
-            var cardPoolPath = Path.Combine(FileLoader.FolderPath, "CardPools", "经典卡池.ddcp");
+            var cardPoolPath = Path.Combine(FileLoader.FolderPath, "CardPools", "Classic.ddcp");
             ExportFromCardPool(potGenerator, cardPoolPath);
 
             potGenerator.WriteOut(cardPoolPotPath);
