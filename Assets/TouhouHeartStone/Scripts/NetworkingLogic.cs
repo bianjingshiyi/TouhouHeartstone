@@ -132,7 +132,8 @@ namespace Game
             return ServerClient.RegisterViaPassword(
                 account.mail,
                 account.password,
-                account.nickName
+                account.nickName,
+                account.language
             );
         }
 
@@ -319,10 +320,10 @@ namespace Game
             }
             return false;
         }
-        public async Task steamRegister(string email, string nickname)
+        public async Task steamRegister(string email, string nickname, string language)
         {
             var ticket = await SteamManager.getAuthTicketForWebApi();
-            await ServerClient.RegisterViaSteam(SteamManager.client, ticket, email, nickname);
+            await ServerClient.RegisterViaSteam(SteamManager.client, ticket, email, nickname, language);
         }
         public async Task<bool> linkSteam()
         {
@@ -501,6 +502,7 @@ namespace Game
         public string password;
         public string mail;
         public string nickName;
+        public string language;
         public int uid;
         public bool guest = false;
 
@@ -512,7 +514,7 @@ namespace Game
         /// <param name="nickName"></param>
         /// <param name="uid"></param>
         /// <param name="guest"></param>
-        public AccountInfo(string password, string nickName, int uid, bool guest = false) : this(password, null, nickName, uid)
+        public AccountInfo(string password, string nickName, string language, int uid, bool guest = false) : this(password, null, nickName, language, uid)
         {
             this.guest = guest;
         }
@@ -523,14 +525,15 @@ namespace Game
         /// <param name="password"></param>
         /// <param name="mail"></param>
         /// <param name="nickName"></param>
-        public AccountInfo(string password, string mail, string nickName) : this(password, mail, nickName, 0)
+        public AccountInfo(string password, string mail, string nickName, string language) : this(password, mail, nickName,language, 0)
         {
         }
-        public AccountInfo(string password, string mail, string nickName, int uid)
+        public AccountInfo(string password, string mail, string nickName, string language, int uid)
         {
             this.password = password;
             this.mail = mail;
             this.nickName = nickName;
+            this.language = language;
             this.uid = uid;
         }
     }

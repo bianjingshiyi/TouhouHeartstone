@@ -206,7 +206,7 @@ namespace Controllers
             {
                 startWaiting(panel);
                 // 注册完毕，切换到登录界面
-                await game.network.logic.register(new AccountInfo(password, email, nickName));
+                await game.network.logic.register(new AccountInfo(password, email, nickName, game.lang.getLanguage()));
                 await showAccountPanel(AccountPanel.Login);
             }
             catch (NetClientException e)
@@ -240,7 +240,7 @@ namespace Controllers
             {
                 startWaiting(panel);
                 var ticket = await SteamManager.getAuthTicketForWebApi();
-                await game.network.logic.steamRegister(email, nickName);
+                await game.network.logic.steamRegister(email, nickName, game.lang.getLanguage());
                 // 注册完毕，登录
                 if (await game.network.logic.steamLogin())
                 {
