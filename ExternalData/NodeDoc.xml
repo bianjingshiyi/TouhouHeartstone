@@ -9338,6 +9338,42 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>107010</defineId>
+    <obsoleteNames />
+    <editorName>事件效果类型判断</editorName>
+    <category>效果</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Effect</type>
+        <name>effect</name>
+        <displayName>效果</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断事件类型的效果。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>EventTriggerTime</type>
+        <name>triggerTime</name>
+        <displayName>事件类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断的事件类型。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[判断结果。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[判断一个事件效果的事件。如果输入的效果不是事件效果，输出false。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>207001</defineId>
     <obsoleteNames />
     <editorName>发动效果</editorName>

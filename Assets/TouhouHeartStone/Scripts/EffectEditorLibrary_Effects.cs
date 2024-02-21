@@ -42,6 +42,8 @@ namespace Game
         public const string EDITOR_NODE_GET_EFFECT_TARGETS = "获取效果的合法使用目标";
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_GET_EFFECT_CARD_DEFINE_OR_BUFF_DEFINE = "获取效果所属卡牌定义或增益定义";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_CHECK_EVENT_EFFECT_TYPE = "事件效果类型判断";
         /// <summary>
         /// 该效果
         /// </summary>
@@ -197,6 +199,23 @@ namespace Game
                 isCardDefine = false;
             }
 
+        }
+        /// <summary>
+        /// 事件效果类型判断
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.CheckEventEffectType, StringTable.EDITOR_NODE_CATEGORY_EFFECT, EDITOR_NODE_CHECK_EVENT_EFFECT_TYPE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
+        public static bool checkEventEffectType(
+            [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT_TYPE, isConst: true)] EventTriggerTime triggerTime)
+        {
+            if (effect == null || triggerTime == null)
+                return false;
+            if (effect is not GeneratedEventEffect eventEffect)
+                return false;
+            if (eventEffect.eventEntry == null)
+                return false;
+            return eventEffect.eventEntry.triggerTime == triggerTime;
         }
         #endregion
 

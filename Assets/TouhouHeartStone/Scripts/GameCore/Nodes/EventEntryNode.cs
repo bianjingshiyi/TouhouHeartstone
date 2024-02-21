@@ -60,14 +60,14 @@ namespace TouhouHeartstone
     {
         public SerializableEventEntryNode(EventEntryNode eventEntryNode) : base(eventEntryNode)
         {
-            triggerTime = new SerializableEventTriggerTime(eventEntryNode.triggerTime);
+            triggerTime = eventEntryNode.triggerTime;
         }
         public PassiveEntryNode ToActionNode(ActionGraph graph)
         {
             EventTriggerTime eventTriggerTime;
             if (triggerTime != null)
             {
-                eventTriggerTime = triggerTime.toTriggerTime();
+                eventTriggerTime = triggerTime;
             }
             else
             {
@@ -96,7 +96,7 @@ namespace TouhouHeartstone
 
         [Obsolete]
         public Dictionary<string, object> consts;
-        public SerializableEventTriggerTime triggerTime;
+        public EventTriggerTime triggerTime;
         [Obsolete]
         public long eventCardPoolId;
         [Obsolete]

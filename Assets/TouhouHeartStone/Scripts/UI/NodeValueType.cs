@@ -176,6 +176,7 @@ namespace UI
             { typeof(KeywordCollection), ActionNodeValueType.keywords },
             { typeof(EventArgReference), ActionNodeValueType.eventReference },
             { typeof(EventReference), ActionNodeValueType.eventReference },
+            { typeof(EventTriggerTime), ActionNodeValueType.eventTriggerTime },
             { typeof(CardPropertySetterName), ActionNodeValueType.cardPropertyNameSet },
             { typeof(CardPropertyGetterName), ActionNodeValueType.cardPropertyNameGet },
             { typeof(CardDefinePropertyGetterName), ActionNodeValueType.cardDefinePropertyNameGet },
@@ -201,6 +202,7 @@ namespace UI
             { ActionNodeValueType.pileNameCollection, () => new PileNameCollection() },
             { ActionNodeValueType.keywords, () => new KeywordCollection() },
             { ActionNodeValueType.eventReference, () => new EventReference(0, string.Empty) },
+            { ActionNodeValueType.eventTriggerTime, () => new EventTriggerTime(new EventReference(0, string.Empty), EventTriggerTimeType.Before) },
             { ActionNodeValueType.cardPropertyNameSet, () => new CardPropertySetterName(string.Empty) },
             { ActionNodeValueType.cardPropertyNameGet, () => new CardPropertyGetterName(string.Empty) },
             { ActionNodeValueType.cardDefinePropertyNameGet, () => new CardDefinePropertyGetterName(string.Empty)  },
@@ -268,6 +270,10 @@ namespace UI
         /// 事件引用
         /// </summary>
         eventReference,
+        /// <summary>
+        /// 事件触发时机
+        /// </summary>
+        eventTriggerTime,
         /// <summary>
         /// 卡牌属性（可设置）
         /// </summary>

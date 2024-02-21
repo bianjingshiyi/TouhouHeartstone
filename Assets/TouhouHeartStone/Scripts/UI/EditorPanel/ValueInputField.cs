@@ -58,6 +58,9 @@ namespace UI
             setProp(ref _eventNames, props.eventNames);
             setProp(ref _eventValues, props.eventValues);
 
+            setProp(ref _eventTriggerTimeNames, props.eventTriggerTimeNames);
+            setProp(ref _eventTriggerTimeValues, props.eventTriggerTimeValues);
+
             setProp(ref _pileNames, props.pileNames);
             setProp(ref _pileValues, props.pileValues);
 
@@ -102,6 +105,9 @@ namespace UI
             {
                 eventNames = _eventNames,
                 eventValues = _eventValues,
+
+                eventTriggerTimeNames = _eventTriggerTimeNames,
+                eventTriggerTimeValues = _eventTriggerTimeValues,
 
                 pileNames = _pileNames,
                 pileValues = _pileValues,
@@ -321,6 +327,10 @@ namespace UI
             else if (valueType == ActionNodeValueType.eventReference)
             {
                 callValueChangedCallback(_eventValues[index]);
+            }
+            else if (valueType == ActionNodeValueType.eventTriggerTime)
+            {
+                callValueChangedCallback(_eventTriggerTimeValues[index]);
             }
             else if (valueType == ActionNodeValueType.type)
             {
@@ -609,6 +619,22 @@ namespace UI
                                 break;
                             case EventReference evtRef:
                                 dropdownIndex = Array.IndexOf(_eventValues, evtRef);
+                                break;
+                        }
+                    }
+                    break;
+
+                case ActionNodeValueType.eventTriggerTime:
+                    {
+                        optionNames = _eventTriggerTimeNames;
+                        switch (_valueInfo.value)
+                        {
+                            case int intValue:
+                                //如果value为int，那有可能是枚举值序列化之后变成了整数再反序列化的结果，直接使用。
+                                dropdownIndex = intValue;
+                                break;
+                            case EventTriggerTime eventTriggerTime:
+                                dropdownIndex = Array.IndexOf(_eventTriggerTimeValues, eventTriggerTime);
                                 break;
                         }
                     }
@@ -916,6 +942,10 @@ namespace UI
         [SerializeField]
         private EventReference[] _eventValues;
         [SerializeField]
+        private string[] _eventTriggerTimeNames;
+        [SerializeField]
+        private EventTriggerTime[] _eventTriggerTimeValues;
+        [SerializeField]
         private string[] _eventVarNameNames;
         [SerializeField]
         private string[] _eventVarNameValues;
@@ -1016,6 +1046,9 @@ namespace UI
 
         public string[] eventNames;
         public EventReference[] eventValues;
+
+        public string[] eventTriggerTimeNames;
+        public EventTriggerTime[] eventTriggerTimeValues;
 
         public string[] eventVarNameNames;
         public string[] eventVarNameValues;

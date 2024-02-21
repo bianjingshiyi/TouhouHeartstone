@@ -110,12 +110,11 @@ namespace TouhouHeartstone
     {
         public SerializableEventRuleEntryNode(EventRuleEntryNode eventEntryNode) : base(eventEntryNode)
         {
-            triggerTime = new SerializableEventTriggerTime(eventEntryNode.triggerTime);
+            triggerTime = eventEntryNode.triggerTime;
         }
         public EventRuleEntryNode ToActionNode(ActionGraph graph)
         {
-            EventTriggerTime eventTriggerTime = triggerTime.toTriggerTime();
-            var entry = new EventRuleEntryNode(eventTriggerTime)
+            var entry = new EventRuleEntryNode(triggerTime)
             {
                 id = id,
                 posX = posX,
@@ -126,6 +125,6 @@ namespace TouhouHeartstone
         }
         public override Node ToNode(ActionGraph graph) => ToActionNode(graph);
 
-        public SerializableEventTriggerTime triggerTime;
+        public EventTriggerTime triggerTime;
     }
 }

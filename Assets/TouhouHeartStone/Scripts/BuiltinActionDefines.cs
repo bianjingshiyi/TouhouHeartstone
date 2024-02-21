@@ -168,6 +168,7 @@ namespace Game
         public const int GetValidEffectTargets = Type_Function + Category_Effect + 7;    // 获取效果的合法使用目标
         public const int CheckEffectType = Type_Function + Category_Effect + 8; // 效果类型判断
         public const int GetEffectCardDefineOrBuffDefine = Type_Function + Category_Effect + 9; // 获取效果所属卡牌定义或增益定义
+        public const int CheckEventEffectType = Type_Function + Category_Effect + 10; // 事件效果类型判断
 
         // 事件
         public const int ThisEvent = Type_Function + Category_Event + 1;    // 当前事件

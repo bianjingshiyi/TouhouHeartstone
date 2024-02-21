@@ -92,15 +92,15 @@ namespace TouhouHeartstone
     {
         public SerializableGeneratedRuleEventLogic(GeneratedRuleEventLogic logic) : base(logic)
         {
-            triggerTime = new SerializableEventTriggerTime(logic.triggerTime);
+            triggerTime = logic.triggerTime;
         }
         public override GeneratedRuleLogic deserialize(INodeDefiner nodeDefiner)
         {
             var graph = this.graph.toActionGraph(nodeDefiner);
-            var logic = new GeneratedRuleEventLogic(triggerTime.toTriggerTime(), graph);
+            var logic = new GeneratedRuleEventLogic(triggerTime, graph);
             initLogic(logic);
             return logic;
         }
-        public SerializableEventTriggerTime triggerTime;
+        public EventTriggerTime triggerTime;
     }
 }

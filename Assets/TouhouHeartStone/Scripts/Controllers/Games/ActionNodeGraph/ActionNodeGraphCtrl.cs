@@ -42,7 +42,10 @@ namespace Controllers
 
                 eventNames = eventEditorNames,
                 eventValues = eventReferences,
-                
+
+                eventTriggerTimeNames = eventTriggerTimeEditorNames,
+                eventTriggerTimeValues = eventTriggerTimes,
+
                 cardTypeNames = game.editor.getCardTypeNames(),
                 cardTypeValues = cardTypeValues,
 
@@ -1967,6 +1970,9 @@ namespace Controllers
                 case ActionNodeValueType.eventReference:
                     value = eventReferences[0];
                     break;
+                case ActionNodeValueType.eventTriggerTime:
+                    value = eventTriggerTimes[0];
+                    break;
                 case ActionNodeValueType.type:
                     value = typeValues[0];
                     break;
@@ -2426,7 +2432,9 @@ namespace Controllers
         private string[] cardTypeValues;
         private string[] typeValues;
         private EventReference[] eventReferences => scene.editor.eventReferences;
+        private EventTriggerTime[] eventTriggerTimes => scene.editor.eventTriggerTimes;
         private string[] eventEditorNames => scene.editor.eventEditorNames;
+        private string[] eventTriggerTimeEditorNames => scene.editor.eventTriggerTimeEditorNames;
         #endregion
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
