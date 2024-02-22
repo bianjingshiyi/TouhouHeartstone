@@ -60,8 +60,11 @@ namespace Game
             Main main = ui.getObject<Main>();
             main.display(main.MainMenu);
             onLoadingFinish?.Invoke();
-            //开始检查新版本
-            _getNewVersionTask = network.getLatestVersion();
+            if (SteamManager.disableSteamWorks)
+            {
+                //开始检查新版本
+                _getNewVersionTask = network.getLatestVersion();
+            }
 
             if (_mainSceneCtrl != null)
             {
@@ -113,17 +116,10 @@ namespace Game
                         var dialog = getManager<UIManager>().getObject<UIDialog>();
                         if (downloadURL != null)
                         {
-                            if (SteamManager.isValid)
+                            dialog.ShowQuestion(StringTable.HINT_TITLE, lang._(StringTable.WANNA_DOWNLOAD_NEW_VERSION), () =>
                             {
-                                dialog.ShowQuestion(StringTable.HINT_TITLE, lang._(StringTable.NEWER_VERSION_FOUND_STEAM), null);
-                            }
-                            else
-                            {
-                                dialog.ShowQuestion(StringTable.HINT_TITLE, lang._(StringTable.WANNA_DOWNLOAD_NEW_VERSION), () =>
-                                {
-                                    Application.OpenURL(downloadURL);
-                                });
-                            }
+                                Application.OpenURL(downloadURL);
+                            });
                         }
                         else
                         {

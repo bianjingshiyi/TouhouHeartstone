@@ -21,6 +21,7 @@ using TicketCallback = Steamworks.Callback<Steamworks.GetTicketForWebApiResponse
 #endif
 using System.Text;
 using System.Threading.Tasks;
+using MukioI18n;
 
 namespace Game
 {
@@ -142,23 +143,6 @@ namespace Game
                 Debug.LogError("[Steamworks.NET] DllCheck Test returned false, One or more of the Steamworks binaries seems to be the wrong version.", this);
             }
 
-#if !STEAM_DEVELOPMENT
-            try
-            {
-                if (SteamAPI.RestartAppIfNecessary((AppId_t)appId))
-                {
-                    Debug.LogError("[Steamworks.NET] Not valid appId, restarting.", this);
-                    Application.Quit();
-                    return;
-                }
-            }
-            catch (DllNotFoundException)
-            {
-                Debug.LogError("[Steamworks.NET] Could not find steam dll.", this);
-                return;
-            }
-#endif
-
             // Initializes the Steamworks API.
             // If this returns false then this indicates one of the following conditions:
             // [*] The Steam client isn't running. A running Steam client is required to provide implementations of the various Steamworks interfaces.
@@ -172,8 +156,40 @@ namespace Game
             if (!initialized)
             {
                 Debug.LogError("[Steamworks.NET] SteamAPI_Init() failed. Refer to Valve's documentation or the comment above this line for more information.", this);
+                // 弹窗并选择是否重启
+                var hint = main.lang._(StringTable.HINT_TITLE);
+                var desc = main.lang._(STEAM_NOT_STARTED_WITH_STEAM);
+                var options = new string[]
+                {
+                    main.lang._(StringTable.RESTART_GAME),
+                    main.lang._(StringTable.CONTINUE_GAME),
+                };
+                main.ui.dialog.ShowOptions(hint, desc, options, (index) =>
+                {
+                    if (index == 0)
+                    {
+                        try
+                        {
+                            if (SteamAPI.RestartAppIfNecessary((AppId_t)appId))
+                            {
+                                Debug.LogError("[Steamworks.NET] Not valid appId, restarting.", this);
+                            }
+                        }
+                        catch (DllNotFoundException)
+                        {
+                            Debug.LogError("[Steamworks.NET] Could not find steam dll.", this);
+                        }
+                        finally
+                        {
+                            Application.Quit();
+                        }
+                    }
+                });
                 return;
             }
+
+
+
             Debug.Log("[Steamworks.NET] SteamAPI is successfully initialized.", this);
             everInitialized = true;
 #endif
@@ -226,6 +242,9 @@ namespace Game
         }
         public static bool initialized { get; private set;} = false;
         public static bool isValid => initialized;
+        [TranslateMsg("steam弹窗")]
+        public const string STEAM_NOT_STARTED_WITH_STEAM = "当前游戏没有通过Steam启动，Steam相关功能将被禁用。";
+        public MainManager main => getManager<MainManager>();
         protected static bool everInitialized = false;
         [SerializeField]
         private uint appIdNormal = 1477010;

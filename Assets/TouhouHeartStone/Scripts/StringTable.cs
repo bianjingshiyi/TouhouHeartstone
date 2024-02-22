@@ -9,8 +9,6 @@ namespace Game
         public const string WANNA_DOWNLOAD_NEW_VERSION = "发现了更新版本的游戏，是否下载？";
         [TranslateMsg("发现了新版本的游戏，但是没有适合的下载链接")]
         public const string INVALID_DOWNLOAD_URL = "发现了更新版本的游戏，但无法获取下载链接。请访问官网手动更新游戏。";
-        [TranslateMsg("发现了新版本的游戏，但是是在Steam环境下")]
-        public const string NEWER_VERSION_FOUND_STEAM = "发现了更新版本的游戏，请通过Steam更新游戏。";
         #endregion
 
         #region 房间

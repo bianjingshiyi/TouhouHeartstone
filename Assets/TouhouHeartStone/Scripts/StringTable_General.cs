@@ -31,6 +31,10 @@ namespace Game
         public const string CANCEL = "取消";
         [TranslateMsg("多个内容显示达到上限时的省略写法（{0}：内容列表）")]
         public const string TRIMMED_COTENTS = "{0}...";
+        [TranslateMsg("通用的重启游戏对话框按钮")]
+        public const string RESTART_GAME = "重启游戏";
+        [TranslateMsg("通用的继续游戏对话框按钮")]
+        public const string CONTINUE_GAME = "继续游戏";
         #endregion
 
         #region 帐号
