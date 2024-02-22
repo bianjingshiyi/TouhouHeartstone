@@ -1750,32 +1750,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2085164223502506922, guid: 4e0d5fda7cc24a1409761ed61aafaf8d,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 3227719695123673115}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4e0d5fda7cc24a1409761ed61aafaf8d, type: 3}
---- !u!1 &4918301546500157354 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2085164223502506922, guid: 4e0d5fda7cc24a1409761ed61aafaf8d,
-    type: 3}
-  m_PrefabInstance: {fileID: 6390235010252485632}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &3227719695123673115
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4918301546500157354}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  comment: "steam\u7ED1\u5B9A\u754C\u9762"
-  context: 
 --- !u!114 &4918301547359923602 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2085164224404347282, guid: 4e0d5fda7cc24a1409761ed61aafaf8d,
@@ -1945,11 +1921,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2085164223502506922, guid: 4e0d5fda7cc24a1409761ed61aafaf8d,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 5421919085406433418}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4e0d5fda7cc24a1409761ed61aafaf8d, type: 3}
 --- !u!224 &8602679754295329828 stripped
 RectTransform:
@@ -1969,26 +1941,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &8602679754492397085 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2085164223502506922, guid: 4e0d5fda7cc24a1409761ed61aafaf8d,
-    type: 3}
-  m_PrefabInstance: {fileID: 7749892831330606519}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &5421919085406433418
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8602679754492397085}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1f7448b11eb11d4396564726fa5353b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  comment: "steam\u7ED1\u5B9A\u754C\u9762"
-  context: 
 --- !u!1001 &8111827566155815549
 PrefabInstance:
   m_ObjectHideFlags: 0
