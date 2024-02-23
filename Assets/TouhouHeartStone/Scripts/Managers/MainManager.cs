@@ -275,34 +275,53 @@ namespace Game
             folderName = "醉梦传说快照";
 #endif
             var oldDir = Path.Combine(Path.GetDirectoryName(newDir), folderName);
-            // 检测新的目录下有没有卡组、卡池或者贴图等关键数据，如果存在则不执行，防止新版本数据被旧版本覆盖。
-            if (File.Exists(Path.Combine(newDir, "data.db")) ||
-                Directory.Exists(Path.Combine(newDir, "CardPools")) ||
-                Directory.Exists(Path.Combine(newDir, "Textures")))
-                return;
             if (!Directory.Exists(oldDir))
                 return;
-
-            var oldDirFiles = Directory.GetFiles(oldDir, "*", SearchOption.AllDirectories);
-            foreach (var filePath in oldDirFiles)
+            // 检测新的目录下有没有卡组、卡池或者贴图等关键数据，如果存在则不执行，防止新版本数据被旧版本覆盖。
+            foreach (var folder in importantPersistentFolders)
             {
-                var newPath = Path.Combine(newDir, Path.GetRelativePath(oldDir, filePath));
-                var dir = Path.GetDirectoryName(newPath);
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
-                if (File.Exists(newPath))
-                {
-                    File.Delete(newPath);
-                }
-                File.Move(filePath, newPath);
+                if (Directory.Exists(Path.Combine(newDir, folder)))
+                    return;
             }
-            Directory.Delete(oldDir, true);
+            foreach (var file in importantPersistentFiles)
+            {
+                if (File.Exists(Path.Combine(newDir, file)))
+                    return;
+            }
+            // 开始移动。
+            foreach (var folder in importantPersistentFolders)
+            {
+                var oldFolder = Path.Combine(oldDir, folder);
+                var newFolder = Path.Combine(newDir, folder);
+                if (!Directory.Exists(oldFolder))
+                    continue;
+                Directory.Move(oldFolder, newFolder);
+            }
+            foreach (var file in importantPersistentFiles)
+            {
+                var oldFile = Path.Combine(oldDir, file);
+                var newFile = Path.Combine(newDir, file);
+                if (!File.Exists(oldFile))
+                    continue;
+                File.Move(oldFile, newFile);
+            }
         }
-#endregion
+        #endregion
 
-#region 属性字段
+        #region 属性字段
+        private static readonly string[] importantPersistentFolders = new string[]
+        {
+            "cache",
+            "CardPools",
+            "pve",
+            "replay",
+            "Textures"
+        };
+        private static readonly string[] importantPersistentFiles = new string[]
+        {
+            "token",
+            "data.db"
+        };
         public UIManager ui => getManager<UIManager>();
         public NetworkingManager network => getManager<NetworkingManager>();
         public GameManager game => getManager<GameManager>();
@@ -348,6 +367,6 @@ namespace Game
         Task<ClientUpdateInfo> _getNewVersionTask = null;
         int _playerKey;
         SnowflakeGenerator _snowflakeGen;
-#endregion
+        #endregion
     }
 }
