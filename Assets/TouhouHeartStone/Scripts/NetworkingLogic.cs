@@ -17,7 +17,8 @@ namespace Game
         {
             Debug.Log("Init server uri: " + serverUri);
 
-            ServerClient = new ServerClient(serverUri, version, System.IO.Path.Combine(Application.persistentDataPath, "token"), new ULogger("ServerAPI"));
+            var cookiePath = System.IO.Path.Combine(Application.persistentDataPath, "token");
+            ServerClient = new ServerClient(serverUri, version, cookiePath, new ULogger("ServerAPI"));
             clientLogic = new ClientLogic("Player.", ports, ServerClient, new ULogger("LAN"), resProvider);
 
             clientLogic.onRoomListChange += LocalLanLogic_onRoomListChange;
@@ -366,6 +367,11 @@ namespace Game
         public async Task<bool> NewKratosClient()
         {
             return await ServerClient.NewKratosClient();
+        }
+        public async Task setLanguage(string language)
+        {
+            ServerClient.SetLanguage(language);
+            userInfo = await ServerClient.GetUserInfoAsync();
         }
         #endregion
         #region 私有方法

@@ -85,6 +85,20 @@ namespace Controllers
             _ui.onPlayerInfoEditSteamBindClick += onPlayerInfoEditSteamBindClickedCallback;
             game.network.onAutoLogin += onAutoLoginCallback;
             game.network.onAutoLoginFinished += onAutoLoginFinishedCallback;
+
+            game.lang.OnLanguageChange += async () =>
+            {
+                try
+                {
+                    await game.network.setLanguage(game.lang.getLanguage());
+                    updatePlayerInfo();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"切换服务器语言时出现错误：{e}");
+                }
+            };
+
         }
         private void OnEnable()
         {

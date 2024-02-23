@@ -20,7 +20,12 @@ namespace Game
         public async void start()
         {
             await _logic.NewKratosClient();
+            await setLanguage(main.lang.getLanguage());
             _ = startSequence();
+        }
+        public async Task setLanguage(string language)
+        {
+            await logic.setLanguage(language.Replace('-', '_').ToLower());
         }
         /// <summary>
         /// 创建一个房间
@@ -65,6 +70,7 @@ namespace Game
         {
             logic.setServerAddress(addr);
             await logic.NewKratosClient();
+            await setLanguage(main.lang.getLanguage());
             _ = startSequence();
         }
         /// <summary>
@@ -138,7 +144,7 @@ namespace Game
 
         #region 生命周期
 
-        protected override async void onAwake()
+        protected override void onAwake()
         {
             base.onAwake();
             _logic = new NetworkingLogic(serverBaseUri, version, cacheManager, _ports);
