@@ -21,10 +21,8 @@ namespace Game
         const string tableDeck = "deck";
         const string tableCards = "deck_cards";
 
-        protected override void onAwake()
+        public void init()
         {
-            base.onAwake();
-
             db.Execute($@"
             CREATE TABLE IF NOT EXISTS {tableDeck}(
                 deckID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -75,7 +73,6 @@ namespace Game
                 db.Execute($@"ALTER TABLE {tableCards} ADD COLUMN cardPoolID INTEGER;", null);
             }
         }
-
         /// <summary>
         /// 创建一个牌组
         /// </summary>

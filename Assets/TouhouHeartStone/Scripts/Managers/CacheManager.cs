@@ -16,6 +16,13 @@ namespace Game
     public class CacheManager : Manager, IResourceProvider
     {
         #region 公共方法
+        public void init()
+        {
+            CacheDir = Path.Combine(Application.persistentDataPath, dirName);
+            prepareDirectory(ResourceType.CardDefine.GetString());
+            prepareDirectory(ResourceType.Picture.GetString());
+            rebuildLRU();
+        }
         /// <summary>
         /// 根据资源类型字符串和资源ID，获取缓存文件路径。
         /// </summary>
@@ -317,12 +324,7 @@ namespace Game
         protected override void onAwake()
         {
             base.onAwake();
-            CacheDir = Path.Combine(Application.persistentDataPath, dirName);
             config.OnConfigChange += OnConfigChange;
-
-            prepareDirectory(ResourceType.CardDefine.GetString());
-            prepareDirectory(ResourceType.Picture.GetString());
-            rebuildLRU();
         }
         #endregion
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using BJSYGameCore;
 using Controllers;
@@ -22,6 +23,7 @@ namespace Game
         protected override void onAwake()
         {
             base.onAwake();
+            checkOldPersistentData();
             //初始化序列化设置
             JsonHelper.init();
             // 初始化节点图的类型转换。
@@ -36,7 +38,9 @@ namespace Game
 
             // 初始化玩家Key.
             InitPlayerKey();
-
+            database.init();
+            cache.init();
+            deck.init();
             network.start();
         }
         protected async void Start()
@@ -261,9 +265,39 @@ namespace Game
         {
             return BuildInformation.Instance.Version;
         }
-        #endregion
+        private void checkOldPersistentData()
+        {
+            var newDir = Application.persistentDataPath;
+            string folderName = "醉梦传说";
+#if DEVELOPMENT_BUILD
+            folderName = "醉梦传说测试版";
+#elif SNAPSHOT_BUILD
+            folderName = "醉梦传说快照";
+#endif
+            var oldDir = Path.Combine(Path.GetDirectoryName(newDir), folderName);
+            if (!Directory.Exists(oldDir))
+                return;
 
-        #region 属性字段
+            var oldDirFiles = Directory.GetFiles(oldDir, "*", SearchOption.AllDirectories);
+            foreach (var filePath in oldDirFiles)
+            {
+                var newPath = Path.Combine(newDir, Path.GetRelativePath(oldDir, filePath));
+                var dir = Path.GetDirectoryName(newPath);
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                if (File.Exists(newPath))
+                {
+                    File.Delete(newPath);
+                }
+                File.Move(filePath, newPath);
+            }
+            Directory.Delete(oldDir, true);
+        }
+#endregion
+
+#region 属性字段
         public UIManager ui => getManager<UIManager>();
         public NetworkingManager network => getManager<NetworkingManager>();
         public GameManager game => getManager<GameManager>();
@@ -287,6 +321,7 @@ namespace Game
         /// </summary>
         public ILanguageManager langManager => getManager<LangManager>();
         public CardManager card => getManager<CardManager>();
+        public DatabaseManager database => getManager<DatabaseManager>();
         public DeckManager deck => getManager<DeckManager>();
         public BGMManager bgm => getManager<BGMManager>();
         public CacheManager cache => getManager<CacheManager>();
@@ -308,6 +343,6 @@ namespace Game
         Task<ClientUpdateInfo> _getNewVersionTask = null;
         int _playerKey;
         SnowflakeGenerator _snowflakeGen;
-        #endregion
+#endregion
     }
 }

@@ -14,9 +14,8 @@ namespace Game
 
         public SqlDatabase Database => db;
 
-        protected override void onAwake()
+        public void init()
         {
-            base.onAwake();
             if (!db.IsConnected)
                 db.Connect(Path.Combine(Application.persistentDataPath, dbFileName));
         }
