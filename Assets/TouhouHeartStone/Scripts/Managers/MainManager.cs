@@ -275,6 +275,11 @@ namespace Game
             folderName = "醉梦传说快照";
 #endif
             var oldDir = Path.Combine(Path.GetDirectoryName(newDir), folderName);
+            // 检测新的目录下有没有卡组、卡池或者贴图等关键数据，如果存在则不执行，防止新版本数据被旧版本覆盖。
+            if (File.Exists(Path.Combine(newDir, "data.db")) ||
+                Directory.Exists(Path.Combine(newDir, "CardPools")) ||
+                Directory.Exists(Path.Combine(newDir, "Textures")))
+                return;
             if (!Directory.Exists(oldDir))
                 return;
 
