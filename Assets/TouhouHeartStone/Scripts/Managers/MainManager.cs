@@ -65,6 +65,10 @@ namespace Game
                 //开始检查新版本
                 _getNewVersionTask = network.getLatestVersion();
             }
+            else
+            {
+                steam.initialize();
+            }
 
             if (_mainSceneCtrl != null)
             {
@@ -269,6 +273,7 @@ namespace Game
         public ReplayManager replays => getManager<ReplayManager>();
         public FileManager fileManager => new FileManager();
         public TutorialManager tutorial => getManager<TutorialManager>();
+        public SteamManager steam => getManager<SteamManager>();
         /// <summary>
         /// 语言管理器，仅用于控制语言的修改。如果你需要翻译，请使用 i18n._();
         /// </summary>

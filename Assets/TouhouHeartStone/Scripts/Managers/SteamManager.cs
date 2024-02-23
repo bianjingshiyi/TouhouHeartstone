@@ -29,100 +29,10 @@ namespace Game
     {
         #region 公有方法
 
-#if STEAM_VALID
-        public async static Task<string> getAuthTicketForWebApi()
+        public void initialize()
         {
-            TaskCompletionSource<string> tcs = new TaskCompletionSource<string>();
-            TicketCallback callback = null;
-            callback = TicketCallback.Create(data =>
-            {
-                string ticket = BitConverter.ToString(data.m_rgubTicket).Replace("-", string.Empty);
-                tcs.SetResult(ticket);
-                callback.Dispose();
-                callback = null;
-            });
-            var authTicket = SteamUser.GetAuthTicketForWebApi(SteamManager.client);
-            return await tcs.Task;
-        }
-#else
-        public static Task<string> getAuthTicketForWebApi() => throw new SteamworksNotValidException();
-#endif
-
-        #endregion
-
-        #region 私有方法
-
-        #region 生命周期
-
-        protected override void onAwake()
-        {
-            base.onAwake();
             if (disableSteamWorks) 
                 return;
-            initialize();
-        }
-
-        // This should only ever get called on first load and after an Assembly reload, You should never Disable the Steamworks Manager yourself.
-        protected virtual void OnEnable()
-        {
-#if STEAM_VALID
-            if (!initialized)
-                return;
-
-            if (SteamAPIWarningMessageHook == null)
-            {
-                // Set up our callback to receive warning messages from Steam.
-                // You must launch with "-debug_steamapi" in the launch args to receive warnings.
-                SteamAPIWarningMessageHook = new SteamAPIWarningMessageHook_t(SteamAPIDebugTextHook);
-                SteamClient.SetWarningMessageHook(SteamAPIWarningMessageHook);
-            }
-#endif
-        }
-
-        // OnApplicationQuit gets called too early to shutdown the SteamAPI.
-        // Because the SteamManager should be persistent and never disabled or destroyed we can shutdown the SteamAPI here.
-        // Thus it is not recommended to perform any Steamworks work in other OnDestroy functions as the order of execution can not be garenteed upon Shutdown. Prefer OnDisable().
-        protected virtual void OnDestroy()
-        {
-#if STEAM_VALID
-            if (!initialized)
-                return;
-
-            SteamAPI.Shutdown();
-#endif
-        }
-
-        protected virtual void Update()
-        {
-#if STEAM_VALID
-            if (!initialized)
-                return;
-
-            // Run Steam client callbacks
-            SteamAPI.RunCallbacks();
-#endif
-        }
-
-        #endregion
-
-        #region 事件回调
-#if STEAM_VALID
-        [AOT.MonoPInvokeCallback(typeof(SteamAPIWarningMessageHook_t))]
-        protected static void SteamAPIDebugTextHook(int nSeverity, StringBuilder pchDebugText)
-        {
-            Debug.LogWarning(pchDebugText);
-        }
-#endif
-        #endregion
-
-        // In case of disabled Domain Reload, reset static members before entering Play Mode.
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void InitOnPlayMode()
-        {
-            everInitialized = false;
-        }
-        private void initialize()
-        {
 #if STEAM_VALID
             if (everInitialized)
             {
@@ -193,6 +103,90 @@ namespace Game
             Debug.Log("[Steamworks.NET] SteamAPI is successfully initialized.", this);
             everInitialized = true;
 #endif
+        }
+#if STEAM_VALID
+        public async static Task<string> getAuthTicketForWebApi()
+        {
+            TaskCompletionSource<string> tcs = new TaskCompletionSource<string>();
+            TicketCallback callback = null;
+            callback = TicketCallback.Create(data =>
+            {
+                string ticket = BitConverter.ToString(data.m_rgubTicket).Replace("-", string.Empty);
+                tcs.SetResult(ticket);
+                callback.Dispose();
+                callback = null;
+            });
+            var authTicket = SteamUser.GetAuthTicketForWebApi(SteamManager.client);
+            return await tcs.Task;
+        }
+#else
+        public static Task<string> getAuthTicketForWebApi() => throw new SteamworksNotValidException();
+#endif
+
+        #endregion
+
+        #region 私有方法
+
+        #region 生命周期
+
+        // This should only ever get called on first load and after an Assembly reload, You should never Disable the Steamworks Manager yourself.
+        protected virtual void OnEnable()
+        {
+#if STEAM_VALID
+            if (!initialized)
+                return;
+
+            if (SteamAPIWarningMessageHook == null)
+            {
+                // Set up our callback to receive warning messages from Steam.
+                // You must launch with "-debug_steamapi" in the launch args to receive warnings.
+                SteamAPIWarningMessageHook = new SteamAPIWarningMessageHook_t(SteamAPIDebugTextHook);
+                SteamClient.SetWarningMessageHook(SteamAPIWarningMessageHook);
+            }
+#endif
+        }
+
+        // OnApplicationQuit gets called too early to shutdown the SteamAPI.
+        // Because the SteamManager should be persistent and never disabled or destroyed we can shutdown the SteamAPI here.
+        // Thus it is not recommended to perform any Steamworks work in other OnDestroy functions as the order of execution can not be garenteed upon Shutdown. Prefer OnDisable().
+        protected virtual void OnDestroy()
+        {
+#if STEAM_VALID
+            if (!initialized)
+                return;
+
+            SteamAPI.Shutdown();
+#endif
+        }
+
+        protected virtual void Update()
+        {
+#if STEAM_VALID
+            if (!initialized)
+                return;
+
+            // Run Steam client callbacks
+            SteamAPI.RunCallbacks();
+#endif
+        }
+
+        #endregion
+
+        #region 事件回调
+#if STEAM_VALID
+        [AOT.MonoPInvokeCallback(typeof(SteamAPIWarningMessageHook_t))]
+        protected static void SteamAPIDebugTextHook(int nSeverity, StringBuilder pchDebugText)
+        {
+            Debug.LogWarning(pchDebugText);
+        }
+#endif
+        #endregion
+
+        // In case of disabled Domain Reload, reset static members before entering Play Mode.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void InitOnPlayMode()
+        {
+            everInitialized = false;
         }
 
         #endregion
