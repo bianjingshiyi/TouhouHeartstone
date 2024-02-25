@@ -274,11 +274,20 @@ namespace Controllers
         /// <param name="index">角色索引</param>
         private void onMasterSelect(int index)
         {
+            var master = _selectableMasters[index];
+            var skillRef = master.getSkillRef();
+            CardDefine skill = skillRef != null ? game.card.getLocalCardDefine(skillRef) : null;
+            if (skill == null)
+            {
+                var title = game.lang._(StringTable.ERROR);
+                var desc = game.lang._(BUILD_NO_SKILL);
+                game.ui.dialog.ShowConfirm(title, desc);
+                return;
+            }
             // 然后在窗口选择之后再正式新建卡组
             _ui.hideMasterSelectPanel();
-            Deck newDeck = new Deck(new DefineReference(_selectableMasters[index].cardPoolId, _selectableMasters[index].id), Enumerable.Empty<DefineReference>())
+            Deck newDeck = new Deck(new DefineReference(master.cardPoolId, master.id), Enumerable.Empty<DefineReference>())
             {
-                //id = (int)game.deck.CreateDeck(StringTable.BUILD_NEW_DECK_DEFAULT_NAME, _selectableMasters[index].id),
                 name = game.lang._(StringTable.BUILD_NEW_DECK_DEFAULT_NAME),
             };
             enterBuildMode(newDeck);
@@ -905,6 +914,8 @@ namespace Controllers
         public const string TUTORIAL_STEP_DRAG_CARD = "将卡牌拖动到卡组中以加入卡牌";
         [TranslateMsg("构筑教程")]
         public const string TUTORIAL_STEP_SAVE_DECK = "点击这里保存卡组";
+        [TranslateMsg("尝试构筑没有技能的角色时的弹窗")]
+        public const string BUILD_NO_SKILL = "该人物没有技能，无法组建套牌！";
         [SerializeField]
         BuildCardPanel _ui;
         [SerializeField]

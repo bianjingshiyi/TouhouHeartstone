@@ -46,14 +46,19 @@ namespace Game
             {
                 return false;
             }
+            // 英雄是否没有技能
+            var master = main.card.getLocalCardDefine(deck.masterCardRef);
+            var skillRef = master?.getSkillRef();
+            var skill = skillRef != null ? main.card.getLocalCardDefine(skillRef) : null;
+            if (skill == null)
+                return false;
 
             //检查是否使用了不合法的卡牌
-            MainManager game = getManager<MainManager>();
             for (int i = 0; i < deck.cardList.Count; i++)
             {
                 var deckItem = deck.cardList[i];
                 // 未知卡牌。
-                var cardDefine = game.card.getLocalCardDefine(deckItem.cardRef);
+                var cardDefine = main.card.getLocalCardDefine(deckItem.cardRef);
                 if (cardDefine == null)
                 {
                     return false;
