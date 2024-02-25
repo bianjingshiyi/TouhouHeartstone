@@ -33,6 +33,7 @@ namespace Controllers
             // 初始化输入
             var typeInfos = GraphTypes.getAllPortTypeInfos();
             var keywords = EditorManager.editorKeywords;
+            cardTypeValues = game.editor.getCardTypes();
             var fieldProps = new ValueInputFieldProperties()
             {
                 graphTypeNames = game.editor.getEditorPortTypeNames(),
@@ -42,7 +43,7 @@ namespace Controllers
                 eventValues = eventReferences,
                 
                 cardTypeNames = game.editor.getCardTypeNames(),
-                cardTypeValues = game.editor.getCardTypes(),
+                cardTypeValues = cardTypeValues,
 
                 buffNames = game.editor.getBuffNames(),
                 buffValues = game.editor.getBuffReferences(),
