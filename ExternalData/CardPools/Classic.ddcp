@@ -1278,7 +1278,7 @@
                 "consts" : null,
                 "targetCheckerList" : [{
                     "targetType" : "Character",
-                    "errorTip" : "必须以随从为目标"
+                    "errorTip" : "必须以仆从为目标"
                   }]
               }, {
                 "_t" : "SerializableActionNode",
@@ -1898,7 +1898,7 @@
                 "consts" : null,
                 "targetCheckerList" : [{
                     "targetType" : "Character",
-                    "errorTip" : "必须以随从为目标"
+                    "errorTip" : "必须以仆从为目标"
                   }]
               }, {
                 "_t" : "SerializableActionNode",
@@ -2041,7 +2041,7 @@
                 "consts" : null,
                 "targetCheckerList" : [{
                     "targetType" : "Character",
-                    "errorTip" : "必须以随从为目标"
+                    "errorTip" : "必须以仆从为目标"
                   }]
               }, {
                 "_t" : "SerializableActionNode",
@@ -5903,7 +5903,7 @@
                 "consts" : null,
                 "targetCheckerList" : [{
                     "targetType" : "Character",
-                    "errorTip" : "目标必须是随从"
+                    "errorTip" : "目标必须是仆从"
                   }]
               }, {
                 "_t" : "SerializableActionNode",
