@@ -451,20 +451,19 @@
   "cardSkinList" : [{
       "_id" : 2,
       "_name" : "火焰弹",
-      "_imagePath" : "9fa91879397d2fea5f426953e24ac2d1b88d16694e5d974a7eaa9b593e56cad3.jpg",
+      "_imagePath" : "1d09f2e6f49e567ccf7430eaa9efa0f337147bf36b0be00debbb6f81ee4f4d1b.jpg",
       "_desc" : "造成1点伤害",
       "_language" : "zh-Hans",
       "_animationRefs" : []
     }, {
       "_id" : 1,
       "_name" : "普通的魔法使",
-      "_imagePath" : "bab030e09788ca3588ef16270b2c6daa3f87edb2de78e7140b1fe3497bf95bc1.jpg",
       "_language" : "zh-Hans",
       "_animationRefs" : []
     }, {
       "_id" : 3,
       "_name" : "抽牌",
-      "_imagePath" : "c97942db145c4672f8ffb66959e42ffff5fd93ccc3279d8d36d5543fb08f36e7.jpg",
+      "_imagePath" : "560d58711a8b3583137faca6eeb64ed9c705e7b24c878b0570d5306a4f04010a.jpg",
       "_desc" : "抽1张牌",
       "_language" : "zh-Hans",
       "_animationRefs" : []
