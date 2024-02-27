@@ -352,8 +352,9 @@ namespace Controllers
             {
                 if (line.StartsWith("#"))
                 {
-                    if (line.StartsWith(exportStringHeader))
-                        deckName = line.Substring(exportStringHeader.Length + 1, line.Length - exportStringHeader.Length - 1).Trim();
+                    var header = game.lang._(exportStringHeader);
+                    if (line.StartsWith(header))
+                        deckName = line.Substring(header.Length + 1, line.Length - header.Length - 1).Trim();
                 }
                 else
                 {
@@ -653,7 +654,8 @@ namespace Controllers
         /// </summary>
         private void exportDeck()
         {
-            string outputString = $"{exportStringHeader} {_deck.name}\n";
+            var header = game.lang._(exportStringHeader);
+            string outputString = $"{header} {_deck.name}\n";
 
             outputString += game.deck.DeckToString(_deck.toDefRefArray());
             GUIUtility.systemCopyBuffer = outputString;
@@ -940,6 +942,7 @@ namespace Controllers
         //List<CardPoolRuntimeData> _cardPoolList = new List<CardPoolRuntimeData>();
         //List<CardDefine> _cardDefineList = new List<CardDefine>();
         //List<CardSkinData> _cardSkinList = new List<CardSkinData>();
+        [TranslateMsg("导出的卡组字符串的标题")]
         const string exportStringHeader = "# 醉梦传说卡组";
         [TranslateMsg]
         const string PILE_EXPORTED = "卡组已导出到剪贴板";
