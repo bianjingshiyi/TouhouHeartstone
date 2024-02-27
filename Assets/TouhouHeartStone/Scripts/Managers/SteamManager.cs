@@ -205,7 +205,7 @@ namespace Game
         {
             get
             {
-#if SNAPSHOT_BUILD
+#if SNAPSHOT_BUILD || DEVELOPMENT_BUILD
                 return appIdPlaytest;
 #else
                 return appIdNormal;
@@ -216,7 +216,7 @@ namespace Game
         {
             get
             {
-#if SNAPSHOT_BUILD
+#if SNAPSHOT_BUILD || DEVELOPMENT_BUILD
                 return clientPlaytest;
 #else
                 return clientNormal;
