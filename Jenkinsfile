@@ -193,7 +193,7 @@ pipeline {
                             pushd .
                             cd $i
                             if [[ ${i,,} = *debug* ]]; then
-								echo "1477010" >> steam_appid.txt
+								echo "2825850" >> steam_appid.txt
 							fi
                             zip -r ../$RELEASE_FOLDER/$PREFIX$i.zip *
                             popd
