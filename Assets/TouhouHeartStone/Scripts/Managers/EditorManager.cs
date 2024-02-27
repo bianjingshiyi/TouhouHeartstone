@@ -89,7 +89,7 @@ namespace Game
         {
             return cardProps.Select(i =>
             {
-                i.name = game.lang._p(i.name, StringTable.CONTEXT_CARD_PROPERTY);
+                i.name = game.lang._p(StringTable.CONTEXT_CARD_PROPERTY, i.name);
                 return i;
             }).ToArray();
         }
