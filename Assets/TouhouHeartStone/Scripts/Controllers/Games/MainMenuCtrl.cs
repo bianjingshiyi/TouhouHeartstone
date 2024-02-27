@@ -51,6 +51,7 @@ namespace Controllers
             _ui.onReplayButtonClick += onReplayButtonClickedCallback;
             _ui.onLanButtonClick += onLanButtonClickedCallback;
             _ui.onServerButtonClick += onServerButtonClickedCallback;
+            _ui.onWorkshopButtonClick += onWorkshopButtonClick;
             _ui.onQuitButtonClick += onQuitButtonClickedCallback;
             _ui.onAboutButtonClick += onAboutButtonClickedCallback;
             _ui.onSettingButtonClick += onSettingButtonClickedCallback;
@@ -140,6 +141,11 @@ namespace Controllers
         {
             main.display(main.NetworkingPage);
             scene.lan.display(false);
+        }
+        private async void onWorkshopButtonClick()
+        {
+            hide();
+            await scene.workshop.display();
         }
         private async void onServerButtonClickedCallback()
         {

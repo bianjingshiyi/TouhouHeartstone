@@ -39,6 +39,8 @@ namespace Game
         public const string CONTINUE_GAME = "继续游戏";
         [TranslateMsg("通用的未知人物")]
         public const string UNKNOWN_CHARACTER = "未知人物";
+        [TranslateMsg("通用页码模板,{0}为当前页码")]
+        public const string PAGE_NUMBER_TEMPLATE = "第{0}页";
         #endregion
 
         #region 帐号

@@ -188,6 +188,7 @@ namespace UI
             _newsButton.onClick.AddListener(onNewsButtonClickCallback);
             _lanButton.onClick.AddListener(onLanButtonClickCallback);
             _serverButton.onClick.AddListener(onServerButtonClickCallback);
+            _workshopButton.onClick.AddListener(() => onWorkshopButtonClick?.Invoke());
             _editorButton.onClick.AddListener(onEditorButtonClickCallback);
 
             _playerInfoEditPanel.onClickNicknameConfirmBtn += nickname => onPlayerInfoEditNicknameConfirmClick?.Invoke(nickname);
@@ -369,6 +370,7 @@ namespace UI
         public event Action onReplayButtonClick;
         public event Action onLanButtonClick;
         public event Action onServerButtonClick;
+        public event Action onWorkshopButtonClick;
         public event Action onAboutButtonClick;
         public event Action onSettingButtonClick;
         public event Action onNewsButtonClick;
@@ -422,6 +424,8 @@ namespace UI
         Button _lanButton;
         [SerializeField]
         Button _serverButton;
+        [SerializeField]
+        Button _workshopButton;
         [SerializeField]
         Button _newsButton;
         [SerializeField]

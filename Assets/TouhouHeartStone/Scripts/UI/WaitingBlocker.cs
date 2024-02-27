@@ -41,6 +41,7 @@ namespace UI
         UserAccount,
         CardEditor,
         Build,
-        Editor
+        Editor,
+        LoadWorkshop
     }
 }

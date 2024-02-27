@@ -23,6 +23,7 @@ namespace UI
         #region 属性字段
         public DebugPage DebugPage => _debug;
         public Image BackgroundImage => _backgroundImage;
+        public WorkshopPanel workshop => _workshop;
         public GameManager game
         {
             get { return _game; }
@@ -34,6 +35,8 @@ namespace UI
         DebugPage _debug;
         [SerializeField]
         Image _backgroundImage;
+        [SerializeField]
+        WorkshopPanel _workshop;
         #endregion
     }
 }

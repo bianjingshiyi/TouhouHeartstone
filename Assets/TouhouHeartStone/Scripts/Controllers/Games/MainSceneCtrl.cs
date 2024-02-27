@@ -63,6 +63,10 @@ namespace Controllers
             {
                 _guideCtrl = TransformHelper.findComponentInScene<GuideTipCtrl>(gameObject.scene);
             }
+            if (_workshop == null)
+            {
+                _workshop = TransformHelper.findComponentInScene<WorkshopCtrl>(gameObject.scene);
+            }
             if (_waitingBlocker == null)
             {
                 _waitingBlocker = TransformHelper.findComponentInScene<WaitingBlocker>(gameObject.scene);
@@ -84,6 +88,7 @@ namespace Controllers
             _lanCtrl.gameObject.SetActive(false);
             _replayCtrl.gameObject.SetActive(false);
             _guideCtrl.gameObject.SetActive(false);
+            _workshop.gameObject.SetActive(false);
             _waitingBlocker.gameObject.SetActive(false);
             _cardPopup.gameObject.SetActive(false);
         }
@@ -104,6 +109,7 @@ namespace Controllers
         public LANPanelCtrl lan => _lanCtrl;
         public ReplaySelectPanelCtrl replay => _replayCtrl;
         public GuideTipCtrl guide => _guideCtrl;
+        public WorkshopCtrl workshop => _workshop;
         public WaitingBlocker waitingBlocker => _waitingBlocker;
         [SerializeField]
         MainMenuCtrl _menu;
@@ -131,6 +137,8 @@ namespace Controllers
         ReplaySelectPanelCtrl _replayCtrl;
         [SerializeField]
         GuideTipCtrl _guideCtrl;
+        [SerializeField]
+        WorkshopCtrl _workshop;
         [SerializeField]
         WaitingBlocker _waitingBlocker;
     }

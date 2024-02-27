@@ -120,6 +120,7 @@ namespace UI
                     this.SettingPage,
                     this.DebugPage,
                     this.Loading,
+                    this.workshop,
             };
         }
         partial void onAwake();
