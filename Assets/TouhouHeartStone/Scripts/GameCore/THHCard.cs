@@ -387,7 +387,7 @@ namespace TouhouHeartstone
                 //随从限定
                 if (!card.isReady(game) && //还没准备好
                     !card.isCharge(game) && //且没有冲锋
-                    !(card.isRush(game) && game.getOpponent(player).getField().Any(c => c.isAttackable(game, card, out _)))// 没有速攻，或者对手没有可以作为攻击目标的仆从。
+                    !(card.isRush(game) && game.getOpponent(player).getField().Any(c => card.isAttackable(game, c, out _)))// 没有速攻，或者对手没有可以作为攻击目标的仆从。
                 ) 
                     return false;
             }
