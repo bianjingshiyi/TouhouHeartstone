@@ -480,17 +480,23 @@ namespace TouhouHeartstone
             // 更新光环。
             await updateAura(game);
 
-            bool anyCleared;
+            bool clearedThisTime = false;
+            bool anyCleared = false;
             const int MAX_UPDATE_TIMES = 30;
             int updateTimes = 0;
             do
             {
+                clearedThisTime = false;
                 var eventArg = await UpdateDeathEventDefine.doEvent(game);
-                anyCleared = eventArg.getVar<Card[]>(UpdateDeathEventDefine.VAR_CLEARED_CARDS).Length > 0;
+                if (eventArg.getVar<Card[]>(UpdateDeathEventDefine.VAR_CLEARED_CARDS).Length > 0)
+                {
+                    clearedThisTime = true;
+                    anyCleared = true;
+                }
                 updateTimes++;
             }
             // 受不了了，什么寄吧卡能让死亡结算运行30多次，跳了
-            while (anyCleared && game.isRunning && updateTimes < MAX_UPDATE_TIMES);
+            while (clearedThisTime && game.isRunning && updateTimes < MAX_UPDATE_TIMES);
 
             // 如果有死亡的卡牌，再更新一次光环。
             if (anyCleared)
