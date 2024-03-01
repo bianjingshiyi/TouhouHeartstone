@@ -77,6 +77,9 @@ namespace Game
         [TranslateMsg("编辑器/节点名称")]
         public const string EDITOR_NODE_SET_EVENT_REPEAT_TIME = "设置事件重复次数";
 
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_TURN_OF_EVENT = "获取事件发生的回合";
+
         #region 事件
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.ThisEvent, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_THIS_EVENT)]
@@ -295,6 +298,20 @@ namespace Game
             if (eventArg == null)
                 return;
             eventArg.repeatTime = times;
+        }
+        [THHActionMethod(BuiltinActionDefineID.GetTurnOfEvent, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_NAME_GET_TURN_OF_EVENT)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT)]
+        public static int getTurnOfEvent(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg)
+        {
+            if (eventArg == null)
+                return -1;
+            var events = game.triggers.getRecordedEvents();
+            var eventIndex = Array.IndexOf(events, eventArg);
+            if (eventIndex < 0)
+                return -1;
+            var turnStarts = events.Take(eventIndex + 1).Where(e => e.define is TurnStartEventDefine).Count();
+            return turnStarts;
         }
         #endregion
 

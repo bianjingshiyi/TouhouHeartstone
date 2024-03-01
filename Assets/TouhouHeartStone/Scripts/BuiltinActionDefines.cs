@@ -59,6 +59,7 @@ namespace Game
         public const int IsOffensivePlayer = Type_Function + Category_Player + 19;    // 玩家是否是先手
         public const int GetAllPlayers = Type_Function + Category_Player + 20;    // 获取所有玩家
         public const int GetFatigue = Type_Function + Category_Player + 21; // 获取疲劳层数
+        public const int GetPlayerOfTurn = Type_Function + Category_Player + 22;    // 获取某个回合的玩家
 
         // 卡牌
         public const int ThisCard = Type_Function + Category_Card + 1; // 这张卡牌
@@ -181,6 +182,7 @@ namespace Game
         public const int GetCardSnapshotBeforeEvent = Type_Function + Category_Event + 8;    // 获取卡牌在某事件前的快照
         public const int GetCardSnapshotAfterEvent = Type_Function + Category_Event + 9;    // 获取卡牌在某事件后的快照
         public const int GetEventRepeatTimes = Type_Function + Category_Event + 10;    // 获取事件重复次数
+        public const int GetTurnOfEvent = Type_Function + Category_Event + 11;    // 获取事件发生的回合数
 
         // 事件记录
         public const int GetTurnCount_Obsolete = Type_Function + Category_EventRecord + 1;    // 获得当前回合数（过时）

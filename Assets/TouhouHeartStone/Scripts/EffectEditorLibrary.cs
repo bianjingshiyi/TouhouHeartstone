@@ -414,6 +414,8 @@ namespace Game
         #region 玩家
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_GET_CURRENT_PLAYER = "获取当前回合的玩家";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_PLAYER_OF_TURN = "获取某个回合的玩家";
         [TranslateMsg("动作图编辑器中动作节点名称之增加固定数量护甲")]
         public const string EDITOR_NODE_ADD_AMOUNT_OF_ARMOR = "增加固定数量护甲";
         [TranslateMsg("动作图编辑器中动作节点名称之增加护甲")]
@@ -543,6 +545,19 @@ namespace Game
         public static Player getCurrentPlayer(CardEngine game)
         {
             return game.getCurrentPlayer();
+        }
+
+        [THHActionMethod(BuiltinActionDefineID.GetPlayerOfTurn, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_NAME_GET_PLAYER_OF_TURN)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]
+        public static Player getPlayerOfTurn(CardEngine game,
+            [ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT)] int turnCount)
+        {
+            if (turnCount <= 0)
+                return null;
+            var goesFirst = game.getSortedPlayers().FirstOrDefault();
+            if (goesFirst == null)
+                return null;
+            return turnCount % 2 == 1 ? goesFirst : game.getOpponent(goesFirst);
         }
         /// <summary>
         /// 获取玩家手牌
