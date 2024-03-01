@@ -16,8 +16,8 @@ namespace Game
     {
         public static void setUnknownCard(this UICard ui, bool isFaceUp = true)
         {
-            ui.type = CATEGORY.SERVANT;
-            ui.isFaceup = isFaceUp;
+            ui.setType(UICardType.Servant);
+            ui.setFaceup(isFaceUp);
             ui.setImage(null);
             ui.setName(StringTable.BUILD_UNKNOWN_CARD_NAME);
             ui.setSubname(string.Empty);
@@ -44,7 +44,7 @@ namespace Game
                 subName = skin.subname;
                 desc = skin.desc;
             }
-            ui.isFaceup = isFaceUp;
+            ui.setFaceup(isFaceUp);
             ui.setName(name);
             ui.setSubname(subName);
             ui.setDesc(desc);
@@ -72,18 +72,7 @@ namespace Game
         }
         public static void setCard(this UICard ui, CardDescriptor card, CardSkinData skin, bool isFaceUp = true)
         {
-            if (card.define.type == DEFINE.MASTER)
-                ui.type = CATEGORY.MASTER;
-            else if (card.define.type == DEFINE.SERVANT)
-                ui.type = CATEGORY.SERVANT;
-            else if (card.define.type == DEFINE.SPELL)
-                ui.type = CATEGORY.SPELL;
-            else if (card.define.type == DEFINE.SKILL)
-                ui.type = CATEGORY.SKILL;
-            else if (card.define.type == DEFINE.ITEM)
-                ui.type = CATEGORY.ITEM;
-            else
-                throw new NotImplementedException();
+            ui.setTypeByName(card.define.type);
             string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
             string subName = string.Empty;
             string description = string.Empty;
@@ -93,7 +82,7 @@ namespace Game
                 subName = skin.subname;
                 description = skin.desc;
             }
-            ui.isFaceup = isFaceUp;
+            ui.setFaceup(isFaceUp);
             ui.setName(name);
             ui.setSubname(subName);
             ui.setDesc(description);

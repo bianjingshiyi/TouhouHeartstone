@@ -1,130 +1,88 @@
 ﻿using BJSYGameCore.UI;
+using Game;
 using TouhouHeartstone;
 using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 namespace UI
 {
-    public class Card : UIObject
+    public class Card : UIObject, IPointerEnterHandler, IPointerExitHandler
     {
-        //[Obsolete]
-        //public void update(TouhouCardEngine.Card card, CardSkinData skin)
-        //{
-        //    this.card = card;
-
-        //    CostPropNumber.text.text = card.getCost(null).ToString();
-        //    if (card.define.type == DEFINE.SERVANT)
-        //    {
-        //        type = CATEGORY.SERVANT;
-        //        // TypeController = Type.Servant;
-        //        //onTypeControllerServant?.Invoke();
-        //        AttackPropNumber.text.text = card.getAttack(null).ToString();
-        //        LifePropNumber.text.text = card.getLife(null).ToString();
-        //    }
-        //    else if (card.define.type == DEFINE.SPELL)
-        //    {
-        //        // TypeController = Type.Spell;
-        //        type = CATEGORY.SPELL;
-        //    }
-
-        //    if (skin != null)
-        //    {
-        //        Image.sprite = skin.image;
-        //        NameText.text = skin.name;
-        //        //{card:damage}
-        //        DescText.text = skin.desc;
-        //        // IsFaceupController = IsFaceup.True;
-        //        isFaceup = true;
-        //    }
-        //    else
-        //    {
-        //        // IsFaceupController = IsFaceup.False;
-        //        isFaceup = false;
-        //    }
-        //}
-        //[Obsolete]
-        //public void update(CardDefine card, CardSkinData skin)
-        //{
-        //    CostPropNumber.text.text = card.getCost().ToString();
-        //    AttackPropNumber.text.text = card.getAttack().ToString();
-        //    LifePropNumber.text.text = card.getLife().ToString();
-
-        //    Image.sprite = skin.image;
-        //    NameText.text = skin.name;
-        //    DescText.text = skin.desc;
-        //    // IsFaceupController = IsFaceup.True;
-        //    isFaceup = true;
-        //}
         public void setTypeByName(string typeName)
         {
+            var type = UICardType.Servant;
             switch (typeName)
             {
-                case DEFINE.MASTER:
-                    type = CATEGORY.MASTER;
+                case DEFINE.ITEM:
+                    type = UICardType.Item;
                     break;
                 case DEFINE.SPELL:
-                    type = CATEGORY.SPELL;
-                    break;
-                case DEFINE.ITEM:
-                    type = CATEGORY.ITEM;
-                    break;
                 case DEFINE.SKILL:
-                    type = CATEGORY.SKILL;
+                    type = UICardType.Spell;
                     break;
-                default://SERVANT
-                    type = CATEGORY.SERVANT;
+                default:
+                    type = UICardType.Servant;
                     break;
             }
+            setType(type);
+        }
+        public void setType(UICardType type)
+        {
+            bool isItem = type == UICardType.Item;
+            bool isSpell = type == UICardType.Spell;
+            bool isServant = !isItem && !isSpell;
+            servantCardFace.gameObject.SetActive(isServant);
+            spellCardFace.gameObject.SetActive(isSpell);
+            itemCardFace.gameObject.SetActive(isItem);
+        }
+        public void setFaceup(bool value)
+        {
+            _cardFaceObj.SetActive(value);
+            _cardBackObj.SetActive(!value);
         }
         public void resetPosition()
         {
             rectTransform.anchoredPosition = Vector2.zero;
         }
-        [SerializeField]
-        AnimationCurve _useCurve = new AnimationCurve();
-        public AnimationCurve useCurve
+
+
+        private void OnDisable()
         {
-            get { return _useCurve; }
+            exitHover();
         }
-        [SerializeField]
-        AnimationCurve _drawCurve = new AnimationCurve();
-        public AnimationCurve drawCurve
+        private void enterHover()
         {
-            get { return _drawCurve; }
+            if (_hovered)
+                return;
+            _hovered = true;
+            if (_playHoverSound)
+                _sePlayer?.Play();
+            _animator.SetBool("isHovered", true);
         }
-        public bool isFaceup
+        private void exitHover()
         {
-            set
-            {
-                _cardFaceObj.SetActive(value);
-                _cardBackObj.SetActive(!value);
-            }
+            if (!_hovered)
+                return;
+            _hovered = false;
+            _animator.SetBool("isHovered", false);
         }
-        public int type
+        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
-            get
-            {
-                return _type;
-            }
-            set
-            {
-                bool isItem = value == CATEGORY.ITEM;
-                bool isSpell = value == CATEGORY.SPELL || value == CATEGORY.SKILL;
-                bool isServant = !isItem && !isSpell;
-                servantCardFace.gameObject.SetActive(isServant);
-                spellCardFace.gameObject.SetActive(isSpell);
-                itemCardFace.gameObject.SetActive(isItem);
-            }
+            if (!_canHover)
+                return;
+            enterHover();
         }
-        public string _flipToFaceAnimName;
-        public string _flipToBackAnimName;
-        public string _notifyAnimName;
-        public SimpleAnim onCast;
-        public SimpleAnim ShowAnim;
+        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+        {
+            exitHover();
+        }
         public ServantCardFace servantCardFace => _servantCardFace;
         public SpellCardFace spellCardFace => _spellCardFace;
         public ItemCardFace itemCardFace => _itemCardFace;
         private int _type;
+        private bool _hovered;
+        [SerializeField]
+        private Animator _animator;
         [SerializeField]
         private ServantCardFace _servantCardFace;
         [SerializeField]
@@ -135,5 +93,19 @@ namespace UI
         private GameObject _cardFaceObj;
         [SerializeField]
         private GameObject _cardBackObj;
+
+        [Header("Pointer Hover")]
+        [SerializeField]
+        private bool _canHover;
+        [SerializeField]
+        private bool _playHoverSound;
+        [SerializeField]
+        private SEPlayer _sePlayer;
+    }
+    public enum UICardType
+    {
+        Servant,
+        Spell,
+        Item
     }
 }

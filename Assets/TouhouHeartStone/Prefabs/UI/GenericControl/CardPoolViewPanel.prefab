@@ -2681,6 +2681,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1195777761491610246, guid: 92b5566bce81a774fb9bb22f1b342b2e,
         type: 3}
+      propertyPath: _canHover
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1195777761491610246, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
       propertyPath: _onTypeControllerItem.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
