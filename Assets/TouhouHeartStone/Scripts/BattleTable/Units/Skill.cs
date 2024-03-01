@@ -16,10 +16,17 @@ namespace Game.BattleTable
             value = Mathf.Max(value, 0);
             _costText.text = value.ToString();
         }
+        public void setCostVisible(bool value)
+        {
+            _costText.gameObject.SetActive(value);
+        }
+        public void setUsable(bool value)
+        {
+            _animator.SetBool("isCanUse", value);
+        }
         public void setOpen(bool open)
         {
-            _openRoot.SetActive(open);
-            _closedRoot.SetActive(!open);
+            _animator.SetBool("isOpen", open);
         }
 
         public void setImageSprite(Sprite sprite)

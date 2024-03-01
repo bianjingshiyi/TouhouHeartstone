@@ -267,6 +267,8 @@ namespace Game.BattleTable
             var defineCost = desc.define.getCost();
             var skillColor = cost > defineCost ? PropertyNumberColor.Red : cost < defineCost ? PropertyNumberColor.Green : PropertyNumberColor.White;
             skill.setCost(cost);
+            skill.setCostVisible(!desc.define.hasKeyword(KEYWORD.UNPLAYABLE));
+            skill.setUsable(!desc.isModifiedUnplayable);
             skill.costNumber.setTextColor(skillColor);
 
             skill.setImageSprite(await loadCardImage(desc));

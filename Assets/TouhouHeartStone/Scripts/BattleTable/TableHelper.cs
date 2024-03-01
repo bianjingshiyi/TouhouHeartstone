@@ -43,7 +43,6 @@ namespace Game.BattleTable
             ui.setSubname(subName);
             ui.setDesc(desc);
 
-            ui.setHighlightColor(CardHighlightColor.None);
             ui.setCostVisible(!card.hasKeyword(KEYWORD.UNPLAYABLE));
             ui.setCost(card.getCost());
             ui.setAttack(card.getAttack());
@@ -75,9 +74,8 @@ namespace Game.BattleTable
             var costColor = card.getCostColor(game);
             var attackColor = card.getAttackColor(game);
             var lifeColor = card.getLifeColor(game);
-            var highlightColor = card.isModifiedUnplayable(game) ? CardHighlightColor.Red : CardHighlightColor.None;
 
-            ui.setHighlightColor(highlightColor);
+            ui.setUsable(!card.isModifiedUnplayable(game));
             ui.setCostVisible(!card.define.hasKeyword(KEYWORD.UNPLAYABLE));
             ui.setCost(cost);
             ui.setAttack(attack);
@@ -110,9 +108,8 @@ namespace Game.BattleTable
             var costColor = desc.getCostColor();
             var attackColor = desc.getAttackColor();
             var lifeColor = desc.getLifeColor();
-            var highlightColor = desc.isModifiedUnplayable ? CardHighlightColor.Red : CardHighlightColor.None;
 
-            ui.setHighlightColor(highlightColor);
+            ui.setUsable(!desc.isModifiedUnplayable);
             ui.setCostVisible(!desc.define.hasKeyword(KEYWORD.UNPLAYABLE));
             ui.setCost(cost);
             ui.setAttack(attack);

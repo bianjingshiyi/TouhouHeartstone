@@ -144,6 +144,10 @@ namespace Game.BattleTable
         {
             animator.SetInteger("HighlightColor", (int)color);
         }
+        public void setUsable(bool usable)
+        {
+            animator.SetBool("isCanUse", usable);
+        }
         public void destroy()
         {
             Destroy(gameObject);
