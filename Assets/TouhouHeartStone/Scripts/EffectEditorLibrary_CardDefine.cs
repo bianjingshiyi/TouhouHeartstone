@@ -461,13 +461,13 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
-            if (cards == null)
+            if (cards == null || cardDefine == null)
+                return;
+            if (!cardDefine.isSpell() && !cardDefine.isSkill())
                 return;
             foreach (var card in cards)
             {
                 if (card == null)
-                    continue;
-                if (!card.isSpell() && !card.isSkill())
                     continue;
                 await card.triggerCardDefineActiveEffect(game, cardDefine, targets);
             }
