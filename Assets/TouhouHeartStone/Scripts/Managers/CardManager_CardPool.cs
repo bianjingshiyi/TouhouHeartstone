@@ -489,7 +489,7 @@ namespace Game
             if (_creatingCardPoolInfo != null)
                 set.Add(_creatingCardPoolInfo);
             set.AddRange(_localCardPoolInfoDict.Values);
-            return set.ToArray();
+            return set.Where(p => !isCardPoolHidden(p.cardPoolId)).ToArray();
         }
         #endregion
 

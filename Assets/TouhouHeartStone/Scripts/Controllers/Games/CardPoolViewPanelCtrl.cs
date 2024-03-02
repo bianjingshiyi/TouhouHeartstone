@@ -294,7 +294,7 @@ namespace Controllers
             else
             {
                 var result = game.card.getLocalCardPoolInfos();
-                cardPoolIdList.AddRange(result.Where(p => !game.card.isCardPoolHidden(p.cardPoolId)).Select(a => a.cardPoolId));
+                cardPoolIdList.AddRange(result.Select(a => a.cardPoolId));
             }
             cardPoolIdList.Sort();
             _cardPoolIdList = cardPoolIdList.ToArray();

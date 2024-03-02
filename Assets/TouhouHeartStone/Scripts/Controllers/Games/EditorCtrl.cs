@@ -766,8 +766,6 @@ namespace Controllers
             foreach (var cardPoolInfo in result)
             {
                 var poolId = cardPoolInfo.cardPoolId;
-                if (game.card.isCardPoolHidden(poolId))
-                    continue;
                 int index = _cardPoolIdList.FindIndex(id => id == poolId);
                 if (index >= 0)
                 {
