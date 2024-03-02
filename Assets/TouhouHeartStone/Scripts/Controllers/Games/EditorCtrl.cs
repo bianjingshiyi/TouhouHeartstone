@@ -619,6 +619,12 @@ namespace Controllers
         }
         private void onClickConfirmAddCardPoolDepButtonCallback()
         {
+            if (checkDependencyCycle(_selectedAddingCardPoolDependencies, out var cyclePools))
+            {
+                showDependencyCycleDialog(cyclePools);
+                return;
+            }
+
             markCardPoolUnsaved(curCardPoolId);
 
             var poolInfo = getCurrentCardPoolInfo();
@@ -753,6 +759,39 @@ namespace Controllers
             _ui.updateCardPoolDependencies(names, outdated);
             _ui.setAutoUpdateDepButtonInteractable(getUpdateableDependencies().Length > 0);
         }
+        private bool checkDependencyCycle(IEnumerable<ICardPoolReference> addingDeps, out ICardPoolReference[] cycleDeps)
+        {
+            var poolInfo = getCurrentCardPoolInfo();
+            var newRefs = new List<ICardPoolReference>();
+            var depRefs = poolInfo.dependencyRefs;
+            if (depRefs != null)
+                newRefs.AddRange(depRefs);
+            if (addingDeps != null)
+                newRefs.AddRange(addingDeps);
+
+            var list = new List<ICardPoolReference>();
+            foreach (var depRef in newRefs)
+            {
+                var depsOfDep = depRef.CardPoolID.GetCardPoolDependencies(game.card);
+                if (depsOfDep.Contains(poolInfo.cardPoolId))
+                {
+                    list.Add(depRef);
+                }
+            }
+            cycleDeps = list.ToArray();
+            return list.Count > 0;
+        }
+        private void showDependencyCycleDialog(ICardPoolReference[] cyclePools)
+        {
+            const int maxDisplayCount = 5;
+            var title = game.lang._(StringTable.ERROR);
+            var poolNames = cyclePools.Select(r => game.card.getCardPoolName(game.card.getCardPoolInfo(r)) ?? game.lang._(StringTable.EDITOR_UNKNOWN_CARD_POOL));
+            var trim = poolNames.Count() > maxDisplayCount;
+            var poolName = string.Join(',', poolNames.Take(maxDisplayCount).ToArray());
+            poolName = trim ? game.lang._(StringTable.TRIMMED_COTENTS, poolName) : poolName;
+            var desc = game.lang._(EDITOR_WARNING_CYCLE_DEPENDENCY, poolName);
+            game.ui.dialog.ShowConfirm(title, desc);
+        }
         #endregion
 
         /// <summary>
@@ -832,26 +871,30 @@ namespace Controllers
         /// <returns></returns>
         private async void trySaveCardPool(Action<bool> onEndAction = null)
         {
-            if (isCurrentCardPoolUnsaved())
+            if (!isCurrentCardPoolUnsaved())
+                return;
+            if (checkDependencyCycle(null, out var cycles))
             {
-                if (hasObsoleteNodes(curCardPoolId, out string desc))
-                {
-                    game.ui.dialog.ShowQuestion(game.langManager.getString(StringTable.WARNING), desc,
-                        async () =>
-                        {
-                            await saveCardPool();
-                            onEndAction?.Invoke(true);
-                        },
-                        () =>
-                        {
-                            onEndAction?.Invoke(false);
-                        });
-                }
-                else
-                {
-                    await saveCardPool();
-                    onEndAction?.Invoke(true);
-                }
+                showDependencyCycleDialog(cycles);
+                return;
+            }
+            if (hasObsoleteNodes(curCardPoolId, out string desc))
+            {
+                game.ui.dialog.ShowQuestion(game.langManager.getString(StringTable.WARNING), desc,
+                    async () =>
+                    {
+                        await saveCardPool();
+                        onEndAction?.Invoke(true);
+                    },
+                    () =>
+                    {
+                        onEndAction?.Invoke(false);
+                    });
+            }
+            else
+            {
+                await saveCardPool();
+                onEndAction?.Invoke(true);
             }
         }
         /// <summary>
@@ -1367,6 +1410,8 @@ namespace Controllers
         const string EDITOR_UNKNOWN_RULE_NAME = "未知自定义规则";
         [TranslateMsg("尝试保存具有过时节点的卡池时的警告。（{0}：过时节点列表）")]
         const string EDITOR_WARNING_OBSOLETE_NODES_TEMPLATE = "以下内容包含过时的节点：\n{0}\n是否保存卡池？";
+        [TranslateMsg("尝试设置循环卡池依赖时的警告。（{0}：过时节点列表）")]
+        const string EDITOR_WARNING_CYCLE_DEPENDENCY = "以下卡池依赖包含对该卡池的依赖，会导致卡池循环依赖：\n{0}\n请取消该依赖后再试。";
         [TranslateMsg("{0}是路径")]
         const string EXPORT_SUCCESS = "卡池已导出至 {0}";
         [TranslateMsg]
