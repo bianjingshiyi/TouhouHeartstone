@@ -6,6 +6,10 @@ using System.Linq;
 using Card = TouhouCardEngine.Card;
 using System;
 using TouhouCardEngine;
+using static UnityEngine.GraphicsBuffer;
+using UI;
+using System.Security.Cryptography;
+using Game.BattleTable;
 
 namespace Game
 {
@@ -33,50 +37,6 @@ namespace Game
         public void stop(CardEngine game)
         {
             game.answers.onRequest -= Answers_onRequest;
-        }
-
-        private async void Answers_onRequest_dummy(IRequest request)
-        {
-            if (game.answers == null)
-                return;
-            if (!request.playersId.Contains(player.id))
-            {
-                return;
-            }
-
-            await Task.Delay(1000);
-            switch (request)
-            {
-                case InitReplaceRequest:
-                    IResponse resp = new InitReplaceResponse()
-                    {
-                        cardsId = new int[0]
-                    };
-                    game.logPlayerAction(player.id, resp);
-                    _ = game.answers.answer(player.id, resp);
-                    break;
-                case FreeActRequest:
-                    resp = new TurnEndResponse();
-                    _ = game.answers.answer(player.id, resp);
-                    break;
-                case DiscoverRequest discover:
-                    resp = discover.getDefaultResponse(game, player.id);
-
-                    //////////////////////////////////////////////////////////////////////////////////////////////////
-                    DefineReference eirin = discover.cardRefArray.FirstOrDefault(defRef => defRef.cardPoolId == CardManager.STANDARD_POOL_ID && defRef.defineId == ClassicCardID.GameOfLife_Rise_N);
-                    if (eirin.defineId != 0)
-                    {
-                        resp = new DiscoverResponse() { cardDefRef = eirin };
-                    }
-                    //////////////////////////////////////////////////////////////////////////////////////////////////
-
-                    game.logPlayerAction(player.id, resp);
-                    _ = game.answers.answer(player.id, resp);
-                    break;
-                default:
-                    UberDebug.LogChannel("AI", $"AI未处理的询问：{request}");
-                    break;
-            }
         }
 
         private async void Answers_onRequest(IRequest request)
@@ -141,153 +101,118 @@ namespace Game
         public Dictionary<Response, float> calcActions(CardEngine game, Player player)
         {
             Dictionary<Response, float> responseDic = new Dictionary<Response, float>();
-            UseResponse use;
-            if (player.getSkill().isUsable(game, player, out _))
+            Player opponent = game.getOpponent(player);
+            // 技能
+            var selfSkill = player.getSkill();
+            if (selfSkill.isUsable(game, player, out _))
             {
-                if (player.getSkill().isNeedTarget(game))
-                {
-                    foreach (var target in player.getSkill().getAvaliableTargets(game).Where(t => player.getSkill().isValidTarget(game, t)))
-                    {
-                        use = new UseResponse() { cardId = player.getSkill().id, targetsId = new int[] { target.id } };
-                        responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
-                    }
-                }
-                else
-                {
-                    use = new UseResponse() { cardId = player.getSkill().id };
-                    responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
-                }
+                addUseResponse(selfSkill);
             }
 
+            // 手牌
             foreach (var card in player.getHand())
             {
                 if (!card.isUsable(game, player, out _))
                     continue;
-                if (card.isServant() && !card.hasBattlecry(game))
+                if (card.isServant())
                 {
                     for (int i = 0; i < player.getField().count + 1; i++)
                     {
-                        if (card.isNeedTarget(game))
-                        {
-                            foreach (var target in card.getAvaliableTargets(game).Where(t => card.isValidTarget(game, t)))
-                            {
-                                responseDic.Add(
-                                    new UseResponse()
-                                    { cardId = card.id, position = i, targetsId = new int[] { target.id } },
-                                    calcServantValue(card.getAttack(game), card.getLife(game)));
-                            }
-                        }
-                        else
-                        {
-                            responseDic.Add(new UseResponse() { cardId = card.id, position = i },
-                                calcServantValue(card.getAttack(game), card.getLife(game)));
-                        }
+                        addUseResponse(card, i);
                     }
                 }
                 else
                 {
-                    if (card.isNeedTarget(game))
-                    {
-                        foreach (var target in player.getSkill().getAvaliableTargets(game).Where(t => card.isValidTarget(game, t)))
-                        {
-                            use = new UseResponse() { cardId = card.id, targetsId = new int[] { target.id } };
-                            responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
-                        }
-                    }
-                    else
-                    {
-                        use = new UseResponse() { cardId = card.id };
-                        responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
-                    }
+                    addUseResponse(card);
                 }
             }
 
-            if (player.getMaster().canAttack(game))
-            {
-                Player opponent = game.getOpponent(player);
-                if (player.getMaster().isAttackable(game, opponent.getMaster(), out _))
-                {
-                    int value = player.getMaster().getAttack(game) > opponent.getMaster().getCurrentLife(game)
-                        ? opponent.getMaster().getLife(game)
-                        : player.getMaster().getAttack(game);
-                    responseDic.Add(
-                        new AttackResponse() { cardId = player.getMaster().id, targetId = opponent.getMaster().id },
-                        value);
-                }
+            // 英雄攻击。
+            var selfMaster = player.getMaster();
+            addAttackResponse(selfMaster);
 
-                foreach (var target in opponent.getField())
-                {
-                    if (!player.getMaster().isAttackable(game, target, out _))
-                        continue;
-                    int value = player.getMaster().getAttack(game) > target.getCurrentLife(game)
-                        ? target.getAttack(game) + target.getCurrentLife(game)
-                        : player.getMaster().getAttack(game);
-                    value += player.getMaster().getCurrentLife(game) > target.getAttack(game)
-                        ? -target.getAttack(game)
-                        : -player.getMaster().getLife(game);
-                    responseDic.Add(new AttackResponse() { cardId = player.getMaster().id, targetId = target.id },
-                        value);
-                }
-            }
-
+            // 仆从攻击。
             foreach (var servant in player.getField())
             {
-                if (!servant.canAttack(game))
-                    continue;
-                Player opponent = game.getOpponent(player);
-                if (servant.isAttackable(game, opponent.getMaster(), out _))
-                {
-                    int value = servant.getAttack(game) > opponent.getMaster().getCurrentLife(game)
-                        ? opponent.getMaster().getLife(game)
-                        : servant.getAttack(game);
-                    responseDic.Add(new AttackResponse() { cardId = servant.id, targetId = opponent.getMaster().id },
-                        value);
-                }
-
-                foreach (var target in opponent.getField())
-                {
-                    if (!servant.isAttackable(game, target, out _))
-                        continue;
-                    int value = servant.getAttack(game) > target.getCurrentLife(game)
-                        ? target.getAttack(game) + target.getCurrentLife(game)
-                        : servant.getAttack(game);
-                    value += servant.getCurrentLife(game) > target.getAttack(game)
-                        ? -target.getAttack(game)
-                        : -servant.getLife(game);
-                    responseDic.Add(new AttackResponse() { cardId = servant.id, targetId = target.id }, value);
-                }
+                addAttackResponse(servant);
             }
 
             return responseDic;
+
+            // 内嵌方法
+            void addUseResponse(Card card, int position = 0)
+            {
+                if (card.isNeedTarget(game))
+                {
+                    foreach (var target in card.getAvaliableTargets(game).Where(t => card.isValidTarget(game, t)))
+                    {
+                        var use = new UseResponse() { cardId = card.id, position = position, targetsId = new int[] { target.id } };
+                        responseDic.Add(use, calcUseValue(use, game, player, game.getOpponent(player)));
+                    }
+                }
+                else
+                {
+                    var use = new UseResponse() { cardId = card.id, position = position };
+                    responseDic.Add(use, calcUseValue(use, game, player, game.getOpponent(player)));
+                }
+            }
+            void addAttackResponse(Card card)
+            {
+                if (!card.canAttack(game))
+                    return;
+                var enemyMaster = opponent.getMaster();
+                // 攻击敌方英雄。
+                if (card.isAttackable(game, enemyMaster, out _))
+                {
+                    var attack = new AttackResponse() { cardId = card.id, targetId = enemyMaster.id };
+                    responseDic.Add(attack, calcAttackValue(card, enemyMaster));
+                }
+
+                // 攻击敌方仆从。
+                foreach (var target in opponent.getField())
+                {
+                    if (!card.isAttackable(game, target, out _))
+                        continue;
+                    var attack = new AttackResponse() { cardId = card.id, targetId = target.id };
+                    responseDic.Add(attack, calcAttackValue(card, target));
+                }
+            }
         }
 
-        float calcActionValue(Response response, CardEngine game, Player player, Player opponent)
+        #region 使用优先级
+        float calcUseValue(Response response, CardEngine game, Player player, Player opponent)
         {
-            float value = 0;
             if (response is UseResponse use)
             {
                 Card card = game.getCard(use.cardId);
-                if (card.define.cardPoolId != CardManager.STANDARD_POOL_ID) // 不是经典卡池的
-                    return value;
-
-                Card target = use.targetsId.Length > 0 ? game.getCard(use.targetsId[0]) : null;
-                if (calcNeutralValue(game, player, card, opponent, target, out value))
-                    return value;
-                if (calcPatchouliValue(game, player, card, opponent, target, out value))
-                    return value;
-                if (calcYoumuValue(game, player, card, opponent, target, out value))
-                    return value;
-                if (calcReisenValue(game, player, card, opponent, target, out value))
-                    return value;
-                if (calcBattlecryValue(game, player, card, opponent, target, out value))
-                    return value;
-                if (calcSanaeValue(game, player, card, opponent, target, out value))
-                    return value;
-                else
-                    value = card.getCost(game);
+                if (card.define.cardPoolId == CardManager.STANDARD_POOL_ID) // 是经典卡池的
+                {
+                    float value = 0;
+                    Card target = use.targetsId.Length > 0 ? game.getCard(use.targetsId[0]) : null;
+                    if (calcNeutralValue(game, player, card, opponent, target, out value))
+                        return value;
+                    if (calcPatchouliValue(game, player, card, opponent, target, out value))
+                        return value;
+                    if (calcYoumuValue(game, player, card, opponent, target, out value))
+                        return value;
+                    if (calcReisenValue(game, player, card, opponent, target, out value))
+                        return value;
+                    if (calcSanaeValue(game, player, card, opponent, target, out value))
+                        return value;
+                    if (calcBattlecryValue(game, player, card, opponent, target, out value))
+                        return value;
+                }
+                if (card.isServant())
+                {
+                    return calcServantValue(card.getAttack(game), card.getLife(game));
+                }
+                else if (card.isItem())
+                {
+                    return calcWeaponValue(card.getAttack(game), card.getLife(game));
+                }
+                return card.getCost(game) + 1;
             }
-
-            return value;
+            return 0;
         }
 
         bool calcNeutralValue(CardEngine game, Player player, Card card, Player oppo, Card target, out float value)
@@ -616,8 +541,6 @@ namespace Game
                 case ClassicCardID.PatchouliKnowledge_N:
                     value += calcDrawCardsValue(game, player, opponent, 2);
                     return true;
-                case ClassicCardID.RemiliaScarlet_N:
-                    return true;
                 case ClassicCardID.FlandreScarlet_N:
                     value = calcRandomServantsValue(game, player, opponent, opponent.getField(), 1);
                     return true;
@@ -625,7 +548,7 @@ namespace Game
                     value += calcDrawCardsValue(game, player, opponent, 1) + 4;
                     return true;
                 case ClassicCardID.YakumoRan_N:
-                    value += calcServantValue(4, 3);
+                    value += calcSummonValue(player, 4, 3);
                     return true;
                 case ClassicCardID.SaigyoujiYuyuko_N:
                     value -= calcServantValue(game, player, opponent, target);
@@ -636,28 +559,19 @@ namespace Game
                     // 加个回手value
                     return true;
                 case ClassicCardID.LunasaPrismriver_N:
-                    value += calcServantValue(1, 2) +
-                             calcServantValue(2, 1);
+                    value += calcSummonValue(player, (1, 2), (2, 1));
                     return true;
                 case ClassicCardID.MerlinPrismriver_N:
-                    value += calcServantValue(2, 2) +
-                             calcServantValue(2, 1);
+                    value += calcSummonValue(player, (2, 2), (2, 1));
                     return true;
                 case ClassicCardID.LyricaPrismriver_N:
-                    value += calcServantValue(2, 2) +
-                             calcServantValue(1, 2);
+                    value += calcSummonValue(player, (2, 2), (1, 2));
                     return true;
                 case ClassicCardID.MystiaLorelei_N:
                     value += calcBuffValue(game, player, opponent, target, 1 - target.getAttack(game), 0);
                     return true;
                 case ClassicCardID.ReisenUdongeinInaba_N:
                     value += calcDamageValue(game, player, opponent, opponent.getMaster(), 4);
-                    return true;
-                case ClassicCardID.TewiInaba_N:
-                    return true;
-                case ClassicCardID.KamishirasawaKeine_Human_N:
-                    return true;
-                case ClassicCardID.KamishirasawaKeine_Beast_N:
                     return true;
                 case ClassicCardID.MedicineSellman:
                     value += calcHealingValue(game, player, opponent, target, 4);
@@ -671,21 +585,45 @@ namespace Game
                 case ClassicCardID.Koakuma:
                     value += calcDrawCardsValue(game, player, opponent, 1);
                     return true;
-                case ClassicCardID.OrochiOfAncientTimes:
-                    value += calcServantValue(target.getAttack(game), target.getCurrentLife(game));
-                    return true;
                 case ClassicCardID.YasakaKanako:
                     value += 10;
+                    return true;
+                case ClassicCardID.RemiliaScarlet_N:
+                case ClassicCardID.TewiInaba_N:
+                case ClassicCardID.KamishirasawaKeine_Human_N:
+                case ClassicCardID.KamishirasawaKeine_Beast_N:
                     return true;
                 default:
                     value = 0;
                     return false;
             }
         }
-        float calcShieldValue(CardEngine game, Player you, Player oppo, Card target)
+        #endregion
+
+        #region 攻击优先级
+        float calcAttackValue(Card attacker, Card defender)
         {
-            return calcServantValue(game, you, oppo, target) - target.getCurrentLife(game);
+            int value = 0;
+            if (defender.isShield(game))
+            {
+                // 目标有护盾则优先级固定为1。
+                value = 1;
+            }
+            else
+            {
+                // 如果攻击者的攻击力大于目标的当前生命值
+                // 则优先级为目标的最大生命值。
+                // 否则为攻击者的攻击力。
+                value = attacker.getAttack(game) > defender.getCurrentLife(game) ? defender.getLife(game) : attacker.getAttack(game);
+            }
+            // 如果攻击者的当前生命值大于敌方仆从的攻击力
+            // 则优先级减少目标的攻击力。
+            // 否则减少攻击者的最大生命值。
+            value -= attacker.getCurrentLife(game) > defender.getAttack(game) ? defender.getAttack(game) : attacker.getLife(game);
+            return value;
         }
+
+        #endregion
 
         float calcSummonValue(Player player, int attack, int life)
         {
@@ -694,6 +632,17 @@ namespace Game
                 return 0;
             }
             return calcServantValue(attack, life);
+        }
+        float calcSummonValue(Player player, params (int attack, int life)[] summons)
+        {
+            var field = player.getField();
+            float value = 0;
+            for (int i = field.count; i < field.maxCount; i++)
+            {
+                var summon = summons[i];
+                value += calcServantValue(summon.attack, summon.life);
+            }
+            return value;
         }
 
         /// <summary>
@@ -706,7 +655,6 @@ namespace Game
         {
             return Math.Max(attack, 0) * Math.Max(life, 0) + (life > 0 ? 1 : 0);
         }
-
         /// <summary>
         /// 估算场上某个随从的价值，已区分敌我，召唤使用+，消灭使用-
         /// </summary>
