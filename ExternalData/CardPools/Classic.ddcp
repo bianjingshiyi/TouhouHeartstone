@@ -50790,7 +50790,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_v" : ["Field"]
                     }
                   }, {
                     "name" : "condition",
