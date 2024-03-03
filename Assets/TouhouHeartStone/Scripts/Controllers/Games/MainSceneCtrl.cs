@@ -1,10 +1,13 @@
-﻿using BJSYGameCore;
+﻿using System.Threading.Tasks;
+using BJSYGameCore;
+using Game;
+using TouhouCardEngine;
 using UI;
 using UnityEngine;
 
 namespace Controllers
 {
-    class MainSceneCtrl : SceneCtrl
+    partial class MainSceneCtrl : SceneCtrl
     {
         protected override void Start()
         {
@@ -64,6 +67,10 @@ namespace Controllers
             {
                 _waitingBlocker = TransformHelper.findComponentInScene<WaitingBlocker>(gameObject.scene);
             }
+            if (_cardPopup == null)
+            {
+                _cardPopup = TransformHelper.findComponentInScene<CardPopUpUI>(gameObject.scene);
+            }
             _menu.gameObject.SetActive(true);
             _room.gameObject.SetActive(false);
             _build.gameObject.SetActive(false);
@@ -78,6 +85,11 @@ namespace Controllers
             _replayCtrl.gameObject.SetActive(false);
             _guideCtrl.gameObject.SetActive(false);
             _waitingBlocker.gameObject.SetActive(false);
+            _cardPopup.gameObject.SetActive(false);
+        }
+        private async void Update()
+        {
+            await updateCardPopup();
         }
         public MainMenuCtrl menu => _menu;
         public RoomCtrl room => _room;

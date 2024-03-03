@@ -43,6 +43,8 @@ namespace UI
         protected virtual void Awake()
         {
             _cardPoolViewPanelCtrl.onClickCard += onClickCardPoolViewCard;
+            _cardPoolViewPanelCtrl.onCardHoverEnter += (item, def) => scene.addLocalCardPopup(item.transform, def);
+            _cardPoolViewPanelCtrl.onCardHoverExit += (item, def) => scene.removeCardPopup(item.transform);
             _cancelCardPoolSelectButton.onClick.AddListener(onClickCancelCardPoolSelectButton);
         }
         #endregion

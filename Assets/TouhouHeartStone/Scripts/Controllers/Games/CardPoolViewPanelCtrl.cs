@@ -121,6 +121,9 @@ namespace Controllers
             _ui.onEnableCardListItem += onEnableCardListItemCallback;
             _ui.onDisableCardListItem += onDisableCardListItemCallback;
             _ui.onUpdateCardListItem += onUpdateCardListItemCallback;
+
+
+
             _ui.onCardPoolsValueChanged += onCardPoolValuesChanged;
             _ui.onSortTypeValueChanged += onSortTypeValueChanged;
             _ui.onCharacterFilterValueChanged += onCharacterFiltersValueChanged;
@@ -164,6 +167,8 @@ namespace Controllers
         {
             EditorCardListItem item = itemRect.GetComponent<EditorCardListItem>();
             item.onClick += onClickCardListItem;
+            item.onHoverEnter += onCardListItemHoverEnterCallback;
+            item.onHoverExit += onCardListItemHoverExitCallback;
             item.onBeginDrag += onStartDragCardListItemCallback;
             item.onDrag += onDragCardListItemCallback;
             item.onEndDrag += onEndDragCardListItemCallback;
@@ -172,6 +177,8 @@ namespace Controllers
         {
             EditorCardListItem item = itemRect.GetComponent<EditorCardListItem>();
             item.onClick -= onClickCardListItem;
+            item.onHoverEnter -= onCardListItemHoverEnterCallback;
+            item.onHoverExit -= onCardListItemHoverExitCallback;
             item.onBeginDrag -= onStartDragCardListItemCallback;
             item.onDrag -= onDragCardListItemCallback;
             item.onEndDrag -= onEndDragCardListItemCallback;
@@ -195,6 +202,18 @@ namespace Controllers
             int index = _ui.getCardItemIndex(item.transform as RectTransform);
             CardDefine card = _filteredCardDefineList[index];
             onClickCard?.Invoke(card);
+        }
+        private void onCardListItemHoverEnterCallback(EditorCardListItem item)
+        {
+            int index = _ui.getCardItemIndex(item.transform as RectTransform);
+            CardDefine card = _filteredCardDefineList[index];
+            onCardHoverEnter?.Invoke(item, card);
+        }
+        private void onCardListItemHoverExitCallback(EditorCardListItem item)
+        {
+            int index = _ui.getCardItemIndex(item.transform as RectTransform);
+            CardDefine card = _filteredCardDefineList[index];
+            onCardHoverExit?.Invoke(item, card);
         }
         private async void onStartDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
         {
@@ -681,6 +700,8 @@ namespace Controllers
         #endregion
         #region 事件
         public event Action<CardDefine> onClickCard;
+        public event Action<EditorCardListItem, CardDefine> onCardHoverEnter;
+        public event Action<EditorCardListItem, CardDefine> onCardHoverExit;
         public event Action<int, EditorCardListItem> onUpdateCardListItem;
         /// <summary>
         /// 当列表中的卡牌开始被拖拽，参数为被拖拽的卡牌和拖拽指针信息，返回值代表拖拽事件是否被使用，如果拖拽事件没有被使用那么会触发卡牌列表的滚动。

@@ -659,6 +659,7 @@ namespace Game.BattleTable
             ui.ErrorTipText.gameObject.SetActive(false);
             ui.TipBox.hide();
             ui.GameResultDialog.hide();
+            ui.CardPopUp.initTable(this);
 
             eventCache.clear();
             _mulliganedCards.Clear();

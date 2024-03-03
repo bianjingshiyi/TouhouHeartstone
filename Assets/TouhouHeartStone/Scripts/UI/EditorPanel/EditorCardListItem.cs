@@ -8,18 +8,6 @@ namespace UI
     public class EditorCardListItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         #region 公有方法
-        public void switchToCard()
-        {
-            _card.gameObject.SetActive(true);
-            if (_newCardButton != null)
-                _newCardButton.gameObject.SetActive(false);
-        }
-        public void switchToAddButton()
-        {
-            _card.gameObject.SetActive(false);
-            if (_newCardButton != null)
-                _newCardButton.gameObject.SetActive(true);
-        }
         /// <summary>
         /// 设置卡牌的数量注脚，可以用于构筑界面
         /// </summary>
@@ -46,8 +34,8 @@ namespace UI
         protected void Awake()
         {
             _button.onClick.AddListener(onClickCallback);
-            if (_newCardButton != null)
-                _newCardButton.onClick.AddListener(onClickCallback);
+            _card.onHoverEnter += card => onHoverEnter?.Invoke(this);
+            _card.onHoverExit += card => onHoverExit?.Invoke(this);
         }
         #endregion
         #region 事件回调
@@ -71,6 +59,8 @@ namespace UI
         #endregion
         #region 事件
         public event Action<EditorCardListItem> onClick;
+        public event Action<EditorCardListItem> onHoverEnter;
+        public event Action<EditorCardListItem> onHoverExit;
         public event Action<EditorCardListItem, PointerEventData> onBeginDrag;
         public event Action<EditorCardListItem, PointerEventData> onDrag;
         public event Action<EditorCardListItem, PointerEventData> onEndDrag;
@@ -79,8 +69,6 @@ namespace UI
         public Card card => _card;
         [SerializeField]
         Card _card;
-        [SerializeField]
-        Button _newCardButton;
         [SerializeField]
         Button _button;
         [SerializeField]

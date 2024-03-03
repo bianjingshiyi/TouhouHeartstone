@@ -1,4 +1,5 @@
-﻿using BJSYGameCore.UI;
+﻿using System;
+using BJSYGameCore.UI;
 using Game;
 using TouhouHeartstone;
 using UnityEngine;
@@ -58,6 +59,7 @@ namespace UI
             if (_playHoverSound)
                 _sePlayer?.Play();
             _animator.SetBool("isHovered", true);
+            onHoverEnter?.Invoke(this);
         }
         private void exitHover()
         {
@@ -65,6 +67,7 @@ namespace UI
                 return;
             _hovered = false;
             _animator.SetBool("isHovered", false);
+            onHoverExit?.Invoke(this);
         }
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
@@ -76,6 +79,9 @@ namespace UI
         {
             exitHover();
         }
+        public event Action<Card> onHoverEnter;
+        public event Action<Card> onHoverExit;
+
         public ServantCardFace servantCardFace => _servantCardFace;
         public SpellCardFace spellCardFace => _spellCardFace;
         public ItemCardFace itemCardFace => _itemCardFace;

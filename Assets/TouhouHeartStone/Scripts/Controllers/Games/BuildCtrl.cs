@@ -139,6 +139,8 @@ namespace Controllers
             _ui.onClickMasterSelectPanelItem += onMasterSelect;
 
             // 卡牌列表
+            _cardPoolViewPanelCtrl.onCardHoverEnter += (item, def) => scene.addLocalCardPopup(item.transform, def);
+            _cardPoolViewPanelCtrl.onCardHoverExit += (item, def) => scene.removeCardPopup(item.transform);
             _cardPoolViewPanelCtrl.onUpdateCardListItem += onUpdateCardListItem;
             _cardPoolViewPanelCtrl.onStartDragCard += onStartDragCard;
             _cardPoolViewPanelCtrl.onDragCard += onDragCard;

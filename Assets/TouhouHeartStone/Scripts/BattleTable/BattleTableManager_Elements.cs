@@ -2118,32 +2118,17 @@ namespace Game.BattleTable
         private void setCardPopUpPosition(Vector3 targetPosition)
         {
             var worldPosition = TableToWorldPosition(targetPosition);
-            var inversePos = ui.CardPopUp.transform.parent.InverseTransformPoint(worldPosition);
-            var pos = ui.CardPopUp.transform.localPosition;
-            pos.x = inversePos.x;
-            pos.y = inversePos.y;
-            ui.CardPopUp.transform.localPosition = pos;
+            ui.CardPopUp.setPosition(worldPosition);
         }
         private async void showCardPopUp(Vector3 targetPosition, CardDefine tokenDefine, string[] keywords)
         {
-            if (tokenDefine != null)
-            {
-                await ui.CardPopUp.tokenCard.setCardDefine(tokenDefine, this);
-            }
-            ui.CardPopUp.gameObject.SetActive(true);
-            ui.CardPopUp.setTokenCardVisible(tokenDefine != null, targetPosition.x < WorldToTableDistance(_popupCardMinLeftSpace));
-            setCardPopUpPosition(targetPosition);
-
-            Vector3 centerPosition = WorldToTablePosition(table.CenterDisplayTransform.position);
-            Vector3 popupCenter = WorldToTablePosition(ui.CardPopUp.centerPosition);
-            bool atRight = popupCenter.x <= centerPosition.x;
-            ui.CardPopUp.setKeywordPopUpPositions(atRight);
-            cardManager.getKeywordTexts(keywords, out var titles, out var descs);
-            ui.CardPopUp.updateKeywordPopUps(titles, descs);
+            var worldPosition = TableToWorldPosition(targetPosition);
+            var skin = getCardSkin(tokenDefine);
+            await ui.CardPopUp.show(worldPosition, tokenDefine, skin, cardManager, table.Camera, keywords);
         }
         private void hideCardPopUp()
         {
-            ui.CardPopUp.gameObject.SetActive(false);
+            ui.CardPopUp.hide();
             _isPopingUpCard = false;
         }
         private void clearPopUpData()
@@ -2812,8 +2797,6 @@ namespace Game.BattleTable
         float _servantAttackThreshold = 0.7f;
         [SerializeField]
         float _masterAttackThreshold = 0.7f;
-        [SerializeField]
-        float _popupCardMinLeftSpace = 4.5f;
         [SerializeField]
         float _cardHeight = 3;
         [SerializeField]
