@@ -85,6 +85,7 @@ namespace UI
         public ServantCardFace servantCardFace => _servantCardFace;
         public SpellCardFace spellCardFace => _spellCardFace;
         public ItemCardFace itemCardFace => _itemCardFace;
+        public Transform centerTransform => _centerTransform;
         private int _type;
         private bool _hovered;
         [SerializeField]
@@ -99,6 +100,8 @@ namespace UI
         private GameObject _cardFaceObj;
         [SerializeField]
         private GameObject _cardBackObj;
+        [SerializeField]
+        private Transform _centerTransform;
 
         [Header("Pointer Hover")]
         [SerializeField]

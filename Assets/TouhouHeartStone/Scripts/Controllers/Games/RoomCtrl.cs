@@ -258,11 +258,12 @@ namespace Controllers
         }
         private async void onViewDeckItemPointerEnterCallback(int index)
         {
-            await _ui.deckCardList.showPreviewCardByPoolSet(_viewingDeck, index, game.card, getCardPoolReferenceSet());
+            var poolSet = getCardPoolReferenceSet();
+            await game.ui.enterDeckListItem(_ui.deckCardList, _viewingDeck, index, poolSet);
         }
         private void onViewDeckItemPointerExitCallback(int index)
         {
-            _ui.deckCardList.hidePreviewCard();
+            game.ui.exitDeckListItem(_ui.deckCardList);
         }
         #endregion
 

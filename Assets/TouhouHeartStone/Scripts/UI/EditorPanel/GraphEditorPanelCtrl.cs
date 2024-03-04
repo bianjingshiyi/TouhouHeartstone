@@ -154,8 +154,8 @@ namespace UI
 
             _cardSelectPanel.enableCount(false);
             _cardSelectPanel.onClickCard += onClickCardSelectPanelCardCallback;
-            _cardSelectPanel.onCardHoverEnter += (item, def) => scene.addLocalCardPopup(item.transform, def);
-            _cardSelectPanel.onCardHoverExit += (item, def) => scene.removeCardPopup(item.transform);
+            _cardSelectPanel.onCardHoverEnter += (item, def) => scene.addLocalCardPopup(item.card, def);
+            _cardSelectPanel.onCardHoverExit += (item, def) => scene.removeCardPopup(item.card);
 
             var customPropTypes = EditorManager.getCustomPropTypes();
             var customPropNames = game.editor.getCustomPropNames();

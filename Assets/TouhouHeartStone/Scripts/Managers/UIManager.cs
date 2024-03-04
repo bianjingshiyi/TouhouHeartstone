@@ -1,17 +1,66 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using BJSYGameCore;
+using Controllers;
 using Game.BattleTable;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
+using TouhouHeartstone;
 using UI;
 using UnityEngine;
+using Deck = TouhouHeartstone.Deck;
 
 namespace Game
 {
     public class UIManager : BJSYGameCore.UI.UIManager
     {
+        #region 卡组卡牌列表
+        public async Task enterDeckListItem(DeckCardList deckList, Deck deck, int index, IEnumerable<ICardPoolReference> poolSet)
+        {
+            var cardRef = await main.deck.getDeckCardReferenceByIndex(deck, index, poolSet);
+            await enterDeckListItem(deckList, cardRef, index, poolSet);
+        }
+        public Task enterDeckListItem(DeckCardList deckList, DeckItem[] deckItems, int index, IEnumerable<ICardPoolReference> poolSet)
+        {
+            var cardRef = deckItems[index]?.cardRef;
+            return enterDeckListItem(deckList, cardRef, index, poolSet);
+        }
+        public async Task enterDeckListItem(DeckCardList deckList, DefineReference cardRef, int index, IEnumerable<ICardPoolReference> poolSet)
+        {
+            var poolRef = main.card.getCardPoolReferenceInEnv(cardRef.cardPoolId, poolSet);
+
+            var cardDefine = main.card.getCardDefine(poolRef, cardRef.defineId);
+            var cardSkin = main.card.getCardSkin(poolRef, cardRef.defineId);
+            var listItem = deckList.getListItem(index);
+
+            await showDeckCardListPreview(deckList, cardRef, index, poolSet);
+            scene.addCardPopup(deckList.previewCard, cardDefine, poolSet);
+        }
+        public void exitDeckListItem(DeckCardList deckList)
+        {
+            deckList.hidePreviewCard();
+            scene.removeCardPopup(deckList.previewCard);
+        }
+        public async Task showDeckCardListPreview(DeckCardList deckView, DefineReference defRef, int index, IEnumerable<ICardPoolReference> poolSet)
+        {
+            var cardManager = main.card;
+            var poolRef = cardManager.getCardPoolReferenceInEnv(defRef.cardPoolId, poolSet);
+            var cardDef = cardManager.getCardDefine(poolRef, defRef.defineId);
+            deckView.setPreviewCardVisible(true);
+            deckView.setPreviewCardPosition(index);
+            if (cardDef == null)
+            {
+                deckView.previewCard.setUnknownCard(true);
+            }
+            else
+            {
+                await deckView.previewCard.setCardDefine(cardDef, cardManager, true);
+            }
+        }
+        #endregion
+
         public string getTranslateNameForLanguage(string languageName)
         {
             if (_languageTranslateNameMapList.Find(m => m.languageName == languageName) is LanguageTranslateNamePair pair)
@@ -64,9 +113,8 @@ namespace Game
         }
         #region 属性字段
         public UIDialog dialog => _dialog;
-        public Main main => _main;
-        public float canvasScale => _canvas.transform.localScale.x;
-        public Canvas canvas => _canvas;
+        MainManager main => this.findInstance<MainManager>();
+        MainSceneCtrl scene => this.findInstance<MainSceneCtrl>();
         [SerializeField]
         MainManager _game;
         [SerializeField]

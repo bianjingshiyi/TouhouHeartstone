@@ -139,8 +139,8 @@ namespace Controllers
             _ui.onClickMasterSelectPanelItem += onMasterSelect;
 
             // 卡牌列表
-            _cardPoolViewPanelCtrl.onCardHoverEnter += (item, def) => scene.addLocalCardPopup(item.transform, def);
-            _cardPoolViewPanelCtrl.onCardHoverExit += (item, def) => scene.removeCardPopup(item.transform);
+            _cardPoolViewPanelCtrl.onCardHoverEnter += (item, def) => scene.addLocalCardPopup(item.card, def);
+            _cardPoolViewPanelCtrl.onCardHoverExit += (item, def) => scene.removeCardPopup(item.card);
             _cardPoolViewPanelCtrl.onUpdateCardListItem += onUpdateCardListItem;
             _cardPoolViewPanelCtrl.onStartDragCard += onStartDragCard;
             _cardPoolViewPanelCtrl.onDragCard += onDragCard;
@@ -227,11 +227,12 @@ namespace Controllers
         }
         private async void onDeckCardPointerEnterCallback(int index, PointerEventData eventData)
         {
-            await _ui.deckCardList.showPreviewCardByLocalPool(_deck, index, game.card);
+            var poolSet = game.card.getLocalCardPoolReferences();
+            await game.ui.enterDeckListItem(_ui.deckCardList, _deck, index, poolSet);
         }
         private void onDeckCardPointerExitCallback(int index, PointerEventData eventData)
         {
-            _ui.deckCardList.hidePreviewCard();
+            game.ui.exitDeckListItem(_ui.deckCardList);
         }
         private void onClickDeckListItem(int index)
         {
@@ -857,7 +858,7 @@ namespace Controllers
             if (_isDraggingHorizontal)
             {
                 await showDragCard(_ui.isPositionOverDeckCardList(eventData.position));
-                _ui.deckCardList.hidePreviewCard();
+                game.ui.exitDeckListItem(_ui.deckCardList);
                 _ui.moveDragCard(eventData.position);
                 eventData.Use();
                 return true;

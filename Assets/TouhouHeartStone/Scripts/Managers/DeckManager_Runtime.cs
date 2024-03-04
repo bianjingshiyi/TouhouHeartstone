@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UnityEngine;
 namespace Game
@@ -65,6 +67,15 @@ namespace Game
                 }
             }
             return true;
+        }
+        public async Task<DefineReference> getDeckCardReferenceByIndex(Deck deck, int index, IEnumerable<ICardPoolReference> poolSet)
+        {
+            if (deck == null)
+                return null;
+            var deckItems = await main.card.orderDeckItemsByPoolsInEnv(deck.cardList, poolSet);
+            var deckItem = deckItems[index];
+            var defRef = deckItem.cardRef;
+            return defRef;
         }
         /// <summary>
         /// 卡组是否能用于线上对战

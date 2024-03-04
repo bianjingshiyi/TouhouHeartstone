@@ -145,12 +145,15 @@ namespace Controllers
                     break;
             }
             var deckView = _ui.getDeckCardList(deckType);
-            await deckView.showPreviewCardByLocalPool(deck, index, game.card);
+
+            var poolSet = game.card.getLocalCardPoolReferences();
+
+            await game.ui.enterDeckListItem(deckView, deck, index, poolSet);
         }
         private void onDeckItemPointerExitCallback(int index, PVERoomPanel.DeckList deck)
         {
             var deckView = _ui.getDeckCardList(deck);
-            deckView.hidePreviewCard();
+            game.ui.exitDeckListItem(deckView);
         }
         private async void onGameFinishedCallback(Player[] winners)
         {

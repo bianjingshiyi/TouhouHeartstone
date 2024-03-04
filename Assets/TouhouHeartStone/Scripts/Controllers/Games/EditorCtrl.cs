@@ -278,8 +278,8 @@ namespace Controllers
             _ui.onClickUpdateCardPoolDepsButton += onClickUpdateCardPoolDepsButtonCallback;
 
             _cardPoolViewPanelCtrl.onClickCard += onClickCard;
-            _cardPoolViewPanelCtrl.onCardHoverEnter += (item, def) => scene.addLocalCardPopup(item.transform, def);
-            _cardPoolViewPanelCtrl.onCardHoverExit += (item, def) => scene.removeCardPopup(item.transform);
+            _cardPoolViewPanelCtrl.onCardHoverEnter += (item, def) => scene.addLocalCardPopup(item.card, def);
+            _cardPoolViewPanelCtrl.onCardHoverExit += (item, def) => scene.removeCardPopup(item.card);
             _cardPoolViewPanelCtrl.onUpdateCardListItem += onUpdateCardListItem;
         }
         #endregion

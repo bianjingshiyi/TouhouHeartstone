@@ -30,6 +30,10 @@ namespace UI
             pos.y = item.position.y;
             _previewCardTransform.position = pos;
         }
+        public CardViewDeckCardListItem getListItem(int itemIndex)
+        {
+            return _cardElementList.getElement<CardViewDeckCardListItem>(itemIndex);
+        }
         public int indexOf(CardViewDeckCardListItem item)
         {
             return _cardElementList.indexOf(item);
@@ -123,48 +127,6 @@ namespace UI
         [SerializeField]
         ElementList _cardElementList;
         #endregion
-    }
-    public static class DeckCardListHelper
-    {
-        public static async Task showPreviewCardByLocalPool(this DeckCardList deckView, Deck deck, int index, CardManager cardManager)
-        {
-            if (deck == null)
-                return;
-            var deckItems = await cardManager.orderDeckItemsByLocalPools(deck.cardList);
-            var deckItem = deckItems[index];
-            var defRef = deckItem.cardRef;
-            if (defRef == null)
-                return;
-            var poolRef = cardManager.getLocalCardPoolReference(defRef.cardPoolId);
-            var cardDef = cardManager.getCardDefine(poolRef, defRef.defineId);
-            await deckView.showPreviewCard(cardDef, index, cardManager);
-        }
-        public static async Task showPreviewCardByPoolSet(this DeckCardList deckView, Deck deck, int index, CardManager cardManager, IEnumerable<ICardPoolReference> poolSet)
-        {
-            if (deck == null)
-                return;
-            var deckItems = await cardManager.orderDeckItemsByPoolsInEnv(deck.cardList, poolSet);
-            var deckItem = deckItems[index];
-            var defRef = deckItem.cardRef;
-            if (defRef == null)
-                return;
-            var poolRef = cardManager.getCardPoolReferenceInEnv(defRef.cardPoolId, poolSet);
-            var cardDef = cardManager.getCardDefine(poolRef, defRef.defineId);
-            await deckView.showPreviewCard(cardDef, index, cardManager);
-        }
-        public static async Task showPreviewCard(this DeckCardList deckView, CardDefine define, int index, CardManager cardManager)
-        {
-            deckView.setPreviewCardVisible(true);
-            deckView.setPreviewCardPosition(index);
-            if (define == null)
-            {
-                deckView.previewCard.setUnknownCard(true);
-            }
-            else
-            {
-                await deckView.previewCard.setCardDefine(define, cardManager, true);
-            }
-        }
     }
     public struct DeckCardViewData
     {

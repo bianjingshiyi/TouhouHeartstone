@@ -28,7 +28,7 @@ namespace Controllers
 
             var (generatedPoolInfo, _) = await game.pve.getGeneratedCardPool(_dataName);
             game.editor.setCurrentCardPoolId(generatedPoolInfo.cardPoolId);
-            game.editor.reloadCardPoolEnv(generatedPoolInfo);
+            await game.editor.reloadCardPoolEnv(generatedPoolInfo);
 
             _ui.setCardSelected(false);
             _ui.displayDeckPage();
@@ -218,18 +218,17 @@ namespace Controllers
             var deckItems = getEditorDeckItems();
             var deckItem = deckItems[index];
             await switchToCard(deckItem.cardRef);
-            _ui.deckCardList.hidePreviewCard();
+            game.ui.exitDeckListItem(_ui.deckCardList);
         }
         private async void onDeckItemPointerEnterCallback(int index, PointerEventData pointer)
         {
             var deckItems = getEditorDeckItems();
-            var deckItem = deckItems[index];
-            var cardDefine = game.card.getLocalCardDefine(deckItem.cardRef);
-            await _ui.deckCardList.showPreviewCard(cardDefine, index, game.card);
+            var poolSet = game.card.getLocalCardPoolReferences();
+            await game.ui.enterDeckListItem(_ui.deckCardList, deckItems, index, poolSet);
         }
         private void onDeckItemPointerExitCallback(int index, PointerEventData pointer)
         {
-            _ui.deckCardList.hidePreviewCard();
+            game.ui.exitDeckListItem(_ui.deckCardList);
         }
         #endregion
 

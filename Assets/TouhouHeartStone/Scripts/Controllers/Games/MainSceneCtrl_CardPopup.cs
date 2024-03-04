@@ -1,22 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
-using BJSYGameCore;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using UI;
 using UnityEngine;
 using Timer = BJSYGameCore.Timer;
+using UICard = UI.Card;
 
 namespace Controllers
 {
     partial class MainSceneCtrl
     {
         #region 公有方法
-        public void addLocalCardPopup(Transform targetTransform, CardDefine cardDefine)
+        public void addLocalCardPopup(UICard card, CardDefine cardDefine)
         {
-            addCardPopup(targetTransform, cardDefine, game.card.getLocalCardPoolReferences());
+            addCardPopup(card.centerTransform, cardDefine, game.card.getLocalCardPoolReferences());
+        }
+        public void addCardPopup(UICard card, CardDefine cardDefine, IEnumerable<ICardPoolReference> env)
+        {
+            addCardPopup(card.centerTransform, cardDefine, env);
         }
         public void addCardPopup(Transform targetTransform, CardDefine cardDefine, IEnumerable<ICardPoolReference> env)
         {
@@ -32,6 +35,10 @@ namespace Controllers
             _cardPopupDefine = tokenDefine;
             _cardPopupSkin = skin;
             hideCardPopup();
+        }
+        public void removeCardPopup(UICard card)
+        {
+            removeCardPopup(card.centerTransform);
         }
         public void removeCardPopup(Transform targetTransform)
         {
