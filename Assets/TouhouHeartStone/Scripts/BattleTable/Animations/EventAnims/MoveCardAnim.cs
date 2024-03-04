@@ -96,14 +96,44 @@ namespace Game.BattleTable
             _movingCardId = card.id;
             yield return moveCanceledAnim(table, data, info);
         }
-        public override bool continueNextGroup(AnimationGroup nextGroup)
+        public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
         {
             var parents = getAllParents(eventArg);
-            if (_duration >= _breakDuration && nextGroup.All(a => canAnimContinue(a, parents)))
+            return following.TakeWhile(anim =>
+            {
+                if (anim is MoveCardAnim move)
+                {
+                    if (move._movingCardId == _movingCardId) // 不能加速当前卡牌的移动。
+                        return false;
+
+                    // 父事件相同
+                    IEventArg parent = move.eventArg;
+                    while (parent != null)
+                    {
+                        if (parents.Contains(parent))
+                            return true;
+                        parent = parent.parent;
+                    }
+                }
+                else if (anim.isInstantAnimation())
+                {
+                    return true;
+                }
+                return false;
+            });
+        }
+        public override bool blockAnimInGroup(TableAnimation other)
+        {
+            if (other is MoveCardAnim move)
+            {
+                if (_duration < _breakDuration)
+                    return true;
+            }
+            else if (other.isInstantAnimation())
             {
                 return true;
             }
-            return base.continueNextGroup(nextGroup);
+            return base.blockAnimInGroup(other);
         }
         #endregion
 
@@ -373,28 +403,6 @@ namespace Game.BattleTable
                     return true;
                 if (fromName == PILE.WARP) // 不播放法术从暂存区置入墓地的动画
                     return true;
-            }
-            return false;
-        }
-        private bool canAnimContinue(TableAnimation anim, IEnumerable<IEventArg> parents)
-        {
-            if (anim is MoveCardAnim move)
-            {
-                if (move._movingCardId == _movingCardId) // 不能加速当前卡牌的移动。
-                {
-                    return false;
-                }
-                IEventArg parent = move.eventArg;
-                while (parent != null)
-                {
-                    if (parents.Contains(parent))
-                        return true;
-                    parent = parent.parent;
-                }
-            }
-            else if (anim.isInstantAnimation())
-            {
-                return true;
             }
             return false;
         }
