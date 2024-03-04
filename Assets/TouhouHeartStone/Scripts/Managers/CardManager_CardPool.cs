@@ -148,14 +148,7 @@ namespace Game
                 finishCreatingCardPool();
 
 
-            if (isInnateCardPool(cardPoolInfo))
-            {
-                //官方卡池只能保存到指定路径下面，也就是工程文件
-                var cardPoolName = cardPoolInfo.cardPoolName;
-                path = Path.Combine(editorCardPoolDirName, $"{cardPoolName}.{cardPoolFilePostfix}");
-                path = Path.GetFullPath(path);
-            }
-            else if (path.isStreamingAssetsPath(out var streamingPath))
+            if (path.isStreamingAssetsPath(out var streamingPath))
             {
                 //如果是StreamingAssets，那要转存成可持续化文件
                 path = Path.Combine(Application.persistentDataPath, streamingPath);
