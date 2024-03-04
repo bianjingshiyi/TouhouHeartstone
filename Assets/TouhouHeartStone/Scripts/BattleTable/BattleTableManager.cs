@@ -633,6 +633,8 @@ namespace Game.BattleTable
 
             table.SelfGem.setGem(0);
             table.EnemyGem.setGem(0);
+            table.SelfGem.setMaxGem(0);
+            table.EnemyGem.setMaxGem(0);
 
             table.SelfItem.setExist(false);
             table.EnemyItem.setExist(false);
