@@ -1431,7 +1431,9 @@ namespace Game.BattleTable
             if (list != table.SelfHandList) return;
 
             if (list.isZoomIn)
-                list.zoomOut();
+            {
+                zoomHand(false);
+            }
         }
         private void onHandItemClickCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
@@ -1443,9 +1445,9 @@ namespace Game.BattleTable
                 return;
 
             if (list.isZoomIn)
-                list.zoomOut();
+                zoomHand(false);
             else
-                list.zoomIn();
+                zoomHand(true);
         }
         private void onHandItemBeginDragCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
@@ -1574,7 +1576,7 @@ namespace Game.BattleTable
                     //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
                     enterTargetSelectMode(TargetSelectMode.Use, card, card.getAvaliableTargets(game));
                     addServantPreviewAnim(card, index, pos);
-                    table.SelfHandList.zoomOut();//手牌缩小
+                    zoomHand(false);//手牌缩小
                 }
                 else
                 {
@@ -1595,7 +1597,7 @@ namespace Game.BattleTable
                 {
                     //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
                     enterTargetSelectMode(TargetSelectMode.Use, card, card.getAvaliableTargets(game));
-                    table.SelfHandList.zoomOut();//手牌缩小
+                    zoomHand(false);//手牌缩小
                 }
                 else
                 {
@@ -2276,7 +2278,7 @@ namespace Game.BattleTable
                 hand.setSpellReady(true);
             }
             enterTargetSelectMode(TargetSelectMode.Use, card, card.getAvaliableTargets(game));
-            table.SelfHandList.zoomOut();//手牌缩小
+            zoomHand(false);//手牌缩小
         }
         private void playSpellCard(Card card, PointerEventData pointer)
         {
@@ -2651,6 +2653,14 @@ namespace Game.BattleTable
             if (orderByCost)
                 cards = cards.OrderBy(c => game.getCard(c).define.getCost());
             return cards;
+        }
+        private void zoomHand(bool expand)
+        {
+            table.SelfGem.setExpand(expand);
+            if (expand)
+                table.SelfHandList.zoomIn();
+            else
+                table.SelfHandList.zoomOut();
         }
         #region 更新可控制高光
         private void updateAllControlable()

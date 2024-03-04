@@ -9880,6 +9880,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SelfGem
       objectReference: {fileID: 0}
+    - target: {fileID: 3247310782527546858, guid: 2407e9f5b94837141b755277e0f251a0,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.2
+      objectReference: {fileID: 0}
     - target: {fileID: 4794665175828714291, guid: 2407e9f5b94837141b755277e0f251a0,
         type: 3}
       propertyPath: m_RootOrder
