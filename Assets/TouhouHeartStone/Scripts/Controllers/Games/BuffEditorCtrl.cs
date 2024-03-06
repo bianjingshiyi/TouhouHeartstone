@@ -596,6 +596,7 @@ namespace Controllers
                    game.card.removeBuffDefine(curCardPoolId, _buffDefine.id);
                    game.card.removeAllBuffSkins(curCardPoolId, _buffDefine.id);
                    scene.editor.markCardPoolUnsaved(curCardPoolId);
+                   scene.editor.removeDisplayPageOfObject(_buffDefine);
                    await exit(true);
                });
         }

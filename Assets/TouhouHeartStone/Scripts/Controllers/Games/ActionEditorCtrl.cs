@@ -163,6 +163,7 @@ namespace Controllers
                    scene.editor.updateAllEvents();
                    scene.editor.markCardPoolUnsaved(curCardPoolId);
                    //返回上个界面
+                   scene.editor.removeDisplayPageOfObject(_actionDefine);
                    await exit(true);
                });
         }

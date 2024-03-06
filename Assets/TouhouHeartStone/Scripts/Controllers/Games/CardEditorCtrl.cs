@@ -664,6 +664,7 @@ namespace Controllers
                    //删除当前卡牌
                    game.card.removeCard(_cardDefine);
                    scene.editor.markCardPoolUnsaved(curCardPoolId);
+                   scene.editor.removeDisplayPageOfObject(_cardDefine);
                    await exit(true);
                });
         }

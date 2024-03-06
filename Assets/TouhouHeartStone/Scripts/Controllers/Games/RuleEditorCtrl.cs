@@ -85,6 +85,7 @@ namespace Controllers
                    game.card.removeRuleLogic(curCardPoolId, _ruleLogic.id);
                    scene.editor.markCardPoolUnsaved(curCardPoolId);
                    //返回上个界面
+                   scene.editor.removeDisplayPageOfObject(_ruleLogic);
                    await exit(true);
                });
         }
