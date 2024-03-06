@@ -50,7 +50,12 @@ namespace TouhouHeartstone
                 if (target == null)
                     continue;
                 var damageArg = await target.damage(game, source, 1);
-                hit.Add(damageArg.getVar<Card>(VAR_CARD));
+                if (damageArg == null)
+                    continue;
+                var card = damageArg.getVar<Card>(DamageEventDefine.VAR_TARGET);
+                if (card == null)
+                    continue;
+                hit.Add(card);
             }
             arg.setVar(VAR_DAMAGED_CARDS, hit.ToArray());
         }

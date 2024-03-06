@@ -48,8 +48,13 @@ namespace TouhouHeartstone
                 if (card == null)
                     continue;
                 Buff buff = new Buff(buffDefine);
+                var eventArg = await card.addBuff(game, buff);
+                if (eventArg == null)
+                    continue;
+                var addedBuff = eventArg.getVar(AddBuffEventDefine.VAR_BUFF);
+                if (buff == null)
+                    continue;
                 buffList.Add(buff);
-                await card.addBuff(game, buff);
             }
             arg.setVar(VAR_BUFF, buffList.ToArray());
         }
