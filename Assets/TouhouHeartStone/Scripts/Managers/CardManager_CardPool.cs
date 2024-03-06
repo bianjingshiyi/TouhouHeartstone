@@ -829,12 +829,15 @@ namespace Game
         }
         public bool isCardPoolHidden(long cardPoolId)
         {
+            if (_creatingCardPoolInfo != null && _creatingCardPoolInfo.cardPoolId == cardPoolId)
+                return false;
+
             var localPoolRef = getLocalCardPoolReference(cardPoolId);
             if (localPoolRef != null)
             {
                 var path = getCardPoolPath(localPoolRef)?.Replace("/", "\\");
                 var dir = game.pve.getCardPoolFileDirectory()?.Replace("/", "\\");
-                if (path.StartsWith(dir))
+                if (!string.IsNullOrEmpty(path) && path.StartsWith(dir))
                 {
                     return true;
                 }
