@@ -299,7 +299,7 @@ namespace Controllers
             var nodeRect = item.getNodeItemRect();
             var inputDefines = node.inputPorts.Select(p => p.define).ToArray();
             var outputDefines = node.outputPorts.Select(p => p.define).ToArray();
-            var connectedInputs = node.inputPorts.Select(p => p.connections.Any()).ToArray();
+            var connectedInputs = node.inputPorts.Select(p => p.connections.Any() || (p is ValueInput vi && vi.hasValue())).ToArray();
             var connectedOutputs = node.outputPorts.Select(p => p.connections.Any()).ToArray();
             return findNodeSnapTargets(nodeRect, inputDefines, outputDefines, connectedInputs, connectedOutputs, item);
         }
@@ -426,7 +426,8 @@ namespace Controllers
                 {
                     var target = targets.FirstOrDefault(o =>
                     {
-                        return o.connections.Count() <= 0 && PortDefine.CanTypeConvert(def.type, o.define.type) && def.GetPortType() == o.GetPortType();
+                        bool hasValue = o is ValueInput vi ? vi.hasValue() : o.connections.Count() > 0;
+                        return !hasValue && PortDefine.CanTypeConvert(def.type, o.define.type) && def.GetPortType() == o.GetPortType();
                     });
                     if (target != null)
                     {
