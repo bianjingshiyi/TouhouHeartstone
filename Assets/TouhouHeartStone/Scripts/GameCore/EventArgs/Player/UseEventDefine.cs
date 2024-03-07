@@ -53,6 +53,9 @@ namespace TouhouHeartstone
             }
             else if (card.isSkill())
             {
+                //使用技能，设置技能使用状态为“已使用”
+                //需要在触发效果前，因为在触发效果后的话，会无法被效果复原。
+                await card.setUsed(game, true);
                 await card.triggerActiveEffect(game, targets);
             }
             else if (card.isSpell())
