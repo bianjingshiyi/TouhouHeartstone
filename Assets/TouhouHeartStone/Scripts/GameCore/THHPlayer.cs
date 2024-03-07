@@ -464,11 +464,6 @@ namespace TouhouHeartstone
             var cost = card.getCost(game);
             await player.setGem(game, player.getGem() - cost);//消耗法力值
             await UseEventDefine.doEvent(game, player, card, position, targets, cost);
-            if (card.isSkill())
-            {
-                //使用技能，设置技能使用状态为“已使用”
-                await card.setUsed(game, true);
-            }
             return true;
         }
         public static Card getMaster(this Player player) => player.getPile(PILE.MASTER)[0];
