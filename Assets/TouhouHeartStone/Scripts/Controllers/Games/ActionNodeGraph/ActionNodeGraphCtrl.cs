@@ -447,7 +447,7 @@ namespace Controllers
         {
             if (node == null)
                 return;
-            foreach (var inputPort in node.inputPorts)
+            foreach (var inputPort in node.inputPorts.ToArray())
             {
                 var name = inputPort.name;
                 var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
