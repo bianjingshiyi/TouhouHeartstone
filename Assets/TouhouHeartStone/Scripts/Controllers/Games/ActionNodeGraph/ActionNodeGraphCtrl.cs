@@ -2129,7 +2129,10 @@ namespace Controllers
                     if (typeof(IEventArg).IsAssignableFrom(portType))
                     {
                         var meta = connectedOutput.define.metas?.OfType<EventTypePortMeta>()?.FirstOrDefault();
-                        return new EventReference(0, EventHelper.getName(meta.eventType));
+                        if (meta != null)
+                        {
+                            return new EventReference(0, EventHelper.getName(meta.eventType));
+                        }
                     }
                 }
             }
