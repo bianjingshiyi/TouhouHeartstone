@@ -322,9 +322,10 @@ namespace Controllers
 
             // 粘贴
             var definer = getNodeDefiner();
-            var rect = new Rect(targetGraph.centerX - targetGraph.width * 0.5f, targetGraph.centerY - targetGraph.height * 0.5f, targetGraph.width, targetGraph.height);
+            var rect = targetGraph.evaluateGraphRect();
+            var bufferRect = buffer.evaluateGraphRect();
             var rightTop = new Vector2(rect.xMax, rect.yMax);
-            var pos = rightTop + new Vector2(200 + buffer.width * 0.5f, buffer.height * -0.5f);
+            var pos = rightTop + new Vector2(200 + bufferRect.width * 0.5f, bufferRect.height * -0.5f);
             ActionNodeGraphCtrl.pasteNodes(seri, targetGraph, pos, definer, out var idMap);
             return idMap;
         }

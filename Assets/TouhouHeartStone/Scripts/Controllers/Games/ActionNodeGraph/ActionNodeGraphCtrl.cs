@@ -212,7 +212,8 @@ namespace Controllers
         public static ActionGraph pasteNodes(SerializableActionNodeGraph seri, ActionGraph graph, Vector2 pos, INodeDefiner definer, out Dictionary<int, int> idMap)
         {
             var clipGraph = seri.toActionGraph(definer);
-            Vector2 centerPos = new Vector2(clipGraph.centerX, clipGraph.centerY);
+            var graphRect = clipGraph.evaluateGraphRect();
+            Vector2 centerPos = graphRect.center;
             idMap = new Dictionary<int, int>();
             foreach (var node in clipGraph.nodes)
             {

@@ -1,10 +1,32 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Numerics;
 using TouhouCardEngine;
+using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace TouhouHeartstone
 {
     public static class THHActionGraph
     {
+        public static Rect evaluateGraphRect(this ActionGraph graph)
+        {
+            //计算输入的宽度
+            float maxX = float.MinValue;
+            float minX = float.MaxValue;
+            float maxY = float.MinValue;
+            float minY = float.MaxValue;
+            foreach (var node in graph.nodes)
+            {
+                maxX = Math.Max(node.posX, maxX);
+                minX = Math.Min(node.posX, minX);
+                maxY = Math.Max(node.posY, maxY);
+                minY = Math.Min(node.posY, minY);
+            }
+            var width = maxX - minX;
+            var height = maxY - minY;
+            return new Rect(minX, minY, width, height);
+        }
         public static ActiveEntryNode createActiveEntryNode(this ActionGraph graph, float posX = 0, float posY = 0)
         {
             int id = graph.getUniqueNodeId();
