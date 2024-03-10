@@ -74,8 +74,8 @@ namespace TouhouHeartstone
                         {
                             await target.loseArmor(game, damage);
                             game.logger.logTrace($"{target}受到{damage}点伤害，护甲=>{target.getArmor(game)}");
-                            await onDealKeywords(game, source, target, damage);
                             arg.setVar(VAR_DAMAGED_VALUE, damage);
+                            await onDealKeywords(game, source, target, damage);
                         }
                         else
                         {
@@ -83,16 +83,16 @@ namespace TouhouHeartstone
                             await target.loseArmor(game, armor);
                             await target.setCurrentLife(game, target.getCurrentLife(game) - leakDamage);
                             game.logger.logTrace($"{target}受到{damage}点伤害，护甲=>{target.getArmor(game)}，生命值=>{target.getCurrentLife(game)}");
-                            await onDealKeywords(game, source, target, damage);
                             arg.setVar(VAR_DAMAGED_VALUE, damage);
+                            await onDealKeywords(game, source, target, damage);
                         }
                     }
                     else
                     {
                         await target.setCurrentLife(game, target.getCurrentLife(game) - damage);
                         game.logger.logTrace($"{target}受到{damage}点伤害，生命值=>{target.getCurrentLife(game)}");
-                        await onDealKeywords(game, source, target, damage);
                         arg.setVar(VAR_DAMAGED_VALUE, damage);
+                        await onDealKeywords(game, source, target, damage);
                     }
                 }
                 else

@@ -43,11 +43,9 @@ namespace Game.BattleTable
 
         public override bool continueNextGroup(AnimationGroup nextGroup)
         {
-            if (nextGroup.Any(a => a is RequestAnimation))
-                return false;
-            if (nextGroup.Any(a => a is TurnEndAnimation))
-                return false;
-            return true;
+            if (!nextGroup.Any(a => a is RequestAnimation || a is TurnEndAnimation))
+                return true;
+            return base.continueNextGroup(nextGroup);
         }
     }
 }
