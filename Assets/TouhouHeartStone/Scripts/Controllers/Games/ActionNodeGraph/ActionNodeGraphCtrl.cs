@@ -34,10 +34,11 @@ namespace Controllers
             var typeInfos = GraphTypes.getAllPortTypeInfos();
             var keywords = EditorManager.editorKeywords;
             cardTypeValues = game.editor.getCardTypes();
+            typeValues = typeInfos.Select(i => i.type.Name).ToArray();
             var fieldProps = new ValueInputFieldProperties()
             {
                 graphTypeNames = game.editor.getEditorPortTypeNames(),
-                graphTypeValues = typeInfos.Select(i => i.type.Name).ToArray(),
+                graphTypeValues = typeValues,
 
                 eventNames = eventEditorNames,
                 eventValues = eventReferences,
