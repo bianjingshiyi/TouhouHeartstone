@@ -17,7 +17,7 @@ namespace Game.BattleTable
                 animState = EventAnimState.Started;
                 yield return startUpdate(table);
                 animState = EventAnimState.StartFinished;
-                while (shouldPause())
+                while (shouldPauseAfterStart())
                 {
                     yield return null;
                 }
@@ -59,9 +59,10 @@ namespace Game.BattleTable
         {
             if (animState == EventAnimState.StartFinished)
             {
-                if (!eventArg.isCompleted)
+                // 事件没有完成，并且该动画不是通过请求动画强行播放的，则继续后续动画。
+                if (isEventPausedAfterStart())
                     return true;
-                if (shouldPause() && isAnimGroupInsertedAnimOfThis(nextGroup))
+                if (shouldPauseAfterStart() && isAnimGroupInsertedAnimOfThis(nextGroup))
                     return true;
             }
             return base.continueNextGroup(nextGroup);
@@ -80,7 +81,7 @@ namespace Game.BattleTable
         #region 私有方法
         protected IEnumerator pauseWhileNotCompleted()
         {
-            while (!eventArg.isCompleted)
+            while (isEventPausedAfterStart())
                 yield return null;
             yield break;
         }
@@ -97,9 +98,13 @@ namespace Game.BattleTable
         {
             return cards.Select(c => table.game.snapshotCard(c)).ToArray();
         }
-        private bool shouldPause()
+        private bool shouldPauseAfterStart()
         {
-            bool notCompleted = !eventArg.isCompleted;
+            // 事件在事件前被停住了；（泰坦，XX时触发。）
+            // 或者存在事件前插入的动画；（陷阱）
+            // 并且当没有事件变量发生改变时；（古明地恋多次修改目标）
+            // 暂停该动画。
+            bool notCompleted = isEventPausedAfterStart();
             bool hasInsertAnim = insertedAnims != null && insertedAnims.Count > 0 && insertedAnims.Any(a => !a.isFinished());
             return (notCompleted || hasInsertAnim) && !_varChanged;
         }
@@ -108,6 +113,10 @@ namespace Game.BattleTable
             if (insertedAnims == null || insertedAnims.Count <= 0)
                 return false;
             return nextGroup.Any(a => insertedAnims.Contains(a));
+        }
+        private bool isEventPausedAfterStart()
+        {
+            return eventArg.state == EventState.Before;
         }
         #endregion
 
