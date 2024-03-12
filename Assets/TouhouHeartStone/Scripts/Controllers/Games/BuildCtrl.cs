@@ -792,7 +792,8 @@ namespace Controllers
                 //当前不在编辑卡组，禁用拖拽
                 return false;
             //记录拖拽信息
-            _dragStartPosition = eventData.position;
+            Vector2 worldPos = eventData.pointerCurrentRaycast.worldPosition;
+            _dragStartPosition = worldPos;
             _isDraggingHorizontal = false;
             _isDraggingVertical = false;
             _isDraggingDeckListItem = false;
@@ -800,7 +801,8 @@ namespace Controllers
         }
         private async Task initDeckItemDrag(PointerEventData eventData, int deckListItemIndex)
         {
-            var delta = _dragStartPosition - eventData.position;
+            Vector2 worldPos = eventData.pointerCurrentRaycast.worldPosition;
+            var delta = _dragStartPosition - worldPos;
             if (delta.magnitude > 0)
             {
                 if (Math.Abs(delta.x) > Math.Abs(delta.y))
@@ -818,7 +820,7 @@ namespace Controllers
                             if (cardRef != null)
                                 _dragCard = game.card.getLocalCardDefine(cardRef);
                         }
-                        await showDragCard(_ui.isPositionOverDeckCardList(eventData.position), true);
+                        await showDragCard(_ui.isPositionOverDeckCardList(worldPos), true);
                     }
                 }
                 else
@@ -857,9 +859,10 @@ namespace Controllers
                 await initDeckItemDrag(eventData, index);
             if (_isDraggingHorizontal)
             {
-                await showDragCard(_ui.isPositionOverDeckCardList(eventData.position));
+                Vector2 worldPos = eventData.pointerCurrentRaycast.worldPosition;
+                await showDragCard(_ui.isPositionOverDeckCardList(worldPos));
                 game.ui.exitDeckListItem(_ui.deckCardList);
-                _ui.moveDragCard(eventData.position);
+                _ui.moveDragCard(worldPos);
                 eventData.Use();
                 return true;
             }
@@ -874,7 +877,7 @@ namespace Controllers
             {
                 //横向拖拽
                 //执行操作
-                if (_dragCard != null && _ui.isPositionOverDeckCardList(eventData.position))
+                if (_dragCard != null && _ui.isPositionOverDeckCardList(eventData.pointerCurrentRaycast.worldPosition))
                 {
                     if (tryAddCardToDeck(_dragCard, out string errorTip))
                     {

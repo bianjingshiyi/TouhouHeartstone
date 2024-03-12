@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using FreespaceFinder;
 using Game;
 using TouhouCardEngine;
@@ -628,30 +629,36 @@ namespace UI
         }
         public void onBackgroundDrag(BaseEventData eventData)
         {
+            if (eventData is not PointerEventData pointer || !pointer.pointerCurrentRaycast.isValid)
+                return;
             setFocused();
+            Vector2 worldPos = pointer.pointerCurrentRaycast.worldPosition;
             _isDragging = true;
             if (shouldDragSelectionFrame(eventData))
             {
-                updateSelectFrame();
+                updateSelectFrame(pointer);
                 return;
             }
             _longPressTimer.reset();
             if (!_isTouchZooming)
             {
-                _content.position = (Vector2)Input.mousePosition - _backgroundDragStartPosition;
+                _content.position = worldPos - _backgroundDragStartPosition;
                 clearFreePlaceCheckRegion();
             }
         }
         public void onBackgroundBeginDrag(BaseEventData eventData)
         {
+            if (eventData is not PointerEventData pointer || !pointer.pointerCurrentRaycast.isValid)
+                return;
             setFocused();
+            Vector2 worldPos = pointer.pointerCurrentRaycast.worldPosition;
             if (shouldDragSelectionFrame(eventData))
             {
-                _selectFrameDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_content.position;
+                _selectFrameDragStartPosition = worldPos - (Vector2)_content.position;
                 return;
             }
             _longPressTimer.reset();
-            _backgroundDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_content.position;
+            _backgroundDragStartPosition = worldPos - (Vector2)_content.position;
         }
         public void OnBackgroundEndDrag(BaseEventData eventData)
         {
@@ -920,6 +927,7 @@ namespace UI
         }
         private void onBeginDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
+            if (!eventData.pointerCurrentRaycast.isValid) return;
             if (_isTouchZooming) return;
 
             setFocused();
@@ -929,16 +937,19 @@ namespace UI
             }
 
             _dragItem = item;
-            _dragItemPositionOffset = (item.transform as RectTransform).anchoredPosition - (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position);
+            Vector2 worldPos = eventData.pointerCurrentRaycast.worldPosition;
+            _dragItemPositionOffset = (item.transform as RectTransform).anchoredPosition - (Vector2)_actionNodesRoot.InverseTransformPoint(worldPos);
             onBeginDragActionNode?.Invoke(item);
         }
         private void onDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
+            if (!eventData.pointerCurrentRaycast.isValid) return;
             if (item != _dragItem)
                 return;
 
             setFocused();
-            Vector2 graphPosition = (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position) + _dragItemPositionOffset;
+            Vector2 worldPos = eventData.pointerCurrentRaycast.worldPosition;
+            Vector2 graphPosition = (Vector2)_actionNodesRoot.InverseTransformPoint(worldPos) + _dragItemPositionOffset;
             if (!isNodeSelected(item))
             {
                 clearAndSelectNode(item);
@@ -1178,11 +1189,11 @@ namespace UI
             return 0.5f * viewSize - viewCenter;
         }
         #region 节点选择
-        private void updateSelectFrame()
+        private void updateSelectFrame(PointerEventData pointer)
         {
             _selectFrameTrans.gameObject.SetActive(true);
             var startPos = _selectFrameDragStartPosition + (Vector2)_content.position;
-            var endPos = (Vector2)Input.mousePosition;
+            var endPos = pointer.pointerCurrentRaycast.worldPosition;
 
             var minPos = Vector2.Min(startPos, endPos);
             var maxPos = Vector2.Max(startPos, endPos);

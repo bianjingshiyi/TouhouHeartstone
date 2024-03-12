@@ -258,7 +258,7 @@ namespace UI
         {
             //记录拖拽信息
             _dragNode = _filteredDefines[index];
-            _dragStartPosition = data.position;
+            _dragStartPosition = data.pointerCurrentRaycast.worldPosition;
             _isDraggingHorizontal = false;
             _isDraggingVertical = false;
             _actionGraphCtrl.hidePreviewNode();
@@ -271,10 +271,11 @@ namespace UI
                 //判断是否在拖拽节点，避免事件错误发生
                 return Task.FromResult(false);
             }
+            Vector2 worldPos = data.pointerCurrentRaycast.worldPosition;
             if (!_isDraggingHorizontal && !_isDraggingVertical)
             {
                 //还没有进入拖拽状态
-                var delta = _dragStartPosition - data.position;
+                var delta = _dragStartPosition - worldPos;
                 if (delta.magnitude > 0)
                 {
                     if (Math.Abs(delta.x) > Math.Abs(delta.y))
@@ -284,7 +285,7 @@ namespace UI
                         {
                             //横向拖拽并且大于阈值，设置节点显示
                             _isDraggingHorizontal = true;
-                            dragNode(data.position);
+                            dragNode(data.pointerCurrentRaycast.worldPosition);
                         }
                     }
                     else
@@ -298,7 +299,7 @@ namespace UI
             }
             else if (_isDraggingHorizontal)
             {
-                dragNode(data.position);
+                dragNode(worldPos);
                 return Task.FromResult(true);
             }
             else if (_isDraggingVertical)
@@ -325,9 +326,10 @@ namespace UI
                 return false;
             }
             //执行操作
-            if (isPositionOverActionGraph(data.position) && !_actionGraphCtrl.isReadonly)
+            Vector2 worldPos = data.pointerCurrentRaycast.worldPosition;
+            if (isPositionOverActionGraph(worldPos) && !_actionGraphCtrl.isReadonly)
             {
-                var pos = _actionGraphContent.InverseTransformPoint(data.position);
+                var pos = _actionGraphContent.InverseTransformPoint(worldPos);
                 pos = _actionGraphCtrl.getNodeSnapPreviewPosition(pos);
                 var node = await _actionGraphCtrl.createNode(_dragNode, pos);
                 if (node != null && _actionGraphCtrl.isNodeSnapped())

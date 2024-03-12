@@ -95,7 +95,7 @@ namespace Controllers
         {
             if (!_draggingGem)
                 return;
-            _draggingGem.move(pointer.position);
+            _draggingGem.move(pointer.pointerCurrentRaycast.worldPosition);
         }
         private async void onInventoryGemEndDragCallback(int index, PointerEventData pointer)
         {
@@ -161,7 +161,7 @@ namespace Controllers
                 return;
             if (_draggingGemSlotGroupIndex < 0 || _draggingGemSlotIndex < 0)
                 return;
-            _draggingGem.move(pointer.position);
+            _draggingGem.move(pointer.pointerCurrentRaycast.worldPosition);
         }
         private async void onSlotGemEndDragCallback(int groupIndex, int slotIndex, PointerEventData pointer)
         {
