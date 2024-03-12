@@ -588,6 +588,8 @@ namespace Game
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_KEYWORD = "关键词";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
+        public const string EDITOR_TYPE_NAME_KEYWORD_COLLECTION = "关键词集合";
+        [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_BUFF_DEFINE = "增益定义";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_BUFF_REFERENCE = "增益定义引用";

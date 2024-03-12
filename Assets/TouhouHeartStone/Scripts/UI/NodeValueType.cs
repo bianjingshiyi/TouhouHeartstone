@@ -109,6 +109,7 @@ namespace UI
                         new NodeValueType(ActionNodeValueType.boolean),
                         new NodeValueType(ActionNodeValueType.integer),
                         new NodeValueType(ActionNodeValueType.text),
+                        new NodeValueType(ActionNodeValueType.keyword),
                         new NodeValueType(ActionNodeValueType.cardReference),
                         new NodeValueType(ActionNodeValueType.buffReference),
                     };
