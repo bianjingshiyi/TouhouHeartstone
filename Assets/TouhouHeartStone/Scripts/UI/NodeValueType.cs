@@ -173,7 +173,8 @@ namespace UI
             { typeof(BuffReference), ActionNodeValueType.buffReference },
             { typeof(PileName), ActionNodeValueType.pileName },
             { typeof(PileNameCollection), ActionNodeValueType.pileNameCollection },
-            { typeof(KeywordCollection), ActionNodeValueType.keywords },
+            { typeof(KeywordName), ActionNodeValueType.keyword },
+            { typeof(KeywordCollection), ActionNodeValueType.keywordCollection },
             { typeof(EventArgReference), ActionNodeValueType.eventReference },
             { typeof(EventReference), ActionNodeValueType.eventReference },
             { typeof(EventTriggerTime), ActionNodeValueType.eventTriggerTime },
@@ -200,7 +201,8 @@ namespace UI
             { ActionNodeValueType.buffReference, () => new BuffReference(0, 0) },
             { ActionNodeValueType.pileName, () => new PileName(string.Empty) },
             { ActionNodeValueType.pileNameCollection, () => new PileNameCollection() },
-            { ActionNodeValueType.keywords, () => new KeywordCollection() },
+            { ActionNodeValueType.keyword, () => new KeywordName(string.Empty) },
+            { ActionNodeValueType.keywordCollection, () => new KeywordCollection() },
             { ActionNodeValueType.eventReference, () => new EventReference(0, string.Empty) },
             { ActionNodeValueType.eventTriggerTime, () => new EventTriggerTime(new EventReference(0, string.Empty), EventTriggerTimeType.Before) },
             { ActionNodeValueType.cardPropertyNameSet, () => new CardPropertySetterName(string.Empty) },
@@ -261,7 +263,11 @@ namespace UI
         /// <summary>
         /// 关键词
         /// </summary>
-        keywords,
+        keyword,
+        /// <summary>
+        /// 关键词列表
+        /// </summary>
+        keywordCollection,
         /// <summary>
         /// 单个效果标签
         /// </summary>

@@ -156,7 +156,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsKeywords(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_KEYWORD)] string select)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_KEYWORD)] KeywordName select)
         {
             if (card == null)
                 return false;

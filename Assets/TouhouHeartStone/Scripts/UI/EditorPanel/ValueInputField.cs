@@ -412,7 +412,7 @@ namespace UI
                     callValueChangedCallback(effectTagCol);
                 }
             }
-            else if (valueType == ActionNodeValueType.keywords)
+            else if (valueType == ActionNodeValueType.keywordCollection)
             {
                 if (!(_valueInfo.value is KeywordCollection keywordCol))
                 {
@@ -706,6 +706,10 @@ namespace UI
                 case ActionNodeValueType.pileName:
                     updateInputDropdownValue<PileName>(_pileNames, _pileValues);
                     break;
+                // 牌堆名称
+                case ActionNodeValueType.keyword:
+                    updateInputDropdownValue<KeywordName>(_keywordNames, _keywordValues);
+                    break;
                 // 设置卡牌属性
                 case ActionNodeValueType.cardPropertyNameSet:
                     {
@@ -771,7 +775,7 @@ namespace UI
                 else
                     _multiInputDropdown.setValuesWithoutNotify(Array.Empty<string>());
             }
-            else if (valueType == ActionNodeValueType.keywords)
+            else if (valueType == ActionNodeValueType.keywordCollection)
             {
                 _multiInputDropdown.gameObject.SetActive(true);
                 _multiInputDropdown.setDropdownValues(_keywordNames, _keywordValues);

@@ -898,7 +898,7 @@ namespace Controllers
                 else if (propModifier is DamageReduceModifier)
                     return ActionNodeValueType.integer;
                 else if (propModifier is KeywordsModifier)
-                    return ActionNodeValueType.keywords;
+                    return ActionNodeValueType.keywordCollection;
                 else if (propModifier is SpellDamageModifier)
                     return ActionNodeValueType.integer;
                 else if (propModifier is CustomPropertyModifier)

@@ -123,7 +123,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool CardSnapshotHasKeywords(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_SNAPSHOT)] CardSnapshot card,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_KEYWORD)] string select)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_KEYWORD)] KeywordName select)
         {
             if (card == null)
                 return false;
