@@ -56,7 +56,7 @@ namespace TouhouHeartstone
         }
         public static Task<EventArg> doEvent(CardEngine game, Card[] targets, Player player)
         {
-            var define = game.getEventDefine<MassEnterFieldEventDefine>();
+            var define = game.getEventDefine<MassMoveToHeadEventDefine>();
             var arg = new EventArg(game, define);
             arg.setVar(VAR_CARD, targets);
             arg.setVar(VAR_PLAYER, player);
