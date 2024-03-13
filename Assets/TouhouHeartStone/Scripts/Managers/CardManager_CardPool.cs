@@ -867,8 +867,8 @@ namespace Game
             if (Application.isEditor)
             {
                 //编辑器下的官方卡池，位于项目文件夹下的ExternalData中
-                var startPath = Path.GetFullPath(_editorCardPoolDirName);
-                if (Path.GetFullPath(path).StartsWith(startPath))
+                var startPath = Path.GetFullPath(_editorCardPoolDirName).Replace("/", "\\");
+                if (path.StartsWith(startPath))
                     return true;
             }
 
