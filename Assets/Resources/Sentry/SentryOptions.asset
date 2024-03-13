@@ -61,7 +61,7 @@ MonoBehaviour:
   <NdkScopeSyncEnabled>k__BackingField: 1
   <WindowsNativeSupportEnabled>k__BackingField: 1
   <MacosNativeSupportEnabled>k__BackingField: 1
-  <LinuxNativeSupportEnabled>k__BackingField: 1
+  <LinuxNativeSupportEnabled>k__BackingField: 0
   <Il2CppLineNumberSupportEnabled>k__BackingField: 1
   <RuntimeOptionsConfiguration>k__BackingField: {fileID: 0}
   <BuildTimeOptionsConfiguration>k__BackingField: {fileID: 0}
