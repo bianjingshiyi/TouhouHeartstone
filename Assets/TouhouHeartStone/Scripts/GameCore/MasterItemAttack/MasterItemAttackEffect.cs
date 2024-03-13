@@ -48,9 +48,7 @@ namespace TouhouHeartstone
             game.logger.logTrace("Effect", $"{card}注销触发器{this}");
             var eventRef = new EventReference(0, EventHelper.getName(eventType));
             var triggerTime = new EventTriggerTime(eventRef, triggerType);
-            var triggers = game.triggers.getTriggers(triggerTime);
-            var trigger = triggers.FirstOrDefault(t => t is EffectTrigger eventTrigger && eventTrigger.effect == this);
-            game.triggers.remove(triggerTime, trigger);
+            game.triggers.removeAll(triggerTime, t => t is EffectTrigger eventTrigger && eventTrigger.effect == this);
             return Task.CompletedTask;
         }
 

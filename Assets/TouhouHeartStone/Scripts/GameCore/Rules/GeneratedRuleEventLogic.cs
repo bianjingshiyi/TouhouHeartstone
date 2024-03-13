@@ -28,8 +28,7 @@ namespace TouhouHeartstone
         }
         public void disable(CardEngine game)
         {
-            var trigger = game.triggers.getTriggers(triggerTime).OfType<EventRuleLogicTrigger>().FirstOrDefault(t => t.logic == this);
-            game.triggers.remove(triggerTime, trigger);
+            game.triggers.removeAll(triggerTime, t => t is EventRuleLogicTrigger rt && rt.logic == this);
         }
         #endregion
 
