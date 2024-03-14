@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.XR;
 
 namespace Game.BattleTable
 {
@@ -48,9 +49,7 @@ namespace Game.BattleTable
             hand.onPointerEnter += onHandItemPointerEnterCallback;
             hand.onPointerExit += onHandItemPointerExitCallback;
 
-            int insertPos = getInsertPosition(position);
-            _hands.Insert(insertPos, hand);
-            addHandToEmpty(position);
+            PileInsertHelper.insertItem(_hands, _emptyPositions, position, hand);
 
             hand.handList = this;
             hand.transform.SetParent(_handRoot, false);
@@ -71,8 +70,7 @@ namespace Game.BattleTable
         }
         public bool removeHand(HandItem hand, bool destroy = true)
         {
-            int handPos = getHandRealPosition(hand);
-            if (_hands.Remove(hand))
+            if (PileInsertHelper.removeItem(_hands, _emptyPositions, hand))
             {
                 hand.onClick -= onHandItemClickCallback;
                 hand.onBeginDrag -= onHandItemBeginDragCallback;
@@ -85,8 +83,6 @@ namespace Game.BattleTable
                 {
                     hand.destroy();
                 }
-
-                removeHandFromEmpty(handPos);
                 return true;
             }
             return false;
@@ -105,6 +101,7 @@ namespace Game.BattleTable
                 hand.destroy();
             }
             _hands.Clear();
+            _emptyPositions.Clear();
         }
         public Vector3 getHandTargetPosition(int index)
         {
@@ -156,54 +153,6 @@ namespace Game.BattleTable
         }
         #endregion
 
-        #region 暂存手牌列表
-        private int getInsertPosition(int position)
-        {
-            var insertPos = position;
-            var emptySlots = _emptyPositions.Where(pos => pos < position).Count();
-            insertPos -= emptySlots;
-            if (insertPos > _hands.Count)
-            {
-                insertPos = _hands.Count;
-                for (int i = _hands.Count + emptySlots; i < position; i++)
-                {
-                    _emptyPositions.Add(i);
-                }
-            }
-            return insertPos;
-        }
-        private int getHandRealPosition(HandItem hand)
-        {
-            int index = _hands.IndexOf(hand);
-            index += _emptyPositions.Where(pos => pos < index).Count();
-            return index;
-        }
-        private void addHandToEmpty(int position)
-        {
-            _emptyPositions.Remove(position);
-            for (int i = 0; i < _emptyPositions.Count; i++)
-            {
-                var pos = _emptyPositions[i];
-                if (pos > position)
-                {
-                    _emptyPositions.RemoveAt(i);
-                    break;
-                }
-            }
-        }
-        private void removeHandFromEmpty(int position)
-        {
-            _emptyPositions.Remove(position);
-            for (int i = 0; i < _emptyPositions.Count; i++)
-            {
-                var pos = _emptyPositions[i];
-                if (position < pos)
-                {
-                    _emptyPositions[i] = pos - 1;
-                }
-            }
-        }
-        #endregion
         private void alignHands(float deltaTime)
         {
             int count = _hands.Count;

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 
 namespace Game.BattleTable
 {
@@ -64,9 +65,10 @@ namespace Game.BattleTable
             servant.onEndDrag += onServantEndDragCallback;
             servant.onPointerEnter += onServantPointerEnterCallback;
             servant.onPointerExit += onServantPointerExitCallback;
+
+            PileInsertHelper.insertItem(_servantList, _emptyPositions, position, servant);
+
             servant.transform.SetParent(_servantRoot, false);
-            position = Mathf.Clamp(position, 0, _servantList.Count);
-            _servantList.Insert(position, servant);
             servant.field = this;
         }
         public Servant insertServant(int position)
@@ -81,7 +83,7 @@ namespace Game.BattleTable
         }
         public bool removeServant(Servant servant, bool destroy = true)
         {
-            if (_servantList.Remove(servant))
+            if (PileInsertHelper.removeItem(_servantList, _emptyPositions, servant))
             {
                 servant.onClick -= onServantClickCallback;
                 servant.onPointerUp -= onServantPointerUpCallback;
@@ -115,6 +117,7 @@ namespace Game.BattleTable
             }
             _ignoreAlignServants.Clear();
             _servantList.Clear();
+            _emptyPositions.Clear();
         }
         #region 私有方法
         #region 生命周期
@@ -263,5 +266,9 @@ namespace Game.BattleTable
         private List<int> _placeHolderPositions = new List<int>();
         [SerializeField]
         private GameObject _placeHolderTemplate;
+        /// <summary>
+        /// 暂存仆从列表，用于暂时存储缺失的仆从位置。用于解决将仆从插入到大于当前仆从数量的位置的问题。
+        /// </summary>
+        private List<int> _emptyPositions = new List<int>();
     }
 }
