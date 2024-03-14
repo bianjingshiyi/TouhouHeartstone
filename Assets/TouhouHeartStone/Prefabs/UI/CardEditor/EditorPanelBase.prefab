@@ -1733,7 +1733,7 @@ MonoBehaviour:
   _nodesPanel: {fileID: 5367419499528679546}
   _dragNodeItemObj: {fileID: 9101821000327914122}
   _dragNodeItem: {fileID: 3620508620367009518}
-  _dragThreshold: 50
+  _dragThreshold: 0.5
   _cancelSelectCardButton: {fileID: 1972260156621327064}
   _cardSelectPanelObj: {fileID: 1765312583277488319}
   _cardSelectPanel: {fileID: 6155324471884284643}

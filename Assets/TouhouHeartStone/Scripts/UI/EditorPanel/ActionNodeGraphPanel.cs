@@ -629,7 +629,7 @@ namespace UI
         }
         public void onBackgroundDrag(BaseEventData eventData)
         {
-            if (eventData is not PointerEventData pointer || !pointer.pointerCurrentRaycast.isValid)
+            if (eventData is not PointerEventData pointer)
                 return;
             setFocused();
             Vector2 worldPos = pointer.pointerCurrentRaycast.worldPosition;
@@ -673,6 +673,8 @@ namespace UI
         /// <param name="eventData"></param>
         private void onBeginDragInputNode(ActionNodeItem item, ActionNodeItemInput input, BaseEventData eventData)
         {
+            if (eventData is not PointerEventData pointer || !pointer.pointerCurrentRaycast.isValid)
+                return;
             if (_isTouchZooming) return;
 
             setFocused();
@@ -692,7 +694,7 @@ namespace UI
             tod.name = "Slot_d";
             tod.transform.SetParent(to.transform);
             to.transform.SetParent(_actionNodeLineRoot);
-            to.transform.position = eventData.currentInputModule.input.mousePosition;
+            to.transform.position = pointer.pointerCurrentRaycast.worldPosition;
             _dragLine = createLine(from, to, input.GetColor(), input.GetColor());
 
 
@@ -706,6 +708,8 @@ namespace UI
         /// <param name="eventData"></param>
         private void onDragInputNode(ActionNodeItem item, ActionNodeItemInput input, BaseEventData eventData)
         {
+            if (eventData is not PointerEventData pointer)
+                return;
             if (_isTouchZooming) return;
 
             setFocused();
@@ -717,7 +721,7 @@ namespace UI
             tod.name = "Slot_d";
             tod.transform.SetParent(to.transform);
             to.transform.SetParent(_dragLine.transform);
-            to.transform.position = eventData.currentInputModule.input.mousePosition;
+            to.transform.position = pointer.pointerCurrentRaycast.worldPosition;
             _dragLine.setPosition(from, to);
 
         }
@@ -740,7 +744,10 @@ namespace UI
             _dragLine = null;
             //使用射线判断是否在其他的输入点上
             List<RaycastResult> raycastList = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(eventData as PointerEventData, raycastList);
+            if (eventData is PointerEventData pointer && pointer.pointerCurrentRaycast.isValid)
+            {
+                EventSystem.current.RaycastAll(pointer, raycastList);
+            }
             for (int i = 0; i < raycastList.Count; i++)
             {
                 ActionNodeItemOutput output = raycastList[i].gameObject.GetComponentInParent<ActionNodeItemOutput>();
@@ -797,6 +804,8 @@ namespace UI
         /// <param name="eventData"></param>
         private void onBeginDragOutputNode(ActionNodeItem item, ActionNodeItemOutput output, BaseEventData eventData)
         {
+            if (eventData is not PointerEventData pointer || !pointer.pointerCurrentRaycast.isValid)
+                return;
             if (_isTouchZooming) return;
             setFocused();
             if (_isReadonly) return;
@@ -815,7 +824,7 @@ namespace UI
             tod.name = "Slot_d";
             tod.transform.SetParent(to.transform);
             to.transform.SetParent(_actionNodeLineRoot);
-            to.transform.position = eventData.currentInputModule.input.mousePosition;
+            to.transform.position = pointer.pointerCurrentRaycast.worldPosition;
             _dragLine = createLine(from, to, output.GetColor(), output.GetColor());
 
             onStartConnection?.Invoke(item, outputIndex, true);
@@ -828,6 +837,8 @@ namespace UI
         /// <param name="eventData"></param>
         private void onDragOutputNode(ActionNodeItem item, ActionNodeItemOutput output, BaseEventData eventData)
         {
+            if (eventData is not PointerEventData pointer)
+                return;
             if (_isTouchZooming) return;
 
             setFocused();
@@ -839,7 +850,7 @@ namespace UI
             tod.name = "Slot_d";
             tod.transform.SetParent(to.transform);
             to.transform.SetParent(_dragLine.transform);
-            to.transform.position = eventData.currentInputModule.input.mousePosition;
+            to.transform.position = pointer.pointerCurrentRaycast.worldPosition;
             _dragLine.setPosition(from, to);
         }
         /// <summary>
@@ -861,7 +872,10 @@ namespace UI
             _dragLine = null;
             //使用射线判断是否在其他的输入点上
             List<RaycastResult> raycastList = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(eventData as PointerEventData, raycastList);
+            if (eventData is PointerEventData pointer && pointer.pointerCurrentRaycast.isValid)
+            {
+                EventSystem.current.RaycastAll(pointer, raycastList);
+            }
             for (int i = 0; i < raycastList.Count; i++)
             {
                 ActionNodeItemInput input = raycastList[i].gameObject.GetComponentInParent<ActionNodeItemInput>();
@@ -943,7 +957,6 @@ namespace UI
         }
         private void onDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
-            if (!eventData.pointerCurrentRaycast.isValid) return;
             if (item != _dragItem)
                 return;
 

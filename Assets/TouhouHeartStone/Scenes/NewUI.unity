@@ -6033,7 +6033,7 @@ MonoBehaviour:
   m_ReferencePixelsPerUnit: 102.5
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
-  m_ScreenMatchMode: 0
+  m_ScreenMatchMode: 1
   m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
@@ -11102,9 +11102,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.12499991
+    y: 0
     width: 1
-    height: 0.7500002
+    height: 1
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60

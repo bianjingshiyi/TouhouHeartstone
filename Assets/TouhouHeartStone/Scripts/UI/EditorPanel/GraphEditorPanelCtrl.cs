@@ -784,7 +784,7 @@ namespace UI
         [SerializeField]
         NodesPanelItem _dragNodeItem;
         [SerializeField]
-        float _dragThreshold = 50f;
+        float _dragThreshold = 0.5f;
 
         [Header("全屏UI引用")]
         [SerializeField]

@@ -1508,7 +1508,7 @@ MonoBehaviour:
   _nodesPanel: {fileID: 3137174611002775224}
   _dragNodeItemObj: {fileID: 7351634420966730126}
   _dragNodeItem: {fileID: 3055912385438735850}
-  _dragThreshold: 50
+  _dragThreshold: 0.5
   _cancelSelectCardButton: {fileID: 218575620658938332}
   _cardSelectPanelObj: {fileID: 11768102114419643}
   _cardSelectPanel: {fileID: 5564887323529923047}
