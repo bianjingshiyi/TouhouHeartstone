@@ -14,17 +14,34 @@ namespace Game.BattleTable
         }
         public override IEnumerator startUpdate(BattleTableManager table, float deltaTime)
         {
+            HandItem hand;
             // 1. 如果HandItem已经存在，什么也不播放。
-            if (table.tryGetHand(_cardDesc.id, out _))
-                yield break;
-
-            // 2. 移除源牌堆的卡牌。
-            removeCard(table);
-            // 3 .创建HandItem，从源位置将HandItem飞到中间位置。
-            var hand = table.createHand(_cardDesc, _to.owner, _position);
+            if (table.tryGetHand(_cardDesc.id, out hand))
+            {
+                // 移入其他手牌
+                var sourceHands = hand.handList;
+                var targetHands = table.getHandList(_to);
+                if (sourceHands != null)
+                {
+                    Vector3 transPos = hand.transform.position;
+                    if (sourceHands.removeHand(hand, false))
+                    {
+                        targetHands.insertHand(_position, hand);
+                        hand.transform.position = transPos;
+                    }
+                }
+            }
+            else
+            {
+                // 2. 移除源牌堆的卡牌。
+                removeCard(table);
+                // 3 .创建HandItem，从源位置将HandItem飞到中间位置。
+                hand = table.createHand(_cardDesc, _to.owner, _position);
+            }
             _handItem = hand;
             hand.isMoving = true;
             hand.ignoreAlign = true;
+            hand.isDraggable = _to?.owner == table.player;
             var positionLerp = hand.positionLerp;
             var worldPos = table.TableToWorldPosition(_startTablePos);
             var targetPos = hand.transform.position;
@@ -62,18 +79,12 @@ namespace Game.BattleTable
         }
         public override IEnumerator logicUpdate(BattleTableManager table, float deltaTime)
         {
-            if (!table.tryGetHand(_cardDesc.id, out var hand))
+            if (table.tryGetHand(_cardDesc.id, out var hand))
             {
-                // 创建移动手牌。
-                hand = table.createHand(_cardDesc, _to?.owner);
-                hand.isMoving = true;
-                _handItem = hand;
-            }
-            else
-            {
+                // 移入其他手牌
                 var sourceHands = hand.handList;
                 var targetHands = table.getHandList(_to);
-                if (sourceHands != targetHands && sourceHands != null)
+                if (sourceHands != null)
                 {
                     Vector3 transPos = hand.transform.position;
                     if (sourceHands.removeHand(hand, false))
@@ -83,10 +94,15 @@ namespace Game.BattleTable
                     }
                 }
             }
-
-            if (!hand.isMoving)
-                yield break;
+            else
+            {
+                // 创建移动手牌。
+                hand = table.createHand(_cardDesc, _to?.owner);
+            }
+            _handItem = hand;
+            hand.isMoving = true;
             hand.ignoreAlign = true;
+            hand.isDraggable = _to?.owner == table.player;
             // 1. 使用HandItem飞到目标。
             updateEndFaceup(table, hand.card);
 
