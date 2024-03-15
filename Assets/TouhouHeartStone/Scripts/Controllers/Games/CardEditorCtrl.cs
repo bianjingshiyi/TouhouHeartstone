@@ -432,7 +432,7 @@ namespace Controllers
             //打开卡牌选择界面
             long poolId = curCardPoolId;
             var skillRef = _cardDefine.getSkillRef();
-            if (skillRef.defineId != 0)
+            if (skillRef != null && skillRef.defineId != 0)
             {
                 poolId = skillRef.cardPoolId;
             }
@@ -788,6 +788,12 @@ namespace Controllers
             _ui.setSkillRefVisible(cardDefine.isMaster());
             if (cardDefine.isMaster())
                 await setSkillRef(cardDefine.getSkillRef());
+            else
+            {
+                cardDefine.removeProp(DEFINE.CARD_PROP_SKILL_ID);
+                cardDefine.removeProp(DEFINE.CARD_PROP_SKILL_REF);
+                await setSkillRef(null);
+            }
         }
         #endregion
 
@@ -858,6 +864,11 @@ namespace Controllers
         #region 属性页面
         private async Task setSkillRef(DefineReference defRef)
         {
+            if (defRef == null)
+            {
+                _ui.setSkillRef(null, string.Empty);
+                return;
+            }
             _cardDefine.setSkillRef(defRef);
             var poolRef = getCardPoolReference(defRef.cardPoolId);
             var skin = game.card.getCardSkin(poolRef, defRef.defineId);
