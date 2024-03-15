@@ -41,7 +41,6 @@ namespace Game
             database.init();
             cache.init();
             deck.init();
-            network.start();
         }
         protected async void Start()
         {
@@ -54,10 +53,18 @@ namespace Game
             {
                 _mainSceneCtrl.menu.hide();
             }
+            // 初始化网络
+            await network.start();
+            // 加载语言文件
+            lang.loadAll();
+            // 加载内置动画
             anims.loadBuiltinAnimations();
-            //加载外部卡片数据
+            // 加载外部卡片数据
             await card.loadAllCardPoolInfosAsync();
+            // 检测预设卡组
             await deck.checkPresetDecks();
+            // 加载配置文件
+            config.loadConfig();
 
             //加载卡片资源成功
             UIManager ui = getManager<UIManager>();

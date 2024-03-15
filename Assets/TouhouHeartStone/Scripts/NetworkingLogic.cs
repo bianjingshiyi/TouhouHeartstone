@@ -72,7 +72,7 @@ namespace Game
 
             async Task success()
             {
-                userInfo = await ServerClient.GetUserInfoAsync();
+                await updateUserInfo();
                 loginSuccess = true;
             }
         }
@@ -368,10 +368,20 @@ namespace Game
         {
             return await ServerClient.NewKratosClient();
         }
-        public async Task setLanguage(string language)
+        public void setLanguage(string language)
         {
             ServerClient.SetLanguage(language);
-            userInfo = await ServerClient.GetUserInfoAsync();
+        }
+        public async Task updateUserInfo()
+        {
+            try
+            {
+                userInfo = await ServerClient.GetUserInfoAsync();
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"获取用户信息发生异常：{e}");
+            }
         }
         #endregion
         #region 私有方法

@@ -17,15 +17,19 @@ namespace Game
     public partial class NetworkingManager : Manager
     {
         #region 公有方法
-        public async void start()
+        public async Task start()
         {
             await _logic.NewKratosClient();
-            await setLanguage(main.lang.getLanguage());
+            setLanguage(main.lang.getLanguage());
             _ = startSequence();
         }
-        public async Task setLanguage(string language)
+        public void  setLanguage(string language)
         {
-            await logic.setLanguage(language.Replace('-', '_').ToLower());
+            logic.setLanguage(language.Replace('-', '_').ToLower());
+        }
+        public Task updateUserInfo()
+        {
+            return logic.updateUserInfo();
         }
         /// <summary>
         /// 创建一个房间
@@ -69,9 +73,7 @@ namespace Game
         public async Task SetServerAddr(string addr)
         {
             logic.setServerAddress(addr);
-            await logic.NewKratosClient();
-            await setLanguage(main.lang.getLanguage());
-            _ = startSequence();
+            await start();
         }
         /// <summary>
         /// 开始远程游戏。

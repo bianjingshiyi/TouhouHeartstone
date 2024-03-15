@@ -10,6 +10,17 @@ namespace Game
     public class ConfigManager : Manager
     {
         #region 公有方法
+        public void loadConfig()
+        {
+            Config.Volume = PlayerPrefs.HasKey(keyVolume) ? PlayerPrefs.GetFloat(keyVolume) : 1;
+            Config.BGM = PlayerPrefs.HasKey(keyBGM) ? PlayerPrefs.GetFloat(keyBGM) : 1;
+            Config.SE = PlayerPrefs.HasKey(keySE) ? PlayerPrefs.GetFloat(keySE) : 1;
+            Config.FullScreen = (PlayerPrefs.HasKey(keyFullScreen) ? PlayerPrefs.GetInt(keyFullScreen, 0) : 0) == 1;
+            Config.Language = PlayerPrefs.HasKey(keyLanguage) ? PlayerPrefs.GetString(keyLanguage) : lang.getSystemLanguage();
+            Config.CacheSize = PlayerPrefs.HasKey(keyCache) ? PlayerPrefs.GetFloat(keyCache) : 0.5f;
+            Config.NodeSnap = (PlayerPrefs.HasKey(keyNodeSnap) ? PlayerPrefs.GetInt(keyNodeSnap, 0) : 1) == 1;
+            MarkChange();
+        }
         public void SaveConfig()
         {
             PlayerPrefs.SetFloat(keyVolume, Config.Volume);
@@ -31,13 +42,6 @@ namespace Game
 
         #region 私有方法
 
-        #region 生命周期
-        private void Start()
-        {
-            loadConfig();
-        }
-        #endregion
-
         #region 音量
         private void updateVolumeMixer()
         {
@@ -56,17 +60,6 @@ namespace Game
         }
         #endregion
 
-        private void loadConfig()
-        {
-            Config.Volume = PlayerPrefs.HasKey(keyVolume) ? PlayerPrefs.GetFloat(keyVolume) : 1;
-            Config.BGM = PlayerPrefs.HasKey(keyBGM) ? PlayerPrefs.GetFloat(keyBGM) : 1;
-            Config.SE = PlayerPrefs.HasKey(keySE) ? PlayerPrefs.GetFloat(keySE) : 1;
-            Config.FullScreen = (PlayerPrefs.HasKey(keyFullScreen) ? PlayerPrefs.GetInt(keyFullScreen, 0) : 0) == 1;
-            Config.Language = PlayerPrefs.HasKey(keyLanguage) ? PlayerPrefs.GetString(keyLanguage) : lang.getSystemLanguage();
-            Config.CacheSize = PlayerPrefs.HasKey(keyCache) ? PlayerPrefs.GetFloat(keyCache) : 0.5f;
-            Config.NodeSnap = (PlayerPrefs.HasKey(keyNodeSnap) ? PlayerPrefs.GetInt(keyNodeSnap, 0) : 1) == 1;
-            MarkChange();
-        }
         #endregion
 
         #region 事件
