@@ -50,14 +50,15 @@ namespace TouhouHeartstone
             arg.setVar(VAR_DEATHRATTLE_BUFFS, deathrattleBuffs);
             arg.setVar(VAR_DEATHRATTLE_EFFECTS, deathrattleEffects);
 
-            if (card.pile.name == PILE.FIELD)//随从阵亡
+            var pile = card.pile;
+            if (pile?.name == PILE.FIELD)//随从阵亡
             {
-                await card.pile.moveTo(game, card, card.getOwner().getGrave());
+                await pile.moveTo(game, card, card.getOwner().getGrave());
                 game.logger.logTrace($"{card}阵亡");
             }
-            else if (card.pile.name == PILE.ITEM)//装备摧毁
+            else if (pile?.name == PILE.ITEM)//装备摧毁
             {
-                await card.pile.moveTo(game, card, card.getOwner().getGrave());
+                await pile.moveTo(game, card, card.getOwner().getGrave());
                 game.logger.logTrace($"{card}摧毁");
             }
         }
