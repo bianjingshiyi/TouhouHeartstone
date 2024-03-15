@@ -129,6 +129,19 @@ namespace Game
         }
         #endregion
 
+        #region 加载
+
+        public void loadAll()
+        {
+            // 设置当前的默认语言
+            var systemCulture = new CultureInfo(getSystemLanguage());
+            CurrentCulture = systemCulture;
+            cultures.AddRange(langs.Select(l => new CultureInfo(l)));
+
+            loadI18n(i18n, uiFilePath, "UI");
+        }
+        #endregion
+
         #endregion
 
         #region 私有方法
@@ -138,7 +151,6 @@ namespace Game
         {
             base.onAwake();
             i18n.OnLanguageChange += OnLanguageChangeCallback;
-            loadAll();
         }
         #endregion
 
@@ -146,19 +158,6 @@ namespace Game
         public void OnLanguageChangeCallback()
         {
             OnLanguageChange?.Invoke();
-        }
-        #endregion
-
-        #region 加载
-
-        private void loadAll()
-        {
-            // 设置当前的默认语言
-            var systemCulture = new CultureInfo(getSystemLanguage());
-            CurrentCulture = systemCulture;
-            cultures.AddRange(langs.Select(l => new CultureInfo(l)));
-
-            loadI18n(i18n, uiFilePath, "UI");
         }
         #endregion
 

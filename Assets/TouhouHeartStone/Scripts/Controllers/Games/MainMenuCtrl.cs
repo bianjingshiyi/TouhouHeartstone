@@ -90,7 +90,8 @@ namespace Controllers
             {
                 try
                 {
-                    await game.network.setLanguage(game.lang.getLanguage());
+                    game.network.setLanguage(game.lang.getLanguage());
+                    await game.network.updateUserInfo();
                     updatePlayerInfo();
                 }
                 catch (Exception e)
