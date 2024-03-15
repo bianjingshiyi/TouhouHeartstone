@@ -58,15 +58,14 @@ namespace Game.BattleTable
         }
         public override bool update(BattleTableManager table, float time)
         {
-            if (!_timer.isExpired() && _card != null)
-            {
-                _card.transform.position = Vector3.Lerp(_startPosition, _target != null ? _target.position : _targetPosition, _curve.Evaluate(_timer.time));
-                _card.transform.localScale = Vector3.Lerp(_startScale, _scale, _curve.Evaluate(_timer.time));
-                return false;
-            }
-            _card.transform.position = _target != null ? _target.position : _targetPosition;
-            _card.transform.localScale = _scale;
-            return true;
+            if (_card == null)
+                return true;
+            var destination = _target != null ? _target.position : _targetPosition;
+            var expired = _timer.isExpired();
+            float t = !expired ? t = _curve.Evaluate(_timer.time) : 1;
+            _card.transform.position = Vector3.Lerp(_startPosition, destination, t);
+            _card.transform.localScale = Vector3.Lerp(_startScale, _scale, t);
+            return expired;
         }
     }
 }
