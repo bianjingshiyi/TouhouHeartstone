@@ -96,19 +96,25 @@ namespace Game.BattleTable
         public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
         {
             var parents = getAllParents(eventArg);
+            List<int> groupedCards = new List<int>() { _movingCardId };
             return following.TakeWhile(anim =>
             {
                 if (anim is MoveCardAnim move)
                 {
-                    if (move._movingCardId == _movingCardId) // 不能加速当前卡牌的移动。
+                    if (groupedCards.Contains(move._movingCardId)) // 不能加速已经被包括入组的动画的移动。
                         return false;
-
                     // 父事件相同
                     IEventArg parent = move.eventArg;
                     while (parent != null)
                     {
                         if (parents.Contains(parent))
+                        {
+                            groupedCards.Add(move._movingCardId);
                             return true;
+                        }
+                        // 最多只能持续到同一个卡牌效果产生的动画。
+                        if (parent.define is EffectTriggerEventDefine)
+                            break;
                         parent = parent.parent;
                     }
                 }
@@ -410,6 +416,9 @@ namespace Game.BattleTable
             while (parent != null)
             {
                 parents.Add(parent);
+                // 最多只能持续到同一个卡牌效果产生的动画。
+                if (parent.define is EffectTriggerEventDefine)
+                    break;
                 parent = parent.parent;
             }
             return parents.ToArray();

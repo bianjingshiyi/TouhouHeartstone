@@ -50,7 +50,16 @@ namespace Game.BattleTable
 
             // 2. 使用MovingCard飞到目标。
             if (!_cardUI)
-                _cardUI = table.createMovingCard(_cardDesc, _startTablePos, _cardHeight);
+            {
+                if (table.tryGetMovingCard(_cardDesc.id, out var moveCard))
+                {
+                    _cardUI = moveCard;
+                }
+                else
+                {
+                    _cardUI = table.createMovingCard(_cardDesc, _startTablePos, _cardHeight);
+                }
+            }
 
             var targetDeck = table.getDeckUI(_to);
             var targetHeight = targetDeck.getCardHeight();
