@@ -1168,7 +1168,7 @@ namespace TouhouHeartstone
         }
         public static async Task<EventArg> moveToHead(this Card card, CardEngine game, Pile from, Pile to, int position = -1)
         {
-            if (isInvalidMove(card, from, to))
+            if (!Pile.canMove(card, from, to))
                 return null;
             if (!card.isTrap(game) && !card.hasKeyword(game, KEYWORD.MISSION))
             {
@@ -1196,7 +1196,7 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static async Task<EventArg> moveToHand(this Card card, CardEngine game, Pile from, Pile to, int position = -1)
         {
-            if (isInvalidMove(card, from, to))
+            if (!Pile.canMove(card, from, to))
                 return null;
             var player = to?.owner;
             if (to.isFull) // 手牌已满
@@ -1224,7 +1224,7 @@ namespace TouhouHeartstone
         }
         public static async Task<EventArg> moveToField(this Card card, CardEngine game, Pile from, Pile to, int position = -1)
         {
-            if (isInvalidMove(card, from, to))
+            if (!Pile.canMove(card, from, to))
                 return null;
             if (position < 0)
                 position = to.count;
@@ -1235,7 +1235,7 @@ namespace TouhouHeartstone
         }
         public static async Task<EventArg> moveToItem(this Card card, CardEngine game, Pile from, Pile to)
         {
-            if (isInvalidMove(card, from, to))
+            if (!Pile.isMoveSourceValid(card, from)) // 不判断目标牌堆是否是满的，因为会有顶武器的操作。
                 return null;
             var equipArg = await to.owner.equip(game, card.pile, card);
             if (equipArg == null)
@@ -1437,14 +1437,6 @@ namespace TouhouHeartstone
         #endregion
 
         #region 私有方法
-        private static bool isInvalidMove(Card card, Pile from, Pile to)
-        {
-            if (card == null || to == null)
-                return true;
-            if (from != null && !from.Contains(card)) // 源牌堆不包含该卡牌。
-                return true;
-            return false;
-        }
         private static async Task cloneCardEffectEnableStates(CardEngine game, Card card, Card clone, Pile from, Pile to)
         {
             var enableEffects = new List<(int buffId, Effect effect)>();
