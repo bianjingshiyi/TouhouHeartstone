@@ -548,11 +548,11 @@ namespace UI
         /// <summary>
         /// 局域网中的主机
         /// </summary>
-        NetworkingHost,
+        Lan,
         /// <summary>
         /// 局域网客户端或大厅客户端
         /// </summary>
-        NetworkingClient
+        Server
     }
     public struct RoomOptionsViewData
     {

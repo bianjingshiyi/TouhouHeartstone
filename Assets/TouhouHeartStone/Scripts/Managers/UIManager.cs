@@ -117,6 +117,7 @@ namespace Game
         }
         #region 属性字段
         public UIDialog dialog => _dialog;
+        public Main mainUI => _main;
         MainManager main => this.findInstance<MainManager>();
         MainSceneCtrl scene => this.findInstance<MainSceneCtrl>();
         [SerializeField]

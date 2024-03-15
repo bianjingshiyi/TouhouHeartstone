@@ -14,10 +14,26 @@ namespace Controllers
         #region 公有方法
         public void display(bool online)
         {
-            var logic = network.logic;
-            isServerMode = online;
-            logic.SwitchMode(!online);
+            network.logic.SwitchMode(!online);
             display();
+        }
+        public void display()
+        {
+            var logic = network.logic;
+            _ui.setLoadingImageVisible(false);
+            _ui.setCreateRoomButtonInteractable(!logic.RoomIsValid);
+            _ui.setIPFieldVisible(isLan);
+            _ui.setRoomInfos(null, null, null);
+
+            if (logic.RoomIsValid)
+            {
+                displayRoomPanel();
+            }
+            else
+            {
+                refreshRooms();
+            }
+            gameObject.SetActive(true);
         }
         public void hide()
         {
@@ -83,7 +99,7 @@ namespace Controllers
             else
             {
                 var name = data.RoomID.ToString();
-                var ip = isServerMode ? "???" : data.IP;
+                var ip = isLan ? data.IP : "???";
                 var desc = lang._(NETMANAGER_DESCRIBE);
                 _ui.setRoomInfos(name, ip, desc);
             }
@@ -112,7 +128,7 @@ namespace Controllers
         }
         private void onReturnButtonClickedCallback()
         {
-            mainUI.display(mainUI.MainMenu);
+            game.ui.mainUI.display(game.ui.mainUI.MainMenu);
         }
         private void onConnectButtonClickedCallback(string ip)
         {
@@ -136,31 +152,7 @@ namespace Controllers
                 dialog.ShowConfirm(lang._(StringTable.ERROR), lang._(INVALID_ADDRESS), null);
             }
         }
-
-        private void onRoomQuitClickedCallback()
-        {
-            mainUI.display(mainUI.NetworkingPage);
-            display();
-        }
         #endregion
-        private void display()
-        {
-            var logic = network.logic;
-            _ui.setLoadingImageVisible(false);
-            _ui.setCreateRoomButtonInteractable(!logic.RoomIsValid);
-            _ui.setIPFieldVisible(!isServerMode);
-            _ui.setRoomInfos(null, null, null);
-
-            if (logic.RoomIsValid)
-            {
-                displayRoomPanel();
-            }
-            else
-            {
-                refreshRooms();
-            }
-            gameObject.SetActive(true);
-        }
         private void updateRoomList(LobbyRoomDataList list)
         {
             clearRooms();
@@ -252,23 +244,13 @@ namespace Controllers
         /// </summary>
         private void displayRoomPanel()
         {
-            var logic = network.logic;
-            var roomCtrl = scene.room;
-            roomCtrl.resetEvents();
-            setRoomDelegates();
-
             hide();
-            RoomData roomData = logic.CurrentRoom;
-            var roomMode = isServerMode ? RoomMode.NetworkingClient : RoomMode.NetworkingHost;
-            string text = isServerMode ? string.Empty : "IP：" + string.Join(", ", network.getAddresses());
-            roomCtrl.display(roomData, text, roomMode);
+            RoomData roomData = network.logic.CurrentRoom;
+            var roomMode = isLan ? RoomMode.Lan : RoomMode.Server;
+            string text = isLan ? "IP：" + string.Join(", ", network.getAddresses()) : string.Empty;
+            scene.room.display(roomData, text, roomMode);
             //  加载聊天框
             scene.chatCtrl.display(roomData);
-        }
-        private void setRoomDelegates()
-        {
-            var roomCtrl = scene.room;
-            roomCtrl.onQuitClick += onRoomQuitClickedCallback;
         }
         private void showCreateRoomException(Exception e)
         {
@@ -295,13 +277,9 @@ namespace Controllers
         private NetworkingManager network => game.network;
         private UIDialog dialog => game.ui.dialog;
         private LangManager lang => game.lang;
-        private Main mainUI => game.ui.getObject<Main>();
         private List<LobbyRoomData> _roomDataList = new List<LobbyRoomData>();
         private List<RoomListItem> _roomListItemList = new List<RoomListItem>();
-        /// <summary>
-        /// 当前是服务器的Lobby，还是局域网模式
-        /// </summary>
-        private bool isServerMode = false;
+        private bool isLan => game.network.logic.isLan;
         #region 密码相关
         private string _enteringRoomAddress;
         private string _enteringRoomID;

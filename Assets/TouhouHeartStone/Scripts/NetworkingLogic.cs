@@ -463,10 +463,11 @@ namespace Game
         /// 当前房间
         /// </summary>
         public RoomData CurrentRoom => clientLogic.room;
+        public bool isLan => clientLogic.curNetwork is LANNetworking;
         /// <summary>
         /// 是局域网的房主吗
         /// </summary>
-        public bool isLanHost => clientLogic.curNetwork is LANNetworking && isRoomOwner;
+        public bool isLanHost => isLan && isRoomOwner;
         /// <summary>
         /// 是否为初始的房主
         /// </summary>

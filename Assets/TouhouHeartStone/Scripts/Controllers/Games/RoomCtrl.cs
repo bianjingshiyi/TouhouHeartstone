@@ -37,7 +37,7 @@ namespace Controllers
                 }
                 cardPoolManager.Reset();
 
-                _ui.setIPTextVisible(info.roomMode == RoomMode.NetworkingHost);
+                _ui.setIPTextVisible(info.roomMode == RoomMode.Lan);
                 _ui.setIPText(info.ipText);
                 _ui.setLocalPlayerDeck(game.lang._(ROOM_SELECT_YOUR_DECK), null);
                 _ui.setEditingRoomName(false);
@@ -109,10 +109,6 @@ namespace Controllers
             updateRoomOptions();
             updateStartAndReadyButton();
             updatePlayerListUI();
-        }
-        public void resetEvents()
-        {
-            onQuitClick = null;
         }
         #endregion
 
@@ -598,7 +594,11 @@ namespace Controllers
                 cardPoolManager.Cancel();
             }
 
-            onQuitClick?.Invoke();
+            if (!_isLocalGame)
+            {
+                game.ui.mainUI.display(game.ui.mainUI.NetworkingPage);
+                scene.lan.display();
+            }
         }
         #endregion
 
@@ -1401,13 +1401,6 @@ namespace Controllers
         }
         #endregion
 
-        #endregion
-
-        #region 事件
-        /// <summary>
-        /// 点击退出房间后触发
-        /// </summary>
-        public event Action onQuitClick;
         #endregion
 
         #region 属性字段
