@@ -27,7 +27,6 @@ namespace Game.BattleTable
                     if (sourceHands.removeHand(hand, false))
                     {
                         targetHands.insertHand(_position, hand);
-                        hand.transform.position = transPos;
                     }
                 }
             }
@@ -167,6 +166,7 @@ namespace Game.BattleTable
                 case PILE.HEAD:
                 case PILE.SKILL:
                 case PILE.ITEM:
+                case PILE.HAND:
                     return true;
             }
             return false;
