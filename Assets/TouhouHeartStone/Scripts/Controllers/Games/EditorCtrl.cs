@@ -796,6 +796,23 @@ namespace Controllers
         }
         #endregion
 
+        #region 卡池非法字符
+        private bool checkCardPoolNameInvalid()
+        {
+            var poolInfo = getCurrentCardPoolInfo();
+            if (poolInfo == null)
+                return false;
+            var poolName = poolInfo.cardPoolName;
+            return Path.GetInvalidFileNameChars().Intersect(poolName).Count() > 0;
+        }
+        private void showCardPoolNameInvalidDialog()
+        {
+            var title = game.lang._(StringTable.ERROR);
+            var desc = game.lang._(EDITOR_WARNING_CARD_POOL_NAME_INVALID);
+            game.ui.dialog.ShowConfirm(title, desc);
+        }
+        #endregion
+
         /// <summary>
         /// 读取所有卡池文件中的卡池信息。
         /// </summary>
@@ -880,24 +897,23 @@ namespace Controllers
                 showDependencyCycleDialog(cycles);
                 return;
             }
+            if (checkCardPoolNameInvalid())
+            {
+                showCardPoolNameInvalidDialog();
+                return;
+            }
+            bool save = true;
             if (hasObsoleteNodes(curCardPoolId, out string desc))
             {
-                game.ui.dialog.ShowQuestion(game.langManager.getString(StringTable.WARNING), desc,
-                    async () =>
-                    {
-                        await saveCardPool();
-                        onEndAction?.Invoke(true);
-                    },
-                    () =>
-                    {
-                        onEndAction?.Invoke(false);
-                    });
+                TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+                game.ui.dialog.ShowQuestion(game.langManager.getString(StringTable.WARNING), desc, () => tcs.SetResult(true), () => tcs.SetResult(false));
+                save = await tcs.Task;
             }
-            else
+            if (save)
             {
                 await saveCardPool();
-                onEndAction?.Invoke(true);
             }
+            onEndAction?.Invoke(save);
         }
         /// <summary>
         /// 保存一个卡池。
@@ -1414,6 +1430,8 @@ namespace Controllers
         const string EDITOR_WARNING_OBSOLETE_NODES_TEMPLATE = "以下内容包含过时的节点：\n{0}\n是否保存卡池？";
         [TranslateMsg("尝试设置循环卡池依赖时的警告。（{0}：过时节点列表）")]
         const string EDITOR_WARNING_CYCLE_DEPENDENCY = "以下卡池依赖包含对该卡池的依赖，会导致卡池循环依赖：\n{0}\n请取消该依赖后再试。";
+        [TranslateMsg("卡池名称非法时的警告。")]
+        const string EDITOR_WARNING_CARD_POOL_NAME_INVALID = "无法保存卡池：卡池名称中包含非法字符。";
         [TranslateMsg("{0}是路径")]
         const string EXPORT_SUCCESS = "卡池已导出至 {0}";
         [TranslateMsg]
