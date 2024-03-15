@@ -166,7 +166,11 @@ namespace TouhouHeartstone
             {
                 return cardDefine.getProp<DefineReference>(DEFINE.CARD_PROP_SKILL_REF);
             }
-            return new DefineReference(cardDefine.cardPoolId, cardDefine.getProp<int>(DEFINE.CARD_PROP_SKILL_ID));
+            else if (cardDefine.hasProp(DEFINE.CARD_PROP_SKILL_ID))
+            {
+                return new DefineReference(cardDefine.cardPoolId, cardDefine.getProp<int>(DEFINE.CARD_PROP_SKILL_ID));
+            }
+            return null;
         }
         #endregion
 

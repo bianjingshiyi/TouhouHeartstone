@@ -228,7 +228,7 @@ namespace Game
                     return;
                 var poolRef = getCardPoolReferenceInEnv(defRef.cardPoolId, cardPoolSet);
                 var cardDefine = getCardDefine(poolRef, defRef.defineId);
-                if (cardDefines.Contains(cardDefine))
+                if (cardDefine == null || cardDefines.Contains(cardDefine))
                     return;
                 if (cardDefine.isMaster() || cardDefine == define)
                     return;
