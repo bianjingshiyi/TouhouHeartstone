@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Controllers;
 using TouhouCardEngine;
@@ -225,7 +226,9 @@ namespace Game
         public BuffSkin[] getBuffSkins(ICardPoolReference cardPoolRef, int buffId)
         {
             if (!tryGetCardPool(cardPoolRef, out CardPool cardPool))
-                throw new KeyNotFoundException($"不存在卡池{cardPoolRef}");
+            {
+                return Array.Empty<BuffSkin>();
+            }
             return cardPool.buffSkinList.Where(s => s.buffId == buffId).ToArray();
         }
         public string[] getBuffDefineNames(BuffDefine[] buffDefines)
