@@ -50,6 +50,7 @@ namespace TouhouHeartstone
         }
         public static Task<EventArg> setMaxGem(this Player player, CardEngine game, int value)
         {
+            value = Math.Clamp(value, 0, 10);
             return SetMaxGemEventDefine.doEvent(game, player, value);
         }
         public static void setStartDeck(this Player player, CardEngine game, CardDefine[] value)

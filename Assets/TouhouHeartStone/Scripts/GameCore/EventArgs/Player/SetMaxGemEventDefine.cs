@@ -33,7 +33,6 @@ namespace TouhouHeartstone
             var value = arg.getVar<int>(VAR_VALUE);
             var player = arg.getVar<Player>(VAR_PLAYER);
 
-            value = Math.Clamp(value, 0, 10);
             player.setProp(game, PLAYER.MAXGEM, value);
             game.logger.logTrace(toString(arg as EventArg));
             return Task.CompletedTask;
