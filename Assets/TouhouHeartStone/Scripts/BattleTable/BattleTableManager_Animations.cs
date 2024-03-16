@@ -275,6 +275,7 @@ namespace Game.BattleTable
                 var buffDefine = game.getBuffDefine(buffDefineRef);
                 var skin = getBuffSkin(buffDefine);
                 if (effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
+                if (skin == null) return null; // 没有皮肤
 
                 var node = genEffect.graph.findNodeById(arg.flowNodeId);
                 return getAnimRefOfEventNode(skin, arg, node);
@@ -285,6 +286,7 @@ namespace Game.BattleTable
                 var cardDefine = game.getDefine(cardDefineRef);
                 var skin = getCardSkin(cardDefine);
                 if (effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
+                if (skin == null) return null; // 没有皮肤
 
                 var node = genEffect.graph.findNodeById(arg.flowNodeId);
                 return getAnimRefOfEventNode(skin, arg, node);
@@ -302,6 +304,7 @@ namespace Game.BattleTable
                 var buffDefine = game.getBuffDefine(cardDefineRef);
                 var skin = getBuffSkin(buffDefine);
                 if (effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
+                if (skin == null) return null; // 没有皮肤
 
                 var node = entryNodeEffect.entryNode;
                 return getAnimRefOfEntryNode(skin, node);
@@ -311,6 +314,7 @@ namespace Game.BattleTable
                 var cardDefine = game.getDefine(cardDefineRef);
                 var skin = getCardSkin(cardDefine);
                 if (effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
+                if (skin == null) return null; // 没有皮肤
 
                 var node = entryNodeEffect.entryNode;
                 return getAnimRefOfEntryNode(skin, node);
@@ -344,14 +348,14 @@ namespace Game.BattleTable
         }
         private SkinAnimationRef getAnimRefOfEntryNode(ISkin skin, Node node)
         {
-            if (node == null) return null; // 节点不存在
+            if (node == null || skin == null) return null; // 节点不存在
 
             var key = SkinAnimationRef.getNodeKey(node);
             return skin.getAnimRef(key);
         }
         private SkinAnimationRef getAnimRefOfEventNode(ISkin skin, IEventArg arg, Node node)
         {
-            if (node == null) return null; // 节点不存在
+            if (node == null || skin == null) return null; // 节点不存在
             var key = SkinAnimationRef.getNodeKey(node);
             var animRef = skin.getAnimRef(key);
 

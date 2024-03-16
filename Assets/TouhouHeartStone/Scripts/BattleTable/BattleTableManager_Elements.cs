@@ -2509,8 +2509,8 @@ namespace Game.BattleTable
                 {
                     var skin = getBuffSkin(buffDefine);
                     sprite = await loadBuffImage(buffDefine);
-                    name = skin.name ?? string.Empty;
-                    desc = skin.desc ?? string.Empty;
+                    name = skin?.name ?? string.Empty;
+                    desc = skin?.desc ?? string.Empty;
                 }
                 if (name.Length > _maxBuffNameLength)
                     name = lang._(StringTable.TRIMMED_COTENTS, name.Substring(0, _maxBuffNameLength));
