@@ -54,6 +54,10 @@ namespace Game
             _cardshotRoot.gameObject.SetActive(false);
 
             var defaultFileName = cardSkin.name;
+            if (string.IsNullOrEmpty(defaultFileName))
+            {
+                defaultFileName = $"card{cardDefine.id}";
+            }
             var invalidChars = Path.GetInvalidFileNameChars();
             foreach (var chr in invalidChars)
             {
