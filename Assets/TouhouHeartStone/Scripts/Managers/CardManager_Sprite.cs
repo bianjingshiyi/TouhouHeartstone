@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using BJSYGameCore;
 using Controllers;
@@ -12,7 +11,6 @@ using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using UI;
 using UnityEngine;
-using UnityEngine.XR;
 using ResourceType = TouhouCardEngine.ResourceType;
 
 namespace Game
@@ -196,6 +194,21 @@ namespace Game
 
         public async Task<string> saveImage(long cardPoolId, Texture2D texture, bool saveAsJpg = true, int jpgQuality = 90)
         {
+            if (saveAsJpg)
+            {
+                // 若保存为jpg，将透明像素变为黑色。
+                var pixels = texture.GetPixels32();
+                var backgroundColor = new Color32(0, 0, 0, 1);
+                for (int i = 0; i < pixels.Length; i++)
+                {
+                    var color = pixels[i];
+                    color = Color32.Lerp(color, backgroundColor, 1 - color.a / 255f);
+                    color.a = 255;
+                    pixels[i] = color;
+                }
+                texture.SetPixels32(pixels);
+                texture.Apply();
+            }
             byte[] bytes = saveAsJpg ? texture.EncodeToJPG(jpgQuality) : texture.EncodeToPNG();
             string hash = calcHashString(bytes);
             string fileName = saveAsJpg ? $"{hash}.jpg" : $"{hash}.png";
