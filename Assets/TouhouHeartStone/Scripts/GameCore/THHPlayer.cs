@@ -396,30 +396,25 @@ namespace TouhouHeartstone
                 await secret.updateSecret(game);
             }
         }
-        public static bool canAddToHead(this Player player, CardEngine game, Card card, out string info)
+        public static bool canAddToHead(this Player player, CardEngine game, Card card, Pile from, Pile to, out string info)
         {
-            if (card.isSpell())
-            {
-                if (card.isTrap(game))
-                {
-                    if (!player.canAddTrap(card, out info))
-                        return false;
-                }
-                if (card.hasKeyword(game, KEYWORD.MISSION))
-                {
-                    if (!player.canAddMission(card, out info))
-                        return false;
-                }
-                info = null;
-                return true;
-            }
             info = null;
-            return false;
+            if (!card.isSpell())
+                return false;
+            if (card.isTrap(game))
+            {
+                return player.canAddTrap(card, from, to, out info);
+            }
+            else if (card.hasKeyword(game, KEYWORD.MISSION))
+            {
+                return player.canAddMission(card, from, to, out info);
+            }
+            return true;
         }
-        public static bool canAddTrap(this Player player, Card card, out string info)
+        public static bool canAddTrap(this Player player, Card card, Pile from, Pile to, out string info)
         {
             var head = player.getHead();
-            if (head.isFull)
+            if (head.isFull && from != to)
             {
                 info = NO_SPACE_FOR_TRAP;
                 return false;
@@ -432,10 +427,10 @@ namespace TouhouHeartstone
             info = null;
             return true;
         }
-        public static bool canAddMission(this Player player, Card card, out string info)
+        public static bool canAddMission(this Player player, Card card, Pile from, Pile to, out string info)
         {
             var head = player.getHead();
-            if (head.isFull)
+            if (head.isFull && from != to)
             {
                 info = NO_SPACE_FOR_TRAP;
                 return false;

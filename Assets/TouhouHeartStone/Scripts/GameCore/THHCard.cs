@@ -234,15 +234,15 @@ namespace TouhouHeartstone
                     info = NO_TARGET;
                     return false;
                 }
-                if (card.isTrap(game))
+                var from = player.getWarp();
+                var to = player.getHead();
+                if (card.isTrap(game) && !player.canAddTrap(card, from, to, out info))
                 {
-                    if (!player.canAddTrap(card, out info))
-                        return false;
+                    return false;
                 }
-                if (card.hasKeyword(game, KEYWORD.MISSION))
+                if (card.hasKeyword(game, KEYWORD.MISSION) && !player.canAddMission(card, from, to, out info))
                 {
-                    if (!player.canAddMission(card, out info))
-                        return false;
+                    return false;
                 }
                 info = null;
                 return true;
@@ -1176,7 +1176,7 @@ namespace TouhouHeartstone
                 return null;
             }
             var player = to.owner;
-            if (!player.canAddToHead(game, card, out _))
+            if (!player.canAddToHead(game, card, from, to, out _))
                 return null;
 
             game.logger.logTrace($"将{string.Join("，", card)}置入{player}的延迟区");
@@ -1199,7 +1199,7 @@ namespace TouhouHeartstone
             if (!Pile.canMove(card, from, to))
                 return null;
             var player = to?.owner;
-            if (to.isFull) // 手牌已满
+            if (to.isFull && from != to) // 手牌已满
             {
                 game.logger.logTrace($"{player}的手牌已满，无法将{card}置入手牌");
                 if (from?.name == PILE.FIELD) // 仆从直接将其消灭

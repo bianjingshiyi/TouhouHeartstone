@@ -36,6 +36,11 @@ namespace TouhouHeartstone
             var card = arg.getVar<Card>(VAR_CARD);
             var from = arg.getVar<Pile>(VAR_FROM_PILE);
             var to = player[PILE.ITEM];
+            if (from == to)
+            {
+                arg.isCanceled = true;
+                return;
+            }
             if (to.isFull)
             {
                 game.logger.logTrace($"由于{player}的道具栏已满，摧毁当前道具");
