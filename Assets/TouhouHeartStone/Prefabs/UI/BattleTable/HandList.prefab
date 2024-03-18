@@ -60,7 +60,7 @@ MonoBehaviour:
   _isZoomIn: 0
   _maxHandWidth: 2
   _cardThickness: 0.2
-  _alignSpeed: 30
+  _alignSpeed: 15
 --- !u!95 &-429928977308094937
 Animator:
   serializedVersion: 5
