@@ -1129,7 +1129,7 @@ namespace TouhouHeartstone
         public static Task<EventArg> returnToHand(this IEnumerable<Card> cards, CardEngine game, Player player)
         {
             if (cards == null || cards.Count() <= 0 || player == null)
-                return null;
+                return Task.FromResult<EventArg>(null);
             return MassReturnHandEventDefine.doEvent(game, cards.ToArray(), player);
         }
         #endregion
