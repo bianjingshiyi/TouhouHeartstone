@@ -12,12 +12,12 @@ namespace Game.BattleTable
         }
         public override IEnumerator startUpdate(BattleTableManager table, float deltaTime)
         {
-            // 1. 如果是同一个牌堆内的移动，什么也不播放。
+            // 1. 移除源牌堆的卡牌。
+            removeCard(table);
+
+            // 2. 如果是同一个牌堆内的移动，什么也不播放。
             if (_from == _to)
                 yield break;
-
-            // 2. 移除源牌堆的卡牌。
-            removeCard(table);
 
             // 3. 从源牌堆的位置创建MovingCard飞到中间位置。
             var worldPos = table.TableToWorldPosition(_startTablePos);
