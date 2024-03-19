@@ -14,6 +14,7 @@ Shader "Custom/TableShaderUnlit"
 	{
 		Tags{ "RenderType" = "Table"  "Queue" = "Transparent+0" "IsEmissive" = "true"  }
 		Cull Back
+		ZWrite Off
 		Blend SrcAlpha OneMinusSrcAlpha , One OneMinusSrcAlpha
 		
 		CGINCLUDE
@@ -121,13 +122,13 @@ Shader "Custom/TableShaderUnlit"
 }
 /*ASEBEGIN
 Version=17000
-0;0;1536;803;1329.481;350.3323;1;True;False
-Node;AmplifyShaderEditor.ColorNode;5;-850.6265,124.7077;Float;False;Property;_Color;Color;2;0;Create;True;0;0;False;0;1,1,1,1;1,0,0,1;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+6.4;16.8;1523.2;786.2;1323.081;341.9323;1;True;False
+Node;AmplifyShaderEditor.ColorNode;5;-850.6265,124.7077;Float;False;Property;_Color;Color;2;0;Create;True;0;0;False;0;1,1,1,1;1,1,1,1;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.SamplerNode;7;-938.8469,-85.95619;Float;True;Property;_MainTex;MainTex;1;0;Create;True;0;0;False;0;45b5194d1dea29248ac052a68d2e0e9a;f97ed17b433b5e346893deeb97773b78;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;6;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;6;-524.1969,-40.45769;Float;False;2;2;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;1;COLOR;0
 Node;AmplifyShaderEditor.ComponentMaskNode;12;-334.2579,91.4614;Float;False;False;False;False;True;1;0;COLOR;0,0,0,0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.ComponentMaskNode;11;-341.4579,-11.73856;Float;False;True;True;True;False;1;0;COLOR;0,0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.StandardSurfaceOutputNode;10;0,-11.20001;Float;False;True;2;Float;ASEMaterialInspector;0;0;Unlit;Custom/TableShaderUnlit;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;Back;0;False;-1;0;False;-1;False;0;False;-1;0;False;-1;False;0;Custom;0.5;True;True;0;True;Custom;Table;Transparent;All;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;0;False;-1;False;0;False;-1;255;False;-1;255;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;False;2;15;10;25;False;0.5;True;2;5;False;-1;10;False;-1;3;1;False;-1;10;False;-1;0;False;-1;0;False;-1;0;False;0;0,0,0,0;VertexOffset;True;False;Cylindrical;False;Relative;0;;0;-1;-1;-1;0;False;0;0;False;-1;-1;0;False;-1;0;0;0;False;0.1;False;-1;0;False;-1;15;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT3;0,0,0;False;3;FLOAT;0;False;4;FLOAT;0;False;6;FLOAT3;0,0,0;False;7;FLOAT3;0,0,0;False;8;FLOAT;0;False;9;FLOAT;0;False;10;FLOAT;0;False;13;FLOAT3;0,0,0;False;11;FLOAT3;0,0,0;False;12;FLOAT3;0,0,0;False;14;FLOAT4;0,0,0,0;False;15;FLOAT3;0,0,0;False;0
+Node;AmplifyShaderEditor.StandardSurfaceOutputNode;10;0,-11.20001;Float;False;True;2;Float;ASEMaterialInspector;0;0;Unlit;Custom/TableShaderUnlit;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;Back;2;False;-1;0;False;-1;False;0;False;-1;0;False;-1;False;0;Custom;0.5;True;True;0;True;Custom;Table;Transparent;All;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;0;False;-1;False;0;False;-1;255;False;-1;255;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;0;False;-1;False;2;15;10;25;False;0.5;True;2;5;False;-1;10;False;-1;3;1;False;-1;10;False;-1;0;False;-1;0;False;-1;0;False;0;0,0,0,0;VertexOffset;True;False;Cylindrical;False;Relative;0;;0;-1;-1;-1;0;False;0;0;False;-1;-1;0;False;-1;0;0;0;False;0.1;False;-1;0;False;-1;15;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT3;0,0,0;False;3;FLOAT;0;False;4;FLOAT;0;False;6;FLOAT3;0,0,0;False;7;FLOAT3;0,0,0;False;8;FLOAT;0;False;9;FLOAT;0;False;10;FLOAT;0;False;13;FLOAT3;0,0,0;False;11;FLOAT3;0,0,0;False;12;FLOAT3;0,0,0;False;14;FLOAT4;0,0,0,0;False;15;FLOAT3;0,0,0;False;0
 WireConnection;6;0;7;0
 WireConnection;6;1;5;0
 WireConnection;12;0;6;0
@@ -135,4 +136,4 @@ WireConnection;11;0;6;0
 WireConnection;10;2;11;0
 WireConnection;10;9;12;0
 ASEEND*/
-//CHKSM=02F1FA54F42A640FAC227D36B4C47F32C9B5210A
+//CHKSM=0F0E69136F0851D04384982E78200706BCA30E07
