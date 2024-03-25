@@ -193,8 +193,10 @@ namespace Controllers
 
             // 属性页面。
             _ui.onClickSkillRefButton += onClickSkillRefButton;
-            _ui.onChangeTag += onChangeTag;
             _ui.onSkillRefEditButtonClicked += onSkillRefEditButtonClicked;
+            _ui.onChangeTag += onChangeTag;
+            _ui.onSoundButtonClicked += onSoundButtonClickedCallback;
+            _ui.onSoundPlayButtonClicked += onSoundPlayButtonClickedCallback;
 
             // 选卡。
             // 卡牌属性。
@@ -467,6 +469,14 @@ namespace Controllers
                 _ui.setRace(-1, string.Empty);
             }
         }
+        private void onSoundButtonClickedCallback(int index)
+        {
+            // TODO: 打开音效选择界面并设置
+        }
+        private void onSoundPlayButtonClickedCallback(int index)
+        {
+            // TODO: 播放音效
+        }
         #endregion
 
         #region 自定义属性
@@ -537,7 +547,7 @@ namespace Controllers
                 propName = name,
                 propIndexes = itemIndexes
             };
-            await displayCardSelectPanel(source, cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);        
+            await displayCardSelectPanel(source, cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
         }
         private async void onClickPropertyCardEditButtonCallback(bool isCustom, string name, int[] itemIndexes)
         {
@@ -794,6 +804,15 @@ namespace Controllers
                 cardDefine.removeProp(DEFINE.CARD_PROP_SKILL_REF);
                 await setSkillRef(null);
             }
+
+            // TODO
+            var list = new List<(string name, Sprite sprite)>()
+            {
+                (game.lang._("入场"), null),
+                (game.lang._("攻击"), null),
+                (game.lang._("死亡"), null),
+            };
+            _ui.updateSoundItems(list.ToArray());
         }
         #endregion
 

@@ -204,6 +204,27 @@ namespace UI
         {
             _skillIdGameObject.SetActive(visible);
         }
+        public void updateSoundItems((string name, Sprite sprite)[] viewDatas)
+        {
+            _sounds.updateList(viewDatas.Length, (i, rect) =>
+            {
+                var soundItem = rect.GetComponent<LabeledSoundItem>();
+                var viewData = viewDatas[i];
+                soundItem.updateView(viewData.name, viewData.sprite);
+            },
+            rect =>
+            {
+                var soundItem = rect.GetComponent<LabeledSoundItem>();
+                soundItem.onSoundItemClick += onSoundButtonClickedCallback;
+                soundItem.onSoundItemPlayClick += onSoundPlayButtonClickedCallback;
+            },
+            rect =>
+            {
+                var soundItem = rect.GetComponent<LabeledSoundItem>();
+                soundItem.onSoundItemClick -= onSoundButtonClickedCallback;
+                soundItem.onSoundItemPlayClick -= onSoundPlayButtonClickedCallback;
+            });
+        }
         public void switchCardFace(CardFaceType type)
         {
             _editSubnameButton.gameObject.SetActive(type != CardFaceType.Spell && type != CardFaceType.Item);
@@ -643,6 +664,14 @@ namespace UI
         {
             onSaveCardFaceToImage?.Invoke();
         }
+        private void onSoundButtonClickedCallback(LabeledSoundItem soundItem)
+        {
+            onSoundButtonClicked?.Invoke(_sounds.indexOf(soundItem));
+        }
+        private void onSoundPlayButtonClickedCallback(LabeledSoundItem soundItem)
+        {
+            onSoundPlayButtonClicked?.Invoke(_sounds.indexOf(soundItem));
+        }
 
         #region 关键词
         private void onClickKeywordButtonCallback(string name, int[] itemIndexes, ValueInputFieldButton button)
@@ -772,6 +801,14 @@ namespace UI
         /// 当点击编辑技能按钮
         /// </summary>
         public event Action onSkillRefEditButtonClicked;
+        /// <summary>
+        /// 当点击选择卡牌音效
+        /// </summary>
+        public event Action<int> onSoundButtonClicked;
+        /// <summary>
+        /// 当点击播放卡牌音效
+        /// </summary>
+        public event Action<int> onSoundPlayButtonClicked;
 
         #region Properties
         /// <summary>
@@ -815,6 +852,8 @@ namespace UI
         InputField _skinNameInputField;
         [SerializeField]
         Dropdown _languageDropdown;
+        [SerializeField]
+        ElementList _sounds;
         [SerializeField]
         EffectList _effectList;
 
