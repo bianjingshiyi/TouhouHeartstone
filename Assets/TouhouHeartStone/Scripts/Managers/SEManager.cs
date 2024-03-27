@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Game
 {
-    public class SEManager : Manager
+    public partial class SEManager : Manager
     {
         #region 公有方法
         public void PlaySE(string name, float pitch = 1)

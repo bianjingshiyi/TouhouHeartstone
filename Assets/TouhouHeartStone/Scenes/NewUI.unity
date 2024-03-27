@@ -7051,6 +7051,8 @@ MonoBehaviour:
     audio: {fileID: 8300000, guid: 00fc2827e9f91f045ad2c525c4dd4ad5, type: 3}
   - name: BeCharged
     audio: {fileID: 8300000, guid: f6d1b4b34d4405141ad074ca240dbe14, type: 3}
+  bitrate: 96000
+  frameSizeLevel: 3
 --- !u!4 &1159673835
 Transform:
   m_ObjectHideFlags: 0
