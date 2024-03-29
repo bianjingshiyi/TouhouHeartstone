@@ -124,6 +124,7 @@ namespace Controllers
 
             hide();
             await scene.room.display(currentRoomData, string.Empty, RoomMode.Local);
+            await scene.chatCtrl.hide();
         }
         private void onBuildButtonClick()
         {

@@ -28,7 +28,8 @@ namespace Controllers
                 }
                 ui.gameObject.SetActive(true);
 
-                chatLog = info.ChatLog;
+                chatLog.Clear();
+                chatLog.AddRange(info.ChatLog);
                 resetChatPanel();
             }
             return Task.CompletedTask;
@@ -47,8 +48,7 @@ namespace Controllers
         public Task hide()
         {
             isDisplay = false;
-            ui.gameObject.SetActive(false);
-
+            gameObject.SetActive(false);
             chatLog.Clear();
             return Task.CompletedTask;
         }
@@ -179,7 +179,7 @@ namespace Controllers
         /// <summary>
         /// 聊天记录
         /// </summary>
-        List<ChatLine> chatLog;
+        List<ChatLine> chatLog = new List<ChatLine>();
         ChatRoom ui;
         #endregion
         #region 内部类
