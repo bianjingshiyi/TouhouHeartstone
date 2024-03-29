@@ -134,11 +134,9 @@ namespace Game
         public void loadAll()
         {
             // 设置当前的默认语言
-            var systemCulture = new CultureInfo(getSystemLanguage());
-            CurrentCulture = systemCulture;
             cultures.AddRange(langs.Select(l => new CultureInfo(l)));
-
             loadI18n(i18n, uiFilePath, "UI");
+            CurrentCulture = new CultureInfo(getSystemLanguage());
         }
         #endregion
 

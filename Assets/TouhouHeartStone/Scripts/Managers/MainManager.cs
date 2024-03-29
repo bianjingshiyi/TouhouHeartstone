@@ -41,6 +41,8 @@ namespace Game
             database.init();
             cache.init();
             deck.init();
+            // 加载语言文件
+            lang.loadAll();
         }
         protected async void Start()
         {
@@ -55,8 +57,6 @@ namespace Game
             }
             // 初始化网络
             await network.start();
-            // 加载语言文件
-            lang.loadAll();
             // 加载内置动画
             anims.loadBuiltinAnimations();
             // 加载外部卡片数据
