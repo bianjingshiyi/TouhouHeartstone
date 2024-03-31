@@ -240,7 +240,7 @@ namespace Controllers
             if (sprite != null)
             {
                 markUnsaved();
-                _curBuffSkin.imagePath = game.card.getSpritePath(sprite);
+                _curBuffSkin.imagePath = game.card.getResourcePath(sprite);
                 _ui.setImage(sprite);
             }
         }

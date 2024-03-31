@@ -499,7 +499,7 @@ namespace Controllers
             {
                 markCardPoolUnsaved(curCardPoolId);
                 var poolInfo = getCurrentCardPoolInfo();
-                poolInfo.imageResPath = game.card.getSpritePath(sprite);
+                poolInfo.imageResPath = game.card.getResourcePath(sprite);
                 var poolName = game.card.getCardPoolName(poolInfo);
                 _ui.updateCurCardPoolInfo(poolName, sprite);
             }

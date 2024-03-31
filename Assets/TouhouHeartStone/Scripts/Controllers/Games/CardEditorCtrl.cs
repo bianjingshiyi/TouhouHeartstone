@@ -61,8 +61,8 @@ namespace Controllers
                 buffValues = game.editor.getBuffReferences(),
             };
             _ui.initValueInputFieldProperties(fieldProps);
-            
-            
+
+
 
             // 基础页面
             _ui.setId(cardDefine.id);
@@ -96,8 +96,8 @@ namespace Controllers
                 tagIndex = 0;
             _ui.setRace(tagIndex, tagName);
 
-            await updateCardType();
             await resetSkin();
+            await updateCardType();
             await updateCustomProperties();
             await updateKeywords();
 
@@ -195,7 +195,7 @@ namespace Controllers
             _ui.onClickSkillRefButton += onClickSkillRefButton;
             _ui.onSkillRefEditButtonClicked += onSkillRefEditButtonClicked;
             _ui.onChangeTag += onChangeTag;
-            _ui.onSoundButtonClicked += onSoundButtonClickedCallback;
+            _ui.onNeedSelectSound += onNeedSelectSound;
             _ui.onSoundPlayButtonClicked += onSoundPlayButtonClickedCallback;
 
             // 选卡。
@@ -221,6 +221,10 @@ namespace Controllers
             {
                 //新建皮肤
                 _curCardSkin = game.card.createSkin(curCardPoolId, _cardDefine.id);
+                foreach (var soundName in _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames)
+                {
+                    _curCardSkin.addSoundRef(new SkinSoundRef(soundName, null));
+                }
                 _cardSkins.Add(_curCardSkin);
                 updateSkinNames();
             }
@@ -355,15 +359,33 @@ namespace Controllers
         /// <summary>
         /// 当需要用户选择图片，根据平台不同调用不同的插件方法，返回选择的贴图。新建的贴图需要缓存在内存中。
         /// </summary>
-        async Task<Sprite> onNeedSelectImage()
+        private async Task<Sprite> onNeedSelectImage()
         {
             Sprite sprite = await game.card.selectExternalImage();
             if (sprite != null)
             {
                 markUnsaved();
-                _curCardSkin.imagePath = game.card.getSpritePath(sprite);
+                _curCardSkin.imagePath = game.card.getResourcePath(sprite);
             }
             return sprite;
+        }
+        /// <summary>
+        /// 当需要用户选择图片，根据平台不同调用不同的插件方法，返回选择的贴图。新建的贴图需要缓存在内存中。
+        /// </summary>
+        private async Task<AudioClip> onNeedSelectSound(int soundIndex)
+        {
+            AudioClip audio = await game.card.selectExternalSound();
+            if (audio != null)
+            {
+                markUnsaved();
+                foreach (var soundName in _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames)
+                {
+                    if (_curCardSkin.getSoundRef(soundName) == null)
+                        _curCardSkin.addSoundRef(new SkinSoundRef(soundName, null));
+                }
+                _curCardSkin.getAllSoundRefs()[soundIndex].path = game.card.getResourcePath(audio);
+            }
+            return audio;
         }
         /// <summary>
         /// 当用户更改卡片描述
@@ -469,13 +491,18 @@ namespace Controllers
                 _ui.setRace(-1, string.Empty);
             }
         }
-        private void onSoundButtonClickedCallback(int index)
+        private async void onSoundPlayButtonClickedCallback(int index)
         {
-            // TODO: 打开音效选择界面并设置
-        }
-        private void onSoundPlayButtonClickedCallback(int index)
-        {
-            // TODO: 播放音效
+            foreach (var soundName in _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames)
+            {
+                if (_curCardSkin.getSoundRef(soundName) == null)
+                    _curCardSkin.addSoundRef(new SkinSoundRef(soundName, null));
+            }
+            AudioClip audio = await game.card.loadSound(getCurrentCardPoolRef(), _curCardSkin.getAllSoundRefs()[index].path);
+            if (audio != null)
+            {
+                game.seManager.playSE(audio);
+            }
         }
         #endregion
 
@@ -805,14 +832,12 @@ namespace Controllers
                 await setSkillRef(null);
             }
 
-            // TODO
-            var list = new List<(string name, Sprite sprite)>()
+            var soundList = new List<(string name, Sprite sprite)>();
+            foreach (var soundName in cardDefine.type == DEFINE.SERVANT ? _servantSoundNames : _defaultSoundNames)
             {
-                (game.lang._("入场"), null),
-                (game.lang._("攻击"), null),
-                (game.lang._("死亡"), null),
-            };
-            _ui.updateSoundItems(list.ToArray());
+                soundList.Add((game.lang._(soundName), null));
+            }
+            _ui.updateSoundItems(soundList.ToArray());
         }
         #endregion
 
@@ -823,6 +848,10 @@ namespace Controllers
             if (skins.Length < 1)
             {
                 CardSkinData skin = game.card.createSkin(curCardPoolId, _cardDefine.id);
+                foreach (var soundName in _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames)
+                {
+                    _curCardSkin.addSoundRef(new SkinSoundRef(soundName, null));
+                }
                 skins = new CardSkinData[] { skin };
                 _cardSkins.Add(skin);
             }
@@ -1169,6 +1198,15 @@ namespace Controllers
         public const string CARD_PICTURE_EXPORTED = "卡牌图片导出成功。";
         [TranslateMsg("卡牌图片导出失败")]
         public const string CARD_PICTURE_EXPORT_FAILED = "卡牌图片导出失败。";
+
+        [TranslateMsg("卡牌皮肤编辑器中仆从牌的入场音效的名称")]
+        public const string SKIN_SOUND_NAME_ON_ENTER = "入场音效";
+        [TranslateMsg("卡牌皮肤编辑器中仆从牌的攻击音效的名称")]
+        public const string SKIN_SOUND_NAME_ON_ATTACK = "攻击音效";
+        [TranslateMsg("卡牌皮肤编辑器中仆从牌的死亡音效的名称")]
+        public const string SKIN_SOUND_NAME_ON_DEATH = "死亡音效";
+        [TranslateMsg("卡牌皮肤编辑器中卡牌的使用音效的名称")]
+        public const string SKIN_SOUND_NAME_ON_USE = "使用音效";
         #endregion
 
         #region 静态集合
@@ -1209,7 +1247,16 @@ namespace Controllers
             StringTable.CARD_TAG_MECH,
             StringTable.CARD_TAG_GHOST
         };
-
+        static readonly string[] _servantSoundNames = new string[]
+        {
+            SKIN_SOUND_NAME_ON_ENTER,
+            SKIN_SOUND_NAME_ON_ATTACK,
+            SKIN_SOUND_NAME_ON_DEATH
+        };
+        static readonly string[] _defaultSoundNames = new string[]
+        {
+            SKIN_SOUND_NAME_ON_USE
+        };
         #region 自定义属性
         public static readonly string[] takenPropNames = new string[]
         {

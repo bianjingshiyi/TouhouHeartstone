@@ -21,6 +21,7 @@ namespace Game
             CacheDir = Path.Combine(Application.persistentDataPath, dirName);
             prepareDirectory(ResourceType.CardDefine.GetString());
             prepareDirectory(ResourceType.Picture.GetString());
+            prepareDirectory(ResourceType.Sound.GetString());
             rebuildLRU();
         }
         /// <summary>

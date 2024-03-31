@@ -171,7 +171,7 @@ namespace Game
             // 检查并修复老旧大卡图
             await fixLargeImage(cardPoolInfo, cardPool);
             // 对缓存的图片进行保存
-            await saveExternalImages(cardPoolInfo, cardPool);
+            await saveExternalResources(cardPoolInfo, cardPool);
 
             // 打成序列化对象。
             SerializableCardPoolInfo seriCardPoolInfo = new(cardPoolInfo);
@@ -560,6 +560,22 @@ namespace Game
             }
 
             return imageFiles.ToArray();
+        }
+        public static string[] getCardPoolSounds(CardPool cardPool)
+        {
+            HashSet<string> paths = new HashSet<string>();
+            foreach (var cardSkin in cardPool.cardSkinList)
+            {
+                foreach (var soundRef in cardSkin.getAllSoundRefs())
+                {
+                    // 不导出内置资源
+                    var path = soundRef.path;
+                    if (string.IsNullOrEmpty(path) || path.isStreamingAssetsPath(out _) || path.isResourcesPath(out _))
+                        continue;
+                    paths.Add(path);
+                }
+            }
+            return paths.ToArray();
         }
         public string getCardPoolName(CardPoolInfo info)
         {

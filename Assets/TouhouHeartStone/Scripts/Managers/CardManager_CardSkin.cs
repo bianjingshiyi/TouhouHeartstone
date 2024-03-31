@@ -24,10 +24,12 @@ namespace Game
             var cardPoolRef = getLocalCardPoolReference(cardPoolId);
             if (tryGetCardPool(cardPoolRef, out var cardPool))
             {
-                CardSkinData skin = new CardSkinData();
-                skin.id = cardDefineId;
-                skin.skinName = StringTable.EDITOR_NEW_SKIN_DEFAULT_NAME;
-                skin.language = game.lang.getLanguage();
+                CardSkinData skin = new()
+                {
+                    id = cardDefineId,
+                    skinName = StringTable.EDITOR_NEW_SKIN_DEFAULT_NAME,
+                    language = game.lang.getLanguage()
+                };
 
                 var skinIds = getAllCardSkins(cardPoolRef, cardDefineId).GroupBy(c => c.skinId).Select(g => g.Key);
                 if (skinIds.Count() > 0)

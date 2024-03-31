@@ -41,6 +41,8 @@ namespace Controllers
         [BsonIgnoreIfNull]
         public string texturesDir;
         [BsonIgnoreIfNull]
+        public string soundsDir;
+        [BsonIgnoreIfNull]
         [Obsolete("使用dependencyRefs。")]
         public long[] dependencies;
         long ICardPoolReference.CardPoolID => cardPoolId;

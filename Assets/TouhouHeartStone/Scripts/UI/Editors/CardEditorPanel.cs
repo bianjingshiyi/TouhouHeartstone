@@ -664,9 +664,27 @@ namespace UI
         {
             onSaveCardFaceToImage?.Invoke();
         }
-        private void onSoundButtonClickedCallback(LabeledSoundItem soundItem)
+        private async void onSoundButtonClickedCallback(LabeledSoundItem soundItem)
         {
-            onSoundButtonClicked?.Invoke(_sounds.indexOf(soundItem));
+            int index = _sounds.indexOf(soundItem);
+            soundItem.soundItem.interactable = false;
+            try
+            {
+                Task<AudioClip> task = onNeedSelectSound?.Invoke(index);
+                AudioClip audio = task != null ? await task : null;
+                if (audio != null)
+                {
+                    // TODO: 设置音频图片
+                }
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException($"设置卡牌图像失败：{e}", e);
+            }
+            finally
+            {
+                soundItem.soundItem.interactable = true;
+            }
         }
         private void onSoundPlayButtonClickedCallback(LabeledSoundItem soundItem)
         {
@@ -804,7 +822,7 @@ namespace UI
         /// <summary>
         /// 当点击选择卡牌音效
         /// </summary>
-        public event Action<int> onSoundButtonClicked;
+        public event Func<int, Task<AudioClip>> onNeedSelectSound;
         /// <summary>
         /// 当点击播放卡牌音效
         /// </summary>

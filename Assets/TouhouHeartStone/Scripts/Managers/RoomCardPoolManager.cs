@@ -238,20 +238,20 @@ namespace Game
                         else if (localCardPool != null)
                         {
                             var resList = new List<Tuple<ResourceType, string>>();
-                            var picturePaths = GetCardPoolPictures(poolRef);
-                            // 遍历卡池内的所有图片。
-                            foreach (var path in picturePaths)
+                            var resourcesInfo = GetCardPoolResourcesInfo(poolRef);
+                            // 遍历卡池内的所有资源。
+                            foreach (var info in resourcesInfo)
                             {
-                                string picId = Path.GetFileNameWithoutExtension(path);
-                                if (string.IsNullOrEmpty(picId))
+                                string resId = Path.GetFileNameWithoutExtension(info.Item2);
+                                if (string.IsNullOrEmpty(resId))
                                     continue;
 
-                                resList.Add(new Tuple<ResourceType, string>(ResourceType.Picture, picId));
+                                resList.Add(info);
                             }
 
                             token.ThrowIfCancellationRequested();
 
-                            // 如果有远端不存在的图片，上传该卡图
+                            // 如果有远端不存在的资源，上传该资源
                             bool[] resExists = await game.network.roomClient.ResourceBatchExistsAsync(resList.ToArray());
                             if (resExists.Contains(false))
                             {
@@ -273,22 +273,25 @@ namespace Game
                     {
                         downloadPools.Add(roomPool);
                     }
-                    // 如果本地存在该卡池，检测卡图下载。
+                    // 如果本地存在该卡池，检测资源下载。
                     else if (cachedCardPool != null)
                     {
-                        // 遍历卡池内的所有卡牌皮肤，如果有不存在的卡图，下载该卡图。
-                        var picturePaths = GetCardPoolPictures(poolRef);
-                        foreach (var path in picturePaths)
+                        // 遍历卡池内的所有资源，如果有不存在的资源，下载该资源。
+                        var resourcesInfo = GetCardPoolResourcesInfo(poolRef);
+                        foreach (var resInfo in resourcesInfo)
                         {
                             token.ThrowIfCancellationRequested();
-                            string picId = Path.GetFileNameWithoutExtension(path);
-                            if (!string.IsNullOrEmpty(picId) &&
-                            !game.cache.FileExists(ResourceType.Picture, picId) &&
-                                !game.card.isExternalImageExists(path))
-                            {
-                                downloadPools.Add(roomPool);
-                                break;
-                            }
+                            string resId = Path.GetFileNameWithoutExtension(resInfo.Item2);
+                            if (string.IsNullOrEmpty(resId))
+                                continue;
+                            if (game.cache.FileExists(resInfo.Item1, resId))
+                                continue;
+                            if (resInfo.Item1 == ResourceType.Picture && game.card.isExternalImageExists(resInfo.Item2))
+                                continue;
+                            if (resInfo.Item1 == ResourceType.Sound && game.card.isExternalSoundExists(resInfo.Item2))
+                                continue;
+                            downloadPools.Add(roomPool);
+                            break;
                         }
                     }
                 }
@@ -324,8 +327,8 @@ namespace Game
                 {
                     cardPoolPlan
                 };
-                var picPlans = GetCardPoolPicturePlans(pool.GetReference());
-                foreach (var p in picPlans)
+                var resPlans = GetCardPoolResourcePlans(pool.GetReference());
+                foreach (var p in resPlans)
                 {
                     p.size = GetPlanFileSize(p);
                     plans.Add(p);
@@ -392,14 +395,25 @@ namespace Game
         /// </summary>
         /// <param name="cardPoolRef">卡池引用。</param>
         /// <returns>图片路径数组。</returns>
-        private string[] GetCardPoolPictures(CardPoolReference cardPoolRef)
+        private Tuple<ResourceType, string>[] GetCardPoolResourcesInfo(CardPoolReference cardPoolRef)
         {
             if (game.card.tryGetCardPool(cardPoolRef, out var cardPool))
             {
                 var info = game.card.getCardPoolInfo(cardPoolRef);
-                return CardManager.getCardPoolImages(info, cardPool);
+                string[] images = CardManager.getCardPoolImages(info, cardPool);
+                string[] sounds = CardManager.getCardPoolSounds(cardPool);
+                Tuple<ResourceType, string>[] res = new Tuple<ResourceType, string>[images.Length + sounds.Length];
+                for (int i = 0; i < images.Length; i++)
+                {
+                    res[i] = new Tuple<ResourceType, string>(ResourceType.Picture, images[i]);
+                }
+                for (int i = 0; i < sounds.Length; i++)
+                {
+                    res[i + images.Length] = new Tuple<ResourceType, string>(ResourceType.Sound, sounds[i]);
+                }
+                return res;
             }
-            return Array.Empty<string>();
+            return Array.Empty<Tuple<ResourceType, string>>();
         }
         /// <summary>
         /// 上传所有卡池计划。
@@ -534,9 +548,9 @@ namespace Game
                         allSuccess = false;
                         continue;
                     }
-                    // 获取该卡池的所有图片id，添加ResourcePlan。
-                    var picPlans = GetCardPoolPicturePlans(poolRef).Where(p => !plan.resPlans.Any(rp => rp.id == p.id));
-                    plan.resPlans.AddRange(picPlans);
+                    // 获取该卡池的所有资源id，添加ResourcePlan。
+                    var resPlans = GetCardPoolResourcePlans(poolRef).Where(p => !plan.resPlans.Any(rp => rp.id == p.id));
+                    plan.resPlans.AddRange(resPlans);
                     token.ThrowIfCancellationRequested();
                 }
 
@@ -642,19 +656,29 @@ namespace Game
             onProgressChanged?.Invoke(value);
         }
         /// <summary>
-        /// 获取卡池内的所有图片，并转换为图片资源计划。
+        /// 获取卡池内的所有资源，并转换为资源计划。
         /// </summary>
-        /// <param name="cardPoolId">卡池引用。</param>
-        /// <returns>图片资源计划数组。</returns>
-        private PictureFilePlan[] GetCardPoolPicturePlans(CardPoolReference cardPoolRef)
+        /// <param name="cardPoolRef">卡池引用。</param>
+        /// <returns>资源计划数组。</returns>
+        private ResourcePlan[] GetCardPoolResourcePlans(CardPoolReference cardPoolRef)
         {
-            var paths = GetCardPoolPictures(cardPoolRef);
-            return paths.Select(p =>
+            var resInfos = GetCardPoolResourcesInfo(cardPoolRef);
+            return Array.ConvertAll(resInfos, r =>
             {
-                var plan = new PictureFilePlan(p);
-                plan.size = GetPlanFileSize(plan);
-                return plan;
-            }).ToArray();
+                ResourcePlan resPlan;
+                if (r.Item1 == ResourceType.Picture)
+                {
+                    resPlan = new PictureFilePlan(r.Item2);
+                }
+                else if (r.Item1 == ResourceType.Sound)
+                {
+                    resPlan = new SoundPlan(r.Item2);
+                }
+                else
+                    throw new NotImplementedException(string.Format("未知的资源类型{0}", r.Item1));
+                resPlan.size = GetPlanFileSize(resPlan);
+                return resPlan;
+            });
         }
         /// <summary>
         /// 获取资源计划的文件大小。
@@ -963,5 +987,35 @@ namespace Game
             }
             throw new FileNotFoundException();
         }
+    }
+    public class SoundPlan : ResourcePlan
+    {
+        public SoundPlan(string path)
+        {
+            _path = path;
+        }
+        public async override Task<byte[]> GetBytes(MainManager game)
+        {
+            if (string.IsNullOrEmpty(_path))
+                throw new FileNotFoundException();
+
+            var fileManager = game.fileManager;
+            var resPath = Path.Combine(game.card.soundDirName, _path);
+            bool isFullPath = Path.GetFullPath(_path) == resPath;
+            if (isFullPath && fileManager.isFileExist(resPath))
+            {
+                //如果直接给出完整路径就直接从完整路径上读
+                return await fileManager.readBinaryFile(resPath);
+            }
+            else if (fileManager.isPersistentFileExist(resPath))
+            {
+                // 从外部资源路径读取资源。
+                return await fileManager.readPersistentBinaryFile(resPath);
+            }
+            throw new FileNotFoundException();
+        }
+        public override ResourceType type => ResourceType.Sound;
+        public override string id => Path.GetFileNameWithoutExtension(_path);
+        private string _path;
     }
 }

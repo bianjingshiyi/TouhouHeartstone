@@ -28,6 +28,10 @@ namespace Game
             {
                 _animationRefs.Add(new SerializableSkinAnimationRef(animRef));
             }
+            foreach (var soundRef in skin.getAllSoundRefs())
+            {
+                _soundRefs.Add(new SerializableSkinSoundRef(soundRef));
+            }
         }
         public CardSkinData toSkin()
         {
@@ -43,11 +47,18 @@ namespace Game
                 desc = _desc,
                 language = _language
             };
-            if (_animationRefs != null)
+            if (_animationRefs != null && _animationRefs.Count > 0)
             {
                 foreach (var animRef in _animationRefs)
                 {
                     skin.addAnimRef(animRef.toRef());
+                }
+            }
+            if (_soundRefs != null && _soundRefs.Count > 0)
+            {
+                foreach (var soundRef in _soundRefs)
+                {
+                    skin.addSoundRef(soundRef.toRef());
                 }
             }
             return skin;
@@ -72,5 +83,7 @@ namespace Game
         public string _language;
         [Key(9)]
         public List<SerializableSkinAnimationRef> _animationRefs = new List<SerializableSkinAnimationRef>();
+        [Key(10)]
+        public List<SerializableSkinSoundRef> _soundRefs = new List<SerializableSkinSoundRef>();
     }
 }

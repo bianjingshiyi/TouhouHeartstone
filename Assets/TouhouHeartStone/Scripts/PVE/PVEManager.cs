@@ -90,6 +90,7 @@ namespace Game.PVE
                 main.card.getLocalCardPoolInfo(CardManager.PVE_POOL_ID).ToReference(),
             };
             info.texturesDir = _generatedTexturesPath;
+            info.soundsDir = _generatedSoundsPath;
             info.cardPoolName = main.lang._(DEFAULT_GEN_POOL_NAME);
             _pvePoolDict.Add(dataName, info);
         }
@@ -111,6 +112,8 @@ namespace Game.PVE
             var dir = Path.GetDirectoryName(path);
             var texDir = Path.Combine(dir, _generatedTexturesPath);
             Directory.CreateDirectory(texDir);
+            var soundDir = Path.Combine(dir, _generatedSoundsPath);
+            Directory.CreateDirectory(soundDir);
             return await cardManager.saveCardPool(info, pool, path);
         }
         public async Task<(CardPoolInfo info, CardPool pool)> loadGeneratedCardPool(string dataName)
@@ -454,6 +457,8 @@ namespace Game.PVE
         private string _cardPoolFileName = "cardpool";
         [SerializeField]
         private string _generatedTexturesPath = "Textures";
+        [SerializeField]
+        private string _generatedSoundsPath = "Sounds";
         private Dictionary<string, CardPoolInfo> _pvePoolDict = new Dictionary<string, CardPoolInfo>();
         private const int VERSION_NUMBER = 0;
 

@@ -162,13 +162,18 @@ namespace Game.BattleTable
             else
             {
                 game.logger.logError($"没有找到{define}对应的皮肤");
-                return new CardSkinData()
+                skin = new CardSkinData()
                 {
                     id = define.id,
                     desc = $"{define}（这张卡随时可能爆炸！）",
                     imagePath = cardManager.getDefaultImagePath(),
                     name = define.GetType().Name
                 };
+                foreach (var soundName in define.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames)
+                {
+                    skin.addSoundRef(new SkinSoundRef(soundName, null));
+                }
+                return skin;
             }
         }
         public CardSkinData getCardSkin(long cardPoolId, int id)

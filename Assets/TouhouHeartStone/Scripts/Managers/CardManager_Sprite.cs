@@ -35,71 +35,6 @@ namespace Game
             }
         }
         /// <summary>
-        /// 保存外部图片，并将指定卡池中所有对外部图片的引用都替换为保存后的路径。
-        /// </summary>
-        /// <returns></returns>
-        public async Task saveExternalImages(CardPoolInfo cardPoolInfo, CardPool cardPool)
-        {
-            long cardPoolId = cardPoolInfo.cardPoolId;
-            //对缓存的图片进行保存
-            List<string> removeSpritePathList = new List<string>();
-            List<KeyValuePair<string, Sprite>> savedPathSpritePairList = new List<KeyValuePair<string, Sprite>>();
-            foreach (var pair in _externalSpriteCacheDict)
-            {
-                var cachePath = pair.Key;
-                var cacheSprite = pair.Value;
-                //已经存在的资源图片不需要保存
-                if (isHashNamedImage(cachePath))
-                    continue;
-
-                //获取使用这张图片的所有皮肤
-                var cardSkins = cardPool.cardSkinList.Where(s => s.imagePath == cachePath);
-                var buffSkins = cardPool.buffSkinList.Where(s => s.imagePath == cachePath);
-
-                //没有皮肤使用，跳过
-                if (buffSkins.Count() <= 0 && cardSkins.Count() <= 0)
-                    continue;
-                // 图片为空。
-                if (cacheSprite is not Sprite sprite)
-                {
-                    Debug.LogWarning($"图片{cachePath}为空");
-                    continue;
-                }
-
-                //另存为图片
-                string path = await saveImage(cardPoolId, sprite.texture);
-                removeSpritePathList.Add(cachePath);
-                savedPathSpritePairList.Add(new KeyValuePair<string, Sprite>(path, sprite));
-
-                //替换所有引用这个图片的皮肤的图片地址
-                if (cardPoolInfo.imageResPath == cachePath)
-                {
-                    cardPoolInfo.imageResPath = cachePath;
-                }
-                foreach (var otherCardSkin in cardSkins)
-                {
-                    otherCardSkin.imagePath = path;
-                }
-                foreach (var otherBuffSkin in buffSkins)
-                {
-                    otherBuffSkin.imagePath = path;
-                }
-            }
-            foreach (var path in removeSpritePathList)
-            {
-                _externalSpriteCacheDict.Remove(path);
-            }
-            foreach (var pair in savedPathSpritePairList)
-            {
-                var path = pair.Key;
-                var sprite = pair.Value;
-                if (!_externalSpriteCacheDict.ContainsKey(path))
-                {
-                    _externalSpriteCacheDict.Add(path, sprite);
-                }
-            }
-        }
-        /// <summary>
         /// 保存时修正路径不正确的图片
         /// </summary>
         /// <param name="cardPoolInfo"></param>
@@ -296,7 +231,7 @@ namespace Game
             if (string.IsNullOrEmpty(imagePath))
                 return null;
 
-            Sprite sprite = getSpriteFromCache(imagePath);
+            Sprite sprite = getResourceFromCache<Sprite>(imagePath);
             if (sprite != null)
                 return sprite;
 
@@ -311,7 +246,7 @@ namespace Game
                     if (sprite == null)
                         return defaultImage;
 
-                    addSpriteToCache(imagePath, sprite);
+                    addResourceToCache(imagePath, sprite);
                     return sprite;
                 }
             }
@@ -326,49 +261,10 @@ namespace Game
                 return defaultImage;
 
             //添加到缓存
-            addSpriteToCache(imagePath, sprite);
+            addResourceToCache(imagePath, sprite);
             return sprite;
         }
         #endregion
-
-        /// <summary>
-        /// 将外部图片添加到缓存
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="sprite"></param>
-        public void addSpriteToCache(string path, Sprite sprite)
-        {
-            _externalSpriteCacheDict[path] = sprite;
-        }
-        /// <summary>
-        /// 获取缓存的外部图片
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public Sprite getSpriteFromCache(string path)
-        {
-            if (_externalSpriteCacheDict.TryGetValue(path, out var value))
-            {
-                return value;
-            }
-            return null;
-        }
-        /// <summary>
-        /// 获取加载到内存的Sprite的地址
-        /// </summary>
-        /// <param name="sprite"></param>
-        /// <returns></returns>
-        public string getSpritePath(Sprite sprite)
-        {
-            foreach (var pair in _externalSpriteCacheDict)
-            {
-                if ((object)pair.Value == sprite)
-                {
-                    return pair.Key;
-                }
-            }
-            return null;
-        }
         /// <summary>
         /// 获取外部图片的绝对路径。
         /// </summary>
@@ -376,7 +272,7 @@ namespace Game
         /// <returns>绝对路径。</returns>
         public string getExternalImagePath(string path)
         {
-            return Path.Combine(externalImageDir, path);
+            return Path.Combine(Application.persistentDataPath, textureDirName, path);
         }
         /// <summary>
         /// 判断一张外部图片是否存在。
@@ -430,10 +326,7 @@ namespace Game
         /// <returns></returns>
         public static bool isHashNamedImage(string imagePath)
         {
-            return
-                imagePath.Length == 68 &&
-                (imagePath.EndsWith(".jpg") || imagePath.EndsWith(".png")) &&
-                imagePath.Substring(0, 32).All(c => ('0' <= c && c <= '9') || ('a' <= c && c <= 'z'));
+            return isHashNamedResource(imagePath) && (imagePath.EndsWith(".jpg") || imagePath.EndsWith(".png"));
         }
 
         /// <summary>
@@ -568,7 +461,6 @@ namespace Game
         #region 私有方法
         private async void onAwake_Sprite()
         {
-            externalImageDir = Path.Combine(Application.persistentDataPath, textureDirName);
             if (_defaultImage == null)
             {
                 Texture2D texture = await getManager<THHResourceManager>().loadTexture(_defaultImagePath, null);
@@ -596,7 +488,7 @@ namespace Game
                     return;
                 }
 
-                Sprite sprite = getSpriteFromCache(path);
+                Sprite sprite = getResourceFromCache<Sprite>(path);
                 if (sprite == null)
                 {
                     // 创建贴图。
@@ -604,7 +496,7 @@ namespace Game
                     var texture = ResizeAndCropImage(orig, width, height);
                     sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
                     //缓存外部图片
-                    addSpriteToCache(path, sprite);
+                    addResourceToCache(path, sprite);
                 }
                 //更改贴图路径为外部文件路径
                 tcs.SetResult(sprite);
@@ -629,7 +521,7 @@ namespace Game
                 return Task.FromResult<Sprite>(null);
             }
 
-            Sprite sprite = getSpriteFromCache(path);
+            Sprite sprite = getResourceFromCache<Sprite>(path);
             if (sprite == null)
             {
                 try
@@ -644,7 +536,7 @@ namespace Game
                     var texture = ResizeAndCropImage(orig, width, height);
                     sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
                     //缓存外部图片
-                    addSpriteToCache(path, sprite);
+                    addResourceToCache(path, sprite);
                 }
                 catch (Exception e)
                 {
@@ -680,10 +572,6 @@ namespace Game
                 Debug.LogError($"加载流文件中的图片{path}失败：{e}");
             }
             return null;
-        }
-        private Sprite loadResourcesSprite(string path)
-        {
-            return Resources.Load<Sprite>(path);
         }
         private async Task<Sprite> loadExternalSprite(string path)
         {
@@ -737,7 +625,7 @@ namespace Game
 
             Sprite sprite;
             if (path.isResourcesPath(out var resourcesPath))
-                sprite = loadResourcesSprite(resourcesPath);
+                sprite = loadResourceAsset<Sprite>(resourcesPath);
             else if (path.isStreamingAssetsPath(out var streamingPath))
                 sprite = await loadStreamingAssetSprite(streamingPath);
             else
@@ -763,9 +651,7 @@ namespace Game
         #region 属性字段
         public string textureDirName => _textureDirName;
         public string editorTextureDirName => _editorTextureDirName;
-        public string externalImageDir { get; private set; }
         private static SHA256 _hashProvider = SHA256.Create();
-        private Dictionary<string, Sprite> _externalSpriteCacheDict = new Dictionary<string, Sprite>();
         [SerializeField]
         string _textureDirName = "Textures";
         [SerializeField]

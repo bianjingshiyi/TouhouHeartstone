@@ -30,6 +30,10 @@ namespace Game
             cardDefine = new CardDefine(cardId, DEFINE.SERVANT);
             cardDefine.cardPoolId = poolRef.CardPoolID;
             cardSkin = createSkin(cardDefine.cardPoolId, cardDefine.id);
+            foreach (var soundName in CardSkinData.servantCardSkinSoundNames)
+            {
+                cardSkin.addSoundRef(new SkinSoundRef(soundName, null));
+            }
         }
         public int allocCardDefineID(CardPool cardPool)
         {

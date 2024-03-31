@@ -32,6 +32,10 @@ namespace UI
             {
                 _animationRefs.Add(new SkinAnimationRef(animRef));
             }
+            foreach (var soundRef in other._soundRefs)
+            {
+                _soundRefs.Add(new SkinSoundRef(soundRef));
+            }
         }
         public SkinAnimationRef[] getAllAnimRefs()
         {
@@ -48,6 +52,22 @@ namespace UI
         public int removeAnimRef(string key)
         {
             return _animationRefs.RemoveAll(r => r.key == key);
+        }
+        public SkinSoundRef[] getAllSoundRefs()
+        {
+            return _soundRefs.ToArray();
+        }
+        public SkinSoundRef getSoundRef(string name)
+        {
+            return _soundRefs.FirstOrDefault(r => r.name == name);
+        }
+        public void addSoundRef(SkinSoundRef soundRef)
+        {
+            _soundRefs.Add(soundRef);
+        }
+        public int removeSoundRef(string name)
+        {
+            return _soundRefs.RemoveAll(r => r.name == name);
         }
         [BsonElement]
         [SerializeField]
@@ -143,7 +163,9 @@ namespace UI
             set { _language = value; }
         }
         [BsonElement]
-        List<SkinAnimationRef> _animationRefs = new List<SkinAnimationRef>();
+        List<SkinAnimationRef> _animationRefs = new();
+        [BsonElement]
+        List<SkinSoundRef> _soundRefs = new();
         public override string ToString()
         {
             string name = this.name;
@@ -152,5 +174,11 @@ namespace UI
             name += $"<{id}>";
             return name;
         }
+        public const string SOUND_NAME_ON_USE = "OnUse";
+        public const string SOUND_NAME_ON_ENTER = "OnEnter";
+        public const string SOUND_NAME_ON_ATTACK = "OnAttack";
+        public const string SOUND_NAME_ON_DEATH = "OnDeath";
+        public static string[] defaultCardSkinSoundNames = new string[] { SOUND_NAME_ON_USE };
+        public static string[] servantCardSkinSoundNames = new string[] { SOUND_NAME_ON_ENTER, SOUND_NAME_ON_ATTACK, SOUND_NAME_ON_DEATH };
     }
 }

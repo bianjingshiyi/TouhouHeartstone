@@ -24,6 +24,7 @@ namespace Game
             editTime = info.editTime;
             dependencyRefs = info.dependencyRefs;
             texturesDir = info.texturesDir;
+            soundsDir = info.soundsDir;
         }
         public CardPoolInfo toInfo()
         {
@@ -35,7 +36,8 @@ namespace Game
                 versionNumber = versionNumber,
                 editTime = editTime,
                 dependencyRefs = dependencyRefs,
-                texturesDir = texturesDir
+                texturesDir = texturesDir,
+                soundsDir = soundsDir
             };
         }
         [Key(0)]
@@ -52,5 +54,7 @@ namespace Game
         public CardPoolReference[] dependencyRefs;
         [IgnoreMember]
         public string texturesDir;
+        [IgnoreMember]
+        public string soundsDir;
     }
 }
