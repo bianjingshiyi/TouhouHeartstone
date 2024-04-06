@@ -4,6 +4,12 @@ using MessagePack;
 
 namespace TouhouHeartstone
 {
+    [Union(0, typeof(AttackResponse))]
+    [Union(1, typeof(DiscoverResponse))]
+    [Union(2, typeof(InitReplaceResponse))]
+    [Union(3, typeof(SurrenderResponse))]
+    [Union(4, typeof(TurnEndResponse))]
+    [Union(5, typeof(UseResponse))]
     [Serializable]
     [MessagePackObject]
     public abstract class Response : IResponse, INetworkData

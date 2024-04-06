@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Game.BattleTable;
+using MessagePack;
 using UnityEngine;
 
 namespace Game.Animations
@@ -22,45 +23,5 @@ namespace Game.Animations
         {
             throw new NotImplementedException();
         }
-    }
-    [Serializable]
-    public class SerializableAnimationDefine
-    {
-        #region 公有方法
-        #region 构造方法
-        public SerializableAnimationDefine(AnimationDefine animDef)
-        {
-            id = animDef.id;
-            name = animDef.name;
-            duration = animDef.duration;
-            blockTime = animDef.blockTime;
-            type = (int)animDef.type;
-            foreach (string propName in animDef.getPropNames())
-            {
-                propDict.Add(propName, animDef.getProp<object>(propName));
-            }
-        }
-        #endregion
-        public GeneratedAnimationDefine toAnimDefine()
-        {
-            var anim = new GeneratedAnimationDefine(id, name);
-            anim.duration = duration;
-            anim.blockTime = blockTime;
-            anim.type = (AnimationType)type;
-            foreach (var pair in propDict)
-            {
-                anim.setProp(pair.Key, pair.Value);
-            }
-            return anim;
-        }
-        #endregion
-        #region 属性字段
-        public int id;
-        public string name;
-        public float duration;
-        public float blockTime;
-        public int type;
-        public Dictionary<string, object> propDict = new Dictionary<string, object>();
-        #endregion
     }
 }

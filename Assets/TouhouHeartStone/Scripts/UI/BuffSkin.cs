@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Game;
 using TouhouCardEngine;
@@ -33,7 +32,7 @@ namespace UI
                 _animationRefs.Add(new SkinAnimationRef(animRef));
             }
         }
-        int ISkin.skinId 
+        int ISkin.skinId
         {
             get => buffId;
             set => buffId = value;
@@ -54,49 +53,5 @@ namespace UI
         {
             return _animationRefs.RemoveAll(r => r.key == key);
         }
-    }
-    [Serializable]
-    public class SerializableBuffSkin
-    {
-        public SerializableBuffSkin(BuffSkin skin)
-        {
-            buffId = skin.buffId;
-            language = skin.language;
-            name = skin.name;
-            desc = skin.desc;
-            imagePath = skin.imagePath;
-            persistentAnimRef = skin.persistentAnimRef;
-            foreach (var animRef in skin.getAllAnimRefs())
-            {
-                _animationRefs.Add(new SerializableSkinAnimationRef(animRef));
-            }
-        }
-        public BuffSkin toSkin()
-        {
-            var skin = new BuffSkin()
-            {
-                buffId = buffId,
-                language = language,
-                name = name,
-                desc = desc,
-                imagePath = imagePath,
-                persistentAnimRef = persistentAnimRef
-            };
-            if (_animationRefs != null)
-            {
-                foreach (var animRef in _animationRefs)
-                {
-                    skin.addAnimRef(animRef.toRef());
-                }
-            }
-            return skin;
-        }
-        public int buffId;
-        public string language;
-        public string name;
-        public string desc;
-        public string imagePath;
-        List<SerializableSkinAnimationRef> _animationRefs = new List<SerializableSkinAnimationRef>();
-        public DefineReference persistentAnimRef;
     }
 }

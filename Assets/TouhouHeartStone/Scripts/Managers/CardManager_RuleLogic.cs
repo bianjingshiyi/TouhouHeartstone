@@ -51,7 +51,7 @@ namespace Game
 
         public GeneratedRuleLogic cloneRuleLogic(long cardPoolId, GeneratedRuleLogic logic)
         {
-            var json = logic.serialize().toJson();
+            var json = SerializeHelper.ToSerializable(logic).toJson();
             var cloneSeri = JsonHelper.fromJson<SerializableGeneratedRuleLogic>(json);
 
 

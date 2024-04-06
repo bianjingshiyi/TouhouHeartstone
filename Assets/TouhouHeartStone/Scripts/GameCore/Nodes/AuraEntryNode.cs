@@ -81,11 +81,6 @@ namespace TouhouHeartstone
         }
         #endregion
 
-        public override SerializableNode ToSerializableNode()
-        {
-            return new SerializableAuraEntryNode(this);
-        }
-
         #endregion
 
         public const string conditionPortName = "condition";
@@ -104,40 +99,5 @@ namespace TouhouHeartstone
         protected static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
         protected static PortDefine targetCardPortDefine = PortDefine.Value(typeof(Card), targetCardName, Translations.EDITOR_PARAM_NAME_TARGET_CARD);
         protected static PortDefine targetBuffPortDefine = PortDefine.Value(typeof(Buff), targetBuffName, Translations.EDITOR_PARAM_NAME_TARGET_BUFF);
-    }
-
-
-    [Serializable]
-    public class SerializableAuraEntryNode : SerializableNode
-    {
-        public SerializableAuraEntryNode(AuraEntryNode entryNode) : base(entryNode)
-        {
-        }
-        public AuraEntryNode ToActionNode(ActionGraph graph)
-        {
-            var entry = new AuraEntryNode()
-            {
-                id = id,
-                posX = posX,
-                posY = posY
-            };
-            IEnumerable<InputDefaultValue> defaultValues =
-                inputDefaultValues?.Select(dv => dv.deserialize())
-                ?? consts?.Select(c => new InputDefaultValue(c.Key, -1, c.Value));
-            InitNode(entry, graph, defaultValues);
-            if (piles != null)
-                entry.setPiles(piles);
-            if (ranges != null)
-                entry.setRanges(ranges);
-            return entry;
-        }
-        public override Node ToNode(ActionGraph graph) => ToActionNode(graph);
-
-        [Obsolete]
-        public Dictionary<string, object> consts;
-        [Obsolete]
-        public string[] piles;
-        [Obsolete]
-        public string[] ranges;
     }
 }

@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Controllers;
+using MessagePack;
 using MukioI18n;
 using SFB;
 using TouhouCardEngine.Shared;
@@ -301,36 +302,9 @@ namespace Game
         string CardPoolPackDefine => $"cardpool.{_cardPoolFilePostfix}";
         #endregion
     }
-
-    class CardPoolPackManifest
+    [MessagePackObject]
+    public class CardPoolPackManifest
     {
-        /// <summary>
-        /// 卡池ID
-        /// </summary>
-        public long CardPoolID;
-
-        /// <summary>
-        /// 卡池名称
-        /// </summary>
-        public string Name;
-
-        /// <summary>
-        /// 卡池版本
-        /// </summary>
-        public long Revision;
-        /// <summary>
-        /// 文件包版本
-        /// </summary>
-        public int FileVersion;
-        /// <summary>
-        /// 文件签名
-        /// </summary>
-        public string Signature;
-
-        CardPoolPackManifest()
-        {
-        }
-
         public CardPoolPackManifest(CardPoolInfo info, string signature)
         {
             CardPoolID = info.cardPoolId;
@@ -338,6 +312,34 @@ namespace Game
             FileVersion = 1;
             Signature = signature;
         }
+        protected CardPoolPackManifest()
+        {
+        }
+        /// <summary>
+        /// 卡池ID
+        /// </summary>
+        [Key(0)]
+        public long CardPoolID;
+        /// <summary>
+        /// 卡池名称
+        /// </summary>
+        [Key(1)]
+        public string Name;
+        /// <summary>
+        /// 卡池版本
+        /// </summary>
+        [Key(2)]
+        public long Revision;
+        /// <summary>
+        /// 文件包版本
+        /// </summary>
+        [Key(3)]
+        public int FileVersion;
+        /// <summary>
+        /// 文件签名
+        /// </summary>
+        [Key(4)]
+        public string Signature;
     }
 
     static class ZipStreamExtension

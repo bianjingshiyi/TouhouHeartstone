@@ -74,25 +74,6 @@ namespace TouhouHeartstone
             }
             return Task.CompletedTask;
         }
-        public override SerializablePropModifier serialize()
-        {
-            return new SerializableLifeModifier(this);
-        }
         #endregion
-    }
-    [Serializable]
-    [BsonDiscriminator("LifeModifier")]
-    public class SerializableLifeModifier : SerializableIntPropModifier
-    {
-        public SerializableLifeModifier(LifeModifier modifier) : base(modifier)
-        {
-        }
-        public override PropModifier deserialize()
-        {
-            return new LifeModifier(getDefaultValue(), isSet)
-            {
-                relatedPropName = relatedPropName
-            };
-        }
     }
 }

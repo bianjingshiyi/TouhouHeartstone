@@ -52,7 +52,7 @@ namespace Controllers
             public CreateNodeOperation(ActionNodeGraphCtrl graphCtrl, Node node) : base(graphCtrl)
             {
                 _nodeID = node.id;
-                _seriNode = node.ToSerializableNode();
+                _seriNode = SerializeHelper.ToSerializable(node);
             }
 
             public override void undo()
@@ -79,7 +79,7 @@ namespace Controllers
             public DeleteNodeOperation(ActionNodeGraphCtrl graphCtrl, Node node) : base(graphCtrl)
             {
                 _nodeID = node.id;
-                _seriNode = node.ToSerializableNode();
+                _seriNode = SerializeHelper.ToSerializable(node);
             }
 
             public override async void undo()
@@ -111,7 +111,7 @@ namespace Controllers
                 _destName = destName;
                 _destParamIndex = destParamIndex;
             }
-            public ConnectOperation(ActionNodeGraphCtrl graphCtrl, IPort source, IPort dest) : 
+            public ConnectOperation(ActionNodeGraphCtrl graphCtrl, IPort source, IPort dest) :
                 this(graphCtrl, source.node, source.name, dest.node, dest.name,
                      dest is ValueInput vi ? vi.paramIndex : -1)
             {

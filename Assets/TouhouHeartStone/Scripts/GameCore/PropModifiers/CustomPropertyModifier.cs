@@ -41,10 +41,6 @@ namespace TouhouHeartstone
             }
             return prop;
         }
-        public override SerializablePropModifier serialize()
-        {
-            return new SerializableCustomPropertyModifier(this);
-        }
         public override string ToString()
         {
             if (!string.IsNullOrEmpty(relatedPropName))
@@ -64,22 +60,5 @@ namespace TouhouHeartstone
         #region 属性字段
         public bool isSet;
         #endregion
-    }
-    [Serializable]
-    [BsonDiscriminator("CustomPropertyModifier")]
-    public class SerializableCustomPropertyModifier : SerializablePropModifier<object>
-    {
-        public SerializableCustomPropertyModifier(CustomPropertyModifier modifier) : base(modifier)
-        {
-            isSet = modifier.isSet;
-        }
-        public override PropModifier deserialize()
-        {
-            return new CustomPropertyModifier(propertyName, getDefaultValue(), isSet)
-            {
-                relatedPropName = relatedPropName
-            };
-        }
-        public bool isSet;
     }
 }

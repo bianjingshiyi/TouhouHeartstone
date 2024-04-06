@@ -57,10 +57,6 @@ namespace TouhouHeartstone
                     return prop != null ? prop.Union(value).ToArray() : value;
             }
         }
-        public override SerializablePropModifier serialize()
-        {
-            return new SerializableKeywordsModifier(this);
-        }
         public override string ToString()
         {
             var value = defaultValue;
@@ -79,22 +75,5 @@ namespace TouhouHeartstone
         {
             add, remove, set
         }
-    }
-    [Serializable]
-    [BsonDiscriminator("KeywordsModifier")]
-    public class SerializableKeywordsModifier : SerializablePropModifier<string[]>
-    {
-        public SerializableKeywordsModifier(KeywordsModifier modifier) : base(modifier)
-        {
-            modifyType = (int)modifier.modifyType;
-        }
-        public override PropModifier deserialize()
-        {
-            return new KeywordsModifier((KeywordsModifier.ModifyType)modifyType, getDefaultValue())
-            {
-                relatedPropName = relatedPropName
-            };
-        }
-        public int modifyType;
     }
 }

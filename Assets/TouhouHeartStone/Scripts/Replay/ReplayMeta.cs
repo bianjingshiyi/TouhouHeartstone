@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using TouhouCardEngine;
 
 namespace Game.Replays
@@ -20,6 +21,7 @@ namespace Game.Replays
             requiredCardPools = new CardPoolInfoPack[0];
         }
     }
+    [MessagePackObject]
     [Serializable]
     public class SerializableReplayMeta
     {
@@ -40,9 +42,13 @@ namespace Game.Replays
                 name = name
             };
         }
+        [Key(0)]
         public DefineReference playerAMasterDefRef;
+        [Key(1)]
         public DefineReference playerBMasterDefRef;
+        [Key(2)]
         public CardPoolInfoPack[] requiredCardPools;
+        [Key(3)]
         public string name;
     }
 }

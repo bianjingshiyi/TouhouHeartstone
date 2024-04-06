@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
@@ -64,17 +65,13 @@ namespace TouhouHeartstone
             return Task.CompletedTask;
         }
         #endregion
-        public override SerializableGeneratedRuleLogic serialize()
-        {
-            return new SerializableGeneratedRuleEventLogic(this);
-        }
 
         #endregion
 
         #region 私有方法
 
         #region 构造器
-        internal GeneratedRuleEventLogic(EventTriggerTime triggerTime, ActionGraph graph)
+        public GeneratedRuleEventLogic(EventTriggerTime triggerTime, ActionGraph graph)
         {
             this.triggerTime = triggerTime;
             this.graph = graph;
@@ -85,21 +82,5 @@ namespace TouhouHeartstone
 
         public EventRuleEntryNode entryNode => graph?.findEventRuleEntryNode();
         public EventTriggerTime triggerTime { get; private set; }
-    }
-    [Serializable]
-    public class SerializableGeneratedRuleEventLogic : SerializableGeneratedRuleLogic
-    {
-        public SerializableGeneratedRuleEventLogic(GeneratedRuleEventLogic logic) : base(logic)
-        {
-            triggerTime = logic.triggerTime;
-        }
-        public override GeneratedRuleLogic deserialize(INodeDefiner nodeDefiner)
-        {
-            var graph = this.graph.toActionGraph(nodeDefiner);
-            var logic = new GeneratedRuleEventLogic(triggerTime, graph);
-            initLogic(logic);
-            return logic;
-        }
-        public EventTriggerTime triggerTime;
     }
 }

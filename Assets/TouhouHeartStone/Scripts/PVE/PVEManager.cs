@@ -66,20 +66,16 @@ namespace Game.PVE
         public async Task saveData(string dataName, SaveData data)
         {
             var serializable = new SerializableSaveData(data);
-            var json = serializable.ToJson();
             var path = getPersistentSavePath(dataName);
-            await main.fileManager.savePersistentFile(path, new string[]
-            {
-                json
-            });
+            await main.fileManager.savePersistentFile(path, serializable.toBytes());
         }
         public async Task<SaveData> loadData(string dataName)
         {
             if (!hasData(dataName))
                 return null;
             var path = getPersistentSavePath(dataName);
-            var json = await main.fileManager.readPersistentTextFile(path, lineCount: 1);
-            var seri = JsonHelper.fromJson<SerializableSaveData>(json[0]);
+            var bytes = await main.fileManager.readPersistentBinaryFile(path);
+            var seri = JsonHelper.fromBytes<SerializableSaveData>(bytes);
             return seri.ToSaveData();
         }
         #endregion

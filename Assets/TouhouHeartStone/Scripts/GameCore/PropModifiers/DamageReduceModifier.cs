@@ -11,24 +11,5 @@ namespace TouhouHeartstone
         public DamageReduceModifier(int value, bool isSet) : base(DEFINE.DAMAGE_REDUCE, value, isSet)
         {
         }
-        public override SerializablePropModifier serialize()
-        {
-            return new SerializableDamageReduceModifier(this);
-        }
-    }
-    [Serializable]
-    [BsonDiscriminator("DamageReduceModifier")]
-    public class SerializableDamageReduceModifier : SerializableIntPropModifier
-    {
-        public SerializableDamageReduceModifier(DamageReduceModifier modifier) : base(modifier)
-        {
-        }
-        public override PropModifier deserialize()
-        {
-            return new DamageReduceModifier(getDefaultValue(), isSet)
-            {
-                relatedPropName = relatedPropName
-            };
-        }
     }
 }

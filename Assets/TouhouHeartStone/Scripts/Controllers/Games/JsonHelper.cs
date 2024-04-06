@@ -1,6 +1,7 @@
 ﻿using Game;
 using Game.PVE;
 using Game.Replays;
+using MessagePack;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
@@ -23,7 +24,7 @@ namespace Controllers
             registerClass<ExecuteResult<string>>();
             registerClass<ExecuteResult<LobbyRoomData>>();
             registerClass<ExecuteResult<LobbyRoomData[]>>();
-            registerClass<ExecuteResult<DeckDataItem[]>>(); 
+            registerClass<ExecuteResult<DeckDataItem[]>>();
             registerClass<ExecuteResult<ClientUpdateInfo>>();
             registerClass<ExecuteResult<PublicBasicUserInfo>>();
 
@@ -115,6 +116,14 @@ namespace Controllers
             T obj = BsonSerializer.Deserialize<T>(json);
             ConventionRegistry.Remove(nameof(CustomClassMapConvention));
             return obj;
+        }
+        public static byte[] toBytes(this object obj)
+        {
+            return MessagePackSerializer.Serialize(obj);
+        }
+        public static T fromBytes<T>(byte[] bytes)
+        {
+            return MessagePackSerializer.Deserialize<T>(bytes);
         }
         private static void registerClass<T>()
         {

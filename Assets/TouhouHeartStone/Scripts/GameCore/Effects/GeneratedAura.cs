@@ -77,10 +77,6 @@ namespace TouhouHeartstone
         {
             return updateAura(env.game, env.card, env.buff, env.eventArg);
         }
-        public override SerializableEffect Serialize()
-        {
-            return new SerializableAuraEffect(this);
-        }
         #endregion
         #region 私有方法
         protected override async Task onEnable(EffectEnv env)
@@ -226,20 +222,5 @@ namespace TouhouHeartstone
         public override ControlOutput onDisableAction => null;
         public override Node entryNode => auraEntry;
         #endregion
-    }
-    [Serializable]
-    public class SerializableAuraEffect : SerializableEffect
-    {
-        public SerializableAuraEffect(GeneratedAura effect) : base(effect)
-        {
-        }
-
-        public override GeneratedEffect Deserialize(INodeDefiner nodeDefiner)
-        {
-            var graph = this.graph.toActionGraph(nodeDefiner);
-            GeneratedAura effect = new GeneratedAura(graph);
-            apply(effect);
-            return effect;
-        }
     }
 }

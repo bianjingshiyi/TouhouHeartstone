@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using TouhouCardEngine;
 using TouhouHeartstone;
 
@@ -26,9 +27,16 @@ namespace Game.Replays
             return data;
         }
     }
+    [MessagePackObject]
     [Serializable]
     public class SerializableReplayPlayerData
     {
+        /// <summary>
+        /// 给序列化用的默认构造器
+        /// </summary>
+        public SerializableReplayPlayerData()
+        {
+        }
         public SerializableReplayPlayerData(ReplayPlayerData replayData)
         {
             id = replayData.id;
@@ -44,8 +52,11 @@ namespace Game.Replays
                 deck = deck
             };
         }
+        [Key(0)]
         public int id;
+        [Key(1)]
         public string name;
+        [Key(2)]
         public DefineReference[] deck;
     }
 }

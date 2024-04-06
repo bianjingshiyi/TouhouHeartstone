@@ -44,10 +44,6 @@ namespace TouhouHeartstone
         {
             return outputList?.FirstOrDefault() as ControlOutput;
         }
-        public override SerializableNode ToSerializableNode()
-        {
-            return new SerializableGameRuleEntryNode(this);
-        }
         #endregion
 
         #region 私有方法
@@ -118,24 +114,5 @@ namespace TouhouHeartstone
         public GameRuleLogicType logicType { get; private set; }
         private static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
         private static PortDefine playerPortDefine = PortDefine.Value(typeof(Player), playerPortName);
-    }
-    public class SerializableGameRuleEntryNode : SerializableNode
-    {
-        public SerializableGameRuleEntryNode(GameRuleEntryNode entryNode) : base(entryNode)
-        {
-            logicType = entryNode.logicType;
-        }
-        public GameRuleEntryNode ToActionNode(ActionGraph graph)
-        {
-            var entry = new GameRuleEntryNode(id, logicType)
-            {
-                posX = posX,
-                posY = posY,
-            };
-            InitNode(entry, graph);
-            return entry;
-        }
-        public override Node ToNode(ActionGraph graph) => ToActionNode(graph);
-        public GameRuleLogicType logicType;
     }
 }

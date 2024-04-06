@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using TouhouCardEngine;
 
 namespace TouhouHeartstone
@@ -29,9 +30,16 @@ namespace TouhouHeartstone
             cardPools = copyTarget.cardPools;
         }
     }
+    [MessagePackObject]
     [Serializable]
     public class SerializableHearthstoneOption
     {
+        /// <summary>
+        /// 给序列化用的默认构造器
+        /// </summary>
+        public SerializableHearthstoneOption()
+        {
+        }
         public SerializableHearthstoneOption(HearthstoneOption option)
         {
             randomSeed = option.randomSeed;
@@ -55,12 +63,19 @@ namespace TouhouHeartstone
                 cardPools = cardPools
             };
         }
+        [Key(0)]
         public int randomSeed;
+        [Key(1)]
         public int[] sortedPlayers;
+        [Key(2)]
         public bool shuffle;
+        [Key(3)]
         public float timeoutForInitReplace;
+        [Key(4)]
         public float timeoutForTurn;
+        [Key(5)]
         public int startGem;
+        [Key(6)]
         public CardPoolInfoPack[] cardPools;
     }
 }

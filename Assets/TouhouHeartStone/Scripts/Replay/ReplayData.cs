@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 using MongoDB.Bson.Serialization.Attributes;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
@@ -16,9 +17,16 @@ namespace Game.Replays
         public int playerBId;
         public List<IResponse> responses;
     }
+    [MessagePackObject]
     [Serializable]
     public class SerializableReplayData
     {
+        /// <summary>
+        /// 给序列化用的默认构造器
+        /// </summary>
+        public SerializableReplayData()
+        {
+        }
         public SerializableReplayData(ReplayData replayData)
         {
             version = replayData.version;
@@ -26,7 +34,7 @@ namespace Game.Replays
             players = replayData.players.Select(p => new SerializableReplayPlayerData(p)).ToArray();
             playerAId = replayData.playerAId;
             playerBId = replayData.playerBId;
-            responses = replayData.responses;
+            responseList = replayData.responses.ConvertAll(r => r as Response);
         }
         public ReplayData toData()
         {
@@ -62,21 +70,33 @@ namespace Game.Replays
                 players = players,
                 playerAId = playerAId,
                 playerBId = playerBId,
-                responses = responses,
+                responses = responseList != null ? responseList.ConvertAll(r => r as IResponse) : responses,
             };
         }
+        [Key(0)]
         public int version;
+        [Key(1)]
         public SerializableHearthstoneOption option;
+        [Key(2)]
         public SerializableReplayPlayerData[] players;
+        [Key(3)]
         public int playerAId;
+        [Key(4)]
         public int playerBId;
+        [IgnoreMember]
         [Obsolete]
         [BsonIgnoreIfNull]
         public SerializableReplayPlayerData playerA;
+        [IgnoreMember]
         [Obsolete]
         [BsonIgnoreIfNull]
         public SerializableReplayPlayerData playerB;
+        [IgnoreMember]
+        [Obsolete]
         public List<IResponse> responses;
+        [Key(5)]
+        public List<Response> responseList;
+        [IgnoreMember]
         [Obsolete]
         [BsonIgnoreIfNull]
         public List<float> responseTimes;

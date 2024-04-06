@@ -149,9 +149,7 @@ namespace Game
         }
         public BuffSkin[] cloneBuffSkins(BuffSkin[] skins)
         {
-            var json = skins.toJson();
-            var clone = JsonHelper.fromJson<BuffSkin[]>(json);
-            return clone;
+            return Array.ConvertAll(skins, s => new BuffSkin(s));
         }
         #endregion
 

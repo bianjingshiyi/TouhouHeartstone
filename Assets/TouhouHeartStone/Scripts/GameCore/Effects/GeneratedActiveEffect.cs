@@ -103,10 +103,6 @@ namespace TouhouHeartstone
         {
             return entryNode?.getPriorty() ?? 0;
         }
-        public override SerializableEffect Serialize()
-        {
-            return new SerializableActiveEffect(this);
-        }
         public override Task execute(EffectEnv env)
         {
             var entry = entryNode;
@@ -132,21 +128,5 @@ namespace TouhouHeartstone
         public IEnumerable<TargetChecker> targetCheckers => entryNode?.targetCheckerList;
         Node IEntryNodeEffect.entryNode => entryNode;
         #endregion
-    }
-
-    [Serializable]
-    public class SerializableActiveEffect : SerializableEffect
-    {
-        public SerializableActiveEffect(GeneratedActiveEffect effect) : base(effect)
-        {
-        }
-
-        public override GeneratedEffect Deserialize(INodeDefiner definer)
-        {
-            var graph = this.graph.toActionGraph(definer);
-            GeneratedActiveEffect effect = new GeneratedActiveEffect(graph);
-            apply(effect);
-            return effect;
-        }
     }
 }

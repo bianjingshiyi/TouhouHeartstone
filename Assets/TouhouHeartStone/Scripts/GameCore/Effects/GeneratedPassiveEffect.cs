@@ -76,10 +76,6 @@ namespace TouhouHeartstone
             }
             return Task.CompletedTask;
         }
-        public override SerializableEffect Serialize()
-        {
-            return new SerializablePassiveEffect(this);
-        }
         #endregion
         #region 私有方法
         protected override IEnumerable<ITraversable> getTraversableProps()
@@ -101,21 +97,5 @@ namespace TouhouHeartstone
         public override ValueInput priorityPort => entryNode?.getInputPort<ValueInput>(PassiveEntryNode.priorityPortName);
         Node IEntryNodeEffect.entryNode => entryNode;
         #endregion
-    }
-
-    [Serializable]
-    public class SerializablePassiveEffect : SerializableEffect
-    {
-        public SerializablePassiveEffect(GeneratedPassiveEffect effect) : base(effect)
-        {
-        }
-
-        public override GeneratedEffect Deserialize(INodeDefiner definer)
-        {
-            var graph = this.graph.toActionGraph(definer);
-            GeneratedPassiveEffect effect = new GeneratedPassiveEffect(graph);
-            apply(effect);
-            return effect;
-        }
     }
 }

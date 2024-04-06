@@ -101,11 +101,6 @@ namespace TouhouHeartstone
             return getInputDefaultValue<int>(priorityPortName);
         }
         #endregion
-        public override SerializableNode ToSerializableNode()
-        {
-            return new SerializableActiveEntryNode(this);
-        }
-
 
         private void DefinitionConditions()
         {
@@ -173,42 +168,5 @@ namespace TouhouHeartstone
         private static PortDefine targetsPortDefine = PortDefine.Value(typeof(Card[]), targetsPortName, Translations.EDITOR_PARAM_NAME_TARGET_CARD);
         private static PortDefine tagsPortDefine = PortDefine.Value(typeof(EffectTagCollection), tagsPortName, Translations.EDITOR_PARAM_NAME_TAG_LIST, isConst: true);
         private static PortDefine priorityPortDefine = PortDefine.Value(typeof(int), priorityPortName, Translations.EDITOR_PARAM_NAME_PRIORITY, isConst: true);
-    }
-    public class SerializableActiveEntryNode : SerializableNode
-    {
-        public SerializableActiveEntryNode(ActiveEntryNode activeEntry) : base(activeEntry)
-        {
-            targetCheckerList = activeEntry.targetCheckerList.ConvertAll(t => new SerializableTargetChecker(t));
-        }
-        public ActiveEntryNode ToActionNode(ActionGraph graph)
-        {
-            var entry = new ActiveEntryNode(id)
-            {
-                posX = posX,
-                posY = posY,
-            };
-            IEnumerable<InputDefaultValue> defaultValues =
-                inputDefaultValues?.Select(dv => dv.deserialize())
-                ?? consts?.Select(c => new InputDefaultValue(c.Key, -1, c.Value));
-            InitNode(entry, graph, defaultValues);
-            if (!entry.hasInputDefaultValue(ActiveEntryNode.conditionPortName))
-                entry.setInputDefaultValue(ActiveEntryNode.conditionPortName, true);
-
-            if (tags != null)
-                entry.setTags(tags);
-            foreach (var seri in targetCheckerList)
-            {
-                var checker = seri.toTargetChecker();
-                entry.AddTargetChecker(checker);
-            }
-            return entry;
-        }
-        public override Node ToNode(ActionGraph graph) => ToActionNode(graph);
-
-        [Obsolete]
-        public string[] tags;
-        [Obsolete]
-        public Dictionary<string, object> consts;
-        public List<SerializableTargetChecker> targetCheckerList = new List<SerializableTargetChecker>();
     }
 }

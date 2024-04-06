@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
@@ -56,12 +57,13 @@ namespace Game.PVE
         {
             return usedGems.Remove(id);
         }
-        
+
         private void newStageSeed()
         {
             stageSeed = runRNG.next();
         }
     }
+    [MessagePackObject]
     [Serializable]
     public class SerializableSaveData
     {
@@ -94,15 +96,25 @@ namespace Game.PVE
                 usedGems = usedGems.ToList(),
             };
         }
+        [Key(0)]
         public int version;
+        [Key(1)]
         public int initSeed;
+        [Key(2)]
         public SerializableRNG runRNG;
+        [Key(3)]
         public int stageSeed;
+        [Key(4)]
         public int currentStage;
+        [Key(5)]
         public int stageState;
+        [Key(6)]
         public int gemId;
+        [Key(7)]
         public DefineReference[] deck;
+        [Key(8)]
         public SerializableCardGem[] plugins;
+        [Key(9)]
         public int[] usedGems;
     }
     public enum PVEStageState

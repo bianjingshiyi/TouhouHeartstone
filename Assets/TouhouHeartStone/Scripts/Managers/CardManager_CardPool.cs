@@ -173,26 +173,15 @@ namespace Game
             // 对缓存的图片进行保存
             await saveExternalImages(cardPoolInfo, cardPool);
 
-            //初始化JSON
-            if (!JsonHelper.isInited)
-            {
-                JsonHelper.init();
-            }
-            bool readFriendly;
-#if UNITY_EDITOR
-            readFriendly = true;
-#else
-            readFriendly = false;
-#endif
             // 打成序列化对象。
-            SerializableCardPoolInfo seriCardPoolInfo = new SerializableCardPoolInfo(cardPoolInfo);
-            SerializableCardPool seriCardPool = new SerializableCardPool(cardPool);
-            //保存文件
-            await game.fileManager.saveFile(path, new string[]
-            {
-                seriCardPoolInfo.toJson(),//文件头信息
-                seriCardPool.toJson(readFriendly)//内容对象
-            });
+            SerializableCardPoolInfo seriCardPoolInfo = new(cardPoolInfo);
+            SerializableCardPool seriCardPool = new(cardPool);
+
+            if (Application.isEditor)
+                await saveSerializableCardPoolToJson(path, seriCardPoolInfo, seriCardPool);
+            else
+                await saveSerializableCardPoolToBytes(path, seriCardPoolInfo, seriCardPool);
+
             Debug.Log($"保存卡池{path}成功");
             return true;
         }
@@ -761,6 +750,12 @@ namespace Game
         /// <exception cref="FormatException"></exception>
         public (CardPoolInfo cardPoolInfo, CardPool cardPool) parseCardPool(string[] lines)
         {
+            //初始化JSON
+            if (!JsonHelper.isInited)
+            {
+                JsonHelper.init();
+            }
+
             string infoJson = lines[0];
             CardPoolInfo cardPoolInfo = parseCardPoolInfo(infoJson);
 
@@ -937,8 +932,50 @@ namespace Game
         }
         #endregion
 
-        #region 卡池解析
+        #region 保存卡池
+        private Task saveSerializableCardPoolToJson(string path, SerializableCardPoolInfo seriCardPoolInfo, SerializableCardPool seriCardPool)
+        {
+            //初始化JSON
+            if (!JsonHelper.isInited)
+            {
+                JsonHelper.init();
+            }
+            bool readFriendly;
+#if UNITY_EDITOR
+            readFriendly = true;
+#else
+            readFriendly = false;
+#endif
+            //保存文件
+            return game.fileManager.saveFile(path, new string[]
+            {
+                seriCardPoolInfo.toJson(),//文件头信息
+                seriCardPool.toJson(readFriendly)//内容对象
+            });
+        }
+        private Task saveSerializableCardPoolToBytes(string path, SerializableCardPoolInfo seriCardPoolInfo, SerializableCardPool seriCardPool)
+        {
+            byte[] header = seriCardPoolInfo.toBytes();
+            byte[] body = seriCardPool.toBytes();
 
+            byte[] bytes = new byte[5 + header.Length + body.Length];
+            // 标识符
+            bytes[0] = CARD_POOL_VERSION_3_HEADER_BYTE_0;
+            bytes[1] = CARD_POOL_VERSION_3_HEADER_BYTE_1;
+            // 头长度
+            BitConverter.GetBytes((short)header.Length).CopyTo(bytes, 2);
+            // 序列化头
+            bytes[4] = 0x92;
+            // 文件头
+            header.CopyTo(bytes, 5);
+            // 文件内容
+            body.CopyTo(bytes, 5 + header.Length);
+
+            return game.fileManager.saveFile(path, bytes);
+        }
+        #endregion
+
+        #region 卡池解析
         /// <summary>
         /// 解析卡池文件，版本1.0-2.0
         /// </summary>
@@ -949,9 +986,8 @@ namespace Game
         {
             SerializableCardPool serializableCardPool = JsonHelper.fromJson<SerializableCardPool>(json);
 
-            TypeFinder typeFinder = GraphTypes.getTypeByName;
 
-            CardPool cardPool = serializableCardPool.toCardPool(cardPoolID, game, typeFinder);
+            CardPool cardPool = serializableCardPool.toCardPool(cardPoolID, game, GraphTypes.getTypeByName);
             return cardPool;
         }
 
@@ -1783,28 +1819,52 @@ namespace Game
             try
             {
                 // 读取文件头作为卡池信息。
+                CardPoolInfo cardPoolInfo;
                 Debug.Log($"开始读取卡池信息{path}");
-                string[] lines;
-                if (path.isStreamingAssetsPath(out var relativePath))
-                    lines = await game.fileManager.readStreamingTextFile(relativePath, lineCount: 1);
-                else
-                    lines = await game.fileManager.readTextFile(path, lineCount: 1);
 
-                // 卡池信息为空。
-                if (lines == null || lines.Length < 1)
+                bool isStreamingAsset = path.isStreamingAssetsPath(out var relativePath);
+                using Stream stream = isStreamingAsset ? await game.fileManager.getStreamingFileStreamAsync(path) : await game.fileManager.getFileStreamAsync(path);
+                byte[] bytes = new byte[5];
+                stream.Read(bytes, 0, bytes.Length);
+                if (bytes.Length == 5 &&
+                    bytes[0] == CARD_POOL_VERSION_3_HEADER_BYTE_0 &&
+                    bytes[1] == CARD_POOL_VERSION_3_HEADER_BYTE_1)
                 {
-                    Debug.LogWarning($"读取卡池信息{path}为空");
-                    return null;
+                    short headerLength = BitConverter.ToInt16(bytes, 2);
+                    bytes = new byte[headerLength];
+                    stream.Read(bytes, 0, headerLength);
+
+                    try
+                    {
+                        cardPoolInfo = JsonHelper.fromBytes<SerializableCardPoolInfo>(bytes).toInfo();
+                    }
+                    catch (Exception e)
+                    {
+                        throw new FormatException($"反序列化卡池信息{path}失败：{e}", e);
+                    }
+                }
+                else
+                {
+                    string[] lines = isStreamingAsset ?
+                        await game.fileManager.readStreamingTextFile(relativePath, lineCount: 1) :
+                        await game.fileManager.readTextFile(path, lineCount: 1);
+
+                    // 卡池信息为空。
+                    if (lines == null || lines.Length < 1)
+                    {
+                        Debug.LogWarning($"读取卡池信息{path}为空");
+                        return null;
+                    }
+
+                    // 解析卡池信息。
+                    cardPoolInfo = parseCardPoolInfo(lines[0]);
                 }
 
-                // 解析卡池信息。
-                CardPoolInfo cardPool = parseCardPoolInfo(lines[0]);
-
                 // 移除冲突的卡池信息，并添加卡池信息。
-                removeConflictCardPoolInfo(targetDict, cardPool.cardPoolId, isLocalCardPoolPath(path));
-                targetDict.Add(path, cardPool);
+                removeConflictCardPoolInfo(targetDict, cardPoolInfo.cardPoolId, isLocalCardPoolPath(path));
+                targetDict.Add(path, cardPoolInfo);
                 Debug.Log($"读取卡池信息{path}完毕");
-                return cardPool;
+                return cardPoolInfo;
             }
             catch (Exception e)
             {
@@ -1818,35 +1878,63 @@ namespace Game
             string path,
             bool handleException = false)
         {
-            //初始化JSON
-            if (!JsonHelper.isInited)
-            {
-                JsonHelper.init();
-            }
-
             try
             {
-                // 读取文件。
-                string[] lines;
-                if (path.isStreamingAssetsPath(out _))
-                    lines = await game.fileManager.readStreamingTextFile(path, 0, 0);
-                else
-                    lines = await game.fileManager.readTextFile(path, 0, 0);
-
-                // 读取文件失败。
-                if (lines == null || lines.Length < 1)
-                    throw new FileLoadException($"卡池文件{path}为空");
-
-                // 解析卡池。
                 CardPoolInfo cardPoolInfo;
                 CardPool cardPool;
-                try
+
+                bool isStreamingAsset = path.isStreamingAssetsPath(out _);
+
+                using Stream stream = isStreamingAsset ? await game.fileManager.getStreamingFileStreamAsync(path) : await game.fileManager.getFileStreamAsync(path);
+                byte[] bytes = new byte[5];
+                stream.Read(bytes, 0, bytes.Length);
+                if (bytes.Length == 5 &&
+                    bytes[0] == CARD_POOL_VERSION_3_HEADER_BYTE_0 &&
+                    bytes[1] == CARD_POOL_VERSION_3_HEADER_BYTE_1)
                 {
-                    (cardPoolInfo, cardPool) = parseCardPool(lines);
+                    short headerLength = BitConverter.ToInt16(bytes, 2);
+                    bytes = new byte[headerLength];
+                    stream.Read(bytes, 0, headerLength);
+
+                    try
+                    {
+                        cardPoolInfo = JsonHelper.fromBytes<SerializableCardPoolInfo>(bytes).toInfo();
+                    }
+                    catch (Exception e)
+                    {
+                        throw new FormatException(string.Format("反序列化卡池{0}的信息失败：{1}", path, e), e);
+                    }
+
+                    bytes = new byte[stream.Length - headerLength - sizeof(byte) * 2 - sizeof(int)];
+                    stream.Read(bytes, 0, bytes.Length);
+
+                    try
+                    {
+                        cardPool = JsonHelper.fromBytes<SerializableCardPool>(bytes).toCardPool(cardPoolInfo.cardPoolId, game, GraphTypes.getTypeByName);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new FormatException(string.Format("反序列化卡池{0}失败：{1}", path, e), e);
+                    }
                 }
-                catch (Exception e)
+                else
                 {
-                    throw new FormatException($"反序列化卡池{path}失败：{e}", e);
+                    // 读取文件。
+                    string[] lines = isStreamingAsset ?
+                        await game.fileManager.readStreamingTextFile(path, 0, 0) :
+                        await game.fileManager.readTextFile(path, 0, 0);
+                    // 读取文件失败。
+                    if (lines == null || lines.Length < 1)
+                        throw new FileLoadException($"卡池文件{path}为空");
+                    // 解析卡池。
+                    try
+                    {
+                        (cardPoolInfo, cardPool) = parseCardPool(lines);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new FormatException($"反序列化卡池{path}失败：{e}", e);
+                    }
                 }
 
                 // 移除冲突的卡池，并添加该卡池。
@@ -1926,7 +2014,13 @@ namespace Game
         private const float CARD_POOL_VERSION_0_1 = 0.1f;
         private const int CARD_POOL_VERSION_1 = 1;
         private const int CARD_POOL_VERSION_2 = 2;
-        private const int CURRENT_CARD_POOL_VERSION = CARD_POOL_VERSION_2;
+        /// <summary>
+        /// 文件格式：'zp' + 文件头长度 + 文件头 + 文件内容
+        /// </summary>
+        private const int CARD_POOL_VERSION_3 = 3;
+        public const byte CARD_POOL_VERSION_3_HEADER_BYTE_0 = (byte)'z';
+        public const byte CARD_POOL_VERSION_3_HEADER_BYTE_1 = (byte)'p';
+        private const int CURRENT_CARD_POOL_VERSION = CARD_POOL_VERSION_3;
         #endregion
     }
 

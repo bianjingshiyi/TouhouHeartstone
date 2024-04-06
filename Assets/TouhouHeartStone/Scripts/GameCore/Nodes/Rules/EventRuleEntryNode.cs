@@ -32,10 +32,6 @@ namespace TouhouHeartstone
             }
             return Task.FromResult(getOutputPort<ControlOutput>(actionPortName));
         }
-        public override SerializableNode ToSerializableNode()
-        {
-            return new SerializableEventRuleEntryNode(this);
-        }
 
         #region 获取端口
         public ValueInput getTriggerCondtionValuePort()
@@ -104,27 +100,5 @@ namespace TouhouHeartstone
         public const string conditionPortName = "condition";
         public static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
         public static PortDefine conditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, Translations.EDITOR_PARAM_NAME_TRIGGER_CONDITION);
-    }
-    [Serializable]
-    public class SerializableEventRuleEntryNode : SerializableNode
-    {
-        public SerializableEventRuleEntryNode(EventRuleEntryNode eventEntryNode) : base(eventEntryNode)
-        {
-            triggerTime = eventEntryNode.triggerTime;
-        }
-        public EventRuleEntryNode ToActionNode(ActionGraph graph)
-        {
-            var entry = new EventRuleEntryNode(triggerTime)
-            {
-                id = id,
-                posX = posX,
-                posY = posY
-            };
-            InitNode(entry, graph);
-            return entry;
-        }
-        public override Node ToNode(ActionGraph graph) => ToActionNode(graph);
-
-        public EventTriggerTime triggerTime;
     }
 }

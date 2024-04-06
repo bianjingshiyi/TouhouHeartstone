@@ -25,10 +25,26 @@ namespace Game
                 ReplayMeta meta;
                 try
                 {
-                    string[] fileHeads = await fileManager.readPersistentTextFile(path, 0, 1);
-                    string fileHead = fileHeads[0];
-                    var seri = JsonHelper.fromJson<SerializableReplayMeta>(fileHead);
-                    meta = seri.toMeta();
+                    using Stream stream = fileManager.getPersistentFileStream(path);
+                    byte[] bytes = new byte[5];
+                    stream.Read(bytes, 0, 2);
+                    if (bytes[0] == REPLAY_HEADER_BYTE0 &&
+                        bytes[1] == REPLAY_HEADER_BYTE1)
+                    {
+                        short headerLength = BitConverter.ToInt16(bytes, 2);
+                        bytes = new byte[headerLength];
+                        stream.Read(bytes, 0, bytes.Length);
+
+                        var seri = JsonHelper.fromBytes<SerializableReplayMeta>(bytes);
+                        meta = seri.toMeta();
+                    }
+                    else
+                    {
+                        string[] fileHeads = await fileManager.readPersistentTextFile(path, 0, 1);
+                        string fileHead = fileHeads[0];
+                        var seri = JsonHelper.fromJson<SerializableReplayMeta>(fileHead);
+                        meta = seri.toMeta();
+                    }
                 }
                 catch
                 {
@@ -46,10 +62,26 @@ namespace Game
         {
             try
             {
-                var content = await fileManager.readPersistentTextFile(path, 1, 1);
-                string json = content[0];
-                var seri = JsonHelper.fromJson<SerializableReplayData>(json);
-                return seri.toData();
+                using Stream stream = fileManager.getPersistentFileStream(path);
+                byte[] bytes = new byte[5];
+                stream.Read(bytes, 0, 2);
+                if (bytes[0] == REPLAY_HEADER_BYTE0 &&
+                    bytes[1] == REPLAY_HEADER_BYTE1)
+                {
+                    short headerLength = BitConverter.ToInt16(bytes, 2);
+                    bytes = new byte[stream.Length - headerLength - 5];
+                    stream.Read(bytes, headerLength, bytes.Length);
+
+                    var seri = JsonHelper.fromBytes<SerializableReplayData>(bytes);
+                    return seri.toData();
+                }
+                else
+                {
+                    var content = await fileManager.readPersistentTextFile(path, 1, 1);
+                    string json = content[0];
+                    var seri = JsonHelper.fromJson<SerializableReplayData>(json);
+                    return seri.toData();
+                }
             }
             catch (Exception e)
             {
@@ -74,17 +106,22 @@ namespace Game
             var path = Path.Combine(DIRECTORY, getNowReplayFileName());
             var seriMeta = new SerializableReplayMeta(meta);
             var seriData = new SerializableReplayData(replay);
-            var head = seriMeta.ToJson();
-            var content = seriData.ToJson();
-            await main.fileManager.savePersistentFile(path, new string[]
-            {
-                head,
-                content
-            });
+            var head = seriMeta.toBytes();
+            var content = seriData.toBytes();
+            byte[] bytes = new byte[5 + head.Length + content.Length];
+            bytes[0] = REPLAY_HEADER_BYTE0;
+            bytes[1] = REPLAY_HEADER_BYTE1;
+            BitConverter.GetBytes((short)head.Length).CopyTo(bytes, 2);
+            bytes[4] = 0x92;
+            head.CopyTo(bytes, 5);
+            content.CopyTo(bytes, 5 + head.Length);
+            await main.fileManager.savePersistentFile(path, bytes);
         }
         #endregion
 
         #region 属性字段
+        public const byte REPLAY_HEADER_BYTE0 = (byte)'z';
+        public const byte REPLAY_HEADER_BYTE1 = (byte)'r';
         public const string DIRECTORY = "replay";
         public const string EXTENSION = "ddrep";
         private FileManager fileManager => main.fileManager;

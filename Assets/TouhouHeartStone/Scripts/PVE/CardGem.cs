@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using TouhouCardEngine;
 
 namespace Game.PVE
@@ -21,6 +22,7 @@ namespace Game.PVE
         private DefineReference _cardRef;
         private string[] _tags;
     }
+    [MessagePackObject]
     [Serializable]
     public class SerializableCardGem
     {
@@ -36,8 +38,11 @@ namespace Game.PVE
             gem.setTags(_tags);
             return gem;
         }
+        [Key(0)]
         public int _id;
+        [Key(1)]
         public DefineReference _cardRef;
+        [Key(2)]
         public string[] _tags;
     }
 }

@@ -163,11 +163,6 @@ namespace TouhouCardEngine
             var exists = outputList.OfType<ControlOutput>().FirstOrDefault(d => d != null && d.define.Equals(portDefine));
             return exists ?? new ControlOutput(this, portDefine);
         }
-        public override SerializableNode ToSerializableNode()
-        {
-            return new SerializablePassiveEntryNode(this);
-        }
-
         #endregion
 
         public const string conditionPortName = "condition";
@@ -193,41 +188,5 @@ namespace TouhouCardEngine
         public static PortDefine tagsPortDefine = PortDefine.Value(typeof(EffectTagCollection), tagsPortName, tagsPortDisplayName, isConst: true);
         public static PortDefine pileListPortDefine = PortDefine.Value(typeof(PileNameCollection), pileListPortName, Translations.EDITOR_PARAM_NAME_ACTIVE_PILES, isConst: true);
         public static PortDefine priorityPortDefine = PortDefine.Value(typeof(int), priorityPortName, Translations.EDITOR_PARAM_NAME_PRIORITY, isConst: true);
-    }
-    [Serializable]
-    public class SerializablePassiveEntryNode : SerializableNode
-    {
-        public SerializablePassiveEntryNode(PassiveEntryNode eventEntryNode) : base(eventEntryNode)
-        {
-        }
-        public PassiveEntryNode ToActionNode(ActionGraph graph)
-        {
-            var entry = new PassiveEntryNode()
-            {
-                id = id,
-                posX = posX,
-                posY = posY
-            };
-            IEnumerable<InputDefaultValue> defaultValues =
-                inputDefaultValues?.Select(dv => dv.deserialize())
-                ?? consts?.Select(c => new InputDefaultValue(c.Key, -1, c.Value));
-            InitNode(entry, graph, defaultValues);
-            if (!entry.hasInputDefaultValue(PassiveEntryNode.conditionPortName))
-                entry.setInputDefaultValue(PassiveEntryNode.conditionPortName, true);
-
-            if (tags != null)
-                entry.setTags(tags);
-            if (piles != null)
-                entry.setPiles(piles);
-            return entry;
-        }
-        public override Node ToNode(ActionGraph graph) => ToActionNode(graph);
-
-        [Obsolete]
-        public Dictionary<string, object> consts;
-        [Obsolete]
-        public string[] tags;
-        [Obsolete]
-        public string[] piles;
     }
 }

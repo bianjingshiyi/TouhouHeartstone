@@ -1,5 +1,4 @@
-﻿using System;
-using TouhouCardEngine;
+﻿using TouhouCardEngine;
 
 namespace UI
 {
@@ -39,39 +38,5 @@ namespace UI
         public EventReference eventReference;
         public DefineReference animRef;
         public const string NODE_CONST_KEY = "EDITOR_ANIMATION_REF";
-    }
-
-    [Serializable]
-    public class SerializableSkinAnimationRef
-    {
-        public SerializableSkinAnimationRef(SkinAnimationRef animRef)
-        {
-            key = animRef.key;
-            this.animRef = animRef.animRef;
-            sourcePosition = animRef.sourcePosition;
-            targetPosition = animRef.targetPosition;
-            sourcePositionVarName = animRef.sourcePositionVarName;
-            targetPositionVarName = animRef.targetPositionVarName;
-            if (animRef.eventReference != null)
-                eventReference = animRef.eventReference;
-        }
-        public SkinAnimationRef toRef()
-        {
-            return new SkinAnimationRef(key, animRef)
-            {
-                eventReference = eventReference,
-                sourcePosition = sourcePosition,
-                targetPosition = targetPosition,
-                sourcePositionVarName = sourcePositionVarName,
-                targetPositionVarName = targetPositionVarName
-            };
-        }
-        public int sourcePosition;
-        public int targetPosition;
-        public string sourcePositionVarName;
-        public string targetPositionVarName;
-        public string key;
-        public DefineReference animRef;
-        public EventReference eventReference;
     }
 }

@@ -1256,10 +1256,7 @@ namespace Controllers
         }
         private CardPoolInfo cloneCardPoolInfo(CardPoolInfo poolInfo)
         {
-            var seriInfo = new SerializableCardPoolInfo(poolInfo);
-            var json = seriInfo.toJson();
-            var seriClone = JsonHelper.fromJson<SerializableCardPoolInfo>(json);
-            return seriClone.toInfo();
+            return new(poolInfo);
         }
         #endregion
         /// <summary>

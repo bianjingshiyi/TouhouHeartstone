@@ -26,10 +26,6 @@ namespace TouhouHeartstone
             }
             return Task.FromResult(getOutputPort<ControlOutput>(actionPortName));
         }
-        public override SerializableNode ToSerializableNode()
-        {
-            return new SerializableEventEntryNode(this);
-        }
         protected override IEnumerable<PortDefine> GetValueOutputDefines()
         {
             if (define == null)
@@ -54,56 +50,5 @@ namespace TouhouHeartstone
         public EventDefine define { get; private set; }
         public EventTriggerTimeType type { get; private set; }
         public EventTriggerTime triggerTime { get; private set; }
-    }
-    [Serializable]
-    public class SerializableEventEntryNode : SerializableNode
-    {
-        public SerializableEventEntryNode(EventEntryNode eventEntryNode) : base(eventEntryNode)
-        {
-            triggerTime = eventEntryNode.triggerTime;
-        }
-        public PassiveEntryNode ToActionNode(ActionGraph graph)
-        {
-            EventTriggerTime eventTriggerTime;
-            if (triggerTime != null)
-            {
-                eventTriggerTime = triggerTime;
-            }
-            else
-            {
-                eventTriggerTime = EventTriggerTime.fromName(eventCardPoolId, eventName);
-            }
-            var entry = new EventEntryNode(eventTriggerTime)
-            {
-                id = id,
-                posX = posX,
-                posY = posY
-            };
-            IEnumerable<InputDefaultValue> defaultValues =
-                inputDefaultValues?.Select(dv => dv.deserialize())
-                ?? consts?.Select(c => new InputDefaultValue(c.Key, -1, c.Value));
-            InitNode(entry, graph, defaultValues);
-            if (!entry.hasInputDefaultValue(PassiveEntryNode.conditionPortName))
-                entry.setInputDefaultValue(PassiveEntryNode.conditionPortName, true);
-
-            if (tags != null)
-                entry.setTags(tags);
-            if (piles != null)
-                entry.setPiles(piles);
-            return entry;
-        }
-        public override Node ToNode(ActionGraph graph) => ToActionNode(graph);
-
-        [Obsolete]
-        public Dictionary<string, object> consts;
-        public EventTriggerTime triggerTime;
-        [Obsolete]
-        public long eventCardPoolId;
-        [Obsolete]
-        public string eventName;
-        [Obsolete]
-        public string[] tags;
-        [Obsolete]
-        public string[] piles;
     }
 }

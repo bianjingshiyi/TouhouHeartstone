@@ -51,9 +51,7 @@ namespace Game
         }
         public CardSkinData[] cloneCardSkins(CardSkinData[] skins)
         {
-            var json = skins.toJson();
-            var clone = JsonHelper.fromJson<CardSkinData[]>(json);
-            return clone;
+            return Array.ConvertAll(skins, s => new CardSkinData(s));
         }
         #endregion
 

@@ -19,10 +19,6 @@ namespace TouhouHeartstone
             eventEntry?.setPiles(tags);
         }
         public override string[] getPiles() => eventEntry?.getPiles()?.ToArray() ?? Array.Empty<string>();
-        public override SerializableEffect Serialize()
-        {
-            return new SerializableEventEffect(this);
-        }
         #endregion
         #region 私有方法
         Task IEventEffect.onTrigger(EffectEnv env)
@@ -75,21 +71,5 @@ namespace TouhouHeartstone
         public override ControlOutput onEnableAction => null;
         public override ControlOutput onDisableAction => null;
         #endregion
-    }
-
-    [Serializable]
-    public class SerializableEventEffect : SerializableEffect
-    {
-        public SerializableEventEffect(GeneratedEventEffect effect) : base(effect)
-        {
-        }
-
-        public override GeneratedEffect Deserialize(INodeDefiner definer)
-        {
-            var graph = this.graph.toActionGraph(definer);
-            GeneratedEventEffect effect = new GeneratedEventEffect(graph);
-            apply(effect);
-            return effect;
-        }
     }
 }
