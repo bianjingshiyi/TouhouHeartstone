@@ -4808,7 +4808,7 @@ GameObject:
   - component: {fileID: 455105010}
   m_Layer: 0
   m_Name: BackClearCamera
-  m_TagString: MainCamera
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13842,7 +13842,7 @@ PrefabInstance:
     - target: {fileID: 7137159522728872616, guid: fde8c54b96186e446ba2f765c6726d7b,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -235.00003
+      value: -235
       objectReference: {fileID: 0}
     - target: {fileID: 7137159522728872616, guid: fde8c54b96186e446ba2f765c6726d7b,
         type: 3}
@@ -16245,7 +16245,7 @@ PrefabInstance:
     - target: {fileID: 5506443023862532095, guid: e5eda7d1e4b5e7d41be47236088eba8c,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -235.00003
+      value: -235
       objectReference: {fileID: 0}
     - target: {fileID: 5506443023862532095, guid: e5eda7d1e4b5e7d41be47236088eba8c,
         type: 3}

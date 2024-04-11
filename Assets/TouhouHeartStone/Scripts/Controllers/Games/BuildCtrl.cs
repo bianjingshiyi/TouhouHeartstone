@@ -23,7 +23,8 @@ namespace Controllers
         {
             await enterCollectionMode();
 
-            _selectableMasters = game.card.findCardDefines(c => {
+            _selectableMasters = game.card.findCardDefines(c =>
+            {
                 if (c.isMaster())
                 {
                     long cardPoolId = c.cardPoolId;
@@ -792,8 +793,7 @@ namespace Controllers
                 //当前不在编辑卡组，禁用拖拽
                 return false;
             //记录拖拽信息
-            Vector2 worldPos = eventData.pointerCurrentRaycast.worldPosition;
-            _dragStartPosition = worldPos;
+            _dragStartPosition = eventData.pointerCurrentRaycast.screenPosition;
             _isDraggingHorizontal = false;
             _isDraggingVertical = false;
             _isDraggingDeckListItem = false;
@@ -801,8 +801,8 @@ namespace Controllers
         }
         private async Task initDeckItemDrag(PointerEventData eventData, int deckListItemIndex)
         {
-            Vector2 worldPos = eventData.pointerCurrentRaycast.worldPosition;
-            var delta = _dragStartPosition - worldPos;
+            Vector2 pos = eventData.pointerCurrentRaycast.screenPosition;
+            var delta = _dragStartPosition - pos;
             if (delta.magnitude > 0)
             {
                 if (Math.Abs(delta.x) > Math.Abs(delta.y))
@@ -820,7 +820,7 @@ namespace Controllers
                             if (cardRef != null)
                                 _dragCard = game.card.getLocalCardDefine(cardRef);
                         }
-                        await showDragCard(_ui.isPositionOverDeckCardList(worldPos), true);
+                        await showDragCard(_ui.isPositionOverDeckCardList(pos), true);
                     }
                 }
                 else
@@ -859,10 +859,10 @@ namespace Controllers
                 await initDeckItemDrag(eventData, index);
             if (_isDraggingHorizontal)
             {
-                Vector2 worldPos = eventData.pointerCurrentRaycast.worldPosition;
-                await showDragCard(_ui.isPositionOverDeckCardList(worldPos));
+                Vector2 pos = eventData.pointerCurrentRaycast.screenPosition;
+                await showDragCard(_ui.isPositionOverDeckCardList(pos));
                 game.ui.exitDeckListItem(_ui.deckCardList);
-                _ui.moveDragCard(worldPos);
+                _ui.moveDragCard(pos);
                 eventData.Use();
                 return true;
             }
@@ -877,7 +877,7 @@ namespace Controllers
             {
                 //横向拖拽
                 //执行操作
-                if (_dragCard != null && _ui.isPositionOverDeckCardList(eventData.pointerCurrentRaycast.worldPosition))
+                if (_dragCard != null && _ui.isPositionOverDeckCardList(eventData.pointerCurrentRaycast.screenPosition))
                 {
                     if (tryAddCardToDeck(_dragCard, out string errorTip))
                     {
@@ -936,6 +936,9 @@ namespace Controllers
         Deck _deck;
         [SerializeField]
         bool _isDeckChanged = false;
+        /// <summary>
+        /// 拖拽起始位置，屏幕空间
+        /// </summary>
         [SerializeField]
         Vector2 _dragStartPosition;
         [SerializeField]

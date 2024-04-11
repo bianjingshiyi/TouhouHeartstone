@@ -107,10 +107,11 @@ namespace UI
             _dragDeckListItem.gameObject.SetActive(isDeckListItem);
             _dragCard.gameObject.SetActive(!isDeckListItem);
         }
-        public void moveDragCard(Vector2 position)
+        public void moveDragCard(Vector2 screenPos)
         {
-            _dragCard.rectTransform.position = position;
-            _dragDeckListItem.transform.position = position;
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(screenPos);
+            _dragCard.transform.position = new Vector3(worldPos.x, worldPos.y, _dragCard.transform.position.z);
+            _dragDeckListItem.transform.position = new Vector3(worldPos.x, worldPos.y, _dragDeckListItem.transform.position.z);
         }
         public void hideDragCard()
         {
@@ -131,11 +132,13 @@ namespace UI
         /// <summary>
         /// 判断坐标是否位于卡组卡牌列表区域中
         /// </summary>
-        /// <param name="position"></param>
+        /// <param name="screenPos"></param>
         /// <returns></returns>
-        public bool isPositionOverDeckCardList(Vector2 position)
+        public bool isPositionOverDeckCardList(Vector2 screenPos)
         {
-            return _deckCardListViewportRect.rect.Contains(_deckCardListViewportRect.InverseTransformPoint(position));
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(screenPos);
+            Vector3 localPos = _deckCardListViewportRect.InverseTransformPoint(worldPos);
+            return _deckCardListViewportRect.rect.Contains(localPos);
         }
         #endregion
 
