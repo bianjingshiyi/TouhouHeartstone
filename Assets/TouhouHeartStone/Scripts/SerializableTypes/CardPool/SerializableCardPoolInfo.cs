@@ -39,18 +39,18 @@ namespace Game
             };
         }
         [Key(0)]
-        public long cardPoolId;
-        [Key(1)]
-        public string cardPoolName;
-        [Key(2)]
-        public string imageResPath;
-        [Key(3)]
         public int versionNumber;
-        [Key(4)]
+        [Key(1)]
+        public long cardPoolId;
+        [Key(2)]
         public int editTime;
+        [Key(3)]
+        public string cardPoolName;
+        [Key(4)]
+        public string imageResPath;
         [Key(5)]
         public CardPoolReference[] dependencyRefs;
-        [Key(6)]
+        [IgnoreMember]
         public string texturesDir;
     }
 }
