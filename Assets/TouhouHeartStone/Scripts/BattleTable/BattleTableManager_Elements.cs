@@ -1357,13 +1357,6 @@ namespace Game.BattleTable
             hideArrow();
         }
 
-        public Projectile createProjectile(Projectile prefab, Transform from, Transform to)
-        {
-            Projectile projectile = Instantiate(prefab, from.position, Quaternion.LookRotation(to.position - from.position, Vector3.forward), table.transform);
-            _projectileList.Add(projectile);
-            return projectile;
-        }
-
         public Vector3 getCardMoveMiddlePosition(Vector3 startTablePos, Vector3 targetTablePos)
         {
             var centerPos = WorldToTablePosition(table.CenterDisplayTransform.position);
@@ -2807,8 +2800,6 @@ namespace Game.BattleTable
         int _maxBuffNameLength = 10;
         [SerializeField]
         int _maxBuffDescLength = 32;
-        [SerializeField]
-        List<Projectile> _projectileList = new List<Projectile>();
         [SerializeField]
         Timer _tipTimer = new Timer() { duration = 2 };
 

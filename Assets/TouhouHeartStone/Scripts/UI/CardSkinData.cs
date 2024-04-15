@@ -27,8 +27,6 @@ namespace UI
             _subname = other._subname;
             _imagePath = other._imagePath;
             _desc = other._desc;
-            _soundPath_onUse = other._soundPath_onUse;
-            _projectilePath = other._projectilePath;
             _language = other.language;
             foreach (var animRef in other._animationRefs)
             {
@@ -135,37 +133,6 @@ namespace UI
             get { return _desc; }
             set { _desc = value; }
         }
-        [BsonIgnore]
-        [SerializeField]
-        AudioClip _sound_onUse;
-        [Obsolete("请使用soundPath_onUse并使用资源加载器加载对应音效替代")]
-        [BsonIgnore]
-        public AudioClip sound_onUse
-        {
-            get { return _sound_onUse; }
-            set { _sound_onUse = value; }
-        }
-        [BsonElement]
-        [SerializeField]
-        string _soundPath_onUse;
-        /// <summary>
-        /// 使用音效地址
-        /// </summary>
-        [BsonIgnore]
-        public string soundPath_onUse
-        {
-            get { return _soundPath_onUse; }
-            set { _soundPath_onUse = value; }
-        }
-        [BsonElement]
-        [SerializeField]
-        string _projectilePath;
-        [BsonIgnore]
-        public string projectilePath
-        {
-            get { return _projectilePath; }
-            set { _projectilePath = value; }
-        }
         [BsonElement]
         [SerializeField]
         string _language;
@@ -200,8 +167,6 @@ namespace UI
             _subname = skin.subname;
             _imagePath = skin.imagePath;
             _desc = skin.desc;
-            _soundPath_onUse = skin.soundPath_onUse;
-            _projectilePath = skin.projectilePath;
             _language = skin.language;
             foreach (var animRef in skin.getAllAnimRefs())
             {
@@ -220,8 +185,6 @@ namespace UI
                 subname = _subname,
                 imagePath = _imagePath,
                 desc = _desc,
-                soundPath_onUse = _soundPath_onUse,
-                projectilePath = _projectilePath,
                 language = _language
             };
             if (_animationRefs != null)
@@ -241,8 +204,6 @@ namespace UI
         public string _subname;
         public string _imagePath;
         public string _desc;
-        public string _soundPath_onUse;
-        public string _projectilePath;
         public string _language;
         public List<SerializableSkinAnimationRef> _animationRefs = new List<SerializableSkinAnimationRef>();
     }

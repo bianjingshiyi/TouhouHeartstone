@@ -64,7 +64,6 @@ namespace Game.BattleTable
 
             // 播放音效。
             CardSkinData skin = table.getCardSkin(_card);
-            yield return loadAndPlaySound(table, skin?.soundPath_onUse);
             // 播放指向目标动画。
             yield return tryTargetedAnim(table, sourceTransform);
         }
@@ -165,72 +164,30 @@ namespace Game.BattleTable
                 table.removeHand(_card);
             }
         }
-        IEnumerator loadAndPlaySound(BattleTableManager table, string path)
-        {
-            if (!string.IsNullOrEmpty(path))
-            {
-                AudioClip sound;
-                var loadSoundTask = table.resources.loadAudio(path);
-                while (!loadSoundTask.IsCompleted)
-                    yield return null;
-
-                sound = loadSoundTask.Result;
-                table.sounds.playSE(sound);
-            }
-        }
         IEnumerator tryTargetedAnim(BattleTableManager table, Transform source)
         {
             var targets = eventArg.getVar<Card[]>(EVENTVAR.TARGETS);
             if (targets != null && targets.Length > 0 && targets[0] is var targetCard)
             {
                 var card = targetCard;
-                if (table.getCardSkin(_card) is var skin && !string.IsNullOrEmpty(skin.projectilePath))
+                SimpleAnim simpleAnim = null;
+                Animator animator = null;
+                if (table.tryGetMaster(card, out var targetMaster))
                 {
-                    var loadProjectileTask = table.resources.loadObject<Projectile>(skin.projectilePath);
-
-                    while (!loadProjectileTask.IsCompleted)
-                        yield return null;
-
-                    var projectile = loadProjectileTask.Result;
-                    if (projectile)
-                    {
-                        Transform target;
-                        if (table.tryGetMaster(card, out var targetMaster))
-                            target = targetMaster.transform;
-                        else if (table.tryGetServant(card, out var targetServant))
-                            target = targetServant.transform;
-                        else
-                            throw new ActorNotFoundException(card);
-
-                        var targetedAnim = new ProjectileAnimation(
-                            table.createProjectile(projectile, source, target),
-                            target);
-
-                        while (!targetedAnim.update(table, _deltaTime))
-                            yield return null;
-                    }
+                    simpleAnim = targetMaster.onTargeted;
+                    animator = targetMaster.animator;
                 }
-                else
+                else if (table.tryGetServant(card, out var targetServant))
                 {
-                    SimpleAnim simpleAnim = null;
-                    Animator animator = null;
-                    if (table.tryGetMaster(card, out var targetMaster))
-                    {
-                        simpleAnim = targetMaster.onTargeted;
-                        animator = targetMaster.animator;
-                    }
-                    else if (table.tryGetServant(card, out var targetServant))
-                    {
-                        simpleAnim = targetServant.onTargeted;
-                        animator = targetServant.animator;
-                    }
+                    simpleAnim = targetServant.onTargeted;
+                    animator = targetServant.animator;
+                }
 
-                    if (animator != null)
-                    {
-                        AnimAnim targetedAnim = null;
-                        while (!SimpleAnimHelper.update(table, ref targetedAnim, simpleAnim, animator, _deltaTime, next => false))
-                            yield return null;
-                    }
+                if (animator != null)
+                {
+                    AnimAnim targetedAnim = null;
+                    while (!SimpleAnimHelper.update(table, ref targetedAnim, simpleAnim, animator, _deltaTime, next => false))
+                        yield return null;
                 }
             }
         }
