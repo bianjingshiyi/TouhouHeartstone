@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Controllers;
@@ -113,6 +114,21 @@ namespace Game
         public string getExternalSoundPath(string path)
         {
             return Path.Combine(Application.persistentDataPath, soundDirName, path);
+        }
+        public async Task<Sprite> getSoundWaveSprite(ICardPoolReference cardPoolRef, string path)
+        {
+            if (cardPoolRef == null || string.IsNullOrEmpty(path))
+                return null;
+            if (_soundSpriteDict.TryGetValue(path, out var spr))
+            {
+                return spr;
+            }
+            var audioClip = await loadSound(cardPoolRef, path);
+            var tex = SEManager.GenerateWaveTexture(audioClip, lineWeight: 24);
+            spr = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+            spr.name = audioClip.name;
+            _soundSpriteDict.Add(path, spr);
+            return spr;
         }
         #endregion
 
@@ -323,6 +339,7 @@ namespace Game
         [TranslateMsg("尝试选择不支持的音频格式的错误描述，{0}为文件扩展名")]
         public const string SOUND_NOT_SUPPORTED_EXTENSION = "音频格式{0}不受支持。";
         public string soundDirName => _soundDirName;
+        private Dictionary<string, Sprite> _soundSpriteDict = new Dictionary<string, Sprite>();
         [SerializeField]
         string _soundDirName = "Sounds";
         [SerializeField]

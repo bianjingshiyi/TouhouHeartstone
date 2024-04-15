@@ -100,6 +100,7 @@ namespace Controllers
             await updateCardType();
             await updateCustomProperties();
             await updateKeywords();
+            await updateSoundItems();
 
             // 效果。
             GeneratedEffect[] effects = cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
@@ -370,7 +371,7 @@ namespace Controllers
             return sprite;
         }
         /// <summary>
-        /// 当需要用户选择图片，根据平台不同调用不同的插件方法，返回选择的贴图。新建的贴图需要缓存在内存中。
+        /// 当需要用户选择音频，根据平台不同调用不同的插件方法，返回选择的音频。新建的音频需要缓存在内存中。
         /// </summary>
         private async Task<AudioClip> onNeedSelectSound(int soundIndex)
         {
@@ -384,6 +385,7 @@ namespace Controllers
                         _curCardSkin.addSoundRef(new SkinSoundRef(soundName, null));
                 }
                 _curCardSkin.getAllSoundRefs()[soundIndex].path = game.card.getResourcePath(audio);
+                await updateSoundItems();
             }
             return audio;
         }
@@ -832,12 +834,7 @@ namespace Controllers
                 await setSkillRef(null);
             }
 
-            var soundList = new List<(string name, Sprite sprite)>();
-            foreach (var soundName in cardDefine.type == DEFINE.SERVANT ? _servantSoundNames : _defaultSoundNames)
-            {
-                soundList.Add((game.lang._(soundName), null));
-            }
-            _ui.updateSoundItems(soundList.ToArray());
+            await updateSoundItems();
         }
         #endregion
 
@@ -1002,6 +999,23 @@ namespace Controllers
             {
                 await fields[i].valueInputField.setInputFieldCardByValue(itemInfos[i].value, env, game);
             }
+        }
+        /// <summary>
+        /// 更新所有音频项。
+        /// </summary>
+        private async Task updateSoundItems()
+        {
+            var skinNames = _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames;
+            var uiNames = _cardDefine.type == DEFINE.SERVANT ? _servantSoundNames : _defaultSoundNames;
+            var viewDatas = new (string name, Sprite sprite)[skinNames.Length];
+            for (int i = 0; i < skinNames.Length; i++)
+            {
+                var skinSoundName = skinNames[i];
+                var uiName = uiNames[i];
+                var soundPath = _curCardSkin.getSoundRef(skinSoundName)?.path;
+                viewDatas[i] = (game.lang._(uiName), await game.card.getSoundWaveSprite(getCurrentCardPoolRef(), soundPath));
+            }
+            _ui.updateSoundItems(viewDatas);
         }
         /// <summary>
         /// 更新所有自定义属性。

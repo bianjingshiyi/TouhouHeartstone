@@ -157,53 +157,6 @@ namespace Game
         }
         #endregion
 
-        #region PCM音频频率转换
-        public static float[] ConvertFrequency(float[] samples, int channels, int sourceFrequency, int destFrequency)
-        {
-            // 重采样率，新的采样率每采样一次，旧的采样率便前进该数值。
-            var resampleRate = destFrequency / (float)sourceFrequency;
-
-            // 每个声道的的重采样长度。
-            var resampleLengthPerChannel = Mathf.CeilToInt(samples.Length * resampleRate / channels);
-
-            // 重采样过后的采样数据。包括每个声道的采样。
-            var convertedSamples = new float[resampleLengthPerChannel * channels];
-
-            // 遍历每个声道的重采样。
-            for (int i = 0; i < resampleLengthPerChannel; i++)
-            {
-                // 采样位置，表示在该重采样位置中，旧的采样率目前处于什么位置。
-                var samplePos = i / resampleRate;
-
-                // 该采样位置左右两侧的采样位置。
-                var leftSamplePos = Mathf.FloorToInt(samplePos);
-                var rightSamplePos = leftSamplePos + 1;
-
-                // 重采样的位置被夹在两个采样位置之间的位置。
-                var v = samplePos - leftSamplePos;
-
-                // 为每个声道生成一次重采样。PCM格式中的声道采样是交替进行的。（例：1，2，1，2，1，2）
-                for (int channel = 0; channel < channels; channel++)
-                {
-                    // 重采样的数组索引。
-                    var index = i * channels + channel;
-
-                    // 左右两侧的数组索引。
-                    var left = leftSamplePos * channels + channel;
-                    var right = rightSamplePos * channels + channel;
-
-                    // 左右两侧的采样。
-                    float leftSample = left < samples.Length ? samples[left] : 0;
-                    float rightSample = right < samples.Length ? samples[right] : leftSample;
-
-                    // 根据左右两侧采样的线性插值重新生成一个采样结果。
-                    convertedSamples[index] = Mathf.Lerp(leftSample, rightSample, v);
-                }
-            }
-            return convertedSamples;
-        }
-        #endregion
-
         #endregion
 
         #region 私有方法

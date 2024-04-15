@@ -10,9 +10,9 @@ namespace UI
         #region 公有方法
         public void updateView(Sprite sprite)
         {
-            if (!sprite)
-                _image.gameObject.SetActive(false);
+            _image.gameObject.SetActive(sprite);
             _image.sprite = sprite;
+            _line.gameObject.SetActive(!sprite);
         }
         #endregion
 
@@ -49,5 +49,7 @@ namespace UI
         Button _playButton;
         [SerializeField]
         Image _image;
+        [SerializeField]
+        GameObject _line;
     }
 }
