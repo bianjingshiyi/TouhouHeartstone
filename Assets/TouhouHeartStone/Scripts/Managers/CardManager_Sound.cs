@@ -15,22 +15,29 @@ namespace Game
     partial class CardManager
     {
         #region 公有方法
-        public Task<AudioClip> selectExternalSound()
+        public async Task<AudioClip> selectExternalSound()
         {
+            AudioClip clip = null;
             if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
             {
                 //手机端
-                return selectExternalSoundForMobile();
+                clip = await selectExternalSoundForMobile();
             }
             else
             {
                 //默认PC
-                return selectExternalSoundForPC();
+                clip = await selectExternalSoundForPC();
             }
+            if (clip != null && clip.length > _maxSoundDuration)
+            {
+                var desc = game.lang._(SOUND_DURATION_OUT_OF_LIMIT, _maxSoundDuration, clip.length);
+                throw new FormatException(desc);
+            }
+            return clip;
         }
         public async Task<string> saveSound(long cardPoolId, AudioClip audio)
         {
-            byte[] bytes = game.seManager.EncodeOpus(audio);
+            byte[] bytes = game.seManager.Compress(audio);
             string hash = calcHashString(bytes);
             string fileName = $"{hash}.{_opusExtension}";
 
@@ -43,7 +50,7 @@ namespace Game
                 await game.fileManager.saveFile(filePath, bytes);
                 Debug.Log($"另存为音效{fileName}成功");
             }
-            return fileName;
+            return filePath;
         }
         public string getCardPoolSoundsDirectory(CardPoolInfo cardPoolInfo)
         {
@@ -217,7 +224,7 @@ namespace Game
             // 如果是空数组，返回默认Sprite.
             if (bytes == null || bytes.Length <= 0)
                 return null;
-            return game.seManager.DecodeOpus(bytes, id);
+            return game.seManager.Decompress(bytes, id);
         }
         private async Task<AudioClip> loadFullPathSound(string path)
         {
@@ -240,7 +247,7 @@ namespace Game
             try
             {
                 var bytes = await game.fileManager.readStreamingBinaryFile(path);
-                return game.seManager.DecodeOpus(bytes);
+                return game.seManager.Decompress(bytes);
             }
             catch (Exception e)
             {
@@ -257,14 +264,14 @@ namespace Game
             {
                 //如果直接给出完整路径就直接从完整路径上读
                 var bytes = await game.fileManager.readBinaryFile(path);
-                return game.seManager.DecodeOpus(bytes);
+                return game.seManager.Decompress(bytes);
             }
             // 相对路径
             else if (fileManager.isPersistentFileExist(path))
             {
                 // 从外部图片路径读取音效。
                 var bytes = await game.fileManager.readPersistentBinaryFile(path);
-                return game.seManager.DecodeOpus(bytes);
+                return game.seManager.Decompress(bytes);
             }
             // 实在找不到了
             Debug.LogWarning($"未找到路径为{path}的音频。");
@@ -336,12 +343,23 @@ namespace Game
         #region 属性字段
         [TranslateMsg("尝试选择不支持的音频格式的错误描述，{0}为文件扩展名")]
         public const string SOUND_NOT_SUPPORTED_EXTENSION = "音频格式{0}不受支持。";
+        [TranslateMsg("尝试选择音频并压缩后，找不到压缩后的文件的错误描述")]
+        public const string SOUND_COMPRESS_FAILED_FILE_NOT_FOUND = "压缩后的音频文件丢失。";
+        [TranslateMsg("尝试选择时间过长的音频格式的错误描述，{0}为最大秒数，{1}为当前秒数")]
+        public const string SOUND_DURATION_OUT_OF_LIMIT = "音频的长度不能超过{0:####.##}秒\n（选择的文件为{1:####.##}秒）。";
+        [TranslateMsg("尝试选择压缩后大小过大的音频格式的错误描述，{0}为最大文件大小，{1}为选择的文件的大小")]
+        public const string SOUND_COMPRESSED_SIZE_OUT_OF_LIMIT = "音频压缩后的大小长度不能超过{0}KB\n（当前文件为{1}KB）。";
         public string soundDirName => _soundDirName;
+        public long maxSoundSize => _maxSoundSize;
         private Dictionary<string, Sprite> _soundSpriteDict = new Dictionary<string, Sprite>();
         [SerializeField]
         string _soundDirName = "Sounds";
         [SerializeField]
         string _opusExtension = "ddsnd";
+        [SerializeField]
+        float _maxSoundDuration = 10;
+        [SerializeField]
+        long _maxSoundSize = 131072; // 128 * 1024
         #endregion
     }
 }

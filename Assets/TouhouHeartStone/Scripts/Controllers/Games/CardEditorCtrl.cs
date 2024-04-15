@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Game;
@@ -390,27 +391,7 @@ namespace Controllers
         private async void onSoundSelectButtonClickedCallback(int soundIndex)
         {
             _ui.setSoundItemInteractable(soundIndex, false);
-            AudioClip audio = null;
-            try
-            {
-                audio = await game.card.selectExternalSound();
-            }
-            catch (Exception e)
-            {
-                var title = game.lang._(StringTable.ERROR);
-                game.ui.dialog.ShowConfirm(title, e.Message);
-            }
-            if (audio != null)
-            {
-                markUnsaved();
-                foreach (var soundName in _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames)
-                {
-                    if (_curCardSkin.getSoundRef(soundName) == null)
-                        _curCardSkin.addSoundRef(new SkinSoundRef(soundName, null));
-                }
-                _curCardSkin.getAllSoundRefs()[soundIndex].path = game.card.getResourcePath(audio);
-                await updateSoundItems();
-            }
+            await selectSound(soundIndex);
             _ui.setSoundItemInteractable(soundIndex, true);
         }
         private async void onSoundPlayButtonClickedCallback(int index)
@@ -1211,6 +1192,49 @@ namespace Controllers
             await scene.editor.closeEditor(forceSave);
         }
         #endregion
+
+        private async Task selectSound(int soundIndex)
+        {
+            AudioClip audio = null;
+            try
+            {
+                audio = await game.card.selectExternalSound();
+            }
+            catch (Exception e)
+            {
+                var title = game.lang._(StringTable.ERROR);
+                game.ui.dialog.ShowConfirm(title, e.Message);
+            }
+
+            if (audio == null)
+                return;
+            var newPath = await game.card.saveSound(game.editor.currentCardPoolId, audio);
+            if (!File.Exists(newPath))
+            {
+                var title = game.lang._(StringTable.ERROR);
+                var desc = game.lang._(CardManager.SOUND_COMPRESS_FAILED_FILE_NOT_FOUND);
+                game.ui.dialog.ShowConfirm(title, desc);
+                return;
+            }
+            var fileInfo = new FileInfo(newPath);
+            if (fileInfo.Length > game.card.maxSoundSize)
+            {
+                var title = game.lang._(StringTable.ERROR);
+                var desc = game.lang._(CardManager.SOUND_COMPRESSED_SIZE_OUT_OF_LIMIT, game.card.maxSoundSize / 1024, fileInfo.Length / 1024);
+                game.ui.dialog.ShowConfirm(title, desc);
+
+                File.Delete(newPath);
+                return;
+            }
+            markUnsaved();
+            foreach (var soundName in _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames)
+            {
+                if (_curCardSkin.getSoundRef(soundName) == null)
+                    _curCardSkin.addSoundRef(new SkinSoundRef(soundName, null));
+            }
+            _curCardSkin.getAllSoundRefs()[soundIndex].path = newPath;
+            await updateSoundItems();
+        }
 
         #endregion
 

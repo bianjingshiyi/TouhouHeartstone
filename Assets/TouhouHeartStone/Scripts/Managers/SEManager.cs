@@ -72,6 +72,14 @@ namespace Game
             }
             return null;
         }
+        public byte[] Compress(AudioClip clip)
+        {
+            return EncodeOpus(clip);
+        }
+        public AudioClip Decompress(byte[] bytes, string audioName = null)
+        {
+            return DecodeOpus(bytes, audioName);
+        }
         #endregion
         #region 私有方法
         #region 事件回调
