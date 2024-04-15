@@ -1905,7 +1905,7 @@ namespace Game
                         throw new FormatException(string.Format("反序列化卡池{0}的信息失败：{1}", path, e), e);
                     }
 
-                    bytes = new byte[stream.Length - headerLength - sizeof(byte) * 2 - sizeof(int)];
+                    bytes = new byte[stream.Length - headerLength - sizeof(byte) * 3 - sizeof(short)];
                     stream.Read(bytes, 0, bytes.Length);
 
                     try
