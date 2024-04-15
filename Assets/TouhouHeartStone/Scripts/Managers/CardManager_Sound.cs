@@ -288,10 +288,8 @@ namespace Game
             }
             if (audioType == AudioType.UNKNOWN)
             {
-                var title = game.lang._(StringTable.ERROR);
                 var desc = game.lang._(SOUND_NOT_SUPPORTED_EXTENSION, ext);
-                game.ui.dialog.ShowConfirm(title, desc);
-                return Task.FromResult<AudioClip>(null);
+                return Task.FromException<AudioClip>(new FormatException(desc));
             }
             else
             {

@@ -13,11 +13,9 @@ namespace UI
         }
         private void Awake()
         {
-            _soundItem.onClick += i => onSoundItemClick?.Invoke(this);
-            _soundItem.onPlayClick += i => onSoundItemPlayClick?.Invoke(this);
+            _soundItem.onClick += (i, b) => onSoundItemClick?.Invoke(this, b);
         }
-        public Action<LabeledSoundItem> onSoundItemClick;
-        public Action<LabeledSoundItem> onSoundItemPlayClick;
+        public Action<LabeledSoundItem, SoundItem.Buttons> onSoundItemClick;
         public Text text => _text;
         public SoundItem soundItem => _soundItem;
         [SerializeField]

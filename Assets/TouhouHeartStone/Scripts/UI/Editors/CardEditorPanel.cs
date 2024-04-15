@@ -204,6 +204,13 @@ namespace UI
         {
             _skillIdGameObject.SetActive(visible);
         }
+        public void setSoundItemInteractable(int index, bool interactable)
+        {
+            var item = _sounds.getElement<LabeledSoundItem>(index);
+            if (!item)
+                return;
+            item.soundItem.interactable = interactable;
+        }
         public void updateSoundItems((string name, Sprite sprite)[] viewDatas)
         {
             _sounds.updateList(viewDatas.Length, (i, rect) =>
@@ -216,13 +223,11 @@ namespace UI
             {
                 var soundItem = rect.GetComponent<LabeledSoundItem>();
                 soundItem.onSoundItemClick += onSoundButtonClickedCallback;
-                soundItem.onSoundItemPlayClick += onSoundPlayButtonClickedCallback;
             },
             rect =>
             {
                 var soundItem = rect.GetComponent<LabeledSoundItem>();
                 soundItem.onSoundItemClick -= onSoundButtonClickedCallback;
-                soundItem.onSoundItemPlayClick -= onSoundPlayButtonClickedCallback;
             });
         }
         public void switchCardFace(CardFaceType type)
@@ -664,31 +669,10 @@ namespace UI
         {
             onSaveCardFaceToImage?.Invoke();
         }
-        private async void onSoundButtonClickedCallback(LabeledSoundItem soundItem)
+        private void onSoundButtonClickedCallback(LabeledSoundItem soundItem, SoundItem.Buttons button)
         {
             int index = _sounds.indexOf(soundItem);
-            soundItem.soundItem.interactable = false;
-            try
-            {
-                Task<AudioClip> task = onNeedSelectSound?.Invoke(index);
-                AudioClip audio = task != null ? await task : null;
-                if (audio != null)
-                {
-                    // TODO: 设置音频图片
-                }
-            }
-            catch (Exception e)
-            {
-                throw new InvalidOperationException($"设置卡牌图像失败：{e}", e);
-            }
-            finally
-            {
-                soundItem.soundItem.interactable = true;
-            }
-        }
-        private void onSoundPlayButtonClickedCallback(LabeledSoundItem soundItem)
-        {
-            onSoundPlayButtonClicked?.Invoke(_sounds.indexOf(soundItem));
+            onSoundButtonClicked?.Invoke(index, button);
         }
 
         #region 关键词
@@ -822,11 +806,7 @@ namespace UI
         /// <summary>
         /// 当点击选择卡牌音效
         /// </summary>
-        public event Func<int, Task<AudioClip>> onNeedSelectSound;
-        /// <summary>
-        /// 当点击播放卡牌音效
-        /// </summary>
-        public event Action<int> onSoundPlayButtonClicked;
+        public event Action<int, SoundItem.Buttons> onSoundButtonClicked;
 
         #region Properties
         /// <summary>

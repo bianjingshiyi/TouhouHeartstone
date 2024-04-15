@@ -21,16 +21,16 @@ namespace UI
         #region 生命周期
         private void Awake()
         {
-            _button.onClick.AddListener(() => onClick?.Invoke(this));
-            _playButton.onClick.AddListener(() => onPlayClick?.Invoke(this));
+            _button.onClick.AddListener(() => onClick?.Invoke(this, Buttons.Sound));
+            _playButton.onClick.AddListener(() => onClick?.Invoke(this, Buttons.Play));
+            _deleteButton.onClick.AddListener(() => onClick?.Invoke(this, Buttons.Delete));
         }
         #endregion
 
         #endregion
 
         #region 事件
-        public event Action<SoundItem> onClick;
-        public event Action<SoundItem> onPlayClick;
+        public event Action<SoundItem, Buttons> onClick;
         #endregion
 
         public bool interactable 
@@ -48,8 +48,17 @@ namespace UI
         [SerializeField]
         Button _playButton;
         [SerializeField]
+        Button _deleteButton;
+        [SerializeField]
         Image _image;
         [SerializeField]
         GameObject _line;
+
+        public enum Buttons
+        {
+            Sound,
+            Play,
+            Delete
+        }
     }
 }

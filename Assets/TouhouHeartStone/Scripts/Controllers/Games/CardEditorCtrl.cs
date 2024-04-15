@@ -196,8 +196,7 @@ namespace Controllers
             _ui.onClickSkillRefButton += onClickSkillRefButton;
             _ui.onSkillRefEditButtonClicked += onSkillRefEditButtonClicked;
             _ui.onChangeTag += onChangeTag;
-            _ui.onNeedSelectSound += onNeedSelectSound;
-            _ui.onSoundPlayButtonClicked += onSoundPlayButtonClickedCallback;
+            _ui.onSoundButtonClicked += onSoundButtonClickedCallback;
 
             // 选卡。
             // 卡牌属性。
@@ -370,12 +369,37 @@ namespace Controllers
             }
             return sprite;
         }
+        private void onSoundButtonClickedCallback(int soundIndex, SoundItem.Buttons button)
+        {
+            switch (button)
+            {
+                case SoundItem.Buttons.Sound:
+                    onSoundSelectButtonClickedCallback(soundIndex);
+                    break;
+                case SoundItem.Buttons.Play:
+                    onSoundPlayButtonClickedCallback(soundIndex);
+                    break;
+                case SoundItem.Buttons.Delete:
+                    onSoundDeleteButtonClickedCallback(soundIndex);
+                    break;
+            }
+        }
         /// <summary>
         /// 当需要用户选择音频，根据平台不同调用不同的插件方法，返回选择的音频。新建的音频需要缓存在内存中。
         /// </summary>
-        private async Task<AudioClip> onNeedSelectSound(int soundIndex)
+        private async void onSoundSelectButtonClickedCallback(int soundIndex)
         {
-            AudioClip audio = await game.card.selectExternalSound();
+            _ui.setSoundItemInteractable(soundIndex, false);
+            AudioClip audio = null;
+            try
+            {
+                audio = await game.card.selectExternalSound();
+            }
+            catch (Exception e)
+            {
+                var title = game.lang._(StringTable.ERROR);
+                game.ui.dialog.ShowConfirm(title, e.Message);
+            }
             if (audio != null)
             {
                 markUnsaved();
@@ -387,7 +411,27 @@ namespace Controllers
                 _curCardSkin.getAllSoundRefs()[soundIndex].path = game.card.getResourcePath(audio);
                 await updateSoundItems();
             }
-            return audio;
+            _ui.setSoundItemInteractable(soundIndex, true);
+        }
+        private async void onSoundPlayButtonClickedCallback(int index)
+        {
+            foreach (var soundName in _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames)
+            {
+                if (_curCardSkin.getSoundRef(soundName) == null)
+                    _curCardSkin.addSoundRef(new SkinSoundRef(soundName, null));
+            }
+            AudioClip audio = await game.card.loadSound(getCurrentCardPoolRef(), _curCardSkin.getAllSoundRefs()[index].path);
+            if (audio != null)
+            {
+                game.seManager.playSE(audio);
+            }
+        }
+        private async void onSoundDeleteButtonClickedCallback(int index)
+        {
+            var soundRefs = _curCardSkin.getAllSoundRefs();
+            var soundRef = soundRefs[index];
+            soundRef.path = null;
+            await updateSoundItems();
         }
         /// <summary>
         /// 当用户更改卡片描述
@@ -491,19 +535,6 @@ namespace Controllers
             else
             {
                 _ui.setRace(-1, string.Empty);
-            }
-        }
-        private async void onSoundPlayButtonClickedCallback(int index)
-        {
-            foreach (var soundName in _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames)
-            {
-                if (_curCardSkin.getSoundRef(soundName) == null)
-                    _curCardSkin.addSoundRef(new SkinSoundRef(soundName, null));
-            }
-            AudioClip audio = await game.card.loadSound(getCurrentCardPoolRef(), _curCardSkin.getAllSoundRefs()[index].path);
-            if (audio != null)
-            {
-                game.seManager.playSE(audio);
             }
         }
         #endregion
