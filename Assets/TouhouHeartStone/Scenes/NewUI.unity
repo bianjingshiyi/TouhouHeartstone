@@ -3234,6 +3234,7 @@ MonoBehaviour:
   _saveFileName: main
   _cardPoolFileName: cardpool
   _generatedTexturesPath: Textures
+  _generatedSoundsPath: Sounds
 --- !u!4 &131238006
 Transform:
   m_ObjectHideFlags: 0
@@ -6146,6 +6147,10 @@ MonoBehaviour:
   editorCardPoolMoDirectory: ExternalData/i18n/cards
   cardPoolMoDirectory: i18n/cards
   cardPoolMoPrefixClassic: classic
+  _soundDirName: Sounds
+  _opusExtension: ogg
+  _maxSoundDuration: 10
+  _maxSoundSize: 131072
   _textureDirName: Textures
   _editorTextureDirName: ExternalData/Textures
   _defaultImagePath: Textures/DrBoom.png

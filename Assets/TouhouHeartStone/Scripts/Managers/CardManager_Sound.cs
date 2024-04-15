@@ -355,7 +355,7 @@ namespace Game
         [SerializeField]
         string _soundDirName = "Sounds";
         [SerializeField]
-        string _opusExtension = "ddsnd";
+        string _opusExtension = "ogg";
         [SerializeField]
         float _maxSoundDuration = 10;
         [SerializeField]
