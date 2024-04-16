@@ -20,6 +20,10 @@ using UnityEditor;
 using System.Reflection;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
+using Game.Replays;
+using Controllers;
+using MessagePack;
+
 namespace Tests
 {
     public class OtherTests
@@ -183,6 +187,81 @@ namespace Tests
             //object obj = BsonSerializer.Deserialize(json);
             //Debug.Log(obj + ",Type:" + obj.GetType().Name);
             //Assert.True(obj is JsonTarget t && t.i == 1);
+        }
+        [Test]
+        public void serializeInterfaceTest()
+        {
+            SerializableReplayData serializableReplayData = new(new ReplayData()
+            {
+                option = HearthstoneOption.Default,
+                version = 0,
+                playerAId = 1,
+                playerBId = 2,
+                players = new ReplayPlayerData[0],
+                responses = new()
+                {
+                    new UseResponse() {  playerId = 1, cardId = 100 },
+                    new AttackResponse(){ playerId = 1, cardId = 100, targetId = 200 }
+                }
+            });
+            byte[] bytes = JsonHelper.toBytes(serializableReplayData);
+            serializableReplayData = JsonHelper.fromBytes<SerializableReplayData>(bytes);
+            Assert.IsInstanceOf<UseResponse>(serializableReplayData.responseList[0]);
+            Assert.IsInstanceOf<AttackResponse>(serializableReplayData.responseList[1]);
+        }
+        [Test]
+        public void serializeAbstractTest()
+        {
+            SerializableBuffDefine serializableBuffDefine = new()
+            {
+                propModifierList = new()
+                {
+                    new SerializableAttackModifier()
+                    {
+                        defaultValue = 1,
+                        isSet  =true,
+                        propertyName = "attack"
+                    }
+                }
+            };
+            byte[] bytes = JsonHelper.toBytes(serializableBuffDefine);
+            serializableBuffDefine = JsonHelper.fromBytes<SerializableBuffDefine>(bytes);
+            Assert.IsInstanceOf<SerializableAttackModifier>(serializableBuffDefine.propModifierList[0]);
+        }
+        [Test]
+        public void readSerializedStreamHeaderTest()
+        {
+            SerializableContent content = new()
+            {
+                header = new() { title = "Title" },
+                body = new() { bytes = new byte[] { 0, 1, 1, 1, 1, 1, 1 } }
+            };
+            using MemoryStream stream = new();
+            MessagePackSerializer.Serialize(stream, content);
+            stream.Position = 0;
+            stream.ReadByte();
+            SerializableHeader header = MessagePackSerializer.Deserialize<SerializableHeader>(stream);
+            Assert.AreEqual("Title", header.title);
+        }
+        [MessagePackObject]
+        public struct SerializableContent
+        {
+            [Key(0)]
+            public SerializableHeader header;
+            [Key(1)]
+            public SerializableBody body;
+        }
+        [MessagePackObject]
+        public class SerializableHeader
+        {
+            [Key(0)]
+            public string title;
+        }
+        [MessagePackObject]
+        public class SerializableBody
+        {
+            [Key(0)]
+            public byte[] bytes;
         }
         class JsonTarget
         {

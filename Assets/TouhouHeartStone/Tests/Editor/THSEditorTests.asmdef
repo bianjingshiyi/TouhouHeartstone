@@ -1,5 +1,6 @@
 {
     "name": "THSEditorTests",
+    "rootNamespace": "",
     "references": [
         "GUID:281468c2df1e53a438f5e793d0b6dc36",
         "GUID:b06a5ad1fe4c58b408bdfab24c55a5e0",
@@ -10,7 +11,9 @@
         "GUID:8d127f57985fd644ca5546f1641c002f",
         "GUID:fad660e7facc0e44095dac4651c0ef9f",
         "GUID:fbe84483a464da04c9b15f1fa3a68c45",
-        "GUID:6e671b56ae6054b43994468b72b5b7b7"
+        "GUID:6e671b56ae6054b43994468b72b5b7b7",
+        "GUID:bbde805d927e795439d7a746d1749cab",
+        "GUID:5a46ad82eac024e4fbb6a0516a5def17"
     ],
     "includePlatforms": [
         "Editor"
