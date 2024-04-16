@@ -147,6 +147,7 @@ namespace Game
         {
             // 关联卡片资源列表
             var imageFiles = getCardPoolImages(cardPoolInfo, cardPool);
+            var soundFiles = getCardPoolSounds(cardPool);
             byte[] defineHash;
             using (var file = File.OpenRead(cardPoolDefineFile))
             {
@@ -169,6 +170,11 @@ namespace Game
                     foreach (var file in imageFiles)
                     {
                         await archive.CreateEntryFromFileAsync(Path.Combine(Application.persistentDataPath, textureDirName, file), $"{textureDirName}/{file}");
+                    }
+                    // 写出卡池音频文件
+                    foreach (var file in soundFiles)
+                    {
+                        await archive.CreateEntryFromFileAsync(Path.Combine(Application.persistentDataPath, soundDirName, file), $"{soundDirName}/{file}");
                     }
                 }
 
@@ -259,11 +265,28 @@ namespace Game
 
                             if (imgEntry == null)
                             {
-                                Debug.Log($"导入的{fileName}不存在");
+                                Debug.Log($"导入的图片{fileName}不存在");
                                 game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), game.i18n._(ERROR_WRONG_FORMAT));
                                 return false;
                             }
                             imageEntries.Add(imgEntry);
+                        }
+
+                        // 检查音频是否完全正常
+                        var soundFiles = getCardPoolSounds(cardPool);
+                        HashSet<ZipArchiveEntry> soundEntries = new HashSet<ZipArchiveEntry>();
+                        foreach (var sound in soundFiles)
+                        {
+                            var fileName = $"{soundDirName}/{sound}";
+                            var imgEntry = archive.GetEntry(fileName);
+
+                            if (imgEntry == null)
+                            {
+                                Debug.Log($"导入的音频{fileName}不存在");
+                                game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), game.i18n._(ERROR_WRONG_FORMAT));
+                                return false;
+                            }
+                            soundEntries.Add(imgEntry);
                         }
 
                         // 写出所有文件
