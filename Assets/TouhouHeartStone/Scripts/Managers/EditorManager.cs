@@ -229,6 +229,8 @@ namespace Game
 
         private static readonly Dictionary<string, string> piles = new Dictionary<string, string>
         {
+            { PILE.INIT, StringTable.PILE_NAME_INIT },
+            { PILE.WARP, StringTable.PILE_NAME_WARP },
             { PILE.FIELD, StringTable.PILE_NAME_FIELD },
             { PILE.HAND, StringTable.PILE_NAME_HAND },
             { PILE.DECK, StringTable.PILE_NAME_DECK },

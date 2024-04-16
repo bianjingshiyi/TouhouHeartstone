@@ -53,6 +53,10 @@ namespace Game
         public const string CONTEXT_PILE_NAME = "牌堆名";
 
         [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
+        public const string PILE_NAME_INIT = "初始手牌";
+        [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
+        public const string PILE_NAME_WARP = "暂存区";
+        [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
         public const string PILE_NAME_FIELD = "战场";
         [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
         public const string PILE_NAME_HAND = "手牌";
