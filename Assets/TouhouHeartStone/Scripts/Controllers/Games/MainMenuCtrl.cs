@@ -115,7 +115,7 @@ namespace Controllers
         {
             //Main main = _ui.getObject<Main>();
             var playerName = game.lang._(StringTable.LOCAL_PLAYER);
-            await scene.game.network.logic.CreateLocalRoom(playerName);
+            await scene.game.network.createLocalRoom(playerName);
             RoomData currentRoomData = scene.game.network.logic.CurrentRoom;
             currentRoomData.maxPlayerCount = 2; // 炉石两个人
 
@@ -222,7 +222,7 @@ namespace Controllers
             {
                 startWaiting(panel);
                 // 注册完毕，切换到登录界面
-                await game.network.logic.register(new AccountInfo(password, email, nickName, game.lang.getLanguage()));
+                await game.network.register(new AccountInfo(password, email, nickName, game.lang.getLanguage()));
                 await showAccountPanel(AccountPanel.Login);
             }
             catch (NetClientException e)
@@ -256,9 +256,9 @@ namespace Controllers
             {
                 startWaiting(panel);
                 var ticket = await SteamManager.getAuthTicketForWebApi();
-                await game.network.logic.steamRegister(email, nickName, game.lang.getLanguage());
+                await game.network.steamRegister(email, nickName, game.lang.getLanguage());
                 // 注册完毕，登录
-                if (await game.network.logic.steamLogin())
+                if (await game.network.steamLogin())
                 {
                     // 登陆完毕
                     updatePlayerInfo();
@@ -321,7 +321,7 @@ namespace Controllers
             try
             {
                 startWaiting(panel);
-                bool success = await game.network.logic.login(username, password);
+                bool success = await game.network.login(username, password);
                 if (success)
                 {
                     game.network.saveRememberedAccount(rememberUsername ? username : null);
@@ -352,7 +352,7 @@ namespace Controllers
             try
             {
                 startWaiting(panel);
-                bool success = await game.network.logic.GuestLogin();
+                bool success = await game.network.guestLogin();
                 if (success)
                 {
                     updatePlayerInfo();
@@ -382,7 +382,7 @@ namespace Controllers
             try
             {
                 startWaiting(panel);
-                if (await game.network.logic.steamLogin())
+                if (await game.network.steamLogin())
                 {
                     updatePlayerInfo();
                     hideAccountPanels();
@@ -422,7 +422,7 @@ namespace Controllers
             try
             {
                 startWaiting(panel);
-                await game.network.logic.logout();
+                await game.network.logout();
                 updatePlayerInfo();
             }
             catch (Exception e)
@@ -455,7 +455,7 @@ namespace Controllers
             try
             {
                 startWaiting(panel);
-                if (await game.network.logic.recoverRequest(mail))
+                if (await game.network.recoverRequest(mail))
                 {
                     _ui.switchRecoverStage(true);
                 }
@@ -497,7 +497,7 @@ namespace Controllers
             try
             {
                 startWaiting(panel);
-                await game.network.logic.ChangeUserNickname(nickname);
+                await game.network.changeUserNickname(nickname);
                 var message = game.lang._(NETMANAGER_EDIT_NICKNAME_SUCCESSFULLY);
                 _ui.showPlayerEditMessage(message);
                 updatePlayerInfo();
@@ -529,7 +529,7 @@ namespace Controllers
             try
             {
                 startWaiting(panel);
-                await game.network.logic.ChangeUserPassword(newPassword);
+                await game.network.changeUserPassword(newPassword);
                 var message = game.lang._(NETMANAGER_EDIT_PASSWORD_SUCCESSFULLY);
                 _ui.showPlayerEditMessage(message);
                 updatePlayerInfo();
@@ -551,11 +551,11 @@ namespace Controllers
                 startWaiting(panel);
                 bool success;
                 if (unbind)
-                    success = await game.network.logic.unlinkSteam();
+                    success = await game.network.unlinkSteam();
                 else
                 {
                     var ticket = await SteamManager.getAuthTicketForWebApi();
-                    success = await game.network.logic.linkSteam();
+                    success = await game.network.linkSteam();
                 }
                 if (success)
                 {
@@ -643,7 +643,7 @@ namespace Controllers
             var gettingText = game.lang._(STEAMBINDING_GETTING_STATE);
             _ui.setPlayerEditPanelSteamState(gettingText, false, false);
 
-            bool bond = await game.network.logic.isAccountSteamLinked();
+            bool bond = await game.network.isAccountSteamLinked();
             var stateText = game.lang._(bond ? STEAMBINDING_BOND : STEAMBINDING_UNBOND);
             _ui.setPlayerEditPanelSteamState(stateText, bond, true);
         }

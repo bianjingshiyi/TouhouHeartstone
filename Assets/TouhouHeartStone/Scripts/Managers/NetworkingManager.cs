@@ -27,18 +27,6 @@ namespace Game
         {
             logic.setLanguage(language.Replace('-', '_').ToLower());
         }
-        public Task updateUserInfo()
-        {
-            return logic.updateUserInfo();
-        }
-        /// <summary>
-        /// 创建一个房间
-        /// </summary>
-        /// <returns></returns>
-        public Task createRoom(string name = "", string password = "")
-        {
-            return logic.CreateRoom(name, password);
-        }
         public async Task<Sprite> getCaptchaImage()
         {
             Texture2D texture = new Texture2D(512, 512);
@@ -58,6 +46,31 @@ namespace Game
         {
             return logic.ServerClient.GetLatestUpdateAsync();
         }
+        /// <summary>
+        /// 开始远程游戏。
+        /// </summary>
+        public void StartRemoteGame()
+        {
+            logic.StartGame();
+        }
+
+        #region 房间相关
+        /// <summary>
+        /// 创建一个房间
+        /// </summary>
+        /// <returns></returns>
+        public Task createRoom(string name = "", string password = "")
+        {
+            return logic.CreateRoom(name, password);
+        }
+        /// <summary>
+        /// 创建本地房间
+        /// </summary>
+        /// <returns></returns>
+        public Task createLocalRoom(string playerName)
+        {
+            return logic.CreateLocalRoom(playerName);
+        }
         public Task joinRoom(string roomID, string password = "")
         {
             return logic.JoinRoom(roomID, password);
@@ -66,6 +79,9 @@ namespace Game
         {
             return logic.JoinRoom(addr, port, password);
         }
+        #endregion
+
+        #region 地址相关
         /// <summary>
         /// 设置服务器地址
         /// </summary>
@@ -74,13 +90,6 @@ namespace Game
         {
             logic.setServerAddress(addr);
             await start();
-        }
-        /// <summary>
-        /// 开始远程游戏。
-        /// </summary>
-        public void StartRemoteGame()
-        {
-            logic.StartGame();
         }
         /// <summary>
         /// 地址解析
@@ -127,6 +136,45 @@ namespace Game
         {
             return _ports;
         }
+        #endregion
+
+        #region 账号相关
+        public Task updateUserInfo()
+        {
+            return logic.updateUserInfo();
+        }
+        public async Task register(AccountInfo accountInfo)
+        {
+            await handleKratosInitException();
+            await logic.register(accountInfo);
+        }
+        public async Task<bool> login(string email, string password)
+        {
+            await handleKratosInitException();
+            return await logic.login(email, password);
+        }
+        public Task<bool> guestLogin()
+        {
+            return logic.GuestLogin();
+        }
+        public async Task logout()
+        {
+            await logic.logout();
+        }
+        public async Task<bool> recoverRequest(string mail)
+        {
+            await handleKratosInitException();
+            return await logic.recoverRequest(mail);
+        }
+        public Task changeUserNickname(string nickname)
+        {
+            return logic.ChangeUserNickname(nickname);
+        }
+        public async Task changeUserPassword(string newPass)
+        {
+            await handleKratosInitException();
+            await logic.ChangeUserPassword(newPass);
+        }
         public void loadRememberAccount(out bool rememberUserName, out string userName)
         {
             rememberUserName = PlayerPrefs.GetInt("RememberAccount", 0) > 0;
@@ -140,6 +188,37 @@ namespace Game
         {
             PlayerPrefs.SetString("UserName", userName);
         }
+        #endregion
+
+        #region Steam帐号相关
+        public async Task steamRegister(string email, string nickname, string language)
+        {
+            await handleKratosInitException();
+            await logic.steamRegister(email, nickname, language);
+        }
+        public async Task<bool> steamLogin()
+        {
+            await handleKratosInitException();
+            return await logic.steamLogin();
+        }
+        public async Task<bool> unlinkSteam()
+        {
+            await handleKratosInitException();
+            return await logic.unlinkSteam();
+        }
+        public async Task<bool> linkSteam()
+        {
+            await handleKratosInitException();
+            return await logic.linkSteam();
+        }
+        public async Task<bool> isAccountSteamLinked()
+        {
+            if (!await validateKratos())
+                return false;
+            return await logic.isAccountSteamLinked();
+        }
+        #endregion
+
         #endregion 公有方法
 
         #region 私有方法
@@ -251,7 +330,11 @@ namespace Game
         {
             // 更新Panel状态，进入加载模式
             onAutoLogin?.Invoke();
-            bool autoLoginSuccess = await logic.AutoLogin();
+            bool autoLoginSuccess = false;
+            if (await validateKratos())
+            {
+                autoLoginSuccess = await logic.AutoLogin();
+            }
             onAutoLoginFinished?.Invoke(autoLoginSuccess);
         }
         #region UI
@@ -266,6 +349,22 @@ namespace Game
 
 
         #endregion UI
+        private async Task<bool> validateKratos()
+        {
+            if (logic.ServerClient == null)
+                return false;
+            if (logic.ServerClient.Kratos != null)
+                return true;
+            return await logic.NewKratosClient();
+        }
+        private async Task handleKratosInitException()
+        {
+            if (!await validateKratos())
+            {
+                var msg = main.lang._(NETWORK_KRATOS_INIT_FAILED);
+                throw new NetClientException(msg);
+            }
+        }
 
         #endregion 私有方法
 
@@ -310,6 +409,8 @@ namespace Game
         private string version => CustomBuilder.BuildInformation.Instance.Version;
 
         private NetworkingLogic _logic;
+        [TranslateMsg("服务器初始化失败时的错误提示")]
+        public const string NETWORK_KRATOS_INIT_FAILED = "网络初始化失败，请检查网络连接";
 
         [Header("配置")]
         /// <summary>

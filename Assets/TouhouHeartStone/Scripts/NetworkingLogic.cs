@@ -115,7 +115,7 @@ namespace Game
             {
                 if (await ServerClient.LoginByKratosAsync())
                 {
-                    userInfo = await ServerClient.GetUserInfoAsync();
+                    await updateUserInfo();
                     return true;
                 }
             }
@@ -315,7 +315,7 @@ namespace Game
             {
                 if (await ServerClient.LoginByKratosAsync())
                 {
-                    userInfo = await ServerClient.GetUserInfoAsync();
+                    await updateUserInfo();
                     return true;
                 }
             }
@@ -366,7 +366,15 @@ namespace Game
         }
         public async Task<bool> NewKratosClient()
         {
-            return await ServerClient.NewKratosClient();
+            try
+            {
+                return await ServerClient.NewKratosClient();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Kratos初始化失败：{e}");
+                return false;
+            }
         }
         public void setLanguage(string language)
         {
