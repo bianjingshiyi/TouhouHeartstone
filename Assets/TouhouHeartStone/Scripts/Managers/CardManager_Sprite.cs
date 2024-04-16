@@ -272,7 +272,7 @@ namespace Game
         /// <returns>绝对路径。</returns>
         public string getExternalImagePath(string path)
         {
-            return Path.Combine(Application.persistentDataPath, textureDirName, path);
+            return Path.Combine(_persistentDataPath, textureDirName, path);
         }
         /// <summary>
         /// 判断一张外部图片是否存在。

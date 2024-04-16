@@ -119,7 +119,7 @@ namespace Game
         /// <returns>绝对路径。</returns>
         public string getExternalSoundPath(string path)
         {
-            return Path.Combine(Application.persistentDataPath, soundDirName, path);
+            return Path.Combine(_persistentDataPath, soundDirName, path);
         }
         public async Task<Sprite> getSoundWaveSprite(ICardPoolReference cardPoolRef, string path)
         {

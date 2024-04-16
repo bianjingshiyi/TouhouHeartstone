@@ -134,6 +134,7 @@ namespace Game
             {
                 case "card":
                 case "pic":
+                case "sound":
                     return true;
             }
             return false;
@@ -196,6 +197,18 @@ namespace Game
                 if (File.Exists(picPath))
                 {
                     var picFileInfo = new FileInfo(picPath);
+                    size = picFileInfo.Length;
+                    return true;
+                }
+            }
+            else if (resType == "sound")
+            {
+                // 查找本地的图片资源。
+                string fileName = string.Format("{0}.ogg", resID);
+                var soundPath = card.getExternalSoundPath(fileName);
+                if (File.Exists(soundPath))
+                {
+                    var picFileInfo = new FileInfo(soundPath);
                     size = picFileInfo.Length;
                     return true;
                 }
@@ -378,6 +391,15 @@ namespace Game
                     return File.OpenRead(card.getExternalImagePath(fileName));
                 }
             }
+            else if (resType == "sound")
+            {
+                // 查找本地的图片资源。
+                string fileName = string.Format("{0}.ogg", resID);
+                if (card.isExternalSoundExists(fileName))
+                {
+                    return File.OpenRead(card.getExternalSoundPath(fileName));
+                }
+            }
 
             //查找上传的别人的卡池缓存。
             var path = GetCachePath(resType, resID);
@@ -397,9 +419,10 @@ namespace Game
         #endregion
 
         #region 字段属性
-        private MainManager main => this.findInstance<MainManager>();
         private ConfigManager config => main.config;
         private CardManager card => main.card;
+        [SerializeField]
+        private MainManager main;
         [SerializeField]
         private string dirName = "cache";
         public long MaxSize { get; set; }

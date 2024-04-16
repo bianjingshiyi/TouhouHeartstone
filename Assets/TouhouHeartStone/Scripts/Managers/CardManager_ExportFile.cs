@@ -70,7 +70,7 @@ namespace Game
             });
             return await t.Task;
 #else
-            var exportPath = Path.Combine(Application.persistentDataPath, defaultFileName);
+            var exportPath = Path.Combine(_persistentDataPath, defaultFileName);
             await exportCardPool(cardPoolInfo, cardPoolDefineFile, cardPool, exportPath);
             return exportPath;
 #endif
@@ -96,7 +96,7 @@ namespace Game
             });
             return await t.Task;
 #else
-            var exportPath = Path.Combine(Application.persistentDataPath, string.Format("{0}.{1}", defaultFileName, extension));
+            var exportPath = Path.Combine(_persistentDataPath, string.Format("{0}.{1}", defaultFileName, extension));
             await File.WriteAllBytesAsync(exportPath, bytes);
             return exportPath;
 #endif
@@ -131,7 +131,7 @@ namespace Game
             }, "*/*");
             return await t.Task;
 #else
-            var importPath = Path.Combine(Application.persistentDataPath, "import.dcpp");
+            var importPath = Path.Combine(_persistentDataPath, "import.dcpp");
             if (!File.Exists(importPath))
             {
                 game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), game.i18n._(ERROR_FILE_NOT_FOUND, importPath));
@@ -169,12 +169,12 @@ namespace Game
                     // 写出卡池图片文件
                     foreach (var file in imageFiles)
                     {
-                        await archive.CreateEntryFromFileAsync(Path.Combine(Application.persistentDataPath, textureDirName, file), $"{textureDirName}/{file}");
+                        await archive.CreateEntryFromFileAsync(Path.Combine(_persistentDataPath, textureDirName, file), $"{textureDirName}/{file}");
                     }
                     // 写出卡池音频文件
                     foreach (var file in soundFiles)
                     {
-                        await archive.CreateEntryFromFileAsync(Path.Combine(Application.persistentDataPath, soundDirName, file), $"{soundDirName}/{file}");
+                        await archive.CreateEntryFromFileAsync(Path.Combine(_persistentDataPath, soundDirName, file), $"{soundDirName}/{file}");
                     }
                 }
 
@@ -290,12 +290,12 @@ namespace Game
                         }
 
                         // 写出所有文件
-                        var definePath = Path.Combine(Application.persistentDataPath, _cardPoolDirName, $"{manifest.CardPoolID}.{_cardPoolFilePostfix}");
+                        var definePath = Path.Combine(_persistentDataPath, _cardPoolDirName, $"{manifest.CardPoolID}.{_cardPoolFilePostfix}");
                         await defineEntry.SaveToAsync(definePath);
                         foreach (var image in imageEntries)
                         {
                             var fileName = image.FullName;
-                            await image.SaveToAsync(Path.Combine(Application.persistentDataPath, fileName));
+                            await image.SaveToAsync(Path.Combine(_persistentDataPath, fileName));
                         }
 
                         // 加载卡池

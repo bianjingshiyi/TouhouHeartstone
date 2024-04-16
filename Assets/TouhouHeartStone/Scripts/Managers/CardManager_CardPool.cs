@@ -151,7 +151,7 @@ namespace Game
             if (path.isStreamingAssetsPath(out var streamingPath))
             {
                 //如果是StreamingAssets，那要转存成可持续化文件
-                path = Path.Combine(Application.persistentDataPath, streamingPath);
+                path = Path.Combine(_persistentDataPath, streamingPath);
             }
             // 修改卡池的版本，并使卡池编辑次数+1。
             cardPoolInfo.editTime++;
@@ -386,7 +386,7 @@ namespace Game
             // 正在创建的卡池没有路径，设置为默认外部卡池路径。
             if (isCreatingCardPool(cardPoolRef))
             {
-                return Path.Combine(Application.persistentDataPath, _cardPoolDirName);
+                return Path.Combine(_persistentDataPath, _cardPoolDirName);
             }
             var path = getCardPoolPath(cardPoolRef);
             if (path == null)
@@ -903,12 +903,12 @@ namespace Game
             }
 
             // 如果路径以本地卡池的路径开头，说明是本身拥有的卡池。
-            string cardPoolDir = Path.Combine(Application.persistentDataPath, cardPoolDirName).Replace("/", "\\");
+            string cardPoolDir = Path.Combine(_persistentDataPath, cardPoolDirName).Replace("/", "\\");
             if (path.StartsWith(cardPoolDirName) || path.StartsWith(cardPoolDir))
                 return true;
 
             // PVE
-            string pveDir = Path.Combine(Application.persistentDataPath, game.pve.directory).Replace("/", "\\");
+            string pveDir = Path.Combine(_persistentDataPath, game.pve.directory).Replace("/", "\\");
             if (path.StartsWith(game.pve.directory) || path.StartsWith(pveDir))
                 return true;
             return false;
@@ -1784,7 +1784,7 @@ namespace Game
         private string allocCardPoolPath(CardPoolInfo cardPool)
         {
             var cardPoolName = cardPool.cardPoolName;
-            string path = Path.Combine(Application.persistentDataPath, cardPoolDirName, $"{cardPoolName}.{cardPoolFilePostfix}");
+            string path = Path.Combine(_persistentDataPath, cardPoolDirName, $"{cardPoolName}.{cardPoolFilePostfix}");
             for (int i = 0; i < 100 && File.Exists(path); i++)
             {
                 if (i == 99)
@@ -1809,11 +1809,11 @@ namespace Game
         /// </summary>
         private void prepareCardpoolDir()
         {
-            var cardPoolDir = Path.Combine(Application.persistentDataPath, cardPoolDirName);
+            var cardPoolDir = Path.Combine(_persistentDataPath, cardPoolDirName);
             if (!Directory.Exists(cardPoolDir))
                 Directory.CreateDirectory(cardPoolDir);
 
-            var picDir = Path.Combine(Application.persistentDataPath, textureDirName);
+            var picDir = Path.Combine(_persistentDataPath, textureDirName);
             if (!Directory.Exists(picDir))
                 Directory.CreateDirectory(picDir);
         }
@@ -2044,6 +2044,10 @@ namespace Game
         {
             PVE_POOL_ID
         };
+        /// <summary>
+        /// 用于防止CacheManager在局域网联机中，通过非主线程访问到Application.persistentDataPath导致出错的问题。
+        /// </summary>
+        private string _persistentDataPath;
         private const float CARD_POOL_VERSION_0_3 = 0.3f;
         private const float CARD_POOL_VERSION_0_2 = 0.2f;
         private const float CARD_POOL_VERSION_0_1 = 0.1f;

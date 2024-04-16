@@ -341,6 +341,7 @@ namespace Game
         protected override void onAwake()
         {
             base.onAwake();
+            _persistentDataPath = Application.persistentDataPath;
             onAwake_Sprite();
             onAwake_CardPool();
             onAwake_Actions();
