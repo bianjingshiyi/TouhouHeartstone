@@ -38,6 +38,7 @@ namespace UI
     }
     public enum WaitingTask
     {
-        UserAccount
+        UserAccount,
+        CardEditor
     }
 }

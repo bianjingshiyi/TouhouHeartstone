@@ -28,6 +28,7 @@ namespace Controllers
             _cardSkins.AddRange(skins);
 
             gameObject.SetActive(true); // 触发Awake。
+            scene.waitingBlocker.addWaitingTask(WaitingTask.CardEditor);
             _ui.reset();
 
             // 初始化UI。
@@ -114,6 +115,8 @@ namespace Controllers
             updateEffectList(effects);
 
             _graphEditor.display();
+
+            scene.waitingBlocker.removeWaitingTask(WaitingTask.CardEditor);
         }
         public override async Task display(CardPoolDisplayPage info)
         {
@@ -1222,6 +1225,7 @@ namespace Controllers
 
             if (audio == null)
                 return;
+            scene.waitingBlocker.addWaitingTask(WaitingTask.CardEditor);
             var newPath = await game.card.saveSound(game.editor.currentCardPoolId, audio);
             var directory = game.card.getCardPoolSoundsDirectory(game.card.getLocalCardPoolInfo(game.editor.currentCardPoolId));
             var fullPath = Path.Combine(directory, newPath);
@@ -1242,6 +1246,7 @@ namespace Controllers
                 File.Delete(fullPath);
                 return;
             }
+            scene.waitingBlocker.removeWaitingTask(WaitingTask.CardEditor);
             markUnsaved();
 
             initSkinSoundRefs(_curCardSkin);
