@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using TouhouCardEngine.Histories;
 using TouhouHeartstone;
+using UI;
 using UnityEngine;
 using Card = TouhouCardEngine.Card;
 
@@ -14,6 +16,7 @@ namespace Game.BattleTable
     /// </summary>
     class DeathAnimation : EventAnimation<Arg>
     {
+        private bool _soundPlayed;
         /// <summary>
         /// 每一帧调用
         /// </summary>
@@ -39,9 +42,19 @@ namespace Game.BattleTable
                 item.onDestroy.invokeBeforeAnim();
                 anim = new AnimAnim(item.animator, item.onDestroy.animName);
             }
+
+            bool mute = table.getAnimGroupOfAnim(this).OfType<DeathAnimation>().Any(a => _soundPlayed);
+            var desc = table.getCardDescriptor(cardId);
+            if (!mute && table.cardHasSound(desc.define, CardSkinData.SOUND_NAME_ON_DEATH))
+            {
+                _soundPlayed = true;
+                _ = table.playSound(desc.define, CardSkinData.SOUND_NAME_ON_DEATH);
+            }
+
             while (anim != null && !anim.update(table, _deltaTime))
                 yield return null;
             Vector3? position = null;
+
             if (table.tryGetServant(cardId, out var servant))//尝试获取死亡的随从的随从UI
             {
                 servant.onDeath.invokeAfterAnim();

@@ -9,7 +9,7 @@ namespace Game.BattleTable
         public HandToFieldAnim(CardDescriptor servantDesc, Vector3 startPosition, Pile fromPile, Pile toPile, int index, bool startVisible)
         {
             _cardDesc = servantDesc;
-            _anim = new MoveToFieldAnim(servantDesc, startPosition, fromPile, toPile, index, -1, startVisible);
+            _anim = new MoveToFieldAnim(servantDesc, startPosition, fromPile, toPile, index, -1, startVisible, false);
         }
         public override IEnumerator update(BattleTableManager table)
         {

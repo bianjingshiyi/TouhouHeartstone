@@ -209,6 +209,10 @@ namespace Game.BattleTable
             var poolRef = getCardPoolReference(define.cardPoolId);
             return cardManager.loadBuffImage(poolRef, define.id);
         }
+        public Task<AudioClip> loadSound(long cardPoolId, string path)
+        {
+            return cardManager.loadSound(getCardPoolReference(cardPoolId), path);
+        }
         #endregion
 
         #region 衍生物&关键词

@@ -1,16 +1,20 @@
 ﻿using System.Collections;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
+using UI;
 using UnityEngine;
 
 namespace Game.BattleTable
 {
     class MoveToFieldAnim : CardMoveAnim
     {
-        public MoveToFieldAnim(CardDescriptor cardDesc, Vector3 startPos, Pile fromPile, Pile toPile, int index, float cardHeight, bool startVisible) : base(cardDesc, startPos, fromPile, toPile, startVisible)
+        public MoveToFieldAnim(CardDescriptor cardDesc, Vector3 startPos, Pile fromPile, Pile toPile, int index, float cardHeight, bool startVisible, bool mute) : 
+            base(cardDesc, startPos, fromPile, toPile, startVisible)
         {
             _position = index;
             _cardHeight = cardHeight;
+            _mute = mute;
         }
         public override IEnumerator startUpdate(BattleTableManager table, float deltaTime)
         {
@@ -20,6 +24,12 @@ namespace Game.BattleTable
 
             // 2. 移除源牌堆的卡牌。
             removeCard(table);
+
+            // 播放音效。
+            if (!_mute)
+            {
+                _ = table.playSound(_cardDesc.define, CardSkinData.SOUND_NAME_ON_ENTER);
+            }
 
             // 3. 创建隐藏的Servant。
             var servant = table.createServant(_cardDesc, _to?.owner, _position);
@@ -133,5 +143,6 @@ namespace Game.BattleTable
         private int _position;
         private float _cardHeight;
         private TableCard _tableCard;
+        private bool _mute;
     }
 }

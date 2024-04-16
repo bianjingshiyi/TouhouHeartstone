@@ -1181,6 +1181,37 @@ namespace Game.BattleTable
             dialog.setWaiting(false);
         }
         #endregion
+
+        #region 音效
+        public bool cardHasSound(CardDefine define, string soundName)
+        {
+            if (define == null)
+                return false;
+            var skin = getCardSkin(define);
+            if (skin == null)
+                return false;
+            var soundRef = skin.getSoundRef(soundName);
+            if (soundRef == null || string.IsNullOrEmpty(soundRef.path))
+                return false;
+            return true;
+        }
+        public async Task<bool> playSound(CardDefine define, string soundName)
+        {
+            if (define == null)
+                return false;
+            var skin = getCardSkin(define);
+            if (skin == null)
+                return false;
+            var soundRef = skin.getSoundRef(soundName);
+            if (soundRef == null || string.IsNullOrEmpty(soundRef.path))
+                return false;
+            var audio = await loadSound(define.cardPoolId, soundRef.path);
+            if (!audio)
+                return false;
+            _main.seManager.playSE(audio);
+            return true;
+        }
+        #endregion
         public Transform getCardTransform(Card card)
         {
             return getCardTransform(card.id);
@@ -1684,7 +1715,11 @@ namespace Game.BattleTable
             if (Vector3.Distance(masterPos, pos) > masterAttackThreshold)
             {
                 var targets = game.findAllCardsInField(c => card.isAttackable(game, c, out _));
-                enterTargetSelectMode(TargetSelectMode.Attack, card, targets);
+                if (targetSelectMode != TargetSelectMode.Attack)
+                {
+                    _ = playSound(getCardDescriptor(card).define, CardSkinData.SOUND_NAME_ON_ATTACK);
+                    enterTargetSelectMode(TargetSelectMode.Attack, card, targets);
+                }
             }
             else
             {
@@ -1878,7 +1913,11 @@ namespace Game.BattleTable
             if (Vector3.Distance(servantPos, pos) > servantAttackThreshold)
             {
                 var targets = game.findAllCardsInField(c => card.isAttackable(game, c, out _));
-                enterTargetSelectMode(TargetSelectMode.Attack, card, targets);
+                if (targetSelectMode != TargetSelectMode.Attack)
+                {
+                    _ = playSound(getCardDescriptor(card).define, CardSkinData.SOUND_NAME_ON_ATTACK);
+                    enterTargetSelectMode(TargetSelectMode.Attack, card, targets);
+                }
             }
             else
             {

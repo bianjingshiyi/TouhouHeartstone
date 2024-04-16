@@ -5,7 +5,9 @@ using System.Linq;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
+using UI;
 using UnityEngine;
+using Card = TouhouCardEngine.Card;
 namespace Game.BattleTable
 {
     using Arg = MoveCardEventDefine;
@@ -172,7 +174,12 @@ namespace Game.BattleTable
                     anim = new MoveToHandAnim(card, startPos, from, to, data.position, startVisible);
                     break;
                 case PILE.FIELD: // 任意牌堆-->战场
-                    anim = new MoveToFieldAnim(card, startPos, from, to, data.position, info.cardHeight, startVisible);
+                    bool mute = table.getAnimGroupOfAnim(this).OfType<MoveCardAnim>().Any(a => a._enterFieldSoundPlayed);
+                    if (!mute && table.cardHasSound(card.define, CardSkinData.SOUND_NAME_ON_ENTER))
+                    {
+                        _enterFieldSoundPlayed = true;
+                    }
+                    anim = new MoveToFieldAnim(card, startPos, from, to, data.position, info.cardHeight, startVisible, mute);
                     break;
                 case PILE.HEAD: // 任意牌堆-->延迟
                     anim = new MoveToHeadAnim(card, startPos, from, to, data.position, startVisible);
@@ -227,7 +234,7 @@ namespace Game.BattleTable
                 case PILE.FIELD: // 任意牌堆-->战场
                     if (_moveAnim is not MoveToFieldAnim)
                     {
-                        anim = new MoveToFieldAnim(card, startPos, from, to, data.position, info.cardHeight, startVisible);
+                        anim = new MoveToFieldAnim(card, startPos, from, to, data.position, info.cardHeight, startVisible, true);
                     }
                     break;
                 case PILE.HEAD: // 任意牌堆-->延迟
@@ -287,7 +294,7 @@ namespace Game.BattleTable
                     anim = new MoveToHandAnim(card, startPos, from, to, data.position, startVisible);
                     break;
                 case PILE.FIELD: // 战场-->任意牌堆
-                    anim = new MoveToFieldAnim(card, startPos, from, to, data.position, info.cardHeight, startVisible);
+                    anim = new MoveToFieldAnim(card, startPos, from, to, data.position, info.cardHeight, startVisible, true);
                     break;
                 case PILE.HEAD: // 延迟-->任意牌堆
                     anim = new MoveToHeadAnim(card, startPos, from, to, data.position, startVisible);
@@ -431,6 +438,7 @@ namespace Game.BattleTable
         private bool _breakDurationEvaluated;
         private int _movingCardId;
         private CardMoveAnim _moveAnim;
+        private bool _enterFieldSoundPlayed;
         #endregion
 
         #region 内嵌类
