@@ -222,10 +222,7 @@ namespace Controllers
             {
                 //新建皮肤
                 _curCardSkin = game.card.createSkin(curCardPoolId, _cardDefine.id);
-                foreach (var soundName in _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames)
-                {
-                    _curCardSkin.addSoundRef(new SkinSoundRef(soundName, null));
-                }
+                initSkinSoundRefs(_curCardSkin);
                 _cardSkins.Add(_curCardSkin);
                 updateSkinNames();
             }
@@ -396,12 +393,9 @@ namespace Controllers
         }
         private async void onSoundPlayButtonClickedCallback(int index)
         {
-            foreach (var soundName in _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames)
-            {
-                if (_curCardSkin.getSoundRef(soundName) == null)
-                    _curCardSkin.addSoundRef(new SkinSoundRef(soundName, null));
-            }
-            AudioClip audio = await game.card.loadSound(getCurrentCardPoolRef(), _curCardSkin.getAllSoundRefs()[index].path);
+            initSkinSoundRefs(_curCardSkin);
+            var soundRef = getCurrentSoundRef(index);
+            AudioClip audio = await game.card.loadSound(getCurrentCardPoolRef(), soundRef.path);
             if (audio != null)
             {
                 game.seManager.playSE(audio);
@@ -409,8 +403,7 @@ namespace Controllers
         }
         private async void onSoundDeleteButtonClickedCallback(int index)
         {
-            var soundRefs = _curCardSkin.getAllSoundRefs();
-            var soundRef = soundRefs[index];
+            var soundRef = getCurrentSoundRef(index);
             soundRef.path = null;
             await updateSoundItems();
         }
@@ -857,10 +850,7 @@ namespace Controllers
             if (skins.Length < 1)
             {
                 CardSkinData skin = game.card.createSkin(curCardPoolId, _cardDefine.id);
-                foreach (var soundName in _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames)
-                {
-                    _curCardSkin.addSoundRef(new SkinSoundRef(soundName, null));
-                }
+                initSkinSoundRefs(skin);
                 skins = new CardSkinData[] { skin };
                 _cardSkins.Add(skin);
             }
@@ -1017,7 +1007,7 @@ namespace Controllers
         /// </summary>
         private async Task updateSoundItems()
         {
-            var skinNames = _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames;
+            var skinNames = getCurrentSoundRefNames();
             var uiNames = _cardDefine.type == DEFINE.SERVANT ? _servantSoundNames : _defaultSoundNames;
             var viewDatas = new (string name, Sprite sprite)[skinNames.Length];
             for (int i = 0; i < skinNames.Length; i++)
@@ -1193,6 +1183,30 @@ namespace Controllers
         }
         #endregion
 
+        private void initSkinSoundRefs(CardSkinData skin)
+        {
+            foreach (var soundName in getCurrentSoundRefNames())
+            {
+                if (skin.getSoundRef(soundName) == null)
+                    skin.addSoundRef(new SkinSoundRef(soundName, null));
+            }
+        }
+        private SkinSoundRef getCurrentSoundRef(int soundIndex)
+        {
+            var skinSoundNames = getCurrentSoundRefNames();
+            var soundName = skinSoundNames[soundIndex];
+            var soundRef = _curCardSkin.getSoundRef(soundName);
+            if (soundRef == null)
+            {
+                soundRef = new SkinSoundRef(soundName, null);
+                _curCardSkin.addSoundRef(soundRef);
+            }
+            return soundRef;
+        }
+        private string[] getCurrentSoundRefNames()
+        {
+            return _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames;
+        }
         private async Task selectSound(int soundIndex)
         {
             AudioClip audio = null;
@@ -1209,30 +1223,30 @@ namespace Controllers
             if (audio == null)
                 return;
             var newPath = await game.card.saveSound(game.editor.currentCardPoolId, audio);
-            if (!File.Exists(newPath))
+            var directory = game.card.getCardPoolSoundsDirectory(game.card.getLocalCardPoolInfo(game.editor.currentCardPoolId));
+            var fullPath = Path.Combine(directory, newPath);
+            if (!File.Exists(fullPath))
             {
                 var title = game.lang._(StringTable.ERROR);
                 var desc = game.lang._(CardManager.SOUND_COMPRESS_FAILED_FILE_NOT_FOUND);
                 game.ui.dialog.ShowConfirm(title, desc);
                 return;
             }
-            var fileInfo = new FileInfo(newPath);
+            var fileInfo = new FileInfo(fullPath);
             if (fileInfo.Length > game.card.maxSoundSize)
             {
                 var title = game.lang._(StringTable.ERROR);
                 var desc = game.lang._(CardManager.SOUND_COMPRESSED_SIZE_OUT_OF_LIMIT, game.card.maxSoundSize / 1024, fileInfo.Length / 1024);
                 game.ui.dialog.ShowConfirm(title, desc);
 
-                File.Delete(newPath);
+                File.Delete(fullPath);
                 return;
             }
             markUnsaved();
-            foreach (var soundName in _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames)
-            {
-                if (_curCardSkin.getSoundRef(soundName) == null)
-                    _curCardSkin.addSoundRef(new SkinSoundRef(soundName, null));
-            }
-            _curCardSkin.getAllSoundRefs()[soundIndex].path = newPath;
+
+            initSkinSoundRefs(_curCardSkin);
+            var soundRef = getCurrentSoundRef(soundIndex);
+            soundRef.path = newPath;
             await updateSoundItems();
         }
 

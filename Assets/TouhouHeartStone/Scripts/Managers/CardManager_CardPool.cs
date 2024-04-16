@@ -375,6 +375,25 @@ namespace Game
             return cacheFiles;
         }
         /// <summary>
+        /// 根据卡池引用获取卡池所在目录。
+        /// </summary>
+        /// <param name="cardPoolRef">卡池引用。</param>
+        /// <returns>卡池所在目录。</returns>
+        public string getCardPoolDirectory(ICardPoolReference cardPoolRef)
+        {
+            if (cardPoolRef == null)
+                return null;
+            // 正在创建的卡池没有路径，设置为默认外部卡池路径。
+            if (isCreatingCardPool(cardPoolRef))
+            {
+                return Path.Combine(Application.persistentDataPath, _cardPoolDirName);
+            }
+            var path = getCardPoolPath(cardPoolRef);
+            if (path == null)
+                return null;
+            return Path.GetDirectoryName(path);
+        }
+        /// <summary>
         /// 根据卡池引用获取卡池路径（结果为第一个符合ID的卡池）。
         /// </summary>
         /// <param name="cardPoolRef">卡池引用。</param>

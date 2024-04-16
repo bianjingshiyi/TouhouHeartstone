@@ -285,8 +285,7 @@ namespace Game
         }
         public string getCardPoolTexturesDirectory(CardPoolInfo cardPoolInfo)
         {
-            var path = getCardPoolPath(cardPoolInfo);
-            var cardPoolDir = Path.GetDirectoryName(path);
+            var cardPoolDir = getCardPoolDirectory(cardPoolInfo);
             if (!string.IsNullOrEmpty(cardPoolInfo.texturesDir))
             {
                 return Path.Combine(cardPoolDir, cardPoolInfo.texturesDir);
@@ -635,14 +634,21 @@ namespace Game
         }
         private string getFullImagePath(ICardPoolReference cardPoolRef, string relativePath)
         {
+            CardPoolInfo cardPool;
+            if (isCreatingCardPool(cardPoolRef))
+                cardPool = _creatingCardPoolInfo;
+            else
+                cardPool = getCardPoolInfo(cardPoolRef);
             // 卡池信息不存在。
-            if (getCardPoolInfo(cardPoolRef) is not CardPoolInfo cardPool || game.card.getCardPoolPath(cardPool) is not string cardPoolPath)
+            if (cardPool == null)
                 return null;
 
             // 卡池路径是流文件路径。
-            if (cardPoolPath.isStreamingAssetsPath(out _) && !relativePath.isStreamingAssetsPath(out _) && !relativePath.isResourcesPath(out _))
-                return $"sa:{Path.Combine(textureDirName, relativePath)}";
-
+            if (game.card.getCardPoolPath(cardPool) is string cardPoolPath)
+            {
+                if (cardPoolPath.isStreamingAssetsPath(out _) && !relativePath.isStreamingAssetsPath(out _) && !relativePath.isResourcesPath(out _))
+                    return $"sa:{Path.Combine(textureDirName, relativePath)}";
+            }
             //绝对路径
             return Path.Combine(getCardPoolTexturesDirectory(cardPool), relativePath);
         }

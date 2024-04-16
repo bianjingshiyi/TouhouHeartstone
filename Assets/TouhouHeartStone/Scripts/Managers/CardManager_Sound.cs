@@ -50,12 +50,11 @@ namespace Game
                 await game.fileManager.saveFile(filePath, bytes);
                 Debug.Log($"另存为音效{fileName}成功");
             }
-            return filePath;
+            return fileName;
         }
         public string getCardPoolSoundsDirectory(CardPoolInfo cardPoolInfo)
         {
-            var path = getCardPoolPath(cardPoolInfo);
-            var cardPoolDir = Path.GetDirectoryName(path);
+            string cardPoolDir = getCardPoolDirectory(cardPoolInfo);
             if (!string.IsNullOrEmpty(cardPoolInfo.soundsDir))
             {
                 return Path.Combine(cardPoolDir, cardPoolInfo.soundsDir);
@@ -131,6 +130,8 @@ namespace Game
                 return spr;
             }
             var audioClip = await loadSound(cardPoolRef, path);
+            if (!audioClip)
+                return null;
             var tex = SEManager.GenerateWaveTexture(audioClip, lineWeight: 24);
             spr = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
             spr.name = audioClip.name;
@@ -327,14 +328,21 @@ namespace Game
 
         private string getFullSoundPath(ICardPoolReference cardPoolRef, string relativePath)
         {
+            CardPoolInfo cardPool;
+            if (isCreatingCardPool(cardPoolRef))
+                cardPool = _creatingCardPoolInfo;
+            else
+                cardPool = getCardPoolInfo(cardPoolRef);
             // 卡池信息不存在。
-            if (getCardPoolInfo(cardPoolRef) is not CardPoolInfo cardPool || game.card.getCardPoolPath(cardPool) is not string cardPoolPath)
+            if (cardPool == null)
                 return null;
 
             // 卡池路径是流文件路径。
-            if (cardPoolPath.isStreamingAssetsPath(out _) && !relativePath.isStreamingAssetsPath(out _) && !relativePath.isResourcesPath(out _))
-                return $"sa:{Path.Combine(soundDirName, relativePath)}";
-
+            if (game.card.getCardPoolPath(cardPool) is string cardPoolPath)
+            {
+                if (cardPoolPath.isStreamingAssetsPath(out _) && !relativePath.isStreamingAssetsPath(out _) && !relativePath.isResourcesPath(out _))
+                    return $"sa:{Path.Combine(soundDirName, relativePath)}";
+            }
             //绝对路径
             return Path.Combine(getCardPoolSoundsDirectory(cardPool), relativePath);
         }
