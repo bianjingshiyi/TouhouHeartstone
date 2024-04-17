@@ -78,6 +78,8 @@ namespace UI
                     return servantCardSkinSoundNames;
                 case DEFINE.ITEM:
                     return itemCardSkinSoundNames;
+                case DEFINE.MASTER:
+                    return masterCardSkinSoundNames;
                 default:
                     return defaultCardSkinSoundNames;
             }
@@ -195,5 +197,6 @@ namespace UI
         public static string[] defaultCardSkinSoundNames = new string[] { SOUND_NAME_ON_USE };
         public static string[] servantCardSkinSoundNames = new string[] { SOUND_NAME_ON_ENTER, SOUND_NAME_ON_ATTACK, SOUND_NAME_ON_DEATH };
         public static string[] itemCardSkinSoundNames = new string[] { SOUND_NAME_ON_EQUIP, SOUND_NAME_ON_DEATH };
+        public static string[] masterCardSkinSoundNames = new string[] { SOUND_NAME_ON_ATTACK, SOUND_NAME_ON_DEATH };
     }
 }
