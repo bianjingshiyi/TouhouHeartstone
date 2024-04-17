@@ -154,6 +154,8 @@ namespace Game.BattleTable
         }
         public CardSkinData getCardSkin(CardDefine define)
         {
+            if (define == null)
+                return null;
             CardSkinData skin = getCardSkin(define.cardPoolId, define.id);
             if (skin != null)
                 return skin;

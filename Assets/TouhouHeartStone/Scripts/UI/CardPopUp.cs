@@ -12,7 +12,7 @@ namespace UI
         #region 公有方法
         public async Task show(Vector3 worldPosition, CardDefine tokenDefine, CardSkinData skin, CardManager cardManager, Camera camera, string[] keywords)
         {
-            if (tokenDefine != null)
+            if (tokenDefine != null && skin != null)
             {
                 await setTokenCardDefine(tokenDefine, skin, cardManager);
             }
