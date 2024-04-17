@@ -64,6 +64,7 @@ namespace UI
             {
                 config.Config.Language = langItemList[val];
                 config.MarkChange();
+                updatePageTabs();
             });
 
             langDropdown.ClearOptions();
@@ -86,14 +87,13 @@ namespace UI
             });
             _nodeSnapToggle.Toggle.onValueChanged.AddListener(onNodeSnapToggleValueChanged);
         }
-        private void OnEnable()
+        protected override void onDisplay()
         {
             _isUpdating = true;
             _VolumeGameOptionItemSlider.Slider.value = config.Config.Volume;
             _BGMGameOptionItemSlider.Slider.value = config.Config.BGM;
             _SEGameOptionItemSlider.Slider.value = config.Config.SE;
             _customSEGameOptionItemSlider.Slider.value = config.Config.CustomSE;
-
             _FullScreenGameOptionItemToggle.Toggle.isOn = config.Config.FullScreen;
             if (config.Config.CacheSize < 0)
             {
@@ -115,6 +115,8 @@ namespace UI
             _nodeSnapToggle.Toggle.isOn = config.Config.NodeSnap;
             updateLabels();
 
+            resetPage();
+
             _isUpdating = false;
         }
         #endregion
@@ -133,7 +135,44 @@ namespace UI
             config.Config.NodeSnap = value;
             config.MarkChange();
         }
+        private void onPageTabClickCallback(SettingPageTab tab)
+        {
+            var index = _pageTabs.indexOf(tab);
+            setPage(index);
+        }
         #endregion
+        private void updatePageTabs()
+        {
+            _pageTabs.updateList(pageNames.Length, (i, rect) =>
+            {
+                var settingPageTab = rect.GetComponent<SettingPageTab>();
+                settingPageTab.setName(main.lang._(pageNames[i]));
+                settingPageTab.setSelected(i == _selectedPage);
+            },
+            rect =>
+            {
+                var settingPageTab = rect.GetComponent<SettingPageTab>();
+                settingPageTab.onClick += onPageTabClickCallback;
+            },
+            rect =>
+            {
+                var settingPageTab = rect.GetComponent<SettingPageTab>();
+                settingPageTab.onClick -= onPageTabClickCallback;
+            });
+        }
+        private void resetPage()
+        {
+            setPage(0);
+        }
+        private void setPage(int index)
+        {
+            _selectedPage = index;
+            updatePageTabs();
+            for (int i = 0; i < _pageContents.Length; i++)
+            {
+                _pageContents[i].SetActive(i == index);
+            }
+        }
         private void updateLabels()
         {
             _VolumeGameOptionItemSlider.DescText.text = $"{System.Math.Floor(config.Config.Volume * 100)}%";
@@ -164,6 +203,14 @@ namespace UI
         [TranslateMsg("设置界面-删除缓存后提示")]
         const string SETTING_CACHE_CLEARED = "缓存文件已清除";
 
+
+        [TranslateMsg("设置界面-页面名称")]
+        const string SETTING_PAGE_NAME_SYSTEM = "系统";
+        [TranslateMsg("设置界面-页面名称")]
+        const string SETTING_PAGE_NAME_AUDIO = "音频";
+        [TranslateMsg("设置界面-页面名称")]
+        const string SETTING_PAGE_NAME_EDITOR = "编辑器";
+
         MainManager main => this.findInstance<MainManager>();
         ConfigManager config => this.findInstance<ConfigManager>();
         LangManager lang => this.findInstance<LangManager>();
@@ -171,7 +218,14 @@ namespace UI
         List<string> langItemList = new List<string>();
         Dropdown langDropdown => _LanguageGameOptionItemDropdown.DropdownLight.asDropdown;
 
+        private static readonly string[] pageNames =
+        {
+            SETTING_PAGE_NAME_SYSTEM,
+            SETTING_PAGE_NAME_AUDIO,
+            SETTING_PAGE_NAME_EDITOR
+        };
         bool _isUpdating = false;
+        private int _selectedPage;
         [SerializeField()]
         private GameOptionItemDropdown _LanguageGameOptionItemDropdown;
         [SerializeField()]
@@ -192,6 +246,13 @@ namespace UI
         private Button _clearCacheButton;
         [SerializeField]
         private GameOptionItemToggle _nodeSnapToggle;
+
+        [Header("Pages")]
+        [SerializeField]
+        private GameObject[] _pageContents;
+        [SerializeField]
+        private ElementList _pageTabs;
+
         #endregion
     }
 }
