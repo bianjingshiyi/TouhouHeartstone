@@ -15,6 +15,7 @@ namespace Game
             Config.Volume = PlayerPrefs.HasKey(keyVolume) ? PlayerPrefs.GetFloat(keyVolume) : 1;
             Config.BGM = PlayerPrefs.HasKey(keyBGM) ? PlayerPrefs.GetFloat(keyBGM) : 1;
             Config.SE = PlayerPrefs.HasKey(keySE) ? PlayerPrefs.GetFloat(keySE) : 1;
+            Config.CustomSE = PlayerPrefs.HasKey(keyCustomSE) ? PlayerPrefs.GetFloat(keyCustomSE) : 1;
             Config.FullScreen = (PlayerPrefs.HasKey(keyFullScreen) ? PlayerPrefs.GetInt(keyFullScreen, 0) : 0) == 1;
             Config.Language = PlayerPrefs.HasKey(keyLanguage) ? PlayerPrefs.GetString(keyLanguage) : lang.getSystemLanguage();
             Config.CacheSize = PlayerPrefs.HasKey(keyCache) ? PlayerPrefs.GetFloat(keyCache) : 0.5f;
@@ -26,6 +27,7 @@ namespace Game
             PlayerPrefs.SetFloat(keyVolume, Config.Volume);
             PlayerPrefs.SetFloat(keyBGM, Config.BGM);
             PlayerPrefs.SetFloat(keySE, Config.SE);
+            PlayerPrefs.SetFloat(keyCustomSE, Config.CustomSE);
             PlayerPrefs.SetInt(keyFullScreen, Config.FullScreen ? 1 : 0);
             PlayerPrefs.SetString(keyLanguage, Config.Language);
             PlayerPrefs.SetFloat(keyCache, Config.CacheSize);
@@ -48,6 +50,7 @@ namespace Game
             setVol(keyVolume, Config.Volume);
             setVol(keySE, Config.SE);
             setVol(keyBGM, Config.BGM);
+            setVol(keyCustomSE, Config.CustomSE);
         }
         private void setVol(string key, float vol)
         {
@@ -70,6 +73,7 @@ namespace Game
         const string keyVolume = "Volume";
         const string keyBGM = "BGM";
         const string keySE = "SE";
+        const string keyCustomSE = "CustomSE";
         const string keyFullScreen = "FullScreen";
         const string keyLanguage = "Language";
         const string keyCache = "Cache Size";
@@ -86,6 +90,7 @@ namespace Game
             public float Volume;
             public float BGM;
             public float SE;
+            public float CustomSE;
             public bool FullScreen;
             public string Language;
             public float CacheSize;

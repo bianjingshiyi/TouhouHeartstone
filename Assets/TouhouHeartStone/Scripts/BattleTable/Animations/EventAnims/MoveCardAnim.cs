@@ -175,7 +175,7 @@ namespace Game.BattleTable
                     break;
                 case PILE.FIELD: // 任意牌堆-->战场
                     bool mute = table.getAnimGroupOfAnim(this).OfType<MoveCardAnim>().Any(a => a._enterFieldSoundPlayed);
-                    if (!mute && table.cardHasSound(card.define, CardSkinData.SOUND_NAME_ON_ENTER))
+                    if (!mute && table.cardHasCustomSound(card.define, CardSkinData.SOUND_NAME_ON_ENTER))
                     {
                         _enterFieldSoundPlayed = true;
                     }

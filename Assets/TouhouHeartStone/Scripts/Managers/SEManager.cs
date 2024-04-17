@@ -19,17 +19,11 @@ namespace Game
         }
         public void playSE(AudioClip clip, float pitch = 1, bool loop = false)
         {
-            if (clip == null)
-                return;
-            var source = Instantiate(_seSourceTemplate.gameObject, _seSourceRoot).GetComponent<SESource>();
-            source.gameObject.SetActive(true);
-            source.name = clip.name;
-            source.clip = clip;
-            source.loop = loop;
-            source.pitch = pitch;
-            source.play();
-            source.onFinished += onSourceFinished;
-            _seSourceList.Add(source);
+            createSource(_seSourceTemplate, clip, pitch, loop);
+        }
+        public void playCustomSE(AudioClip clip, float pitch = 1, bool loop = false)
+        {
+            createSource(_customSourceTemplate, clip, pitch, loop);
         }
         public void stopSE(AudioClip clip)
         {
@@ -88,6 +82,20 @@ namespace Game
             removeSource(source);
         }
         #endregion
+        public void createSource(SESource template, AudioClip clip, float pitch = 1, bool loop = false)
+        {
+            if (clip == null)
+                return;
+            var source = Instantiate(template.gameObject, _seSourceRoot).GetComponent<SESource>();
+            source.gameObject.SetActive(true);
+            source.name = clip.name;
+            source.clip = clip;
+            source.loop = loop;
+            source.pitch = pitch;
+            source.play();
+            source.onFinished += onSourceFinished;
+            _seSourceList.Add(source);
+        }
         private void removeSource(SESource source)
         {
             _seSourceList.Remove(source);
@@ -100,6 +108,8 @@ namespace Game
         Transform _seSourceRoot;
         [SerializeField]
         SESource _seSourceTemplate;
+        [SerializeField]
+        SESource _customSourceTemplate;
         [SerializeField]
         List<SESource> _seSourceList;
         [SerializeField]

@@ -1183,7 +1183,7 @@ namespace Game.BattleTable
         #endregion
 
         #region 音效
-        public bool cardHasSound(CardDefine define, string soundName)
+        public bool cardHasCustomSound(CardDefine define, string soundName)
         {
             if (define == null)
                 return false;
@@ -1195,7 +1195,7 @@ namespace Game.BattleTable
                 return false;
             return true;
         }
-        public async Task<bool> playSound(CardDefine define, string soundName)
+        public async Task<bool> playCustomSound(CardDefine define, string soundName)
         {
             if (define == null)
                 return false;
@@ -1208,7 +1208,7 @@ namespace Game.BattleTable
             var audio = await loadSound(define.cardPoolId, soundRef.path);
             if (!audio)
                 return false;
-            _main.seManager.playSE(audio);
+            _main.seManager.playCustomSE(audio);
             return true;
         }
         #endregion
@@ -1717,7 +1717,7 @@ namespace Game.BattleTable
                 var targets = game.findAllCardsInField(c => card.isAttackable(game, c, out _));
                 if (targetSelectMode != TargetSelectMode.Attack)
                 {
-                    _ = playSound(getCardDescriptor(card).define, CardSkinData.SOUND_NAME_ON_ATTACK);
+                    _ = playCustomSound(getCardDescriptor(card).define, CardSkinData.SOUND_NAME_ON_ATTACK);
                     enterTargetSelectMode(TargetSelectMode.Attack, card, targets);
                 }
             }
@@ -1915,7 +1915,7 @@ namespace Game.BattleTable
                 var targets = game.findAllCardsInField(c => card.isAttackable(game, c, out _));
                 if (targetSelectMode != TargetSelectMode.Attack)
                 {
-                    _ = playSound(getCardDescriptor(card).define, CardSkinData.SOUND_NAME_ON_ATTACK);
+                    _ = playCustomSound(getCardDescriptor(card).define, CardSkinData.SOUND_NAME_ON_ATTACK);
                     enterTargetSelectMode(TargetSelectMode.Attack, card, targets);
                 }
             }

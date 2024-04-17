@@ -28,7 +28,7 @@ namespace Game.BattleTable
             // 播放音效。
             if (!_mute)
             {
-                _ = table.playSound(_cardDesc.define, CardSkinData.SOUND_NAME_ON_ENTER);
+                _ = table.playCustomSound(_cardDesc.define, CardSkinData.SOUND_NAME_ON_ENTER);
             }
 
             // 3. 创建隐藏的Servant。

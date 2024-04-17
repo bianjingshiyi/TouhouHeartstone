@@ -45,10 +45,10 @@ namespace Game.BattleTable
 
             bool mute = table.getAnimGroupOfAnim(this).OfType<DeathAnimation>().Any(a => _soundPlayed);
             var desc = table.getCardDescriptor(cardId);
-            if (!mute && table.cardHasSound(desc.define, CardSkinData.SOUND_NAME_ON_DEATH))
+            if (!mute && table.cardHasCustomSound(desc.define, CardSkinData.SOUND_NAME_ON_DEATH))
             {
                 _soundPlayed = true;
-                _ = table.playSound(desc.define, CardSkinData.SOUND_NAME_ON_DEATH);
+                _ = table.playCustomSound(desc.define, CardSkinData.SOUND_NAME_ON_DEATH);
             }
 
             while (anim != null && !anim.update(table, _deltaTime))

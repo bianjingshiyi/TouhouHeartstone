@@ -33,6 +33,12 @@ namespace UI
                 updateLabels();
                 config.MarkChange();
             });
+            _customSEGameOptionItemSlider.Slider.onValueChanged.AddListener((vol) =>
+            {
+                config.Config.CustomSE = vol;
+                updateLabels();
+                config.MarkChange();
+            });
             _cacheSlider.Slider.onValueChanged.AddListener((cache) =>
             {
                 if (cache == 20)
@@ -86,6 +92,7 @@ namespace UI
             _VolumeGameOptionItemSlider.Slider.value = config.Config.Volume;
             _BGMGameOptionItemSlider.Slider.value = config.Config.BGM;
             _SEGameOptionItemSlider.Slider.value = config.Config.SE;
+            _customSEGameOptionItemSlider.Slider.value = config.Config.CustomSE;
 
             _FullScreenGameOptionItemToggle.Toggle.isOn = config.Config.FullScreen;
             if (config.Config.CacheSize < 0)
@@ -132,6 +139,7 @@ namespace UI
             _VolumeGameOptionItemSlider.DescText.text = $"{System.Math.Floor(config.Config.Volume * 100)}%";
             _BGMGameOptionItemSlider.DescText.text = $"{System.Math.Floor(config.Config.BGM * 100)}%";
             _SEGameOptionItemSlider.DescText.text = $"{System.Math.Floor(config.Config.SE * 100)}%";
+            _customSEGameOptionItemSlider.DescText.text = $"{System.Math.Floor(config.Config.CustomSE * 100)}%";
             if (config.Config.CacheSize < 0)
             {
                 _cacheSlider.DescText.text = lang._(OPTIONS_CACHE_UNLIMITED);
@@ -172,6 +180,8 @@ namespace UI
         private GameOptionItemSlider _BGMGameOptionItemSlider;
         [SerializeField()]
         private GameOptionItemSlider _SEGameOptionItemSlider;
+        [SerializeField()]
+        private GameOptionItemSlider _customSEGameOptionItemSlider;
         [SerializeField()]
         private GameOptionItemToggle _FullScreenGameOptionItemToggle;
         [SerializeField()]
