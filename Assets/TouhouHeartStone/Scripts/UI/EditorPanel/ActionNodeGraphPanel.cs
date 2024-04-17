@@ -590,10 +590,11 @@ namespace UI
                 _isTouchZooming = true;
                 var _currentTouch1 = Input.GetTouch(0);
                 var _currentTouch2 = Input.GetTouch(1);
-                Vector2 _perviousPosition1 = _perviousTouch1.position;
-                Vector2 _perviousPosition2 = _perviousTouch2.position;
-                Vector2 _currentPosition1 = _currentTouch1.position;
-                Vector2 _currentPosition2 = _currentTouch2.position;
+                var camera = Camera.main;
+                Vector2 _perviousPosition1 = camera.ScreenToWorldPoint(_perviousTouch1.position);
+                Vector2 _perviousPosition2 = camera.ScreenToWorldPoint(_perviousTouch2.position);
+                Vector2 _currentPosition1 = camera.ScreenToWorldPoint(_currentTouch1.position);
+                Vector2 _currentPosition2 = camera.ScreenToWorldPoint(_currentTouch2.position);
 
                 float leng1 = Vector2.Distance(_perviousPosition1, _perviousPosition2);
                 float leng2 = Vector2.Distance(_currentPosition1, _currentPosition2);
