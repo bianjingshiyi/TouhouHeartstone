@@ -1438,9 +1438,18 @@ namespace Game.BattleTable
                 return;
 
             if (list.isZoomIn)
+            {
+                if (_hoveredHand == hand)
+                {
+                    stopHover();
+                }
                 zoomHand(false);
+            }
             else
+            {
+                startHover(hand);
                 zoomHand(true);
+            }
         }
         private void onHandItemBeginDragCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
