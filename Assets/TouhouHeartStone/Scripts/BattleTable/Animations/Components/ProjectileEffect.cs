@@ -27,9 +27,9 @@ namespace Game.Animations
             var offset = _offsetCurve.Evaluate(t) * distance.magnitude;
 
             var targetWorldPos = sourcePos + axis * fly + offsetAxis * offset;
-            if (_projectileRoot)
+            if (_positionRoot)
             {
-                _projectileRoot.localPosition = _projectileRoot.parent.InverseTransformPoint(targetWorldPos) + rootObj.transform.localPosition;
+                _positionRoot.localPosition = _positionRoot.parent.InverseTransformPoint(targetWorldPos) + rootObj.transform.localPosition;
             }
             else
             {
@@ -37,7 +37,16 @@ namespace Game.Animations
             }
 
             if (_faceToTarget)
-                transform.forward = distance.normalized;
+            {
+                if (_rotationRoot)
+                {
+                    _rotationRoot.localRotation = Quaternion.LookRotation(distance);
+                }
+                else
+                {
+                    transform.forward = distance.normalized;
+                }
+            }
         }
 
         [Header("Projectile")]
@@ -46,7 +55,9 @@ namespace Game.Animations
         [SerializeField]
         private AnimationCurve _offsetCurve = AnimationCurve.Constant(0, 1, 0);
         [SerializeField]
-        private Transform _projectileRoot;
+        private Transform _positionRoot;
+        [SerializeField]
+        private Transform _rotationRoot;
         [SerializeField]
         private bool _faceToTarget = true;
     }

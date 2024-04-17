@@ -189,7 +189,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _projectileRoot: {fileID: 4070782790279059538}
+  _positionRoot: {fileID: 753446367950089483}
+  _rotationRoot: {fileID: 0}
   _faceToTarget: 1
 --- !u!114 &3842044945674065406
 MonoBehaviour:
