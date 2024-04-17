@@ -240,7 +240,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_TRIGGER_EVENT, isOut: true)][NodeParamEventType(typeof(EffectTriggerEventDefine))] EventArg outEvent)
         {
             if (effect == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             if (ignoreTriggerCondition)
                 outEvent = await EffectTriggerEventDefine.doEvent(game, card, buff, effect, targets: targets);
             else

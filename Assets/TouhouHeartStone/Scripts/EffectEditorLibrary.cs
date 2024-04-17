@@ -404,7 +404,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_POSITION)] int position = -1)
         {
             if (card == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return false;
+            }
             var arg = await card.moveCardFromPileToPile(game, fromPile, toPile, position);
             setOutParam(flow, node, nameof(outEvent), arg);
             return arg != null && arg.getVar<bool>(MoveCardEventDefine.VAR_SUCCESS);
@@ -701,11 +704,11 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(SetCardPropEventDefine))] EventArg outEvent)
         {
-            if ((player != null) && player.getSkill().isUsed(game))
-            {
-                outEvent = await player.getSkill().setUsed(game, false);
-                setOutParam(flow, node, nameof(outEvent), outEvent);
-            }
+            if (player == null || !player.getSkill().isUsed(game))
+                setOutParam(flow, node, nameof(outEvent), null);
+
+            outEvent = await player.getSkill().setUsed(game, false);
+            setOutParam(flow, node, nameof(outEvent), outEvent);
         }
         /// <summary>
         /// 获取道具
@@ -739,7 +742,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(SetCardPropEventDefine))] EventArg outEvent)
         {
             if (player == null || player.getItem() == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             outEvent = await player.getItem().kill(game);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
@@ -797,7 +803,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_SET_GEM_EVENT, isOut: true)][NodeParamEventType(typeof(SetGemEventDefine))] EventArg outEvent)
         {
             if (player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             outEvent = await player.setGem(game, count);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
@@ -813,7 +822,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_SET_GEM_EVENT, isOut: true)][NodeParamEventType(typeof(SetGemEventDefine))] EventArg outEvent)
         {
             if (player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             outEvent = await player.setGem(game, player.getGem() + count);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
@@ -829,7 +841,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_SET_MAX_GEM_EVENT, isOut: true)][NodeParamEventType(typeof(SetMaxGemEventDefine))] EventArg outEvent)
         {
             if (player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             outEvent = await player.setMaxGem(game, count);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
@@ -845,7 +860,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_SET_MAX_GEM_EVENT, isOut: true)][NodeParamEventType(typeof(SetMaxGemEventDefine))] EventArg outEvent)
         {
             if (player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             outEvent = await player.setMaxGem(game, player.getMaxGem() + count);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
@@ -902,7 +920,12 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_FAITH_DUEL_EVENT, isOut: true)][NodeParamEventType(typeof(RevealDuelEventDefine))] EventArg outEvent)
         {
             if (player == null)
+            {
+                setOutParam(flow, node, nameof(selfCard), null);
+                setOutParam(flow, node, nameof(opponentCard), null);
+                setOutParam(flow, node, nameof(outEvent), null);
                 return false;
+            }
 
             bool filterFunc(Card c)
             {
@@ -1031,7 +1054,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_FATIGUE_EVENT, isOut: true)][NodeParamEventType(typeof(FatigueEventDefine))] EventArg outEvent)
         {
             if (game == null || player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             outEvent = await player.fatigue(game);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
@@ -1253,7 +1279,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_MASS_ADD_BUFF_EVENT, isOut: true)][NodeParamEventType(typeof(MassAddBuffEventDefine))] EventArg outEvent)
         {
             if (cards == null || buffDefine == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return Array.Empty<Buff>();
+            }
             outEvent = await cards.addBuffs(game, buffDefine);
             setOutParam(flow, node, nameof(outEvent), outEvent);
             return outEvent.getVar<Buff[]>(MassAddBuffEventDefine.VAR_BUFF);
@@ -1268,7 +1297,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_REMOVE_BUFF_EVENT, isOut: true)][NodeParamEventType(typeof(RemoveBuffEventDefine))] EventArg outEvent)
         {
             if (card == null || buff == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return false;
+            }
 
             outEvent = await card.removeBuff(game, buff);
             setOutParam(flow, node, nameof(outEvent), outEvent);
@@ -1294,7 +1326,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_BUFF_PROP_CHANGED_EVENT, isOut: true)][NodeParamEventType(typeof(BuffPropertyChangeEventDefine))] EventArg[] outEvent)
         {
             if (buffs == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
 
             var list = new List<EventArg>();
             for (int i = 0; i < buffs.Length; i++)
@@ -1352,7 +1387,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_BUFF_PROP_VISIBILITY_CHANGED_EVENT, isOut: true)][NodeParamEventType(typeof(ChangeBuffPropVisibilityEventDefine))] EventArg[] outEvent)
         {
             if (buffs == null || player == null || propName == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             var list = new List<EventArg>();
             foreach (var buff in buffs)
             {
@@ -1437,9 +1475,15 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_MASS_ENTER_FIELD_EVENT, isOut: true)][NodeParamEventType(typeof(MassEnterFieldEventDefine))] EventArg outEvent)
         {
             if (cards == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return Array.Empty<Card>();
+            }
             if (player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return cards;
+            }
             outEvent = await cards.moveToField(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
             return outEvent?.getVar<Card[]>(MassEnterFieldEventDefine.VAR_MOVED_CARDS) ?? Array.Empty<Card>();
@@ -1457,9 +1501,15 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_MASS_RETURN_HAND_EVENT, isOut: true)][NodeParamEventType(typeof(MassReturnHandEventDefine))] EventArg outEvent)
         {
             if (cards == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return Array.Empty<Card>();
+            }
             if (player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return cards;
+            }
             outEvent = await cards.returnToHand(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
             return outEvent?.getVar<Card[]>(MassEnterFieldEventDefine.VAR_MOVED_CARDS) ?? Array.Empty<Card>();
@@ -1478,9 +1528,15 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_MASS_SHUFFLE_TO_DECK_EVENT, isOut: true)][NodeParamEventType(typeof(MassShuffleToDeckEventDefine))] EventArg outEvent)
         {
             if (cards == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return Array.Empty<Card>();
+            }
             if (player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return cards;
+            }
             outEvent = await cards.moveToDeck(game, player, top);
             setOutParam(flow, node, nameof(outEvent), outEvent);
             return outEvent?.getVar<Card[]>(MassEnterFieldEventDefine.VAR_MOVED_CARDS) ?? Array.Empty<Card>();
@@ -1498,10 +1554,15 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_MASS_MOVE_CARD_EVENT, isOut: true)][NodeParamEventType(typeof(MassMoveCardEventDefine))] EventArg outEvent)
         {
             if (cards == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return Array.Empty<Card>();
+            }
             if (player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return cards;
-
+            }
             outEvent = await cards.moveToGrave(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
             return outEvent?.getVar<Card[]>(MassEnterFieldEventDefine.VAR_MOVED_CARDS) ?? Array.Empty<Card>();
@@ -1519,9 +1580,15 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_MASS_MOVE_TO_HEAD_EVENT, isOut: true)][NodeParamEventType(typeof(MassMoveToHeadEventDefine))] EventArg outEvent)
         {
             if (cards == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return Array.Empty<Card>();
+            }
             if (player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return cards;
+            }
 
             outEvent = await cards.moveToHead(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
@@ -1558,9 +1625,15 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_MASS_MOVE_CARD_EVENT, isOut: true)][NodeParamEventType(typeof(MassMoveCardEventDefine))] EventArg outEvent)
         {
             if (cards == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return Array.Empty<Card>();
+            }
             if (player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return cards;
+            }
             outEvent = await cards.moveToWarp(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
             return outEvent?.getVar<Card[]>(MassEnterFieldEventDefine.VAR_MOVED_CARDS) ?? Array.Empty<Card>();

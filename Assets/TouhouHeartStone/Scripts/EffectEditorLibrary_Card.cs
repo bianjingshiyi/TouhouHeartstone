@@ -192,7 +192,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_ENTER_FIELD_EVENT, isOut: true)][NodeParamEventType(typeof(EnterFieldEventDefine))] EventArg outEvent)
         {
             if (player == null || cardDefine == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return null;
+            }
             outEvent = await player.createToken(game, cardDefine);
             setOutParam(flow, node, nameof(outEvent), outEvent);
             return outEvent?.getVar<Card>(EnterFieldEventDefine.VAR_CARD);
@@ -209,10 +212,11 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
             [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)][NodeParamEventType(typeof(MoveCardEventDefine))] EventArg outEvent)
         {
-            if (player == null || cardDefine == null)
+            if (player == null || cardDefine == null || player.getHand().isFull)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return null;
-            if (player.getHand().isFull)
-                return null;
+            }
             Card createdCard = game.createCard(cardDefine);
             outEvent = await player.getHand().add(game, createdCard);
             setOutParam(flow, node, nameof(outEvent), outEvent);
@@ -234,7 +238,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)][NodeParamEventType(typeof(MoveCardEventDefine))] EventArg outEvent)
         {
             if (player == null || cardDefine == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return null;
+            }
             Card createdCard = game.createCard(cardDefine);
 
             outEvent = await player.getDeck().insert(game, createdCard, game.randomInt(0, player.getDeck().count));
@@ -259,7 +266,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_EQUIP_EVENT, isOut: true)][NodeParamEventType(typeof(EquipItemEventDefine))] EventArg outEvent)
         {
             if (player == null || cardDefine == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return null;
+            }
             Card createdCard = game.createCard(cardDefine);
 
             outEvent = await player.equip(game, null, createdCard);
@@ -282,7 +292,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)][NodeParamEventType(typeof(MoveCardEventDefine))] EventArg outEvent)
         {
             if (player == null || cardDefine == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return null;
+            }
             Card createdCard = game.createCard(cardDefine);
             outEvent = await createdCard.moveToHead(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
@@ -305,13 +318,19 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_POSITION)] int position = -1)
         {
             if (cardDefine == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return null;
+            }
             // 根据卡牌的定义创建一张新的卡牌。
             var newCard = game.createCard(cardDefine);
 
             // 不移动到任何牌堆，直接返回。
             if (pile == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return newCard;
+            }
 
             // 将卡牌移动到目标牌堆。
             outEvent = await newCard.moveCardFromPileToPile(game, null, pile, position);
@@ -372,7 +391,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(SetCardPropEventDefine))] EventArg outEvent)
         {
             if (card == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             outEvent = await card.setProp(game, propName, value);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
@@ -493,7 +515,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_SET_ARMOR_EVENT, isOut: true)][NodeParamEventType(typeof(SetArmorEventDefine))] EventArg outEvent)
         {
             if (player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             outEvent = await player.getMaster().gainArmor(game, count);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
@@ -508,7 +533,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_SET_ARMOR_EVENT, isOut: true)][NodeParamEventType(typeof(SetArmorEventDefine))] EventArg outEvent)
         {
             if (player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             outEvent = await player.getMaster().gainArmor(game, count);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
@@ -523,7 +551,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_SET_ARMOR_EVENT, isOut: true)][NodeParamEventType(typeof(SetArmorEventDefine))] EventArg outEvent)
         {
             if (player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             outEvent = await player.getMaster().loseArmor(game, count);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
@@ -1086,7 +1117,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_SHACKLE_EVENT, isOut:true)][NodeParamEventType(typeof(ShackleEventDefine))] EventArg outEvent)
         {
             if (card == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             outEvent = await card.shackle(game);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
@@ -1129,7 +1163,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(SetCardPropEventDefine))] EventArg[] outEvent)
         {
             if (cards == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             outEvent = await cards.kill(game);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
@@ -1336,7 +1373,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_ATTACK_EVENT, isOut: true)][NodeParamEventType(typeof(AttackEventDefine))] EventArg[] outEvent)
         {
             if (cards == null || targets == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             var eventList = new List<EventArg>(); 
             foreach (var card in cards)
             {
@@ -1362,7 +1402,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(SetCardPropEventDefine))] EventArg[] outEvent)
         {
             if (cards == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             var eventList = new List<EventArg>();
             foreach (var card in cards)
             {
@@ -1416,7 +1459,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_REVEAL_EVENT, isOut: true)][NodeParamEventType(typeof(RevealEventDefine))] EventArg outEvent)
         {
             if (card == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             outEvent = await game.Reveal(card);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
@@ -1436,10 +1482,11 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)][NodeParamEventType(typeof(MoveCardEventDefine))] EventArg outEvent,
             [ActionNodeParam(EDITOR_PARAM_NAME_POSITION)] int position = -1)
         {
-            if (card == null)
+            if (card == null || player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
-            if (player == null)
-                return;
+            }
             outEvent = await card.takeControl(game, player, position);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
@@ -1481,7 +1528,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_BE_CHARGED_EVENT, isOut: true)][NodeParamEventType(typeof(BeChargedEventDefine))] EventArg outEvent)
         {
             if (card == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             outEvent = await card.setChargeLevel(game, level);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
@@ -1498,7 +1548,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_VISIBILITY_CHANGED_EVENT, isOut: true)][NodeParamEventType(typeof(ChangeCardPropVisibilityEventDefine))] EventArg[] outEvent)
         {
             if (cards == null || player == null || propName == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             var list = new List<EventArg>();
             foreach (var card in cards)
             {
@@ -1532,7 +1585,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_CARD_VISIBILITY_CHANGED_EVENT, isOut: true)][NodeParamEventType(typeof(ChangeCardVisibilityEventDefine))] EventArg[] outEvent)
         {
             if (cards == null || player == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return;
+            }
             var list = new List<EventArg>();
             foreach (var card in cards)
             {

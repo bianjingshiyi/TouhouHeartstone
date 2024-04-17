@@ -257,7 +257,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_SET_CARD_DEFINE_EVENT, isOut: true)][NodeParamEventType(typeof(SetCardDefineEventDefine))] EventArg outEvent)
         {
             if (define == null)
+            {
+                setOutParam(flow, node, nameof(outEvent), null);
                 return card;
+            }
             outEvent = await card.setDefine(game, define, isreset);
             setOutParam(flow, node, nameof(outEvent), outEvent);
             return outEvent?.getVar<Card>(SetCardDefineEventDefine.VAR_CARD);
