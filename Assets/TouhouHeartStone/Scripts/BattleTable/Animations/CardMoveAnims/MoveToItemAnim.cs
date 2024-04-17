@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using TouhouCardEngine;
+using UI;
 using UnityEngine;
 
 namespace Game.BattleTable
@@ -29,6 +30,7 @@ namespace Game.BattleTable
             {
                 yield return null;
             }
+            _ = table.playSound(_cardDesc.define, CardSkinData.SOUND_NAME_ON_EQUIP);
         }
         public override Vector3 getCurrentPosition(BattleTableManager table)
         {

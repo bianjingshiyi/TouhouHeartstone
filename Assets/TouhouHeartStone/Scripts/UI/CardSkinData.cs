@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Game;
 using MongoDB.Bson.Serialization.Attributes;
+using TouhouHeartstone;
 using UnityEngine;
 
 namespace UI
@@ -68,6 +69,18 @@ namespace UI
         public int removeSoundRef(string name)
         {
             return _soundRefs.RemoveAll(r => r.name == name);
+        }
+        public static string[] getSoundNamesByType(string cardType)
+        {
+            switch (cardType)
+            {
+                case DEFINE.SERVANT:
+                    return servantCardSkinSoundNames;
+                case DEFINE.ITEM:
+                    return itemCardSkinSoundNames;
+                default:
+                    return defaultCardSkinSoundNames;
+            }
         }
         [BsonElement]
         [SerializeField]
@@ -175,10 +188,12 @@ namespace UI
             return name;
         }
         public const string SOUND_NAME_ON_USE = "OnUse";
+        public const string SOUND_NAME_ON_EQUIP = "OnEquip";
         public const string SOUND_NAME_ON_ENTER = "OnEnter";
         public const string SOUND_NAME_ON_ATTACK = "OnAttack";
         public const string SOUND_NAME_ON_DEATH = "OnDeath";
         public static string[] defaultCardSkinSoundNames = new string[] { SOUND_NAME_ON_USE };
         public static string[] servantCardSkinSoundNames = new string[] { SOUND_NAME_ON_ENTER, SOUND_NAME_ON_ATTACK, SOUND_NAME_ON_DEATH };
+        public static string[] itemCardSkinSoundNames = new string[] { SOUND_NAME_ON_EQUIP, SOUND_NAME_ON_DEATH };
     }
 }

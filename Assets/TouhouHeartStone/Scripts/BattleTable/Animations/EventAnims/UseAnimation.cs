@@ -31,9 +31,7 @@ namespace Game.BattleTable
             {
                 yield return playUseCardAnim(table);
             }
-            var task = table.playSound(_card.define, CardSkinData.SOUND_NAME_ON_USE);
-            while (!task.IsCompleted)
-                yield return null;
+            _ = table.playSound(_card.define, CardSkinData.SOUND_NAME_ON_USE);
         }
         public override IEnumerator logicUpdate(BattleTableManager table)
         {

@@ -169,7 +169,7 @@ namespace Game.BattleTable
                     imagePath = cardManager.getDefaultImagePath(),
                     name = define.GetType().Name
                 };
-                foreach (var soundName in define.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames)
+                foreach (var soundName in CardSkinData.getSoundNamesByType(define.type))
                 {
                     skin.addSoundRef(new SkinSoundRef(soundName, null));
                 }

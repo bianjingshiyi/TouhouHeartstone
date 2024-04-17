@@ -1011,7 +1011,7 @@ namespace Controllers
         private async Task updateSoundItems()
         {
             var skinNames = getCurrentSoundRefNames();
-            var uiNames = _cardDefine.type == DEFINE.SERVANT ? _servantSoundNames : _defaultSoundNames;
+            var uiNames = getCurrentSoundRefUINames();
             var viewDatas = new (string name, Sprite sprite)[skinNames.Length];
             for (int i = 0; i < skinNames.Length; i++)
             {
@@ -1208,7 +1208,11 @@ namespace Controllers
         }
         private string[] getCurrentSoundRefNames()
         {
-            return _cardDefine.type == DEFINE.SERVANT ? CardSkinData.servantCardSkinSoundNames : CardSkinData.defaultCardSkinSoundNames;
+            return CardSkinData.getSoundNamesByType(_cardDefine.type);
+        }
+        private string[] getCurrentSoundRefUINames()
+        {
+            return getCurrentSoundRefNames().Select(n => _soundNameDict.TryGetValue(n, out var name) ? name : SKIN_SOUND_NAME_UNKNOWN).ToArray();
         }
         private async Task selectSound(int soundIndex)
         {
@@ -1287,6 +1291,8 @@ namespace Controllers
         [TranslateMsg("卡牌图片导出失败")]
         public const string CARD_PICTURE_EXPORT_FAILED = "卡牌图片导出失败。";
 
+        [TranslateMsg("卡牌皮肤编辑器中卡牌的未知音效的名称")]
+        public const string SKIN_SOUND_NAME_UNKNOWN = "未知音效";
         [TranslateMsg("卡牌皮肤编辑器中仆从牌的入场音效的名称")]
         public const string SKIN_SOUND_NAME_ON_ENTER = "入场音效";
         [TranslateMsg("卡牌皮肤编辑器中仆从牌的攻击音效的名称")]
@@ -1295,6 +1301,8 @@ namespace Controllers
         public const string SKIN_SOUND_NAME_ON_DEATH = "死亡音效";
         [TranslateMsg("卡牌皮肤编辑器中卡牌的使用音效的名称")]
         public const string SKIN_SOUND_NAME_ON_USE = "使用音效";
+        [TranslateMsg("卡牌皮肤编辑器中道具牌的装备音效的名称")]
+        public const string SKIN_SOUND_NAME_ON_EQUIP = "装备音效";
         #endregion
 
         #region 静态集合
@@ -1335,15 +1343,13 @@ namespace Controllers
             StringTable.CARD_TAG_MECH,
             StringTable.CARD_TAG_GHOST
         };
-        static readonly string[] _servantSoundNames = new string[]
+        static readonly Dictionary<string, string> _soundNameDict = new Dictionary<string, string>()
         {
-            SKIN_SOUND_NAME_ON_ENTER,
-            SKIN_SOUND_NAME_ON_ATTACK,
-            SKIN_SOUND_NAME_ON_DEATH
-        };
-        static readonly string[] _defaultSoundNames = new string[]
-        {
-            SKIN_SOUND_NAME_ON_USE
+            { CardSkinData.SOUND_NAME_ON_USE, SKIN_SOUND_NAME_ON_USE },
+            { CardSkinData.SOUND_NAME_ON_EQUIP, SKIN_SOUND_NAME_ON_EQUIP },
+            { CardSkinData.SOUND_NAME_ON_ENTER, SKIN_SOUND_NAME_ON_ENTER },
+            { CardSkinData.SOUND_NAME_ON_ATTACK, SKIN_SOUND_NAME_ON_ATTACK },
+            { CardSkinData.SOUND_NAME_ON_DEATH, SKIN_SOUND_NAME_ON_DEATH },
         };
         #region 自定义属性
         public static readonly string[] takenPropNames = new string[]
