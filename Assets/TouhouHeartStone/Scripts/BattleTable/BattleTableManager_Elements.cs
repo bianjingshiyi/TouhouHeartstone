@@ -2004,6 +2004,11 @@ namespace Game.BattleTable
             startHoverTimer();
             _hoveredDiscoverCard = card;
         }
+        private void startHoverMulliganItem(MulliganCardItem card)
+        {
+            startHoverTimer();
+            _hoveredMulliganItem = card;
+        }
         private void stopHover()
         {
             _hoveredServant = null;
@@ -2012,6 +2017,7 @@ namespace Game.BattleTable
             _hoveredHand = null;
             _hoveredPileCard = null;
             _hoveredDiscoverCard = null;
+            _hoveredMulliganItem = null;
             clearCardDisplayerData();
             clearPopUpData();
         }
@@ -2141,6 +2147,9 @@ namespace Game.BattleTable
                 transform = _hoveredPileCard.transform;
             else if (_hoveredDiscoverCard != null)
                 transform = _hoveredDiscoverCard.transform;
+            else if (_hoveredMulliganItem != null)
+                transform = _hoveredMulliganItem.transform;
+
             if (transform && transform.gameObject.activeInHierarchy)
             {
                 position = getTransformHoveringPosition(transform, false);
@@ -2169,6 +2178,11 @@ namespace Game.BattleTable
                 var index = table.Discover.indexOf(_hoveredDiscoverCard);
                 var cardId = _choosingCards.ElementAt(index);
                 return game.getCard(cardId);
+            }
+            else if (_hoveredMulliganItem != null)
+            {
+                var index = ui.InitReplaceDialog.indexOf(_hoveredMulliganItem);
+                return player.getInit()[index];
             }
             return null;
         }
@@ -2812,6 +2826,7 @@ namespace Game.BattleTable
         HandItem _hoveredHand;
         UICard _hoveredPileCard;
         UICard _hoveredDiscoverCard;
+        MulliganCardItem _hoveredMulliganItem;
         bool _isDisplayingCard;
         #endregion
 

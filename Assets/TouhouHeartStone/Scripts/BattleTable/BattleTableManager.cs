@@ -319,6 +319,8 @@ namespace Game.BattleTable
             table.Discover.onItemPointerEnter += onCardChooseItemPointerEnterCallback;
             table.Discover.onItemPointerExit += onCardChooseItemPointerExitCallback;
 
+            ui.InitReplaceDialog.onItemPointerEnter += onMulliganItemPointerEnterCallback;
+            ui.InitReplaceDialog.onItemPointerExit += onMulliganItemPointerExitCallback;
             ui.InitReplaceDialog.onItemClicked += onMulliganItemClickCallback;
             ui.InitReplaceDialog.onAccept += onMulliganAcceptCallback;
 
@@ -461,6 +463,14 @@ namespace Game.BattleTable
         #endregion
         #region 事件回调
         #region 换牌
+        private void onMulliganItemPointerEnterCallback(int index)
+        {
+            startHoverMulliganItem(ui.InitReplaceDialog.getItem(index));
+        }
+        private void onMulliganItemPointerExitCallback(int index)
+        {
+            stopHover();
+        }
         private void onMulliganItemClickCallback(int index)
         {
             if (!canControl)

@@ -29,11 +29,17 @@ namespace Game.BattleTable
         {
             return _choices[index];
         }
+        public int indexOf(MulliganCardItem item)
+        {
+            return _choices.IndexOf(item);
+        }
         public MulliganCardItem addChoice()
         {
             var choice = Instantiate(_itemTemplate, _itemRoot).GetComponent<MulliganCardItem>();
             choice.gameObject.SetActive(true);
             _choices.Add(choice);
+            choice.onPointerEnter += onItemPointerEnterCallback;
+            choice.onPointerExit += onItemPointerExitCallback;
             choice.onClick += onItemClickCallback;
             return choice;
         }
@@ -41,6 +47,8 @@ namespace Game.BattleTable
         {
             foreach (var choice in _choices)
             {
+                choice.onPointerEnter -= onItemPointerEnterCallback;
+                choice.onPointerExit -= onItemPointerExitCallback;
                 choice.onClick -= onItemClickCallback;
                 choice.destroy();
             }
@@ -54,6 +62,14 @@ namespace Game.BattleTable
             _itemTemplate.SetActive(false);
         }
         #endregion
+        private void onItemPointerEnterCallback(MulliganCardItem card, PointerEventData pointer)
+        {
+            onItemPointerEnter?.Invoke(_choices.IndexOf(card));
+        }
+        private void onItemPointerExitCallback(MulliganCardItem card, PointerEventData pointer)
+        {
+            onItemPointerExit?.Invoke(_choices.IndexOf(card));
+        }
         private void onItemClickCallback(MulliganCardItem card, PointerEventData pointer)
         {
             onItemClicked?.Invoke(_choices.IndexOf(card));
@@ -65,6 +81,8 @@ namespace Game.BattleTable
         #endregion
 
         #region 事件
+        public Action<int> onItemPointerEnter;
+        public Action<int> onItemPointerExit;
         public Action<int> onItemClicked;
         public Action onAccept;
         #endregion
