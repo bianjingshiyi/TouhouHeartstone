@@ -48,8 +48,8 @@ namespace TouhouHeartstone
                 game.logger.logTrace($"{card}攻击{target}");
                 int targetAttack = target.getAttack(game);
                 int cardAttack = card.getAttack(game);
-                await card.damage(game, target, targetAttack);
                 await target.damage(game, card, cardAttack);
+                await card.damage(game, target, targetAttack);
 
                 // 取消隐匿
                 if (card.isStealth(game))
