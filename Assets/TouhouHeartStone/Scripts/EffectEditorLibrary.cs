@@ -199,10 +199,11 @@ namespace Game
                 times++;
                 finished = false;
 
+                flow.setValue(repeatTimePort, times);
+
                 var scope = flow.EnterScope();
                 setScopeLooping(scope);
 
-                flow.setValue(repeatTimePort, times);
                 await game.runActions(flow, action);
 
                 int flowState = getScopeLoopState(scope);
