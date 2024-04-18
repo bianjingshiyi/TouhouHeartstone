@@ -97,6 +97,14 @@ namespace TouhouHeartstone
         /// 不能被使用
         /// </summary>
         public const string UNPLAYABLE = "unplayable";
+        /// <summary>
+        /// 幻象，只是作为卡牌关键词说明的占位符
+        /// </summary>
+        public const string ILLUSIVE = "illusive";
+        /// <summary>
+        /// 消失，只是作为卡牌关键词说明的占位符
+        /// </summary>
+        public const string VANISH = "vanish";
 
         #region 效果关键词
         /// <summary>

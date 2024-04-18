@@ -117,6 +117,7 @@ namespace Game
             addKeywordInfo(KEYWORD.MISSION, StringTable.KEYWORD_NAME_MISSION, KEYWORD_DESC_MISSION);
             addKeywordInfo(KEYWORD.PERMANENT_FROZEN, StringTable.KEYWORD_NAME_PERMANENT_FROZEN, KEYWORD_DESC_PERMANENT_FROZEN);
             addKeywordInfo(KEYWORD.UNPLAYABLE, StringTable.KEYWORD_NAME_UNPLAYABLE, KEYWORD_DESC_UNPLAYABLE);
+            addKeywordInfo(KEYWORD.ILLUSIVE, StringTable.KEYWORD_NAME_ILLUSIVE, KEYWORD_DESC_ILLUSIVE);
 
             addKeywordInfo(DEFINE.ELEMENTAL_SPELL, StringTable.KEYWORD_NAME_ELEMENTAL_SPELL, KEYWORD_DESC_ELEMENTAL_SPELL);
             addKeywordInfo(DEFINE.DOWSE, StringTable.KEYWORD_NAME_DOWSE, KEYWORD_DESC_DOWSE);
@@ -134,6 +135,7 @@ namespace Game
             addKeywordInfo(KEYWORD.SHACKLE, StringTable.KEYWORD_NAME_SHACKLE, KEYWORD_DESC_FROZEN);
             addKeywordInfo(KEYWORD.SEAL, StringTable.KEYWORD_NAME_SEAL, KEYWORD_DESC_SEAL);
             addKeywordInfo(KEYWORD.FAITHDUEL, StringTable.KEYWORD_NAME_FAITHDUEL, KEYWORD_DESC_FAITHDUEL);
+            addKeywordInfo(KEYWORD.VANISH, StringTable.KEYWORD_NAME_VANISH, KEYWORD_DESC_VANISH);
 
             // 特殊
             addKeywordInfo(KEYWORD.FROZEN, StringTable.KEYWORD_NAME_FREEZE, KEYWORD_DESC_FROZEN);
@@ -212,8 +214,12 @@ namespace Game
             "<b>水：</b>特殊类效果。\n" +
             "<b>火：</b>进攻类效果。\n" +
             "<b>土：</b>召唤与保护。\n";
-        [TranslateMsg("关键词描述-元素法术", CONTEXT_KEYWORD_DESCRIPTION)]
+        [TranslateMsg("关键词描述-寻觅", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_DOWSE = "使用后，随机将牌库中一张灵力值消耗相同的卡牌置于牌库顶。";
+        [TranslateMsg("关键词描述-幻象", CONTEXT_KEYWORD_DESCRIPTION)]
+        public const string KEYWORD_DESC_ILLUSIVE = "受到伤害后死亡。";
+        [TranslateMsg("关键词描述-消失", CONTEXT_KEYWORD_DESCRIPTION)]
+        public const string KEYWORD_DESC_VANISH = "将卡牌移出游戏。";
         #endregion
 
         private Dictionary<string, KeywordInfo> keywordInfos = new Dictionary<string, KeywordInfo>();
