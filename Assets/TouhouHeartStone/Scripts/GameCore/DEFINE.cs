@@ -18,6 +18,7 @@
         public const string SPELL_DAMAGE = "spellDamage";
         public const string DAMAGE_REDUCE = "damageReduce";
         public const string KEYWORDS = "keywords";
+        public const string ELEMENTAL_SPELL = "elementalSpell"; //只是卡牌关键词描述中的占位符
         public const string TAGS = "tags";
         public const string CARD_PROP_SKILL_ID = "skillId";
         public const string CARD_PROP_SKILL_REF = "skillRef";

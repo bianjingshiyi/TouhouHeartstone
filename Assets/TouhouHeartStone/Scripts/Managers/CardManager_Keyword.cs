@@ -118,6 +118,8 @@ namespace Game
             addKeywordInfo(KEYWORD.PERMANENT_FROZEN, StringTable.KEYWORD_NAME_PERMANENT_FROZEN, KEYWORD_DESC_PERMANENT_FROZEN);
             addKeywordInfo(KEYWORD.UNPLAYABLE, StringTable.KEYWORD_NAME_UNPLAYABLE, KEYWORD_DESC_UNPLAYABLE);
 
+            addKeywordInfo(DEFINE.ELEMENTAL_SPELL, StringTable.KEYWORD_NAME_ELEMENTAL_SPELL, KEYWORD_DESC_ELEMENTAL_SPELL);
+
             addKeywordInfo(DEFINE.SPELL_DAMAGE, StringTable.KEYWORD_NAME_SPELL_DAMAGE, KEYWORD_DESC_SPELL_DAMAGE, typeof(int));
             addKeywordInfo(DEFINE.DAMAGE_REDUCE, StringTable.KEYWORD_NAME_DAMAGE_REDUCTION, KEYWORD_DESC_DAMAGE_REDUCE, typeof(int));
 
@@ -202,6 +204,13 @@ namespace Game
         public const string KEYWORD_DESC_SEAL = "被<b>封印</b>的角色失去所有强化效果。";
         [TranslateMsg("关键词描述-信仰对决", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_FAITHDUEL = "揭示双方牌库里的一张牌，灵力值消耗更高的一方赢得<b>信仰对决</b>。";
+        [TranslateMsg("关键词描述-元素法术", CONTEXT_KEYWORD_DESCRIPTION)]
+        public const string KEYWORD_DESC_ELEMENTAL_SPELL = "使用后，将手牌中的另一<b>元素法术</b>变形为两者融合后的<b>元素法术</b>。\n" +
+            "<b>金：</b>对仆从伤害。\n" +
+            "<b>木：</b>对仆从增益。\n" +
+            "<b>水：</b>特殊类效果。\n" +
+            "<b>火：</b>进攻类效果。\n" +
+            "<b>土：</b>召唤与保护。\n";
         #endregion
 
         private Dictionary<string, KeywordInfo> keywordInfos = new Dictionary<string, KeywordInfo>();
