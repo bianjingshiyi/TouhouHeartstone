@@ -2,6 +2,7 @@
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using TouhouCardEngine;
 
 namespace Game
 {
@@ -26,7 +27,8 @@ namespace Game
             type = (int)animDef.type;
             foreach (string propName in animDef.getPropNames())
             {
-                propDict.Add(propName, animDef.getProp<object>(propName));
+                var prop = animDef.getProp<object>(propName);
+                propDict.Add(propName, ObjectProxy.TryProxy(prop));
             }
         }
         #endregion
@@ -38,7 +40,8 @@ namespace Game
             anim.type = (AnimationType)type;
             foreach (var pair in propDict)
             {
-                anim.setProp(pair.Key, pair.Value);
+                var prop = pair.Value;
+                anim.setProp(pair.Key, ObjectProxy.TryConvertBack(prop));
             }
             return anim;
         }

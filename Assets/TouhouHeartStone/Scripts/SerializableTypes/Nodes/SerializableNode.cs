@@ -32,7 +32,10 @@ namespace Game
             posX = node.posX;
             posY = node.posY;
             inputDefaultValues = node.inputDefaultValues != null ? node.inputDefaultValues.Select(v => new SerializableInputDefaultValue(v)).ToList() : null;
-            propDict = node.propDict != null ? new Dictionary<string, object>(node.propDict) : null;
+            if (node.propDict != null)
+            {
+                propDict = SerializeHelper.ProxyPropDict(node.propDict);
+            }
         }
         public abstract Node ToNode(ActionGraph graph);
         protected void InitNode(Node node, ActionGraph graph, IEnumerable<InputDefaultValue> defaultValues = null)

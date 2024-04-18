@@ -22,14 +22,14 @@ namespace Game
         public SerializableEffect(GeneratedEffect effect)
         {
             name = effect.name;
-            propDict = effect.propDict;
+            propDict = SerializeHelper.ProxyPropDict(effect.propDict);
             graph = new SerializableActionNodeGraph(effect.graph);
         }
         public abstract GeneratedEffect Deserialize(INodeDefiner definer);
         protected void apply(GeneratedEffect effect)
         {
             effect.name = name;
-            effect.propDict = propDict;
+            effect.propDict = SerializeHelper.UnproxyPropDict(propDict);
         }
         [Key(0)]
         public string name;

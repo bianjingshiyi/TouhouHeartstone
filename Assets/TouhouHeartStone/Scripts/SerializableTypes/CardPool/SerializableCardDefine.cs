@@ -23,14 +23,21 @@ namespace Game
             type = cardDefine.type;
             foreach (string propName in cardDefine.getPropNames())
             {
-                propDict.Add(propName, cardDefine.getProp<object>(propName));
+                var prop = cardDefine.getProp<object>(propName);
+                propDict.Add(propName, ObjectProxy.TryProxy(prop));
             }
             effects.AddRange(Array.ConvertAll(cardDefine.getGeneratedEffects(), e => SerializeHelper.ToSerializable(e)));
         }
         #endregion
         public CardDefine toCardDefine(INodeDefiner definer)
         {
-            CardDefine cardDefine = new CardDefine(id, type, propDict);
+            var newPropDict = new Dictionary<string, object>();
+            foreach (var pair in propDict)
+            {
+                var prop = pair.Value;
+                newPropDict.Add(pair.Key, ObjectProxy.TryConvertBack(prop));
+            }
+            CardDefine cardDefine = new CardDefine(id, type, newPropDict);
             GeneratedEffect[] effectsList = new GeneratedEffect[effects.Count];
             for (int i = 0; i < effects.Count; i++)
             {

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
 
@@ -69,6 +71,18 @@ namespace Game
                 return new SerializableSpellDamageModifier(spellDamageModifier);
             else
                 throw new ArgumentException($"无法序列化未知类型的节点{propModifier.GetType().Name}");
+        }
+        public static Dictionary<string, object> ProxyPropDict(Dictionary<string, object> propDict)
+        {
+            if (propDict == null)
+                return null;
+            return propDict.ToDictionary(p => p.Key, p => ObjectProxy.TryProxy(p.Value));
+        }
+        public static Dictionary<string, object> UnproxyPropDict(Dictionary<string, object> proxiedDict)
+        {
+            if (proxiedDict == null)
+                return null;
+            return proxiedDict.ToDictionary(p => p.Key, p => ObjectProxy.TryConvertBack(p.Value));
         }
     }
 }

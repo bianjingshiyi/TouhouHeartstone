@@ -34,7 +34,8 @@ namespace Game
             props = new Dictionary<string, object>();
             foreach (var propName in buffDefine.getPropNames())
             {
-                props.Add(propName, buffDefine.getProp(propName));
+                var prop = buffDefine.getProp(propName);
+                props.Add(propName, ObjectProxy.TryProxy(prop));
             }
         }
         #endregion
@@ -59,7 +60,8 @@ namespace Game
             {
                 foreach (var pair in props)
                 {
-                    generatedBuffDefine.setProp(pair.Key, pair.Value);
+                    var prop = pair.Value;
+                    generatedBuffDefine.setProp(pair.Key, ObjectProxy.TryConvertBack(prop));
                 }
             }
             return generatedBuffDefine;

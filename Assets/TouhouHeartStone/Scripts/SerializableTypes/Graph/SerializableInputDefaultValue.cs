@@ -18,11 +18,11 @@ namespace Game
         {
             name = value.name;
             paramIndex = value.paramIndex;
-            this.value = value.value;
+            this.value = ObjectProxy.TryProxy(value.value);
         }
         public InputDefaultValue deserialize()
         {
-            return new InputDefaultValue(name, paramIndex, value);
+            return new InputDefaultValue(name, paramIndex, ObjectProxy.TryConvertBack(value));
         }
         [Key(0)]
         public string name;
