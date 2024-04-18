@@ -119,6 +119,7 @@ namespace Game
             addKeywordInfo(KEYWORD.UNPLAYABLE, StringTable.KEYWORD_NAME_UNPLAYABLE, KEYWORD_DESC_UNPLAYABLE);
 
             addKeywordInfo(DEFINE.ELEMENTAL_SPELL, StringTable.KEYWORD_NAME_ELEMENTAL_SPELL, KEYWORD_DESC_ELEMENTAL_SPELL);
+            addKeywordInfo(DEFINE.DOWSE, StringTable.KEYWORD_NAME_DOWSE, KEYWORD_DESC_DOWSE);
 
             addKeywordInfo(DEFINE.SPELL_DAMAGE, StringTable.KEYWORD_NAME_SPELL_DAMAGE, KEYWORD_DESC_SPELL_DAMAGE, typeof(int));
             addKeywordInfo(DEFINE.DAMAGE_REDUCE, StringTable.KEYWORD_NAME_DAMAGE_REDUCTION, KEYWORD_DESC_DAMAGE_REDUCE, typeof(int));
@@ -211,6 +212,8 @@ namespace Game
             "<b>水：</b>特殊类效果。\n" +
             "<b>火：</b>进攻类效果。\n" +
             "<b>土：</b>召唤与保护。\n";
+        [TranslateMsg("关键词描述-元素法术", CONTEXT_KEYWORD_DESCRIPTION)]
+        public const string KEYWORD_DESC_DOWSE = "使用后，随机将牌库中一张灵力值消耗相同的卡牌置于牌库顶。";
         #endregion
 
         private Dictionary<string, KeywordInfo> keywordInfos = new Dictionary<string, KeywordInfo>();

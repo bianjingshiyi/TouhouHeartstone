@@ -182,6 +182,8 @@ namespace Game
         [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
         public const string KEYWORD_NAME_ELEMENTAL_SPELL = "元素法术";
         [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_DOWSE = "寻觅";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
         public const string KEYWORD_NAME_SPELL_DAMAGE = "法术伤害";
         [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
         public const string KEYWORD_NAME_DAMAGE_REDUCTION = "减伤";
