@@ -9,6 +9,7 @@ namespace UI
 {
     public class WorkshopPanel : UIObject
     {
+        #region 公有方法
         public void setSortItems(string[] sortNames)
         {
             _sortBy.ClearOptions();
@@ -68,6 +69,39 @@ namespace UI
             _nextPageButton.interactable = next;
         }
 
+        #region 选择上传卡池面板
+        public void setSelectUploadPoolPanelVisible(bool visible)
+        {
+            _selectUploadPoolObj.SetActive(visible);
+        }
+        public void setSelectingUploadPools(DeckListItemViewData[] viewData)
+        {
+            _selectUploadPoolView.update(viewData);
+        }
+        #endregion
+
+        #region 上传卡池面板
+        public void setUploadingPool(DeckListItemViewData viewData, int cardCount, int version)
+        {
+            _uploadPoolHeader.updateView(viewData);
+            _uploadPoolCardCount.text = cardCount.ToString();
+            _uploadPoolVersion.text = version.ToString();
+            _uploadPoolDescInputField.text = string.Empty;
+            _uploadPoolRuleAgreeToggle.isOn = false;
+        }
+        public void setUploadPoolPanelVisible(bool value)
+        {
+            _uploadPoolObj.SetActive(value);
+        }
+        public void showWorkshopRule(string content)
+        {
+            _ruleEulaPanel.Show(content);
+        }
+        #endregion
+
+        #endregion
+
+        #region 私有方法
         protected override void Awake()
         {
             base.Awake();
@@ -82,12 +116,22 @@ namespace UI
             _nextPageButton.onClick.AddListener(() => onPageButtonClicked?.Invoke(true));
 
             _downloadButton.onClick.AddListener(() => onDownloadClick?.Invoke());
+            _uploadButton.onClick.AddListener(() => onUploadClick?.Invoke());
+
+            _selectUploadPoolView.onClickItemButton += i => onClickSelectUploadPoolItem?.Invoke(i);
+            _selectUploadPoolCloseButton.onClick.AddListener(() => onClickSelectUploadPoolCloseButton?.Invoke());
+
+            _uploadWorkshopRuleViewButton.onClick.AddListener(() => onClickWorkshopRuleViewButton?.Invoke());
+            _uploadConfirmButton.onClick.AddListener(() => onClickUploadConfirmButton?.Invoke());
+            _uploadCloseButton.onClick.AddListener(() => onClickUploadCloseButton?.Invoke()); 
         }
         private void onCardPoolItemClickCallback(DeckListItem item)
         {
             onCardPoolItemClick?.Invoke(_cardPoolItemList.indexOf(item));
         }
+        #endregion
 
+        #region 事件
         public event Action onReturnClick;
 
         public event Action<int> onSortChanged;
@@ -100,7 +144,15 @@ namespace UI
         public event Action<bool> onPageButtonClicked;
 
         public event Action onDownloadClick;
+        public event Action onUploadClick;
 
+        public event Action<int> onClickSelectUploadPoolItem;
+        public event Action onClickSelectUploadPoolCloseButton;
+
+        public event Action onClickWorkshopRuleViewButton;
+        public event Action onClickUploadConfirmButton;
+        public event Action onClickUploadCloseButton;
+        #endregion
 
         #region 属性字段
         [SerializeField]
@@ -152,6 +204,42 @@ namespace UI
         private RectTransform _downloadProgressBar;
         [SerializeField]
         private Button _downloadButton;
+        [SerializeField]
+        private Button _uploadButton;
+
+        [Header("Select Upload Pool")]
+        [SerializeField]
+        private GameObject _selectUploadPoolObj;
+        [SerializeField]
+        private DeckViewPanel _selectUploadPoolView;
+        [SerializeField]
+        private Button _selectUploadPoolCloseButton;
+
+        [Header("Upload Pool")]
+        [SerializeField]
+        private GameObject _uploadPoolObj;
+        [SerializeField]
+        private DeckListItem _uploadPoolHeader;
+        [SerializeField]
+        private TextMeshProUGUI _uploadPoolCardCount;
+        [SerializeField]
+        private TextMeshProUGUI _uploadPoolVersion;
+        [SerializeField]
+        private TMP_InputField _uploadPoolDescInputField;
+        [SerializeField]
+        private Toggle _uploadPoolRuleAgreeToggle;
+        [SerializeField]
+        private Button _uploadWorkshopRuleViewButton;
+        [SerializeField]
+        private Button _uploadConfirmButton;
+        [SerializeField]
+        private Button _uploadCloseButton;
+
+        [Header("Rule Panel")]
+        [SerializeField]
+        private GameObject _rulePanelObj;
+        [SerializeField]
+        private EULAPanel _ruleEulaPanel;
         #endregion
     }
 }

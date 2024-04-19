@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ExcelLibrary.BinaryFileFormat;
 using Game;
 using MukioI18n;
+using Steamworks;
+using TouhouCardEngine;
 using UI;
 using UnityEngine;
 
@@ -43,6 +47,14 @@ namespace Controllers
             _ui.onPageButtonClicked += onPageButtonClickCallback;
 
             _ui.onDownloadClick += onDownloadClickCallback;
+            _ui.onUploadClick += onUploadClickCallback;
+
+            _ui.onClickSelectUploadPoolCloseButton += onClickSelectUploadPoolCloseButtonCallback;
+            _ui.onClickSelectUploadPoolItem += onClickSelectUploadPoolItemCallback;
+
+            _ui.onClickWorkshopRuleViewButton += onClickWorkshopRuleViewButtonCallback;
+            _ui.onClickUploadConfirmButton += onClickUploadConfirmButtonCallback;
+            _ui.onClickUploadCloseButton += onClickUploadCloseButtonCallback;
         }
         #endregion
 
@@ -101,14 +113,97 @@ namespace Controllers
         private void onDownloadClickCallback()
         {
         }
+        private async void onUploadClickCallback()
+        {
+            startWaiting();
+            try
+            {
+                var localPools = game.card.getLocalCardPoolInfos();
+                _selectingUploadPools = localPools.Where(p => !game.card.isInnateCardPool(p.cardPoolId)).ToArray();
+
+                var viewDatas = new DeckListItemViewData[_selectingUploadPools.Length];
+                for (int i = 0; i < viewDatas.Length; i++)
+                {
+                    var pool = _selectingUploadPools[i];
+                    string name = game.card.getCardPoolName(pool);
+                    viewDatas[i] = new DeckListItemViewData()
+                    {
+                        name = name,
+                        image = await game.card.loadCardPoolImage(pool)
+                    };
+                }
+                _ui.setSelectingUploadPools(viewDatas);
+                _ui.setSelectUploadPoolPanelVisible(true);
+            }
+            finally
+            {
+                stopWaiting();
+            }
+        }
+
+        #region 选择上传卡池界面
+        private void onClickSelectUploadPoolCloseButtonCallback()
+        {
+            _uploadingPoolId = 0;
+            _selectingUploadPools = null;
+            _ui.setSelectUploadPoolPanelVisible(false);
+        }
+        private async void onClickSelectUploadPoolItemCallback(int index)
+        {
+            startWaiting();
+            try
+            {
+                var info = _selectingUploadPools[index];
+                _uploadingPoolId = info.cardPoolId;
+                var (_, pool) = await game.card.getOrLoadCardPool(info);
+                var cardCount = pool.cardDefineList.Count;
+                var version = info.editTime;
+                var viewData = new DeckListItemViewData()
+                {
+                    image = await game.card.loadCardPoolImage(info),
+                    name = game.card.getCardPoolName(info),
+                };
+                _ui.setUploadingPool(viewData, cardCount, version);
+                _ui.setSelectUploadPoolPanelVisible(false);
+                _ui.setUploadPoolPanelVisible(true);
+            }
+            catch (Exception e)
+            {
+                var title = game.lang._(StringTable.ERROR);
+                var desc = game.lang._(ERROR_UPLOADING_CARDPOOL, e.Message);
+                game.ui.dialog.ShowConfirm(title, desc);
+                Debug.LogError(desc);
+            }
+            finally
+            {
+                stopWaiting();
+            }
+        }
+        #endregion
+
+        #region 上传卡池界面
+        private void onClickWorkshopRuleViewButtonCallback()
+        {
+            var content = string.Empty;
+            _ui.showWorkshopRule(content);
+        }
+        private void onClickUploadCloseButtonCallback()
+        {
+            _ui.setUploadPoolPanelVisible(false);
+            _ui.setSelectUploadPoolPanelVisible(true);
+        }
+        private void onClickUploadConfirmButtonCallback()
+        {
+        }
+        #endregion
 
         #endregion
 
         private async Task updatePage()
         {
-            scene.waitingBlocker.addWaitingTask(WaitingTask.LoadWorkshop);
+            startWaiting();
             await loadPage(_page);
-            scene.waitingBlocker.removeWaitingTask(WaitingTask.LoadWorkshop);
+            stopWaiting();
 
             var pageViewDatas = getCurrentPageViewData();
             _ui.updateCardPools(pageViewDatas);
@@ -137,6 +232,14 @@ namespace Controllers
                 };
             }
             return Task.CompletedTask;
+        }
+        private void startWaiting()
+        {
+            scene.waitingBlocker.addWaitingTask(WaitingTask.LoadWorkshop);
+        }
+        private void stopWaiting()
+        {
+            scene.waitingBlocker.removeWaitingTask(WaitingTask.LoadWorkshop);
         }
         private DeckListItemViewData[] getCurrentPageViewData()
         {
@@ -172,6 +275,8 @@ namespace Controllers
         private const string SORTING_MOST_RELEVANT = "最相关";
         [TranslateMsg("创意工坊排序方法")]
         private const string SORTING_NEWEST = "最新上传";
+        [TranslateMsg("尝试上传卡池时出现的错误描述，{0}为错误信息")]
+        private const string ERROR_UPLOADING_CARDPOOL = "尝试上传卡池时出现错误：{0}";
 
         private static string[] _sortNames =
         {
@@ -192,6 +297,9 @@ namespace Controllers
         private bool _onlyMineFilter;
         private string _creatorFilter;
         private string _searchFilter;
+
+        private CardPoolInfo[] _selectingUploadPools;
+        private long _uploadingPoolId;
 
         [SerializeField]
         private int _poolCountPerPage = 16;
