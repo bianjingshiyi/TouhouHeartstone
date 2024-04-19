@@ -237,6 +237,25 @@ namespace Game
         }
         #endregion
 
+        #region 创意工坊
+        public Task<WorkshopCardPoolInfo> getWorkshopCardPool(string id, int version)
+        {
+            return logic.getWorkshopCardPool(id, version);
+        }
+        public Task<byte[]> getWorkshopResource(string type, string id)
+        {
+            return logic.getWorkshopResource(type, id);
+        }
+        public Task<string[]> uploadWorkshopCardPool(string desc, byte[] data)
+        {
+            return logic.uploadWorkshopCardPool(desc, data);
+        }
+        public Task uploadWorkshopResource(string type, string id, byte[] data)
+        {
+            return logic.uploadWorkshopResource(type, id, data);
+        }
+        #endregion
+
         #endregion 公有方法
 
         #region 私有方法

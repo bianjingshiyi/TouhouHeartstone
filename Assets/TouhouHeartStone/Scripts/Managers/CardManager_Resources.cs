@@ -3,15 +3,140 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using BJSYGameCore;
 using Controllers;
+using TouhouCardEngine.Shared;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using ResourceType = TouhouCardEngine.ResourceType;
 
 namespace Game
 {
     partial class CardManager
     {
         #region 公有方法
+
+        /// <summary>
+        /// 将外部资源添加到缓存
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="sprite"></param>
+        public void addResourceToCache<T>(string path, T t) where T : UnityEngine.Object
+        {
+            _externalResourcesCacheDict[path] = t;
+        }
+        /// <summary>
+        /// 获取缓存的外部资源
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public T getResourceFromCache<T>(string path) where T : UnityEngine.Object
+        {
+            if (_externalResourcesCacheDict.TryGetValue(path, out var value) && value is T t)
+            {
+                return t;
+            }
+            return null;
+        }
+        /// <summary>
+        /// 获取加载到内存的Sprite的地址
+        /// </summary>
+        /// <param name="res"></param>
+        /// <returns></returns>
+        public string getResourcePath<T>(T res) where T : UnityEngine.Object
+        {
+            foreach (var pair in _externalResourcesCacheDict)
+            {
+                if ((object)pair.Value == res)
+                {
+                    return pair.Key;
+                }
+            }
+            return null;
+        }
+        /// <summary>
+        /// 判断文件名是否为32bytes的小写hex哈希值
+        /// </summary>
+        /// <param name="imagePath"></param>
+        /// <returns></returns>
+        public static bool isHashNamedResource(string imagePath)
+        {
+            var nameWithoutExt = Path.GetFileNameWithoutExtension(imagePath);
+            return nameWithoutExt.Length == 64 && imagePath.Substring(0, 32).All(c => ('0' <= c && c <= '9') || ('a' <= c && c <= 'z'));
+        }
+
+        #region 加载
+        public T parseResource<T>(ResourceType resourceType, byte[] data) where T : Object
+        {
+            // 如果是空数组，返回null.
+            if (data == null || data.Length <= 0)
+                return null;
+            switch (resourceType)
+            {
+                case ResourceType.Picture:
+                    return createSprite(data) as T;
+                case ResourceType.Sound:
+                    return game.seManager.Decompress(data) as T;
+            }
+            return null;
+        }
+        public async Task<T> loadResource<T>(ICardPoolReference cardPoolRef, ResourceType resourceType, string relativePath, T defaultValue = null) where T : Object
+        {
+            // 不存在卡池引用参数
+            if (cardPoolRef == null)
+                return defaultValue;
+
+            // 路径为空
+            if (string.IsNullOrEmpty(relativePath))
+                return defaultValue;
+
+            T result = getResourceFromCache<T>(relativePath);
+            if (result != null)
+                return result;
+
+            var fullPath = getFullResourcePath(cardPoolRef, resourceType, relativePath);
+            if (fullPath == null)
+                return defaultValue;
+
+            if (fullPath.isResourcesPath(out var resourcesPath))
+            {
+                result = loadResourceAsset<T>(resourcesPath);
+            }
+            else
+            {
+                var bytes = await loadResourceBytes(resourceType, fullPath);
+                if (bytes != null)
+                    result = parseResource<T>(resourceType, bytes);
+            }
+            addResourceToCache(relativePath, result);
+            return result;
+        }
+        public async Task<byte[]> loadResourceBytes(ResourceType resourceType, string fullPath)
+        {
+            // 路径为空
+            if (string.IsNullOrEmpty(fullPath))
+                return null;
+
+            // 缓存资源
+            if (!isLocalCardPoolPath(fullPath))
+            {
+                var id = Path.GetFileNameWithoutExtension(fullPath);
+                if (game.cache.FileExists(resourceType, id))
+                {
+                    return await loadCacheBytes(resourceType, id);
+                }
+            }
+
+            // 流式资源
+            if (fullPath.isStreamingAssetsPath(out var streamingPath))
+                return await loadStreamingAssetBytes(streamingPath);
+
+            // 外部资源
+            return await loadExternalBytes(fullPath);
+        }
+        #endregion
+
+        #region 保存
         /// <summary>
         /// 保存外部资源，并将指定卡池中所有对外部资源的引用都替换为保存后的路径。
         /// </summary>
@@ -137,62 +262,160 @@ namespace Game
                 }
             }
         }
+        public async Task<string> saveResourceBytes(long cardPoolId, byte[] bytes, ResourceType type, string extension)
+        {
+            string hash = calcHashString(bytes);
+            string fileName = $"{hash}.{extension}";
 
-        /// <summary>
-        /// 将外部资源添加到缓存
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="sprite"></param>
-        public void addResourceToCache<T>(string path, T t) where T : UnityEngine.Object
-        {
-            _externalResourcesCacheDict[path] = t;
-        }
-        /// <summary>
-        /// 获取缓存的外部资源
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public T getResourceFromCache<T>(string path) where T : UnityEngine.Object
-        {
-            if (_externalResourcesCacheDict.TryGetValue(path, out var value) && value is T t)
+            var poolRef = getLocalCardPoolReference(cardPoolId);
+            var poolInfo = getCardPoolInfo(poolRef);
+            var soundDir = getCardPoolResourceDirectory(poolInfo, type);
+            string filePath = Path.Combine(soundDir, fileName);
+            if (!game.fileManager.isFileExist(filePath))
             {
-                return t;
+                await game.fileManager.saveFile(filePath, bytes);
+                Debug.Log($"另存为资源{fileName}成功");
             }
-            return null;
-        }
-        /// <summary>
-        /// 获取加载到内存的Sprite的地址
-        /// </summary>
-        /// <param name="res"></param>
-        /// <returns></returns>
-        public string getResourcePath<T>(T res) where T : UnityEngine.Object
-        {
-            foreach (var pair in _externalResourcesCacheDict)
-            {
-                if ((object)pair.Value == res)
-                {
-                    return pair.Key;
-                }
-            }
-            return null;
-        }
-        /// <summary>
-        /// 判断文件名是否为32bytes的小写hex哈希值
-        /// </summary>
-        /// <param name="imagePath"></param>
-        /// <returns></returns>
-        public static bool isHashNamedResource(string imagePath)
-        {
-            var nameWithoutExt = Path.GetFileNameWithoutExtension(imagePath);
-            return nameWithoutExt.Length == 64 && imagePath.Substring(0, 32).All(c => ('0' <= c && c <= '9') || ('a' <= c && c <= 'z'));
+            return fileName;
         }
         #endregion
 
+        #region 路径
+        public string getExternalResourcePath(ResourceType resourceType, string path)
+        {
+            return Path.Combine(_persistentDataPath, getResourceDirectoryName(resourceType), path);
+        }
+        public string getFullResourcePath(ICardPoolReference cardPoolRef, ResourceType resourceType, string relativePath)
+        {
+            CardPoolInfo cardPool;
+            if (isCreatingCardPool(cardPoolRef))
+                cardPool = _creatingCardPoolInfo;
+            else
+                cardPool = getCardPoolInfo(cardPoolRef);
+            // 卡池信息不存在。
+            if (cardPool == null)
+                return null;
+
+            // 卡池路径是流文件路径。
+            if (game.card.getCardPoolPath(cardPool) is string cardPoolPath)
+            {
+                if (cardPoolPath.isStreamingAssetsPath(out _) && !relativePath.isStreamingAssetsPath(out _) && !relativePath.isResourcesPath(out _))
+                    return $"sa:{Path.Combine(getResourceDirectoryName(resourceType), relativePath)}";
+            }
+            //绝对路径
+            return Path.Combine(getCardPoolResourceDirectory(cardPool, resourceType), relativePath);
+        }
+        public string getCardPoolResourceDirectory(CardPoolInfo cardPoolInfo, ResourceType resourceType)
+        {
+            string cardPoolDir = getCardPoolDirectory(cardPoolInfo);
+            string specifiedDir = getCardPoolSpecifiedResourceDir(cardPoolInfo, resourceType);
+            if (!string.IsNullOrEmpty(specifiedDir))
+            {
+                return Path.Combine(cardPoolDir, specifiedDir);
+            }
+            else
+            {
+                var lastDir = Path.GetDirectoryName(cardPoolDir);
+                return Path.Combine(lastDir, getResourceDirectoryName(resourceType));
+            }
+        }
+        #endregion
+
+        #endregion
+
         #region 私有方法
+
+        #region 加载
         private T loadResourceAsset<T>(string path) where T : UnityEngine.Object
         {
             return Resources.Load<T>(path);
         }
+        private async Task<byte[]> loadStreamingAssetBytes(string path)
+        {
+            try
+            {
+                byte[] bytes;
+                try
+                {
+                    bytes = await game.fileManager.readStreamingBinaryFile(path);
+                }
+                catch (FileNotFoundException)
+                {
+                    //可能是后缀不对
+                    if (path.EndsWith(".png"))
+                    {
+                        bytes = await game.fileManager.readStreamingBinaryFile(path.Replace(".png", ".jpg"));
+                    }
+                    else if (path.EndsWith(".jpg"))
+                    {
+                        bytes = await game.fileManager.readStreamingBinaryFile(path.Replace(".jpg", ".png"));
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return bytes;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"加载流文件中的资源{path}失败：{e}");
+            }
+            return null;
+        }
+        private async Task<byte[]> loadExternalBytes(string path)
+        {
+            var fileManager = game.fileManager;
+            bool isFullPath = Path.GetFullPath(path) == path;
+            // 绝对路径
+            if (isFullPath && fileManager.isFileExist(path))
+            {
+                //如果直接给出完整路径就直接从完整路径上读
+                return await fileManager.readBinaryFile(path);
+            }
+            // 相对路径
+            else if (fileManager.isPersistentFileExist(path))
+            {
+                // 从外部图片路径读取图片。
+                return await fileManager.readPersistentBinaryFile(path);
+            }
+            // 实在找不到了
+            Debug.LogWarning($"未找到路径为{path}的资源。");
+            return null;
+        }
+        private async Task<byte[]> loadCacheBytes(ResourceType type, string picId)
+        {
+            return await game.cache.ReadCache(type, picId);
+        }
+        #endregion
+
+        #region 路径
+        private string getResourceDirectoryName(ResourceType resourceType)
+        {
+            switch (resourceType)
+            {
+                case ResourceType.CardDefine:
+                    return cardPoolDirName;
+                case ResourceType.Sound:
+                    return soundDirName;
+                case ResourceType.Picture:
+                    return textureDirName;
+            }
+            return null;
+        }
+        private string getCardPoolSpecifiedResourceDir(CardPoolInfo cardPoolInfo, ResourceType resourceType)
+        {
+            switch (resourceType)
+            {
+                case ResourceType.Sound:
+                    return cardPoolInfo.soundsDir;
+                case ResourceType.Picture:
+                    return cardPoolInfo.texturesDir;
+            }
+            return null;
+        }
+        #endregion
+
         #endregion
 
         #region 属性字段

@@ -1249,7 +1249,7 @@ namespace Controllers
                     return;
                 scene.waitingBlocker.addWaitingTask(WaitingTask.CardEditor);
                 var newPath = await game.card.saveSound(game.editor.currentCardPoolId, audio);
-                var directory = game.card.getCardPoolSoundsDirectory(game.card.getLocalCardPoolInfo(game.editor.currentCardPoolId));
+                var directory = game.card.getCardPoolResourceDirectory(game.card.getLocalCardPoolInfo(game.editor.currentCardPoolId), ResourceType.Sound);
                 var fullPath = Path.Combine(directory, newPath);
                 if (!File.Exists(fullPath))
                 {

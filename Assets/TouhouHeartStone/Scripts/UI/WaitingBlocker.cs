@@ -10,7 +10,7 @@ namespace UI
         public void addWaitingTask(WaitingTask task, string text = null, bool showProgressBar = false)
         {
             waitingTasks.Add(task);
-            _text.text = text ?? string.Empty;
+            setText(text);
             _progressBar.gameObject.SetActive(showProgressBar);
             updateGameObject();
         }
@@ -18,6 +18,10 @@ namespace UI
         {
             waitingTasks.Remove(task);
             updateGameObject();
+        }
+        public void setText(string text)
+        {
+            _text.text = text ?? string.Empty;
         }
         public void setProgress(float progress)
         {

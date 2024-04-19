@@ -606,6 +606,12 @@ namespace Game
             }
             return paths.ToArray();
         }
+        public static (ResourceType type, string path)[] getCardPoolResources(CardPoolInfo info, CardPool cardPool)
+        {
+            var images = getCardPoolImages(info, cardPool).Select(i => (ResourceType.Picture, i));
+            var sounds = getCardPoolSounds(cardPool).Select(s => (ResourceType.Sound, s));
+            return images.Concat(sounds).ToArray();
+        }
         public static string[] getCardPoolInfoLocalizedStringKeys(CardPoolInfo cardPoolInfo)
         {
             HashSet<string> strings = new HashSet<string>();

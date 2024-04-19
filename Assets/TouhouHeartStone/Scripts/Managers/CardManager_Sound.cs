@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Controllers;
 using MukioI18n;
 using SFB;
 using TouhouCardEngine;
@@ -35,78 +34,14 @@ namespace Game
             }
             return clip;
         }
-        public async Task<string> saveSound(long cardPoolId, AudioClip audio)
+        public Task<string> saveSound(long cardPoolId, AudioClip audio)
         {
             byte[] bytes = game.seManager.Compress(audio);
-            string hash = calcHashString(bytes);
-            string fileName = $"{hash}.{_opusExtension}";
-
-            var poolRef = getLocalCardPoolReference(cardPoolId);
-            var poolInfo = getCardPoolInfo(poolRef);
-            var soundDir = getCardPoolSoundsDirectory(poolInfo);
-            string filePath = Path.Combine(soundDir, fileName);
-            if (!game.fileManager.isFileExist(filePath))
-            {
-                await game.fileManager.saveFile(filePath, bytes);
-                Debug.Log($"另存为音效{fileName}成功");
-            }
-            return fileName;
+            return saveResourceBytes(cardPoolId, bytes, ResourceType.Sound, _opusExtension);
         }
-        public string getCardPoolSoundsDirectory(CardPoolInfo cardPoolInfo)
+        public Task<AudioClip> loadSound(ICardPoolReference cardPoolRef, string soundPath)
         {
-            string cardPoolDir = getCardPoolDirectory(cardPoolInfo);
-            if (!string.IsNullOrEmpty(cardPoolInfo.soundsDir))
-            {
-                return Path.Combine(cardPoolDir, cardPoolInfo.soundsDir);
-            }
-            else
-            {
-                var poolDir = Path.GetDirectoryName(cardPoolDir);
-                return Path.Combine(poolDir, soundDirName);
-            }
-        }
-        public async Task<AudioClip> loadSound(ICardPoolReference cardPoolRef, string soundPath)
-        {
-            // 不存在卡池引用参数
-            if (cardPoolRef == null)
-                return null;
-
-            // 图片路径为空
-            if (string.IsNullOrEmpty(soundPath))
-                return null;
-
-            AudioClip audio = getResourceFromCache<AudioClip>(soundPath);
-            if (audio != null)
-                return audio;
-
-            // 缓存路径
-            if (!isLocalCardPool(cardPoolRef))
-            {
-                var id = Path.GetFileNameWithoutExtension(soundPath);
-                if (game.cache.FileExists(ResourceType.Sound, id))
-                {
-                    //添加到缓存
-                    audio = await loadCacheSound(id);
-                    if (audio == null)
-                        return null;
-
-                    addResourceToCache(soundPath, audio);
-                    return audio;
-                }
-            }
-
-            //绝对路径
-            var fullPath = getFullSoundPath(cardPoolRef, soundPath);
-            if (fullPath == null)
-                return null;
-
-            audio = await loadFullPathSound(fullPath);
-            if (audio == null)
-                return null;
-
-            //添加到缓存
-            addResourceToCache(soundPath, audio);
-            return audio;
+            return loadResource<AudioClip>(cardPoolRef, ResourceType.Sound, soundPath);
         }
         public bool isExternalSoundExists(string path)
         {
@@ -119,7 +54,7 @@ namespace Game
         /// <returns>绝对路径。</returns>
         public string getExternalSoundPath(string path)
         {
-            return Path.Combine(_persistentDataPath, soundDirName, path);
+            return getExternalResourcePath(ResourceType.Sound, path);
         }
         public async Task<Sprite> getSoundWaveSprite(ICardPoolReference cardPoolRef, string path)
         {
@@ -219,65 +154,6 @@ namespace Game
         #endregion
 
         #region 加载音效
-        private async Task<AudioClip> loadCacheSound(string id)
-        {
-            byte[] bytes = await game.cache.ReadCache(ResourceType.Sound, id);
-            // 如果是空数组，返回默认Sprite.
-            if (bytes == null || bytes.Length <= 0)
-                return null;
-            return game.seManager.Decompress(bytes, id);
-        }
-        private async Task<AudioClip> loadFullPathSound(string path)
-        {
-            // 路径为空
-            if (string.IsNullOrEmpty(path))
-                return null;
-
-            AudioClip audio;
-            if (path.isResourcesPath(out var resourcesPath))
-                audio = loadResourceAsset<AudioClip>(resourcesPath);
-            else if (path.isStreamingAssetsPath(out var streamingPath))
-                audio = await loadStreamingAssetSound(streamingPath);
-            else
-                audio = await loadExternalSound(path);
-
-            return audio;
-        }
-        private async Task<AudioClip> loadStreamingAssetSound(string path)
-        {
-            try
-            {
-                var bytes = await game.fileManager.readStreamingBinaryFile(path);
-                return game.seManager.Decompress(bytes);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"加载流文件中的音频{path}失败：{e}");
-            }
-            return null;
-        }
-        private async Task<AudioClip> loadExternalSound(string path)
-        {
-            var fileManager = game.fileManager;
-            bool isFullPath = Path.GetFullPath(path) == path;
-            // 绝对路径
-            if (isFullPath && fileManager.isFileExist(path))
-            {
-                //如果直接给出完整路径就直接从完整路径上读
-                var bytes = await game.fileManager.readBinaryFile(path);
-                return game.seManager.Decompress(bytes);
-            }
-            // 相对路径
-            else if (fileManager.isPersistentFileExist(path))
-            {
-                // 从外部图片路径读取音效。
-                var bytes = await game.fileManager.readPersistentBinaryFile(path);
-                return game.seManager.Decompress(bytes);
-            }
-            // 实在找不到了
-            Debug.LogWarning($"未找到路径为{path}的音频。");
-            return null;
-        }
         private Task<AudioClip> loadSoundFile(string path)
         {
             var ext = Path.GetExtension(path).ToLower();
@@ -326,26 +202,6 @@ namespace Game
         }
         #endregion
 
-        private string getFullSoundPath(ICardPoolReference cardPoolRef, string relativePath)
-        {
-            CardPoolInfo cardPool;
-            if (isCreatingCardPool(cardPoolRef))
-                cardPool = _creatingCardPoolInfo;
-            else
-                cardPool = getCardPoolInfo(cardPoolRef);
-            // 卡池信息不存在。
-            if (cardPool == null)
-                return null;
-
-            // 卡池路径是流文件路径。
-            if (game.card.getCardPoolPath(cardPool) is string cardPoolPath)
-            {
-                if (cardPoolPath.isStreamingAssetsPath(out _) && !relativePath.isStreamingAssetsPath(out _) && !relativePath.isResourcesPath(out _))
-                    return $"sa:{Path.Combine(soundDirName, relativePath)}";
-            }
-            //绝对路径
-            return Path.Combine(getCardPoolSoundsDirectory(cardPool), relativePath);
-        }
         #endregion
 
         #region 属性字段

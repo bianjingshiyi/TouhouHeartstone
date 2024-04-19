@@ -356,6 +356,26 @@ namespace Game
             var cookiePath = System.IO.Path.Combine(Application.persistentDataPath, "token");
             ServerClient.InitCookie(cookiePath);
         }
+        
+        #region 创意工坊
+        public Task<WorkshopCardPoolInfo> getWorkshopCardPool(string id, int version)
+        {
+            return ServerClient.WorkshopGetCardPool(id, version);
+        }
+        public Task<byte[]> getWorkshopResource(string type, string id)
+        {
+            return ServerClient.WorkshopGetResourceAsync(type, id);
+        }
+        public Task<string[]> uploadWorkshopCardPool(string desc, byte[] data)
+        {
+            return ServerClient.WorkshopUploadAsync(desc, data);
+        }
+        public Task uploadWorkshopResource(string type, string id, byte[] data)
+        {
+            return ServerClient.WorkshopUploadResourceAsync(type, id, data);
+        }
+        #endregion
+
         /// <summary>
         /// 周期事件
         /// </summary>

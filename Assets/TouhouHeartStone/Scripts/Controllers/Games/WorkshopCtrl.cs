@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using ExcelLibrary.BinaryFileFormat;
 using Game;
 using MukioI18n;
+using NitoriNetwork.Common;
 using Steamworks;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using UI;
 using UnityEngine;
 
@@ -28,7 +32,6 @@ namespace Controllers
             gameObject.SetActive(false);
         }
         #endregion
-
 
         #region 私有方法
 
@@ -172,7 +175,7 @@ namespace Controllers
                 var title = game.lang._(StringTable.ERROR);
                 var desc = game.lang._(ERROR_UPLOADING_CARDPOOL, e.Message);
                 game.ui.dialog.ShowConfirm(title, desc);
-                Debug.LogError(desc);
+                Debug.LogError($"选择上传卡池时出现错误：{e}");
             }
             finally
             {
@@ -192,13 +195,137 @@ namespace Controllers
             _ui.setUploadPoolPanelVisible(false);
             _ui.setSelectUploadPoolPanelVisible(true);
         }
-        private void onClickUploadConfirmButtonCallback()
+        private async void onClickUploadConfirmButtonCallback(string desc, bool agreed)
         {
+            if (!agreed)
+            {
+                var title = game.lang._(StringTable.HINT_TITLE);
+                var quote = game.lang._(HINT_AGREE_RULE_FIRST);
+                game.ui.dialog.ShowConfirm(title, quote);
+                return;
+            }
+
+            startWaiting(true);
+            try
+            {
+                await startUploadCardPool(desc);
+            }
+            catch (Exception e)
+            {
+                var title = game.lang._(StringTable.ERROR);
+                var quote = game.lang._(ERROR_UPLOADING_CARDPOOL, e.Message);
+                game.ui.dialog.ShowConfirm(title, quote);
+                Debug.LogError($"上传卡池时出现错误：{e}");
+            }
+            finally
+            {
+                stopWaiting();
+            }
         }
         #endregion
 
         #endregion
 
+        #region 上传卡池
+        private async Task startUploadCardPool(string desc)
+        {
+
+            // 上传卡池文件。
+            setWaitingText(game.lang._(UPLOAD_PROGRESS_UPLOADING_POOL_FILE));
+            setWaitingProgress(0);
+
+            var info = game.card.getLocalCardPoolInfo(_uploadingPoolId);
+
+            // 读取远端的卡池信息。
+            var workshopInfo = await getWorkshopCardPoolFile(info);
+            string[] requiredResources;
+            if (workshopInfo == null)
+            {
+                // 创意工坊中不存在该卡池。
+                requiredResources = await uploadCardPoolFile(info, desc);
+            }
+            else if (workshopInfo.State == WorkshopCardPoolState.Pending)
+            {
+                // 等待上传资源。
+                requiredResources = workshopInfo.PendingResources;
+            }
+            else
+            {
+                // 已经上传完所有资源，直接结束
+                var title = game.lang._(StringTable.HINT_TITLE);
+                var quote = game.lang._(HINT_CARD_POOL_ALREADY_UPLOADED);
+                game.ui.dialog.ShowConfirm(title, quote);
+                return;
+            }
+
+
+            // 上传资源
+            setWaitingText(game.lang._(UPLOAD_PROGRESS_UPLOADING_RESOURCES));
+            setWaitingProgress(uploadCardPoolProgress);
+
+            var notFoundResources = await uploadCardPoolResources(info, requiredResources);
+
+            if (notFoundResources.Length > 0)
+            {
+                var title = game.lang._(StringTable.ERROR);
+                var quote = game.lang._(HINT_UPLOAD_RESOURCE_FAILED, notFoundResources.Length);
+                game.ui.dialog.ShowConfirm(title, quote);
+                Debug.LogError($"上传卡池资源失败：\n{string.Join(",\n", notFoundResources)}");
+            }
+            else
+            {
+                var title = game.lang._(StringTable.HINT_TITLE);
+                var quote = game.lang._(HINT_UPLOAD_CARDPOOL_SUCCESS);
+                game.ui.dialog.ShowConfirm(title, quote);
+            }
+        }
+        private async Task<string[]> uploadCardPoolFile(ICardPoolReference poolRef, string desc)
+        {
+            var path = game.card.getCardPoolPath(poolRef);
+            var data = await game.fileManager.readBinaryFile(path);
+            var compressed = Compression.compress(data);
+            return await game.network.uploadWorkshopCardPool(desc, compressed);
+        }
+        private async Task<string[]> uploadCardPoolResources(CardPoolInfo poolInfo, string[] resources)
+        {
+            var (_, pool) = await game.card.getOrLoadCardPool(poolInfo);
+            var cardPoolResources = CardManager.getCardPoolResources(poolInfo, pool);
+            int totalResources = resources.Length;
+            int uploadedResources = 0;
+            List<string> notFoundResources = new List<string>();
+            foreach (var res in resources)
+            {
+                var (type, resPath) = cardPoolResources.FirstOrDefault(r => r.path.StartsWith(res));
+                if (string.IsNullOrEmpty(resPath))
+                {
+                    notFoundResources.Add(res);
+                    continue;
+                }
+                var fullPath = game.card.getFullResourcePath(poolInfo, type, resPath);
+                var resType = Path.GetExtension(resPath).TrimStart('.');
+                var resData = await game.card.loadResourceBytes(type, fullPath);
+                await game.network.uploadWorkshopResource(resType, res, resData);
+                uploadedResources++;
+                setWaitingProgress(uploadCardPoolProgress + uploadResourceProgress * (uploadedResources / (float)totalResources));
+            }
+            return notFoundResources.ToArray();
+        }
+        #endregion
+
+        #region 获取卡池信息
+        private async Task<WorkshopCardPoolInfo> getWorkshopCardPoolFile(ICardPoolReference poolRef)
+        {
+            try
+            {
+                return await game.network.getWorkshopCardPool(poolRef.CardPoolID.ToString(), poolRef.CardPoolVersion);
+            }
+            catch (Exception e)
+            {
+                Debug.Log($"未找到创意工坊卡池{poolRef.CardPoolID}的{poolRef.CardPoolVersion}版本：{e}");
+            }
+            return null;
+        }
+        #endregion
         private async Task updatePage()
         {
             startWaiting();
@@ -233,9 +360,17 @@ namespace Controllers
             }
             return Task.CompletedTask;
         }
-        private void startWaiting()
+        private void startWaiting(bool showProgress = false)
         {
-            scene.waitingBlocker.addWaitingTask(WaitingTask.LoadWorkshop);
+            scene.waitingBlocker.addWaitingTask(WaitingTask.LoadWorkshop, showProgressBar: showProgress);
+        }
+        private void setWaitingText(string text)
+        {
+            scene.waitingBlocker.setText(text);
+        }
+        private void setWaitingProgress(float progress)
+        {
+            scene.waitingBlocker.setProgress(progress);
         }
         private void stopWaiting()
         {
@@ -277,6 +412,21 @@ namespace Controllers
         private const string SORTING_NEWEST = "最新上传";
         [TranslateMsg("尝试上传卡池时出现的错误描述，{0}为错误信息")]
         private const string ERROR_UPLOADING_CARDPOOL = "尝试上传卡池时出现错误：{0}";
+        [TranslateMsg("尝试不勾选同意创意工坊规则上传卡池时出现的提示描述")]
+        private const string HINT_AGREE_RULE_FIRST = "请先同意<b>创意工坊使用规则</b>。";
+        [TranslateMsg("上传卡池成功后的提示描述")]
+        private const string HINT_UPLOAD_CARDPOOL_SUCCESS = "卡池上传成功。";
+        [TranslateMsg("上传卡池资源失败后的提示描述，{0}为未上传的资源数量")]
+        private const string HINT_UPLOAD_RESOURCE_FAILED = "卡池上传失败，有{0}个资源未上传。";
+        [TranslateMsg("尝试上传已经上传的卡池后的提示描述")]
+        private const string HINT_CARD_POOL_ALREADY_UPLOADED = "该卡池已被上传至创意工坊，无需再次上传。";
+        [TranslateMsg("上传进度-上传卡池文件")]
+        private const string UPLOAD_PROGRESS_UPLOADING_POOL_FILE = "上传卡池文件中……";
+        [TranslateMsg("上传进度-上传卡池资源")]
+        private const string UPLOAD_PROGRESS_UPLOADING_RESOURCES = "上传卡池资源中……";
+
+        const float uploadCardPoolProgress = 0.25f;
+        const float uploadResourceProgress = 1 - uploadCardPoolProgress;
 
         private static string[] _sortNames =
         {

@@ -122,7 +122,7 @@ namespace UI
             _selectUploadPoolCloseButton.onClick.AddListener(() => onClickSelectUploadPoolCloseButton?.Invoke());
 
             _uploadWorkshopRuleViewButton.onClick.AddListener(() => onClickWorkshopRuleViewButton?.Invoke());
-            _uploadConfirmButton.onClick.AddListener(() => onClickUploadConfirmButton?.Invoke());
+            _uploadConfirmButton.onClick.AddListener(() => onClickUploadConfirmButton?.Invoke(_uploadPoolDescInputField.text, _uploadPoolRuleAgreeToggle.isOn));
             _uploadCloseButton.onClick.AddListener(() => onClickUploadCloseButton?.Invoke()); 
         }
         private void onCardPoolItemClickCallback(DeckListItem item)
@@ -150,7 +150,7 @@ namespace UI
         public event Action onClickSelectUploadPoolCloseButton;
 
         public event Action onClickWorkshopRuleViewButton;
-        public event Action onClickUploadConfirmButton;
+        public event Action<string, bool> onClickUploadConfirmButton;
         public event Action onClickUploadCloseButton;
         #endregion
 
