@@ -177,7 +177,7 @@ namespace Game
             SerializableCardPoolInfo seriCardPoolInfo = new(cardPoolInfo);
             SerializableCardPool seriCardPool = new(cardPool);
 
-            if (Application.isEditor)
+            if (isInnateCardPool(cardPoolInfo))
                 await saveSerializableCardPoolToJson(path, seriCardPoolInfo, seriCardPool);
             else
                 await saveSerializableCardPoolToBytes(path, seriCardPoolInfo, seriCardPool);
