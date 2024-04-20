@@ -142,9 +142,9 @@ namespace Game
             return ServerClient.GetCaptchaImageAsync();
         }
 
-        public string GetUserName(int uid)
+        public PublicBasicUserInfo GetUserInfo(int uid)
         {
-            return ServerClient.GetUserInfo(uid).Name;
+            return ServerClient.GetUserInfo(uid);
         }
 
         /// <summary>
@@ -358,6 +358,14 @@ namespace Game
         }
         
         #region 创意工坊
+        public Task<WorkshopCardPoolInfo[]> getWorkshopUserCardPool(int uid, int page, int limit)
+        {
+            return ServerClient.WorkshopGetUserCardPools(uid, page, limit);
+        }
+        public Task<WorkshopCardPoolInfo[]> getWorkshopPageCardPool(int page, int limit, string keywords)
+        {
+            return ServerClient.WorkshopSearchCardPools(page, limit, keywords);
+        }
         public Task<WorkshopCardPoolInfo> getWorkshopCardPool(string id, int version)
         {
             return ServerClient.WorkshopGetCardPool(id, version);

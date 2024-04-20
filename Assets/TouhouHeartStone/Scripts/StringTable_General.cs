@@ -41,6 +41,10 @@ namespace Game
         public const string UNKNOWN_CHARACTER = "未知人物";
         [TranslateMsg("通用页码模板,{0}为当前页码")]
         public const string PAGE_NUMBER_TEMPLATE = "第{0}页";
+        [TranslateMsg("找不到某些内容时的占位符")]
+        public const string UNKNOWN = "未知";
+        [TranslateMsg("找不到用户时的占位符")]
+        public const string UNKNOWN_USER = "未知用户"; 
         #endregion
 
         #region 帐号

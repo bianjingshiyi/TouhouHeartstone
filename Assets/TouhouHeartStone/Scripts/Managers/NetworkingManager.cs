@@ -206,6 +206,10 @@ namespace Game
         {
             PlayerPrefs.SetString("UserName", userName);
         }
+        public PublicBasicUserInfo getUserInfo(int uid)
+        {
+            return logic.GetUserInfo(uid);
+        }
         #endregion
 
         #region Steam帐号相关
@@ -238,6 +242,14 @@ namespace Game
         #endregion
 
         #region 创意工坊
+        public Task<WorkshopCardPoolInfo[]> getWorkshopUserCardPools(int uid, int page, int limit)
+        {
+            return logic.getWorkshopUserCardPool(uid, page, limit);
+        }
+        public Task<WorkshopCardPoolInfo[]> searchWorkshopPageCardPools(int page, int limit, string keywords)
+        {
+            return logic.getWorkshopPageCardPool(page, limit, keywords);
+        }
         public Task<WorkshopCardPoolInfo> getWorkshopCardPool(string id, int version)
         {
             return logic.getWorkshopCardPool(id, version);

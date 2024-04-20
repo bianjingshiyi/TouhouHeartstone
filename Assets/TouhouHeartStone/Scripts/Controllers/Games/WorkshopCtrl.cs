@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
-using ExcelLibrary.BinaryFileFormat;
 using Game;
 using MukioI18n;
 using NitoriNetwork.Common;
-using Steamworks;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using UI;
@@ -23,6 +20,7 @@ namespace Controllers
         {
             gameObject.SetActive(true);
             _page = 0;
+            _viewingCardPool = null;
             _ui.hideDetails();
             await updatePage();
             updateDownload();
@@ -42,12 +40,16 @@ namespace Controllers
             _ui.onReturnClick += onReturnClickCallback;
 
             _ui.onSortChanged += onSortChangedCallback;
-            _ui.onOnlyMineChanged += onOnlyMeChangedCallback;
+            _ui.onViewMineClicked += onViewMineClickedCallback;
+            _ui.onHomeClicked += onHomeClickedCallback;
             _ui.onCreatorFilterChanged += onCreatorFilterChangedCallback;
             _ui.onSearchFilterChanged += onSearchFilterChangedCallback;
+            _ui.onRefreshClicked += onRefreshClickedCallback;
 
             _ui.onCardPoolItemClick += onClickCardPoolItemCallback;
             _ui.onPageButtonClicked += onPageButtonClickCallback;
+
+            _ui.onCreatorClicked += onCreatorClickedCallback;
 
             _ui.onDownloadClick += onDownloadClickCallback;
             _ui.onUploadClick += onUploadClickCallback;
@@ -75,11 +77,15 @@ namespace Controllers
             _page = 0;
             _ = updatePage();
         }
-        private void onOnlyMeChangedCallback(bool value)
+        private void onHomeClickedCallback()
         {
-            _onlyMineFilter = value;
-            _page = 0;
-            _ = updatePage();
+            viewUser(-1);
+        }
+        private void onViewMineClickedCallback()
+        {
+            if (game.network.logic.UserInfo == null)
+                return;
+            viewUser(game.network.logic.UserInfo.UID);
         }
         private void onCreatorFilterChangedCallback(string filter)
         {
@@ -96,16 +102,36 @@ namespace Controllers
         #endregion
 
         #region 卡池列表
-        private void onClickCardPoolItemCallback(int index)
+        private async void onClickCardPoolItemCallback(int index)
         {
-            var pool = _currentPagePools[index];
-            var viewData = getCardPoolViewData(index);
-            var creator = pool.creator;
-            var creationTime = pool.creationTime;
+            var pool = _currentPageCardPools[index];
+            _viewingCardPool = pool;
+
+            var viewData = await getCardPoolViewData(pool);
+            var creator = getUserName((int)pool.Author);
+            var creationTime = DateTime.UnixEpoch.AddSeconds(pool.CreatedAt);
+            creationTime += TimeZoneInfo.Local.GetUtcOffset(creationTime);
             var dateTime = game.lang._(TASK_DATETIME_TEMPLATE, creationTime.Year, creationTime.Month, creationTime.Day, creationTime.Hour, creationTime.Minute);
-            var cardCount = pool.cardCount.ToString();
-            var desc = pool.description;
+            var cardCount = pool.CardCount.ToString();
+            var desc = pool.Description;
             _ui.showDetails(viewData, creator, dateTime, cardCount, desc);
+
+            var selfUserInfo = game.network.logic.UserInfo;
+            if (selfUserInfo != null)
+            {
+                bool stateVisible = _viewingUser == selfUserInfo.UID;
+                _ui.setDetailsStateVisible(stateVisible);
+                if (stateVisible)
+                {
+                    var stateColor = getStateColor(pool.State);
+                    var stateText = getStateText(pool.State);
+                    _ui.setDetailsState(stateColor, stateText);
+                }
+            }
+        }
+        private async void onRefreshClickedCallback()
+        {
+            await updatePage();
         }
         #endregion
         private async void onPageButtonClickCallback(bool next)
@@ -113,6 +139,16 @@ namespace Controllers
             _page += next ? 1 : -1;
             await updatePage();
         }
+
+        #region 详细信息
+        private void onCreatorClickedCallback()
+        {
+            if (_viewingCardPool == null)
+                return;
+            viewUser((int)_viewingCardPool.Author);
+        }
+        #endregion
+
         private void onDownloadClickCallback()
         {
         }
@@ -325,40 +361,110 @@ namespace Controllers
             }
             return null;
         }
+        private async Task<Sprite> loadCardPoolCoverImage(string id)
+        {
+            if (id == null)
+                return null;
+            if (!game.cache.FileExists(ResourceType.Picture, id))
+            {
+                try
+                {
+                    byte[] bytes;
+                    try
+                    {
+                        bytes = await game.network.getWorkshopResource("png", id);
+                    }
+                    catch (Exception)
+                    {
+                        bytes = await game.network.getWorkshopResource("jpg", id);
+                    }
+                    await game.cache.SaveCache(ResourceType.Picture, id, bytes);
+                    return game.card.parseResource<Sprite>(ResourceType.Picture, bytes);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log($"未找到缓存中的卡池封面{id}：{e}");
+                }
+            }
+
+            if (!game.cache.FileExists(ResourceType.Picture, id))
+                return game.card.getDefaultSprite();
+
+            var spriteBytes = await game.cache.ReadCache(ResourceType.Picture, id);
+            return game.card.parseResource<Sprite>(ResourceType.Picture, spriteBytes);
+        }
         #endregion
+
+        private Color getStateColor(WorkshopCardPoolState state)
+        {
+            switch (state)
+            {
+                case WorkshopCardPoolState.Deleted:
+                case WorkshopCardPoolState.Pending:
+                    return Color.gray;
+                case WorkshopCardPoolState.NoPass:
+                    return Color.red;
+                case WorkshopCardPoolState.OldVer:
+                    return Color.yellow;
+            }
+            return Color.white;
+        }
+        private string getStateText(WorkshopCardPoolState state)
+        {
+            if (_stateTexts.TryGetValue(state, out var text))
+            {
+                return game.lang._(text);
+            }
+            return game.lang._(StringTable.UNKNOWN);
+        }
+        private void viewUser(int uid)
+        {
+            if (_viewingUser == uid)
+                return;
+            _viewingUser = uid;
+            _page = 0;
+            _ = updatePage();
+        }
         private async Task updatePage()
         {
-            startWaiting();
-            await loadPage(_page);
-            stopWaiting();
+            _ui.setLoadingState(WorkshopPanel.LoadingState.Loading);
 
-            var pageViewDatas = getCurrentPageViewData();
-            _ui.updateCardPools(pageViewDatas);
+            _ui.switchViewMineOrHome(_viewingUser < 0);
+            _ui.switchViewUserLabelOrSearch(_viewingUser >= 0);
+            if (_viewingUser >= 0)
+            {
+                var label = game.lang._(VIEWING_USER_NAME_TEMPLATE, getUserName(_viewingUser));
+                _ui.setViewingUserLabel(label);
+            }
+            try
+            {
+                _ui.updateCardPools(Array.Empty<DeckListItemViewData>());
+                await loadPage(_page);
+                var pageViewDatas = await getCurrentPageViewData();
+                _ui.updateCardPools(pageViewDatas);
 
-            _ui.setPageText(game.lang._(StringTable.PAGE_NUMBER_TEMPLATE, _page + 1));
-            _ui.setPageButtonInteractable(_page > 0, _currentPagePools.Length >= _poolCountPerPage);
+                _ui.setPageText(game.lang._(StringTable.PAGE_NUMBER_TEMPLATE, _page + 1));
+                _ui.setPageButtonInteractable(_page > 0, _currentPageCardPools.Length >= _poolCountPerPage);
+
+                _ui.setLoadingState(WorkshopPanel.LoadingState.Normal);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"加载创意工坊页面{_page}失败：{e}");
+                _ui.setLoadingState(WorkshopPanel.LoadingState.Warning);
+            }
         }
         private void updateDownload()
         {
             _ui.setDownloadButtonText(game.lang._(TASK_DOWNLOAD));
             _ui.setDownloadProgress(0);
         }
-        private Task loadPage(int page)
+        private async Task loadPage(int page)
         {
-            _currentPagePools = new WorkshopPool[_poolCountPerPage];
-            for (int i = 0; i < _currentPagePools.Length; i++)
-            {
-                _currentPagePools[i] = new WorkshopPool()
-                {
-                    sprite = game.card.getDefaultSprite(),
-                    cardCount = 16,
-                    creationTime = DateTime.Now,
-                    creator = "Cuerzor58",
-                    name = "未知卡池",
-                    description = "描述",
-                };
-            }
-            return Task.CompletedTask;
+            if (_viewingUser >= 0)
+                _currentPageCardPools = await game.network.getWorkshopUserCardPools(_viewingUser, page, _poolCountPerPage);
+            else
+                _currentPageCardPools = await game.network.searchWorkshopPageCardPools(page, _poolCountPerPage, _searchFilter);
         }
         private void startWaiting(bool showProgress = false)
         {
@@ -376,25 +482,38 @@ namespace Controllers
         {
             scene.waitingBlocker.removeWaitingTask(WaitingTask.LoadWorkshop);
         }
-        private DeckListItemViewData[] getCurrentPageViewData()
+        private async Task<DeckListItemViewData[]> getCurrentPageViewData()
         {
-            var count = _currentPagePools.Length;
+            var count = _currentPageCardPools.Length;
             var viewDatas = new DeckListItemViewData[count];
             for (int i = 0; i < count; i++)
             {
-                viewDatas[i] = getCardPoolViewData(i);
+                viewDatas[i] = await getCardPoolViewData(_currentPageCardPools[i]);
             }
             return viewDatas;
         }
-        private DeckListItemViewData getCardPoolViewData(int index)
+        private async Task<DeckListItemViewData> getCardPoolViewData(WorkshopCardPoolInfo info)
         {
-            var item = _currentPagePools[index];
+            Sprite sprite = await loadCardPoolCoverImage(info.CoverImage);
             return new DeckListItemViewData()
             {
-                image = item.sprite,
+                image = sprite,
                 mode = DeckListItem.Mode.Default,
-                name = item.name
+                name = info.Name
             };
+        }
+        private string getUserName(int author)
+        {
+            try
+            {
+                var userInfo = game.network.getUserInfo(author);
+                return userInfo.Name;
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"无法找到用户{author}：{e}");
+                return game.lang._(StringTable.UNKNOWN_USER);
+            }
         }
 
         #endregion
@@ -415,7 +534,7 @@ namespace Controllers
         [TranslateMsg("尝试不勾选同意创意工坊规则上传卡池时出现的提示描述")]
         private const string HINT_AGREE_RULE_FIRST = "请先同意<b>创意工坊使用规则</b>。";
         [TranslateMsg("上传卡池成功后的提示描述")]
-        private const string HINT_UPLOAD_CARDPOOL_SUCCESS = "卡池上传成功。";
+        private const string HINT_UPLOAD_CARDPOOL_SUCCESS = "卡池上传成功，请等待工作人员进行审核。";
         [TranslateMsg("上传卡池资源失败后的提示描述，{0}为未上传的资源数量")]
         private const string HINT_UPLOAD_RESOURCE_FAILED = "卡池上传失败，有{0}个资源未上传。";
         [TranslateMsg("尝试上传已经上传的卡池后的提示描述")]
@@ -424,6 +543,22 @@ namespace Controllers
         private const string UPLOAD_PROGRESS_UPLOADING_POOL_FILE = "上传卡池文件中……";
         [TranslateMsg("上传进度-上传卡池资源")]
         private const string UPLOAD_PROGRESS_UPLOADING_RESOURCES = "上传卡池资源中……";
+        [TranslateMsg("查看其他用户的卡池时的说明")]
+        private const string VIEWING_USER_NAME_TEMPLATE = "正在查看：\n{0}上传的卡池";
+
+
+        [TranslateMsg("创意工坊卡池状态")]
+        private const string STATE_PENDING = "等待上传资源";
+        [TranslateMsg("创意工坊卡池状态")]
+        private const string STATE_REVIEWING = "审核中";
+        [TranslateMsg("创意工坊卡池状态")]
+        private const string STATE_PASS = "已通过";
+        [TranslateMsg("创意工坊卡池状态")]
+        private const string STATE_NOT_PASS = "未通过";
+        [TranslateMsg("创意工坊卡池状态")]
+        private const string STATE_OLD_VERSION = "旧版本";
+        [TranslateMsg("创意工坊卡池状态")]
+        private const string STATE_DELETED = "已删除";
 
         const float uploadCardPoolProgress = 0.25f;
         const float uploadResourceProgress = 1 - uploadCardPoolProgress;
@@ -438,13 +573,23 @@ namespace Controllers
             Sorting.MostRelevant,
             Sorting.Newest,
         };
+        private static Dictionary<WorkshopCardPoolState, string> _stateTexts = new Dictionary<WorkshopCardPoolState, string>()
+        {
+            { WorkshopCardPoolState.Pending, STATE_PENDING },
+            { WorkshopCardPoolState.Reviewing, STATE_REVIEWING },
+            { WorkshopCardPoolState.Pass, STATE_PASS },
+            { WorkshopCardPoolState.NoPass, STATE_NOT_PASS },
+            { WorkshopCardPoolState.OldVer, STATE_OLD_VERSION },
+            { WorkshopCardPoolState.Deleted, STATE_DELETED },
+        };
 
-        private WorkshopPool[] _currentPagePools;
+        private WorkshopCardPoolInfo[] _currentPageCardPools;
+        private WorkshopCardPoolInfo _viewingCardPool;
         private int _page;
 
 
         private Sorting _sorting;
-        private bool _onlyMineFilter;
+        private int _viewingUser = -1;
         private string _creatorFilter;
         private string _searchFilter;
 
@@ -466,13 +611,4 @@ namespace Controllers
         #endregion
     }
 
-    public class WorkshopPool
-    {
-        public Sprite sprite;
-        public string name;
-        public string creator;
-        public DateTime creationTime;
-        public int cardCount;
-        public string description;
-    }
 }
