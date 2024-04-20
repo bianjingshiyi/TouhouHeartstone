@@ -117,12 +117,13 @@ namespace UI
         #endregion
 
         #region ÉÏ´«¿¨³ØÃæ°å
-        public void setUploadingPool(DeckListItemViewData viewData, int cardCount, int version)
+        public void setUploadingPool(DeckListItemViewData viewData, int cardCount, int version, string dependencies)
         {
             _uploadPoolHeader.updateView(viewData);
             _uploadPoolCardCount.text = cardCount.ToString();
             _uploadPoolVersion.text = version.ToString();
             _uploadPoolDescInputField.text = string.Empty;
+            _uploadPoolDependencyText.text = dependencies;
             _uploadPoolRuleAgreeToggle.isOn = false;
         }
         public void setUploadPoolPanelVisible(bool value)
@@ -288,6 +289,8 @@ namespace UI
         private TextMeshProUGUI _uploadPoolCardCount;
         [SerializeField]
         private TextMeshProUGUI _uploadPoolVersion;
+        [SerializeField]
+        private TextMeshProUGUI _uploadPoolDependencyText;
         [SerializeField]
         private TMP_InputField _uploadPoolDescInputField;
         [SerializeField]

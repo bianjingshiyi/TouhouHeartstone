@@ -22,6 +22,9 @@ namespace Controllers
             _page = 0;
             _viewingCardPool = null;
             _ui.hideDetails();
+            _ui.setSelectUploadPoolPanelVisible(false);
+            _ui.setUploadPoolPanelVisible(false);
+            _ui.setDetailsStateVisible(false);
             await updatePage();
             updateDownload();
         }
@@ -202,7 +205,46 @@ namespace Controllers
                     image = await game.card.loadCardPoolImage(info),
                     name = game.card.getCardPoolName(info),
                 };
-                _ui.setUploadingPool(viewData, cardCount, version);
+
+                // 获取卡池依赖
+                var dependencies = info.dependencyRefs;
+                string dependencyString;
+                if (dependencies != null && dependencies.Length > 0)
+                {
+                    var dependencyNames = new string[dependencies.Length];
+                    for (int i = 0; i < dependencies.Length; i++)
+                    {
+                        var dep = dependencies[i];
+                        var localRef = game.card.getLocalCardPoolReference(dep.cardPoolId);
+                        var (depInfo, depPool) = await game.card.getOrLoadCardPool(localRef);
+                        if (depInfo == null)
+                        {
+                            // 本地没有该卡池。
+                            var poolName = game.lang._(StringTable.EDITOR_UNKNOWN_CARD_POOL);
+                            var str = game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, poolName, dep.version);
+                            dependencyNames[i] = $"<color=red>{str}</color>";
+                        }
+                        else if (depInfo.editTime > dep.version)
+                        {
+                            // 本地有该卡池的旧版本。
+                            var poolName = game.card.getCardPoolName(depInfo);
+                            var str = game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, poolName, dep.version);
+                            dependencyNames[i] = $"<color=yellow>{str}</color>";
+                        }
+                        else
+                        {
+                            // 本地有该卡池。
+                            var poolName = game.card.getCardPoolName(depInfo);
+                            dependencyNames[i] = game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, poolName, dep.version);
+                        }
+                    }
+                    dependencyString = string.Join("\n", dependencyNames);
+                }
+                else
+                {
+                    dependencyString = game.lang._(StringTable.NONE);
+                }
+                _ui.setUploadingPool(viewData, cardCount, version, dependencyString);
                 _ui.setSelectUploadPoolPanelVisible(false);
                 _ui.setUploadPoolPanelVisible(true);
             }
@@ -242,8 +284,17 @@ namespace Controllers
             }
 
             startWaiting(true);
+;
             try
             {
+                var errorMessage = await validateCardPoolUpload();
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    var title = game.lang._(StringTable.ERROR);
+                    game.ui.dialog.ShowConfirm(title, errorMessage);
+                    return;
+                }
+
                 await startUploadCardPool(desc);
             }
             catch (Exception e)
@@ -263,6 +314,43 @@ namespace Controllers
         #endregion
 
         #region 上传卡池
+        private async Task<string> validateCardPoolUpload()
+        {
+            var info = game.card.getLocalCardPoolInfo(_uploadingPoolId);
+            var dependencies = info.dependencyRefs.Where(dep => !game.card.isInnateCardPool(dep));
+            List<CardPoolReference> notUploadedDependencies = new List<CardPoolReference>();
+            foreach (var dep in dependencies)
+            {
+                var localRef = game.card.getLocalCardPoolReference(dep.cardPoolId);
+                if (!game.card.isLocalCardPoolRefExists(localRef))
+                    // 有丢失的依赖。
+                    return game.lang._(ERROR_UPLOADING_CARDPOOL_HAS_MISSING_DEPENDENCY);
+
+                if (dep.version < localRef.CardPoolVersion)
+                    // 有过时的依赖。
+                    return game.lang._(ERROR_UPLOADING_CARDPOOL_HAS_OUTDATED_DEPENDENCY);
+
+                var depInfo = await getWorkshopCardPoolFile(dep);
+                if (depInfo == null)
+                    // 有未上传的依赖。
+                    notUploadedDependencies.Add(dep);
+            }
+            if (notUploadedDependencies.Count > 0)
+            {
+                const int maxCount = 5;
+                var depNames = string.Join(',', notUploadedDependencies.Take(maxCount).Select(dep => 
+                {
+                    var poolInfo = game.card.getCardPoolInfo(dep);
+                    return game.card.getCardPoolName(poolInfo);
+                }));
+                if (notUploadedDependencies.Count > maxCount)
+                {
+                    depNames = game.lang._(StringTable.TRIMMED_COTENTS, depNames);
+                }
+                return game.lang._(ERROR_UPLOADING_CARDPOOL_HAS_NOT_UPLOADED_DEPENDENCY, depNames);
+            }
+            return null;
+        }
         private async Task startUploadCardPool(string desc)
         {
 
@@ -531,6 +619,12 @@ namespace Controllers
         private const string SORTING_NEWEST = "最新上传";
         [TranslateMsg("尝试上传卡池时出现的错误描述，{0}为错误信息")]
         private const string ERROR_UPLOADING_CARDPOOL = "尝试上传卡池时出现错误：{0}";
+        [TranslateMsg("尝试上传拥有丢失卡池依赖的卡池时出现的错误描述")]
+        private const string ERROR_UPLOADING_CARDPOOL_HAS_MISSING_DEPENDENCY = "该卡池拥有丢失的卡池依赖，无法上传。";
+        [TranslateMsg("尝试上传拥有过时卡池依赖的卡池时出现的错误描述")]
+        private const string ERROR_UPLOADING_CARDPOOL_HAS_OUTDATED_DEPENDENCY = "该卡池拥有过时的卡池依赖，无法上传。";
+        [TranslateMsg("尝试上传拥有未上传卡池依赖的卡池时出现的错误描述，{0}为未上传卡池")]
+        private const string ERROR_UPLOADING_CARDPOOL_HAS_NOT_UPLOADED_DEPENDENCY = "以下依赖卡池没有被上传至创意工坊，请先将其上传：\n{0}";
         [TranslateMsg("尝试不勾选同意创意工坊规则上传卡池时出现的提示描述")]
         private const string HINT_AGREE_RULE_FIRST = "请先同意<b>创意工坊使用规则</b>。";
         [TranslateMsg("上传卡池成功后的提示描述")]

@@ -1027,6 +1027,8 @@ namespace Game
         }
         public bool isLocalCardPoolRefExists(ICardPoolReference cardPoolRef)
         {
+            if (cardPoolRef == null)
+                return false;
             var info = game.card.getLocalCardPoolInfo(cardPoolRef.CardPoolID);
             return info != null && info.editTime == cardPoolRef.CardPoolVersion;
         }
