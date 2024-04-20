@@ -146,7 +146,7 @@ namespace UI
             _pageTabs.updateList(pageNames.Length, (i, rect) =>
             {
                 var settingPageTab = rect.GetComponent<SettingPageTab>();
-                settingPageTab.setName(main.lang._(pageNames[i]));
+                settingPageTab.setName(main.lang._p(CONTEXT_SETTING_PAGE, pageNames[i]));
                 settingPageTab.setSelected(i == _selectedPage);
             },
             rect =>
@@ -204,11 +204,12 @@ namespace UI
         const string SETTING_CACHE_CLEARED = "缓存文件已清除";
 
 
-        [TranslateMsg("设置界面-页面名称")]
+        const string CONTEXT_SETTING_PAGE = "设置面板的页面";
+        [TranslateMsg("设置界面-页面名称", CONTEXT_SETTING_PAGE)]
         const string SETTING_PAGE_NAME_SYSTEM = "系统";
-        [TranslateMsg("设置界面-页面名称")]
+        [TranslateMsg("设置界面-页面名称", CONTEXT_SETTING_PAGE)]
         const string SETTING_PAGE_NAME_AUDIO = "音频";
-        [TranslateMsg("设置界面-页面名称")]
+        [TranslateMsg("设置界面-页面名称", CONTEXT_SETTING_PAGE)]
         const string SETTING_PAGE_NAME_EDITOR = "编辑器";
 
         MainManager main => this.findInstance<MainManager>();
