@@ -587,7 +587,11 @@ namespace Controllers
             {
                 image = sprite,
                 mode = DeckListItem.Mode.Default,
-                name = info.Name
+                name = info.Name,
+                hasPrivatePools = info.State == WorkshopCardPoolState.Pending,
+                isWarning = info.State == WorkshopCardPoolState.OldVer,
+                isError = info.State == WorkshopCardPoolState.NoPass || info.State == WorkshopCardPoolState.Deleted,
+                isWaiting = info.State == WorkshopCardPoolState.Reviewing,
             };
         }
         private string getUserName(int author)

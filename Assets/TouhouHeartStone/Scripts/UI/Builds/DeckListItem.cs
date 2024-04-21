@@ -16,6 +16,8 @@ namespace UI
             _image.sprite = viewData.image;
             _imageButton.interactable = !viewData.banned;
             _warningImage.gameObject.SetActive(viewData.isWarning);
+            _errorImage.gameObject.SetActive(viewData.isError);
+            _waitingImage.gameObject.SetActive(viewData.isWaiting);
             _cardPoolWarningImage.gameObject.SetActive(viewData.hasPrivatePools);
             _fullButtonText.text = viewData.buttonText;
             if (_toggle)
@@ -126,6 +128,10 @@ namespace UI
         private Image _warningImage;
         [SerializeField]
         private Image _cardPoolWarningImage;
+        [SerializeField]
+        private Image _errorImage;
+        [SerializeField]
+        private Image _waitingImage;
         #endregion
 
         #region 内嵌类
@@ -155,7 +161,9 @@ namespace UI
         public string name;
         public Sprite image;
         public bool isWarning;
+        public bool isError;
         public bool hasPrivatePools;
+        public bool isWaiting;
         public DeckListItem.Mode mode;
         public bool banned;
         public bool selected;
