@@ -95,9 +95,10 @@ namespace Game
         /// <returns>是否成功保存卡池。</returns>
         public Task<bool> saveCardPool(CardPoolInfo cardPoolInfo)
         {
+            if (cardPoolInfo == null) { return Task.FromResult(false); }//如果没有保存需求就跳过这个流程
+
             //如果当前的卡池没有被保存过，没有分配地址，则给它分配一个地址。
             string cardPoolPath = null;
-            if (cardPoolInfo == null) { return Task.FromResult(false); }//如果没有保存需求就跳过这个流程
             foreach (var pair in _localCardPoolInfoDict)
             {
                 if (pair.Value.cardPoolId == cardPoolInfo.cardPoolId)
@@ -109,7 +110,7 @@ namespace Game
             if (cardPoolPath == null)
             {
                 //没有指定地址
-                cardPoolPath = allocCardPoolPath(cardPoolInfo);
+                cardPoolPath = allocCardPoolPathByName(cardPoolInfo);
             }
             return saveCardPool(cardPoolInfo, cardPoolPath);
         }
@@ -177,6 +178,17 @@ namespace Game
             removeInfoInvalidLocalizations(cardPoolInfo);
             removeInvalidLocalizations(cardPool);
 
+            return await saveCardPoolFileOnly(cardPoolInfo, cardPool, path);
+        }
+        /// <summary>
+        /// 按指定的路径和内容保存卡池（只是保存文件，不进行其他处理）。
+        /// </summary>
+        /// <param name="cardPoolInfo">卡池信息。</param>
+        /// <param name="cardPool">卡池内容。</param>
+        /// <param name="path">路径。</param>
+        /// <returns>是否成功保存卡池。</returns>
+        public async Task<bool> saveCardPoolFileOnly(CardPoolInfo cardPoolInfo, CardPool cardPool, string path)
+        {
             // 打成序列化对象。
             SerializableCardPoolInfo seriCardPoolInfo = new(cardPoolInfo);
             SerializableCardPool seriCardPool = new(cardPool);
@@ -919,6 +931,63 @@ namespace Game
                 return (cardPoolInfo, cardPool);
             }
         }
+        public async Task<(CardPoolInfo info, CardPool pool)> parseCardPoolFile(string path)
+        {
+            CardPoolInfo cardPoolInfo;
+            CardPool cardPool;
+
+            try
+            {
+                bool isStreamingAsset = path.isStreamingAssetsPath(out _);
+
+                using Stream stream = isStreamingAsset ? await game.fileManager.getStreamingFileStreamAsync(path) : await game.fileManager.getFileStreamAsync(path);
+                // 读取文件失败。
+                if (stream == null || stream.Length <= 0)
+                    throw new FileLoadException($"卡池文件{path}为空");
+                return parseCardPoolStream(stream);
+            }
+            catch (Exception e)
+            {
+                throw new FormatException($"反序列化卡池{path}失败：{e}", e);
+            }
+        }
+        public bool checkCardPoolHeaderBytes(byte[] data)
+        {
+            return data.Length >= 2 && data[0] == CARD_POOL_VERSION_3_HEADER_BYTE_0 && data[1] == CARD_POOL_VERSION_3_HEADER_BYTE_1;
+        }
+        public bool tryParseCardPoolBytes(byte[] data, out CardPoolInfo cardPoolInfo, out CardPool cardPool)
+        {
+            using var stream = new MemoryStream(data);
+            return tryParseCardPoolBytesStream(stream, out cardPoolInfo, out cardPool);
+        }
+        public bool tryParseCardPoolBytesStream(Stream stream, out CardPoolInfo cardPoolInfo, out CardPool cardPool)
+        {
+            cardPoolInfo = null;
+            cardPool = null;
+
+            var bytes = new byte[5];
+            stream.Read(bytes, 0, bytes.Length);
+            if (!checkCardPoolHeaderBytes(bytes))
+                return false;
+
+            var headerLength = BitConverter.ToInt16(bytes, 2);
+            var headerBytes = new byte[headerLength];
+            stream.Read(headerBytes, 0, headerBytes.Length);
+            cardPoolInfo = parseCardPoolInfoBytes(headerBytes);
+
+            var poolBytes = new byte[stream.Length - stream.Position];
+            stream.Read(poolBytes, 0, poolBytes.Length);
+            cardPool = parseCardPoolBytes(cardPoolInfo.cardPoolId, poolBytes);
+            return true;
+        }
+        public CardPoolInfo parseCardPoolInfoBytes(byte[] bytes)
+        {
+            return JsonHelper.fromBytes<SerializableCardPoolInfo>(bytes).toInfo();
+        }
+        public CardPool parseCardPoolBytes(long cardPoolId, byte[] bytes)
+        {
+            return JsonHelper.fromBytes<SerializableCardPool>(bytes).toCardPool(cardPoolId, game, GraphTypes.getTypeByName);
+        }
         #endregion
 
         #region 卡池属性检测
@@ -1033,6 +1102,33 @@ namespace Game
             return info != null && info.editTime == cardPoolRef.CardPoolVersion;
         }
         #endregion
+        public string allocCardPoolPathByName(CardPoolInfo cardPool)
+        {
+            var cardPoolName = game.card.getCardPoolName(cardPool);
+            string path = Path.Combine(_persistentDataPath, cardPoolDirName, $"{cardPoolName}.{cardPoolFilePostfix}");
+            for (int i = 0; i < 100 && File.Exists(path); i++)
+            {
+                if (i == 99)
+                {
+                    throw new IOException("达到最大文件存储上限");
+                }
+                Match match = Regex.Match(path, $@"(?<path>.+)\s\((?<num>\d+)\)\.{cardPoolFilePostfix}");
+                if (match.Success)
+                {
+                    int num = int.Parse(match.Groups["num"].Value);
+                    path = path.Replace($"({num})", $"({num + 1})");
+                }
+                else
+                {
+                    path = path.Insert(path.LastIndexOf('.'), " (0)");
+                }
+            }
+            return path;
+        }
+        public string allocCardPoolPathById(CardPoolInfo cardPool)
+        {
+            return Path.Combine(_persistentDataPath, cardPoolDirName, $"{cardPool.cardPoolId}.{cardPoolFilePostfix}");
+        }
         public void showCardPoolLoadErrorDialog()
         {
             var title = game.lang._(StringTable.ERROR);
@@ -1983,29 +2079,6 @@ namespace Game
         }
         #endregion
 
-        private string allocCardPoolPath(CardPoolInfo cardPool)
-        {
-            var cardPoolName = cardPool.cardPoolNameKey;
-            string path = Path.Combine(_persistentDataPath, cardPoolDirName, $"{cardPoolName}.{cardPoolFilePostfix}");
-            for (int i = 0; i < 100 && File.Exists(path); i++)
-            {
-                if (i == 99)
-                {
-                    throw new IOException("达到最大文件存储上限");
-                }
-                Match match = Regex.Match(path, $@"(?<path>.+)\s\((?<num>\d+)\)\.{cardPoolFilePostfix}");
-                if (match.Success)
-                {
-                    int num = int.Parse(match.Groups["num"].Value);
-                    path = path.Replace($"({num})", $"({num + 1})");
-                }
-                else
-                {
-                    path = path.Insert(path.LastIndexOf('.'), " (0)");
-                }
-            }
-            return path;
-        }
         /// <summary>
         /// 建立需要的卡池文件夹
         /// </summary>
@@ -2117,23 +2190,7 @@ namespace Game
         {
             try
             {
-                CardPoolInfo cardPoolInfo;
-                CardPool cardPool;
-
-                try
-                {
-                    bool isStreamingAsset = path.isStreamingAssetsPath(out _);
-
-                    using Stream stream = isStreamingAsset ? await game.fileManager.getStreamingFileStreamAsync(path) : await game.fileManager.getFileStreamAsync(path);
-                    // 读取文件失败。
-                    if (stream == null || stream.Length <= 0)
-                        throw new FileLoadException($"卡池文件{path}为空");
-                    (cardPoolInfo, cardPool) = parseCardPoolStream(stream);
-                }
-                catch (Exception e)
-                {
-                    throw new FormatException($"反序列化卡池{path}失败：{e}", e);
-                }
+                var (cardPoolInfo, cardPool) = await parseCardPoolFile(path);
 
                 // 移除冲突的卡池，并添加该卡池。
                 removeConflictCardPoolInfo(_localCardPoolInfoDict, cardPoolInfo.cardPoolId, isLocalCardPoolPath(path));

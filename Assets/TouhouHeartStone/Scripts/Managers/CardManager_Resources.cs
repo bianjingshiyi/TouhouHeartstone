@@ -65,6 +65,28 @@ namespace Game
             return nameWithoutExt.Length == 64 && imagePath.Substring(0, 32).All(c => ('0' <= c && c <= '9') || ('a' <= c && c <= 'z'));
         }
 
+        /// <summary>
+        /// 检测卡池资源是否存在。（不包括缓存文件）
+        /// </summary>
+        /// <param name="poolRef">卡池引用。</param>
+        /// <param name="type">资源类型。</param>
+        /// <param name="relativePath">相对路径。</param>
+        /// <returns></returns>
+        public bool isResourceExists(ICardPoolReference poolRef, ResourceType type, string relativePath)
+        {
+            // 路径为空
+            if (string.IsNullOrEmpty(relativePath))
+                return false;
+
+            var fullPath = getFullResourcePath(poolRef, type, relativePath);
+
+            // 流式资源
+            if (fullPath.isStreamingAssetsPath(out var streamingPath))
+                return game.fileManager.isStreamingBinaryFileExist(streamingPath);
+
+            // 外部资源
+            return game.fileManager.isFileExist(fullPath);
+        }
         #region 加载
         public T parseResource<T>(ResourceType resourceType, byte[] data) where T : Object
         {
@@ -262,9 +284,13 @@ namespace Game
                 }
             }
         }
-        public async Task<string> saveResourceBytes(long cardPoolId, byte[] bytes, ResourceType type, string extension)
+        public Task<string> saveResourceBytes(long cardPoolId, byte[] bytes, ResourceType type, string extension)
         {
             string hash = calcHashString(bytes);
+            return saveResourceBytes(cardPoolId, bytes, type, hash, extension);
+        }
+        public async Task<string> saveResourceBytes(long cardPoolId, byte[] bytes, ResourceType type, string hash, string extension)
+        {
             string fileName = $"{hash}.{extension}";
 
             var poolRef = getLocalCardPoolReference(cardPoolId);

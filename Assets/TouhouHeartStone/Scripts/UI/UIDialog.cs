@@ -1,6 +1,7 @@
 ﻿using MukioI18n;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine.UI;
 
 namespace UI
@@ -10,6 +11,18 @@ namespace UI
         protected override void Awake()
         {
             base.Awake();
+        }
+        /// <summary>
+        /// 显示一个只有两个选项的询问对话框
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="content"></param>
+        /// <returns>选择结果，true为确认，false为取消</returns>
+        public Task<bool> ShowQuestionAsync(string title, string content)
+        {
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            ShowQuestion(title, content, () => tcs.SetResult(true), () => tcs.SetResult(false));
+            return tcs.Task;
         }
 
         /// <summary>

@@ -30,20 +30,21 @@ namespace UI
             _homeButton.gameObject.SetActive(!viewMine);
         }
         #region 卡池详细信息
-        public void hideDetails()
+        public void setDetailsVisible(DetailPage page)
         {
-            _detailsNothingPage.SetActive(true);
-            _detailsPreviewPage.SetActive(false);
+            _detailsNothingPage.SetActive(page == DetailPage.Nothing);
+            _detailsPreviewPage.SetActive(page == DetailPage.Preview);
+            _detailsLoadingPage.SetActive(page == DetailPage.Loading);
         }
-        public void showDetails(DeckListItemViewData viewData, string creator, string time, string cardCount, string description)
+        public void setDetails(DeckListItemViewData viewData, WorkshopCardPoolDetailsViewData details)
         {
-            _detailsNothingPage.SetActive(false);
-            _detailsPreviewPage.SetActive(true);
             _detailsPoolItem.updateView(viewData);
-            _detailsCreatorText.text = creator;
-            _detailsCreateTimeText.text = time;
-            _detailsCardCountText.text = cardCount;
-            _detailsDescriptionText.text = description;
+            _detailsCreatorText.text = details.creator;
+            _detailsCreateTimeText.text = details.creationTime;
+            _detailsCardCountText.text = details.cardCount;
+            _detailsDescriptionText.text = details.description;
+            _detailsVersionText.text = details.version;
+            _detailsDependenciesText.text = details.dependencies;
         }
         public void setDetailsState(Color color, string state)
         {
@@ -55,6 +56,8 @@ namespace UI
             _detailsStateObj.SetActive(visible);
         }
         #endregion
+
+        #region 任务栏
         public void setDownloadProgress(float progress)
         {
             var parent = _downloadProgressBar.parent as RectTransform;
@@ -62,10 +65,15 @@ namespace UI
             sizeDelta.x = Mathf.Lerp(0, parent.rect.size.x, progress);
             _downloadProgressBar.sizeDelta = sizeDelta;
         }
+        public void setDownloadButtonInteractable(bool value)
+        {
+            _downloadButton.interactable = value;
+        }
         public void setDownloadButtonText(string text)
         {
             _downloadButtonText.text = text;
         }
+        #endregion
 
         #region 卡池列表
         public void updateCardPools(DeckListItemViewData[] viewData)
@@ -246,6 +254,8 @@ namespace UI
         [SerializeField]
         private GameObject _detailsPreviewPage;
         [SerializeField]
+        private GameObject _detailsLoadingPage;
+        [SerializeField]
         private DeckListItem _detailsPoolItem;
         [SerializeField]
         private GameObject _detailsStateObj;
@@ -254,11 +264,15 @@ namespace UI
         [SerializeField]
         private TextMeshProUGUI _detailsCreatorText;
         [SerializeField]
-        private TextMeshProUGUI _detailsCreateTimeText;
+        private TextMeshProUGUI _detailsDescriptionText;
         [SerializeField]
         private TextMeshProUGUI _detailsCardCountText;
         [SerializeField]
-        private TextMeshProUGUI _detailsDescriptionText;
+        private TextMeshProUGUI _detailsCreateTimeText;
+        [SerializeField]
+        private TextMeshProUGUI _detailsVersionText;
+        [SerializeField]
+        private TextMeshProUGUI _detailsDependenciesText;
         [SerializeField]
         private Button _detailsCreatorButton;
 
@@ -316,6 +330,21 @@ namespace UI
             Loading,
             Warning
         }
+        public enum DetailPage
+        {
+            Nothing,
+            Preview,
+            Loading
+        }
         #endregion
+    }
+    public struct WorkshopCardPoolDetailsViewData
+    {
+        public string creator;
+        public string creationTime;
+        public string cardCount;
+        public string description;
+        public string version;
+        public string dependencies;
     }
 }
