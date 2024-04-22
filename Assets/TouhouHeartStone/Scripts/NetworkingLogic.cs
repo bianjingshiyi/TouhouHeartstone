@@ -386,6 +386,10 @@ namespace Game
         {
             return ServerClient.WorkshopDeleteCardPool(id, version);
         }
+        public Task<WorkshopCardPoolReview[]> getWorkshopCardPoolReviews(long id, int version)
+        {
+            return ServerClient.WorkshopGetCardPoolReviews(id, version);
+        }
         #endregion
 
         /// <summary>

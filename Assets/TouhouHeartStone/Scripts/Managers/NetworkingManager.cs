@@ -270,6 +270,10 @@ namespace Game
         {
             return logic.deleteWorkshopCardPool(id, version);
         }
+        public Task<WorkshopCardPoolReview[]> getWorkshopCardPoolReviews(long id, int version)
+        {
+            return logic.getWorkshopCardPoolReviews(id, version);
+        }
         #endregion
 
         #endregion 公有方法

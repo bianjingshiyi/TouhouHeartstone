@@ -55,6 +55,14 @@ namespace UI
         {
             _detailsStateObj.SetActive(visible);
         }
+        public void setReviewsText(string reviewText)
+        {
+            _detailsReviewText.text = reviewText;
+        }
+        public void setReviewsVisible(bool visible)
+        {
+            _detailsReviewObj.SetActive(visible);
+        }
         #endregion
 
         #region »ŒŒÒ¿∏
@@ -263,6 +271,10 @@ namespace UI
         private GameObject _detailsStateObj;
         [SerializeField]
         private TextMeshProUGUI _detailsStateText;
+        [SerializeField]
+        private GameObject _detailsReviewObj;
+        [SerializeField]
+        private TextMeshProUGUI _detailsReviewText;
         [SerializeField]
         private TextMeshProUGUI _detailsCreatorText;
         [SerializeField]

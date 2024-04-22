@@ -525,19 +525,6 @@ namespace Controllers
 
             await updateCardPoolDetails(workshopInfo);
             updateDownloadButton();
-
-            var selfUserInfo = game.network.logic.UserInfo;
-            if (selfUserInfo != null)
-            {
-                bool stateVisible = _viewingUser == selfUserInfo.UID;
-                _ui.setDetailsStateVisible(stateVisible);
-                if (stateVisible)
-                {
-                    var stateColor = getStateColor(workshopInfo.State);
-                    var stateText = getStateText(workshopInfo.State);
-                    _ui.setDetailsState(stateColor, stateText);
-                }
-            }
         }
         private void deselectCardPool()
         {
@@ -564,6 +551,29 @@ namespace Controllers
                 dependencies = dependencies
             };
             _ui.setDetails(viewData, details);
+
+            // 卡池状态。
+            var selfUserInfo = game.network.logic.UserInfo;
+            if (selfUserInfo != null)
+            {
+                bool stateVisible = _viewingUser == selfUserInfo.UID;
+                bool reviewsVisible = stateVisible && workshopInfo.State == WorkshopCardPoolState.NoPass;
+                _ui.setDetailsStateVisible(stateVisible);
+                _ui.setReviewsVisible(reviewsVisible);
+                if (stateVisible)
+                {
+                    var stateColor = getStateColor(workshopInfo.State);
+                    var stateText = getStateText(workshopInfo.State);
+                    _ui.setDetailsState(stateColor, stateText);
+                }
+                if (reviewsVisible)
+                {
+                    var reviews = await game.network.getWorkshopCardPoolReviews(workshopInfo.ID, (int)workshopInfo.Version);
+                    var reviewString = getReviewsText(reviews);
+                    _ui.setReviewsText(reviewString);
+                }
+            }
+
             _ui.setDetailsVisible(WorkshopPanel.DetailPage.Preview);
         }
         private async Task<string> getWorkshopCardPoolDependenciesName(WorkshopCardPoolInfo workshopInfo)
@@ -585,13 +595,16 @@ namespace Controllers
                     else
                     {
                         var depInfo = await getWorkshopCardPoolFile(dep.ID, dep.Version);
-                        var poolString = game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, depInfo.Name, dep.Version);
-                        if (depInfo.State == WorkshopCardPoolState.Deleted)
+                        if (depInfo != null)
                         {
-                            poolString = $"<color=grey><s>{poolString}</s></color>";
+                            var poolString = game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, depInfo.Name, dep.Version);
+                            if (depInfo.State == WorkshopCardPoolState.Deleted)
+                            {
+                                poolString = $"<color=grey><s>{poolString}</s></color>";
+                            }
+                            dependencyNames.Add(poolString);
+                            continue;
                         }
-                        dependencyNames.Add(poolString);
-                        continue;
                     }
                 }
                 dependencyNames.Add($"<color=red>{game.lang._(StringTable.EDITOR_UNKNOWN_CARD_POOL)}</color>");
@@ -848,6 +861,30 @@ namespace Controllers
             }
             return game.lang._(StringTable.UNKNOWN);
         }
+        private string getReviewsText(IEnumerable<WorkshopCardPoolReview> reviews)
+        {
+            if (reviews.Count() <= 0)
+                return game.lang._(StringTable.NONE);
+            var texts = reviews.Select(r =>
+            {
+                string resultText;
+                switch (r.Result)
+                {
+                    case WorkshopReviewResult.Pass:
+                        resultText = $"<color=green>{game.lang._(REVIEW_RESULT_PASS)}</color>";
+                        break;
+                    case WorkshopReviewResult.NotPass:
+                        resultText = $"<color=red>{game.lang._(REVIEW_RESULT_NOT_PASS)}</color>";
+                        break;
+                    default:
+                        resultText = game.lang._(REVIEW_RESULT_COMMENT);
+                        break;
+                }
+                string messageText = string.IsNullOrEmpty(r.Message) ? game.lang._(NO_DESCRIPTION_PROVIDED) : r.Message;
+                return game.lang._(REVIEW_TEMPLATE, resultText, messageText);
+            });
+            return string.Join('\n', texts);
+        }
         private async Task viewUser(int uid, bool forceUpdate = false)
         {
             if (_viewingUser == uid && !forceUpdate)
@@ -1018,6 +1055,15 @@ namespace Controllers
         private const string BUTTON_TEXT_CANCEL_DOWNLOADING = "取消下载";
         [TranslateMsg("创意工坊-空的卡池说明")]
         private const string NO_DESCRIPTION_PROVIDED = "未提供说明。";
+
+        [TranslateMsg("创意工坊-审核意见结果模板，{0}为审核结果，{1}为意见")]
+        private const string REVIEW_TEMPLATE = "{0}{1}";
+        [TranslateMsg("创意工坊-审核意见结果")]
+        private const string REVIEW_RESULT_PASS = "[同意]";
+        [TranslateMsg("创意工坊-审核意见结果")]
+        private const string REVIEW_RESULT_NOT_PASS = "[拒绝]";
+        [TranslateMsg("创意工坊-审核意见结果")]
+        private const string REVIEW_RESULT_COMMENT = "[讨论]";
 
 
         [TranslateMsg("创意工坊-卡池状态")]
