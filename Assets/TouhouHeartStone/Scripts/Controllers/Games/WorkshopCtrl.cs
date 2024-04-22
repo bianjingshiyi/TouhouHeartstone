@@ -20,13 +20,11 @@ namespace Controllers
         public async Task display()
         {
             gameObject.SetActive(true);
-            _page = 0;
-            deselectCardPool();
             _ui.setSelectUploadPoolPanelVisible(false);
             _ui.setUploadPoolPanelVisible(false);
             _ui.setDetailsStateVisible(false);
-            await updatePage();
-            updateDownloadButton();
+            deselectCardPool();
+            await viewUser(-1, true);
         }
         public void hide()
         {
@@ -52,6 +50,7 @@ namespace Controllers
             _ui.onCardPoolItemClick += onClickCardPoolItemCallback;
             _ui.onPageButtonClicked += onPageButtonClickCallback;
 
+            _ui.onDeleteCardPoolClicked += onDeleteCardPoolClickedCallback;
             _ui.onCreatorClicked += onCreatorClickedCallback;
 
             _ui.onDownloadClick += onDownloadClickCallback;
@@ -92,13 +91,13 @@ namespace Controllers
         }
         private void onHomeClickedCallback()
         {
-            viewUser(-1);
+            _ = viewUser(-1);
         }
         private void onViewMineClickedCallback()
         {
             if (game.network.logic.UserInfo == null)
                 return;
-            viewUser(game.network.logic.UserInfo.UID);
+            _ = viewUser(game.network.logic.UserInfo.UID);
         }
         private void onCreatorFilterChangedCallback(string filter)
         {
@@ -132,11 +131,45 @@ namespace Controllers
         }
 
         #region 详细信息
+        private bool validateCardPoolDelete(WorkshopCardPoolInfo poolInfo, out string errorMessage)
+        {
+            if (_downloadingCardPools.Contains(poolInfo.ID))
+            {
+                errorMessage = game.lang._(ERROR_CANNOT_DELETE_DOWNLOADING_CARDPOOL);
+                return false;
+            }
+
+            errorMessage = null;
+            return true;
+        }
+
+        private async void onDeleteCardPoolClickedCallback()
+        {
+            var userInfo = game.network.logic.UserInfo;
+            if (userInfo == null)
+                return;
+            if (_viewingCardPool == null || _viewingCardPool.Author != userInfo.UID)
+                return;
+
+            if (!validateCardPoolDelete(_viewingCardPool, out var errorMessage))
+            {
+                var validateTitle = game.lang._(StringTable.ERROR);
+                game.ui.dialog.ShowConfirm(validateTitle, errorMessage);
+            }
+
+            var title = game.lang._(StringTable.WARNING);
+            var desc = game.lang._(WARNING_DELETE_CARD_POOL, _viewingCardPool.Name);
+            var result = await game.ui.dialog.ShowQuestionAsync(title, desc);
+            if (result)
+            {
+                await deleteCardPool();
+            }
+        }
         private void onCreatorClickedCallback()
         {
             if (_viewingCardPool == null)
                 return;
-            viewUser((int)_viewingCardPool.Author);
+            _ = viewUser((int)_viewingCardPool.Author);
         }
         #endregion
 
@@ -293,6 +326,7 @@ namespace Controllers
                 }
 
                 await startUploadCardPool(desc);
+                await updatePage();
             }
             catch (Exception e)
             {
@@ -441,7 +475,7 @@ namespace Controllers
         {
             try
             {
-                return await game.network.getWorkshopCardPool(id.ToString(), version);
+                return await game.network.getWorkshopCardPool(id, version);
             }
             catch (Exception e)
             {
@@ -451,7 +485,7 @@ namespace Controllers
         }
         private async Task<Sprite> loadCardPoolCoverImage(string id)
         {
-            if (id == null)
+            if (string.IsNullOrEmpty(id))
                 return null;
             if (!game.cache.FileExists(ResourceType.Picture, id))
             {
@@ -514,7 +548,8 @@ namespace Controllers
         private async Task updateCardPoolDetails(WorkshopCardPoolInfo workshopInfo)
         {
             _ui.setDetailsVisible(WorkshopPanel.DetailPage.Loading);
-            var viewData = await getCardPoolViewData(workshopInfo);
+            var viewData = await getCardPoolHeaderViewData(workshopInfo);
+
             var creationTime = DateTime.UnixEpoch.AddSeconds(workshopInfo.CreatedAt);
             creationTime += TimeZoneInfo.Local.GetUtcOffset(creationTime);
             var dateTime = game.lang._(TASK_DATETIME_TEMPLATE, creationTime.Year, creationTime.Month, creationTime.Day, creationTime.Hour, creationTime.Minute);
@@ -550,7 +585,12 @@ namespace Controllers
                     else
                     {
                         var depInfo = await getWorkshopCardPoolFile(dep.ID, dep.Version);
-                        dependencyNames.Add(game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, depInfo.Name, dep.Version));
+                        var poolString = game.lang._(StringTable.EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT, depInfo.Name, dep.Version);
+                        if (depInfo.State == WorkshopCardPoolState.Deleted)
+                        {
+                            poolString = $"<color=grey><s>{poolString}</s></color>";
+                        }
+                        dependencyNames.Add(poolString);
                         continue;
                     }
                 }
@@ -560,13 +600,18 @@ namespace Controllers
         }
         private void updateDownloadButton()
         {
-            _ui.setDownloadButtonInteractable(_viewingCardPool != null || _downloadTask != null);
+            _ui.setDownloadButtonInteractable((_viewingCardPool != null && _viewingCardPool.State != WorkshopCardPoolState.Deleted) || _downloadTask != null);
         }
         #endregion
 
         #region 下载卡池
         private string validateCardPoolDownload(WorkshopCardPoolInfo poolInfo)
         {
+            if (poolInfo.State == WorkshopCardPoolState.Deleted)
+            {
+                // 卡池已被删除。
+                return game.lang._(ERROR_DOWNLOAD_DELETED_CARDPOOL);
+            }
             var info = game.card.getLocalCardPoolInfo(poolInfo.ID);
             if (info != null)
             {
@@ -577,7 +622,8 @@ namespace Controllers
         }
         private string validateCardPoolDependenciesDownload(WorkshopCardPoolInfo poolInfo, IEnumerable<WorkshopCardPoolInfo> dependencies)
         {
-            var differentVersionDeps = dependencies.Where(dep => {
+            var differentVersionDeps = dependencies.Where(dep =>
+            {
                 if (dep == null)
                     return false;
                 var depRef = game.card.getLocalCardPoolReference(dep.ID);
@@ -610,7 +656,8 @@ namespace Controllers
 
                 // 检验卡池依赖能否被下载。
                 var allDeps = await getDownloadPoolAllDependencies(_viewingCardPool);
-                errorMessage = validateCardPoolDependenciesDownload(_viewingCardPool, allDeps);
+                var downloadableDeps = allDeps.Where(d => d.State != WorkshopCardPoolState.Deleted);
+                errorMessage = validateCardPoolDependenciesDownload(_viewingCardPool, downloadableDeps);
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
                     var title = game.lang._(StringTable.ERROR);
@@ -619,8 +666,11 @@ namespace Controllers
                 }
 
                 // 开始下载。
+                var downloading = downloadableDeps.Prepend(_viewingCardPool);
+                _downloadingCardPools.Clear();
+                _downloadingCardPools.AddRange(downloading.Select(d => d.ID));
                 _downloadCts = new CancellationTokenSource();
-                _downloadTask = downloadPoolGroup(allDeps.Prepend(_viewingCardPool));
+                _downloadTask = downloadPoolGroup(downloading);
                 _ui.setDownloadButtonText(game.lang._(BUTTON_TEXT_CANCEL_DOWNLOADING));
                 updateDownloadButton();
                 await _downloadTask;
@@ -642,6 +692,7 @@ namespace Controllers
             {
                 _downloadTask = null;
                 _downloadCts = null;
+                _downloadingCardPools.Clear();
                 _downloadedCardPools.Clear();
                 _downloadedResources.Clear();
                 _ui.setDownloadButtonText(game.lang._(BUTTON_TEXT_DOWNLOAD));
@@ -752,6 +803,29 @@ namespace Controllers
         }
         #endregion
 
+        #region 删除卡池
+        private async Task deleteCardPool()
+        {
+            try
+            {
+                startWaiting();
+                await game.network.deleteWorkshopCardPool(_viewingCardPool.ID, (int)_viewingCardPool.Version);
+                deselectCardPool();
+                await updatePage();
+            }
+            catch (Exception e)
+            {
+                var title = game.lang._(StringTable.ERROR);
+                var desc = game.lang._(ERROR_DELETING_CARDPOOL, e.Message);
+                game.ui.dialog.ShowConfirm(title, desc);
+                Debug.LogError($"删除卡池时出现错误：{e}");
+            }
+            finally
+            {
+                stopWaiting();
+            }
+        }
+        #endregion
         private Color getStateColor(WorkshopCardPoolState state)
         {
             switch (state)
@@ -774,13 +848,13 @@ namespace Controllers
             }
             return game.lang._(StringTable.UNKNOWN);
         }
-        private void viewUser(int uid)
+        private async Task viewUser(int uid, bool forceUpdate = false)
         {
-            if (_viewingUser == uid)
+            if (_viewingUser == uid && !forceUpdate)
                 return;
             _viewingUser = uid;
             _page = 0;
-            _ = updatePage();
+            await updatePage();
         }
         private async Task updatePage()
         {
@@ -840,11 +914,11 @@ namespace Controllers
             var viewDatas = new DeckListItemViewData[count];
             for (int i = 0; i < count; i++)
             {
-                viewDatas[i] = await getCardPoolViewData(_currentPageCardPools[i]);
+                viewDatas[i] = await getCardPoolItemViewData(_currentPageCardPools[i]);
             }
             return viewDatas;
         }
-        private async Task<DeckListItemViewData> getCardPoolViewData(WorkshopCardPoolInfo info)
+        private async Task<DeckListItemViewData> getCardPoolItemViewData(WorkshopCardPoolInfo info)
         {
             Sprite sprite = await loadCardPoolCoverImage(info.CoverImage);
             return new DeckListItemViewData()
@@ -853,9 +927,24 @@ namespace Controllers
                 mode = DeckListItem.Mode.Default,
                 name = info.Name,
                 hasPrivatePools = info.State == WorkshopCardPoolState.Pending,
-                isWarning = info.State == WorkshopCardPoolState.OldVer,
-                isError = info.State == WorkshopCardPoolState.NoPass || info.State == WorkshopCardPoolState.Deleted,
+                isWarning = info.State == WorkshopCardPoolState.OldVer || info.State == WorkshopCardPoolState.NoPass,
+                isError = info.State == WorkshopCardPoolState.Deleted,
                 isWaiting = info.State == WorkshopCardPoolState.Reviewing,
+            };
+        }
+        private async Task<DeckListItemViewData> getCardPoolHeaderViewData(WorkshopCardPoolInfo info)
+        {
+            Sprite sprite = await loadCardPoolCoverImage(info.CoverImage);
+            var mode = DeckListItem.Mode.Default;
+            if (info.State != WorkshopCardPoolState.Deleted && game.network.logic.UserInfo != null && info.Author == game.network.logic.UserInfo.UID)
+            {
+                mode = DeckListItem.Mode.CanDelete;
+            }
+            return new DeckListItemViewData()
+            {
+                image = sprite,
+                mode = mode,
+                name = info.Name,
             };
         }
         private string getUserName(int author)
@@ -894,11 +983,21 @@ namespace Controllers
         [TranslateMsg("创意工坊-下载卡池时出现的错误描述，{0}为错误信息")]
         private const string ERROR_DOWNLOADING_CARDPOOL = "下载卡池时出现错误：{0}";
         [TranslateMsg("创意工坊-尝试下载已经存在的卡池时出现的错误描述")]
+        private const string ERROR_DOWNLOAD_DELETED_CARDPOOL = "该卡池已被删除，无法下载。";
+        [TranslateMsg("创意工坊-尝试下载已经存在的卡池时出现的错误描述")]
         private const string ERROR_DOWNLOADING_CARDPOOL_ALREADY_EXISTS = "该卡池在本地已存在，请先将其删除。";
         [TranslateMsg("创意工坊-尝试下载已经存在本地依赖的卡池时出现的错误描述，{0}为冲突的卡池")]
         private const string ERROR_DOWNLOADING_CARDPOOL_DEPENDENCY_CONFLICT = "本地卡池与该卡池所依赖的卡池冲突，无法下载：\n{0}";
-        [TranslateMsg("创意工坊-尝试下载已经存在的卡池时出现的错误描述")]
+        [TranslateMsg("创意工坊-删除卡池时出现的错误描述，{0}为错误信息")]
+        private const string ERROR_DELETING_CARDPOOL = "删除卡池时出现错误：{0}";
+        [TranslateMsg("创意工坊-尝试删除正在下载的卡池时")]
+        private const string ERROR_CANNOT_DELETE_DOWNLOADING_CARDPOOL = "你不能删除正在下载的卡池。";
+
+        [TranslateMsg("创意工坊-尝试在下载时离开的警告")]
         private const string WARNING_QUIT_WHILE_DOWNLOADING = "正在下载卡池，退出创意工坊会取消下载。\n您确认要退出吗？";
+        [TranslateMsg("创意工坊-尝试删除卡池时出现的警告，{0}为卡池名字")]
+        private const string WARNING_DELETE_CARD_POOL = "您确认要删除卡池“{0}”吗？";
+
         [TranslateMsg("创意工坊-尝试不勾选同意创意工坊规则上传卡池时出现的提示描述")]
         private const string HINT_AGREE_RULE_FIRST = "请先同意<b>创意工坊使用规则</b>。";
         [TranslateMsg("创意工坊-上传卡池成功后的提示描述")]
@@ -906,7 +1005,7 @@ namespace Controllers
         [TranslateMsg("创意工坊-上传卡池资源失败后的提示描述，{0}为未上传的资源数量")]
         private const string HINT_UPLOAD_RESOURCE_FAILED = "卡池上传失败，有{0}个资源未上传。";
         [TranslateMsg("创意工坊-尝试上传已经上传的卡池后的提示描述")]
-        private const string HINT_CARD_POOL_ALREADY_UPLOADED = "该卡池已被上传至创意工坊，无需再次上传。";
+        private const string HINT_CARD_POOL_ALREADY_UPLOADED = "该卡池的同一版本已被上传至创意工坊，无需再次上传。\n请考虑提升卡池版本再试。";
         [TranslateMsg("创意工坊-上传进度-上传卡池文件")]
         private const string UPLOAD_PROGRESS_UPLOADING_POOL_FILE = "上传卡池文件中……";
         [TranslateMsg("创意工坊-上传进度-上传卡池资源")]
@@ -919,7 +1018,7 @@ namespace Controllers
         private const string BUTTON_TEXT_CANCEL_DOWNLOADING = "取消下载";
         [TranslateMsg("创意工坊-空的卡池说明")]
         private const string NO_DESCRIPTION_PROVIDED = "未提供说明。";
-        
+
 
         [TranslateMsg("创意工坊-卡池状态")]
         private const string STATE_PENDING = "等待上传资源";
@@ -959,7 +1058,9 @@ namespace Controllers
 
         private WorkshopCardPoolInfo[] _currentPageCardPools;
         private WorkshopCardPoolInfo _viewingCardPool;
+
         private CancellationTokenSource _downloadCts;
+        private List<long> _downloadingCardPools = new List<long>();
         private List<ICardPoolReference> _downloadedCardPools = new List<ICardPoolReference>();
         private List<string> _downloadedResources = new List<string>();
 

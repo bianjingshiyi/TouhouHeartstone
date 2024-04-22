@@ -366,7 +366,7 @@ namespace Game
         {
             return ServerClient.WorkshopSearchCardPools(page, limit, keywords);
         }
-        public Task<WorkshopCardPoolInfo> getWorkshopCardPool(string id, int version)
+        public Task<WorkshopCardPoolInfo> getWorkshopCardPool(long id, int version)
         {
             return ServerClient.WorkshopGetCardPool(id, version);
         }
@@ -381,6 +381,10 @@ namespace Game
         public Task uploadWorkshopResource(string type, string id, byte[] data)
         {
             return ServerClient.WorkshopUploadResourceAsync(type, id, data);
+        }
+        public Task<bool> deleteWorkshopCardPool(long id, int version)
+        {
+            return ServerClient.WorkshopDeleteCardPool(id, version);
         }
         #endregion
 

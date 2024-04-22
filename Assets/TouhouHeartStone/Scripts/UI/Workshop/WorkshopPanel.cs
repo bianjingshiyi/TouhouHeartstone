@@ -162,6 +162,7 @@ namespace UI
             _prevPageButton.onClick.AddListener(() => onPageButtonClicked?.Invoke(false));
             _nextPageButton.onClick.AddListener(() => onPageButtonClicked?.Invoke(true));
 
+            _detailsPoolItem.onClickDeleteButton += item => onDeleteCardPoolClicked?.Invoke();
             _detailsCreatorButton.onClick.AddListener(() => onCreatorClicked?.Invoke());
 
             _downloadButton.onClick.AddListener(() => onDownloadClick?.Invoke());
@@ -194,6 +195,7 @@ namespace UI
 
         public event Action<bool> onPageButtonClicked;
 
+        public event Action onDeleteCardPoolClicked;
         public event Action onCreatorClicked;
 
         public event Action onDownloadClick;

@@ -250,7 +250,7 @@ namespace Game
         {
             return logic.getWorkshopPageCardPool(page, limit, keywords);
         }
-        public Task<WorkshopCardPoolInfo> getWorkshopCardPool(string id, int version)
+        public Task<WorkshopCardPoolInfo> getWorkshopCardPool(long id, int version)
         {
             return logic.getWorkshopCardPool(id, version);
         }
@@ -265,6 +265,10 @@ namespace Game
         public Task uploadWorkshopResource(string type, string id, byte[] data)
         {
             return logic.uploadWorkshopResource(type, id, data);
+        }
+        public Task<bool> deleteWorkshopCardPool(long id, int version)
+        {
+            return logic.deleteWorkshopCardPool(id, version);
         }
         #endregion
 
