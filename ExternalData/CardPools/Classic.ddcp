@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 4, "cardPoolId" : NumberLong(1), "editTime" : 618, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
+{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 4, "cardPoolId" : NumberLong(1), "editTime" : 619, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -53961,14 +53961,14 @@
         "cost" : 15,
         "life" : 30,
         "skillRef" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 172
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMrA==")
         },
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [],
@@ -53979,9 +53979,9 @@
       "propDict" : {
         "cost" : 2,
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [{
@@ -54002,8 +54002,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "priority",
@@ -54023,9 +54024,9 @@
                     "name" : "cardDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "DefineReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 173
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.DefineReference",
+                      "Content" : new BinData(0, "kgHMrQ==")
                     }
                   }],
                 "propDict" : { },
@@ -54063,9 +54064,9 @@
         "life" : 2,
         "isToken" : true,
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [],
@@ -54075,18 +54076,20 @@
       "type" : "Spell",
       "propDict" : {
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         },
         "cost" : 7,
         "tags" : {
-          "_t" : "System.String[]",
-          "_v" : []
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kA==")
         },
         "keywords" : {
-          "_t" : "System.String[]",
-          "_v" : ["unique"]
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
       "effects" : [{
@@ -54107,8 +54110,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "priority",
@@ -54447,13 +54451,14 @@
         "attack" : 4,
         "life" : 4,
         "keywords" : {
-          "_t" : "System.String[]",
-          "_v" : ["rush"]
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kaRydXNo")
         },
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [{
@@ -54470,23 +54475,25 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 90
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFa")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Field"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaVGaWVsZA==")
                     }
                   }, {
                     "name" : "rangeList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Field"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaVGaWVsZA==")
                     }
                   }],
                 "propDict" : { },
@@ -54570,9 +54577,9 @@
                     "name" : "argRef",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "EventReference",
-                      "cardPoolId" : NumberLong(0),
-                      "eventName" : "UseEvent"
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
                     }
                   }],
                 "propDict" : { },
@@ -54595,9 +54602,9 @@
                     "name" : "eventReference",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "EventReference",
-                      "cardPoolId" : NumberLong(0),
-                      "eventName" : "UseEvent"
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
                     }
                   }],
                 "propDict" : { },
@@ -55002,9 +55009,9 @@
       "type" : "Spell",
       "propDict" : {
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         },
         "cost" : 1
       },
@@ -55022,20 +55029,26 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : ["trap"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kaR0cmFw")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Head"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRIZWFk")
                     }
                   }, {
                     "name" : "priority",
                     "paramIndex" : -1,
                     "value" : 0
+                  }, {
+                    "name" : "condition",
+                    "paramIndex" : -1,
+                    "value" : true
                   }],
                 "propDict" : { },
                 "consts" : null,
@@ -55292,9 +55305,9 @@
       "type" : "Spell",
       "propDict" : {
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         },
         "cost" : 1
       },
@@ -55312,15 +55325,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : ["trap"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kaR0cmFw")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Head"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRIZWFk")
                     }
                   }, {
                     "name" : "priority",
@@ -55626,9 +55641,9 @@
       "type" : "Spell",
       "propDict" : {
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         },
         "cost" : 1
       },
@@ -55646,15 +55661,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : ["trap"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kaR0cmFw")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Head"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRIZWFk")
                     }
                   }, {
                     "name" : "priority",
@@ -55818,9 +55835,9 @@
                     "name" : "cardDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "DefineReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 179
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.DefineReference",
+                      "Content" : new BinData(0, "kgHMsw==")
                     }
                   }],
                 "propDict" : { },
@@ -55903,8 +55920,9 @@
         "attack" : 1,
         "life" : 1,
         "tags" : {
-          "_t" : "System.String[]",
-          "_v" : ["Beast"]
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kaVCZWFzdA==")
         }
       },
       "effects" : [],
@@ -55914,14 +55932,15 @@
       "type" : "Spell",
       "propDict" : {
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         },
         "cost" : 9,
         "keywords" : {
-          "_t" : "System.String[]",
-          "_v" : ["unique"]
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
       "effects" : [{
@@ -55938,23 +55957,25 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 91
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFb")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Hand"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRIYW5k")
                     }
                   }, {
                     "name" : "rangeList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Hand"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRIYW5k")
                     }
                   }],
                 "propDict" : { },
@@ -56004,9 +56025,9 @@
                     "name" : "eventReference",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "EventReference",
-                      "cardPoolId" : NumberLong(0),
-                      "eventName" : "UseEvent"
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
                     }
                   }],
                 "propDict" : { },
@@ -56029,9 +56050,9 @@
                     "name" : "argRef",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "EventReference",
-                      "cardPoolId" : NumberLong(0),
-                      "eventName" : "UseEvent"
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
                     }
                   }],
                 "propDict" : { },
@@ -56406,8 +56427,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "priority",
@@ -56427,9 +56449,9 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 92
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFc")
                     }
                   }],
                 "propDict" : { },
@@ -56488,9 +56510,9 @@
         "attack" : 4,
         "life" : 3,
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [{
@@ -56511,8 +56533,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : ["played"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kaZwbGF5ZWQ=")
                     }
                   }, {
                     "name" : "priority",
@@ -56583,9 +56606,9 @@
                     "name" : "argRef",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "EventReference",
-                      "cardPoolId" : NumberLong(0),
-                      "eventName" : "UseEvent"
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
                     }
                   }],
                 "propDict" : { },
@@ -56608,9 +56631,9 @@
                     "name" : "eventReference",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "EventReference",
-                      "cardPoolId" : NumberLong(0),
-                      "eventName" : "UseEvent"
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
                     }
                   }],
                 "propDict" : { },
@@ -57020,17 +57043,19 @@
         "attack" : 2,
         "life" : 3,
         "keywords" : {
-          "_t" : "System.String[]",
-          "_v" : ["taunt"]
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kaV0YXVudA==")
         },
         "tags" : {
-          "_t" : "System.String[]",
-          "_v" : ["Beast"]
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [{
@@ -57047,23 +57072,25 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 94
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFe")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Hand"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRIYW5k")
                     }
                   }, {
                     "name" : "rangeList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Hand"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRIYW5k")
                     }
                   }],
                 "propDict" : { },
@@ -57265,13 +57292,14 @@
         "attack" : 4,
         "life" : 5,
         "keywords" : {
-          "_t" : "System.String[]",
-          "_v" : ["rush"]
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kaRydXNo")
         },
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [{
@@ -57288,23 +57316,25 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 95
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFf")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Field"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaVGaWVsZA==")
                     }
                   }, {
                     "name" : "rangeList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Field"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaVGaWVsZA==")
                     }
                   }],
                 "propDict" : { },
@@ -57354,9 +57384,9 @@
                     "name" : "argRef",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "EventReference",
-                      "cardPoolId" : NumberLong(0),
-                      "eventName" : "DrawEvent"
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCpRHJhd0V2ZW50")
                     }
                   }],
                 "propDict" : { },
@@ -57379,9 +57409,9 @@
                     "name" : "eventReference",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "EventReference",
-                      "cardPoolId" : NumberLong(0),
-                      "eventName" : "DrawEvent"
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCpRHJhd0V2ZW50")
                     }
                   }],
                 "propDict" : { },
@@ -57643,9 +57673,9 @@
         "attack" : 3,
         "life" : 2,
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [{
@@ -57666,8 +57696,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : ["played"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kaZwbGF5ZWQ=")
                     }
                   }, {
                     "name" : "priority",
@@ -57708,9 +57739,9 @@
                     "name" : "cardDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "DefineReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 185
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.DefineReference",
+                      "Content" : new BinData(0, "kgHMuQ==")
                     }
                   }],
                 "propDict" : { },
@@ -57752,18 +57783,20 @@
         "attack" : 2,
         "life" : 1,
         "tags" : {
-          "_t" : "System.String[]",
-          "_v" : ["Fairy"]
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kaVGYWlyeQ==")
         },
         "isToken" : true,
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         },
         "keywords" : {
-          "_t" : "System.String[]",
-          "_v" : ["autocast"]
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kahhdXRvY2FzdA==")
         }
       },
       "effects" : [{
@@ -57783,8 +57816,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "priority",
@@ -57804,9 +57838,9 @@
                     "name" : "cardDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "DefineReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 186
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.DefineReference",
+                      "Content" : new BinData(0, "kgHMug==")
                     }
                   }],
                 "propDict" : { },
@@ -57843,14 +57877,15 @@
         "attack" : 2,
         "life" : 1,
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         },
         "isToken" : true,
         "tags" : {
-          "_t" : "System.String[]",
-          "_v" : ["Fairy"]
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kaVGYWlyeQ==")
         }
       },
       "effects" : [],
@@ -57863,13 +57898,14 @@
         "attack" : 3,
         "life" : 3,
         "tags" : {
-          "_t" : "System.String[]",
-          "_v" : ["Fairy"]
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kaVGYWlyeQ==")
         },
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [{
@@ -57886,15 +57922,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Field"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaVGaWVsZA==")
                     }
                   }, {
                     "name" : "priority",
@@ -57995,9 +58033,9 @@
                     "name" : "cardDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "DefineReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 186
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.DefineReference",
+                      "Content" : new BinData(0, "kgHMug==")
                     }
                   }],
                 "propDict" : { },
@@ -58059,9 +58097,9 @@
         "attack" : 2,
         "life" : 3,
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [{
@@ -58078,15 +58116,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Item"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRJdGVt")
                     }
                   }, {
                     "name" : "priority",
@@ -58240,9 +58280,9 @@
       "type" : "Spell",
       "propDict" : {
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         },
         "cost" : 2
       },
@@ -58264,8 +58304,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "priority",
@@ -58347,9 +58388,9 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 96
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFg")
                     }
                   }],
                 "propDict" : { },
@@ -58433,13 +58474,14 @@
         "attack" : 4,
         "life" : 3,
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         },
         "tags" : {
-          "_t" : "System.String[]",
-          "_v" : []
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kA==")
         }
       },
       "effects" : [{
@@ -58460,15 +58502,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Field"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaVGaWVsZA==")
                     }
                   }, {
                     "name" : "priority",
@@ -58582,9 +58626,9 @@
                     "name" : "argRef",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "EventReference",
-                      "cardPoolId" : NumberLong(0),
-                      "eventName" : "UseEvent"
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
                     }
                   }],
                 "propDict" : { },
@@ -58607,9 +58651,9 @@
                     "name" : "eventReference",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "EventReference",
-                      "cardPoolId" : NumberLong(0),
-                      "eventName" : "UseEvent"
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
                     }
                   }],
                 "propDict" : { },
@@ -58982,9 +59026,9 @@
       "type" : "Spell",
       "propDict" : {
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         },
         "cost" : 3
       },
@@ -59006,8 +59050,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "priority",
@@ -59089,9 +59134,9 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 98
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFi")
                     }
                   }],
                 "propDict" : { },
@@ -59244,9 +59289,9 @@
       "type" : "Spell",
       "propDict" : {
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [{
@@ -59267,8 +59312,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "priority",
@@ -59291,9 +59337,9 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 99
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFj")
                     }
                   }],
                 "propDict" : { },
@@ -59382,9 +59428,9 @@
       "type" : "Spell",
       "propDict" : {
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         },
         "cost" : 2
       },
@@ -59406,8 +59452,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "priority",
@@ -59499,9 +59546,9 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 101
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFl")
                     }
                   }],
                 "propDict" : { },
@@ -59583,13 +59630,14 @@
       "propDict" : {
         "cost" : 3,
         "tags" : {
-          "_t" : "System.String[]",
-          "_v" : []
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kA==")
         },
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [{
@@ -59610,8 +59658,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "priority",
@@ -59772,9 +59821,9 @@
         "attack" : 4,
         "life" : 3,
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [{
@@ -59795,8 +59844,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : ["played"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kaZwbGF5ZWQ=")
                     }
                   }, {
                     "name" : "priority",
@@ -59844,16 +59894,17 @@
       "type" : "Servant",
       "propDict" : {
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         },
         "cost" : 1,
         "attack" : 2,
         "life" : 1,
         "tags" : {
-          "_t" : "System.String[]",
-          "_v" : ["Machine"]
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kadNYWNoaW5l")
         }
       },
       "effects" : [{
@@ -59874,8 +59925,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : ["played"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kaZwbGF5ZWQ=")
                     }
                   }, {
                     "name" : "priority",
@@ -59988,9 +60040,9 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 103
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFn")
                     }
                   }],
                 "propDict" : { },
@@ -60119,9 +60171,9 @@
       "type" : "Spell",
       "propDict" : {
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [{
@@ -60142,8 +60194,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "priority",
@@ -60252,9 +60305,9 @@
                     "name" : "cardDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "DefineReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 199
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.DefineReference",
+                      "Content" : new BinData(0, "kgHMxw==")
                     }
                   }],
                 "propDict" : { },
@@ -60325,9 +60378,9 @@
       "propDict" : {
         "cost" : 1,
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         },
         "isToken" : true
       },
@@ -60347,8 +60400,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "priority",
@@ -60412,9 +60466,9 @@
       "type" : "Spell",
       "propDict" : {
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [{
@@ -60435,8 +60489,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "priority",
@@ -60456,9 +60511,9 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 105
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFp")
                     }
                   }],
                 "propDict" : { },
@@ -60517,9 +60572,9 @@
         "attack" : 4,
         "life" : 3,
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [{
@@ -60540,8 +60595,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : ["played"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kaZwbGF5ZWQ=")
                     }
                   }, {
                     "name" : "priority",
@@ -60654,9 +60710,9 @@
                     "name" : "argRef",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "EventReference",
-                      "cardPoolId" : NumberLong(0),
-                      "eventName" : "UseEvent"
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
                     }
                   }],
                 "propDict" : { },
@@ -60679,9 +60735,9 @@
                     "name" : "eventReference",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "EventReference",
-                      "cardPoolId" : NumberLong(0),
-                      "eventName" : "UseEvent"
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
                     }
                   }],
                 "propDict" : { },
@@ -61073,9 +61129,9 @@
       "type" : "Spell",
       "propDict" : {
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         },
         "cost" : 1
       },
@@ -61093,15 +61149,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : ["trap"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kaR0cmFw")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Head"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRIZWFk")
                     }
                   }, {
                     "name" : "priority",
@@ -61240,9 +61298,9 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 107
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFr")
                     }
                   }],
                 "propDict" : { },
@@ -61425,9 +61483,9 @@
       "propDict" : {
         "cost" : 2,
         "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 171
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
         }
       },
       "effects" : [{
@@ -61448,8 +61506,9 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "priority",
@@ -61503,9 +61562,9 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 109
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFt")
                     }
                   }],
                 "propDict" : { },
@@ -64751,7 +64810,6 @@
     }, {
       "_id" : 191,
       "_skinId" : 1,
-      "_skinName" : "新建皮肤",
       "_name" : "杀人玩偶",
       "_desc" : "对一个角色造成3点伤害，<b>连击</b>：在本回合结束时，再对其造成2点伤害。",
       "_language" : "zh-Hans",
@@ -64833,7 +64891,8 @@
       "_name" : "飞刀",
       "_desc" : "Deal 1 damage.",
       "_language" : "en-US",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "_soundRefs" : []
     }, {
       "_id" : 199,
       "_skinId" : 1,
@@ -64841,7 +64900,8 @@
       "_name" : "飞刀",
       "_desc" : "１ダメ\u30fcジを与える。",
       "_language" : "ja",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "_soundRefs" : []
     }, {
       "_id" : 200,
       "_skinId" : 1,
@@ -64876,7 +64936,8 @@
       "_name" : "离剑之见",
       "_desc" : "抽一张牌。在本回合结束时，对所有仆从造成1点伤害。",
       "_language" : "zh-Hans",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "_soundRefs" : []
     }],
   "buffDefineList" : [{
       "_id" : 1,
@@ -74094,23 +74155,25 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 93
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFd")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "rangeList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Hand"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRIYW5k")
                     }
                   }],
                 "propDict" : { },
@@ -74641,15 +74704,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "priority",
@@ -74846,15 +74911,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "priority",
@@ -75447,23 +75514,25 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 97
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFh")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "rangeList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Hand"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRIYW5k")
                     }
                   }],
                 "propDict" : { },
@@ -75582,15 +75651,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "priority",
@@ -75693,15 +75764,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "priority",
@@ -75882,15 +75955,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "priority",
@@ -76111,15 +76186,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Field"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaVGaWVsZA==")
                     }
                   }, {
                     "name" : "priority",
@@ -76181,9 +76258,9 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 100
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFk")
                     }
                   }],
                 "propDict" : { },
@@ -76255,15 +76332,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "priority",
@@ -76430,15 +76509,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "priority",
@@ -76547,15 +76628,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "priority",
@@ -76869,15 +76952,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "priority",
@@ -77002,15 +77087,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Hand"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRIYW5k")
                     }
                   }, {
                     "name" : "priority",
@@ -77119,23 +77206,25 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 106
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFq")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "rangeList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Hand"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRIYW5k")
                     }
                   }],
                 "propDict" : { },
@@ -77319,15 +77408,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "priority",
@@ -77430,15 +77521,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "priority",
@@ -77707,15 +77800,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Hand"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRIYW5k")
                     }
                   }, {
                     "name" : "priority",
@@ -77958,23 +78053,25 @@
                     "name" : "buffDefine",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "BuffReference",
-                      "cardPoolId" : NumberLong(1),
-                      "defineId" : 108
+                      "_t" : "ObjectProxy",
+                      "Type" : "Game.BuffReference",
+                      "Content" : new BinData(0, "kgFs")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "rangeList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Hand"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRIYW5k")
                     }
                   }],
                 "propDict" : { },
@@ -78242,15 +78339,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "priority",
@@ -78373,15 +78472,17 @@
                     "name" : "tags",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                      "_v" : []
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
                     }
                   }, {
                     "name" : "pileList",
                     "paramIndex" : -1,
                     "value" : {
-                      "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                      "_v" : ["Master"]
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
                     "name" : "priority",
@@ -79137,7 +79238,7 @@
       "buffId" : 98,
       "language" : "zh-Hans",
       "name" : "杀人玩偶",
-      "desc" : "在你的回合结束时，再造成3点伤害。",
+      "desc" : "本回合结束时受到2点伤害。",
       "_animationRefs" : []
     }, {
       "buffId" : 99,
@@ -82201,9 +82302,9 @@
                 "name" : "argRef",
                 "paramIndex" : -1,
                 "value" : {
-                  "_t" : "EventReference",
-                  "cardPoolId" : NumberLong(0),
-                  "eventName" : "UseEvent"
+                  "_t" : "ObjectProxy",
+                  "Type" : "TouhouCardEngine.EventReference",
+                  "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
                 }
               }],
             "propDict" : { },
@@ -82226,9 +82327,9 @@
                 "name" : "eventReference",
                 "paramIndex" : -1,
                 "value" : {
-                  "_t" : "EventReference",
-                  "cardPoolId" : NumberLong(0),
-                  "eventName" : "UseEvent"
+                  "_t" : "ObjectProxy",
+                  "Type" : "TouhouCardEngine.EventReference",
+                  "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
                 }
               }],
             "propDict" : { },
@@ -82710,9 +82811,9 @@
                 "name" : "buffDefine",
                 "paramIndex" : -1,
                 "value" : {
-                  "_t" : "BuffReference",
-                  "cardPoolId" : NumberLong(1),
-                  "defineId" : 102
+                  "_t" : "ObjectProxy",
+                  "Type" : "Game.BuffReference",
+                  "Content" : new BinData(0, "kgFm")
                 }
               }],
             "propDict" : { },
@@ -82756,9 +82857,9 @@
                 "name" : "buffDefine",
                 "paramIndex" : -1,
                 "value" : {
-                  "_t" : "BuffReference",
-                  "cardPoolId" : NumberLong(1),
-                  "defineId" : 104
+                  "_t" : "ObjectProxy",
+                  "Type" : "Game.BuffReference",
+                  "Content" : new BinData(0, "kgFo")
                 }
               }],
             "propDict" : { },
