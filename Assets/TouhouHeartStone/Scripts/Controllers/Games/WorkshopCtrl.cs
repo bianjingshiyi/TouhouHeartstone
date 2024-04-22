@@ -796,8 +796,9 @@ namespace Controllers
                         // 创意工坊卡池需要这个资源，并且卡池文件也需要，下载
                         var extension = Path.GetExtension(resPath).TrimStart('.');
                         var resourceBytes = await game.network.getWorkshopResource(extension, resId);
-                        var savedPath = await game.card.saveResourceBytes(poolInfo.cardPoolId, resourceBytes, resType, resId, extension);
-                        _downloadedResources.Add(savedPath);
+                        var savedFileName = await game.card.saveResourceBytes(poolInfo.cardPoolId, resourceBytes, resType, resId, extension);
+                        var savedPath = Path.Combine(game.card.getCardPoolResourceDirectory(poolInfo, resType), savedFileName);
+                        _downloadedResources.Add(savedFileName);
                     }
                 }
                 downloadedCount++;
@@ -810,13 +811,20 @@ namespace Controllers
         }
         private void deleteDownloadedFiles()
         {
-            foreach (var poolRef in _downloadedCardPools)
+            try
             {
-                game.card.removeCardPool(poolRef);
+                foreach (var poolRef in _downloadedCardPools)
+                {
+                    game.card.removeCardPool(poolRef);
+                }
+                foreach (var resPath in _downloadedResources)
+                {
+                    game.fileManager.deleteFile(resPath);
+                }
             }
-            foreach (var resPath in _downloadedResources)
+            catch (Exception e)
             {
-                game.fileManager.deleteFile(resPath);
+                Debug.Log($"删除已下载卡池资源时出错：{e}");
             }
         }
         #endregion
