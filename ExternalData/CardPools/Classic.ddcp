@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 4, "cardPoolId" : NumberLong(1), "editTime" : 619, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
+{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 4, "cardPoolId" : NumberLong(1), "editTime" : 621, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -60161,12 +60161,6 @@
         }],
       "effectList" : []
     }, {
-      "_id" : 197,
-      "type" : "Servant",
-      "propDict" : { },
-      "effects" : [],
-      "effectList" : []
-    }, {
       "_id" : 198,
       "type" : "Spell",
       "propDict" : {
@@ -64856,13 +64850,6 @@
       "_skinName" : "新建皮肤",
       "_name" : "钟表魔术师",
       "_desc" : "<b>宣言</b>：随机使你手牌中一张灵力值消耗大于(0)的法术牌灵力值消耗减少(1)点。",
-      "_language" : "zh-Hans",
-      "_animationRefs" : [],
-      "_soundRefs" : []
-    }, {
-      "_id" : 197,
-      "_skinId" : 1,
-      "_skinName" : "新建皮肤",
       "_language" : "zh-Hans",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -76369,8 +76356,8 @@
               }, {
                 "_t" : "SerializableActionNode",
                 "_id" : 2,
-                "posX" : 908.41302490234375,
-                "posY" : -124.83418273925781,
+                "posX" : 976.6507568359375,
+                "posY" : -563.92864990234375,
                 "inputDefaultValues" : [],
                 "propDict" : { },
                 "defineRef" : {
@@ -76455,6 +76442,57 @@
                 "inputs" : null,
                 "regVar" : null,
                 "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 7,
+                "posX" : 1406.8924560546875,
+                "posY" : -7.5853118896484375,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 206002
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 8,
+                "posX" : 981.42523193359375,
+                "posY" : -223.0341796875,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 106001
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 9,
+                "posX" : 1024.255126953125,
+                "posY" : -52.883403778076172,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102001
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
               }],
             "connections" : [{
                 "sourceName" : "玩家",
@@ -76477,6 +76515,11 @@
                 "destName" : "enter",
                 "destNodeId" : 2
               }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 3,
+                "destName" : "enter",
+                "destNodeId" : 7
+              }, {
                 "sourceName" : "result",
                 "sourceNodeId" : 4,
                 "destName" : "condition",
@@ -76491,121 +76534,16 @@
                 "sourceNodeId" : 6,
                 "destName" : "A",
                 "destNodeId" : 4
-              }]
-          }
-        }, {
-          "_t" : "SerializableEventEffect",
-          "name" : "事件效果2",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableEventEntryNode",
-                "_id" : 1,
-                "inputDefaultValues" : [{
-                    "name" : "condition",
-                    "paramIndex" : -1,
-                    "value" : true
-                  }, {
-                    "name" : "tags",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.EffectTagCollection",
-                      "Content" : new BinData(0, "kA==")
-                    }
-                  }, {
-                    "name" : "pileList",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
-                      "Content" : new BinData(0, "kaZNYXN0ZXI=")
-                    }
-                  }, {
-                    "name" : "priority",
-                    "paramIndex" : -1,
-                    "value" : 0
-                  }],
-                "propDict" : { },
-                "consts" : null,
-                "triggerTime" : {
-                  "defineRef" : {
-                    "cardPoolId" : NumberLong(0),
-                    "eventName" : "TurnEndEvent"
-                  },
-                  "type" : 1
-                },
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : null,
-                "tags" : null,
-                "piles" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "posX" : 672.7364501953125,
-                "posY" : 32.5,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 206002
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "posX" : 220.56732177734375,
-                "posY" : 282.84759521484375,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 106001
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "posX" : 278.23138427734375,
-                "posY" : -315.4171142578125,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102001
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 2
               }, {
                 "sourceName" : "return",
-                "sourceNodeId" : 3,
+                "sourceNodeId" : 8,
                 "destName" : "buff",
-                "destNodeId" : 2
+                "destNodeId" : 7
               }, {
                 "sourceName" : "return",
-                "sourceNodeId" : 4,
+                "sourceNodeId" : 9,
                 "destName" : "card",
-                "destNodeId" : 2
+                "destNodeId" : 7
               }]
           }
         }],
@@ -77786,254 +77724,7 @@
           "defaultValue" : -3
         }],
       "existLimitList" : [],
-      "effects" : [{
-          "_t" : "SerializableEventEffect",
-          "name" : "事件效果1",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableEventEntryNode",
-                "_id" : 1,
-                "posX" : -167.67195129394531,
-                "posY" : -51.142578125,
-                "inputDefaultValues" : [{
-                    "name" : "tags",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.EffectTagCollection",
-                      "Content" : new BinData(0, "kA==")
-                    }
-                  }, {
-                    "name" : "pileList",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
-                      "Content" : new BinData(0, "kaRIYW5k")
-                    }
-                  }, {
-                    "name" : "priority",
-                    "paramIndex" : -1,
-                    "value" : 0
-                  }, {
-                    "name" : "condition",
-                    "paramIndex" : -1,
-                    "value" : true
-                  }],
-                "propDict" : { },
-                "consts" : null,
-                "triggerTime" : {
-                  "defineRef" : {
-                    "cardPoolId" : NumberLong(0),
-                    "eventName" : "UseEvent"
-                  },
-                  "type" : 1
-                },
-                "eventCardPoolId" : NumberLong(0),
-                "eventName" : null,
-                "tags" : null,
-                "piles" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "posX" : -638.82086181640625,
-                "posY" : 399.20556640625,
-                "inputDefaultValues" : [{
-                    "name" : "type",
-                    "paramIndex" : -1,
-                    "value" : "Spell"
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102032
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "posX" : 849.676025390625,
-                "posY" : 48.073593139648438,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 206002
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "posX" : 485.04971313476563,
-                "posY" : -341.32342529296875,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 106001
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "posX" : 440.37820434570313,
-                "posY" : 313.10980224609375,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102001
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 6,
-                "posX" : -108.91728210449219,
-                "posY" : 679.6441650390625,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112002
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 7,
-                "posX" : -1097.2193603515625,
-                "posY" : 710.7899169921875,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102001
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 8,
-                "posX" : -765.42840576171875,
-                "posY" : 710.7899169921875,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102010
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 9,
-                "posX" : 445.24285888671875,
-                "posY" : 679.6441650390625,
-                "inputDefaultValues" : [{
-                    "name" : "operator",
-                    "paramIndex" : -1,
-                    "value" : 1
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112005
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "card",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "玩家",
-                "sourceNodeId" : 1,
-                "destName" : "B",
-                "destNodeId" : 6
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 2,
-                "destName" : "value",
-                "destParamIndex" : 2,
-                "destNodeId" : 9
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 4,
-                "destName" : "buff",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 5,
-                "destName" : "card",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 6,
-                "destName" : "value",
-                "destParamIndex" : 1,
-                "destNodeId" : 9
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 7,
-                "destName" : "card",
-                "destNodeId" : 8
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 8,
-                "destName" : "A",
-                "destNodeId" : 6
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 9,
-                "destName" : "condition",
-                "destNodeId" : 1
-              }]
-          }
-        }],
+      "effects" : [],
       "props" : { }
     }, {
       "_id" : 107,
@@ -79102,13 +78793,20 @@
     }, {
       "buffId" : 79,
       "name" : "天文密葬",
-      "desc" : "你的英雄技能具有吸血。",
+      "desc" : "<b>吸血</b>。",
       "imagePath" : "8effdbbfc92f67e34d85ff772f3bc3f6c13d7ec0bbfeb69023ae2ebd800eec32.jpg",
       "_animationRefs" : []
     }, {
       "buffId" : 80,
       "name" : "贩药货郎",
-      "desc" : "获得+1攻击力。",
+      "desc" : "攻击力增加。",
+      "imagePath" : "fae3700cc718c659b4a370152f2be3ad1715900e947173542981489a18309a3b.jpg",
+      "_animationRefs" : []
+    }, {
+      "buffId" : 80,
+      "language" : "en-US",
+      "name" : "贩药货郎",
+      "desc" : "Attack increased.",
       "imagePath" : "fae3700cc718c659b4a370152f2be3ad1715900e947173542981489a18309a3b.jpg",
       "_animationRefs" : []
     }, {
@@ -79124,19 +78822,19 @@
     }, {
       "buffId" : 82,
       "name" : "幻象震爆",
-      "desc" : "在本回合中，你每使用过一次技能，灵力值消耗便减少(2)点。",
+      "desc" : "灵力值消耗减少。",
       "imagePath" : "b8934c7606ec2446d2a7c5ff4c9ebfc04263f8e8e354bbbd05d18dc8bc1fc9e5.jpg",
       "_animationRefs" : []
     }, {
       "buffId" : 83,
       "name" : "伏击战术",
-      "desc" : "每控制一个陷阱，灵力值消耗便减少(1)点。",
+      "desc" : "灵力值消耗减少。",
       "imagePath" : "fdc2e4ce39dcbb7b882b4fba77e3064f4b875e85a8fa8918251120a7509a3850.jpg",
       "_animationRefs" : []
     }, {
       "buffId" : 84,
       "name" : "幻象",
-      "desc" : "具有幻象的仆从受到伤害后，会被消灭。",
+      "desc" : "受到伤害后可能会被消灭。",
       "imagePath" : "36e1f0b08c37c57c6db086e4b9a8bdeb5123c8753db7f300e666314da0b9dcbf.jpg",
       "_animationRefs" : [],
       "persistentAnimRef" : {
@@ -79152,7 +78850,7 @@
     }, {
       "buffId" : 87,
       "name" : "真实之月",
-      "desc" : "在你的回合开始时，将此牌移回其拥有者的战场。",
+      "desc" : "在施放者的回合开始时，将此牌移回其拥有者的战场。",
       "imagePath" : "bf58e35956deebc2970513f69c1e75bd6bd6462c1f824b5fea285cb02901ce1e.jpg",
       "_animationRefs" : [{
           "sourcePosition" : 2,
@@ -79173,7 +78871,7 @@
     }, {
       "buffId" : 88,
       "name" : "梦醒时分",
-      "desc" : "回合结束后，置换的卡牌会从手牌中消失。",
+      "desc" : "回合结束后消失。",
       "imagePath" : "9db1399f0602c7b59ecd7dbde709923b1ad264a6341e2c02e0c8c989ce64a095.jpg",
       "_animationRefs" : [],
       "persistentAnimRef" : {
@@ -79183,56 +78881,56 @@
     }, {
       "buffId" : 89,
       "name" : "梦境降临",
-      "desc" : "回合结束后将卡牌换回原来的牌堆。",
+      "desc" : "回合结束后移回手牌。",
       "imagePath" : "9db1399f0602c7b59ecd7dbde709923b1ad264a6341e2c02e0c8c989ce64a095.jpg",
       "_animationRefs" : []
     }, {
       "buffId" : 90,
       "language" : "zh-Hans",
       "name" : "位面",
-      "desc" : "在本回合，法术伤害增加。",
+      "desc" : "本回合内法术伤害增加。",
       "_animationRefs" : []
     }, {
       "buffId" : 91,
       "language" : "zh-Hans",
       "name" : "The World I",
-      "desc" : "在本回合，你每使用一张法术牌，消耗减少（1）点。",
+      "desc" : "灵力值消耗减少。",
       "_animationRefs" : []
     }, {
       "buffId" : 92,
       "language" : "zh-Hans",
       "name" : "时间停止",
-      "desc" : "你的英雄会获得时间停止的临时效果。",
+      "desc" : "本回合内你的法术灵力值消耗变为(0)点，但效果会在回合结束时发动。",
       "_animationRefs" : []
     }, {
       "buffId" : 93,
       "language" : "zh-Hans",
       "name" : "The World II",
-      "desc" : "你的法术在本回合消耗变为0点。",
+      "desc" : "灵力值消耗变为(0)点。",
       "_animationRefs" : []
     }, {
       "buffId" : 94,
       "language" : "zh-Hans",
       "name" : "地精保镖",
-      "desc" : "你每有一张其他手牌，此牌的灵力值消耗便增加(1)点。",
+      "desc" : "灵力值消耗增加。",
       "_animationRefs" : []
     }, {
       "buffId" : 95,
       "language" : "zh-Hans",
       "name" : "替身",
-      "desc" : "在本回合，你每抽到一张牌，便获得+1攻击力。",
+      "desc" : "攻击力增加。",
       "_animationRefs" : []
     }, {
       "buffId" : 96,
       "language" : "zh-Hans",
       "name" : "星光魔刃（光环）",
-      "desc" : "你本回合使用的下一张卡牌的消耗减少（2）点。",
+      "desc" : "你本回合使用的下一张卡牌的消耗减少(2)点。",
       "_animationRefs" : []
     }, {
       "buffId" : 97,
       "language" : "zh-Hans",
       "name" : "星光魔刃（消耗）",
-      "desc" : "在本回合中，你使用的下一张牌灵力值消耗减少(2)点。",
+      "desc" : "灵力值消耗减少(2)点。",
       "_animationRefs" : []
     }, {
       "buffId" : 98,
@@ -79244,19 +78942,19 @@
       "buffId" : 99,
       "language" : "zh-Hans",
       "name" : "回到未来",
-      "desc" : "回合结束时，将其洗入你的牌库。",
+      "desc" : "回合结束时将被洗入你的牌库，且灵力值消耗变为(0)点。",
       "_animationRefs" : []
     }, {
       "buffId" : 100,
       "language" : "zh-Hans",
       "name" : "回到未来（归零）",
-      "desc" : "灵力消耗变为（0）点。",
+      "desc" : "灵力值消耗变为(0)点。",
       "_animationRefs" : []
     }, {
       "buffId" : 101,
       "language" : "zh-Hans",
       "name" : "跃迁失败",
-      "desc" : "回合结束时，抽两张牌。",
+      "desc" : "本回合结束时，抽两张牌。",
       "_animationRefs" : []
     }, {
       "buffId" : 102,
@@ -79268,12 +78966,13 @@
       "buffId" : 103,
       "language" : "zh-Hans",
       "name" : "机械魔术师",
+      "desc" : "灵力值消耗减少(1)点。",
       "_animationRefs" : []
     }, {
       "buffId" : 104,
       "language" : "zh-Hans",
       "name" : "连环飞刀",
-      "desc" : "本回合消耗减少（1）点.",
+      "desc" : "本回合灵力值消耗减少(1)点.",
       "_animationRefs" : []
     }, {
       "buffId" : 105,
@@ -79285,19 +78984,19 @@
       "buffId" : 106,
       "language" : "zh-Hans",
       "name" : "静候时机（效果）",
-      "desc" : "在本回合中，你使用的下一张法术牌灵力值消耗减少(3)点。",
+      "desc" : "灵力值消耗减少(3)点。",
       "_animationRefs" : []
     }, {
       "buffId" : 107,
       "language" : "zh-Hans",
       "name" : "膨胀空间（光环）",
-      "desc" : "所有与其使用牌同类型的卡牌在本回合中灵力值消耗增加(5)点。",
+      "desc" : "所有与使用牌同类型的卡牌在本回合中灵力值消耗增加(5)点。",
       "_animationRefs" : []
     }, {
       "buffId" : 108,
       "language" : "zh-Hans",
       "name" : "膨胀空间（效果）",
-      "desc" : "所有与其使用牌同类型的卡牌在本回合中灵力值消耗增加(5)点。",
+      "desc" : "灵力值消耗增加(5)点。",
       "_animationRefs" : []
     }, {
       "buffId" : 109,
