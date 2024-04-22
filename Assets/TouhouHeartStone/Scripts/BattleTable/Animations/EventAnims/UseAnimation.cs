@@ -113,6 +113,9 @@ namespace Game.BattleTable
         }
         IEnumerator cancelUseCard(BattleTableManager table)
         {
+            if (MoveCardAnim.cardIsMovedAfterStart(this, _card.id))
+                // 如果在取消之后该卡牌发生了移动，则不播放回手动画。
+                yield break;
             // 使用卡牌被取消。
             if (table.tryGetHand(_card, out _))
                 // 手上有这张牌，重置手牌显示。

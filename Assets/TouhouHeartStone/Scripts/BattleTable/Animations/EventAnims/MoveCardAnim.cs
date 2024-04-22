@@ -75,24 +75,27 @@ namespace Game.BattleTable
         }
         public override IEnumerator canceledUpdate(BattleTableManager table)
         {
-            var card = table.getEventCardSnapshot(eventArg, EVENTVAR.CARD);
-            if (card == null)
+            var beforeSnapshot = table.getEventCardSnapshot(eventArg, EVENTVAR.CARD);
+            if (beforeSnapshot == null)
                 yield break;
-            var from = eventArg.getVar<Pile>(Arg.VAR_FROM_PILE);
-            var to = eventArg.getVar<Pile>(Arg.VAR_TO_PILE);
-            var startVisible = table.canSeeCard(card);
-            var cardDesc = table.updateCardDescriptor(card);
+            if (cardIsMovedAfterStart(this, beforeSnapshot.id))
+                // 如果在取消之后该卡牌发生了移动，则不播放移回动画。
+                yield break;
+            var to = eventArg.getVar<Pile>(Arg.VAR_FROM_PILE); // 反过来
+            var from = eventArg.getVar<Pile>(Arg.VAR_TO_PILE);
+            var startVisible = table.canSeeCard(beforeSnapshot);
+            var cardDesc = table.updateCardDescriptor(beforeSnapshot);
             EventData data = new EventData
             {
                 startVisible = startVisible,
                 card = cardDesc,
-                from = to, // 反过来
-                to = from,
-                position = card.position
+                from = from,
+                to = to,
+                position = beforeSnapshot.position
             };
 
-            var info = getCardMoveInfo(table, card.id, to);
-            _movingCardId = card.id;
+            var info = getCardMoveInfo(table, beforeSnapshot.id, from);
+            _movingCardId = beforeSnapshot.id;
             yield return moveCanceledAnim(table, data, info);
         }
         public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
@@ -139,6 +142,12 @@ namespace Game.BattleTable
                 return true;
             }
             return base.blockAnimInGroup(other);
+        }
+        public static bool cardIsMovedAfterStart(EventAnimation anim, int cardId)
+        {
+            return anim.insertedAnims
+                .OfType<MoveCardAnim>()
+                .Any(a => !a.eventArg.isCanceled && a.eventArg.getVar<Card>(MoveCardEventDefine.VAR_CARD)?.id == cardId);
         }
         #endregion
 
