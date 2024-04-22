@@ -576,6 +576,8 @@ namespace Game
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_PILE_NAME_COLLECTION = "牌堆名集合";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
+        public const string EDITOR_TYPE_NAME_PILE_NAME_RANGE = "牌堆名范围";
+        [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_CARD_DEFINE = "卡牌定义";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_CARD_REFERENCE = "卡牌定义引用";

@@ -56,6 +56,7 @@ namespace Controllers
                 keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray(),
                 keywordValues = keywords.ToArray(),
 
+                anyPileName = game.editor.getAnyPileName(),
                 pileNames = game.editor.getAllPileNames(),
                 pileValues = game.editor.getAllPileValues(),
 

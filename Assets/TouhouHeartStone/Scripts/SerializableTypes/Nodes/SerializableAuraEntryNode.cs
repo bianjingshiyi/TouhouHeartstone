@@ -32,6 +32,13 @@ namespace Game
                 inputDefaultValues?.Select(dv => dv.deserialize())
                 ?? consts?.Select(c => new InputDefaultValue(c.Key, -1, c.Value));
             InitNode(entry, graph, defaultValues);
+            // 将PileNameCollection更新为PileNameRange
+            var pileNameCollection = entry.getPiles();
+            if (pileNameCollection != null && pileNameCollection is not PileNameRange)
+            {
+                entry.setPiles(pileNameCollection.ToArray());
+            }
+
             if (piles != null)
                 entry.setPiles(piles);
             if (ranges != null)

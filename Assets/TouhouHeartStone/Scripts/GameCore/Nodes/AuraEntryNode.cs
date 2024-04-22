@@ -46,38 +46,40 @@ namespace TouhouHeartstone
         #region 生效区域
         public void setPiles(params string[] value)
         {
-            var piles = getInputDefaultValue<PileNameCollection>(pileListPortName);
-            if (piles == null)
-            {
-                piles = new PileNameCollection();
-                setInputDefaultValue(pileListPortName, piles);
-            }
+            var piles = getPiles();
             piles.Clear();
             if (value != null)
                 piles.AddRange(value);
         }
-        public PileNameCollection getPiles()
+        public PileNameRange getPiles()
         {
-            return getInputDefaultValue<PileNameCollection>(pileListPortName);
+            var piles = getInputDefaultValue<PileNameCollection>(pileListPortName);
+            if (piles is not PileNameRange pileNameRange)
+            {
+                pileNameRange = piles is IEnumerable<string> strings ? new PileNameRange(strings) : new PileNameRange();
+                setInputDefaultValue(pileListPortName, pileNameRange);
+            }
+            return pileNameRange;
         }
         #endregion
 
         #region 作用区域
         public void setRanges(params string[] value)
         {
-            var ranges = getInputDefaultValue<PileNameCollection>(rangeListPortName);
-            if (ranges == null)
-            {
-                ranges = new PileNameCollection();
-                setInputDefaultValue(rangeListPortName, ranges);
-            }
+            var ranges = getRanges();
             ranges.Clear();
             if (value != null)
                 ranges.AddRange(value);
         }
-        public PileNameCollection getRanges()
+        public PileNameRange getRanges()
         {
-            return getInputDefaultValue<PileNameCollection>(rangeListPortName);
+            var ranges = getInputDefaultValue<PileNameCollection>(rangeListPortName);
+            if (ranges is not PileNameRange pileNameRange)
+            {
+                pileNameRange = ranges is IEnumerable<string> strings ? new PileNameRange(strings) : new PileNameRange();
+                setInputDefaultValue(rangeListPortName, pileNameRange);
+            }
+            return pileNameRange;
         }
         #endregion
 
@@ -94,8 +96,8 @@ namespace TouhouHeartstone
 
         protected static PortDefine conditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, Translations.EDITOR_PARAM_NAME_AFFECT_CONDITION);
         protected static PortDefine buffDefinePortDefine = PortDefine.Value(typeof(BuffDefine), buffDefineName, Translations.EDITOR_PARAM_NAME_BUFF_DEFINE);
-        protected static PortDefine pileListPortDefine = PortDefine.Value(typeof(PileNameCollection), pileListPortName, Translations.EDITOR_PARAM_NAME_ACTIVE_PILES, isConst: true);
-        protected static PortDefine rangeListPortDefine = PortDefine.Value(typeof(PileNameCollection), rangeListPortName, Translations.EDITOR_PARAM_NAME_AFFECT_PILES, isConst: true);
+        protected static PortDefine pileListPortDefine = PortDefine.Value(typeof(PileNameRange), pileListPortName, Translations.EDITOR_PARAM_NAME_ACTIVE_PILES, isConst: true);
+        protected static PortDefine rangeListPortDefine = PortDefine.Value(typeof(PileNameRange), rangeListPortName, Translations.EDITOR_PARAM_NAME_AFFECT_PILES, isConst: true);
         protected static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
         protected static PortDefine targetCardPortDefine = PortDefine.Value(typeof(Card), targetCardName, Translations.EDITOR_PARAM_NAME_TARGET_CARD);
         protected static PortDefine targetBuffPortDefine = PortDefine.Value(typeof(Buff), targetBuffName, Translations.EDITOR_PARAM_NAME_TARGET_BUFF);

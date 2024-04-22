@@ -63,6 +63,7 @@ namespace UI
 
             setProp(ref _pileNames, props.pileNames);
             setProp(ref _pileValues, props.pileValues);
+            setProp(ref _anyPileName, props.anyPileName);
 
             setProp(ref _effectTagNames, props.effectTagNames);
             setProp(ref _effectTagValues, props.effectTagValues);
@@ -109,6 +110,7 @@ namespace UI
                 eventTriggerTimeNames = _eventTriggerTimeNames,
                 eventTriggerTimeValues = _eventTriggerTimeValues,
 
+                anyPileName = _anyPileName,
                 pileNames = _pileNames,
                 pileValues = _pileValues,
 
@@ -356,7 +358,7 @@ namespace UI
         {
             if (valueType == ActionNodeValueType.pileNameCollection)
             {
-                if (!(_valueInfo.value is PileNameCollection pileNameCollection))
+                if (_valueInfo.value is not PileNameCollection pileNameCollection)
                 {
                     pileNameCollection = new PileNameCollection();
                 }
@@ -381,6 +383,42 @@ namespace UI
                     pileNameCollection.Clear();
                     pileNameCollection.AddRange(values);
                     callValueChangedCallback(pileNameCollection);
+                }
+            }
+            if (valueType == ActionNodeValueType.pileNameRange)
+            {
+                if (_valueInfo.value is not PileNameRange pileNameRange)
+                {
+                    pileNameRange = _valueInfo.value is PileNameCollection pileNameCollection ? new PileNameRange(pileNameCollection) : new PileNameRange();
+                }
+                var selected = values.Where(v => !pileNameRange.Contains(v)).ToArray();
+                var deselected = pileNameRange.Where(v => !values.Contains(v)).ToArray();
+                bool isValueChanged = selected.Length + deselected.Length > 0;
+                if (isValueChanged)
+                {
+                    if (selected.Contains(Pile.PILE_RANGE_ANY))
+                    {
+                        bool selectedOther = pileNameRange.Any(p => p != Pile.PILE_RANGE_ANY);
+                        pileNameRange.Clear();
+                        pileNameRange.Add(Pile.PILE_RANGE_ANY);
+                        if (selectedOther)
+                        {
+                            _multiInputDropdown.setValuesWithoutNotify(pileNameRange.ToArray());
+                            _multiInputDropdown.updateOptionToggles();
+                        }
+                    }
+                    else
+                    {
+                        bool selectedAny = pileNameRange.Contains(Pile.PILE_RANGE_ANY);
+                        pileNameRange.Clear();
+                        pileNameRange.AddRange(values.Where(v => v != Pile.PILE_RANGE_ANY));
+                        if (selectedAny)
+                        {
+                            _multiInputDropdown.setValuesWithoutNotify(pileNameRange.ToArray());
+                            _multiInputDropdown.updateOptionToggles();
+                        }
+                    }
+                    callValueChangedCallback(pileNameRange);
                 }
             }
             else if (valueType == ActionNodeValueType.effectTagCollection)
@@ -753,10 +791,21 @@ namespace UI
         private void updateMultiInputDropdown()
         {
             //可自定义多选下拉菜单
-            if (valueType == ActionNodeValueType.pileNameCollection)
+            if (valueType == ActionNodeValueType.pileNameCollection || valueType == ActionNodeValueType.pileNameRange)
             {
                 _multiInputDropdown.gameObject.SetActive(true);
-                _multiInputDropdown.setDropdownValues(_pileNames, _pileValues);
+                string[] pileNames, pileValues;
+                if (valueType == ActionNodeValueType.pileNameRange)
+                {
+                    pileNames = _pileNames.Prepend(_anyPileName).ToArray();
+                    pileValues = _pileValues.Prepend(Pile.PILE_RANGE_ANY).ToArray();
+                }
+                else
+                {
+                    pileNames = _pileNames;
+                    pileValues = _pileValues;
+                }
+                _multiInputDropdown.setDropdownValues(pileNames, pileValues);
                 if (_valueInfo.value is PileNameCollection pileNameCollection)
                 {
                     _multiInputDropdown.setValuesWithoutNotify(pileNameCollection.ToArray());
@@ -930,6 +979,8 @@ namespace UI
 
         [Header("下拉列表值")]
         [SerializeField]
+        string _anyPileName;
+        [SerializeField]
         string[] _pileNames;
         [SerializeField]
         private string[] _pileValues;
@@ -1040,6 +1091,7 @@ namespace UI
     [Serializable]
     public struct ValueInputFieldProperties
     {
+        public string anyPileName;
         public string[] pileNames;
         public string[] pileValues;
 

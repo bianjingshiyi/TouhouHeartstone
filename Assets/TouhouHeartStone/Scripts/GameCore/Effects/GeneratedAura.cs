@@ -25,14 +25,14 @@ namespace TouhouHeartstone
         /// <summary>
         /// 光环的生效范围
         /// </summary>
-        public PileNameCollection getPileList()
+        public PileNameRange getPileList()
         {
             return auraEntry?.getPiles();
         }
         /// <summary>
         /// 光环的作用范围
         /// </summary>
-        public PileNameCollection getRangeList()
+        public PileNameRange getRangeList()
         {
             return auraEntry?.getRanges();
         }
@@ -48,7 +48,7 @@ namespace TouhouHeartstone
             // 如果该光环已被禁用。
             if (isDisabled(game, card, buff) || 
                 (buff == null && card.isSilenced(game))||
-                (selfCard != null && (pileList == null || !pileList.Contains(selfCard.pile.name))))
+                (selfCard != null && (pileList == null || !pileList.ContainsPileOrAny(selfCard.pile.name))))
             {
                 // 遍历已经记录的卡牌和增益列表。
                 foreach (var pair in buffDict)
@@ -64,14 +64,9 @@ namespace TouhouHeartstone
 
             //获取光环的作用范围
             var rangeList = getRangeList();
-            IEnumerable<Pile> ranges = null;
-            if (rangeList != null && rangeList.Count > 0 && game != null)
-            {
-                ranges = game.players.SelectMany(p => p.getPiles(rangeList));
-            }
 
             // 更新所有增益。
-            await updateBuffCards(game, card, buff, buffDict, ranges);
+            await updateBuffCards(game, card, buff, buffDict, rangeList);
         }
         public override Task execute(EffectEnv env)
         {
@@ -93,13 +88,14 @@ namespace TouhouHeartstone
         {
             graph.createAuraEntryNode(0, 0);
         }
-        private async Task updateBuffCards(CardEngine game, ICard card, IBuff buff, Dictionary<Card, Buff> buffDict, IEnumerable<Pile> ranges)
+        private async Task updateBuffCards(CardEngine game, ICard card, IBuff buff, Dictionary<Card, Buff> buffDict, IEnumerable<string> rangeList)
         {
+            var ranges = game.getSortedPlayers().SelectMany(p => p.getPiles()).Where(p => rangeList.ContainsPileOrAny(p?.name));
             var allCards = buffDict.Keys.Union(ranges.SelectMany(r => r)).ToArray();
             foreach (var targetCard in allCards)
             {
                 // 检测增益条件。
-                bool shouldContinueBuff = ranges != null && ranges.Contains(targetCard.pile) && await checkAuraCondition(game, card, buff, targetCard);
+                bool shouldContinueBuff = rangeList != null && rangeList.ContainsPileOrAny(targetCard.pile?.name) && await checkAuraCondition(game, card, buff, targetCard);
                 // 卡牌不再符合增益条件。
                 if (!shouldContinueBuff)
                 {

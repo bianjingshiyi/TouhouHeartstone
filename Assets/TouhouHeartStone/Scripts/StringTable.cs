@@ -72,6 +72,8 @@ namespace Game
         public const string PILE_NAME_ITEM = "道具";
         [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
         public const string PILE_NAME_DELAY = "延迟";
+        [TranslateMsg("牌堆名称", CONTEXT_PILE_NAME)]
+        public const string PILE_NAME_ANY = "任意";
         #endregion
 
         #region 游戏

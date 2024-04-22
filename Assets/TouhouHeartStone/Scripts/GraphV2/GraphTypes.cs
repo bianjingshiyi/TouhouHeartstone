@@ -145,6 +145,7 @@ namespace Game
             new GraphTypeInfo() { type = typeof(CardEngine), typeName = StringTable.EDITOR_TYPE_NAME_CARD_ENGINE, color = new Color(.2f, .2f, 1, 1) },
             new GraphTypeInfo() { type = typeof(DefineReference), typeName = StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE, color = new Color(.1f, .3f, .6f, 1) },
             new GraphTypeInfo() { type = typeof(PileNameCollection), typeName = StringTable.EDITOR_TYPE_NAME_PILE_NAME_COLLECTION, color = new Color(.2f, .1f, .6f, 1) },
+            new GraphTypeInfo() { type = typeof(PileNameRange), typeName = StringTable.EDITOR_TYPE_NAME_PILE_NAME_RANGE, color = new Color(.2f, .1f, .6f, 1) },
             new GraphTypeInfo() { type = typeof(EffectTagCollection), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT_TAG_COLLECTION, color = new Color(.2f, .5f, .5f, 1) },
 
             new GraphTypeInfo() { type = typeof(PropModifier), typeName = StringTable.EDITOR_TYPE_NAME_PROP_MODIFIER, color = new Color(1, .2f, .8f, 1) },

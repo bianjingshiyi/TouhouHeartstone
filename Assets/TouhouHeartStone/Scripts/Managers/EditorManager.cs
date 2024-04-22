@@ -95,6 +95,10 @@ namespace Game
         }
 
         #region 牌堆
+        public string getAnyPileName()
+        {
+            return game.lang._(StringTable.PILE_NAME_ANY, StringTable.CONTEXT_PILE_NAME);
+        }
         public string[] getAllPileNames()
         {
             return piles.Select(p => game.lang._p(StringTable.CONTEXT_PILE_NAME, p.Value)).ToArray();
