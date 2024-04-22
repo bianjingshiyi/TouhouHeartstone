@@ -277,7 +277,7 @@ namespace Controllers
             {
                 //卡池卡牌
                 var localRef = getCardPoolReference(cardPoolId);
-                var (_, cardPool) = await game.card.getOrLoadCardPool(localRef);
+                var (_, cardPool) = await game.card.getOrLoadCardPool(localRef, true);
                 if (cardPool == null)
                     continue;
                 if (_cardFilter == null)

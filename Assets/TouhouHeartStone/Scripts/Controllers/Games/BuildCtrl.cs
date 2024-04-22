@@ -57,18 +57,31 @@ namespace Controllers
         }
         private async Task enterCollectionMode()
         {
-            //清理字段
-            _deck = null;
-            _isDeckChanged = false;
-            await _cardPoolViewPanelCtrl.display(cardFilter: cardFilter);
+            startWaiting();
+            try
+            {
+                //清理字段
+                _deck = null;
+                _isDeckChanged = false;
+                await _cardPoolViewPanelCtrl.display(cardFilter: cardFilter);
 
-            //UI更新
-            _ui.gameObject.SetActive(true);
-            _ui.showErrorTip(false);
-            _ui.setEnableDragDeckCard(false);
-            _ui.setDeckListActive(true);
-            _ui.setEditDeckPanelActive(false);
-            await updateDeckListUI();
+                //UI更新
+                _ui.gameObject.SetActive(true);
+                _ui.showErrorTip(false);
+                _ui.setEnableDragDeckCard(false);
+                _ui.setDeckListActive(true);
+                _ui.setEditDeckPanelActive(false);
+                await updateDeckListUI();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"进入组卡页面时出现错误：{e}");
+            }
+            finally
+            {
+                stopWaiting();
+            }
+
 
             updateTutorialStep();
         }
@@ -907,6 +920,14 @@ namespace Controllers
                 game.deck.reloadDeckList();
             }
             await enterCollectionMode();
+        }
+        private void startWaiting()
+        {
+            scene.waitingBlocker.addWaitingTask(WaitingTask.Build);
+        }
+        private void stopWaiting()
+        {
+            scene.waitingBlocker.removeWaitingTask(WaitingTask.Build);
         }
         #endregion
         #region 属性字段

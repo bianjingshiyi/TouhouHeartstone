@@ -39,6 +39,7 @@ namespace UI
     public enum WaitingTask
     {
         UserAccount,
-        CardEditor
+        CardEditor,
+        Build
     }
 }
