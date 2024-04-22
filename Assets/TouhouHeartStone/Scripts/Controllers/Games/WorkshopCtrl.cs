@@ -862,6 +862,7 @@ namespace Controllers
                 case WorkshopCardPoolState.NoPass:
                     return Color.red;
                 case WorkshopCardPoolState.OldVer:
+                case WorkshopCardPoolState.ReviewingOldVer:
                     return Color.yellow;
             }
             return Color.white;
@@ -977,9 +978,9 @@ namespace Controllers
                 mode = DeckListItem.Mode.Default,
                 name = info.Name,
                 hasPrivatePools = info.State == WorkshopCardPoolState.Pending,
-                isWarning = info.State == WorkshopCardPoolState.OldVer || info.State == WorkshopCardPoolState.NoPass,
+                isWarning = info.State == WorkshopCardPoolState.OldVer || info.State == WorkshopCardPoolState.NoPass || info.State == WorkshopCardPoolState.ReviewingOldVer,
                 isError = info.State == WorkshopCardPoolState.Deleted,
-                isWaiting = info.State == WorkshopCardPoolState.Reviewing,
+                isWaiting = info.State == WorkshopCardPoolState.Reviewing || info.State == WorkshopCardPoolState.ReviewingOldVer,
             };
         }
         private async Task<DeckListItemViewData> getCardPoolHeaderViewData(WorkshopCardPoolInfo info)
@@ -1090,6 +1091,8 @@ namespace Controllers
         [TranslateMsg("创意工坊-卡池状态")]
         private const string STATE_OLD_VERSION = "旧版本";
         [TranslateMsg("创意工坊-卡池状态")]
+        private const string STATE_REVIEWING_OLD_VERSION = "旧版本（审核中）";
+        [TranslateMsg("创意工坊-卡池状态")]
         private const string STATE_DELETED = "已删除";
 
         const float cardPoolFileProgress = 0.25f;
@@ -1109,6 +1112,7 @@ namespace Controllers
         {
             { WorkshopCardPoolState.Pending, STATE_PENDING },
             { WorkshopCardPoolState.Reviewing, STATE_REVIEWING },
+            { WorkshopCardPoolState.ReviewingOldVer, STATE_REVIEWING_OLD_VERSION },
             { WorkshopCardPoolState.Pass, STATE_PASS },
             { WorkshopCardPoolState.NoPass, STATE_NOT_PASS },
             { WorkshopCardPoolState.OldVer, STATE_OLD_VERSION },
