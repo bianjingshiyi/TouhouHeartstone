@@ -478,9 +478,15 @@ namespace Controllers
         }
         private async Task<WorkshopCardPoolInfo> getWorkshopCardPoolFile(long id, int version)
         {
+            var cacheKey = $"{id}_{version}";
+            if (_cardPoolCacheDict.TryGetValue(cacheKey, out var cache))
+                return cache;
+
             try
             {
-                return await game.network.getWorkshopCardPool(id, version);
+                var workshopInfo = await game.network.getWorkshopCardPool(id, version);
+                _cardPoolCacheDict.Add(cacheKey, workshopInfo);
+                return workshopInfo;
             }
             catch (Exception e)
             {
@@ -920,6 +926,7 @@ namespace Controllers
             }
             try
             {
+                _cardPoolCacheDict.Clear();
                 _ui.updateCardPools(Array.Empty<DeckListItemViewData>());
                 await loadPage(_page);
                 var pageViewDatas = await getCurrentPageViewData();
@@ -1121,6 +1128,7 @@ namespace Controllers
 
         private WorkshopCardPoolInfo[] _currentPageCardPools;
         private WorkshopCardPoolInfo _viewingCardPool;
+        private Dictionary<string, WorkshopCardPoolInfo> _cardPoolCacheDict = new Dictionary<string, WorkshopCardPoolInfo>();
 
         private CancellationTokenSource _downloadCts;
         private List<long> _downloadingCardPools = new List<long>();
