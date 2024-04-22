@@ -144,8 +144,15 @@ namespace Controllers
         }
         private async void onWorkshopButtonClick()
         {
-            hide();
-            await scene.workshop.display();
+            if (game.network.logic.Logined)
+            {
+                hide();
+                await scene.workshop.display();
+            }
+            else
+            {
+                await showAccountPanel(AccountPanel.Login);
+            }
         }
         private async void onServerButtonClickedCallback()
         {
