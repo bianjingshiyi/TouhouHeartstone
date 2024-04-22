@@ -244,6 +244,8 @@ namespace Game
         }
         public Task<Sprite> loadImage(ICardPoolReference cardPoolRef, string imagePath, bool fallbackDefault = true)
         {
+            if (imagePath == null)
+                return Task.FromResult<Sprite>(null);
             var defaultImage = fallbackDefault ? getDefaultSprite() : null;
             return loadResource(cardPoolRef, ResourceType.Picture, imagePath, defaultImage);
         }

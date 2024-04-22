@@ -348,34 +348,37 @@ namespace Controllers
         private async Task<string> validateCardPoolUpload()
         {
             var info = game.card.getLocalCardPoolInfo(_uploadingPoolId);
-            var dependencies = info.dependencyRefs.Where(dep => !game.card.isInnateCardPool(dep));
-            List<CardPoolReference> notUploadedDependencies = new List<CardPoolReference>();
-            foreach (var dep in dependencies)
+            if (info != null && info.dependencyRefs != null)
             {
-                var localRef = game.card.getLocalCardPoolReference(dep.cardPoolId);
-                if (!game.card.isLocalCardPoolRefExists(localRef))
-                    // 有丢失的依赖。
-                    return game.lang._(ERROR_UPLOADING_CARDPOOL_HAS_MISSING_DEPENDENCY);
-
-                if (dep.version < localRef.CardPoolVersion)
-                    // 有过时的依赖。
-                    return game.lang._(ERROR_UPLOADING_CARDPOOL_HAS_OUTDATED_DEPENDENCY);
-
-                var depInfo = await getWorkshopCardPoolFile(dep);
-                if (depInfo == null || !(depInfo.State == WorkshopCardPoolState.Pass || depInfo.State == WorkshopCardPoolState.OldVer))
-                    // 有未上传的依赖。
-                    notUploadedDependencies.Add(dep);
-            }
-            if (notUploadedDependencies.Count > 0)
-            {
-                const int maxCount = 5;
-                var depNames = string.Join(',', notUploadedDependencies.Take(maxCount).Select(dep =>
+                var dependencies = info.dependencyRefs.Where(dep => !game.card.isInnateCardPool(dep));
+                List<CardPoolReference> notUploadedDependencies = new List<CardPoolReference>();
+                foreach (var dep in dependencies)
                 {
-                    var poolInfo = game.card.getCardPoolInfo(dep);
-                    return game.card.getCardPoolName(poolInfo);
-                }));
-                depNames = notUploadedDependencies.Count > maxCount ? depNames = game.lang._(StringTable.TRIMMED_COTENTS, depNames) : depNames;
-                return game.lang._(ERROR_UPLOADING_CARDPOOL_HAS_NOT_UPLOADED_DEPENDENCY, depNames);
+                    var localRef = game.card.getLocalCardPoolReference(dep.cardPoolId);
+                    if (!game.card.isLocalCardPoolRefExists(localRef))
+                        // 有丢失的依赖。
+                        return game.lang._(ERROR_UPLOADING_CARDPOOL_HAS_MISSING_DEPENDENCY);
+
+                    if (dep.version < localRef.CardPoolVersion)
+                        // 有过时的依赖。
+                        return game.lang._(ERROR_UPLOADING_CARDPOOL_HAS_OUTDATED_DEPENDENCY);
+
+                    var depInfo = await getWorkshopCardPoolFile(dep);
+                    if (depInfo == null || !(depInfo.State == WorkshopCardPoolState.Pass || depInfo.State == WorkshopCardPoolState.OldVer))
+                        // 有未上传的依赖。
+                        notUploadedDependencies.Add(dep);
+                }
+                if (notUploadedDependencies.Count > 0)
+                {
+                    const int maxCount = 5;
+                    var depNames = string.Join(',', notUploadedDependencies.Take(maxCount).Select(dep =>
+                    {
+                        var poolInfo = game.card.getCardPoolInfo(dep);
+                        return game.card.getCardPoolName(poolInfo);
+                    }));
+                    depNames = notUploadedDependencies.Count > maxCount ? depNames = game.lang._(StringTable.TRIMMED_COTENTS, depNames) : depNames;
+                    return game.lang._(ERROR_UPLOADING_CARDPOOL_HAS_NOT_UPLOADED_DEPENDENCY, depNames);
+                }
             }
             return null;
         }
@@ -447,6 +450,8 @@ namespace Controllers
             List<string> notFoundResources = new List<string>();
             foreach (var res in resources)
             {
+                if (string.IsNullOrEmpty(res))
+                    continue;
                 var (type, resPath) = cardPoolResources.FirstOrDefault(r => r.path.StartsWith(res));
                 if (string.IsNullOrEmpty(resPath))
                 {
