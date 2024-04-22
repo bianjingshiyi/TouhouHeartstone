@@ -14,11 +14,23 @@ namespace UI
         }
         public void setDropdownValues(string[] names, string[] values)
         {
-            _dropdownNames = names;
-            _dropdownValues = values;
-            updateDropdownOptions();
+            _dropdownNames.Clear();
+            _dropdownNames.AddRange(names);
+            _dropdownValues.Clear();
+            _dropdownValues.AddRange(values);
+            refreshOptions();
         }
-        public void refresh()
+        public void updateOptionToggles()
+        {
+            if (!_showingDropdownList || !_dropdownList)
+                return;
+            var options = _tempValues.Concat(_dropdownValues).ToArray();
+            for (int i = 0; i < options.Length; i++)
+            {
+                _dropdownList.setOptionSelected(i, _values.Contains(options[i]));
+            }
+        }
+        public void refreshShowingDropdown()
         {
             if (!_showingDropdownList)
                 return;
@@ -29,27 +41,30 @@ namespace UI
             _dropdown.Show(true);
             _dropdown.alphaFadeSpeed = originSpeed;
         }
-        public void onShowDropdownList()
+        public void onShowDropdownList(MultiDropdownList dropdownList)
         {
+            _dropdownList = dropdownList;
             _showingDropdownList = true;
             _tempValues.RemoveAll(v => !_values.Contains(v));
-            updateDropdownOptions();
+            refreshOptions();
         }
-        public void onHideDropdownList()
+        public void onHideDropdownList(MultiDropdownList dropdownList)
         {
+            _dropdownList = null;
             _showingDropdownList = false;
         }
         #region 私有方法
         #region 生命周期
         private void Awake()
         {
+            _dropdown.template.GetComponent<MultiDropdownList>().isTemplate = true;
             _dropdown.onValueChanged.AddListener(onDropdownValueChangedCallback);
         }
         private void Update()
         {
             if (!_dropdown.IsActive())
             {
-                updateDropdownOptions();
+                refreshOptions();
             }
         }
         #endregion
@@ -71,15 +86,12 @@ namespace UI
         {
             _values.Clear();
             _values.AddRange(values.Where(v => !string.IsNullOrEmpty(v)));
-            updateDropdownOptions();
+            refreshOptions();
             if (sendCallback)
                 onValueChanged?.Invoke(values);
         }
-        private void updateDropdownOptions()
+        private bool refreshOptions()
         {
-            _dropdown.ClearOptions();
-            var options = new List<string>();
-
             bool optionsModified = false;
             foreach (var value in _values)
             {
@@ -89,22 +101,18 @@ namespace UI
                     optionsModified = true;
                 }
             }
-
-            bool[] newValues = new bool[_tempValues.Count + _dropdownNames.Length];
-            for (int i = 0; i < newValues.Length; i++)
-            {
-                var value = i < _tempValues.Count ? _tempValues[i] : _dropdownValues[i - _tempValues.Count];
-                newValues[i] = _values.Contains(value);
-            }
-
-
-            options.AddRange(_tempValues);
-            options.AddRange(_dropdownNames);
-            _dropdown.AddOptions(options);
-
-            _dropdown.SetValueWithoutNotify(newValues);
+            _dropdown.ClearOptions();
+            _dropdown.AddOptions(_tempValues.Concat(_dropdownNames).ToList());
+            updateDropdownValues();
             if (optionsModified)
-                refresh();
+                refreshShowingDropdown();
+
+            return optionsModified;
+        }
+        private void updateDropdownValues()
+        {
+            var newValues = _tempValues.Concat(_dropdownValues).Select(v => _values.Contains(v)).ToArray();
+            _dropdown.SetValueWithoutNotify(newValues);
         }
         #endregion
         public event Action<string[]> onValueChanged;
@@ -126,6 +134,7 @@ namespace UI
             }
         }
         private bool _interactable = true;
+        private MultiDropdownList _dropdownList;
         [SerializeField]
         private bool _showingDropdownList;
         [SerializeField]
@@ -135,8 +144,8 @@ namespace UI
         [SerializeField]
         MultiSelectDropdown _dropdown;
         [SerializeField]
-        string[] _dropdownNames;
+        List<string> _dropdownNames;
         [SerializeField]
-        string[] _dropdownValues;
+        List<string> _dropdownValues;
     }
 }

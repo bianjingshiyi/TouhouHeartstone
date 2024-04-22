@@ -44,6 +44,12 @@ namespace Game
             InitNode(entry, graph, defaultValues);
             if (!entry.hasInputDefaultValue(PassiveEntryNode.conditionPortName))
                 entry.setInputDefaultValue(PassiveEntryNode.conditionPortName, true);
+            // 将PileNameCollection更新为PileNameRange
+            var pileNameCollection = entry.getPiles();
+            if (pileNameCollection != null && pileNameCollection is not PileNameRange)
+            {
+                entry.setPiles(pileNameCollection.ToArray());
+            }
 
             if (tags != null)
                 entry.setTags(tags);

@@ -174,6 +174,7 @@ namespace UI
             { typeof(BuffReference), ActionNodeValueType.buffReference },
             { typeof(PileName), ActionNodeValueType.pileName },
             { typeof(PileNameCollection), ActionNodeValueType.pileNameCollection },
+            { typeof(PileNameRange), ActionNodeValueType.pileNameRange },
             { typeof(KeywordName), ActionNodeValueType.keyword },
             { typeof(KeywordCollection), ActionNodeValueType.keywordCollection },
             { typeof(EventArgReference), ActionNodeValueType.eventReference },
@@ -202,6 +203,7 @@ namespace UI
             { ActionNodeValueType.buffReference, () => new BuffReference(0, 0) },
             { ActionNodeValueType.pileName, () => new PileName(string.Empty) },
             { ActionNodeValueType.pileNameCollection, () => new PileNameCollection() },
+            { ActionNodeValueType.pileNameRange, () => new PileNameRange() },
             { ActionNodeValueType.keyword, () => new KeywordName(string.Empty) },
             { ActionNodeValueType.keywordCollection, () => new KeywordCollection() },
             { ActionNodeValueType.eventReference, () => new EventReference(0, string.Empty) },
@@ -249,6 +251,10 @@ namespace UI
         /// 牌堆名称集
         /// </summary>
         pileNameCollection,
+        /// <summary>
+        /// 牌堆名称集（包括任意牌堆值）
+        /// </summary>
+        pileNameRange,
         /// <summary>
         /// 标签集合
         /// </summary>

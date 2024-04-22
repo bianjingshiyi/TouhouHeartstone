@@ -716,14 +716,14 @@ namespace TouhouHeartstone
             foreach (Card card in cards)
             {
                 // 卡牌定义自带的效果。
-                foreach (var effect in card.define.getEffects().Where(e => !e.isDeathRattle() && e is IPileRangedEffect pe && !pe.getPiles().Contains(PILE.GRAVE)))
+                foreach (var effect in card.define.getEffects().Where(e => !e.isDeathRattle() && e is IPileRangedEffect pe && !pe.getPiles().ContainsPileOrAny(PILE.GRAVE)))
                 {
                     await effect.disable(game, card, null);
                 }
                 // BUFF给予的效果。
                 foreach (var buff in card.getBuffs())
                 {
-                    foreach (var effect in buff.getEffects().Where(e => !e.isDeathRattle() && e is IPileRangedEffect pe && !pe.getPiles().Contains(PILE.GRAVE)))
+                    foreach (var effect in buff.getEffects().Where(e => !e.isDeathRattle() && e is IPileRangedEffect pe && !pe.getPiles().ContainsPileOrAny(PILE.GRAVE)))
                     {
                         await effect.disable(game, card, buff);
                     }
@@ -1317,7 +1317,7 @@ namespace TouhouHeartstone
                 // 如果是陷阱效果，改变其启用或禁用。
                 foreach (var effect in secret.define.getEffects().Where(e => e.isTrap()))
                 {
-                    if (effect is IPileRangedEffect rangedEffect && rangedEffect.getPiles().Contains(PILE.HEAD))
+                    if (effect is IPileRangedEffect rangedEffect && rangedEffect.getPiles().ContainsPileOrAny(PILE.HEAD))
                     {
                         if (game.getCurrentPlayer() == secret.getOwner())
                             await effect.disable(game, secret, null);

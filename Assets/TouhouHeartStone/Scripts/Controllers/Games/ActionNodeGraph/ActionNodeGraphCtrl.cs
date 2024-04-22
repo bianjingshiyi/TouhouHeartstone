@@ -52,6 +52,7 @@ namespace Controllers
                 buffNames = game.editor.getBuffNames(),
                 buffValues = game.editor.getBuffReferences(),
 
+                anyPileName = game.editor.getAnyPileName(),
                 pileNames = game.editor.getAllPileNames(),
                 pileValues = game.editor.getAllPileValues(),
 

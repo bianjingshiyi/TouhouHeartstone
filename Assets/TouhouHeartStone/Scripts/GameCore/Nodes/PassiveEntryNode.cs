@@ -80,19 +80,20 @@ namespace TouhouCardEngine
         #region 生效区域
         public void setPiles(params string[] value)
         {
-            var tags = getInputDefaultValue<PileNameCollection>(pileListPortName);
-            if (tags == null)
-            {
-                tags = new PileNameCollection();
-                setInputDefaultValue(pileListPortName, tags);
-            }
-            tags.Clear();
+            var piles = getPiles();
+            piles.Clear();
             if (value != null)
-                tags.AddRange(value);
+                piles.AddRange(value);
         }
-        public PileNameCollection getPiles()
+        public PileNameRange getPiles()
         {
-            return getInputDefaultValue<PileNameCollection>(pileListPortName);
+            var piles = getInputDefaultValue<PileNameCollection>(pileListPortName);
+            if (piles is not PileNameRange pileNameRange)
+            {
+                pileNameRange = piles is IEnumerable<string> strings ? new PileNameRange(strings) : new PileNameRange();
+                setInputDefaultValue(pileListPortName, pileNameRange);
+            }
+            return pileNameRange;
         }
         #endregion
 
@@ -186,7 +187,7 @@ namespace TouhouCardEngine
         public static PortDefine playerPortDefine = PortDefine.Value(typeof(Player), playerPortName, Translations.EDITOR_PARAM_NAME_PLAYER);
         public static PortDefine cardPortDefine = PortDefine.Value(typeof(Card), cardPortName, Translations.EDITOR_PARAM_NAME_CARD);
         public static PortDefine tagsPortDefine = PortDefine.Value(typeof(EffectTagCollection), tagsPortName, tagsPortDisplayName, isConst: true);
-        public static PortDefine pileListPortDefine = PortDefine.Value(typeof(PileNameCollection), pileListPortName, Translations.EDITOR_PARAM_NAME_ACTIVE_PILES, isConst: true);
+        public static PortDefine pileListPortDefine = PortDefine.Value(typeof(PileNameRange), pileListPortName, Translations.EDITOR_PARAM_NAME_ACTIVE_PILES, isConst: true);
         public static PortDefine priorityPortDefine = PortDefine.Value(typeof(int), priorityPortName, Translations.EDITOR_PARAM_NAME_PRIORITY, isConst: true);
     }
 }

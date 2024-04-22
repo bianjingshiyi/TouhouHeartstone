@@ -76,7 +76,7 @@ namespace Controllers
                             true),
                         new InputPortInfo(
                             new PortItemInfo(game.lang._(PassiveEntryNode.pileListPortDisplayName), arrayColor, false),
-                            new ActionNodeValueInfo(PassiveEntryNode.pileListPortName, new NodeValueType(ActionNodeValueType.pileNameCollection), null),
+                            new ActionNodeValueInfo(PassiveEntryNode.pileListPortName, new NodeValueType(ActionNodeValueType.pileNameRange), null),
                             false,
                             true)
                     };
