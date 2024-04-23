@@ -526,7 +526,7 @@ MonoBehaviour:
   _initStates:
   - IsFaceup/IsFaceup_True
   - Type/Type_Servant
-  _animator: {fileID: 613913946243370178}
+  _cardAnimator: {fileID: 613913946243370178}
   _servantCardFace: {fileID: 4481527198265274879}
   _spellCardFace: {fileID: 5081877866888625424}
   _itemCardFace: {fileID: 425855481427461983}

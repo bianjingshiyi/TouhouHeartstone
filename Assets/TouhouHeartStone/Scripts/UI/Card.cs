@@ -41,7 +41,7 @@ namespace UI
             _hovered = true;
             if (_playHoverSound)
                 _sePlayer?.Play();
-            _animator.SetBool("isHovered", true);
+            _cardAnimator.SetBool("isHovered", true);
             onHoverEnter?.Invoke(this);
         }
         private void exitHover()
@@ -49,7 +49,7 @@ namespace UI
             if (!_hovered)
                 return;
             _hovered = false;
-            _animator.SetBool("isHovered", false);
+            _cardAnimator.SetBool("isHovered", false);
             onHoverExit?.Invoke(this);
         }
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
@@ -72,7 +72,7 @@ namespace UI
         private int _type;
         private bool _hovered;
         [SerializeField]
-        private Animator _animator;
+        private Animator _cardAnimator;
         [SerializeField]
         private ServantCardFace _servantCardFace;
         [SerializeField]
