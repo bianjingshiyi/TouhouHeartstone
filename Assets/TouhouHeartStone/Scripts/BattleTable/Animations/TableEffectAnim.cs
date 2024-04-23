@@ -74,6 +74,10 @@ namespace Game.Animations
             {
                 srcTransform = table.getAreaTransform(area);
             }
+            else if (define.type == AnimationType.Camera)
+            {
+                srcTransform = table.table.CenterDisplayTransform;
+            }
             _sourceConfirmed = srcTransform;
             return srcTransform;
         }

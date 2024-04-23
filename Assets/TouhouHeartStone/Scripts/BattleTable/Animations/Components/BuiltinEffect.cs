@@ -23,6 +23,9 @@ namespace Game.Animations
                 case AreaEffect:
                     anim.type = AnimationType.Area;
                     break;
+                case CameraEffect:
+                    anim.type = AnimationType.Camera;
+                    break;
                 case CardEffect:
                     anim.type = AnimationType.Card;
                     break;

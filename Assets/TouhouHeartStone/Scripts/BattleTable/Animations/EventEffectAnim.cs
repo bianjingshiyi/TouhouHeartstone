@@ -22,6 +22,9 @@ namespace Game.Animations
         {
             switch (define.type)
             {
+                case AnimationType.Camera:
+                    // 什么都不初始化。
+                    break;
                 case AnimationType.Area:
                     area = table.getEventSkinAnimArea(effectArg, eventArg, 0); // TODO
                     break;

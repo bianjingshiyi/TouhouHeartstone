@@ -282,14 +282,6 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.93333334
-    functionName: PlaySEClip
-    data: 
-    objectReferenceParameter: {fileID: 8300000, guid: 03c990ea1fe1b784e91b8efa0e0518f1,
-      type: 3}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
   - time: 0.95
     functionName: PlaySEClip
     data: 

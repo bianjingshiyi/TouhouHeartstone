@@ -182,6 +182,61 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 198232804733716286, guid: 04dff093cac715c4ca6702f61aa0f5ef,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198232804733716286, guid: 04dff093cac715c4ca6702f61aa0f5ef,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198232804733716286, guid: 04dff093cac715c4ca6702f61aa0f5ef,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 198656777211617440, guid: 04dff093cac715c4ca6702f61aa0f5ef,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198656777211617440, guid: 04dff093cac715c4ca6702f61aa0f5ef,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198656777211617440, guid: 04dff093cac715c4ca6702f61aa0f5ef,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 198665534540485320, guid: 04dff093cac715c4ca6702f61aa0f5ef,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198665534540485320, guid: 04dff093cac715c4ca6702f61aa0f5ef,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198665534540485320, guid: 04dff093cac715c4ca6702f61aa0f5ef,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 198804968692821980, guid: 04dff093cac715c4ca6702f61aa0f5ef,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 198940041443350384, guid: 04dff093cac715c4ca6702f61aa0f5ef,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
