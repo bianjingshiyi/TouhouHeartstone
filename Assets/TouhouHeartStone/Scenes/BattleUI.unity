@@ -612,7 +612,7 @@ Light:
   m_RenderMode: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 32
+    m_Bits: 96
   m_RenderingLayerMask: 1
   m_Lightmapping: 4
   m_LightShadowCasterMode: 0
@@ -2009,7 +2009,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Version: 300
-  m_EffectMaterial: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
+  m_EffectMaterial: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
     type: 2}
   m_EffectFactor: 1
   m_ColorFactor: 1
@@ -2275,34 +2275,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 439759468}
-    - targetCorrespondingSourceObject: {fileID: 5093202236737795821, guid: cb2d89f4de23f27459c6048aef36dde6,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 4594342767996950731, guid: cb2d89f4de23f27459c6048aef36dde6,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 7988170730750248684, guid: cb2d89f4de23f27459c6048aef36dde6,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 6322388774240708956, guid: cb2d89f4de23f27459c6048aef36dde6,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 4646267294127431997, guid: cb2d89f4de23f27459c6048aef36dde6,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 1675820147980703049, guid: cb2d89f4de23f27459c6048aef36dde6,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 5669854839618812868, guid: cb2d89f4de23f27459c6048aef36dde6,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: cb2d89f4de23f27459c6048aef36dde6, type: 3}
 --- !u!224 &439759465 stripped
 RectTransform:
@@ -2780,6 +2752,7 @@ Transform:
   - {fileID: 1520265005}
   - {fileID: 848266876}
   - {fileID: 1980511462}
+  - {fileID: 669553928}
   m_Father: {fileID: 702626782}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &508968762
@@ -3137,9 +3110,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.12499991
+    y: 0
     width: 1
-    height: 0.7500002
+    height: 1
   near clip plane: 0.3
   far clip plane: 10000
   field of view: 60
@@ -3206,6 +3179,52 @@ MonoBehaviour:
   _safeAspectMin: 1.333333
   _safeAspectMax: -1
   _camera: {fileID: 577032261}
+--- !u!1 &669553927
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 669553928}
+  - component: {fileID: 669553929}
+  m_Layer: 0
+  m_Name: MulliganLightFactor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &669553928
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 669553927}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 450401108}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &669553929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 669553927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3dbaa1581172e94f9fb45bb927fe057, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _targetIntensity: 0.1
+  _controllers: []
 --- !u!1 &689023950
 GameObject:
   m_ObjectHideFlags: 0
@@ -3351,6 +3370,7 @@ MonoBehaviour:
   _fatigue: {fileID: 1520265007}
   _discover: {fileID: 635482350501438396}
   _attackArrow: {fileID: 1980511463}
+  _mulliganLightFactor: {fileID: 669553929}
   _allFieldAreaTransform: {fileID: 835964969}
   _selfFieldAreaTransform: {fileID: 1686352160}
   _enemyFieldAreaTransform: {fileID: 1580184564}
@@ -5806,7 +5826,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.78431374}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -7722,13 +7742,11 @@ MonoBehaviour:
   _tipBoxOffset: {x: 20, y: -40, z: -20}
   _servantAttackThreshold: 70
   _masterAttackThreshold: 70
-  _popupCardMinLeftSpace: 4.5
   _cardHeight: 300
   _verticalExtents: 2.4
   _maxBuffDisplayCount: 15
   _maxBuffNameLength: 10
   _maxBuffDescLength: 32
-  _projectileList: []
   _tipTimer:
     startTime: -1
     updateTime: -1

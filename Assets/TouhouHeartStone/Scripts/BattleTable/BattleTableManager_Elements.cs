@@ -123,6 +123,10 @@ namespace Game.BattleTable
             isLocalTurn = false;
             cancelTargetSelect();
         }
+        public void completeMulligan()
+        {
+            _mulliganed = true;
+        }
         #region 英雄
         /// <summary>
         /// 初始化Master的事件
@@ -2828,6 +2832,7 @@ namespace Game.BattleTable
         private bool _requesting;
         public float servantAttackThreshold => _servantAttackThreshold;
         public float masterAttackThreshold => _masterAttackThreshold;
+        private bool _mulliganed;
         private CardChooseMode _cardChooseMode;
         private int[] _choosingCards;
         private DefineReference[] _choosingCardDefineRefs;

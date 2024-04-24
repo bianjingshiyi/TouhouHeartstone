@@ -378,6 +378,11 @@ namespace TouhouHeartstone
         {
         }
         #region 重写
+        public override Task onGameInit(CardEngine game, GameOption options)
+        {
+            game.logger.log($"游戏开始，本局游戏设置：{options.ToJson()}");
+            return InitEventDefine.doEvent(game);
+        }
         public override async Task onPlayerInit(CardEngine game, Player player)
         {
             player.addPile(game, new Pile(PILE.MASTER, 1));
@@ -396,46 +401,51 @@ namespace TouhouHeartstone
             player.setFatigue(game, 0);
 
 
-            CardDefine[] playerDeck = player.getStartDeck();
-            var master = playerDeck[0];
-            var deck = playerDeck.Skip(1).ToArray();
+            CardDefine[] startDeck = player.getStartDeck();
+            var master = startDeck[0];
+            var deckCardDefines = startDeck.Skip(1).ToArray();
             CardDefine luckyCoinDefine = game.getDefine(1, ClassicCardID.LuckyCoin);
-            for (int i = 1; i < deck.Length; i++)
+            for (int i = 1; i < deckCardDefines.Length; i++)
             {
-                var define = deck[i];
+                var define = deckCardDefines[i];
                 if (define == null)
                 {
-                    game.logger.logError($"非法卡牌ID{deck[i]}被替换为幸运币");
-                    deck[i] = luckyCoinDefine;
+                    game.logger.logError($"非法卡牌ID{deckCardDefines[i]}被替换为幸运币");
+                    deckCardDefines[i] = luckyCoinDefine;
                 }
 
                 if (define.isToken())
                 {
                     game.logger.log("为什么你的牌库里会有衍生物？让我把它换成幸运币");
-                    deck[i] = luckyCoinDefine;
+                    deckCardDefines[i] = luckyCoinDefine;
                 }
             }
 
             DefineReference skillRef = master.getSkillRef();
             var skillDef = game.getDefine(skillRef.cardPoolId, skillRef.defineId);
-            await player[PILE.MASTER].add(game, game.createCard(master));
-            await player[PILE.SKILL].add(game, game.createCard(skillDef));
-            await player[PILE.DECK].add(game, Array.ConvertAll(deck, d => game.createCard(d)).Reverse());
+            var masterCard = game.createCard(master);
+            await Pile.moveCard(game, masterCard, null, player[PILE.MASTER], 0);
+            var skillCard = game.createCard(skillDef);
+            await Pile.moveCard(game, skillCard, null, player[PILE.SKILL], 0);
+
+            var deckCards = Array.ConvertAll(deckCardDefines, d => game.createCard(d)).Reverse();
+            if (game.getOption().shuffle)
+                deckCards = deckCards.shuffle(game);
+            var deck = player[PILE.DECK];
+            foreach (var deckCard in deckCards)
+            {
+                await Pile.moveCard(game, deckCard, null, deck, deck.count);
+            }
         }
         public override Task onPlayerExit(CardEngine game, Player player)
         {
             game.logger.logWarn($"玩家{player}已退出游戏！");
             return Task.CompletedTask;
         }
-        public override Task onGameInit(CardEngine game, GameOption options)
+        public override async Task onGameRun(CardEngine game)
         {
-            game.addBuffDefine(new MasterItemAttackBuffDefine());
-            game.logger.log($"游戏开始，本局游戏设置：{options.ToJson()}");
-            return init(game);
-        }
-        public override Task onGameRun(CardEngine game)
-        {
-            return gameflow(game);
+            await playerReady(game);
+            await gameflow(game);
         }
         public override Task onGameClose(CardEngine game)
         {
@@ -534,7 +544,55 @@ namespace TouhouHeartstone
             }
         }
         #region Gameflow
+        private async Task playerReady(CardEngine game)
+        {
+            var gamePlayers = game.players;
+            //决定玩家行动顺序
+            var optionPlayers = game.getOption().sortedPlayers;
+            if (optionPlayers == null || optionPlayers.Length != gamePlayers.Length)
+            {
+                if (optionPlayers != null && optionPlayers.Length != gamePlayers.Length)
+                    game.logger?.logWarn("游戏参数玩家行动顺序长度与实际数量不匹配");
+                List<Player> remainedList = new List<Player>(gamePlayers);
+                Player[] sortedPlayers = new Player[remainedList.Count];
+                for (int i = 0; i < sortedPlayers.Length; i++)
+                {
+                    int index = game.randomInt(0, remainedList.Count - 1);
+                    sortedPlayers[i] = remainedList[index];
+                    remainedList.RemoveAt(index);
+                }
+                game.setProp(GAME.SORTEDPLAYER, sortedPlayers);
+            }
+            else
+            {
+                game.setProp(GAME.SORTEDPLAYER, optionPlayers.Select(id => gamePlayers.FirstOrDefault(p => p.id == id)).ToArray());
+            }
 
+            // 抽初始卡牌
+            var sortPlayers = game.getSortedPlayers();
+            for (int i = 0; i < sortPlayers.Length; i++)
+            {
+                Player player = sortPlayers[i];
+                Pile deck = player.getDeck();
+                if (deck.count < 1)
+                    continue;
+                int count = i == 0 ? 3 : 4;
+                var initCards = deck.Where(c => c.hasKeyword(game, KEYWORD.MISSION))
+                    .randomTake(game, count).ToList();
+                initCards.AddRange(deck.Except(initCards)
+                    .Reverse()
+                    .Take(count - initCards.Count()));
+                initCards.Reverse();
+                await deck.moveTo(game, initCards, player.getInit());
+                await game.updateMasterItemAttack(player);
+            }
+
+
+            var orderLog = string.Join("、", sortPlayers.Select(p => p.ToString()));
+            var masterLog = string.Join("，", sortPlayers.Select(p => $"{p.getMaster()}({p.getSkill()})"));
+            var cardsLog = string.Join("；", sortPlayers.Select(p => string.Join("、", p.getInit().Select(c => c.ToString()))));
+            game.logger.logTrace($"游戏初始化，玩家行动顺序：{orderLog}，玩家英雄：{masterLog}，初始卡牌：{cardsLog}");
+        }
         private async Task gameflow(CardEngine game, Action onInited = null)
         {
             Task<Dictionary<int, IResponse>> task = game.answers.askAll(
@@ -572,11 +630,6 @@ namespace TouhouHeartstone
             }
 
             await gameEnd(game, new Player[0]);
-        }
-
-        private Task init(CardEngine game)
-        {
-            return InitEventDefine.doEvent(game);
         }
         private Task start(CardEngine game)
         {

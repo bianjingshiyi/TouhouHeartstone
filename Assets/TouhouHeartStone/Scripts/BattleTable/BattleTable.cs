@@ -83,6 +83,7 @@ namespace Game.BattleTable
         public Fatigue Fatigue => _fatigue;
         public DiscoverDialog Discover => _discover;
         public AttackArrow AttackArrowImage => _attackArrow;
+        public TableLightFactor MulliganLightFactor => _mulliganLightFactor;
 
         #region 战场区域
         public Transform AllFieldAreaTransform => _allFieldAreaTransform;
@@ -155,6 +156,8 @@ namespace Game.BattleTable
         private DiscoverDialog _discover;
         [SerializeField]
         private AttackArrow _attackArrow;
+        [SerializeField]
+        private TableLightFactor _mulliganLightFactor;
 
         #region 战场区域
         [SerializeField]

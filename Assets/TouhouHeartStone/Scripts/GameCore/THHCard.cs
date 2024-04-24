@@ -465,7 +465,7 @@ namespace TouhouHeartstone
         {
             if (card == target)//是自己
                 return false;
-            if (!(target.pile.name == PILE.FIELD || target.pile.name == PILE.MASTER))//不在战场上
+            if (!(target.pile?.name == PILE.FIELD || target.pile?.name == PILE.MASTER))//不在战场上
                 return false;
             if (target.isDead(game))//已经死了
                 return false;

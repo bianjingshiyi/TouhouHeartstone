@@ -18,18 +18,14 @@ namespace Game.BattleTable
     public partial class BattleTableManager : MonoBehaviour
     {
         /// <summary>
-        /// 设置游戏对象和玩家并初始化UI
+        /// 设置游戏对象和玩家
         /// </summary>
         /// <param name="game"></param>
         /// <param name="player"></param>
         public void setGame(MainManager main, CardEngine game, Player player)
         {
-            _main = main;
-
             reset();
-
-            initMaster(table.SelfMaster);
-            initMaster(table.EnemyMaster);
+            _main = main;
             this.player = player;
             if (this.game != null)
             {
@@ -45,13 +41,25 @@ namespace Game.BattleTable
                 game.triggers.onEventAfter += onEventAfterHandler;
                 game.answers.onRequest += onRequestHandler;
                 game.answers.onResponse += onResponseHandler;
-
-                setMaster(table.SelfMaster, newSnapshot(player.getMaster()));
-                setSkill(table.SelfSkill, newSnapshot(player.getSkill()));
-                var oppo = game.getOpponent(player);
-                setMaster(table.EnemyMaster, newSnapshot(oppo.getMaster()));
-                setSkill(table.EnemySkill, newSnapshot(oppo.getSkill()));
             }
+        }
+        /// <summary>
+        /// 初始化UI
+        /// </summary>
+        public void init()
+        {
+            table.MulliganLightFactor.targetIntensity = 0.1f;
+            _mulliganed = false;
+            initMaster(table.SelfMaster);
+            initMaster(table.EnemyMaster);
+
+            setMaster(table.SelfMaster, newSnapshot(player.getMaster()));
+            setSkill(table.SelfSkill, newSnapshot(player.getSkill()));
+
+            var oppo = game.getOpponent(player);
+            setMaster(table.EnemyMaster, newSnapshot(oppo.getMaster()));
+            setSkill(table.EnemySkill, newSnapshot(oppo.getSkill()));
+
             initDecksAndGraves();
         }
         public void showTurnTipImage(bool friendly)
@@ -343,6 +351,10 @@ namespace Game.BattleTable
         {
             table.update(Time.deltaTime);
 
+            if (_mulliganed)
+            {
+                table.MulliganLightFactor.targetIntensity = Mathf.Clamp01(table.MulliganLightFactor.targetIntensity + 1 * Time.deltaTime);
+            }
 
             // 鼠标悬浮到仆从/道具/陷阱上查看
             if (_showCardTimer.isExpired())

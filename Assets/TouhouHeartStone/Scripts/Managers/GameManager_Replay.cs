@@ -10,9 +10,9 @@ namespace Game
         public async Task startReplayGame(ReplayData replay)
         {
             var players = replay.players.Select(p => p.toRoomData()).ToArray();
-            CardEngine game = await createGame(replay.option, players);
+            CardEngine game = createGame();
             _replayPlayer = new ReplayDataPlayer(game, replay);
-            await startGame(game, GameMode.replay, replay.playerAId);
+            await startGame(game, GameMode.replay, replay.playerAId, replay.option, players);
         }
         void onReplayGameUpdate()
         {

@@ -26,10 +26,10 @@ namespace Game
         public async Task startLocalGame(RoomData room)
         {
             //创建游戏
-            CardEngine game = await createGame(room);
+            CardEngine game = createGame();
             var localId = room.playerDataList[0].id;
             initReplay(game, room, localId);
-            await startGame(game, GameMode.local, localId, true);
+            await startGame(game, GameMode.local, localId, room, true);
         }
         public Task startPVEGame(RoomData room)
         {
@@ -47,13 +47,13 @@ namespace Game
         public async Task startRemoteGame(IClient client, RoomData room)
         {
             //创建游戏
-            CardEngine game = await createGame(room);
+            CardEngine game = createGame();
             //将游戏与网络连接
             game.answers.client = client;
             //初始化本地玩家与UI
             var localId = client.id;
             initReplay(game, room, localId);
-            await startGame(game, GameMode.remote, localId);
+            await startGame(game, GameMode.remote, localId, room);
         }
         #endregion
         #region 私有方法
@@ -133,12 +133,29 @@ namespace Game
             }
         }
         #endregion
-        private Task<CardEngine> createGame(RoomData room)
+
+        #region 游戏
+        private CardEngine createGame()
         {
-            return createGame(room.getOption(), room.playerDataList);
+            var answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>();
+            var triggerManager = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>();
+            CardEngine game = new CardEngine()
+            {
+                answers = answers,
+                triggers = triggerManager,
+                time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
+                snapshoter = new THHSnapshoter(),
+                logger = new ULogger()
+            };
+            answers.game = game;
+            triggerManager.game = game;
+            return game;
         }
-        private async Task<CardEngine> createGame(HearthstoneOption option, IEnumerable<IRoomPlayer> playerList)
+        private async Task initGame(CardEngine game, GameMode mode, HearthstoneOption option, IEnumerable<IRoomPlayer> playerList, int localId, bool hasAI = false)
         {
+            this.game = game;
+            this.mode = mode;
+
             //加载外部卡牌
             List<CardDefine> cards = new List<CardDefine>();
             List<BuffDefine> buffs = new List<BuffDefine>();
@@ -158,18 +175,6 @@ namespace Game
             }
 
 
-            var answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>();
-            var triggerManager = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>();
-            CardEngine game = new CardEngine()
-            {
-                answers = answers,
-                triggers = triggerManager,
-                time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
-                snapshoter = new THHSnapshoter(),
-                logger = new ULogger()
-            };
-            answers.game = game;
-            triggerManager.game = game;
 #if UNITY_EDITOR
             if (_useTestDeck)
             {
@@ -188,6 +193,8 @@ namespace Game
             {
                 game.addEventDefine(eventDefine);
             }
+
+            // 初始化玩家。
             Player[] players = new Player[playerList.Count()];
             for (int i = 0; i < players.Length; i++)
             {
@@ -198,10 +205,46 @@ namespace Game
                 player.setStartDeck(game, defineArray);
                 players[i] = player;
             }
-            await game.init(cards.ToArray(), buffs.ToArray(), rules.ToArray(), option, players);
-            return game;
-        }
+            //初始化本地玩家，AI
+            localPlayer = players.FirstOrDefault(p => p.id == localId);
+            if (hasAI)
+            {
+                foreach (var player in players.Where(p => p != localPlayer))
+                {
+#if UNITY_EDITOR
+                    new AI(game, player, dummy: _dummyAI); //AI玩家用AI
+#else
+                    new AI(game, player);
+#endif
+                }
+            }
 
+            // 初始化事件和回调。
+            initGameEvents();
+            battleTableManager.setGame(main, game, localPlayer);
+
+            // 触发游戏初始化规则。
+            await game.init(cards.ToArray(), buffs.ToArray(), rules.ToArray(), option, players);
+        }
+        /// <summary>
+        /// 开始游戏
+        /// </summary>
+        /// <returns></returns>
+        private Task startGame(CardEngine game, GameMode mode, int localId, RoomData roomData, bool hasAI = false)
+        {
+            return startGame(game, mode, localId, roomData.getOption(), roomData.playerDataList, hasAI);
+        }
+        /// <summary>
+        /// 开始游戏
+        /// </summary>
+        /// <returns></returns>
+        private async Task startGame(CardEngine game, GameMode mode, int localId, HearthstoneOption option, IEnumerable<IRoomPlayer> playerList, bool hasAI = false)
+        {
+            await loadBattleUI(game);
+            await initGame(game, mode, option, playerList, localId, hasAI);
+            gotoBattleUI();
+            await runGame(game);
+        }
         private Task runGame(CardEngine game)
         {
             onGameStart?.Invoke();
@@ -256,60 +299,7 @@ namespace Game
             }
         }
         /// <summary>
-        /// 显示游戏UI，并指定本地玩家
-        /// </summary>
-        /// <param name="localPlayer"></param>
-        private async Task displayGameUI(CardEngine game, Player localPlayer)
-        {
-            //本地玩家用UI
-            var tcs = new TaskCompletionSource<AsyncOperation>();
-            var operation = SceneManager.LoadSceneAsync("BattleUI", LoadSceneMode.Additive);
-            operation.completed += op => { tcs.SetResult(op); };
-
-            await tcs.Task;
-
-            var scene = SceneManager.GetSceneByName("BattleUI");
-            _battleTableManager = scene.findInstance<BattleTableManager>();
-            _tableUI = scene.findInstance<TableUI>();
-            _mainUI.setBackgroundVisible(false);
-            _mainUI.hidePages();
-            main.camera.gameObject.SetActive(false);
-            main.bgm.PlayList("Game");
-            if (battleTableManager)
-            {
-                battleTableManager.setGame(main, game, localPlayer);
-                battleTableManager.canSeeAllCards = mode == GameMode.replay;
-                battleTableManager.setCanControl(mode != GameMode.replay);
-            }
-            initTableUI();
-        }
-        /// <summary>
-        /// 开始游戏
-        /// </summary>
-        /// <returns></returns>
-        private async Task startGame(CardEngine game, GameMode mode, int localId, bool hasAI = false)
-        {
-            this.game = game;
-            this.mode = mode;
-            localPlayer = game.players.FirstOrDefault(p => p.id == localId);
-            //初始化本地玩家，AI，UI
-            if (hasAI)
-            {
-                foreach (var player in game.players.Where(p => p != localPlayer))
-                {
-#if UNITY_EDITOR
-                    new AI(game, player, dummy: _dummyAI); //AI玩家用AI
-#else
-                    new AI(game, player);
-#endif
-                }
-            }
-            initGameEvents();
-            await displayGameUI(game, localPlayer);
-            await runGame(game);
-        }
-        /// <summary>
-        /// 关闭游戏
+        /// 结束游戏
         /// </summary>
         private void endGame()
         {
@@ -324,6 +314,44 @@ namespace Game
                 gameTask = null;
                 onGameEnd?.Invoke();
             }
+        }
+        #endregion
+
+        /// <summary>
+        /// 加载游戏UI
+        /// </summary>
+        /// <param name="localPlayer"></param>
+        private async Task loadBattleUI(CardEngine game)
+        {
+            //本地玩家用UI
+            var tcs = new TaskCompletionSource<AsyncOperation>();
+            var operation = SceneManager.LoadSceneAsync("BattleUI", LoadSceneMode.Additive);
+            operation.completed += op => { tcs.SetResult(op); };
+
+            await tcs.Task;
+
+            var scene = SceneManager.GetSceneByName("BattleUI");
+            _battleTableManager = scene.findInstance<BattleTableManager>();
+            _tableUI = scene.findInstance<TableUI>();
+        }
+        /// <summary>
+        /// 显示游戏UI，并指定本地玩家
+        /// </summary>
+        /// <param name="localPlayer"></param>
+        private void gotoBattleUI()
+        {
+            //本地玩家用UI
+            _mainUI.setBackgroundVisible(false);
+            _mainUI.hidePages();
+            main.camera.gameObject.SetActive(false);
+            main.bgm.PlayList("Game");
+            if (battleTableManager)
+            {
+                battleTableManager.init();
+                battleTableManager.canSeeAllCards = mode == GameMode.replay;
+                battleTableManager.setCanControl(mode != GameMode.replay);
+            }
+            initTableUI();
         }
         /// <summary>
         /// 关闭游戏UI并回到主页面
@@ -343,18 +371,6 @@ namespace Game
                 onGameQuit?.Invoke();
                 reset();
             };
-        }
-        /// <summary>
-        /// 关闭游戏和UI
-        /// </summary>
-        private void quitGame()
-        {
-            endGame();
-            closeGameUI();
-        }
-        private void initGameEvents()
-        {
-            game.triggers.onEventAfter += onEventAfter;
         }
         private void initTableUI()
         {
@@ -381,6 +397,18 @@ namespace Game
                 tableUI.GameResultDialog.onQuitButtonClicked -= onGameResultQuitGameButtonClicked;
                 tableUI.GameResultDialog.onSaveReplayButtonClicked -= onSaveReplayButtonClickCallback;
             }
+        }
+        /// <summary>
+        /// 关闭游戏和UI
+        /// </summary>
+        private void quitGame()
+        {
+            endGame();
+            closeGameUI();
+        }
+        private void initGameEvents()
+        {
+            game.triggers.onEventAfter += onEventAfter;
         }
         private void reset()
         {
