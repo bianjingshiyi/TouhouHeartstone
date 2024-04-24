@@ -5032,15 +5032,15 @@ MonoBehaviour:
       time: 0
       value: 0
       inSlope: 0
-      outSlope: 10
+      outSlope: 5
       tangentMode: 65
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.1
+      time: 0.2
       value: 1
-      inSlope: 10
+      inSlope: 5
       outSlope: 1
       tangentMode: 5
       weightedMode: 0
@@ -5090,7 +5090,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defineName: "\u94F6\u5315\u9996"
   duration: 1
-  blockTime: 0.1
+  blockTime: 0.2
   isPersistent: 0
 --- !u!114 &890685524685931368
 MonoBehaviour:
