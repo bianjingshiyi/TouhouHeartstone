@@ -953,6 +953,34 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>101022</defineId>
+    <obsoleteNames />
+    <editorName>获取某个回合的玩家</editorName>
+    <category>玩家</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>turnCount</name>
+        <displayName>回合数</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取当前玩家的回合数。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>return</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的玩家。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[获取某个回合的所属玩家。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>101006</defineId>
     <obsoleteNames />
     <editorName>获取玩家的手牌</editorName>
@@ -3253,7 +3281,7 @@
         <summary><![CDATA[要判断拥有关键词的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>String</type>
+        <type>KeywordName</type>
         <name>select</name>
         <displayName>关键词</displayName>
         <isParams>false</isParams>
@@ -6484,7 +6512,7 @@
         <summary><![CDATA[要判断的卡牌定义。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>String</type>
+        <type>KeywordName</type>
         <name>select</name>
         <displayName>关键词</displayName>
         <isParams>false</isParams>
@@ -7343,7 +7371,7 @@
         <summary><![CDATA[要进行关键词判断的卡牌快照。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>String</type>
+        <type>KeywordName</type>
         <name>select</name>
         <displayName>关键词</displayName>
         <isParams>false</isParams>
@@ -10239,6 +10267,34 @@
     </inputs>
     <outputs />
     <summary><![CDATA[设置一个事件的重复次数。这个事件如果还未被执行，会被额外执行这些次数。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>108011</defineId>
+    <obsoleteNames />
+    <editorName>获取事件发生的回合</editorName>
+    <category>事件</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>eventArg</name>
+        <displayName>事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取回合的事件。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>回合数</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的回合数。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[获取某个事件发生的回合。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
