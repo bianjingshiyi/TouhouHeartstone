@@ -25,6 +25,11 @@ namespace Game.Replays
     [Serializable]
     public class SerializableReplayMeta
     {
+        // 序列化使用的默认构造器。
+        public SerializableReplayMeta()
+        {
+
+        }
         public SerializableReplayMeta(ReplayMeta meta)
         {
             playerAMasterDefRef = meta.playerAMasterDefRef;
