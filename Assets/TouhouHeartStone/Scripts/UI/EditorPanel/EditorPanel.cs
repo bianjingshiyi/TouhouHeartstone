@@ -28,7 +28,7 @@ namespace UI
         }
         public void setCardPoolListActive(bool value)
         {
-            _cardPoolListObj.SetActive(value);
+            _cardPoolListPanel.SetActive(value);
         }
         public void setEditCardPoolPanelActive(bool value)
         {
@@ -47,6 +47,11 @@ namespace UI
         public void updateCardPoolList(DeckListItemViewData[] deckViewData)
         {
             _cardPoolList.update(deckViewData);
+        }
+        public void setCardPoolListWaiting(bool value)
+        {
+            _cardPoolListWaitingObj.SetActive(value);
+            _cardPoolListRoot.SetActive(!value);
         }
 
         #region 游戏规则
@@ -311,7 +316,11 @@ namespace UI
 
         [Header("卡池列表")]
         [SerializeField]
-        GameObject _cardPoolListObj;
+        GameObject _cardPoolListRoot;
+        [SerializeField]
+        GameObject _cardPoolListWaitingObj;
+        [SerializeField]
+        GameObject _cardPoolListPanel;
         [SerializeField]
         DeckViewPanel _cardPoolList;
         [SerializeField]

@@ -40,6 +40,7 @@ namespace UI
     {
         UserAccount,
         CardEditor,
-        Build
+        Build,
+        Editor
     }
 }

@@ -38,6 +38,7 @@ namespace Controllers
                 }
                 try
                 {
+                    startWaiting();
                     //显示卡牌列表
                     if (reloadCardPool)
                     {
@@ -60,6 +61,10 @@ namespace Controllers
                     game.card.showCardPoolLoadErrorDialog();
                     Debug.LogError(e);
                     return;
+                }
+                finally
+                {
+                    endWaiting();
                 }
                 //设置当前卡池
                 var poolInfo = getCardPoolInfo(poolId);
@@ -426,6 +431,7 @@ namespace Controllers
             }
             try
             {
+                startWaiting();
                 var path = await game.card.exportCardPool(getCurrentCardPoolInfo());
                 if (path != null)
                 {
@@ -437,12 +443,17 @@ namespace Controllers
                 Debug.LogException(e);
                 game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), e.Message);
             }
+            finally
+            {
+                endWaiting();
+            }
         }
 
         private async void onClickImportCardPoolButton()
         {
             try
             {
+                startWaiting();
                 bool success = await game.card.importCardPool();
                 if (success)
                 {
@@ -455,6 +466,10 @@ namespace Controllers
             {
                 Debug.LogException(e);
                 game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), e.Message);
+            }
+            finally
+            {
+                endWaiting();
             }
         }
 
@@ -911,7 +926,20 @@ namespace Controllers
             }
             if (save)
             {
-                await saveCardPool();
+                try
+                {
+                    startWaiting();
+                    await saveCardPool();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), e.Message);
+                }
+                finally
+                {
+                    endWaiting();
+                }
             }
             onEndAction?.Invoke(save);
         }
@@ -1041,7 +1069,9 @@ namespace Controllers
             _ui.setCardPoolListActive(true);
             _ui.setEditCardPoolPanelActive(false);
             await _cardPoolViewPanelCtrl.hide();
+            startCardPoolListWaiting();
             await updateCardPoolListUI();
+            endCardPoolListWaiting();
         }
         /// <summary>
         /// 更新卡池列表UI
@@ -1403,6 +1433,22 @@ namespace Controllers
             }
             _ui.setPasteButtonInteractable(false);
             _copyingCard = null;
+        }
+        private void startWaiting()
+        {
+            scene.waitingBlocker.addWaitingTask(WaitingTask.Editor);
+        }
+        private void endWaiting()
+        {
+            scene.waitingBlocker.removeWaitingTask(WaitingTask.Editor);
+        }
+        private void startCardPoolListWaiting()
+        {
+            _ui.setCardPoolListWaiting(true);
+        }
+        private void endCardPoolListWaiting()
+        {
+            _ui.setCardPoolListWaiting(false);
         }
         #endregion
 
