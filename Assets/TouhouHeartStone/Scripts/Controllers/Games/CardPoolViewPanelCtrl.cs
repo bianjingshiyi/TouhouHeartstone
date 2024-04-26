@@ -626,8 +626,8 @@ namespace Controllers
                 //名称排序
                 cardDefines.Sort((a, b) =>
                 {
-                    string nameA = game.card.getCardSkin(a).name;
-                    string nameB = game.card.getCardSkin(b).name;
+                    string nameA = game.card.getCardSkin(a).name ?? string.Empty;
+                    string nameB = game.card.getCardSkin(b).name ?? string.Empty;
                     var compared = nameA.CompareTo(nameB);
                     if (compared == 0)
                     {
