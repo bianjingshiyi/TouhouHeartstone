@@ -88,8 +88,9 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME)] string variableName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
-            var key = variableName;
-            flow.setFlowVariable(key, value);
+            if (variableName == null)
+                return;
+            flow.setFlowVariable(variableName, value);
         }
         /// <summary>
         /// 获取临时变量
@@ -101,8 +102,9 @@ namespace Game
         public static object getTempVariable(Flow flow,
             [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME)] string variableName)
         {
-            var key = variableName;
-            return flow.getFlowVariable(key);
+            if (variableName == null)
+                return null;
+            return flow.getFlowVariable(variableName);
         }
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.BranchAction, EDITOR_CATEGORY_NAME_OTHER, StringTable.EDITOR_NODE_NAME_BRANCH_ACTION)]
@@ -706,7 +708,10 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)][NodeParamEventType(typeof(SetCardPropEventDefine))] EventArg outEvent)
         {
             if (player == null || !player.getSkill().isUsed(game))
+            {
                 setOutParam(flow, node, nameof(outEvent), null);
+                return;
+            }
 
             outEvent = await player.getSkill().setUsed(game, false);
             setOutParam(flow, node, nameof(outEvent), outEvent);
@@ -985,6 +990,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(EDITOR_PARAM_PILE_NAME)] PileName pileName)
         {
+            if (player == null || pileName == null)
+                return null;
             return player.getPile(pileName);
         }
 
@@ -1367,6 +1374,8 @@ namespace Game
         public static BuffDefine getDefineOfBuff(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff)
         {
+            if (buff == null)
+                return null;
             return buff.define;
         }
         [THHActionMethod(BuiltinActionDefineID.GetAllBuffsOnCard, StringTable.EDITOR_NODE_CATEGORY_BUFF, EDITOR_NODE_NAME_GET_ALL_BUFFS_ON_CARD)]
@@ -1374,6 +1383,8 @@ namespace Game
         public static Buff[] getAllBuffsOnCard(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
+            if (card == null)
+                return null;
             return card.getBuffs();
         }
 
