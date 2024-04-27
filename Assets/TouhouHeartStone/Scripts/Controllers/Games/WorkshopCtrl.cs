@@ -926,6 +926,7 @@ namespace Controllers
             }
             try
             {
+                _ui.setPageButtonInteractable(false, false);
                 _cardPoolCacheDict.Clear();
                 _ui.updateCardPools(Array.Empty<DeckListItemViewData>());
                 await loadPage(_page);
