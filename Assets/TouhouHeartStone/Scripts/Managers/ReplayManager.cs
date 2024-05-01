@@ -27,7 +27,7 @@ namespace Game
                 {
                     using Stream stream = fileManager.getPersistentFileStream(path);
                     byte[] bytes = new byte[5];
-                    stream.Read(bytes, 0, 2);
+                    stream.Read(bytes, 0, bytes.Length);
                     if (bytes[0] == REPLAY_HEADER_BYTE0 &&
                         bytes[1] == REPLAY_HEADER_BYTE1)
                     {
@@ -64,13 +64,14 @@ namespace Game
             {
                 using Stream stream = fileManager.getPersistentFileStream(path);
                 byte[] bytes = new byte[5];
-                stream.Read(bytes, 0, 2);
+                stream.Read(bytes, 0, bytes.Length);
                 if (bytes[0] == REPLAY_HEADER_BYTE0 &&
                     bytes[1] == REPLAY_HEADER_BYTE1)
                 {
                     short headerLength = BitConverter.ToInt16(bytes, 2);
                     bytes = new byte[stream.Length - headerLength - 5];
-                    stream.Read(bytes, headerLength, bytes.Length);
+                    stream.Position += headerLength;
+                    stream.Read(bytes, 0, bytes.Length);
 
                     var seri = JsonHelper.fromBytes<SerializableReplayData>(bytes);
                     return seri.toData();

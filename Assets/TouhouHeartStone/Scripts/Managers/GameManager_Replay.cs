@@ -31,10 +31,8 @@ namespace Game
         }
         private void initReplay(CardEngine game, RoomData roomData, int localPlayerId)
         {
-            _recordingReplay = true;
             _replayRecorder.startRecord(game, roomData, localPlayerId);
         }
-        private bool _recordingReplay;
         ReplayDataPlayer _replayPlayer = null;
         ReplayRecorder _replayRecorder = new ReplayRecorder();
     }

@@ -317,7 +317,6 @@ namespace Game
                 _replayPlayer = null;
             if (_replayRecorder.isRecording)
                 _replayRecorder.stopRecord();
-            _recordingReplay = false;
             if (game != null)
             {
                 game.Dispose();

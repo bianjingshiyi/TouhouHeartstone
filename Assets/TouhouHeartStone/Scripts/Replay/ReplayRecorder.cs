@@ -29,7 +29,7 @@ namespace Game.Replays
             replay = new ReplayData()
             {
                 version = REPLAY_VERSION,
-                option = game.getOption(),
+                option = roomData.getOption(),
                 players = players.Select(p => new ReplayPlayerData(p)).ToArray(),
                 playerAId = localPlayer.id,
                 playerBId = otherPlayer.id,
