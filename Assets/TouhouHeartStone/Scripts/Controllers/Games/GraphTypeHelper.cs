@@ -59,11 +59,11 @@ namespace Game
         {
             Type fromUnpacked = from;
             Type toUnpacked = to;
-            if (from.IsSubclassOfRawGeneric(typeof(NodeConstProxy<>), out var fromGenArgs))
+            if (from.HasInterfaceOfRawGeneric(typeof(INodeConstProxy<>), out var fromGenArgs))
             {
                 fromUnpacked = fromGenArgs[0];
             }
-            if (to.IsSubclassOfRawGeneric(typeof(NodeConstProxy<>), out var toGenArgs))
+            if (to.HasInterfaceOfRawGeneric(typeof(INodeConstProxy<>), out var toGenArgs))
             {
                 toUnpacked = toGenArgs[0];
             }

@@ -842,7 +842,7 @@ namespace UI
             }
         }
 
-        private void updateInputDropdownValue<T>(string[] names, string[] values) where T : NodeConstProxy<string>
+        private void updateInputDropdownValue<T>(string[] names, string[] values) where T : INodeConstProxy<string>
         {
             _inputDropdown.gameObject.SetActive(true);
             _inputDropdown.setDropdownValues(names, values);
