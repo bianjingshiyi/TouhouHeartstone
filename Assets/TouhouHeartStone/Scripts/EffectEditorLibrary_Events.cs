@@ -106,8 +106,10 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT_TYPE, isConst: true)] EventReference eventReference)
         {
-            if (eventArg == null || eventReference == null)
+            if (eventArg == null)
                 return null;
+            if (eventReference == null || eventReference == EventReference.ANY)
+                return eventArg;
             var define = eventArg.define;
             bool equals = define.cardPoolId == eventReference.cardPoolId && define.eventName == eventReference.eventName;
             return equals ? eventArg : null;
@@ -210,8 +212,10 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT_TYPE, isConst: true)] EventReference argRef)
         {
-            if (eventArg == null || argRef == null)
+            if (eventArg == null)
                 return false;
+            if (argRef == null || argRef == EventReference.ANY)
+                return true;
             var eventDefine = eventArg.define;
             var eventReference = argRef;
             if (eventDefine.cardPoolId == eventReference.cardPoolId && eventDefine.eventName == eventReference.eventName)
@@ -220,9 +224,12 @@ namespace Game
         }
         [THHActionMethod(BuiltinActionDefineID.GetEventsThisGame, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_GET_EVENTS_THIS_GAME)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENTS)]
-        public static EventArg[] getEventsThisGame(CardEngine game)
+        public static EventArg[] getEventsThisGame(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT_TYPE, isConst: true)] EventReference eventRef)
         {
-            return game.triggers.getRecordedEvents().OfType<EventArg>().ToArray();
+            if (eventRef == null || (eventRef == EventReference.ANY))
+                return game.triggers.getRecordedEvents().OfType<EventArg>().ToArray();
+            return game.triggers.getRecordedEventsOfDefine(eventRef).OfType<EventArg>().ToArray();
         }
 
         [THHActionMethod(BuiltinActionDefineID.GetEventsThisTurn, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_GET_EVENTS_THIS_TURN)]

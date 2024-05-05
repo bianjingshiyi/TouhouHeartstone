@@ -10061,7 +10061,16 @@
     <obsoleteNames />
     <editorName>获取本局游戏事件</editorName>
     <category>事件</category>
-    <inputs />
+    <inputs>
+      <ActionParameterComment>
+        <type>EventReference</type>
+        <name>eventRef</name>
+        <displayName>事件类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取的事件的类型。]]></summary>
+      </ActionParameterComment>
+    </inputs>
     <outputs>
       <ActionParameterComment>
         <type>EventArg</type>
@@ -10072,7 +10081,7 @@
         <summary><![CDATA[获取到的事件列表。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <summary><![CDATA[获取本局游戏中所有发生过的事件。]]></summary>
+    <summary><![CDATA[获取本局游戏中所有发生过的，某种特定类型的事件。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>

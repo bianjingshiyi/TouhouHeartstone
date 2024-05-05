@@ -487,6 +487,8 @@ namespace Game
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_UNKNOWN = "未知事件";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
+        public const string EDITOR_EVENT_NAME_ANY = "任意事件";
+        [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_ADD_BUFF = "添加增益";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_REMOVE_BUFF = "移除增益";

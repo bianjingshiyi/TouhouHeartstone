@@ -4,6 +4,7 @@ using System.Linq;
 using BJSYGameCore;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
+using TouhouHeartstone;
 using UnityEngine;
 
 namespace Game
@@ -22,6 +23,10 @@ namespace Game
             if (!includeHidden)
                 list = list.Where(e => !isEventHidden(e));
             return list.ToArray();
+        }
+        public string getAnyEventDefineNameForEditor()
+        {
+            return game.lang._p(StringTable.CONTEXT_EVENT_NAME, StringTable.EDITOR_EVENT_NAME_ANY);
         }
         public string translateBuiltinEventNameForEditor(string eventName)
         {

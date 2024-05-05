@@ -205,9 +205,9 @@ namespace Controllers
             var poolRefs = getCardPoolEnv();
             var mainEventDefines = game.card.getAllEventDefines(includeHidden: false, poolRefs);
             eventTriggerTimes = mainEventDefines.getEventTriggerTimes();
-            eventReferences = mainEventDefines.Select(d => d.getReference()).ToArray();
+            eventReferences = mainEventDefines.Select(d => d.getReference()).Prepend(EventReference.ANY).ToArray();
             eventTriggerTimeEditorNames = eventTriggerTimes.Select(t => game.eventManager.translateEventTriggerTimeNameForEditor(t)).ToArray();
-            eventEditorNames = mainEventDefines.Select(d => game.eventManager.translateEventDefineNameForEditor(d)).ToArray();
+            eventEditorNames = mainEventDefines.Select(d => game.eventManager.translateEventDefineNameForEditor(d)).Prepend(game.eventManager.getAnyEventDefineNameForEditor()).ToArray();
         }
 
         #region 保存状态
