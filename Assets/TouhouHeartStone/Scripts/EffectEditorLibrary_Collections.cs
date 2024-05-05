@@ -119,38 +119,6 @@ namespace Game
             return objList.ToArray();
         }
         /// <summary>
-        /// 筛选
-        /// </summary>
-        [THHActionMethod(BuiltinActionDefineID.Where, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, StringTable.EDITOR_NODE_NAME_WHERE)]
-        [return: ActionNodeParam(EDITOR_PARAM_NAME_ARRAY_MATCHED)]
-        public static async Task<object[]> where(CardEngine game, Flow flow, ActionNode node,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] NodeValueRef<bool> condition,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
-        {
-            if (array == null)
-                return Array.Empty<object>();
-            if (condition == null || condition.outputPort == null)
-                return array;
-
-            List<object> objList = new List<object>();
-            var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
-
-            foreach (var obj in array)
-            {
-                flow.setValue(elementPort, obj);
-                flow.EnterScope();
-                var result = await condition.getValue(flow);
-                flow.ExitScope();
-
-                if (result)
-                {
-                    objList.Add(obj);
-                }
-            }
-            return objList.ToArray();
-        }
-        /// <summary>
         /// 计算集合中元素数量
         /// </summary>
         /// <param name="collection"></param>

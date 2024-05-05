@@ -249,6 +249,50 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>111012</defineId>
+    <obsoleteNames />
+    <editorName>筛选</editorName>
+    <category>集合运算</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>array</name>
+        <displayName>集合</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[要筛选的集合。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>NodeValueRef&lt;Boolean&gt;</type>
+        <name>condition</name>
+        <displayName>条件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[集合内元素要满足的条件。需要连接一个真值。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>element</name>
+        <displayName>元素</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[提供给“条件”的输出值，表示每个要检查满足条件的元素。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>匹配的集合</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[所有满足条件的元素的集合。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[从一个集合中筛选所有满足条件的元素，并将它们输出为集合。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>212004</defineId>
     <obsoleteNames />
     <editorName>设置临时变量</editorName>
@@ -7827,50 +7871,6 @@
         <isArray>false</isArray>
         <summary><![CDATA[集合元素要满足的条件。需要连接一个输出真值的节点。]]></summary>
       </ActionParameterComment>
-      <ActionParameterComment>
-        <type>Object</type>
-        <name>element</name>
-        <displayName>元素</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[提供给“条件”的输出值，表示每个要检查满足条件的元素。]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>Object</type>
-        <name>return</name>
-        <displayName>匹配的集合</displayName>
-        <isParams>false</isParams>
-        <isArray>true</isArray>
-        <summary><![CDATA[所有满足条件的元素的集合。]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <summary><![CDATA[从一个集合中筛选所有满足条件的元素，并将它们输出为集合。]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineId>111012</defineId>
-    <obsoleteNames />
-    <editorName>筛选</editorName>
-    <category>集合运算</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>Object</type>
-        <name>array</name>
-        <displayName>集合</displayName>
-        <isParams>false</isParams>
-        <isArray>true</isArray>
-        <summary><![CDATA[要筛选的集合。]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>NodeValueRef&lt;Boolean&gt;</type>
-        <name>condition</name>
-        <displayName>条件</displayName>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[集合内元素要满足的条件。需要连接一个真值。]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs>
       <ActionParameterComment>
         <type>Object</type>
         <name>element</name>
