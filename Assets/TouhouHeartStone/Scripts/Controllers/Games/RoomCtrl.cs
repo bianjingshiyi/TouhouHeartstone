@@ -57,8 +57,7 @@ namespace Controllers
                 {
                     _ = CheckCardPoolsUpdate(_currentRoomData.getCardPools());
                 }
-                updateStartAndReadyButton();
-                updatePlayerListUI();
+                updatePlayerReadyStates();
             }
             return Task.CompletedTask;
         }
@@ -107,8 +106,7 @@ namespace Controllers
                 }
             }
             updateRoomOptions();
-            updateStartAndReadyButton();
-            updatePlayerListUI();
+            updatePlayerReadyStates();
         }
         #endregion
 
@@ -338,7 +336,7 @@ namespace Controllers
                         RemoveCardPools(removedCardPools);
                         ApplyCardPools();
                         closeEditCardPoolsPanel();
-                        updateStartAndReadyButton();
+                        updatePlayerReadyStates();
                     }
                     else
                     {
@@ -441,8 +439,7 @@ namespace Controllers
         private async void onClickAddAIPlayerButton()
         {
             await game.network.logic.AddAIPlayer();
-            updatePlayerListUI();
-            updateStartAndReadyButton();
+            updatePlayerReadyStates();
         }
         #endregion
 
@@ -556,7 +553,7 @@ namespace Controllers
             }
 
             _gameStarted = true;
-            updateStartAndReadyButton();
+            updatePlayerReadyStates();
             if (_isLocalGame)
             {
                 await game.game.startLocalGame(_currentRoomData);
@@ -571,14 +568,14 @@ namespace Controllers
             var localPlayer = getLocalPlayerData();
             localPlayer.setReady(true);
             setLocalPlayerProp(THHRoomPlayerDataHelper.PROP_READY, true);
-            updateStartAndReadyButton();
+            updatePlayerReadyStates();
         }
         private void onClickCancelReadyButton()
         {
             var localPlayer = getLocalPlayerData();
             localPlayer.setReady(false);
             setLocalPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
-            updateStartAndReadyButton();
+            updatePlayerReadyStates();
         }
         private void onClickQuitButton()
         {
@@ -626,8 +623,7 @@ namespace Controllers
                 localPlayer.setReady(false);
                 setLocalPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
             }
-            updateStartAndReadyButton();
-            updatePlayerListUI();
+            updatePlayerReadyStates();
         }
         private void onOutOfRetry(Exception e)
         {
@@ -737,11 +733,6 @@ namespace Controllers
             if (player != null)
             {
                 player.setDeck(deck);
-
-                if (player.type == RoomPlayerType.ai)
-                {
-                    player.setReady(true);
-                }
                 if (playerId == GetSelfID())
                 {
                     setLocalPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, deck.toDefRefArray(true));
@@ -752,8 +743,7 @@ namespace Controllers
             //隐藏选择卡组界面
             _ui.hideDeckSelectPanel();
             //更新界面
-            updatePlayerListUI();
-            updateStartAndReadyButton();
+            updatePlayerReadyStates();
         }
         #endregion
 
@@ -1169,6 +1159,16 @@ namespace Controllers
         #endregion
 
         #region 底部按钮
+        private void updatePlayerReadyStates()
+        {
+            // AI自动准备
+            foreach (var ai in _currentRoomData.playerDataList.Where(p => p.type == RoomPlayerType.ai))
+            {
+                ai.setReady(isAbleToReady(ai));
+            }
+            updateStartAndReadyButton();
+            updatePlayerListUI();
+        }
         private void updateStartAndReadyButton()
         {
             if (_currentRoomData == null)
@@ -1186,12 +1186,6 @@ namespace Controllers
                 RoomPlayerData localPlayer = getLocalPlayerData();
                 _ui.displayReadyButton(isAbleToReady(localPlayer) && !localPlayer.getReady());
                 _ui.displayCancelReadyButton(localPlayer.getReady());
-            }
-
-            // AI自动准备
-            foreach (var ai in _currentRoomData.playerDataList.Where(a => a.type == RoomPlayerType.ai))
-            {
-                ai.setReady(true);
             }
         }
         private bool isAbleToStartGame()
