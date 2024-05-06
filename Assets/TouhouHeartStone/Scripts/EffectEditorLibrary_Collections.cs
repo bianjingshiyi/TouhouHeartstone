@@ -130,6 +130,8 @@ namespace Game
         {
             if (array == null)
                 return Array.Empty<object>();
+            if (condition == null || condition.outputPort == null)
+                return array;
 
             List<object> objList = new List<object>();
             var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
@@ -137,13 +139,9 @@ namespace Game
             foreach (var obj in array)
             {
                 flow.setValue(elementPort, obj);
-                bool result = true;
-                if (condition.outputPort != null)
-                {
-                    flow.EnterScope();
-                    result = await condition.getValue(flow);
-                    flow.ExitScope();
-                }
+                flow.EnterScope();
+                var result = await condition.getValue(flow);
+                flow.ExitScope();
 
                 if (result)
                 {
@@ -236,7 +234,7 @@ namespace Game
         {
             if (array == null)
                 return Array.Empty<object>();
-            if (condition == null)
+            if (condition == null || condition.outputPort == null)
                 return array;
 
             var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
@@ -245,12 +243,9 @@ namespace Game
             {
                 flow.setValue(elementPort, obj);
                 object value = null;
-                if (condition.outputPort != null)
-                {
-                    flow.EnterScope();
-                    value = condition.getValue(flow).Result;
-                    flow.ExitScope();
-                }
+                flow.EnterScope();
+                value = condition.getValue(flow).Result;
+                flow.ExitScope();
                 return value;
             }
             if (!descending)
