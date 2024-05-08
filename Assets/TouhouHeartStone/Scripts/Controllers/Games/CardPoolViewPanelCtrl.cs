@@ -678,20 +678,21 @@ namespace Controllers
         /// <returns>人物名称数组。</returns>
         private string[] getCharacterNames()
         {
-            List<string> characterNameList = new List<string>
-            {
-                game.lang._(StringTable.CARDVIEW_CHARACTER_NEUTRAL)
-            };
-            for (int i = 1; i < _characterFilters.Length; i++)
+            string[] characterNameList = new string[_characterFilters.Length];
+            characterNameList[0] = game.lang._(StringTable.CARDVIEW_CHARACTER_NEUTRAL);
+            for (int i = 1; i < characterNameList.Length; i++)
             {
                 var characterRef = _characterFilters[i];
                 var localPoolRef = getCardPoolReference(characterRef.cardPoolId);
                 var character = game.card.getCardDefine(localPoolRef, characterRef.defineId);
                 if (character == null)
+                {
+                    characterNameList[i] = game.lang._(StringTable.UNKNOWN_CHARACTER);
                     continue;
-                characterNameList.Add(game.card.getCardSkin(character).name);
+                }
+                characterNameList[i] = game.card.getCardSkin(character).name;
             }
-            return characterNameList.ToArray();
+            return characterNameList;
         }
         private ICardPoolReference getCardPoolReference(long cardPoolId)
         {

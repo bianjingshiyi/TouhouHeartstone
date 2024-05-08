@@ -1244,7 +1244,7 @@ namespace Controllers
                     }
                     else
                     {
-                        characterName = game.langManager.getString(ROOM_UNKNOWN_CHARACTER_NAME);
+                        characterName = game.langManager.getString(StringTable.UNKNOWN_CHARACTER);
                     }
                 }
                 var loadState = player.getLoadState();
@@ -1440,8 +1440,6 @@ namespace Controllers
         private const string ROOM_CARD_POOL_VERSION_TEMPLATE = "{0}({1})";
         [TranslateMsg]
         private const string ROOM_SELECT_YOUR_DECK = "选择你的卡组";
-        [TranslateMsg("在房间页面中，当玩家角色获取失败时显示的角色名称")]
-        private const string ROOM_UNKNOWN_CHARACTER_NAME = "未知人物";
         [TranslateMsg("房间-查看卡池面板的标题")]
         private const string ROOM_TITLE_VIEW_CARD_POOLS = "查看本房间卡池";
         [TranslateMsg("房间-编辑可用卡池面板的标题")]
