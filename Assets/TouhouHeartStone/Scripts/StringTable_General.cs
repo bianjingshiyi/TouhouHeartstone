@@ -35,6 +35,8 @@ namespace Game
         public const string RESTART_GAME = "重启游戏";
         [TranslateMsg("通用的继续游戏对话框按钮")]
         public const string CONTINUE_GAME = "继续游戏";
+        [TranslateMsg("通用的未知人物")]
+        public const string UNKNOWN_CHARACTER = "未知人物";
         #endregion
 
         #region 帐号
