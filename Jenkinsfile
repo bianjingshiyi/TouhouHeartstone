@@ -9,6 +9,9 @@ import org.lotlab.pipeline.TencentCOS
 import org.lotlab.pipeline.BackblazeB2
 import org.lotlab.pipeline.Mail
 
+import org.jenkinsci.plugins.workflow.steps.TimeoutStepExecution;
+import org.jenkinsci.plugins.workflow.support.steps.input.Rejection;
+
 pipeline {
     agent {
         node { label 'unity' }
@@ -41,28 +44,6 @@ pipeline {
                         env.UPLOAD_FOLDER = 'nightly'
                         env.GLOBAL_BUILD_FLAGS = ';SNAPSHOT_BUILD'
                     }
-                    if (env.BUILD_RELEASE == 'false') {
-                        try {
-                            timeout(time:30, unit:'SECONDS') {
-                                env.BUILD_RELEASE = input(
-                                    message: '要打Release包吗？',
-                                    parameters: [
-                                        [$class: 'TextParameterDefinition',
-                                        defaultValue: 'true',
-                                        description: '包配置', name: 'true/false']
-                                ])
-                            }
-                        } catch (err) { // timeout reached or input Aborted
-                            def user = err.getCauses()[0].getUser()
-                            if ('SYSTEM' == user.toString()) { // SYSTEM means timeout
-                                echo ('Input timeout expired, will build debug package.')
-                                env.BUILD_RELEASE = 'false'
-                            } else {
-                                echo "Input aborted by: [${user}]"
-                                error("Pipeline aborted by: [${user}]")
-                            }
-                        }
-                    }
                 }
 			}
 		}
@@ -88,6 +69,13 @@ pipeline {
                     // 设置构建版本
                     def gitTag = sh label: '', returnStdout: true, script: 'git describe --always'
                     env.BUILD_GIT_TAG = gitTag.trim()
+                    
+                    // 获取提交日志
+                    def commitMsg = sh label: '', returnStdout: true, script: 'git log HEAD -n 1 --format=%B'
+                    if (commitMsg.startsWith('[ci release]')) {
+						env.BUILD_RELEASE = 'true'
+                        echo "Build release package trigger from commit"
+                    }
 
                     // 生成文本 Git 日志
                     def logVar = [
