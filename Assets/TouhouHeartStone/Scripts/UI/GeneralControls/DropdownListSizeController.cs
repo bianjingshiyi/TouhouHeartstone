@@ -48,6 +48,12 @@ namespace UI
         {
             updateRectTransform();
         }
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            updateRectTransform();
+        }
+#endif
         private void OnDisable()
         {
             m_Tracker.Clear();
