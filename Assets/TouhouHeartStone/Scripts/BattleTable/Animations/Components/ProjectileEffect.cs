@@ -23,8 +23,9 @@ namespace Game.Animations
             }
 
             var t = time;
-            var fly = _flyCurve.Evaluate(t) * distance.magnitude;
-            var offset = _offsetCurve.Evaluate(t) * distance.magnitude;
+            var distanceLength = (distance.magnitude - _flyStartDistance - _flyEndDistance);
+            var fly = _flyCurve.Evaluate(t) * distanceLength + _flyStartDistance;
+            var offset = _offsetCurve.Evaluate(t) * distanceLength + _flyStartDistance;
 
             var targetWorldPos = sourcePos + axis * fly + offsetAxis * offset;
             if (_positionRoot)
@@ -34,6 +35,10 @@ namespace Game.Animations
             else
             {
                 transform.position = targetWorldPos;
+            }
+            if (_onHitRoot)
+            {
+                _onHitRoot.position = targetPos;
             }
 
             if (_faceToTarget)
@@ -55,9 +60,15 @@ namespace Game.Animations
         [SerializeField]
         private AnimationCurve _offsetCurve = AnimationCurve.Constant(0, 1, 0);
         [SerializeField]
+        private float _flyStartDistance = 0;
+        [SerializeField]
+        private float _flyEndDistance = 0;
+        [SerializeField]
         private Transform _positionRoot;
         [SerializeField]
         private Transform _rotationRoot;
+        [SerializeField]
+        private Transform _onHitRoot;
         [SerializeField]
         private bool _faceToTarget = true;
     }

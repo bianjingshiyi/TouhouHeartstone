@@ -14,11 +14,10 @@ namespace Game.Animations
             transform.forward = distance.normalized;
             if (_scaleByDistance)
             {
-                var distanceScale = distance;
-                distanceScale.Scale(_scaleMultiplier);
-                var scaleX = Mathf.Lerp(1, distanceScale.x, _scaleFactors.x);
-                var scaleY = Mathf.Lerp(1, distanceScale.y, _scaleFactors.y);
-                var scaleZ = Mathf.Lerp(1, distanceScale.z, _scaleFactors.z);
+                var distanceLength = distance.magnitude;
+                var scaleX = Mathf.Lerp(1, distanceLength * _scaleMultiplier.x, _scaleFactors.x);
+                var scaleY = Mathf.Lerp(1, distanceLength * _scaleMultiplier.y, _scaleFactors.y);
+                var scaleZ = Mathf.Lerp(1, distanceLength * _scaleMultiplier.z, _scaleFactors.z);
                 var scale = new Vector3(scaleX, scaleY, scaleZ);
                 if (_scaleRoot)
                 {
@@ -34,7 +33,7 @@ namespace Game.Animations
         [SerializeField]
         private bool _scaleByDistance = false;
         [SerializeField]
-        private Vector3 _scaleFactors = Vector3.up;
+        private Vector3 _scaleFactors = Vector3.zero;
         [SerializeField]
         private Vector3 _scaleMultiplier = Vector3.one;
         [SerializeField]
