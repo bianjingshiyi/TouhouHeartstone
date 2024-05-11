@@ -76,25 +76,43 @@ namespace Game
         }
         #endregion
         #region 私有方法
+
+        #region 生命周期
+        private void Update()
+        {
+            _frameSECache.Clear();
+        }
+        #endregion
+
         #region 事件回调
         private void onSourceFinished(SESource source)
         {
             removeSource(source);
         }
         #endregion
+        
         public void createSource(SESource template, AudioClip clip, float pitch = 1, bool loop = false)
         {
             if (clip == null)
                 return;
-            var source = Instantiate(template.gameObject, _seSourceRoot).GetComponent<SESource>();
-            source.gameObject.SetActive(true);
-            source.name = clip.name;
-            source.clip = clip;
+            SESource source;
+            if (_frameSECache.TryGetValue(clip, out var before))
+            {
+                source = before;
+            }
+            else
+            {
+                source = Instantiate(template.gameObject, _seSourceRoot).GetComponent<SESource>();
+                source.gameObject.SetActive(true);
+                source.onFinished += onSourceFinished;
+                source.name = clip.name;
+                source.clip = clip;
+                _seSourceList.Add(source);
+                _frameSECache.Add(clip, source);
+            }
             source.loop = loop;
             source.pitch = pitch;
             source.play();
-            source.onFinished += onSourceFinished;
-            _seSourceList.Add(source);
         }
         private void removeSource(SESource source)
         {
@@ -114,6 +132,10 @@ namespace Game
         List<SESource> _seSourceList;
         [SerializeField]
         SEItem[] se;
+        /// <summary>
+        /// 本帧中已经被播放的音频字典。防止同一个音效在同一帧内被播放多次导致非常吵的问题。
+        /// </summary>
+        Dictionary<AudioClip, SESource> _frameSECache = new Dictionary<AudioClip, SESource>();
         #endregion
         #region 内嵌类
         [Serializable]
