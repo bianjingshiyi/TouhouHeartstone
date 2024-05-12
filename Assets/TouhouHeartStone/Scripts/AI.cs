@@ -10,6 +10,7 @@ using static UnityEngine.GraphicsBuffer;
 using UI;
 using System.Security.Cryptography;
 using Game.BattleTable;
+using UnityEngine;
 
 namespace Game
 {
@@ -161,11 +162,11 @@ namespace Game
                 if (!card.canAttack(game))
                     return;
                 var enemyMaster = opponent.getMaster();
+                var validTargets = new List<Card>();
                 // 攻击敌方英雄。
                 if (card.isAttackable(game, enemyMaster, out _))
                 {
-                    var attack = new AttackResponse() { cardId = card.id, targetId = enemyMaster.id };
-                    responseDic.Add(attack, calcAttackValue(card, enemyMaster));
+                    validTargets.Add(enemyMaster);
                 }
 
                 // 攻击敌方仆从。
@@ -173,9 +174,12 @@ namespace Game
                 {
                     if (!card.isAttackable(game, target, out _))
                         continue;
-                    var attack = new AttackResponse() { cardId = card.id, targetId = target.id };
-                    responseDic.Add(attack, calcAttackValue(card, target));
+                    validTargets.Add(target);
                 }
+                var attackEarns = validTargets.Select(t => (calcAttackValue(card, t), t));
+                var bestAttackTarget = attackEarns.OrderByDescending(p => p.Item1).FirstOrDefault();
+                var attackRes = new AttackResponse() { cardId = card.id, targetId = bestAttackTarget.Item2.id };
+                responseDic.Add(attackRes, bestAttackTarget.Item1);
             }
         }
 
@@ -603,26 +607,140 @@ namespace Game
         #region 攻击优先级
         float calcAttackValue(Card attacker, Card defender)
         {
-            int value = 0;
-            if (defender.isShield(game))
+            // 攻击本身就能产生收益。
+            float earn = 1;
+            float penalty = 0;
+            var enemyDamage = defender.getAttack(game);
+
+
+            if (willAttackKill(attacker, defender))
             {
-                // 目标有护盾则优先级固定为1。
-                value = 1;
+                // 如果能击杀目标。
+                if (defender.isMaster())
+                {
+                    // 攻击英雄。
+                    // 击杀敌方英雄，收益为999。
+                    earn += 999;
+                }
+                else
+                {
+                    // 攻击仆从。
+                    // 击杀敌方仆从，收益为这个仆从的价值。
+                    earn += calcServantValue(defender.getAttack(game), defender.getLife(game));
+                }
             }
             else
             {
-                // 如果攻击者的攻击力大于目标的当前生命值
-                // 则优先级为目标的最大生命值。
-                // 否则为攻击者的攻击力。
-                value = attacker.getAttack(game) > defender.getCurrentLife(game) ? defender.getLife(game) : attacker.getAttack(game);
+                // 否则收益为有效的伤害。
+                earn += getEffectiveDamageValue(attacker.getAttack(game), defender);
             }
-            // 如果攻击者的当前生命值大于敌方仆从的攻击力
-            // 则优先级减少目标的攻击力。
-            // 否则减少攻击者的最大生命值。
-            value -= attacker.getCurrentLife(game) > defender.getAttack(game) ? defender.getAttack(game) : attacker.getLife(game);
-            return value;
-        }
 
+            // 伤害惩罚。
+            int takeDamage = getEffectiveDamageValue(enemyDamage, attacker);
+            int damagedLife = getDamagedLife(enemyDamage, attacker);
+            if (attacker.isMaster())
+            {
+                // 英雄受到伤害惩罚。
+                // 受到的伤害越大，惩罚越大。
+                penalty = takeDamage * 0.5f;
+                // 自己被攻击造成伤害后剩余的血量越低，惩罚越大，最高为4倍。
+                penalty *= Mathf.Lerp(4, 1, damagedLife / 30f);
+                if (damagedLife <= 0)
+                {
+                    // 致死则不可能攻击。
+                    penalty = earn * 4;
+                }
+            }
+            else if (attacker.isServant())
+            {
+                // 仆从受到伤害惩罚。
+                var servantValue = calcServantValue(attacker.getAttack(game), attacker.getCurrentLife(game)) * 0.5f;
+                // 致命。
+                bool enemyLethal = defender.isPoisonous(game);
+                if (enemyLethal && canBeKilledByLethal(enemyDamage, defender))
+                {
+                    penalty = servantValue;
+                }
+                else
+                {
+                    // 受伤后剩余的血量越少，惩罚越大。最高不超过这个仆从本身的价值的一半。
+                    penalty = Mathf.Lerp(servantValue, 0, (float)damagedLife / attacker.getLife(game));
+                }
+            }
+            else
+            {
+                return 0;
+            }
+            return earn - penalty;
+        }
+        /// <summary>
+        /// 获取一张卡牌的预估受到伤害。
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="defender"></param>
+        /// <returns></returns>
+        int getEffectiveDamage(int damage, Card defender)
+        {
+            if (defender.isImmunity(game))
+                return 0;
+            if (defender.isShield(game))
+                return 0;
+
+            return damage - defender.getDamageReduce(game);
+        }
+        /// <summary>
+        /// 获取伤害打在一个卡牌上的有效价值。
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="defender"></param>
+        /// <returns></returns>
+        int getEffectiveDamageValue(int damage, Card defender)
+        {
+            if (defender.isShield(game))
+                return 1;
+            return getEffectiveDamage(damage, defender);
+        }
+        /// <summary>
+        /// 获取一张卡牌在受到伤害后的预估剩余生命值。
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="defender"></param>
+        /// <returns></returns>
+        int getDamagedLife(int damage, Card defender)
+        {
+            return defender.getCurrentLife(game) + defender.getArmor(game) - getEffectiveDamage(damage, defender);
+        }
+        /// <summary>
+        /// 伤害能否击杀目标。
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="defender"></param>
+        /// <returns></returns>
+        bool willDamageKill(int damage, Card defender)
+        {
+            return getDamagedLife(damage, defender) <= 0;
+        }
+        bool willAttackKill(Card attacker, Card defender)
+        {
+            var attack = attacker.getAttack(game);
+            if (attacker.isPoisonous(game) && canBeKilledByLethal(attack, defender))
+            {
+                return true;
+            }
+            return willDamageKill(attack, defender);
+        }
+        bool canBeKilledByLethal(int damage, Card defender)
+        {
+            if (defender.isMaster())
+                return false;
+            if (defender.isImmunity(game))
+                return false;
+            if (defender.isShield(game))
+                return false;
+            if (damage - defender.getDamageReduce(game) <= 0)
+                return false;
+            return true;
+        }
         #endregion
 
         float calcSummonValue(Player player, int attack, int life)
