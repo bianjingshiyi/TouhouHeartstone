@@ -299,27 +299,36 @@ namespace Game.BattleTable
             var effect = effectDefine.getEffect(effectArg);
             var buffDefineRef = effect.buffDefineRef;
             var cardDefineRef = effect.cardDefineRef;
+            ISkin skin = null;
             if (buffDefineRef != null)
             {
                 var buffDefine = game.getBuffDefine(cardDefineRef);
-                var skin = getBuffSkin(buffDefine);
-                if (effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
-                if (skin == null) return null; // 没有皮肤
-
-                var node = entryNodeEffect.entryNode;
-                return getAnimRefOfEntryNode(skin, node);
+                skin = getBuffSkin(buffDefine);
             }
             else if (cardDefineRef != null)
             {
                 var cardDefine = game.getDefine(cardDefineRef);
-                var skin = getCardSkin(cardDefine);
-                if (effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
-                if (skin == null) return null; // 没有皮肤
-
-                var node = entryNodeEffect.entryNode;
-                return getAnimRefOfEntryNode(skin, node);
+                skin = getCardSkin(cardDefine);
             }
-            return null;
+            if (effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
+            if (skin == null) return null; // 没有皮肤
+
+            var node = entryNodeEffect.entryNode;
+            if (effectDefine is EffectActivationEventDefine)
+            {
+                if (!effectArg.getVar<bool>(EffectActivationEventDefine.VAR_ENABLE))
+                    // 失效动作不播放特效。
+                    return null;
+                if (node.GetType() != typeof(PassiveEntryNode))
+                    // 非被动效果的启用/禁用效果不播放特效。
+                    return null;
+                var passiveEntry = node as PassiveEntryNode;
+                if (passiveEntry.getTags().Contains(EFFECTTAG.PASSIVE_LASTWORD))
+                    // 遗言效果的启用/禁用效果不播放特效。
+                    return null;
+            }
+
+            return getAnimRefOfEntryNode(skin, node);
         }
         public Card getEventSkinAnimCard(EventArg effectArg, IEventArg arg, int position)
         {
