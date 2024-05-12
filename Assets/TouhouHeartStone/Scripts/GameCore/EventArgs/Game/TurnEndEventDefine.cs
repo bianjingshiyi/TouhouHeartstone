@@ -39,16 +39,11 @@ namespace TouhouHeartstone
             {
                 if (chara.isFreeze(game))
                 {
-                    if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
-                        chara.isServant() && chara.isReady(game))
+                    var hasAttackTimes = chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1;
+                    var ready = chara.isReady(game) || chara.isCharge(game) || chara.isMaster();
+                    if (hasAttackTimes && ready)
                     {
-                        game.logger.logTrace("被禁锢的仆从解除禁锢");
-                        await chara.setFreeze(game, false);
-                    }
-                    else if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
-                            chara.isMaster())
-                    {
-                        game.logger.logTrace("被禁锢的英雄解除禁锢");
+                        game.logger.logTrace($"被禁锢的角色{chara}解除禁锢");
                         await chara.setFreeze(game, false);
                     }
                 }
