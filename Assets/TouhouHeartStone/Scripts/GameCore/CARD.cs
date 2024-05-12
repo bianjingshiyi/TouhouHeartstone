@@ -14,5 +14,17 @@
         public const string CHARGED_LEVEL = "chargedLevel";
         public const string IS_USED = "isUsed";
 
+        /// <summary>
+        /// 拥有圣盾
+        /// </summary>
+        public const string HAS_SHIELD = "hasShield";
+        /// <summary>
+        /// 拥有潜行
+        /// </summary>
+        public const string HAS_STEALTH = "hasStealth";
+        /// <summary>
+        /// 被禁锢
+        /// </summary>
+        public const string IS_FROZEN = "isFrozen";
     }
 }

@@ -30,7 +30,7 @@ namespace TouhouHeartstone
             var game = arg.game;
             Card card = arg.getVar<Card>(VAR_CARD);
             await card.addKeywords(game, KEYWORD.FROZEN);
-            await card.addKeywords(game, KEYWORD.IS_FROZEN);
+            await card.setProp(game, CARD.IS_FROZEN, true);
         }
         public override string toString(EventArg arg)
         {

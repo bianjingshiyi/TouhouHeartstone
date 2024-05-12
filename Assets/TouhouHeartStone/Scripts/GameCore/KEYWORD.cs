@@ -21,17 +21,9 @@ namespace TouhouHeartstone
         /// </summary>
         public const string SHIELD = "shield";
         /// <summary>
-        /// 拥有圣盾
-        /// </summary>
-        public const string HAS_SHIELD = "hasShield";
-        /// <summary>
         /// 潜行
         /// </summary>
         public const string STEALTH = "stealth";
-        /// <summary>
-        /// 拥有潜行
-        /// </summary>
-        public const string HAS_STEALTH = "hasStealth";
         /// <summary>
         /// 永久潜行
         /// </summary>
@@ -48,10 +40,6 @@ namespace TouhouHeartstone
         /// 魔免
         /// </summary>
         public const string ELUSIVE = "elusive";
-        /// <summary>
-        /// 被禁锢
-        /// </summary>
-        public const string IS_FROZEN = "isFrozen";
         /// <summary>
         /// 被冰冻的
         /// </summary>

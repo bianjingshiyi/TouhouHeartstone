@@ -52,7 +52,7 @@ namespace TouhouHeartstone
             {
                 arg.isCanceled = true;
                 game.logger.logTrace($"{target}受到伤害，失去圣盾");
-                await target.setShield(game, false);
+                await target.loseShield(game);
             }
             else
             {

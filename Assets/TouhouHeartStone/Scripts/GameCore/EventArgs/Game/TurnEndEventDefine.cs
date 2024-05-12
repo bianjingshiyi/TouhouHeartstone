@@ -44,7 +44,7 @@ namespace TouhouHeartstone
                     if (hasAttackTimes && ready)
                     {
                         game.logger.logTrace($"被禁锢的角色{chara}解除禁锢");
-                        await chara.setFreeze(game, false);
+                        await chara.loseShackle(game);
                     }
                 }
             }

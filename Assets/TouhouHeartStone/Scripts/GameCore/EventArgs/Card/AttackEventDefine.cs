@@ -54,7 +54,7 @@ namespace TouhouHeartstone
                 // 取消隐匿
                 if (card.isStealth(game))
                 {
-                    await card.setStealth(game, false);
+                    await card.loseStealth(game);
                 }
                 // 消耗耐久
                 var owner = card.getOwner();

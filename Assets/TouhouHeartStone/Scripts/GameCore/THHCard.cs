@@ -1354,9 +1354,48 @@ namespace TouhouHeartstone
         /// <param name="isreset"></param>
         public static async Task<EventArg> setDefine(this Card card, CardEngine game, CardDefine define, bool isreset = true)
         {
+            var beforeDefine = card.define;
             var eventArg = await SetCardDefineEventDefine.doEvent(game, card, define);
-            if (isreset) //卡牌重置
-                await card.resetCard(game); 
+            if (eventArg == null || eventArg.isCanceled)
+                return eventArg;
+            if (isreset)
+            {
+                //卡牌重置
+                await card.resetCard(game);
+            }
+            else
+            {
+                // 限制卡牌的当前生命值不能超过最大生命值。
+                if (card.getCurrentLife(game) > card.getLife(game))
+                {
+                    await card.setCurrentLife(game, card.getLife(game));
+                }
+                // 更新卡牌标签。
+                await card.setTags(game, define.getTags());
+                // 更新关键词。
+                // 移除之前的卡牌定义自带的关键词，并加入新的卡牌定义自带的关键词。
+                // 目前除了封印、禁锢、失去禁锢、以及重置卡牌以外，关键词属性不会以被任何方式修改，所以大概是没问题的。
+                // TODO：如果一张卡牌自带被禁锢的关键词，在禁锢结束之后再禁锢，变成其他卡牌时不会保留禁锢效果。
+                IEnumerable<string> keywords = card.getKeywords(game, true);
+                var beforeKeywords = beforeDefine.getKeywords();
+                if (beforeKeywords != null)
+                {
+                    keywords = keywords.Except(beforeKeywords);
+                }
+                if (!card.isSilenced(game))
+                {
+                    var newKeywords = card.define.getKeywords();
+                    if (newKeywords != null)
+                    {
+                        keywords = keywords.Concat(newKeywords);
+                    }
+                    await card.setSpellDamage(game, define.getSpellDamage());
+                    await card.setDamageReduce(game, define.getDamageReduce());
+                }
+                await card.setKeywords(game, keywords.Distinct().ToArray());
+                await card.InitConsumableKeywords(game);
+                await card.updateConsumableKeywords(game);
+            }
             return eventArg;
         }
         /// <summary>

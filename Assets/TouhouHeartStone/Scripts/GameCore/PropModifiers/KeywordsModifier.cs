@@ -23,15 +23,15 @@ namespace TouhouHeartstone
             {
                 if (value.Contains(KEYWORD.SHIELD))
                 {
-                    await card.addKeywords(game, KEYWORD.HAS_SHIELD);
+                    await card.setProp(game, CARD.HAS_SHIELD, true);
                 }
                 if (value.Contains(KEYWORD.STEALTH))
                 {
-                    await card.addKeywords(game, KEYWORD.HAS_STEALTH);
+                    await card.setProp(game, CARD.HAS_STEALTH, true);
                 }
                 if (value.Contains(KEYWORD.FROZEN))
                 {
-                    await card.addKeywords(game, KEYWORD.IS_FROZEN);
+                    await card.setProp(game, CARD.IS_FROZEN, true);
                 }
             }
             await card.updateConsumableKeywords(game);

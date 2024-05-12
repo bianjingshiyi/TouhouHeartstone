@@ -90,55 +90,6 @@ namespace TouhouHeartstone
         #endregion
 
         #region 设置
-        public static void setRush(this Card card, IGame game, bool value)
-        {
-            if (value)
-                card.addKeywords(game, KEYWORD.RUSH);
-            else
-                card.removeKeywords(game, KEYWORD.RUSH);
-        }
-        public static void setDrain(this Card card, IGame game, bool value)
-        {
-            if (value)
-                card.addKeywords(game, KEYWORD.DRAIN);
-            else
-                card.removeKeywords(game, KEYWORD.DRAIN);
-        }
-        public static void setPoisonous(this Card card, IGame game, bool value)
-        {
-            if (value)
-                card.addKeywords(game, KEYWORD.POISONOUS);
-            else
-                card.removeKeywords(game, KEYWORD.POISONOUS);
-        }
-        public static void setElusive(this Card card, IGame game, bool value)
-        {
-            if (value)
-                card.addKeywords(game, KEYWORD.ELUSIVE);
-            else
-                card.removeKeywords(game, KEYWORD.ELUSIVE);
-        }
-        public static void setWindfury(this Card card, IGame game, bool value)
-        {
-            if (value)
-                card.addKeywords(game, KEYWORD.WINDFURY);
-            else
-                card.removeKeywords(game, KEYWORD.WINDFURY);
-        }
-        public static void setImmunity(this Card card, IGame game, bool value)
-        {
-            if (value)
-                card.addKeywords(game, KEYWORD.IMMUNITY);
-            else
-                card.removeKeywords(game, KEYWORD.IMMUNITY);
-        }
-        public static void setUnique(this Card card, IGame game, bool value)
-        {
-            if (value)
-                card.addKeywords(game, KEYWORD.UNIQUE);
-            else
-                card.removeKeywords(game, KEYWORD.UNIQUE);
-        }
         public static Task<EventArg> setChargeLevel(this Card card, CardEngine game, int value)
         {
             var beforeValue = card.getChargedLevel(game);
@@ -208,15 +159,15 @@ namespace TouhouHeartstone
         {
             if (card.hasKeyword(game, KEYWORD.SHIELD))
             {
-                await card.addKeywords(game, KEYWORD.HAS_SHIELD);
+                await card.setProp(game, CARD.HAS_SHIELD, true);
             }
             if (card.hasKeyword(game, KEYWORD.STEALTH))
             {
-                await card.addKeywords(game, KEYWORD.HAS_STEALTH);
+                await card.setProp(game, CARD.HAS_STEALTH, true);
             }
             if (card.hasKeyword(game, KEYWORD.FROZEN))
             {
-                await card.addKeywords(game, KEYWORD.IS_FROZEN);
+                await card.setProp(game, CARD.IS_FROZEN, true);
             }
         }
         /// <summary>
@@ -227,22 +178,17 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         public static async Task updateConsumableKeywords(this Card card, IGame game)
         {
-            List<string> removeKeywords = new List<string>();
-            if (!card.hasKeyword(game, KEYWORD.SHIELD) && card.hasKeyword(game, KEYWORD.HAS_SHIELD, true))
+            if (!card.hasKeyword(game, KEYWORD.SHIELD) && card.getProp<bool>(game, CARD.HAS_SHIELD))
             {
-                removeKeywords.Add(KEYWORD.HAS_SHIELD);
+                await card.loseShield(game);
             }
-            if (!card.hasKeyword(game, KEYWORD.STEALTH) && card.hasKeyword(game, KEYWORD.HAS_STEALTH, true))
+            if (!card.hasKeyword(game, KEYWORD.STEALTH) && card.getProp<bool>(game, CARD.HAS_STEALTH))
             {
-                removeKeywords.Add(KEYWORD.HAS_STEALTH);
+                await card.loseStealth(game);
             }
-            if (!card.hasKeyword(game, KEYWORD.FROZEN) && card.hasKeyword(game, KEYWORD.IS_FROZEN, true))
+            if (!card.hasKeyword(game, KEYWORD.FROZEN) && card.getProp<bool>(game, CARD.IS_FROZEN))
             {
-                removeKeywords.Add(KEYWORD.IS_FROZEN);
-            }
-            if (removeKeywords.Count > 0)
-            {
-                await card.removeKeywords(game, removeKeywords.ToArray());
+                await card.setProp(game, CARD.IS_FROZEN, false);
             }
         }
         /// <summary>
@@ -252,58 +198,35 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         public static async Task clearConsumableKeywords(this Card card, IGame game)
         {
-            await card.removeKeywords(game, KEYWORD.HAS_SHIELD, KEYWORD.HAS_STEALTH, KEYWORD.IS_FROZEN);
+            await card.loseShield(game);
+            await card.loseStealth(game);
+            await card.setProp(game, CARD.IS_FROZEN, false);
         }
 
         public static bool isShield(this ICardData card, IGame game)
         {
-            return card.hasKeyword(game, KEYWORD.SHIELD) && card.hasKeyword(game, KEYWORD.HAS_SHIELD);
+            return card.hasKeyword(game, KEYWORD.SHIELD) && card.getProp<bool>(game, CARD.HAS_SHIELD);
         }
         public static bool isStealth(this ICardData card, IGame game)
         {
-            return (card.hasKeyword(game, KEYWORD.STEALTH) && card.hasKeyword(game, KEYWORD.HAS_STEALTH)) || card.hasKeyword(game, KEYWORD.PERMANENTSTEALTH);
+            return (card.hasKeyword(game, KEYWORD.STEALTH) && card.getProp<bool>(game, CARD.HAS_STEALTH)) || card.hasKeyword(game, KEYWORD.PERMANENTSTEALTH);
         }
         public static bool isFreeze(this ICardData card, IGame game)
         {
-            return (card.hasKeyword(game, KEYWORD.FROZEN) && card.hasKeyword(game, KEYWORD.IS_FROZEN)) || card.hasKeyword(game, KEYWORD.PERMANENT_FROZEN);
+            return (card.hasKeyword(game, KEYWORD.FROZEN) && card.getProp<bool>(game, CARD.IS_FROZEN)) || card.hasKeyword(game, KEYWORD.PERMANENT_FROZEN);
         }
-        public static async Task setShield(this Card card, IGame game, bool value)
+        public static Task loseShield(this Card card, IGame game)
         {
-            if (value)
-            {
-                await card.addKeywords(game, KEYWORD.SHIELD);
-                await card.addKeywords(game, KEYWORD.HAS_SHIELD);
-            }
-            else
-            {
-                await card.removeKeywords(game, KEYWORD.SHIELD);
-                await card.removeKeywords(game, KEYWORD.HAS_SHIELD);
-            }
+            return card.setProp(game, CARD.HAS_SHIELD, false);
         }
-        public static async Task setStealth(this Card card, IGame game, bool value)
+        public static Task loseStealth(this Card card, IGame game)
         {
-            if (value)
-            {
-                await card.addKeywords(game, KEYWORD.STEALTH);
-                await card.addKeywords(game, KEYWORD.HAS_STEALTH);
-            }
-            else
-            {
-                await card.removeKeywords(game, KEYWORD.STEALTH);
-                await card.removeKeywords(game, KEYWORD.HAS_STEALTH);
-            }
+            return card.setProp(game, CARD.HAS_STEALTH, false);
         }
-        public static async Task setFreeze(this Card card, CardEngine game, bool value)
+        public static async Task loseShackle(this Card card, CardEngine game)
         {
-            if (value)
-            {
-                await card.shackle(game);
-            }
-            else
-            {
-                await card.removeKeywords(game, KEYWORD.FROZEN);
-                await card.removeKeywords(game, KEYWORD.IS_FROZEN);
-            }
+            await card.removeKeywords(game, KEYWORD.FROZEN);
+            await card.setProp(game, CARD.IS_FROZEN, false);
         }
         public static Task<EventArg> shackle(this Card card, CardEngine game)
         {
@@ -350,10 +273,6 @@ namespace TouhouHeartstone
                 }
             }
             var result = await card.setProp(game, DEFINE.KEYWORDS, keywords);
-            foreach (var keyword in card.getKeywords(game))
-            {
-                await card.setProp(game, keyword, true);
-            }
             await card.updateConsumableKeywords(game);
             return result;
         }
