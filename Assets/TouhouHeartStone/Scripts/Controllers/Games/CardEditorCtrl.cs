@@ -1220,43 +1220,45 @@ namespace Controllers
             try
             {
                 audio = await game.card.selectExternalSound();
+                if (audio == null)
+                    return;
+                scene.waitingBlocker.addWaitingTask(WaitingTask.CardEditor);
+                var newPath = await game.card.saveSound(game.editor.currentCardPoolId, audio);
+                var directory = game.card.getCardPoolSoundsDirectory(game.card.getLocalCardPoolInfo(game.editor.currentCardPoolId));
+                var fullPath = Path.Combine(directory, newPath);
+                if (!File.Exists(fullPath))
+                {
+                    var title = game.lang._(StringTable.ERROR);
+                    var desc = game.lang._(CardManager.SOUND_COMPRESS_FAILED_FILE_NOT_FOUND);
+                    game.ui.dialog.ShowConfirm(title, desc);
+                    return;
+                }
+                var fileInfo = new FileInfo(fullPath);
+                if (fileInfo.Length > game.card.maxSoundSize)
+                {
+                    var title = game.lang._(StringTable.ERROR);
+                    var desc = game.lang._(CardManager.SOUND_COMPRESSED_SIZE_OUT_OF_LIMIT, game.card.maxSoundSize / 1024, fileInfo.Length / 1024);
+                    game.ui.dialog.ShowConfirm(title, desc);
+
+                    File.Delete(fullPath);
+                    return;
+                }
+                markUnsaved();
+
+                initSkinSoundRefs(_curCardSkin);
+                var soundRef = getCurrentSoundRef(soundIndex);
+                soundRef.path = newPath;
+                await updateSoundItems();
             }
             catch (Exception e)
             {
                 var title = game.lang._(StringTable.ERROR);
                 game.ui.dialog.ShowConfirm(title, e.Message);
             }
-
-            if (audio == null)
-                return;
-            scene.waitingBlocker.addWaitingTask(WaitingTask.CardEditor);
-            var newPath = await game.card.saveSound(game.editor.currentCardPoolId, audio);
-            var directory = game.card.getCardPoolSoundsDirectory(game.card.getLocalCardPoolInfo(game.editor.currentCardPoolId));
-            var fullPath = Path.Combine(directory, newPath);
-            if (!File.Exists(fullPath))
+            finally
             {
-                var title = game.lang._(StringTable.ERROR);
-                var desc = game.lang._(CardManager.SOUND_COMPRESS_FAILED_FILE_NOT_FOUND);
-                game.ui.dialog.ShowConfirm(title, desc);
-                return;
+                scene.waitingBlocker.removeWaitingTask(WaitingTask.CardEditor);
             }
-            var fileInfo = new FileInfo(fullPath);
-            if (fileInfo.Length > game.card.maxSoundSize)
-            {
-                var title = game.lang._(StringTable.ERROR);
-                var desc = game.lang._(CardManager.SOUND_COMPRESSED_SIZE_OUT_OF_LIMIT, game.card.maxSoundSize / 1024, fileInfo.Length / 1024);
-                game.ui.dialog.ShowConfirm(title, desc);
-
-                File.Delete(fullPath);
-                return;
-            }
-            scene.waitingBlocker.removeWaitingTask(WaitingTask.CardEditor);
-            markUnsaved();
-
-            initSkinSoundRefs(_curCardSkin);
-            var soundRef = getCurrentSoundRef(soundIndex);
-            soundRef.path = newPath;
-            await updateSoundItems();
         }
 
         #endregion
