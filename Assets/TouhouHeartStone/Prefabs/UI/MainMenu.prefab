@@ -378,8 +378,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "QQ\u7FA4\uFF1A957440521, 820332712\n\xA9 2020-2022 \u9189\u68A6\u4F20\u8BF4\u5236\u4F5C\u7EC4
-    \n\xA9 2018-2022 IGensoukyo"
+  m_Text: "QQ\u7FA4\uFF1A957440521, 820332712\n\xA9 2020-2024 \u9189\u68A6\u4F20\u8BF4\u5236\u4F5C\u7EC4
+    \n\xA9 2018-2024 IGensoukyo"
 --- !u!114 &6361775775560978309
 MonoBehaviour:
   m_ObjectHideFlags: 0
