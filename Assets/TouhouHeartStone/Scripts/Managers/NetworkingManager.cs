@@ -23,6 +23,24 @@ namespace Game
             setLanguage(main.lang.getLanguage());
             _ = startSequence();
         }
+        public bool initCookie()
+        {
+            try
+            {
+                // Unity和Mono的新版本有Bug，在主机名内包含多字节字符时CookieContainer构造方法会出错。
+                _logic.initCookie();
+                return true;
+            }
+            catch (Exception e)
+            {
+                var title = main.lang._(StringTable.ERROR);
+                var msg = e.Message;
+                main.ui.dialog.ShowConfirm(title, msg);
+                Debug.LogException(e);
+                return false;
+            }
+
+        }
         public void  setLanguage(string language)
         {
             logic.setLanguage(language.Replace('-', '_').ToLower());
