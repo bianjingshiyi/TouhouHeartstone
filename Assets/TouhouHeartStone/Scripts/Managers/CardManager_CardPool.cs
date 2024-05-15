@@ -776,14 +776,70 @@ namespace Game
                 return JsonHelper.fromJson<CardPoolInfo>(line);
             }
         }
+        public (CardPoolInfo cardPoolInfo, CardPool cardPool) parseCardPoolStream(Stream stream)
+        {
+            CardPoolInfo cardPoolInfo;
+            CardPool cardPool;
+            byte[] bytes = new byte[5];
+            stream.Read(bytes, 0, bytes.Length);
+            if (bytes.Length == 5 &&
+                bytes[0] == CARD_POOL_VERSION_3_HEADER_BYTE_0 &&
+                bytes[1] == CARD_POOL_VERSION_3_HEADER_BYTE_1)
+            {
+                short headerLength = BitConverter.ToInt16(bytes, 2);
+                bytes = new byte[headerLength];
+                stream.Read(bytes, 0, headerLength);
 
+                try
+                {
+                    cardPoolInfo = JsonHelper.fromBytes<SerializableCardPoolInfo>(bytes).toInfo();
+                }
+                catch (Exception e)
+                {
+                    throw new FormatException(string.Format("反序列化卡池的信息失败：{0}", e), e);
+                }
+
+                bytes = new byte[stream.Length - headerLength - sizeof(byte) * 3 - sizeof(short)];
+                stream.Read(bytes, 0, bytes.Length);
+
+                try
+                {
+                    cardPool = JsonHelper.fromBytes<SerializableCardPool>(bytes).toCardPool(cardPoolInfo.cardPoolId, game, GraphTypes.getTypeByName);
+                }
+                catch (Exception e)
+                {
+                    throw new FormatException(string.Format("反序列化卡池{0}失败：{1}", cardPoolInfo.cardPoolName, e), e);
+                }
+            }
+            else
+            {
+                using StreamReader reader = new StreamReader(stream);
+                stream.Position = 0;
+                // 读取文件。
+                List<string> lines = new List<string>();
+                while (!reader.EndOfStream)
+                {
+                    lines.Add(reader.ReadLine());
+                }
+                // 解析卡池。
+                try
+                {
+                    (cardPoolInfo, cardPool) = parseCardPoolJson(lines.ToArray());
+                }
+                catch (Exception e)
+                {
+                    throw new FormatException($"反序列化卡池失败：{e}", e);
+                }
+            }
+            return (cardPoolInfo, cardPool);
+        }
         /// <summary>
         /// 解析卡池文件
         /// </summary>
         /// <param name="lines">文件文本行</param>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        public (CardPoolInfo cardPoolInfo, CardPool cardPool) parseCardPool(string[] lines)
+        public (CardPoolInfo cardPoolInfo, CardPool cardPool) parseCardPoolJson(string[] lines)
         {
             //初始化JSON
             if (!JsonHelper.isInited)
@@ -1918,58 +1974,19 @@ namespace Game
                 CardPoolInfo cardPoolInfo;
                 CardPool cardPool;
 
-                bool isStreamingAsset = path.isStreamingAssetsPath(out _);
-
-                using Stream stream = isStreamingAsset ? await game.fileManager.getStreamingFileStreamAsync(path) : await game.fileManager.getFileStreamAsync(path);
-                byte[] bytes = new byte[5];
-                stream.Read(bytes, 0, bytes.Length);
-                if (bytes.Length == 5 &&
-                    bytes[0] == CARD_POOL_VERSION_3_HEADER_BYTE_0 &&
-                    bytes[1] == CARD_POOL_VERSION_3_HEADER_BYTE_1)
+                try
                 {
-                    short headerLength = BitConverter.ToInt16(bytes, 2);
-                    bytes = new byte[headerLength];
-                    stream.Read(bytes, 0, headerLength);
+                    bool isStreamingAsset = path.isStreamingAssetsPath(out _);
 
-                    try
-                    {
-                        cardPoolInfo = JsonHelper.fromBytes<SerializableCardPoolInfo>(bytes).toInfo();
-                    }
-                    catch (Exception e)
-                    {
-                        throw new FormatException(string.Format("反序列化卡池{0}的信息失败：{1}", path, e), e);
-                    }
-
-                    bytes = new byte[stream.Length - headerLength - sizeof(byte) * 3 - sizeof(short)];
-                    stream.Read(bytes, 0, bytes.Length);
-
-                    try
-                    {
-                        cardPool = JsonHelper.fromBytes<SerializableCardPool>(bytes).toCardPool(cardPoolInfo.cardPoolId, game, GraphTypes.getTypeByName);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new FormatException(string.Format("反序列化卡池{0}失败：{1}", path, e), e);
-                    }
-                }
-                else
-                {
-                    // 读取文件。
-                    string[] lines = isStreamingAsset ?
-                        await game.fileManager.readStreamingTextFile(path, 0, 0) :
-                        await game.fileManager.readTextFile(path, 0, 0);
+                    using Stream stream = isStreamingAsset ? await game.fileManager.getStreamingFileStreamAsync(path) : await game.fileManager.getFileStreamAsync(path);
                     // 读取文件失败。
-                    if (lines == null || lines.Length < 1)
+                    if (stream == null || stream.Length <= 0)
                         throw new FileLoadException($"卡池文件{path}为空");
-                    // 解析卡池。
-                    try
-                    {
-                        (cardPoolInfo, cardPool) = parseCardPool(lines);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new FormatException($"反序列化卡池{path}失败：{e}", e);
-                    }
+                    (cardPoolInfo, cardPool) = parseCardPoolStream(stream);
+                }
+                catch (Exception e)
+                {
+                    throw new FormatException($"反序列化卡池{path}失败：{e}", e);
                 }
 
                 // 移除冲突的卡池，并添加该卡池。
