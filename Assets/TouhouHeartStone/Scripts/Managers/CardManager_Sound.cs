@@ -280,7 +280,7 @@ namespace Game
         }
         private Task<AudioClip> loadSoundFile(string path)
         {
-            var ext = Path.GetExtension(path);
+            var ext = Path.GetExtension(path).ToLower();
             AudioType audioType = AudioType.UNKNOWN;
             switch (ext)
             {
