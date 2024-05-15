@@ -247,8 +247,9 @@ namespace Game
                         }
 
                         // 将ID与清单文件对照，防止被修改
-                        var defineLines = await defineEntry.ReadLinesAsync(Encoding.UTF8);
-                        var (cardPoolInfo, cardPool) = parseCardPool(defineLines);
+                        var defineBytes = defineEntry.Decompress();
+                        var defineStream = new MemoryStream(defineBytes);
+                        var (cardPoolInfo, cardPool) = parseCardPoolStream(defineStream);
                         if (cardPoolInfo.cardPoolId != manifest.CardPoolID || cardPoolInfo.editTime != manifest.Revision)
                         {
                             game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), game.i18n._(ERROR_SIGNATURE_NOT_MATCH));
@@ -455,6 +456,17 @@ namespace Game
                 }
             }
             return lines.ToArray();
+        }
+        public static byte[] Decompress(this ZipArchiveEntry entry)
+        {
+            using (var zipStream = entry.Open())
+            {
+                using (var stream = new MemoryStream())
+                {
+                    zipStream.CopyTo(stream);
+                    return stream.ToArray();
+                }
+            }
         }
 
         public static byte[] GetSHA256(this ZipArchiveEntry entry)
