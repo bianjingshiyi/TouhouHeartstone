@@ -17,8 +17,7 @@ namespace Game
         {
             Debug.Log("Init server uri: " + serverUri);
 
-            var cookiePath = System.IO.Path.Combine(Application.persistentDataPath, "token");
-            ServerClient = new ServerClient(serverUri, version, cookiePath, new ULogger("ServerAPI"));
+            ServerClient = new ServerClient(serverUri, version, new ULogger("ServerAPI"));
             clientLogic = new ClientLogic("Player.", ports, ServerClient, new ULogger("LAN"), resProvider);
 
             clientLogic.onRoomListChange += LocalLanLogic_onRoomListChange;
@@ -352,6 +351,11 @@ namespace Game
         }
         #endregion
 
+        public void initCookie()
+        {
+            var cookiePath = System.IO.Path.Combine(Application.persistentDataPath, "token");
+            ServerClient.InitCookie(cookiePath);
+        }
         /// <summary>
         /// 周期事件
         /// </summary>

@@ -56,6 +56,7 @@ namespace Game
                 _mainSceneCtrl.menu.hide();
             }
             // 初始化网络
+            bool cookieInited = network.initCookie();
             await network.start();
             // 加载内置动画
             anims.loadBuiltinAnimations();
@@ -71,14 +72,18 @@ namespace Game
             Main main = ui.getObject<Main>();
             main.display(main.MainMenu);
             onLoadingFinish?.Invoke();
-            if (SteamManager.disableSteamWorks)
+
+            if (cookieInited)
             {
-                //开始检查新版本
-                _getNewVersionTask = network.getLatestVersion();
-            }
-            else
-            {
-                steam.initialize();
+                if (SteamManager.disableSteamWorks)
+                {
+                    //开始检查新版本
+                    _getNewVersionTask = network.getLatestVersion();
+                }
+                else
+                {
+                    steam.initialize();
+                }
             }
 
             if (_mainSceneCtrl != null)
