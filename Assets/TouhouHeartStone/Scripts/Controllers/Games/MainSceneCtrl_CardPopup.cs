@@ -25,15 +25,16 @@ namespace Controllers
         {
             var tokenDefine = game.card.evaluateCardTokens(cardDefine, env).FirstOrDefault();
             var skin = game.card.getCardSkin(cardDefine);
-            addCardPopup(targetTransform, tokenDefine, skin);
+            addCardPopup(targetTransform, cardDefine, tokenDefine, env);
         }
-        public void addCardPopup(Transform targetTransform, CardDefine tokenDefine, CardSkinData skin)
+        public void addCardPopup(Transform targetTransform, CardDefine card, CardDefine token, IEnumerable<ICardPoolReference> env)
         {
             _cardPopupTimer.reset();
             _cardPopupTimer.start();
             _cardPopupTarget = targetTransform;
-            _cardPopupDefine = tokenDefine;
-            _cardPopupSkin = skin;
+            _cardPopupEnv = env;
+            _cardPopupDefine = card;
+            _cardPopupTokenDefine = token;
             hideCardPopup();
         }
         public void removeCardPopup(UICard card)
@@ -48,8 +49,8 @@ namespace Controllers
             hideCardPopup();
 
             _cardPopupTarget = null;
+            _cardPopupTokenDefine = null;
             _cardPopupDefine = null;
-            _cardPopupSkin = null;
         }
         #endregion
 
@@ -64,20 +65,29 @@ namespace Controllers
             }
             if (_cardPopupTimer.isExpired())
             {
-                await showCardPopup(_cardPopupTarget.position, _cardPopupDefine, _cardPopupSkin);
+                await showCardPopup(_cardPopupTarget.position, _cardPopupDefine, _cardPopupTokenDefine, _cardPopupEnv);
             }
             if (isShowingCardPopup)
             {
                 _cardPopup.setPosition(_cardPopupTarget.position);
             }
         }
-        private async Task showCardPopup(Vector3 position, CardDefine tokenDefine, CardSkinData skin)
+        private async Task showCardPopup(Vector3 position, CardDefine card, CardDefine token, IEnumerable<ICardPoolReference> env)
         {
             if (isShowingCardPopup)
                 return;
             isShowingCardPopup = true;
-            var keywords = game.card.getKeywordsInDescription(skin.desc);
-            await _cardPopup.show(position, tokenDefine, skin, game.card, game.camera, keywords);
+            var mainCardRef = game.card.getCardPoolReferenceInEnv(card.cardPoolId, env);
+            var cardDesc = game.card.getCardDesc(mainCardRef, card.id);
+            var keywords = game.card.getKeywordsInDescription(cardDesc);
+
+            CardSkinData tokenSkin = null;
+            if (token != null)
+            {
+                var tokenCardRef = game.card.getCardPoolReferenceInEnv(token.cardPoolId, env);
+                tokenSkin = game.card.getCardSkin(tokenCardRef, token.id);
+            }
+            await _cardPopup.show(position, token, tokenSkin, game.card, game.camera, keywords);
         }
         private void hideCardPopup()
         {
@@ -95,8 +105,9 @@ namespace Controllers
         };
         bool isShowingCardPopup = false;
         Transform _cardPopupTarget;
+        IEnumerable<ICardPoolReference> _cardPopupEnv;
         CardDefine _cardPopupDefine;
-        CardSkinData _cardPopupSkin;
+        CardDefine _cardPopupTokenDefine;
         [SerializeField]
         CardPopUpUI _cardPopup;
         #endregion

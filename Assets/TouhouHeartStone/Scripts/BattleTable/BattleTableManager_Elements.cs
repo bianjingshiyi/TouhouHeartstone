@@ -429,8 +429,8 @@ namespace Game.BattleTable
             setCardDesc(item.card, desc);
             item.card.setFaceup(canSeeCard(desc));
 
-            var skin = getCardSkin(desc.define);
-            item.gameObject.name = $"{skin?.name ?? "Hand"}<{desc.id}>";
+            var name = getCardName(desc.define);
+            item.gameObject.name = $"{name ?? "Hand"}<{desc.id}>";
             cardHandDic.Add(desc.id, item);
             return item;
         }
@@ -576,8 +576,8 @@ namespace Game.BattleTable
             {
                 servant = field.insertServant(position);
             }
-            var skin = getCardSkin(desc.define);
-            servant.gameObject.name = $"{skin?.name ?? "Card"}<{desc.id}>";
+            var name = getCardName(desc.define);
+            servant.gameObject.name = $"{name ?? "Card"}<{desc.id}>";
             UberDebug.LogChannel(servant, "UI", $"为{desc.id}创建{servant}");
             setServant(servant, desc);
             cardServantDic.Add(desc.id, servant);
@@ -1844,8 +1844,9 @@ namespace Game.BattleTable
 
         private void onSkillPointerEnterCallback(Skill skill, PointerEventData pointer)
         {
-            string desc = getCardSkin(skill == table.SelfSkill ? player.getSkill() : game.getOpponent(player).getSkill()).desc;
-            showTipBox(desc, skill.gameObject);
+            var cardDesc = getCardDescriptor(skill == table.SelfSkill ? player.getSkill() : game.getOpponent(player).getSkill());
+            var description = getCardDescription(cardDesc?.define);
+            showTipBox(description, skill.gameObject);
             var tablePos = ScreenToTablePosition(pointer.position);
             tablePos.y = 0;
             setTipboxPosition(tablePos);
@@ -2537,10 +2538,10 @@ namespace Game.BattleTable
                 }
                 else
                 {
-                    var skin = getBuffSkin(buffDefine);
+                    var poolRef = getCardPoolReference(buffDefine.cardPoolId);
                     sprite = await loadBuffImage(buffDefine);
-                    name = skin?.name ?? string.Empty;
-                    desc = skin?.desc ?? string.Empty;
+                    name = cardManager.getBuffName(poolRef, buffDefine.id);
+                    desc = cardManager.getBuffDesc(poolRef, buffDefine.id);
                 }
                 if (name.Length > _maxBuffNameLength)
                     name = lang._(StringTable.TRIMMED_COTENTS, name.Substring(0, _maxBuffNameLength));

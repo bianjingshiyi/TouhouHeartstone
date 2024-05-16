@@ -8,10 +8,9 @@ namespace UI
     public class BuffSkin : ISkin
     {
         public int buffId;
-        public string language;
-        public string name;
-        public string desc;
-        public string imagePath;
+        public string nameKey;
+        public string descKey;
+        public string imagePathKey;
         List<SkinAnimationRef> _animationRefs = new List<SkinAnimationRef>();
         public DefineReference persistentAnimRef;
 
@@ -22,10 +21,9 @@ namespace UI
         public BuffSkin(BuffSkin other)
         {
             buffId = other.buffId;
-            language = other.language;
-            name = other.name;
-            desc = other.desc;
-            imagePath = other.imagePath;
+            nameKey = other.nameKey;
+            descKey = other.descKey;
+            imagePathKey = other.imagePathKey;
             persistentAnimRef = other.persistentAnimRef;
             foreach (var animRef in other._animationRefs)
             {

@@ -301,9 +301,10 @@ namespace Controllers
                 {
                     if (int.TryParse(m.Groups["id"].Value, out var id) && long.TryParse(m.Groups["poolId"].Value, out var poolId))
                     {
-                        return tableManager.getCardSkin(poolId, id).name;
+                        var define = tableManager.getCardDefine(poolId, id);
+                        return tableManager.getCardName(define);
                     }
-                    return "未知卡牌";
+                    return _main.lang._(StringTable.BUILD_UNKNOWN_CARD_NAME);
                 });
             info = Regex.Replace(info, cardPattern,
                 m =>
@@ -311,19 +312,14 @@ namespace Controllers
                     if (int.TryParse(m.Groups["id"].Value, out var id))
                     {
                         var card = tableManager.game.getCard(id);
-                        CardSkinData skin = null;
                         if (card != null)
                         {
                             var cardSnapshot = getCardSnapshotOfEvent(card, arg);
                             var define = cardSnapshot?.define ?? card.define;
-                            skin = tableManager.getCardSkin(define);
-                        }
-                        if (skin != null)
-                        {
-                            return skin.name;
+                            return tableManager.getCardName(define);
                         }
                     }
-                    return "未知卡牌";
+                    return _main.lang._(StringTable.BUILD_UNKNOWN_CARD_NAME);
                 });
             return info;
         }

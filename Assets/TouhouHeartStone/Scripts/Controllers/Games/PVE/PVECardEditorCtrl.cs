@@ -571,7 +571,8 @@ namespace Controllers
                 foreach (var skin in cardSkins)
                 {
                     var image = await game.card.loadCardImage(pveCard);
-                    skin.imagePath = await game.card.saveImage(genPoolInfo.cardPoolId, image.texture);
+                    var imagePath = await game.card.saveImage(genPoolInfo.cardPoolId, image.texture);
+                    game.card.setCardImagePath(genPoolInfo, skin, LangManager.SOURCE, imagePath);
                     game.card.addCardSkin(genPoolInfo.cardPoolId, skin);
                 }
                 clonedCard.setProp(PVEManager.CARD_PROP_TEMPLATE_DEFINE, pveCard.getDefineRef());

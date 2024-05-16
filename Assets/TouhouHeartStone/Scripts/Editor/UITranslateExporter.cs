@@ -1,19 +1,11 @@
-﻿using System;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-using BJSYGameCore;
+﻿using System.IO;
 using Controllers;
 using Game;
 using MukioI18n;
-using TouhouCardEngine;
-using UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static UnityEditor.PlayerSettings.Switch;
 
 namespace TouhouHeartstone
 {
@@ -111,7 +103,6 @@ namespace TouhouHeartstone
             var cardPoolInfo = JsonHelper.fromJson<SerializableCardPoolInfo>(infoJson);
             var cardPool = JsonHelper.fromJson<SerializableCardPool>(json);
 
-            var sourceLanaguage = CardManager.sourceLanaguage;
             var cardNameContext = CardManager.cardNameContext;
             var cardSubnameContext = CardManager.cardSubnameContext;
             var cardDescContext = CardManager.cardDescContext;
@@ -119,8 +110,6 @@ namespace TouhouHeartstone
             var buffDescContext = CardManager.buffDescContext;
             foreach (var skin in cardPool.cardSkinList)
             {
-                if (skin._language != sourceLanaguage)
-                    continue;
                 var reference = $"{cardPoolInfo.cardPoolName}/卡牌/{skin._name}";
                 var cardComment = $"卡牌“{skin._name}”";
                 if (!string.IsNullOrEmpty(skin._name)) pot.AddString(new PotTranslate(skin._name, reference, cardComment, cardNameContext));
@@ -129,8 +118,6 @@ namespace TouhouHeartstone
             }
             foreach (var skin in cardPool.buffSkinList)
             {
-                if (skin.language != sourceLanaguage)
-                    continue;
                 var reference = $"{cardPoolInfo.cardPoolName}/增益/{skin.name}";
                 var buffComment = $"增益{skin.name}";
                 if (!string.IsNullOrEmpty(skin.name)) pot.AddString(new PotTranslate(skin.name, reference, buffComment, buffNameContext));

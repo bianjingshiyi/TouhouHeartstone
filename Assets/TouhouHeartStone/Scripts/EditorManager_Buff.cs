@@ -73,7 +73,7 @@ namespace Game
         public string[] getBuffNames()
         {
             var newBuffName = game.lang._(DROPDOWN_NEW_BUFF);
-            return _currentBuffDefines.Select(b => game.card.getBuffSkin(b)?.name ?? b.ToString()).Prepend(newBuffName).ToArray();
+            return _currentBuffDefines.Select(b => game.card.getBuffName(getCurrentCardPoolReference(), b.id)).Prepend(newBuffName).ToArray();
         }
         /// <summary>
         /// 获取当前卡池环境下的所有增益引用。
@@ -93,7 +93,7 @@ namespace Game
             {
                 var poolName = game.card.getCardPoolName(game.card.getLocalCardPoolInfo(group.Key));
                 var children = new List<BuffReferenceRecursion>();
-                children.AddRange(group.Select(b => new BuffReferenceRecursion(game.card.getBuffSkin(b)?.name ?? b.ToString(), new BuffReference(b.cardPoolId, b.id))));
+                children.AddRange(group.Select(b => new BuffReferenceRecursion(game.card.getBuffName(game.card.getLocalCardPoolReference(b.cardPoolId), b.id), new BuffReference(b.cardPoolId, b.id))));
                 var recursion = new BuffReferenceRecursion(poolName, children: children);
                 buffRecursions.Add(recursion);
             }
@@ -162,7 +162,7 @@ namespace Game
             if (buffSkin == null)
             {
                 //如果不存在皮肤，那就创建一个
-                buffSkin = game.card.createBuffSkin(buffDefine.cardPoolId, buffDefine.id, game.langManager.getLanguage());
+                buffSkin = game.card.createBuffSkin(buffDefine.cardPoolId, buffDefine.id);
                 game.card.addBuffSkin(curCardPoolId, buffSkin);
                 needUpdateBuffs = true;
             }

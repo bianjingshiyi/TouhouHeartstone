@@ -1,13 +1,11 @@
-﻿using Controllers;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Game.Animations;
 using MessagePack;
 using MongoDB.Bson.Serialization.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
-using UI;
 
 namespace Game
 {
@@ -27,6 +25,7 @@ namespace Game
         {
             if (cardPool == null)
                 throw new ArgumentNullException(nameof(cardPool));
+            originLanguage = cardPool.originLanguage;
             cardDefineList = cardPool.cardDefineList.ConvertAll(c => new SerializableCardDefine(c));
             cardSkinList = cardPool.cardSkinList.ConvertAll(s => new SerializableCardSkinData(s));
             buffDefineList = cardPool.buffDefineList.ConvertAll(b => new SerializableBuffDefine(b));
@@ -37,6 +36,12 @@ namespace Game
                 actionDefineList = new List<SerializableActionDefine>();
             animationDefineList = cardPool.animationDefineList.ConvertAll(a => new SerializableAnimationDefine(a));
             ruleLogicList = cardPool.ruleLogicList.ConvertAll(r => SerializeHelper.ToSerializable(r));
+            localizedStringList = cardPool.localizedStringList.Count(v => v != null) > 0 ? 
+                cardPool.localizedStringList.ConvertAll(s => new SerializableLocalizedString(s)) :
+                null;
+            localizedResourceList = cardPool.localizedStringList.Count(v => v != null) > 0 ? 
+                cardPool.localizedResourceList.ConvertAll(s => new SerializableLocalizedResource(s)) :
+                null;
         }
         #endregion
         public CardPool toCardPool(long cardPoolId, MainManager mainManager, TypeFinder typeFinder)
@@ -72,13 +77,18 @@ namespace Game
             });
             var animationDefines = animationDefineList?.ConvertAll(b => b.toAnimDefine()) ?? new List<GeneratedAnimationDefine>();
 
+            var localizedStrings = localizedStringList?.ConvertAll(s => s.deserialize()) ?? new List<LocalizedString>();
+            var localizedResources = localizedResourceList?.ConvertAll(r => r.deserialize()) ?? new List<LocalizedResource>();
             return new CardPool()
             {
+                originLanguage = originLanguage,
                 cardDefineList = cardDefines,
                 buffDefineList = buffDefines,
                 actionDefineList = new List<GeneratedActionDefine>(_genActionDefines),
                 animationDefineList = animationDefines,
                 ruleLogicList = ruleLogicList?.ConvertAll(r => r.deserialize(_nodeDefiner)) ?? new List<GeneratedRuleLogic>(),
+                localizedStringList = localizedStrings,
+                localizedResourceList = localizedResources,
                 cardSkinList = cardSkinList.ConvertAll(s => s.toSkin()),
                 buffSkinList = buffSkinList.ConvertAll(s => s.toSkin()),
                 eventDefineList = new List<EventDefine>(_loadedEventDefines)
@@ -177,6 +187,12 @@ namespace Game
         public List<SerializableAnimationDefine> animationDefineList;
         [Key(6)]
         public List<SerializableGeneratedRuleLogic> ruleLogicList;
+        [Key(7)]
+        public string originLanguage;
+        [Key(8)]
+        public List<SerializableLocalizedString> localizedStringList;
+        [Key(9)]
+        public List<SerializableLocalizedResource> localizedResourceList;
         [IgnoreMember]
         [Obsolete]
         public List<SerializableActionNodeGraphInfo> actionNodeGraphInfoList = new List<SerializableActionNodeGraphInfo>();

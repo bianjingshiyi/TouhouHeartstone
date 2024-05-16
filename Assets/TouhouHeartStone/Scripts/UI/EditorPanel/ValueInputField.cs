@@ -1126,8 +1126,7 @@ namespace UI
                 var cardDefine = game.card.getCardDefine(localRef, cardReference.defineId);
                 if (cardDefine != null)
                 {
-                    var cardSkin = game.card.getCardSkin(cardDefine);
-                    cardName = cardSkin != null ? cardSkin.name : game.lang._(StringTable.BUILD_UNKNOWN_CARD_NAME);
+                    cardName = game.card.getCardName(localRef, cardReference.defineId) ?? game.lang._(StringTable.BUILD_UNKNOWN_CARD_NAME);
                     image = await game.card.loadCardImage(cardDefine, true);
                 }
                 else

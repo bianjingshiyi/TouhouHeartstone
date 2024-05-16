@@ -990,7 +990,7 @@ namespace Controllers
                 var nodeInfo = obsoleteGraphs[i];
                 if (nodeInfo.cardId != 0)
                 {
-                    var cardName = game.card.getCardSkin(cardPoolRef, nodeInfo.cardId)?.name;
+                    var cardName = game.card.getCardName(cardPoolRef, nodeInfo.cardId);
                     descs.Add(cardName ?? StringTable.BUILD_UNKNOWN_CARD_NAME);
                 }
                 else if (nodeInfo.buffId != 0)
@@ -998,7 +998,7 @@ namespace Controllers
                     string buffName = null;
                     if (game.card.tryGetBuffDefine(cardPoolRef, nodeInfo.buffId, out var buffDefine))
                     {
-                        buffName = game.card.getBuffSkin(buffDefine)?.name;
+                        buffName = game.card.getBuffName(cardPoolRef, nodeInfo.buffId);
                     }
                     descs.Add(buffName ?? StringTable.BUFF_NAME_UNKNOWN);
                 }

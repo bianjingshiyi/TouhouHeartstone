@@ -114,7 +114,7 @@ namespace Game
         #region 增益皮肤
 
         #region 创建
-        public BuffSkin createBuffSkin(long cardPoolId, int buffId, string language)
+        public BuffSkin createBuffSkin(long cardPoolId, int buffId)
         {
             var cardPool = getLocalCardPool(cardPoolId);
             if (cardPool == null)
@@ -123,12 +123,11 @@ namespace Game
             }
             BuffSkin buffSkin = new BuffSkin()
             {
-                language = language,
                 buffId = buffId
             };
-            if (cardPool.buffSkinList.Find(s => s.buffId == buffId && s.language == language) != null)
+            if (cardPool.buffSkinList.Find(s => s.buffId == buffId) != null)
             {
-                Debug.LogWarning($"已经存在增益{buffId}的语言为{language}的皮肤");
+                Debug.LogWarning($"已经存在增益{buffId}的皮肤");
             }
             return buffSkin;
         }
@@ -207,7 +206,7 @@ namespace Game
         public BuffSkin getDefaultBuffSkin(ICardPoolReference cardPoolRef, int buffId)
         {
             var buffSkinList = getBuffSkins(cardPoolRef, buffId);
-            return buffSkinList.FirstOrDefault(s => s.language == game.langManager.getLanguage()) ?? buffSkinList.FirstOrDefault();
+            return buffSkinList.FirstOrDefault();
         }
         public BuffSkin getBuffSkin(BuffDefine buffDefine) => getDefaultBuffSkin(buffDefine);
         public BuffSkin getBuffSkin(ICardPoolReference cardPoolRef, int buffId) => getDefaultBuffSkin(cardPoolRef, buffId);
@@ -228,10 +227,6 @@ namespace Game
                 return Array.Empty<BuffSkin>();
             }
             return cardPool.buffSkinList.Where(s => s.buffId == buffId).ToArray();
-        }
-        public string[] getBuffDefineNames(BuffDefine[] buffDefines)
-        {
-            return buffDefines.Select(b => getDefaultBuffSkin(b)?.name ?? b.ToString()).ToArray();
         }
         #endregion
 

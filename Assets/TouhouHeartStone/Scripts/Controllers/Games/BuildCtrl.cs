@@ -103,7 +103,7 @@ namespace Controllers
             _ui.gameObject.SetActive(true);
             _ui.showErrorTip(false);
             await updateEditingDeck(deck);
-            var masterName = masterSkin.name;
+            var masterName = game.card.getCardName(cardPoolRef, masterSkin);
             if (masterName.Length > masterNameMaxLength)
                 masterName = game.lang._(StringTable.TRIMMED_COTENTS, masterName.Substring(0, masterNameMaxLength));
             _ui.setCharacterName(masterName);
@@ -277,7 +277,7 @@ namespace Controllers
                 CardSkinData skin = game.card.getCardSkin(cardDefine);
                 viewData[i] = new DeckListItemViewData()
                 {
-                    name = skin.name,
+                    name = game.card.getCardName(cardPoolRef, skin),
                     image = await game.card.loadCardImage(cardPoolRef, cardDefine.id),
                     mode = DeckListItem.Mode.Default
                 };
@@ -779,11 +779,11 @@ namespace Controllers
                 //更新UI
                 if (_dragCard != null)
                 {
-                    CardSkinData skin = game.card.getCardSkin(_dragCard);
                     var cardPoolRef = game.card.getLocalCardPoolReference(_dragCard.cardPoolId);
+                    CardSkinData skin = game.card.getCardSkin(cardPoolRef, _dragCard.id);
                     Sprite image = await game.card.loadCardImage(cardPoolRef, _dragCard.id);
                     if (isDeckListItem)
-                        _ui.dragDeckListItem.updateView(skin.name, image);
+                        _ui.dragDeckListItem.updateView(game.card.getCardName(cardPoolRef, skin), image);
                     else
                         await _ui.dragCard.setCardDefine(_dragCard, game.card, true);
                 }

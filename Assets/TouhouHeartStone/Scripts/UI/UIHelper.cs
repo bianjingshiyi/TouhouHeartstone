@@ -31,23 +31,10 @@ namespace Game
             ui.setLifeColor(PropertyNumberColor.White);
             ui.setTag(string.Empty);
         }
-        public static void setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, bool isFaceUp = true)
+        private static void setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, bool isFaceUp = true)
         {
             ui.setTypeByName(card.type);
-
-            string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
-            string subName = string.Empty;
-            string desc = string.Empty;
-            if (skin != null)
-            {
-                name = skin.name;
-                subName = skin.subname;
-                desc = skin.desc;
-            }
             ui.setFaceup(isFaceUp);
-            ui.setName(name);
-            ui.setSubname(subName);
-            ui.setDesc(desc);
             ui.setCostVisible(!card.hasKeyword(KEYWORD.UNPLAYABLE));
             ui.setCost(card.getCost().ToString());
             ui.setAttack(card.getAttack().ToString());
@@ -58,6 +45,21 @@ namespace Game
         {
             var skin = cardManager.getCardSkin(card);
             ui.setCardDefine(card, skin, isFaceUp);
+
+            string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
+            string subName = string.Empty;
+            string desc = string.Empty;
+            if (skin != null)
+            {
+                var poolRef = cardManager.getCardPoolReferenceOfCard(card);
+                name = cardManager.getCardName(poolRef, skin);
+                subName = cardManager.getCardSubname(poolRef, skin);
+                desc = cardManager.getCardDesc(poolRef, skin);
+            }
+            ui.setName(name);
+            ui.setSubname(subName);
+            ui.setDesc(desc);
+
             // 先设置卡牌定义再加载卡图，不然卡框会和卡图一起被突然改变，看起来会有些别扭
             ui.setImage(null);
             ui.setImage(await cardManager.loadCardImage(card));
@@ -66,26 +68,28 @@ namespace Game
         {
             var skin = table.getCardSkin(card);
             ui.setCardDefine(card, skin, isFaceUp);
+
+            string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
+            string subName = string.Empty;
+            string desc = string.Empty;
+            if (skin != null)
+            {
+                name = table.getCardName(card);
+                subName = table.getCardSubname(card);
+                desc = table.getCardDescription(card);
+            }
+            ui.setName(name);
+            ui.setSubname(subName);
+            ui.setDesc(desc);
+
             // 先设置卡牌定义再加载卡图，不然卡框会和卡图一起被突然改变，看起来会有些别扭
             ui.setImage(null);
             ui.setImage(await table.loadCardImage(card));
         }
-        public static void setCard(this UICard ui, CardDescriptor card, CardSkinData skin, bool isFaceUp = true)
+        private static void setCard(this UICard ui, CardDescriptor card, CardSkinData skin, bool isFaceUp = true)
         {
             ui.setTypeByName(card.define.type);
-            string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
-            string subName = string.Empty;
-            string description = string.Empty;
-            if (skin != null)
-            {
-                name = skin.name;
-                subName = skin.subname;
-                description = skin.desc;
-            }
-            ui.setFaceup(isFaceUp);
-            ui.setName(name);
-            ui.setSubname(subName);
-            ui.setDesc(description);
+            ui.setFaceup(isFaceUp);;
             var attack = card.getAttack();
             var curLife = card.getCurrentLife();
             var life = card.getLife();
@@ -117,6 +121,19 @@ namespace Game
             var define = desc.define;
             var skin = table.getCardSkin(define);
             ui.setCard(desc, skin, isFaceUp);
+
+            string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
+            string subName = string.Empty;
+            string description = string.Empty;
+            if (skin != null)
+            {
+                name = table.getCardName(desc.define);
+                subName = table.getCardSubname(desc.define);
+                description = table.getCardDescription(desc.define);
+            }
+            ui.setName(name);
+            ui.setSubname(subName);
+            ui.setDesc(description);
 
             ui.setImage(null);
             ui.setImage(await table.loadCardImage(define));

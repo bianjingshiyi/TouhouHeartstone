@@ -495,10 +495,12 @@ namespace Controllers
         {
             var upperStr = str.ToUpper();
             // 名称
-            if (!string.IsNullOrEmpty(skin.name) && skin.name.ToUpper().Contains(upperStr))
+            var cardName = game.card.getCardName(game.card.getLocalCardPoolReference(define.cardPoolId), define.id)?.ToUpper();
+            if (!string.IsNullOrEmpty(cardName) && cardName.Contains(upperStr))
                 return true;
             // 描述
-            if (!string.IsNullOrEmpty(skin.desc) && skin.desc.ToUpper().Contains(upperStr))
+            var cardDesc = game.card.getCardDesc(game.card.getLocalCardPoolReference(define.cardPoolId), define.id)?.ToUpper();
+            if (!string.IsNullOrEmpty(cardDesc) && cardDesc.Contains(upperStr))
                 return true;
 
             // 种族
@@ -626,8 +628,8 @@ namespace Controllers
                 //名称排序
                 cardDefines.Sort((a, b) =>
                 {
-                    string nameA = game.card.getCardSkin(a).name ?? string.Empty;
-                    string nameB = game.card.getCardSkin(b).name ?? string.Empty;
+                    string nameA = game.card.getCardName(game.card.getLocalCardPoolReference(a.cardPoolId), a.id);
+                    string nameB = game.card.getCardName(game.card.getLocalCardPoolReference(b.cardPoolId), b.id);
                     var compared = nameA.CompareTo(nameB);
                     if (compared == 0)
                     {
@@ -690,7 +692,7 @@ namespace Controllers
                     characterNameList[i] = game.lang._(StringTable.UNKNOWN_CHARACTER);
                     continue;
                 }
-                characterNameList[i] = game.card.getCardSkin(character).name;
+                characterNameList[i] = game.card.getCardName(localPoolRef, characterRef.defineId);
             }
             return characterNameList;
         }

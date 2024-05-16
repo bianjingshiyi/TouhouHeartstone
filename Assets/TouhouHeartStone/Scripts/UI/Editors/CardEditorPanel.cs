@@ -46,18 +46,11 @@ namespace UI
         {
             _skinDropdown.SetValueWithoutNotify(skinIndex);
         }
-        public void initLanguages(string[] languages)
+        public void initLanguages(string[] codes)
         {
-            _languageDropdown.ClearOptions();
-            _languageDropdown.AddOptions(new List<string>(languages));
-        }
-        /// <summary>
-        /// 设置当前语言索引
-        /// </summary>
-        /// <param name="languageIndex"></param>
-        public void setLanguage(int languageIndex)
-        {
-            _languageDropdown.SetValueWithoutNotify(languageIndex);
+            _nameInputField.setLanguages(codes);
+            _subnameInputField.setLanguages(codes);
+            _descInputField.setLanguages(codes);
         }
         /// <summary>
         /// 设置可选的卡牌类型
@@ -104,7 +97,16 @@ namespace UI
         public void setName(string name)
         {
             _card.setName(name);
-            _nameInputField.SetTextWithoutNotify(name);
+            _nameInputField.inputField.SetTextWithoutNotify(name);
+        }
+        public void setNameInputFieldActive(bool active)
+        {
+            _nameInputField.gameObject.SetActive(active);
+            _editNameButton.gameObject.SetActive(!active);
+            // Show background text
+            _card.itemCardFace.nameText.gameObject.SetActive(!active);
+            _card.servantCardFace.nameText.gameObject.SetActive(!active);
+            _card.spellCardFace.nameText.gameObject.SetActive(!active);
         }
         /// <summary>
         /// 设置卡牌副名
@@ -113,7 +115,14 @@ namespace UI
         public void setSubName(string subName)
         {
             _card.setSubname(subName);
-            _subnameInputField.SetTextWithoutNotify(subName);
+            _subnameInputField.inputField.SetTextWithoutNotify(subName);
+        }
+        public void setSubnameInputFieldActive(bool active)
+        {
+            _subnameInputField.gameObject.SetActive(active);
+            _editSubnameButton.gameObject.SetActive(!active);
+            // Show background text
+            _card.servantCardFace.subNameText.gameObject.SetActive(!active);
         }
         /// <summary>
         /// 设置卡牌的图片。
@@ -130,7 +139,17 @@ namespace UI
         public void setDesc(string text)
         {
             _card.setDesc(text);
-            _descInputField.SetTextWithoutNotify(text);
+            _descInputField.inputField.SetTextWithoutNotify(text);
+        }
+        public void setDescInputFieldActive(bool active)
+        {
+            _descEndEditButton.gameObject.SetActive(active);
+            _descInputField.gameObject.SetActive(active);
+            _editDescButton.gameObject.SetActive(!active);
+            // Show background text
+            _card.itemCardFace.descText.gameObject.SetActive(!active);
+            _card.servantCardFace.descText.gameObject.SetActive(!active);
+            _card.spellCardFace.descText.gameObject.SetActive(!active);
         }
         /// <summary>
         /// 设置卡牌的攻击力
@@ -252,14 +271,13 @@ namespace UI
             }
             _editNameButton.transform.position = namePosition;
             _nameInputField.transform.position = namePosition;
-            _nameInputField.textComponent.alignment = TextAnchor.MiddleCenter;
+            _nameInputField.inputField.textComponent.alignment = TextAnchor.MiddleCenter;
         }
         public override void reset()
         {
             displayPage(_cardPage, _cardPageIndicator);
             hideCopyHint();
             _skinDropdown.Hide();
-            _languageDropdown.Hide();
             _characterDropdown.Hide();
             _typeDropdown.Hide();
             _tagDropdown.Hide();
@@ -274,15 +292,18 @@ namespace UI
             _editLifeButton.gameObject.SetActive(true);
             _lifeInputField.gameObject.SetActive(false);
             _skinNameInputField.DeactivateInputField();
-            _nameInputField.DeactivateInputField();
+
             _editNameButton.gameObject.SetActive(true);
+            _nameInputField.inputField.DeactivateInputField();
             _nameInputField.gameObject.SetActive(false);
-            _subnameInputField.DeactivateInputField();
+
             _editSubnameButton.gameObject.SetActive(true);
+            _subnameInputField.inputField.DeactivateInputField();
             _subnameInputField.gameObject.SetActive(false);
-            _descInputField.DeactivateInputField();
+
             _editDescButton.gameObject.SetActive(true);
             _descEndEditButton.gameObject.SetActive(false);
+            _descInputField.inputField.DeactivateInputField();
             _descInputField.gameObject.SetActive(false);
         }
         public void showEffectListItemInputField(int index, string value)
@@ -384,7 +405,6 @@ namespace UI
             _deleteSkinButton.onClick.AddListener(onDeleteSkinButtonClicked);
             _skinNameInputField.gameObject.SetActive(false);
             _skinNameInputField.onEndEdit.AddListener(onSkinNameInputFieldEndEdit);
-            _languageDropdown.onValueChanged.AddListener(onLanguageDropdownValueChanged);
             _editNameButton.onClick.AddListener(onEditNameButtonClicked);
             _editSubnameButton.onClick.AddListener(onEditSubnameButtonClicked);
             _editDescButton.onClick.AddListener(onEditDescButtonClicked);
@@ -393,10 +413,18 @@ namespace UI
             _editAttackButton.onClick.AddListener(onEditAttackButtonClicked);
             _editLifeButton.onClick.AddListener(onEditLifeButtonClicked);
             _saveToImageButton.onClick.AddListener(onSaveToImageButtonClickedCallback);
-            _nameInputField.onEndEdit.AddListener(onNameInputFieldEndEdit);
-            _subnameInputField.onEndEdit.AddListener(onSubNameInputFieldEndEdit);
+
+            _nameInputField.onDeselect += () => onInputFieldDeselect?.Invoke(CardInputField.Name);
+            _nameInputField.onEndEdit += onNameInputFieldEndEdit;
+            _nameInputField.OnLanguageChanged += value => onInputFieldLanguageChanged?.Invoke(value, CardInputField.Name);
+            _subnameInputField.onDeselect += () => onInputFieldDeselect?.Invoke(CardInputField.Subname);
+            _subnameInputField.onEndEdit += onSubNameInputFieldEndEdit;
+            _subnameInputField.OnLanguageChanged += value => onInputFieldLanguageChanged?.Invoke(value, CardInputField.Subname);
+            _descInputField.onDeselect += () => onInputFieldDeselect?.Invoke(CardInputField.Description);
+            _descInputField.onEndEdit += onDescInputFieldEndEdit;
+            _descInputField.OnLanguageChanged += value => onInputFieldLanguageChanged?.Invoke(value, CardInputField.Description);
+
             _descEndEditButton.onClick.AddListener(onDescEndEditButtonClicked);
-            _descInputField.onEndEdit.AddListener(onDescInputFieldEndEdit);
             _tagDropdown.onValueChanged.AddListener(onTagDropdownValueChangedCallback);
             _tagInputField.onEndEdit.AddListener(onTagInputFieldEndEdit);
             _costInputField.onEndEdit.AddListener(onCostInputFieldEndEdit);
@@ -461,16 +489,12 @@ namespace UI
         {
             onClickDeleteSkinButton?.Invoke();
         }
-        private void onLanguageDropdownValueChanged(int value)
-        {
-            onChangeLanguage?.Invoke(value);
-        }
         private void onEditNameButtonClicked()
         {
             _editNameButton.gameObject.SetActive(false);
             _nameInputField.gameObject.SetActive(true);
-            _nameInputField.SetTextWithoutNotify(_card.getName());
-            _nameInputField.Select();
+            _nameInputField.inputField.SetTextWithoutNotify(_card.getName());
+            _nameInputField.inputField.Select();
             _card.spellCardFace.nameText.gameObject.SetActive(false);
 
             // Hide background text
@@ -482,8 +506,8 @@ namespace UI
         {
             _editSubnameButton.gameObject.SetActive(false);
             _subnameInputField.gameObject.SetActive(true);
-            _subnameInputField.SetTextWithoutNotify(_card.getSubname());
-            _subnameInputField.Select();
+            _subnameInputField.inputField.SetTextWithoutNotify(_card.getSubname());
+            _subnameInputField.inputField.Select();
 
             // Hide background text
             _card.servantCardFace.subNameText.gameObject.SetActive(false);
@@ -493,8 +517,8 @@ namespace UI
             _editDescButton.gameObject.SetActive(false);
             _descEndEditButton.gameObject.SetActive(true);
             _descInputField.gameObject.SetActive(true);
-            _descInputField.SetTextWithoutNotify(_card.getDesc());
-            _descInputField.Select();
+            _descInputField.inputField.SetTextWithoutNotify(_card.getDesc());
+            _descInputField.inputField.Select();
 
             // Hide background text
             _card.itemCardFace.descText.gameObject.SetActive(false);
@@ -555,39 +579,19 @@ namespace UI
         }
         private void onNameInputFieldEndEdit(string text)
         {
-            _nameInputField.gameObject.SetActive(false);
-            _editNameButton.gameObject.SetActive(true);
             onChangeName?.Invoke(text);
-
-            // Show background text
-            _card.itemCardFace.nameText.gameObject.SetActive(true);
-            _card.servantCardFace.nameText.gameObject.SetActive(true);
-            _card.spellCardFace.nameText.gameObject.SetActive(true);
         }
         private void onSubNameInputFieldEndEdit(string text)
         {
-            _subnameInputField.gameObject.SetActive(false);
-            _editSubnameButton.gameObject.SetActive(true);
             onChangeSubName?.Invoke(text);
-
-            // Show background text
-            _card.servantCardFace.subNameText.gameObject.SetActive(true);
         }
         private void onDescEndEditButtonClicked()
         {
-            _descInputField.DeactivateInputField();
+            _descInputField.inputField.DeactivateInputField();
         }
         private void onDescInputFieldEndEdit(string text)
         {
-            _editDescButton.gameObject.SetActive(true);
-            _descEndEditButton.gameObject.SetActive(false);
-            _descInputField.gameObject.SetActive(false);
             onChangeDesc?.Invoke(text);
-
-            // Show background text
-            _card.itemCardFace.descText.gameObject.SetActive(true);
-            _card.servantCardFace.descText.gameObject.SetActive(true);
-            _card.spellCardFace.descText.gameObject.SetActive(true);
         }
         private void onTagDropdownValueChangedCallback(int value)
         {
@@ -726,10 +730,6 @@ namespace UI
         /// </summary>
         public event Action onClickDeleteSkinButton;
         /// <summary>
-        /// 当更换了语言，参数为更换的语言索引。
-        /// </summary>
-        public event Action<int> onChangeLanguage;
-        /// <summary>
         /// 当更换卡牌类型，参数为更改类型索引。
         /// </summary>
         public event Action<int> onChangeType;
@@ -807,6 +807,15 @@ namespace UI
         /// 当点击选择卡牌音效
         /// </summary>
         public event Action<int, SoundItem.Buttons> onSoundButtonClicked;
+        /// <summary>
+        /// 当本地化输入框语言改变
+        /// </summary>
+        public event Action<int, CardInputField> onInputFieldLanguageChanged;
+        /// <summary>
+        /// 当本地化输入框被取消选择
+        /// </summary>
+        public event Action<CardInputField> onInputFieldDeselect;
+
 
         #region Properties
         /// <summary>
@@ -849,8 +858,6 @@ namespace UI
         [SerializeField]
         InputField _skinNameInputField;
         [SerializeField]
-        Dropdown _languageDropdown;
-        [SerializeField]
         ElementList _sounds;
         [SerializeField]
         EffectList _effectList;
@@ -876,13 +883,13 @@ namespace UI
 
         [Header("Fields")]
         [SerializeField]
-        InputField _nameInputField;
+        LocalizedInputField _nameInputField;
         [SerializeField]
-        InputField _subnameInputField;
+        LocalizedInputField _subnameInputField;
         [SerializeField]
         Button _descEndEditButton;
         [SerializeField]
-        InputField _descInputField;
+        LocalizedInputField _descInputField;
         [SerializeField]
         Dropdown _tagDropdown;
         [SerializeField]
@@ -924,16 +931,14 @@ namespace UI
         [Header("Misc")]
         public GameObject _copyHintTextObj;
 
-        public Button EditNameButton
+        #region 嵌套类
+        public enum CardInputField
         {
-            get { return _editNameButton; }
-            set { _editNameButton = value; }
+            Name,
+            Subname,
+            Description
         }
-        public InputField NameInputField
-        {
-            get { return _nameInputField; }
-            set { _nameInputField = value; }
-        }
+        #endregion
     }
     public enum CardFaceType
     {

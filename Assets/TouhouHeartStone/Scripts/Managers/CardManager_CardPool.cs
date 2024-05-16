@@ -556,29 +556,35 @@ namespace Game
         public static string[] getCardPoolImages(CardPoolInfo info, CardPool cardPool)
         {
             HashSet<string> imageFiles = new HashSet<string>();
-            var resPath = info.imageResPath;
-            if (!string.IsNullOrEmpty(resPath) && !resPath.isStreamingAssetsPath(out _) && !resPath.isResourcesPath(out _))
-            {
-                imageFiles.Add(info.imageResPath);
-            }
+            addImagePath(info.imageResPath);
             foreach (var item in cardPool.cardSkinList)
             {
-                // 不导出内置资源
-                var path = item.imagePath;
-                if (string.IsNullOrEmpty(path) || path.isStreamingAssetsPath(out _) || path.isResourcesPath(out _))
-                    continue;
-                imageFiles.Add(path);
+                addLocalizedResource(item.imagePathKey);
             }
-            foreach (var item in cardPool.buffSkinList)
+            foreach (var buffSkin in cardPool.buffSkinList)
             {
-                // 不导出内置资源
-                var path = item.imagePath;
-                if (string.IsNullOrEmpty(path) || path.isStreamingAssetsPath(out _) || path.isResourcesPath(out _))
-                    continue;
-                imageFiles.Add(path);
+                addLocalizedResource(buffSkin.imagePathKey);
             }
 
             return imageFiles.ToArray();
+
+            void addLocalizedResource(string key)
+            {
+                var localizedRes = cardPool.getLocalizedResource(key);
+                if (localizedRes == null)
+                    return;
+                foreach (var path in localizedRes.getAllLocalizations())
+                {
+                    addImagePath(path);
+                }
+            }
+            void addImagePath(string path)
+            {
+                // 不导出内置资源
+                if (string.IsNullOrEmpty(path) || path.isStreamingAssetsPath(out _) || path.isResourcesPath(out _))
+                    return;
+                imageFiles.Add(path);
+            }
         }
         public static string[] getCardPoolSounds(CardPool cardPool)
         {
@@ -804,7 +810,9 @@ namespace Game
 
                 try
                 {
-                    cardPool = JsonHelper.fromBytes<SerializableCardPool>(bytes).toCardPool(cardPoolInfo.cardPoolId, game, GraphTypes.getTypeByName);
+                    var seriCardPool = JsonHelper.fromBytes<SerializableCardPool>(bytes);
+                    fixSerializableCardPool(seriCardPool);
+                    cardPool = seriCardPool.toCardPool(cardPoolInfo.cardPoolId, game, GraphTypes.getTypeByName);
                 }
                 catch (Exception e)
                 {
@@ -1076,8 +1084,7 @@ namespace Game
         CardPool parseCardPool_v2(string json, long cardPoolID)
         {
             SerializableCardPool serializableCardPool = JsonHelper.fromJson<SerializableCardPool>(json);
-
-
+            fixSerializableCardPool(serializableCardPool);
             CardPool cardPool = serializableCardPool.toCardPool(cardPoolID, game, GraphTypes.getTypeByName);
             return cardPool;
         }
@@ -1195,6 +1202,114 @@ namespace Game
             cardPool.cardSkinList.RemoveAll(skin => !cardPool.cardDefineList.Exists(c => c.id == skin.id));
             cardPool.buffSkinList.RemoveAll(skin => !cardPool.buffDefineList.Exists(b => b.id == skin.buffId));
         }
+        private void fixSerializableCardPool(SerializableCardPool serializablePool)
+        {
+            // 修复卡池的卡牌皮肤和增益皮肤，去除它们的多语言版本。
+            var cardSkins = serializablePool.cardSkinList;
+            var buffSkins = serializablePool.buffSkinList;
+
+            // 获取卡池中数量最多的皮肤用作卡池主语言。
+            string mainLang = LangManager.CN;
+            var cardLangs = cardSkins?.Select(s => s._language) ?? Enumerable.Empty<string>();
+            var buffLangs = buffSkins?.Select(s => s.language) ?? Enumerable.Empty<string>();
+            var buffLangConcat = cardLangs.Concat(buffLangs);
+            if (buffLangConcat.Count() > 0)
+            {
+                var cardSkinGroups = cardSkins.GroupBy(s => s._language).ToArray();
+                var buffSkinGroups = buffSkins.GroupBy(s => s.language).ToArray();
+
+                var langGroups = buffLangConcat.GroupBy(k => k);
+                mainLang = langGroups
+                    .OrderByDescending(g => g.Count())
+                    .ThenBy(g => Array.IndexOf(game.lang.getLanguages(), g.Key))
+                    .FirstOrDefault()
+                    .Key;
+            }
+
+            // 修复卡牌皮肤。
+            var skinGroupsByCard = cardSkins.GroupBy(s => s._id).Distinct().ToArray();
+            foreach (var skinGroupByCard in skinGroupsByCard)
+            {
+                var skinGroups = skinGroupByCard.GroupBy(s => s._skinId);
+                foreach (var skinGroup in skinGroups)
+                {
+                    var mainSkin = skinGroup.FirstOrDefault(s => s._language == mainLang) ?? skinGroup.FirstOrDefault();
+
+                    var nameKey = mainSkin._name;
+                    var subnameKey = mainSkin._subname;
+                    var descKey = mainSkin._desc;
+                    var imagePathKey = mainSkin._imagePath;
+                    foreach (var skin in skinGroup)
+                    {
+                        if (skin == mainSkin)
+                            // 主语言皮肤，保留。
+                            continue;
+
+                        // 非主语言皮肤，合并到卡池本地化文本中。
+                        addToLocalizedString(nameKey, skin._language, skin._name);
+                        addToLocalizedString(subnameKey, skin._language, skin._subname);
+                        addToLocalizedString(descKey, skin._language, skin._desc);
+                        addToLocalizedResource(imagePathKey, skin._language, skin._imagePath);
+                        cardSkins.Remove(skin);
+                    }
+                }
+            }
+
+            // 修复增益皮肤。
+            var buffIds = buffSkins.Select(s => s.buffId).Distinct().ToArray();
+            foreach (var buffId in buffIds)
+            {
+                var skins = buffSkins.Where(s => s.buffId == buffId).ToArray();
+                var mainSkin = skins.FirstOrDefault(s => s.language == mainLang) ?? skins.FirstOrDefault();
+
+                var nameKey = mainSkin.name;
+                var descKey = mainSkin.desc;
+                var imagePathKey = mainSkin.imagePath;
+                foreach (var skin in skins)
+                {
+                    if (skin == mainSkin)
+                        // 主语言皮肤，保留。
+                        continue;
+
+                    // 非主语言皮肤，合并到卡池本地化文本中。
+                    addToLocalizedString(nameKey, skin.language, skin.name);
+                    addToLocalizedString(descKey, skin.language, skin.desc);
+                    addToLocalizedResource(imagePathKey, skin.language, skin.imagePath);
+                    buffSkins.Remove(skin);
+                }
+            }
+
+            void addToLocalizedString(string key, string language, string value)
+            {
+                if (string.IsNullOrEmpty(key))
+                    return;
+                if (serializablePool.localizedStringList == null)
+                    serializablePool.localizedStringList = new List<SerializableLocalizedString>();
+                var localizedString = serializablePool.localizedStringList.FirstOrDefault(s => s.value == key);
+                if (localizedString == null)
+                {
+                    localizedString = new SerializableLocalizedString() { value = key };
+                    serializablePool.localizedStringList.Add(localizedString);
+                }
+                localizedString.dictionary = localizedString.dictionary ?? new Dictionary<string, string>();
+                localizedString.dictionary[language] = value;
+            }
+            void addToLocalizedResource(string key, string language, string value)
+            {
+                if (string.IsNullOrEmpty(key))
+                    return;
+                if (serializablePool.localizedResourceList == null)
+                    serializablePool.localizedResourceList = new List<SerializableLocalizedResource>();
+                var localizedResource = serializablePool.localizedResourceList.FirstOrDefault(s => s.value == key);
+                if (localizedResource == null)
+                {
+                    localizedResource = new SerializableLocalizedResource() { value = key };
+                    serializablePool.localizedResourceList.Add(localizedResource);
+                }
+                localizedResource.dictionary = localizedResource.dictionary ?? new Dictionary<string, string>();
+                localizedResource.dictionary[language] = value;
+            }
+        }
         private async Task fixCardPool(CardPoolInfo cardPoolInfo, CardPool cardPool, IEnumerable<ICardPoolReference> env = null)
         {
             Dictionary<int, int> massEventNodeMap = new Dictionary<int, int>()
@@ -1239,22 +1354,6 @@ namespace Game
             #region 内嵌方法
             void fixSkins()
             {
-                foreach (var skin in cardPool.cardSkinList)
-                {
-                    if (string.IsNullOrEmpty(skin.language))
-                    {
-                        //皮肤不能没有对应语言信息，如果没有那么至少设置为当前语言
-                        skin.language = game.langManager.getLanguage();
-                    }
-                }
-                foreach (var skin in cardPool.buffSkinList)
-                {
-                    if (string.IsNullOrEmpty(skin.language))
-                    {
-                        //皮肤不能没有对应语言信息，如果没有那么至少设置为当前语言
-                        skin.language = game.langManager.getLanguage();
-                    }
-                }
             }
             // 用于遍历卡牌/增益效果的方法。
             void effectAction(GeneratedEffect effect)

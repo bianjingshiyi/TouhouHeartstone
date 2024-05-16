@@ -152,6 +152,11 @@ namespace Game.BattleTable
             var poolRefs = getCardPoolSet();
             return cardManager.getCardPoolReferenceInEnv(cardPoolId, poolRefs);
         }
+        public CardDefine getCardDefine(long cardPoolId, int id)
+        {
+            var poolRef = getCardPoolReference(cardPoolId);
+            return cardManager.getCardDefine(poolRef, id);
+        }
         public CardSkinData getCardSkin(ICardData card)
         {
             return getCardSkin(card.define);
@@ -173,9 +178,9 @@ namespace Game.BattleTable
                 skin = new CardSkinData()
                 {
                     id = define.id,
-                    desc = $"{define}（这张卡随时可能爆炸！）",
-                    imagePath = cardManager.getDefaultImagePath(),
-                    name = define.GetType().Name
+                    descKey = $"{define}（这张卡随时可能爆炸！）",
+                    imagePathKey = cardManager.getDefaultImagePath(),
+                    nameKey = define.GetType().Name
                 };
                 foreach (var soundName in CardSkinData.getSoundNamesByType(define.type))
                 {
@@ -188,6 +193,38 @@ namespace Game.BattleTable
         {
             var poolRef = getCardPoolReference(cardPoolId);
             return cardManager.getCardSkin(poolRef, id);
+        }
+        public string getCardName(CardDefine define)
+        {
+            if (define == null)
+                return define.ToString();
+            var poolRef = getCardPoolReference(define.cardPoolId);
+            var skin = getCardSkin(define);
+            return cardManager.getCardName(poolRef, skin);
+        }
+        public string getCardSubname(CardDefine define)
+        {
+            if (define == null)
+                return define.ToString();
+            var poolRef = getCardPoolReference(define.cardPoolId);
+            var skin = getCardSkin(define);
+            return cardManager.getCardSubname(poolRef, skin);
+        }
+        public string getCardDescription(CardDefine define)
+        {
+            if (define == null)
+                return define.ToString();
+            var poolRef = getCardPoolReference(define.cardPoolId);
+            var skin = getCardSkin(define);
+            return cardManager.getCardDesc(poolRef, skin);
+        }
+        public string getCardImagePath(CardDefine define)
+        {
+            if (define == null)
+                return define.ToString();
+            var poolRef = getCardPoolReference(define.cardPoolId);
+            var skin = getCardSkin(define);
+            return cardManager.getCardImagePath(poolRef, skin);
         }
         public BuffSkin getBuffSkin(BuffDefine define)
         {
@@ -202,6 +239,30 @@ namespace Game.BattleTable
                 return null;
             var poolRef = getCardPoolReference(defineRef.cardPoolId);
             return cardManager.getBuffSkin(poolRef, defineRef.defineId);
+        }
+        public string getBuffName(BuffDefine define)
+        {
+            if (define == null)
+                return define.ToString();
+            var poolRef = getCardPoolReference(define.cardPoolId);
+            var skin = getBuffSkin(define);
+            return cardManager.getBuffName(poolRef, skin);
+        }
+        public string getBuffDescription(BuffDefine define)
+        {
+            if (define == null)
+                return define.ToString();
+            var poolRef = getCardPoolReference(define.cardPoolId);
+            var skin = getBuffSkin(define);
+            return cardManager.getBuffDesc(poolRef, skin);
+        }
+        public string getBuffImagePath(BuffDefine define)
+        {
+            if (define == null)
+                return define.ToString();
+            var poolRef = getCardPoolReference(define.cardPoolId);
+            var skin = getBuffSkin(define);
+            return cardManager.getBuffImagePath(poolRef, skin);
         }
         public Task<Sprite> loadCardImage(CardDescriptor desc)
         {
@@ -239,10 +300,8 @@ namespace Game.BattleTable
             if (_cardKeywordsDict.TryGetValue(card, out var keywords))
                 return keywords;
 
-            var skin = getCardSkin(card);
-            if (skin == null)
-                return null;
-            keywords = cardManager.getKeywordsInDescription(skin.desc);
+            var desc = getCardDescription(card);
+            keywords = cardManager.getKeywordsInDescription(desc);
             _cardKeywordsDict.Add(card, keywords);
             return keywords;
         }

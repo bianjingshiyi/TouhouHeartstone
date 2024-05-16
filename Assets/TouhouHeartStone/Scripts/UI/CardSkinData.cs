@@ -28,7 +28,6 @@ namespace UI
             _subname = other._subname;
             _imagePath = other._imagePath;
             _desc = other._desc;
-            _language = other.language;
             foreach (var animRef in other._animationRefs)
             {
                 _animationRefs.Add(new SkinAnimationRef(animRef));
@@ -133,7 +132,7 @@ namespace UI
         /// 皮肤显示的标题名称
         /// </summary>
         [BsonIgnore]
-        public string name
+        public string nameKey
         {
             get { return _name; }
             set { _name = value; }
@@ -145,7 +144,7 @@ namespace UI
         /// 皮肤显示的副标题名称
         /// </summary>
         [BsonIgnore]
-        public string subname
+        public string subnameKey
         {
             get { return _subname; }
             set { _subname = value; }
@@ -154,7 +153,7 @@ namespace UI
         [SerializeField]
         string _imagePath;
         [BsonIgnore]
-        public string imagePath
+        public string imagePathKey
         {
             get { return _imagePath; }
             set { _imagePath = value; }
@@ -163,19 +162,10 @@ namespace UI
         [SerializeField]
         string _desc;
         [BsonIgnore]
-        public string desc
+        public string descKey
         {
             get { return _desc; }
             set { _desc = value; }
-        }
-        [BsonElement]
-        [SerializeField]
-        string _language;
-        [BsonIgnore]
-        public string language
-        {
-            get { return _language; }
-            set { _language = value; }
         }
         [BsonElement]
         List<SkinAnimationRef> _animationRefs = new();
@@ -183,9 +173,9 @@ namespace UI
         List<SkinSoundRef> _soundRefs = new();
         public override string ToString()
         {
-            string name = this.name;
-            if (!string.IsNullOrEmpty(subname))
-                name += $"-{subname}";
+            string name = this.nameKey;
+            if (!string.IsNullOrEmpty(subnameKey))
+                name += $"-{subnameKey}";
             name += $"<{id}>";
             return name;
         }

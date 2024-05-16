@@ -25,6 +25,18 @@ namespace Game
             Array.Copy(langs, 0, languages, 0, langs.Length);
             return languages;
         }
+        public string[] getLanguagesWithSource()
+        {
+            return langs.Prepend(SOURCE).ToArray();
+        }
+        public string getLanguageShortCode(string lang)
+        {
+            if (shortCodes.TryGetValue(lang, out var code))
+            {
+                return code;
+            }
+            return "??";
+        }
         public string getDefaultLanguage()
         {
             return defaultLang;
@@ -172,6 +184,15 @@ namespace Game
         #region 属性字段
         public const string CN = "zh-Hans";
         public const string EN = "en-US";
+        public const string JP = "ja-JP";
+        public const string SOURCE = "SOURCE";
+        private static readonly Dictionary<string, string> shortCodes = new Dictionary<string, string>()
+        {
+            { SOURCE, "\udf10" },
+            { CN, "CN" },
+            { EN, "EN" },
+            { JP, "JP" },
+        };
         /// <summary>
         /// 可用的语言
         /// </summary>

@@ -41,11 +41,10 @@ namespace Game
                     //另存为资源
 
                     // 获取使用这张资源的所有皮肤
-                    var cardSkins = cardPool.cardSkinList.Where(s => s.imagePath == cachePath);
-                    var buffSkins = cardPool.cardSkinList.Where(s => s.imagePath == cachePath);
+                    var resourcesUsedThis = cardPool.localizedResourceList.Where(res => res.getAllTranslations(true).Contains(cachePath));
 
                     // 没有皮肤使用，跳过
-                    if (cardSkins.Count() <= 0)
+                    if (resourcesUsedThis.Count() <= 0)
                         continue;
 
                     string path = await saveImage(cardPoolId, sprite.texture);
@@ -54,15 +53,32 @@ namespace Game
                     //替换所有引用这个资源的皮肤的资源地址
                     if (cardPoolInfo.imageResPath == cachePath)
                     {
-                        cardPoolInfo.imageResPath = cachePath;
+                        cardPoolInfo.imageResPath = path;
                     }
-                    foreach (var otherCardSkin in cardSkins)
+                    foreach (var resource in resourcesUsedThis)
                     {
-                        otherCardSkin.imagePath = path;
-                    }
-                    foreach (var otherBuffSkin in buffSkins)
-                    {
-                        otherBuffSkin.imagePath = path;
+                        if (resource.value == cachePath)
+                        {
+                            resource.value = path;
+
+                            var cardSkins = cardPool.cardSkinList.Where(s => s.imagePathKey == cachePath);
+                            var buffSkins = cardPool.buffSkinList.Where(s => s.imagePathKey == cachePath);
+                            foreach (var otherCardSkin in cardSkins)
+                            {
+                                otherCardSkin.imagePathKey = path;
+                            }
+                            foreach (var otherBuffSkin in buffSkins)
+                            {
+                                otherBuffSkin.imagePathKey = path;
+                            }
+                        }
+                        foreach (var lang in resource.getAllLanguages())
+                        {
+                            if (resource.getTranslation(lang) == cachePath)
+                            {
+                                resource.setTranslation(lang, path);
+                            }
+                        }
                     }
                 }
                 else if (res is AudioClip audio)

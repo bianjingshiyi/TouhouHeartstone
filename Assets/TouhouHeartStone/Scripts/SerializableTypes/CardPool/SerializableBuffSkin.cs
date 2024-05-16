@@ -19,10 +19,9 @@ namespace Game
         public SerializableBuffSkin(BuffSkin skin)
         {
             buffId = skin.buffId;
-            language = skin.language;
-            name = skin.name;
-            desc = skin.desc;
-            imagePath = skin.imagePath;
+            name = skin.nameKey;
+            desc = skin.descKey;
+            imagePath = skin.imagePathKey;
             persistentAnimRef = skin.persistentAnimRef;
             foreach (var animRef in skin.getAllAnimRefs())
             {
@@ -34,10 +33,9 @@ namespace Game
             var skin = new BuffSkin()
             {
                 buffId = buffId,
-                language = language,
-                name = name,
-                desc = desc,
-                imagePath = imagePath,
+                nameKey = name,
+                descKey = desc,
+                imagePathKey = imagePath,
                 persistentAnimRef = persistentAnimRef
             };
             if (_animationRefs != null)
@@ -52,6 +50,7 @@ namespace Game
         [Key(0)]
         public int buffId;
         [Key(1)]
+        [Obsolete]
         public string language;
         [Key(2)]
         public string name;

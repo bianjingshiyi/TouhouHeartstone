@@ -102,7 +102,7 @@ namespace Game
             Destroy(renderTexture);
             _cardshotRoot.gameObject.SetActive(false);
 
-            var defaultFileName = cardSkin.name;
+            var defaultFileName = _game.card.getCardName(poolRef, cardSkin);
             if (string.IsNullOrEmpty(defaultFileName))
             {
                 defaultFileName = $"card{cardDefine.id}";

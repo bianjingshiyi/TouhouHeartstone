@@ -16,8 +16,8 @@ namespace Game
             {
                 var masterRef = deck.masterCardRef;
                 var poolInfo = main.card.getLocalCardPoolInfo(masterRef.cardPoolId);
-                var cardSkin = main.card.getCardSkin(poolInfo, masterRef.defineId);
-                var deckId = CreateDeck(cardSkin.name, masterRef);
+                var cardName = main.card.getCardName(poolInfo, masterRef.defineId);
+                var deckId = CreateDeck(cardName, masterRef);
                 EnterTransaction();
                 foreach (var cardRef in deck.toDefRefArray(includeMasterCard: false))
                 {

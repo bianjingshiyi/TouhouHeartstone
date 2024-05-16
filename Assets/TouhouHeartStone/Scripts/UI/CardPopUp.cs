@@ -10,11 +10,11 @@ namespace UI
     public abstract class CardPopUp : MonoBehaviour
     {
         #region 公有方法
-        public async Task show(Vector3 worldPosition, CardDefine tokenDefine, CardSkinData skin, CardManager cardManager, Camera camera, string[] keywords)
+        public async Task show(Vector3 worldPosition, CardDefine tokenDefine, CardSkinData tokenSkin, CardManager cardManager, Camera camera, string[] keywords)
         {
-            if (tokenDefine != null && skin != null)
+            if (tokenDefine != null && tokenSkin != null)
             {
-                await setTokenCardDefine(tokenDefine, skin, cardManager);
+                await setTokenCardDefine(tokenDefine, tokenSkin, cardManager);
             }
             gameObject.SetActive(true);
             setTokenCardVisible(tokenDefine != null, worldPosition.x < _cardMinLeftSpace);

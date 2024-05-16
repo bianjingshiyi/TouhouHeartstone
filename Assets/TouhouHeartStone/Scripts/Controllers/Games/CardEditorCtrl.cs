@@ -22,6 +22,10 @@ namespace Controllers
         public async Task display(CardDefine cardDefine, CardSkinData[] skins)
         {
             // 初始化属性。
+            _curCardNameLang = LangManager.SOURCE;
+            _curCardSubnameLang = LangManager.SOURCE;
+            _curCardDescLang = LangManager.SOURCE;
+
             _selectableCharacters = await getSelectableCharacters();
             _cardDefine = cardDefine;
             _cardSkins.Clear();
@@ -37,9 +41,9 @@ namespace Controllers
             _cardTypes = game.editor.getCardTypes();
             _ui.initTypes(typeNames);
             // 语言。
-            var lanaguages = game.langManager.getLanguages();
-            var languageNames = lanaguages.Select(l => game.langManager.getString(game.ui.getTranslateNameForLanguage(l))).ToArray();
-            _ui.initLanguages(languageNames);
+            var lanaguages = game.lang.getLanguagesWithSource();
+            var languageCodes = lanaguages.Select(l => game.lang.getLanguageShortCode(l)).ToArray();
+            _ui.initLanguages(languageCodes);
             // 标签
             _ui.initTags(_raceNames.Select(n => game.lang._(n)).ToArray());
             // 效果类型
@@ -75,7 +79,15 @@ namespace Controllers
             _ui.setTags(cardDefine.getTags());
             updateSkinNames();
             // 人物，中立为0，有角色则为index+1
-            string[] charactersName = _selectableCharacters.Select(c => game.card.getCardSkin(c).name).Prepend(game.lang._(StringTable.CARDVIEW_CHARACTER_NEUTRAL)).ToArray();
+            string[] charactersName = _selectableCharacters
+                .Select(c => 
+                {
+                    var poolRef = getCardPoolReference(c.cardPoolId);
+                    var skin = game.card.getCardSkin(poolRef, c.id);
+                    return game.card.getCardName(poolRef, skin);
+                })
+                .Prepend(game.lang._(StringTable.CARDVIEW_CHARACTER_NEUTRAL))
+                .ToArray();
             int characterIndex = Array.FindIndex(_selectableCharacters, c =>
             {
                 var charRef = cardDefine.getCharacterRef();
@@ -168,7 +180,6 @@ namespace Controllers
             _ui.onChangeSkin += onChangeSkin;
             _ui.onChangeSkinName += onChangeSkinName;
             _ui.onClickDeleteSkinButton += onDeleteSkin;
-            _ui.onChangeLanguage += onChangeLanguage;
             _ui.onChangeType += onChangeType;
             _ui.onIsTokenToggleValueChanged += onIsTokenToggleValueChanged;
             _ui.onChangeCharacter += onChangeCharacter;
@@ -183,6 +194,8 @@ namespace Controllers
             _ui.onChangeAttack += onChangeAttack;
             _ui.onChangeLife += onChangeLife;
             _ui.onChangeRace += onChangeRace;
+            _ui.onInputFieldLanguageChanged += onInputFieldLangaugeChangedCallback;
+            _ui.onInputFieldDeselect += onInputFieldDeselectCallback;
 
             // 效果。
             _ui.onClickEditEffectButton += onClickEditEffectButton;
@@ -223,7 +236,7 @@ namespace Controllers
         private async void onChangeSkin(int skinIndex)
         {
             markUnsaved();
-            if (skinIndex == getCurrentLangaugeSkins().Length)
+            if (skinIndex == _cardSkins.Count)
             {
                 //新建皮肤
                 _curCardSkin = game.card.createSkin(curCardPoolId, _cardDefine.id);
@@ -236,19 +249,14 @@ namespace Controllers
         private async void onChangeSkinName(string skinName)
         {
             markUnsaved();
-            var curLanguageGroup = getCurrentIdSkins();
-            foreach (var skin in curLanguageGroup)
-            {
-                skin.skinName = skinName;
-            }
+            _curCardSkin.skinName = skinName;
             updateSkinNames();
             await setSkin(_curCardSkin);
         }
         private async void onDeleteSkin()
         {
             markUnsaved();
-            var skinGroup = getCurrentLangaugeSkins();
-            if (skinGroup.Length < 2)
+            if (_cardSkins.Count <= 1)
             {
                 Debug.LogWarning("你不能删除卡牌的最后一个皮肤");
                 return;
@@ -256,19 +264,6 @@ namespace Controllers
             _cardSkins.Remove(_curCardSkin);
             updateSkinNames();
             await resetSkin();
-        }
-        private async void onChangeLanguage(int languageIndex)
-        {
-            string language = game.langManager.getLanguages()[languageIndex];
-            var targetSkin = getSkin(language, _curCardSkin.skinId);
-            if (targetSkin == null)
-            {
-                markUnsaved();
-                //不存在对应语言的皮肤，新建一个
-                targetSkin = game.card.createSkinForDiffLanguage(_curCardSkin, language);
-                _cardSkins.Add(targetSkin);
-            }
-            await setSkin(targetSkin);
         }
         /// <summary>
         /// 当用户更改类型
@@ -344,7 +339,7 @@ namespace Controllers
         async void onChangeName(string name)
         {
             markUnsaved();
-            _curCardSkin.name = name;
+            game.card.setCardName(getCurrentCardPoolRef(), _curCardSkin, _curCardNameLang, name);
             _ui.setName(name);
             await updateCardType();
         }
@@ -355,7 +350,7 @@ namespace Controllers
         void onChangeSubName(string subName)
         {
             markUnsaved();
-            _curCardSkin.subname = subName;
+            game.card.setCardSubname(getCurrentCardPoolRef(), _curCardSkin, _curCardSubnameLang, subName);
             _ui.setSubName(subName);
 
         }
@@ -368,49 +363,9 @@ namespace Controllers
             if (sprite != null)
             {
                 markUnsaved();
-                _curCardSkin.imagePath = game.card.getResourcePath(sprite);
+                game.card.setCardImagePath(getCurrentCardPoolRef(), _curCardSkin, LangManager.SOURCE, game.card.getResourcePath(sprite));
             }
             return sprite;
-        }
-        private void onSoundButtonClickedCallback(int soundIndex, SoundItem.Buttons button)
-        {
-            switch (button)
-            {
-                case SoundItem.Buttons.Sound:
-                    onSoundSelectButtonClickedCallback(soundIndex);
-                    break;
-                case SoundItem.Buttons.Play:
-                    onSoundPlayButtonClickedCallback(soundIndex);
-                    break;
-                case SoundItem.Buttons.Delete:
-                    onSoundDeleteButtonClickedCallback(soundIndex);
-                    break;
-            }
-        }
-        /// <summary>
-        /// 当需要用户选择音频，根据平台不同调用不同的插件方法，返回选择的音频。新建的音频需要缓存在内存中。
-        /// </summary>
-        private async void onSoundSelectButtonClickedCallback(int soundIndex)
-        {
-            _ui.setSoundItemInteractable(soundIndex, false);
-            await selectSound(soundIndex);
-            _ui.setSoundItemInteractable(soundIndex, true);
-        }
-        private async void onSoundPlayButtonClickedCallback(int index)
-        {
-            initSkinSoundRefs(_curCardSkin);
-            var soundRef = getCurrentSoundRef(index);
-            AudioClip audio = await game.card.loadSound(getCurrentCardPoolRef(), soundRef.path);
-            if (audio != null)
-            {
-                game.seManager.playSE(audio);
-            }
-        }
-        private async void onSoundDeleteButtonClickedCallback(int index)
-        {
-            var soundRef = getCurrentSoundRef(index);
-            soundRef.path = null;
-            await updateSoundItems();
         }
         /// <summary>
         /// 当用户更改卡片描述
@@ -419,7 +374,7 @@ namespace Controllers
         void onChangeDesc(string desc)
         {
             markUnsaved();
-            _curCardSkin.desc = desc;
+            game.card.setCardDesc(getCurrentCardPoolRef(), _curCardSkin, _curCardDescLang, desc);
             _ui.setDesc(desc);
         }
         /// <summary>
@@ -472,6 +427,81 @@ namespace Controllers
             _cardDefine.setTags(value);
             _ui.setTags(value);
             _ui.setRace(index, value.Length > 0 ? value[0] : string.Empty);
+        }
+        private async void onInputFieldLangaugeChangedCallback(int languageIndex, CardEditorPanel.CardInputField field)
+        {
+            switch (field)
+            {
+                case CardEditorPanel.CardInputField.Name:
+                    _curCardNameLang = game.lang.getLanguagesWithSource()[languageIndex];
+                    break;
+                case CardEditorPanel.CardInputField.Subname:
+                    _curCardSubnameLang = game.lang.getLanguagesWithSource()[languageIndex];
+                    break;
+                case CardEditorPanel.CardInputField.Description:
+                    _curCardDescLang = game.lang.getLanguagesWithSource()[languageIndex];
+                    break;
+            }
+            await updateSkin();
+        }
+        private async void onInputFieldDeselectCallback(CardEditorPanel.CardInputField field)
+        {
+            switch (field)
+            {
+                case CardEditorPanel.CardInputField.Name:
+                    _ui.setNameInputFieldActive(false);
+                    break;
+                case CardEditorPanel.CardInputField.Subname:
+                    _ui.setSubnameInputFieldActive(false);
+                    break;
+                case CardEditorPanel.CardInputField.Description:
+                    _ui.setDescInputFieldActive(false);
+                    break;
+            }
+            await updateSkin();
+        }
+        #endregion
+
+        #region 音效
+        private void onSoundButtonClickedCallback(int soundIndex, SoundItem.Buttons button)
+        {
+            switch (button)
+            {
+                case SoundItem.Buttons.Sound:
+                    onSoundSelectButtonClickedCallback(soundIndex);
+                    break;
+                case SoundItem.Buttons.Play:
+                    onSoundPlayButtonClickedCallback(soundIndex);
+                    break;
+                case SoundItem.Buttons.Delete:
+                    onSoundDeleteButtonClickedCallback(soundIndex);
+                    break;
+            }
+        }
+        /// <summary>
+        /// 当需要用户选择音频，根据平台不同调用不同的插件方法，返回选择的音频。新建的音频需要缓存在内存中。
+        /// </summary>
+        private async void onSoundSelectButtonClickedCallback(int soundIndex)
+        {
+            _ui.setSoundItemInteractable(soundIndex, false);
+            await selectSound(soundIndex);
+            _ui.setSoundItemInteractable(soundIndex, true);
+        }
+        private async void onSoundPlayButtonClickedCallback(int index)
+        {
+            initSkinSoundRefs(_curCardSkin);
+            var soundRef = getCurrentSoundRef(index);
+            AudioClip audio = await game.card.loadSound(getCurrentCardPoolRef(), soundRef.path);
+            if (audio != null)
+            {
+                game.seManager.playSE(audio);
+            }
+        }
+        private async void onSoundDeleteButtonClickedCallback(int index)
+        {
+            var soundRef = getCurrentSoundRef(index);
+            soundRef.path = null;
+            await updateSoundItems();
         }
         #endregion
 
@@ -763,6 +793,7 @@ namespace Controllers
 
         #region 选卡
         #endregion
+
         #region 节点图
         private void onGraphEdited()
         {
@@ -851,15 +882,13 @@ namespace Controllers
         #region 皮肤
         private void updateSkinNames()
         {
-            CardSkinData[] skins = getCurrentLangaugeSkins();
-            if (skins.Length < 1)
+            if (_cardSkins.Count < 1)
             {
                 CardSkinData skin = game.card.createSkin(curCardPoolId, _cardDefine.id);
                 initSkinSoundRefs(skin);
-                skins = new CardSkinData[] { skin };
                 _cardSkins.Add(skin);
             }
-            _ui.setSkinNames(skins.Select(s => s.name).ToArray());
+            _ui.setSkinNames(_cardSkins.Select(s => game.card.getCardName(getCurrentCardPoolRef(), s)).ToArray());
         }
 
         #region 设置卡牌皮肤
@@ -867,26 +896,28 @@ namespace Controllers
         {
             return setSkin(0, getDefaultSkin());
         }
+        private Task updateSkin()
+        {
+            return setSkin(_curCardSkin);
+        }
         private Task setSkin(int index)
         {
-            var skin = getCurrentIdSkins()[index];
+            var skin = _cardSkins[index];
             return setSkin(index, skin);
         }
         private Task setSkin(CardSkinData skin)
         {
-            var index = Array.FindIndex(getCurrentLangaugeSkins(), s => s.skinId == skin.skinId);
+            var index = _cardSkins.FindIndex(s => s.skinId == skin.skinId);
             return setSkin(index, skin);
         }
         private async Task setSkin(int index, CardSkinData skin)
         {
             _curCardSkin = skin;
-            var curLang = game.langManager.getLanguages();
-            _ui.setSkin(index);
-            _ui.setLanguage(Array.IndexOf(curLang, skin.language));
-            _ui.setName(skin.name);
-            _ui.setSubName(skin.subname);
-            _ui.setDesc(skin.desc);
             var poolRef = getCurrentCardPoolRef();
+            _ui.setSkin(index);
+            _ui.setName(game.card.getLocalizedCardName(poolRef, skin, _curCardNameLang));
+            _ui.setSubName(game.card.getLocalizedCardSubname(poolRef, skin, _curCardSubnameLang));
+            _ui.setDesc(game.card.getLocalizedCardDesc(poolRef, skin, _curCardDescLang));
             Sprite image = await game.card.loadCardImage(poolRef, skin);
             _ui.setImage(image);
         }
@@ -895,19 +926,11 @@ namespace Controllers
         #region 获取卡牌皮肤
         private CardSkinData getDefaultSkin()
         {
-            return _cardSkins.getDefaultSkin(game.langManager.getLanguage());
+            return _cardSkins.FirstOrDefault();
         }
-        private CardSkinData getSkin(string language, int skinId)
+        private CardSkinData getSkin(int skinId)
         {
-            return _cardSkins.FirstOrDefault(s => s.skinId == skinId && s.language == language);
-        }
-        private CardSkinData[] getCurrentLangaugeSkins()
-        {
-            return _cardSkins.getCardSkinsOfLanguage(game.langManager.getLanguage());
-        }
-        private CardSkinData[] getCurrentIdSkins()
-        {
-            return _cardSkins.getCardSkinsOfId(_curCardSkin.skinId);
+            return _cardSkins.FirstOrDefault(s => s.skinId == skinId);
         }
         #endregion
 
@@ -929,7 +952,7 @@ namespace Controllers
             if (skin != null)
             {
                 spr = await game.card.loadCardImage(poolRef, skin);
-                name = skin.name;
+                name = game.card.getCardName(poolRef, skin);
             }
             else
             {
@@ -1281,6 +1304,9 @@ namespace Controllers
         List<CardSkinData> _cardSkins = new List<CardSkinData>();
         CardDefine[] _selectableCharacters;
         string[] _cardTypes;
+        string _curCardNameLang;
+        string _curCardSubnameLang;
+        string _curCardDescLang;
         private long curCardPoolId => game.editor.currentCardPoolId;
 
         #region 翻译文本

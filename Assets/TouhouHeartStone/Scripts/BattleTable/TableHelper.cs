@@ -1,12 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UI;
-using UnityEngine;
-using Card = TouhouCardEngine.Card;
 using UICard = Game.BattleTable.TableCard;
 
 namespace Game.BattleTable
@@ -26,8 +23,6 @@ namespace Game.BattleTable
             ui.setAttack(0);
             ui.setLife(0);
         }
-
-
         public static void setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, CardManager cardManager)
         {
             string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
@@ -35,9 +30,10 @@ namespace Game.BattleTable
             string desc = string.Empty;
             if (skin != null)
             {
-                name = skin.name;
-                subName = skin.subname;
-                desc = skin.desc;
+                var poolRef = cardManager.getCardPoolReferenceOfCard(card);
+                name = cardManager.getCardName(poolRef, card.id);
+                subName = cardManager.getCardSubname(poolRef, card.id);
+                desc = cardManager.getCardDesc(poolRef, card.id);
             }
             ui.setName(name);
             ui.setSubname(subName);
@@ -53,39 +49,6 @@ namespace Game.BattleTable
             ui.setType(card.type);
             ui.setTranslatedTag(cardManager, card.getTags().FirstOrDefault());
         }
-        public static void setCard(this UICard ui, CardEngine game, Card card, CardSkinData skin, BattleTableManager table)
-        {
-            string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
-            string subName = string.Empty;
-            string desc = string.Empty;
-            if (skin != null)
-            {
-                name = skin.name;
-                subName = skin.subname;
-                desc = skin.desc;
-            }
-            ui.setName(name);
-            ui.setSubname(subName);
-            ui.setDesc(desc);
-
-            var cost = card.getCost(game);
-            var attack = card.getAttack(game);
-            var currentLife = card.getCurrentLife(game);
-            var costColor = card.getCostColor(game);
-            var attackColor = card.getAttackColor(game);
-            var lifeColor = card.getLifeColor(game);
-
-            ui.setUsable(!card.isModifiedUnplayable(game));
-            ui.setCostVisible(!card.define.hasKeyword(KEYWORD.UNPLAYABLE));
-            ui.setCost(cost);
-            ui.setAttack(attack);
-            ui.setLife(currentLife);
-            ui.setCostColor(costColor);
-            ui.setAttackColor(attackColor);
-            ui.setLifeColor(lifeColor);
-            ui.setType(card.define.type);
-            ui.setTranslatedTag(table.cardManager, card.getTags(game).FirstOrDefault());
-        }
         public static void setCard(this UICard ui, CardDescriptor desc, CardSkinData skin, BattleTableManager table)
         {
             string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
@@ -93,9 +56,10 @@ namespace Game.BattleTable
             string description = string.Empty;
             if (skin != null)
             {
-                name = skin.name;
-                subName = skin.subname;
-                description = skin.desc;
+                var define = desc.define;
+                name = table.getCardName(define);
+                subName = table.getCardSubname(define);
+                description = table.getCardDescription(define);
             }
             ui.setName(name);
             ui.setSubname(subName);
@@ -129,15 +93,6 @@ namespace Game.BattleTable
             ui.setImageSprite(null);
             ui.setImageSprite(await table.loadCardImage(card));
         }
-        public static async Task setCard(this UICard ui, CardEngine game, Card card, BattleTableManager table)
-        {
-            var define = card.define;
-            var skin = table.getCardSkin(define);
-            ui.setCard(game, card, skin, table);
-
-            ui.setImageSprite(null);
-            ui.setImageSprite(await table.loadCardImage(define));
-        }
         public static async Task setCard(this UICard ui, CardDescriptor desc, BattleTableManager table)
         {
             var define = desc.define;
@@ -146,35 +101,6 @@ namespace Game.BattleTable
 
             ui.setImageSprite(null);
             ui.setImageSprite(await table.loadCardImage(define));
-        }
-        public static PropertyNumberColor getCostColor(this Card card, IGame game)
-        {
-            var cost = card.getCost(game);
-            var defineCost = card.define.getCost();
-            if (cost < defineCost)
-                return PropertyNumberColor.Green;
-            else if (cost > defineCost)
-                return PropertyNumberColor.Red;
-            return PropertyNumberColor.White;
-        }
-        public static PropertyNumberColor getAttackColor(this Card card, IGame game)
-        {
-            var attack = card.getAttack(game);
-            var defineAttack = card.define.getAttack();
-            if (attack > defineAttack)
-                return PropertyNumberColor.Green;
-            return PropertyNumberColor.White;
-        }
-        public static PropertyNumberColor getLifeColor(this Card card, IGame game)
-        {
-            var currentLife = card.getCurrentLife(game);
-            var life = card.getLife(game);
-            var defineLife = card.define.getLife();
-            if (currentLife < life)
-                return PropertyNumberColor.Red;
-            else if (life > defineLife)
-                return PropertyNumberColor.Green;
-            return PropertyNumberColor.White;
         }
         public static PropertyNumberColor getCostColor(this CardDescriptor card)
         {

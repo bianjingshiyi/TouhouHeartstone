@@ -202,7 +202,7 @@ namespace UI
         /// <param name="name"></param>
         public void setName(string name)
         {
-            _nameInputField.SetTextWithoutNotify(name);
+            _nameInputField.inputField.SetTextWithoutNotify(name);
         }
         /// <summary>
         /// 设置卡牌的描述
@@ -210,27 +210,19 @@ namespace UI
         /// <param name="text"></param>
         public void setDesc(string text)
         {
-            _descInputField.SetTextWithoutNotify(text);
+            _descInputField.inputField.SetTextWithoutNotify(text);
         }
         #endregion
 
         #region 语言
-        public void initLanguages(string[] languages)
+        public void initLanguages(string[] codes)
         {
-            _languageDropdown.ClearOptions();
-            _languageDropdown.AddOptions(new List<string>(languages));
-        }
-        /// <summary>
-        /// 设置当前语言索引
-        /// </summary>
-        /// <param name="languageIndex"></param>
-        public void setLanguage(int languageIndex)
-        {
-            _languageDropdown.SetValueWithoutNotify(languageIndex);
+            _nameInputField.setLanguages(codes);
+            _descInputField.setLanguages(codes);
         }
         #endregion
 
-        #region 语言
+        #region 特效
         public void initPersistentAnims(string[] animNames)
         {
             _persistentAnimDropdown.ClearOptions();
@@ -277,10 +269,9 @@ namespace UI
             displayPage(_buffPage, _buffPageIndicator);
             _skinDropdown.Hide();
             _skinNameInputField.DeactivateInputField();
-            _languageDropdown.Hide();
             _persistentAnimDropdown.Hide();
-            _nameInputField.DeactivateInputField();
-            _descInputField.DeactivateInputField();
+            _nameInputField.inputField.DeactivateInputField();
+            _descInputField.inputField.DeactivateInputField();
         }
 
         public void updateAnimationRefs(AnimationRefViewData[] viewDatas, string[] anims, string[] positions)
@@ -307,11 +298,12 @@ namespace UI
             _deleteSkinButton.onClick.AddListener(onDeleteSkinButtonClicked);
             _skinNameInputField.gameObject.SetActive(false);
             _skinNameInputField.onEndEdit.AddListener(onSkinNameInputFieldEndEdit);
-            _languageDropdown.onValueChanged.AddListener(onLanguageDropdownValueChanged);
             _persistentAnimDropdown.onValueChanged.AddListener(onPersistentAnimDropdownValueChanged);
 
-            _nameInputField.onEndEdit.AddListener(onNameInputFieldEndEdit);
-            _descInputField.onEndEdit.AddListener(onDescInputFieldEndEdit);
+            _nameInputField.onEndEdit += onNameInputFieldEndEdit;
+            _descInputField.onEndEdit += onDescInputFieldEndEdit;
+            _nameInputField.OnLanguageChanged += value => onInputFieldLanguageChanged?.Invoke(value, BuffInputField.Name);
+            _descInputField.OnLanguageChanged += value => onInputFieldLanguageChanged?.Invoke(value, BuffInputField.Description);
 
             // Effects
             _effectList.onClickAddEffect += onAddEffectButtonClicked;
@@ -390,10 +382,6 @@ namespace UI
         private void onDescInputFieldEndEdit(string text)
         {
             onChangeDesc?.Invoke(text);
-        }
-        private void onLanguageDropdownValueChanged(int value)
-        {
-            onChangeLanguage?.Invoke(value);
         }
         private void onPersistentAnimDropdownValueChanged(int value)
         {
@@ -519,7 +507,7 @@ namespace UI
         /// </summary>
         public event Action<int> onChangeSkin;
         /// <summary>
-        /// 当更改当前皮肤名字，参数为更改名称。
+        /// 当更改当前皮肤名字，参数为更改名称，以及更改的语言。
         /// </summary>
         public event Action<string> onChangeSkinName;
         /// <summary>
@@ -543,13 +531,10 @@ namespace UI
         /// </summary>
         public event Action<string> onChangeDesc;
         /// <summary>
-        /// 当更换了语言，参数为更换的语言索引。
-        /// </summary>
-        public event Action<int> onChangeLanguage;
-        /// <summary>
         /// 当更换了持续特效，参数为更换的特效索引。
         /// </summary>
         public event Action<int> onChangePersistentAnim;
+        public event Action<int, BuffInputField> onInputFieldLanguageChanged;
         #endregion
 
         #region 修改器
@@ -651,11 +636,9 @@ namespace UI
         [SerializeField]
         GameObject _cardPoolViewPanelObj;
         [SerializeField]
-        InputField _nameInputField;
+        LocalizedInputField _nameInputField;
         [SerializeField]
-        InputField _descInputField;
-        [SerializeField]
-        Dropdown _languageDropdown;
+        LocalizedInputField _descInputField;
         [SerializeField]
         Dropdown _persistentAnimDropdown;
         [SerializeField]
@@ -674,6 +657,14 @@ namespace UI
         GameObject _buffPageIndicator;
         [SerializeField]
         GameObject _propertyPageIndicator;
+        #endregion
+
+        #region 嵌套类
+        public enum BuffInputField
+        {
+            Name,
+            Description
+        }
         #endregion
     }
 

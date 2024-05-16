@@ -405,9 +405,8 @@ namespace Controllers
             {
                 var poolRef = game.card.getLocalCardPoolReference(charRef.cardPoolId);
                 await game.card.getOrLoadCardPool(poolRef);
-                var cardDefine = game.card.getCardDefine(poolRef, charRef.defineId);
-                var skin = game.card.getCardSkin(cardDefine);
-                return (skin.name, await game.card.loadCardImage(cardDefine));
+                var name = game.card.getCardName(poolRef, charRef.defineId);
+                return (name, await game.card.loadCardImage(poolRef, charRef.defineId));
             }
             return (string.Empty, null);
         }

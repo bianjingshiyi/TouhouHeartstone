@@ -72918,13 +72918,6 @@
       "desc" : "After the end of turn, swap back the cards.",
       "imagePath" : "9db1399f0602c7b59ecd7dbde709923b1ad264a6341e2c02e0c8c989ce64a095.jpg",
       "_animationRefs" : []
-    }, {
-      "buffId" : 89,
-      "language" : "en-US",
-      "name" : "Dream Descends",
-      "desc" : "After the end of turn, swap back the cards.",
-      "imagePath" : "9db1399f0602c7b59ecd7dbde709923b1ad264a6341e2c02e0c8c989ce64a095.jpg",
-      "_animationRefs" : []
     }],
   "actionDefineList" : [{
       "_id" : 3,

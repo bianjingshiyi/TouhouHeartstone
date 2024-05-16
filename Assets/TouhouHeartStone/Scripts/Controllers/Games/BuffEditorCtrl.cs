@@ -22,10 +22,12 @@ namespace Controllers
         public async Task display(GeneratedBuffDefine buffDefine, BuffSkin[] skins)
         {
             // 设置数据。
+            _curBuffNameLang = LangManager.SOURCE;
+            _curBuffDescLang = LangManager.SOURCE;
+
             _buffDefine = buffDefine;
             _buffSkins.Clear();
             _buffSkins.AddRange(skins);
-            _curLanguage = game.langManager.getLanguage();
             _persistentAnimRefs = game.anims.getAnimationDefinesForBuff().Select(def => new DefineReference(def.cardPoolId, def.id)).ToArray();
 
             gameObject.SetActive(true); // 会触发Awake
@@ -40,9 +42,9 @@ namespace Controllers
             // 修改器属性类型
             _ui.initModifierPropertyTypes(getBuffDefinePropertyTypeNames());
             // 语言
-            string[] languages = game.langManager.getLanguages();
-            var languageNames = languages.Select(l => game.langManager.getString(game.ui.getTranslateNameForLanguage(l))).ToArray();
-            _ui.initLanguages(languageNames);
+            string[] languages = game.lang.getLanguagesWithSource();
+            var languageCodes = languages.Select(l => game.lang.getLanguageShortCode(l)).ToArray();
+            _ui.initLanguages(languageCodes);
             // 效果类型
             _ui.setEffectTypes(game.card.getEffectNames());
             // 自定义属性
@@ -68,7 +70,6 @@ namespace Controllers
 
             // 设置UI。
             _ui.setId(buffDefine.id);
-            _ui.setLanguage(languages.indexOf(_curLanguage));
 
             // 更新内容。
             updateSkinNames();
@@ -137,9 +138,9 @@ namespace Controllers
             _ui.onNeedSelectImage += onNeedSelectImage;
             _ui.onChangeDesc += onChangeDesc;
             _ui.onChangeBuffImage += onChangeBuffImage;
+            _ui.onInputFieldLanguageChanged += onInputFieldLangaugeChangedCallback;
 
 
-            _ui.onChangeLanguage += onChangeLanguage;
             _ui.onChangePersistentAnim += onChangePersistentAnimCallback;
 
 
@@ -181,6 +182,7 @@ namespace Controllers
         {
             markUnsaved();
         }
+
         #region 皮肤
         private async void onChangeSkin(int skinIndex)
         {
@@ -188,7 +190,7 @@ namespace Controllers
             if (skinIndex == getSkinCount())
             {
                 //新建皮肤
-                _curBuffSkin = game.card.createBuffSkin(curCardPoolId, _buffDefine.id, _curLanguage);
+                _curBuffSkin = game.card.createBuffSkin(curCardPoolId, _buffDefine.id);
                 _buffSkins.Add(_curBuffSkin);
                 updateSkinNames();
             }
@@ -197,17 +199,18 @@ namespace Controllers
         private async void onChangeSkinName(string skinName)
         {
             markUnsaved();
-            var skinGroup = getCurrentLangSkins();
-            int index = skinGroup.indexOf(_curBuffSkin);
-            _curBuffSkin.name = skinName;
+            var skins = getCurrentBuffSkins();
+            int index = skins.indexOf(_curBuffSkin);
+            // 暂时没有用
+            // game.card.setBuffSkinName(_curBuffSkin, skinName);
             updateSkinNames();
             await setCurSkinIndex(index);
         }
         private async void onDeleteSkin()
         {
             markUnsaved();
-            var skinGroup = getCurrentLangSkins();
-            if (skinGroup.Count() <= 1)
+            var skins = getCurrentBuffSkins();
+            if (skins.Length <= 1)
             {
                 Debug.LogWarning("你不能删除增益的最后一个皮肤");
                 return;
@@ -224,7 +227,7 @@ namespace Controllers
         void onChangeName(string name)
         {
             markUnsaved();
-            _curBuffSkin.name = name;
+            game.card.setBuffName(getCurrentCardPoolRef(), _curBuffSkin, _curBuffNameLang, name);
             _ui.setName(name);
         }
         /// <summary>
@@ -242,7 +245,7 @@ namespace Controllers
             if (sprite != null)
             {
                 markUnsaved();
-                _curBuffSkin.imagePath = game.card.getResourcePath(sprite);
+                game.card.setBuffImagePath(getCurrentCardPoolRef(), _curBuffSkin, LangManager.SOURCE, game.card.getResourcePath(sprite));
                 _ui.setImage(sprite);
             }
         }
@@ -253,25 +256,8 @@ namespace Controllers
         void onChangeDesc(string desc)
         {
             markUnsaved();
-            _curBuffSkin.desc = desc;
+            game.card.setBuffDesc(getCurrentCardPoolRef(), _curBuffSkin, _curBuffDescLang, desc);
             _ui.setDesc(desc);
-        }
-        private async void onChangeLanguage(int languageIndex)
-        {
-            string language = game.langManager.getLanguages()[languageIndex];
-            _curLanguage = language;
-            var skins = getCurrentBuffSkins().Where(s => s.language == language);
-            var targetSkin = skins.FirstOrDefault();
-            if (targetSkin == null)
-            {
-                markUnsaved();
-                //不存在对应语言的皮肤，新建一个
-                targetSkin = game.card.createBuffSkin(curCardPoolId, _buffDefine.id, language);
-                _buffSkins.Add(targetSkin);
-            }
-            updateSkinNames();
-            var skinIndex = getCurrentLangSkins().indexOf(targetSkin);
-            await setCurSkinIndex(skinIndex);
         }
         private void onChangePersistentAnimCallback(int index)
         {
@@ -280,10 +266,21 @@ namespace Controllers
             _curBuffSkin.persistentAnimRef = animRef;
             _ui.setPersistentAnim(index);
         }
+        private async void onInputFieldLangaugeChangedCallback(int languageIndex, BuffEditorPanel.BuffInputField field)
+        {
+            switch (field)
+            {
+                case BuffEditorPanel.BuffInputField.Name:
+                    _curBuffNameLang = game.lang.getLanguagesWithSource()[languageIndex];
+                    break;
+                case BuffEditorPanel.BuffInputField.Description:
+                    _curBuffDescLang = game.lang.getLanguagesWithSource()[languageIndex];
+                    break;
+            }
+            await updateSkin();
+        }
 
         #endregion
-
-
 
         #region 效果
         private async void onCreateEffect(GeneratedEffect effect)
@@ -371,8 +368,6 @@ namespace Controllers
             _graphEditor.updateAnimationDialog(eventViewData);
         }
         #endregion
-
-
 
         #region 修改器
         private void onAddModifier()
@@ -666,43 +661,65 @@ namespace Controllers
 
         private void updateSkinNames()
         {
-            BuffSkin[] skins = getCurrentLangSkins();
+            BuffSkin[] skins = getCurrentBuffSkins();
             if (skins.Length < 1)
             {
-                BuffSkin skin = game.card.createBuffSkin(curCardPoolId, _buffDefine.id, _curLanguage);
+                BuffSkin skin = game.card.createBuffSkin(curCardPoolId, _buffDefine.id);
                 _buffSkins.Add(skin);
                 skins = new BuffSkin[] { skin };
             }
-            _ui.setSkinNames(skins.Select(g => g.name).ToArray());
+            var poolRef = getCurrentCardPoolRef();
+            _ui.setSkinNames(skins.Select(g => game.card.getBuffName(poolRef, g)).ToArray());
         }
         private async Task setCurSkinIndex(int skinIndex)
         {
-            var skinGroup = getCurrentLangSkins();
+            var skins = getCurrentBuffSkins();
             //获取对应语言的皮肤
-            var skin = skinGroup[skinIndex];
+            var skin = skins[skinIndex];
 
             _curBuffSkin = skin;
 
-            string[] languages = game.langManager.getLanguages();
-            var languageIndex = Array.IndexOf(languages, skin.language);
-            _ui.setLanguage(languageIndex);
-            _ui.setName(skin.name);
-            _ui.setDesc(skin.desc);
-            _ui.setSkin(skinIndex);
             var poolRef = getCurrentCardPoolRef();
+            _ui.setName(game.card.getLocalizedBuffName(poolRef, skin, _curBuffNameLang));
+            _ui.setDesc(game.card.getLocalizedBuffDesc(poolRef, skin, _curBuffDescLang));
+            _ui.setSkin(skinIndex);
             Sprite image = await game.card.loadBuffImage(poolRef, skin);
             _ui.setImage(image);
             var animRef = skin.persistentAnimRef;
             _ui.setPersistentAnim(animRef != null ? Array.IndexOf(_persistentAnimRefs, animRef) + 1 : 0);
 
         }
+        private Task updateSkin()
+        {
+            return setSkin(_curBuffSkin);
+        }
+        private Task setSkin(BuffSkin skin)
+        {
+            var skins = getCurrentBuffSkins();
+            var skinIndex = Array.IndexOf(skins, skin);
+            return setSkin(skinIndex, skin);
+        }
+        private Task setSkin(int skinIndex)
+        {
+            var skins = getCurrentBuffSkins();
+            var skin = skins[skinIndex];
+            return setSkin(skinIndex, skin);
+        }
+        private async Task setSkin(int skinIndex, BuffSkin skin)
+        {
+            _curBuffSkin = skin;
+            var poolRef = getCurrentCardPoolRef();
+            _ui.setName(game.card.getLocalizedBuffName(poolRef, skin, _curBuffNameLang));
+            _ui.setDesc(game.card.getLocalizedBuffDesc(poolRef, skin, _curBuffDescLang));
+            _ui.setSkin(skinIndex);
+            Sprite image = await game.card.loadBuffImage(poolRef, skin);
+            _ui.setImage(image);
+            var animRef = skin.persistentAnimRef;
+            _ui.setPersistentAnim(animRef != null ? Array.IndexOf(_persistentAnimRefs, animRef) + 1 : 0);
+        }
         private int getSkinCount()
         {
-            return getCurrentLangSkins().Length;
-        }
-        private BuffSkin[] getCurrentLangSkins()
-        {
-            return _buffSkins.Where(s => s.language == _curLanguage).ToArray();
+            return getCurrentBuffSkins().Length;
         }
         private BuffSkin[] getCurrentBuffSkins()
         {
@@ -1155,7 +1172,8 @@ namespace Controllers
         /// 正在编辑的增益定义的所有皮肤。
         /// </summary>
         List<BuffSkin> _buffSkins = new List<BuffSkin>();
-        string _curLanguage;
+        string _curBuffNameLang;
+        string _curBuffDescLang;
         DefineReference[] _persistentAnimRefs;
         private long curCardPoolId => game.editor.currentCardPoolId;
         private EventTriggerTime[] eventTriggerTimes => scene.editor.eventTriggerTimes;

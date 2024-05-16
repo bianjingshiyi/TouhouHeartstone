@@ -40,6 +40,8 @@ namespace TouhouHeartstone
             sort(cardPool.cardDefineList, a => a.id);
             sort(cardPool.cardSkinList, a => a._id);
             sort(cardPool.ruleLogicList, a => a.id);
+            sort(cardPool.localizedStringList, a => a.value);
+            sort(cardPool.localizedResourceList, a => a.value);
 
             sortGraph(cardPool.actionDefineList, a => a.graph);
             sortGraph(cardPool.buffDefineList, a => a.effects.Select(e => e.graph));

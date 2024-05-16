@@ -795,29 +795,33 @@ namespace Controllers
         {
             errorMessage = string.Empty;
             bool valid = true;
-            List<CardSkinData> missingCardSkins = new List<CardSkinData>();
-            List<BuffSkin> missingBuffSkins = new List<BuffSkin>();
+            List<(ICardPoolReference poolRef, CardSkinData skin)> missingCardSkins = new List<(ICardPoolReference poolRef, CardSkinData skin)>();
+            List<(ICardPoolReference poolRef, BuffSkin skin)> missingBuffSkins = new List<(ICardPoolReference poolRef, BuffSkin skin)>();
             foreach (var poolInfoPack in cardPools)
             {
-                if (game.card.isInnateCardPool(poolInfoPack.cardPoolId) || _isLocalGame)
-                {
+                if (_isLocalGame)
+                    break;
+                if (game.card.isInnateCardPool(poolInfoPack.cardPoolId))
                     continue;
-                }
+
+                var poolRef = poolInfoPack.GetReference();
                 if (game.card.tryGetCardPool(poolInfoPack.GetReference(), out CardPool pool))
                 {
                     foreach (var skin in pool.cardSkinList)
                     {
-                        if (skin == null || (skin.imagePath != null && !game.card.isExternalImageExists(skin.imagePath)))
+                        var translationResources = game.card.getTranslationResourcesFromPool(poolRef, skin.imagePathKey);
+                        if (translationResources.Any(r => !game.card.isExternalImageExists(r.path)))
                         {
-                            missingCardSkins.Add(skin);
+                            missingCardSkins.Add((poolRef, skin));
                             valid = false;
                         }
                     }
                     foreach (var skin in pool.buffSkinList)
                     {
-                        if (skin == null || (skin.imagePath != null && !game.card.isExternalImageExists(skin.imagePath)))
+                        var translationResources = game.card.getTranslationResourcesFromPool(poolRef, skin.imagePathKey);
+                        if (translationResources.Any(r => !game.card.isExternalImageExists(r.path)))
                         {
-                            missingBuffSkins.Add(skin);
+                            missingBuffSkins.Add((poolRef, skin));
                             valid = false;
                         }
                     }
@@ -830,7 +834,7 @@ namespace Controllers
                 const int MAX_DISPLAY_COUNT = 5;
                 if (missingCardSkins.Count > 0)
                 {
-                    var cardNames = missingCardSkins.Select(s => s.name).ToArray();
+                    var cardNames = missingCardSkins.Select(s => game.card.getCardName(s.poolRef, s.skin)).ToArray();
                     var cardNamesStr = string.Join(",", cardNames, 0, Mathf.Min(MAX_DISPLAY_COUNT, cardNames.Length));
                     if (missingCardSkins.Count > MAX_DISPLAY_COUNT)
                         cardNamesStr += "...";
@@ -839,7 +843,7 @@ namespace Controllers
                 }
                 if (missingBuffSkins.Count > 0)
                 {
-                    var buffNames = missingBuffSkins.Select(s => s.name).ToArray();
+                    var buffNames = missingBuffSkins.Select(s => game.card.getBuffName(s.poolRef, s.skin)).ToArray();
                     var buffNamesStr = string.Join(",", buffNames, 0, Mathf.Min(MAX_DISPLAY_COUNT, buffNames.Length));
                     if (missingBuffSkins.Count > MAX_DISPLAY_COUNT)
                         buffNamesStr += "...";
@@ -1240,7 +1244,7 @@ namespace Controllers
                     var cardPoolRef = getCardPoolReference(deck.masterCardRef.cardPoolId);
                     if (game.card.tryGetCardSkin(cardPoolRef, deck.masterCardRef.defineId, out CardSkinData skin))
                     {
-                        characterName = skin.name;
+                        characterName = game.card.getCardName(cardPoolRef, skin);
                     }
                     else
                     {

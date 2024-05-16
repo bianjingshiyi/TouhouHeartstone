@@ -27,8 +27,7 @@ namespace Game
                 CardSkinData skin = new()
                 {
                     id = cardDefineId,
-                    skinName = StringTable.EDITOR_NEW_SKIN_DEFAULT_NAME,
-                    language = game.lang.getLanguage()
+                    skinName = StringTable.EDITOR_NEW_SKIN_DEFAULT_NAME
                 };
 
                 var skinIds = getAllCardSkins(cardPoolRef, cardDefineId).GroupBy(c => c.skinId).Select(g => g.Key);
@@ -40,12 +39,6 @@ namespace Game
             }
             else
                 throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
-        }
-        public CardSkinData createSkinForDiffLanguage(CardSkinData skin, string language)
-        {
-            CardSkinData newSkin = new CardSkinData(skin);
-            newSkin.language = language;
-            return newSkin;
         }
         public CardSkinData[] cloneCardSkins(ICardPoolReference poolRef, int cardId)
         {
@@ -115,7 +108,7 @@ namespace Game
                 return false;
             }
             var skins = getAllCardSkins(cardPoolRef, cardId);
-            skin = skins.getDefaultSkin(game.langManager.getLanguage());
+            skin = skins.FirstOrDefault();
             return skin != null;
         }
         /// <summary>
@@ -138,59 +131,5 @@ namespace Game
         #endregion
 
         #endregion
-    }
-
-    public static class CardSkinHelper
-    {
-        /// <summary>
-        /// 获取卡牌皮肤列表中的所有指定语言的皮肤。每个皮肤ID组内如果没有指定语言的的皮肤，改为获取组内第一个皮肤。
-        /// </summary>
-        /// <param name="skins">卡牌皮肤列表。</param>
-        /// <param name="language">指定语言。</param>
-        /// <returns>指定语言的卡牌皮肤数组。</returns>
-        public static CardSkinData[] getCardSkinsOfLanguage(this IEnumerable<CardSkinData> skins, string language)
-        {
-            return skins.GroupBy(s => s.skinId).Select(g => g.getCardSkinOfLanguageInGroup(language)).ToArray();
-        }
-        /// <summary>
-        /// 获取卡牌皮肤列表中的所有指定皮肤ID的皮肤。每个语言组内如果没有指定皮肤ID的的皮肤，则不会加入到列表中。
-        /// </summary>
-        /// <param name="skins">卡牌皮肤列表。</param>
-        /// <param name="skinId">指定皮肤ID。</param>
-        /// <returns>指定皮肤ID的卡牌皮肤数组。</returns>
-        public static CardSkinData[] getCardSkinsOfId(this IEnumerable<CardSkinData> skins, int skinId)
-        {
-            return skins.GroupBy(s => s.language).Select(g => g.getCardSkinOfIdInGroup(skinId)).Where(s => s != null).ToArray();
-        }
-        /// <summary>
-        /// 获取卡牌皮肤语言组内的指定皮肤ID的卡牌皮肤。
-        /// </summary>
-        /// <param name="group">卡牌皮肤语言组。</param>
-        /// <param name="skinId">指定皮肤ID。</param>
-        /// <returns>指定皮肤ID的皮肤。</returns>
-        public static CardSkinData getCardSkinOfIdInGroup(this IGrouping<string, CardSkinData> group, int skinId)
-        {
-            return group.FirstOrDefault(s => s.skinId == skinId);
-        }
-        /// <summary>
-        /// 获取卡牌皮肤ID组内的指定语言的卡牌皮肤。如果不存在，改为获取第一个皮肤。
-        /// </summary>
-        /// <param name="group">卡牌皮肤语言组。</param>
-        /// <param name="language">指定皮肤语言。</param>
-        /// <returns>指定皮肤语言的皮肤。</returns>
-        public static CardSkinData getCardSkinOfLanguageInGroup(this IGrouping<int, CardSkinData> group, string language)
-        {
-            return group.FirstOrDefault(s => s.language == language) ?? group.FirstOrDefault();
-        }
-        /// <summary>
-        /// 获取一个卡牌皮肤列表中的，语言为指定语言的默认皮肤。
-        /// </summary>
-        /// <param name="skins">皮肤列表。</param>
-        /// <param name="language">指定语言。</param>
-        /// <returns>指定语言的默认皮肤。</returns>
-        public static CardSkinData getDefaultSkin(this IEnumerable<CardSkinData> skins, string language)
-        {
-            return skins.getCardSkinsOfLanguage(language).FirstOrDefault();
-        }
     }
 }

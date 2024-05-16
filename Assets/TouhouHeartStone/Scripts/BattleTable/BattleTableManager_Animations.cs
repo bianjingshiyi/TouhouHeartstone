@@ -122,7 +122,7 @@ namespace Game.BattleTable
         {
             var card = game.getCard(cardId);
             var cardDefine = card.define;
-            var name = getCardSkin(cardDefine)?.name ?? card.ToString();
+            var name = getCardName(cardDefine);
             Transform transform;
             if (deadCardAnchors.ContainsKey(cardId))
             {

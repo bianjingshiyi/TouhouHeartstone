@@ -19,11 +19,10 @@ namespace Game
             _skinId = skin.skinId;
             _illustrator = skin.illustrator;
             _skinName = skin.skinName;
-            _name = skin.name;
-            _subname = skin.subname;
-            _imagePath = skin.imagePath;
-            _desc = skin.desc;
-            _language = skin.language;
+            _name = skin.nameKey;
+            _subname = skin.subnameKey;
+            _imagePath = skin.imagePathKey;
+            _desc = skin.descKey;
             foreach (var animRef in skin.getAllAnimRefs())
             {
                 _animationRefs.Add(new SerializableSkinAnimationRef(animRef));
@@ -41,11 +40,10 @@ namespace Game
                 skinId = _skinId,
                 illustrator = _illustrator,
                 skinName = _skinName,
-                name = _name,
-                subname = _subname,
-                imagePath = _imagePath,
-                desc = _desc,
-                language = _language
+                nameKey = _name,
+                subnameKey = _subname,
+                imagePathKey = _imagePath,
+                descKey = _desc,
             };
             if (_animationRefs != null && _animationRefs.Count > 0)
             {
@@ -80,6 +78,7 @@ namespace Game
         [Key(7)]
         public string _desc;
         [Key(8)]
+        [Obsolete]
         public string _language;
         [Key(9)]
         public List<SerializableSkinAnimationRef> _animationRefs = new List<SerializableSkinAnimationRef>();

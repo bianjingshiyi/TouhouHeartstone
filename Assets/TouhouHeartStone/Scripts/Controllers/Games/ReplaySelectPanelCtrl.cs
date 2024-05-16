@@ -147,12 +147,7 @@ namespace Controllers
             if (poolRef != null)
             {
                 await cardManager.getOrLoadCardPool(poolRef, true);
-                var define = game.card.getCardDefine(poolRef, defRef.defineId);
-                if (define != null)
-                {
-                    var skin = main.card.getCardSkin(define);
-                    return skin.name;
-                }
+                return main.card.getCardName(poolRef, defRef.defineId);
             }
             return game.lang._(StringTable.BUILD_UNKNOWN_CARD_NAME);
         }

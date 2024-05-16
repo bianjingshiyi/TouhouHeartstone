@@ -222,7 +222,7 @@ namespace UI
                 Sprite image;
                 if (skin != null)
                 {
-                    name = skin.name;
+                    name = cardManager.getCardName(poolRef, skin);
                     image = await cardManager.loadCardImage(cardDefine);
                 }
                 else
@@ -252,7 +252,8 @@ namespace UI
                 Sprite image;
                 if (skin != null)
                 {
-                    name = skin.name;
+                    var poolRef = cardManager.getCardPoolReferenceOfCard(cardDefine);
+                    name = cardManager.getCardName(poolRef, skin);
                     image = await cardManager.loadCardImage(cardDefine);
                 }
                 else
