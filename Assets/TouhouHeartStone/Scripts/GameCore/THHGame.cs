@@ -488,7 +488,7 @@ namespace TouhouHeartstone
         public async Task updateGameState(CardEngine game)
         {
             // 更新光环。
-            await updateAura(game);
+            await updateCardStates(game);
 
             bool clearedThisTime = false;
             bool anyCleared = false;
@@ -511,7 +511,7 @@ namespace TouhouHeartstone
             // 如果有死亡的卡牌，再更新一次光环。
             if (anyCleared)
             {
-                await updateAura(game);
+                await updateCardStates(game);
             }
         }
         public async Task updateMasterItemAttack(CardEngine game, Player player)
@@ -535,12 +535,13 @@ namespace TouhouHeartstone
         }
         #endregion
 
-        private async Task updateAura(CardEngine game)
+        private async Task updateCardStates(CardEngine game)
         {
             var cards = game.players.SelectMany(p => p.getPiles().SelectMany(pile => pile));
             foreach (var card in cards)
             {
                 await card.updateAuras(game);
+                await card.regainPernamentConsumableKeywords(game);
             }
         }
         #region Gameflow

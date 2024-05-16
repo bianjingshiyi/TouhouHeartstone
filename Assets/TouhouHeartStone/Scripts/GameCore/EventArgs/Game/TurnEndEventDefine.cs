@@ -37,7 +37,7 @@ namespace TouhouHeartstone
             characters.AddRange(player.getField());
             foreach (Card chara in characters)
             {
-                if (chara.isFreeze(game))
+                if (chara.isFreeze(game) && !chara.hasKeyword(game, KEYWORD.PERMANENT_FROZEN))
                 {
                     var hasAttackTimes = chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1;
                     var ready = chara.isReady(game) || chara.isCharge(game) || chara.isMaster();

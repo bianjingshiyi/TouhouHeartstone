@@ -21,29 +21,8 @@ namespace TouhouHeartstone
             var value = getValueGeneric(buff);
             if (modifyType != ModifyType.remove)
             {
-                if (value.Contains(KEYWORD.SHIELD))
-                {
-                    await card.setProp(game, CARD.HAS_SHIELD, true);
-                }
-                if (value.Contains(KEYWORD.STEALTH))
-                {
-                    await card.setProp(game, CARD.HAS_STEALTH, true);
-                }
-                if (value.Contains(KEYWORD.FROZEN))
-                {
-                    await card.setProp(game, CARD.IS_FROZEN, true);
-                }
+                await card.InitConsumableKeywords(value, game);
             }
-            await card.updateConsumableKeywords(game);
-        }
-        public override async Task afterRemove(IGame game, Card card, Buff buff)
-        {
-            await base.afterRemove(game, card, buff);
-            await card.updateConsumableKeywords(game);
-        }
-        public override async Task updateModifierValue(IGame game, Card card, Buff buff, string[] beforeValue)
-        {
-            await card.updateConsumableKeywords(game);
         }
         public override string[] calcGeneric(IGame game, ICardData card, string[] prop, string[] value)
         {

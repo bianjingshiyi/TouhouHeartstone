@@ -1394,7 +1394,6 @@ namespace TouhouHeartstone
                 }
                 await card.setKeywords(game, keywords.Distinct().ToArray());
                 await card.InitConsumableKeywords(game);
-                await card.updateConsumableKeywords(game);
             }
             return eventArg;
         }

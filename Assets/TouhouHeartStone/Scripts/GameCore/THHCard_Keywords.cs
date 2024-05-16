@@ -155,40 +155,47 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <param name="game"></param>
-        public static async Task InitConsumableKeywords(this Card card, IGame game)
+        public static Task InitConsumableKeywords(this Card card, IGame game)
         {
-            if (card.hasKeyword(game, KEYWORD.SHIELD))
+            return InitConsumableKeywords(card, card.getKeywords(game), game);
+        }
+        /// <summary>
+        /// 初始化卡牌的可消耗关键字，如隐匿、护盾。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="keywords"></param>
+        /// <param name="game"></param>
+        public static async Task InitConsumableKeywords(this Card card, string[] keywords, IGame game)
+        {
+            if (keywords == null)
+                return;
+            if (keywords.Contains(KEYWORD.SHIELD))
             {
                 await card.setProp(game, CARD.HAS_SHIELD, true);
             }
-            if (card.hasKeyword(game, KEYWORD.STEALTH))
+            if (keywords.Contains(KEYWORD.STEALTH) || keywords.Contains(KEYWORD.PERMANENTSTEALTH))
             {
                 await card.setProp(game, CARD.HAS_STEALTH, true);
             }
-            if (card.hasKeyword(game, KEYWORD.FROZEN))
+            if (keywords.Contains(KEYWORD.FROZEN) || keywords.Contains(KEYWORD.PERMANENT_FROZEN))
             {
                 await card.setProp(game, CARD.IS_FROZEN, true);
             }
         }
         /// <summary>
-        /// 更新卡牌的可消耗关键字，如隐匿、护盾。
-        /// 如果不再具有护盾或隐匿的条件，把表示当前关键字状态的关键字也取消。
+        /// 使仆从重新获取永久状态关键词提供的状态。
         /// </summary>
         /// <param name="card"></param>
         /// <param name="game"></param>
-        public static async Task updateConsumableKeywords(this Card card, IGame game)
+        public static async Task regainPernamentConsumableKeywords(this Card card, IGame game)
         {
-            if (!card.hasKeyword(game, KEYWORD.SHIELD) && card.getProp<bool>(game, CARD.HAS_SHIELD))
+            if (card.hasKeyword(game, KEYWORD.PERMANENTSTEALTH))
             {
-                await card.loseShield(game);
+                await card.setProp(game, CARD.HAS_STEALTH, true);
             }
-            if (!card.hasKeyword(game, KEYWORD.STEALTH) && card.getProp<bool>(game, CARD.HAS_STEALTH))
+            if (card.hasKeyword(game, KEYWORD.PERMANENT_FROZEN))
             {
-                await card.loseStealth(game);
-            }
-            if (!card.hasKeyword(game, KEYWORD.FROZEN) && card.getProp<bool>(game, CARD.IS_FROZEN))
-            {
-                await card.setProp(game, CARD.IS_FROZEN, false);
+                await card.setProp(game, CARD.IS_FROZEN, true);
             }
         }
         /// <summary>
@@ -205,15 +212,15 @@ namespace TouhouHeartstone
 
         public static bool isShield(this ICardData card, IGame game)
         {
-            return card.hasKeyword(game, KEYWORD.SHIELD) && card.getProp<bool>(game, CARD.HAS_SHIELD);
+            return card.getProp<bool>(game, CARD.HAS_SHIELD);
         }
         public static bool isStealth(this ICardData card, IGame game)
         {
-            return (card.hasKeyword(game, KEYWORD.STEALTH) && card.getProp<bool>(game, CARD.HAS_STEALTH)) || card.hasKeyword(game, KEYWORD.PERMANENTSTEALTH);
+            return card.getProp<bool>(game, CARD.HAS_STEALTH);
         }
         public static bool isFreeze(this ICardData card, IGame game)
         {
-            return (card.hasKeyword(game, KEYWORD.FROZEN) && card.getProp<bool>(game, CARD.IS_FROZEN)) || card.hasKeyword(game, KEYWORD.PERMANENT_FROZEN);
+            return card.getProp<bool>(game, CARD.IS_FROZEN);
         }
         public static Task loseShield(this Card card, IGame game)
         {
@@ -223,10 +230,9 @@ namespace TouhouHeartstone
         {
             return card.setProp(game, CARD.HAS_STEALTH, false);
         }
-        public static async Task loseShackle(this Card card, CardEngine game)
+        public static Task loseShackle(this Card card, CardEngine game)
         {
-            await card.removeKeywords(game, KEYWORD.FROZEN);
-            await card.setProp(game, CARD.IS_FROZEN, false);
+            return card.setProp(game, CARD.IS_FROZEN, false);
         }
         public static Task<EventArg> shackle(this Card card, CardEngine game)
         {
@@ -272,9 +278,7 @@ namespace TouhouHeartstone
                     await card.setProp(game, keyword, false);
                 }
             }
-            var result = await card.setProp(game, DEFINE.KEYWORDS, keywords);
-            await card.updateConsumableKeywords(game);
-            return result;
+            return await card.setProp(game, DEFINE.KEYWORDS, keywords);
         }
         /// <summary>
         /// 获取关键词数组。

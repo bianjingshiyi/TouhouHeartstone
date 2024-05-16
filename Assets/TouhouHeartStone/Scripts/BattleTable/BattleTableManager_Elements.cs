@@ -619,26 +619,6 @@ namespace Game.BattleTable
             setCardControlDirty(desc.id);
         }
         /// <summary>
-        /// 设置随从定义
-        /// </summary>
-        /// <param name="servant"></param>
-        /// <param name="cardDefine"></param>
-        public async void setServant(Servant servant, CardDefine cardDefine)
-        {
-            servant.setAttack(cardDefine.getAttack());
-            servant.setLife(cardDefine.getLife());
-            servant.setTaunt(cardDefine.hasKeyword(KEYWORD.TAUNT));
-            servant.setShield(cardDefine.hasKeyword(KEYWORD.SHIELD));
-            servant.setStealth(cardDefine.hasKeyword(KEYWORD.STEALTH) || cardDefine.hasKeyword(KEYWORD.PERMANENTSTEALTH));
-            servant.setLastword(cardDefine.getEffects().hasDeathRattles());
-            servant.setLethal(cardDefine.hasKeyword(KEYWORD.POISONOUS));
-            servant.setLifeDrain(cardDefine.hasKeyword(KEYWORD.DRAIN));
-            servant.setShackle(cardDefine.hasKeyword(KEYWORD.FROZEN) || cardDefine.hasKeyword(KEYWORD.PERMANENT_FROZEN));
-            servant.setSealed(false);
-
-            servant.setImageSprite(await loadCardImage(cardDefine));
-        }
-        /// <summary>
         /// 从卡获取对应的随从UI
         /// </summary>
         /// <param name="card"></param>

@@ -52,7 +52,7 @@ namespace TouhouHeartstone
                 await card.damage(game, target, targetAttack);
 
                 // 取消隐匿
-                if (card.isStealth(game))
+                if (card.isStealth(game) && !card.hasKeyword(game, KEYWORD.PERMANENTSTEALTH))
                 {
                     await card.loseStealth(game);
                 }
