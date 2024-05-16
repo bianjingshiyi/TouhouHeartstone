@@ -26,6 +26,7 @@ namespace Game.BattleTable
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
             var cardId = eventArg.getVar<Card>(EVENTVAR.CARD).id;
+            var cardSnapshot = table.getEventCardSnapshot(eventArg, EVENTVAR.CARD);
             AnimAnim anim = null;
             if (table.tryGetServant(cardId, out var serv))//尝试获取死亡的随从的随从UI
             {
@@ -44,8 +45,8 @@ namespace Game.BattleTable
             }
 
             bool mute = table.getAnimGroupOfAnim(this).OfType<DeathAnimation>().Any(a => _soundPlayed);
-            var desc = table.getCardDescriptor(cardId);
-            if (!mute && table.cardHasCustomSound(desc.define, CardSkinData.SOUND_NAME_ON_DEATH))
+            var desc = table.updateCardDescriptor(cardSnapshot);
+            if (!mute && desc != null && table.cardHasCustomSound(desc.define, CardSkinData.SOUND_NAME_ON_DEATH))
             {
                 _soundPlayed = true;
                 _ = table.playCustomSound(desc.define, CardSkinData.SOUND_NAME_ON_DEATH);
