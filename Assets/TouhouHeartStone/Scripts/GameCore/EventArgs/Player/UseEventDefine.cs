@@ -151,7 +151,7 @@ namespace TouhouHeartstone
             {
                 player.name,
                 card?.getFormatString(),
-                string.Join("，", targets?.Select(c => c.getFormatString()))
+                string.Join("，", targets?.Select(c => c?.getFormatString()))
             };
         }
 
