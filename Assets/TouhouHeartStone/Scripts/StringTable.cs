@@ -244,6 +244,12 @@ namespace Game
         [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
         public const string CARD_PROP_NAME_ATTACK_TIMES = "攻击次数";
         [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_HAS_STEALTH = "具有隐匿";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_HAS_BARRIER = "具有护盾";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_IS_SHACKLED = "被禁锢";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
         public const string CARD_PROP_NAME_COST = "灵力值消耗";
         [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
         public const string CARD_PROP_NAME_ATTACK = "攻击力";
