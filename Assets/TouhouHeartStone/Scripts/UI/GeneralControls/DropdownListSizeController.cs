@@ -1,33 +1,13 @@
 ﻿using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace UI
 {
     [ExecuteAlways]
     [RequireComponent(typeof(RectTransform))]
-    public class DropdownListSizeController : MonoBehaviour
+    public class DropdownListSizeController : MonoBehaviour, ILayoutSelfController
     {
-        private void OnEnable()
-        {
-            Canvas.willRenderCanvases += onWillRenderCanvasCallback;
-        }
-        private void OnDisable()
-        {
-            m_Tracker.Clear();
-            Canvas.willRenderCanvases -= onWillRenderCanvasCallback;
-        }
-        private void Start()
-        {
-            updateRectTransform();
-        }
-        private void onWillRenderCanvasCallback()
-        {
-            if (!isActiveAndEnabled)
-                return;
-            updateRectTransform();
-        }
-        private void updateRectTransform()
+        public void updateRectTransform()
         {
             m_Tracker.Clear();
             m_Tracker.Add(this, rectTransform, DrivenTransformProperties.SizeDeltaX);
@@ -36,22 +16,49 @@ namespace UI
             var anchorMax = rectTransform.anchorMax.x;
             var anchorWidth = GetParentSize().x * (anchorMax - anchorMin);
 
-            float width = anchorWidth;
-            if (_content)
-            {
-                width = LayoutUtility.GetPreferredSize(_content, (int)RectTransform.Axis.Horizontal);
-            }
-
             float min = 0;
             float max = float.MaxValue;
             if (minWidth >= 0)
                 min = minWidthRelative ? minWidth + anchorWidth : minWidth;
             if (maxWidth >= 0)
                 max = maxWidthRelative ? maxWidth + anchorWidth : maxWidth;
+
             min = Mathf.Min(min, max);
             setMinWidth(min);
+
+            var width = anchorWidth;
+            if (_content)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
+                width = LayoutUtility.GetPreferredWidth(_content);
+            }
+
             width = Mathf.Clamp(width, min, max);
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+        }
+        private void OnRectTransformDimensionsChange()
+        {
+            updateRectTransform();
+        }
+        private void OnTransformParentChanged()
+        {
+            updateRectTransform();
+        }
+        private void OnEnable()
+        {
+            updateRectTransform();
+        }
+        private void OnDisable()
+        {
+            m_Tracker.Clear();
+            LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
+        }
+        private void Update()
+        {
+            if (_minObjElement)
+            {
+                _minObjElement.transform.SetAsLastSibling();
+            }
         }
         private void setMinWidth(float min)
         {
@@ -75,6 +82,12 @@ namespace UI
             }
 
             return parent.rect.size;
+        }
+        void ILayoutController.SetLayoutHorizontal()
+        {
+        }
+        void ILayoutController.SetLayoutVertical()
+        {
         }
         public RectTransform rectTransform
         {
