@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BJSYGameCore.UI;
 using Game;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
@@ -55,6 +56,8 @@ namespace UI
         }
         public void initProperties(ValueInputFieldProperties props)
         {
+            setProp(ref _backText, props.backText);
+
             setProp(ref _eventNames, props.eventNames);
             setProp(ref _eventValues, props.eventValues);
 
@@ -74,7 +77,6 @@ namespace UI
             setProp(ref _keywordNames, props.keywordNames);
             setProp(ref _keywordValues, props.keywordValues);
 
-            setProp(ref _buffNames, props.buffNames);
             setProp(ref _buffValues, props.buffValues);
 
             setProp(ref _cardPropertyNameItems, props.cardProperties);
@@ -104,6 +106,8 @@ namespace UI
         {
             return new ValueInputFieldProperties()
             {
+                backText = _backText,
+
                 eventNames = _eventNames,
                 eventValues = _eventValues,
 
@@ -123,7 +127,6 @@ namespace UI
                 keywordNames = _keywordNames,
                 keywordValues = _keywordValues,
 
-                buffNames = _buffNames,
                 buffValues = _buffValues,
 
                 cardProperties = _cardPropertyNameItems,
@@ -343,11 +346,11 @@ namespace UI
                 callValueChangedCallback(_cardTypeValues[index]);
             }
         }
-        private void onBuffDropdownValueChangedCallback(int index)
+        private void onBuffDropdownValueChangedCallback(int[] value)
         {
             if (valueType == ActionNodeValueType.buffReference)
             {
-                callValueChangedCallback(_buffValues[index]);
+                callValueChangedCallback(BuffReferenceRecursion.getValueByIndexes(_buffValues, value));
             }
         }
         private void onInputDropdownValueChangedCallback(string value)
@@ -870,20 +873,18 @@ namespace UI
             if (valueType == ActionNodeValueType.buffReference)
             {
                 _buffItemObj.SetActive(true);
+                _buffDropdown.backText = _backText;
                 _buffDropdown.ClearOptions();
-                _buffDropdown.AddOptions(new List<string>(_buffNames));
-                int index = 1;
+                var options = _buffValues.Select(v => v.toOptionData()).ToList();
+                _buffDropdown.AddOptions(options);
+                int[] values = null;
                 if (_valueInfo.value is DefineReference defRef)
                 {
-                    index = Array.FindIndex(_buffValues, v => v == defRef);
+                    values = BuffReferenceRecursion.getIndexesByValue(_buffValues.ToList(), defRef);
                 }
-                else if (_valueInfo.value is BuffReference buffRef)
-                {
-                    index = Array.IndexOf(_buffValues, buffRef);
-                }
-                if (index < 0)
-                    index = 1;
-                _buffDropdown.SetValueWithoutNotify(index);
+                if (values == null)
+                    values = new int[0];
+                _buffDropdown.SetValueWithoutNotify(values);
             }
             else
             {
@@ -965,7 +966,7 @@ namespace UI
         [SerializeField]
         GameObject _buffItemObj;
         [SerializeField]
-        Dropdown _buffDropdown;
+        RecursiveDropdown _buffDropdown;
         [SerializeField]
         Button _buffItemEditButton;
 
@@ -978,6 +979,8 @@ namespace UI
         Button _addItemButton;
 
         [Header("下拉列表值")]
+        [SerializeField]
+        string _backText;
         [SerializeField]
         string _anyPileName;
         [SerializeField]
@@ -1007,9 +1010,7 @@ namespace UI
         [SerializeField]
         private CardPropertyNameItem[] _cardPropertyNameItems;
         [SerializeField]
-        private string[] _buffNames;
-        [SerializeField]
-        private BuffReference[] _buffValues;
+        private BuffReferenceRecursion[] _buffValues;
         [SerializeField]
         private string _defaultValueTypeName;
         [SerializeField]
@@ -1030,6 +1031,65 @@ namespace UI
         [SerializeField]
         bool _isListItem;
         #endregion
+    }
+
+    [Serializable]
+    public class BuffReferenceRecursion
+    {
+        public string name;
+        public BuffReference value;
+        public List<BuffReferenceRecursion> children;
+
+        public BuffReferenceRecursion(string name = null, BuffReference value = null, List<BuffReferenceRecursion> children = null)
+        {
+            this.name = name;
+            this.value = value;
+            this.children = children;
+        }
+        public RecursiveOptionData toOptionData()
+        {
+            var optionData = new RecursiveOptionData();
+            optionData.text = name;
+            optionData.children = children != null ? children.Select(c => c.toOptionData()).ToList() : null;
+            return optionData;
+        }
+        public static int[] getIndexesByValue(List<BuffReferenceRecursion> recursion, DefineReference defineRef)
+        {
+            if (recursion == null)
+                return null;
+            var itemIndex = recursion.FindIndex(r => r.value == defineRef);
+            if (itemIndex >= 0)
+            {
+                // 在列表中找到了对应的引用，返回索引。
+                return new int[] { itemIndex };
+            }
+            // 没有在列表中找到对应引用，在子项里找。
+            for (int i = 0; i < recursion.Count; i++)
+            {
+                var buffRef = recursion[i];
+                var itemIndexes = getIndexesByValue(buffRef.children, defineRef);
+                if (itemIndexes == null)
+                    // 子项里没有找到，跳过这个子项。
+                    continue;
+                // 子项里找到了，在结果前面加上一个当前项的索引。
+                return itemIndexes.Prepend(i).ToArray();
+            }
+            return null;
+        }
+        public static DefineReference getValueByIndexes(IEnumerable<BuffReferenceRecursion> recursion, int[] indexes)
+        {
+            if (recursion == null || indexes == null || indexes.Length <= 0)
+                return null;
+            var index = indexes[0];
+            var childRef = recursion.ElementAtOrDefault(index);
+            if (childRef == null)
+                return null;
+            if (indexes.Length <= 1)
+            {
+                return childRef.value;
+            }
+            return getValueByIndexes(childRef.children, indexes.Skip(1).ToArray());
+        }
     }
 
     public static class ValueInputFieldHelper 
@@ -1091,6 +1151,7 @@ namespace UI
     [Serializable]
     public struct ValueInputFieldProperties
     {
+        public string backText;
         public string anyPileName;
         public string[] pileNames;
         public string[] pileValues;
@@ -1112,8 +1173,7 @@ namespace UI
         public string[] effectTagNames;
         public string[] effectTagValues;
 
-        public string[] buffNames;
-        public BuffReference[] buffValues;
+        public BuffReferenceRecursion[] buffValues;
 
         public string defaultValueTypeName;
         public ValueTypeNameMap[] valueTypeNames;
@@ -1148,11 +1208,11 @@ namespace UI
                 keywordValues = keywordValues
             };
         }
-        public static ValueInputFieldProperties buffReference(string[] buffNames, BuffReference[] buffValues)
+        public static ValueInputFieldProperties buffReference(string backText, BuffReferenceRecursion[] buffValues)
         {
             return new ValueInputFieldProperties()
             {
-                buffNames = buffNames,
+                backText = backText,
                 buffValues = buffValues,
             };
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore;
@@ -82,14 +83,32 @@ namespace Game
             return _currentBuffDefines.Select(b => new BuffReference(b.cardPoolId, b.id)).Prepend(newBuffOptionRef).ToArray();
         }
         /// <summary>
+        /// 获取当前卡池环境下的所有增益引用嵌套。
+        /// </summary>
+        public BuffReferenceRecursion[] getBuffReferenceRecursions()
+        {
+            var buffGroups = _currentBuffDefines.GroupBy(b => b.cardPoolId);
+            List<BuffReferenceRecursion> buffRecursions = new List<BuffReferenceRecursion>();
+            foreach (var group in buffGroups)
+            {
+                var poolName = game.card.getCardPoolName(game.card.getLocalCardPoolInfo(group.Key));
+                var children = new List<BuffReferenceRecursion>();
+                children.AddRange(group.Select(b => new BuffReferenceRecursion(game.card.getBuffSkin(b)?.name ?? b.ToString(), new BuffReference(b.cardPoolId, b.id))));
+                var recursion = new BuffReferenceRecursion(poolName, children: children);
+                buffRecursions.Add(recursion);
+            }
+            var newBuffName = game.lang._(DROPDOWN_NEW_BUFF);
+            return buffRecursions.Prepend(new BuffReferenceRecursion(newBuffName, newBuffOptionRef)).ToArray();
+        }
+        /// <summary>
         /// 根据增益定义列表获取用于更新UI控件的结构。
         /// </summary>
         public ValueInputFieldProperties getBuffInputProperties()
         {
+            var backText = game.lang._(StringTable.RETURN);
             var newBuffName = game.lang._(DROPDOWN_NEW_BUFF);
-            var buffNames = getBuffNames();
-            var buffValues = getBuffReferences();
-            return ValueInputFieldProperties.buffReference(buffNames, buffValues);
+            var buffValues = getBuffReferenceRecursions();
+            return ValueInputFieldProperties.buffReference(backText, buffValues);
         }
         /// <summary>
         /// 对单个增益引用进行检查。如果没有指定的增益定义或增益皮肤，获取第一个或创建一个，并通知需要更新增益。

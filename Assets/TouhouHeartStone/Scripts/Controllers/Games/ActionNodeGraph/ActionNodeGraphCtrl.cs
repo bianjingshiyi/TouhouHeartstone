@@ -37,6 +37,8 @@ namespace Controllers
             typeValues = typeInfos.Select(i => i.type.Name).ToArray();
             var fieldProps = new ValueInputFieldProperties()
             {
+                backText = game.lang._(StringTable.RETURN),
+
                 graphTypeNames = game.editor.getEditorPortTypeNames(),
                 graphTypeValues = typeValues,
 
@@ -49,8 +51,7 @@ namespace Controllers
                 cardTypeNames = game.editor.getCardTypeNames(),
                 cardTypeValues = cardTypeValues,
 
-                buffNames = game.editor.getBuffNames(),
-                buffValues = game.editor.getBuffReferences(),
+                buffValues = game.editor.getBuffReferenceRecursions(),
 
                 anyPileName = game.editor.getAnyPileName(),
                 pileNames = game.editor.getAllPileNames(),

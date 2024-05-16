@@ -11,6 +11,8 @@ namespace Game
         public const string YES = "是";
         [TranslateMsg("所有按钮通用的否")]
         public const string NO = "否";
+        [TranslateMsg("所有按钮通用的返回")]
+        public const string RETURN = "返回";
         [TranslateMsg("所有提示通用的警告")]
         public const string WARNING = "警告";
         [TranslateMsg("所有提示通用的错误")]

@@ -53,6 +53,8 @@ namespace Controllers
             var keywords = EditorManager.editorKeywords;
             var fieldProps = new ValueInputFieldProperties()
             {
+                backText = game.lang._(StringTable.RETURN),
+
                 keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray(),
                 keywordValues = keywords.ToArray(),
 
@@ -60,8 +62,7 @@ namespace Controllers
                 pileNames = game.editor.getAllPileNames(),
                 pileValues = game.editor.getAllPileValues(),
 
-                buffNames = game.editor.getBuffNames(),
-                buffValues = game.editor.getBuffReferences(),
+                buffValues = game.editor.getBuffReferenceRecursions(),
             };
             _ui.initValueFields(fieldProps);
 
