@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
 
@@ -14,8 +15,58 @@ namespace Game
             Flow.addConversion(new NodeConstProxyConversion());
             Flow.addConversion(new CollectionConversion());
         }
+        public readonly static IEqualityComparer<object> graphEqualityComparer = new GraphEqualityComparer();
     }
+    public class GraphEqualityComparer : IEqualityComparer<object>
+    {
+        public new bool Equals(object x, object y)
+        {
+            if (x == null)
+                return y == null;
+            if (GetSpecific2Types(x, y, out BuffDefine buffDefine, out BuffReference buffRef))
+            {
+                return buffDefine.getDefineRef() == buffRef;
+            }
+            else if (GetSpecific2Types(x, y, out CardDefine cardDefine, out DefineReference defineRef))
+            {
+                return cardDefine.getDefineRef() == defineRef;
+            }
+            return x.Equals(y);
+        }
 
+        public int GetHashCode(object obj)
+        {
+            if (obj is CardDefine cardDefine)
+            {
+                return cardDefine.getDefineRef().GetHashCode();
+            }
+            else if (obj is BuffDefine buffDefine)
+            {
+                return buffDefine.getDefineRef().GetHashCode();
+            }
+            return obj.GetHashCode();
+        }
+        private bool GetSpecific2Types<T1, T2>(object x, object y, out T1 t1, out T2 t2)
+        {
+            if (x is T1 t1x && y is T2 t2y)
+            {
+                t1 = t1x;
+                t2 = t2y;
+                return true;
+            }
+
+            if (y is T1 t1y && x is T2 t2x)
+            {
+                t1 = t1y;
+                t2 = t2x;
+                return true;
+            }
+
+            t1 = default;
+            t2 = default;
+            return false;
+        }
+    }
     public class CardDefineConversion : ParamConversion
     {
         public override bool canConvert(Type from, Type to)
