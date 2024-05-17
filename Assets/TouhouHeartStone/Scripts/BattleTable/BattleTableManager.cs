@@ -323,11 +323,14 @@ namespace Game.BattleTable
 
             table.SelfHandList.onBlockerClick += onHandListBlockerClickCallback;
             table.SelfHandList.onHandItemClick += onHandItemClickCallback;
+            table.SelfHandList.onHandItemPointerEnter += onHandItemPointerEnterCallback;
+            table.SelfHandList.onHandItemPointerExit += onHandItemPointerExitCallback;
             table.SelfHandList.onHandItemBeginDrag += onHandItemBeginDragCallback;
             table.SelfHandList.onHandItemDrag += onHandItemDragCallback;
             table.SelfHandList.onHandItemEndDrag += onHandItemEndDragCallback;
-            table.SelfHandList.onHandItemPointerEnter += onHandItemPointerEnterCallback;
-            table.SelfHandList.onHandItemPointerExit += onHandItemPointerExitCallback;
+
+            table.EnemyHandList.onBlockerClick += onHandListBlockerClickCallback;
+            table.EnemyHandList.onHandItemClick += onHandItemClickCallback;
             table.EnemyHandList.onHandItemPointerEnter += onHandItemPointerEnterCallback;
             table.EnemyHandList.onHandItemPointerExit += onHandItemPointerExitCallback;
 

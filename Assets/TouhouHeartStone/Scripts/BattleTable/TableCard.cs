@@ -31,6 +31,30 @@ namespace Game.BattleTable
             _spellCardFace.setVisible(type == DEFINE.SPELL || type == DEFINE.SKILL);
             _itemCardFace.setVisible(type == DEFINE.ITEM);
         }
+        public void setIgnoreRaycast(bool value)
+        {
+            int defaultLayer = 0;
+            int ignoreRaycastLayer = LayerMask.NameToLayer("Ignore Raycast");
+            int uiLayer = LayerMask.NameToLayer("UI");
+            int ignoreRaycastUILayer = LayerMask.NameToLayer("IgnoreRaycastUI");
+
+            bool isUI = gameObject.layer == uiLayer || gameObject.layer == ignoreRaycastUILayer;
+            int layer;
+            if (value)
+            {
+                layer = isUI ? ignoreRaycastUILayer : ignoreRaycastLayer;
+            }
+            else
+            {
+                layer = isUI ? uiLayer : defaultLayer;
+            }
+            gameObject.layer = layer;
+            foreach (var child in GetComponentsInChildren<Collider>(true))
+            {
+                child.gameObject.layer = layer;
+            }
+        }
+
         public PropertyNumber getAttackPropNum(string cardType)
         {
             switch (cardType)

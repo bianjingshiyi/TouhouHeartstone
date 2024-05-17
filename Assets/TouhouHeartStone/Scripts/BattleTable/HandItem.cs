@@ -7,9 +7,24 @@ namespace Game.BattleTable
 {
     public class HandItem : TableUnit
     {
-        public void setHovered(bool hovered)
+        public void startHovered(bool enemy)
         {
-            _animator.SetBool("Show", hovered);
+            _animator.SetBool("Show", !enemy);
+            _animator.SetBool("EnemyShow", enemy);
+        }
+        public void stopHovered()
+        {
+            _animator.SetBool("Show", false);
+            _animator.SetBool("EnemyShow", false);
+        }
+        public void setPlayed(bool played)
+        {
+            _isPlayed = true;
+            card.setIgnoreRaycast(played);
+        }
+        public bool isPlayed()
+        {
+            return _isPlayed;
         }
         public void setSpellReady(bool ready)
         {
@@ -78,6 +93,7 @@ namespace Game.BattleTable
         private bool _isDraggable = true;
         [SerializeField]
         private TableCard _card;
+        private bool _isPlayed = false;
 
         public TableCard card => _card;
         public bool isDraggable

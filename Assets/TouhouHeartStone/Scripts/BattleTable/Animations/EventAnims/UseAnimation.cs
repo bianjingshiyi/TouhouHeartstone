@@ -163,6 +163,7 @@ namespace Game.BattleTable
                 hand.positionLerp.setStartPositionToCurrent();
                 hand.positionLerp.setTargetTransform(table.table.SpellDisplayTransform);
                 AnimAnim useAnim = null;
+                hand.setPlayed(true);
                 while (!SimpleAnimHelper.update(table, ref useAnim, hand.onEnemyUse, hand.animator, _deltaTime))
                     yield return null;
                 table.removeHand(_card);

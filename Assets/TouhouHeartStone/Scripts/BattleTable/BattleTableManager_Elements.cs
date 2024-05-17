@@ -1456,34 +1456,33 @@ namespace Game.BattleTable
         #region 手牌
         private void onHandListBlockerClickCallback(HandList list)
         {
-            if (list != table.SelfHandList) return;
-
+            bool isSelf = list == table.SelfHandList;
+            Gem gem = isSelf ? table.SelfGem : table.EnemyGem;
             if (list.isZoomIn)
             {
-                zoomHand(false);
+                zoomHand(gem, list, false);
             }
         }
         private void onHandItemClickCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
-            if (list != table.SelfHandList)
-                return;
-
             var card = getCard(hand);
             if (usingCard == card) // 点击正在拖动的卡牌时不会缩进
                 return;
 
+            bool isSelf = list == table.SelfHandList;
+            Gem gem = isSelf ? table.SelfGem : table.EnemyGem;
             if (list.isZoomIn)
             {
                 if (_hoveredHand == hand)
                 {
                     stopHover();
                 }
-                zoomHand(false);
+                zoomHand(gem, list, false);
             }
-            else
+            else if (canSeeCard(card))
             {
                 startHover(hand);
-                zoomHand(true);
+                zoomHand(gem, list, true);
             }
         }
         private void onHandItemBeginDragCallback(HandItem hand, HandList list, PointerEventData pointer)
@@ -1613,7 +1612,7 @@ namespace Game.BattleTable
                     //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
                     enterTargetSelectMode(TargetSelectMode.Use, card, card.getAvaliableTargets(game));
                     addServantPreviewAnim(card, index, pos);
-                    zoomHand(false);//手牌缩小
+                    hideAllHands();//手牌缩小
                 }
                 else
                 {
@@ -1634,7 +1633,7 @@ namespace Game.BattleTable
                 {
                     //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
                     enterTargetSelectMode(TargetSelectMode.Use, card, card.getAvaliableTargets(game));
-                    zoomHand(false);//手牌缩小
+                    hideAllHands();//手牌缩小
                 }
                 else
                 {
@@ -1654,9 +1653,14 @@ namespace Game.BattleTable
         {
             if (list.count <= 0)
                 return;
-            if (list == table.SelfHandList)
-                hand.setHovered(true);
-            if (!table.SelfHandList.isZoomIn)
+            bool isEnemy = list != table.SelfHandList;
+            var card = getCard(hand);
+            bool canSee = canSeeCard(card);
+            if (canSee)
+            {
+                hand.startHovered(isEnemy);
+            }
+            if (!list.isZoomIn)
             {
                 int count = list.count;
                 showTipBox(lang._(TAB_CARD_NUMBER, count), hand.gameObject);
@@ -1671,7 +1675,7 @@ namespace Game.BattleTable
         }
         private void onHandItemPointerExitCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
-            hand.setHovered(false);
+            hand.stopHovered();
             hideTipBoxFromObject(hand.gameObject);
             stopHover();
         }
@@ -2322,7 +2326,7 @@ namespace Game.BattleTable
                 hand.setSpellReady(true);
             }
             enterTargetSelectMode(TargetSelectMode.Use, card, card.getAvaliableTargets(game));
-            zoomHand(false);//手牌缩小
+            hideAllHands();//手牌缩小
         }
         private void playSpellCard(Card card, PointerEventData pointer)
         {
@@ -2698,13 +2702,18 @@ namespace Game.BattleTable
                 cards = cards.OrderBy(c => game.getCard(c).define.getCost());
             return cards;
         }
-        private void zoomHand(bool expand)
+        private void zoomHand(Gem gem, HandList handList, bool expand)
         {
-            table.SelfGem.setExpand(expand);
+            gem.setExpand(expand);
             if (expand)
-                table.SelfHandList.zoomIn();
+                handList.zoomIn();
             else
-                table.SelfHandList.zoomOut();
+                handList.zoomOut();
+        }
+        private void hideAllHands()
+        {
+            zoomHand(table.SelfGem, table.SelfHandList, false);
+            zoomHand(table.EnemyGem, table.EnemyHandList, false);
         }
         #region 更新可控制高光
         private void updateAllControlable()
