@@ -9,6 +9,7 @@ using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Pool;
 
 namespace UI
 {
@@ -29,6 +30,9 @@ namespace UI
             var pos = _previewCardTransform.position;
             pos.y = item.position.y;
             _previewCardTransform.position = pos;
+
+            // 防止卡牌预览超出屏幕。
+            avoidOutsideScreen();
         }
         public CardViewDeckCardListItem getListItem(int itemIndex)
         {
@@ -106,6 +110,65 @@ namespace UI
         }
         #endregion
 
+        private void avoidOutsideScreen()
+        {
+            var rootCanvas = getRootCanvas();
+            var worldCorners = new Vector3[4];
+            _previewCardTransform.GetWorldCorners(worldCorners);
+
+            RectTransform rootCanvasRectTransform = rootCanvas.transform as RectTransform;
+            Rect rootCanvasRect = rootCanvasRectTransform.rect;
+
+            var localRectMin = rootCanvasRectTransform.InverseTransformPoint(worldCorners[0]);
+            var localRectMax = rootCanvasRectTransform.InverseTransformPoint(worldCorners[2]);
+            for (int axis = 0; axis < 2; axis++)
+            {
+                bool outside = false;
+                float outsideDistance = 0;
+                if (localRectMin[axis] < rootCanvasRect.min[axis] && !Mathf.Approximately(localRectMin[axis], rootCanvasRect.min[axis]))
+                {
+                    outside = true;
+                    outsideDistance = localRectMin[axis] - rootCanvasRect.min[axis];
+                }
+                else if (localRectMax[axis] > rootCanvasRect.max[axis] && !Mathf.Approximately(localRectMax[axis], rootCanvasRect.max[axis]))
+                {
+                    outside = true;
+                    outsideDistance = localRectMax[axis] - rootCanvasRect.max[axis];
+                }
+                if (outside)
+                {
+                    if (axis == 0)
+                        // 水平超出屏幕。
+                        RectTransformUtility.FlipLayoutOnAxis(_previewCardTransform, axis, false, false);
+                    else
+                    {
+                        // 垂直超出屏幕。
+                        var pos = _previewCardTransform.localPosition;
+                        pos.y -= outsideDistance;
+                        _previewCardTransform.localPosition = pos;
+                    }
+                }
+            }
+        }
+        private Canvas getRootCanvas()
+        {
+            var canvases = gameObject.GetComponentsInParent<Canvas>(false);
+            if (canvases.Length == 0)
+                return null;
+
+            // 根Canvas为GetComponentsInParent()返回的最后一个元素。
+            Canvas rootCanvas = canvases[canvases.Length - 1];
+            for (int i = 0; i < canvases.Length; i++)
+            {
+                if (canvases[i].isRootCanvas)
+                {
+                    rootCanvas = canvases[i];
+                    break;
+                }
+            }
+            return rootCanvas;
+        }
+
         #endregion
 
         #region 事件
@@ -121,7 +184,7 @@ namespace UI
         #region 属性字段
         public Card previewCard => _previewCard;
         [SerializeField]
-        Transform _previewCardTransform;
+        RectTransform _previewCardTransform;
         [SerializeField]
         Card _previewCard;
         [SerializeField]
