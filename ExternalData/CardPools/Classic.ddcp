@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 3, "cardPoolId" : NumberLong(1), "editTime" : 596, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [] }
+{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 3, "cardPoolId" : NumberLong(1), "editTime" : 597, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -26503,10 +26503,10 @@
       "type" : "Skill",
       "propDict" : {
         "cost" : 2,
-        "skillRef" : {
+        "characterId" : {
           "_t" : "ObjectProxy",
           "Type" : "TouhouCardEngine.DefineReference",
-          "Content" : new BinData(0, "kgFC")
+          "Content" : new BinData(0, "kgFB")
         }
       },
       "effects" : [{
@@ -26531,6 +26531,10 @@
                     "name" : "condition",
                     "paramIndex" : -1,
                     "value" : true
+                  }, {
+                    "name" : "priority",
+                    "paramIndex" : -1,
+                    "value" : 0
                   }],
                 "propDict" : { },
                 "tags" : null,
@@ -58544,7 +58548,6 @@
       "_soundRefs" : []
     }, {
       "_id" : 64,
-      "_skinName" : "Mouse Summon",
       "_name" : "Mouse Summon",
       "_subname" : "",
       "_imagePath" : "af95d8a91c7de3d2e814f54971f22bddb3f4694f1df45ea36a54a0f4d13329b9.jpg",
@@ -58554,7 +58557,6 @@
       "_soundRefs" : []
     }, {
       "_id" : 64,
-      "_skinName" : "ネズミ召喚",
       "_name" : "ネズミ召喚",
       "_subname" : "",
       "_imagePath" : "af95d8a91c7de3d2e814f54971f22bddb3f4694f1df45ea36a54a0f4d13329b9.jpg",
@@ -70278,6 +70280,10 @@
                     "name" : "priority",
                     "paramIndex" : -1,
                     "value" : 0
+                  }, {
+                    "name" : "condition",
+                    "paramIndex" : -1,
+                    "value" : true
                   }],
                 "propDict" : { },
                 "consts" : null,
