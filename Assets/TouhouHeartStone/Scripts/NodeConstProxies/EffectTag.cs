@@ -1,4 +1,5 @@
 ﻿using System;
+using MessagePack;
 using MongoDB.Bson.Serialization.Attributes;
 using TouhouCardEngine;
 
@@ -10,6 +11,7 @@ namespace Game
         [Obsolete("请使用value。该属性仅用于序列化兼容，之后会移除该属性")]
         [BsonElement]
         [BsonIgnoreIfNull]
+        [IgnoreMember]
         public string effectTag
         {
             get => null;
