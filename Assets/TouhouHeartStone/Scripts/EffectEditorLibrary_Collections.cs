@@ -144,7 +144,7 @@ namespace Game
         {
             if (collection == null)
                 return false;
-            return collection.Contains(element);
+            return collection.Contains(element, GraphTypeHelper.graphEqualityComparer);
         }
 
         /// <summary>
@@ -302,7 +302,7 @@ namespace Game
             if (array == null)
                 return null;
 
-            return array.Distinct().ToArray();
+            return array.Distinct(GraphTypeHelper.graphEqualityComparer).ToArray();
         }
         /// <summary>
         /// 集合相减
@@ -320,7 +320,7 @@ namespace Game
                 return null;
             if (excepted == null)
                 return array;
-            return array.Except(excepted).ToArray();
+            return array.Except(excepted, GraphTypeHelper.graphEqualityComparer).ToArray();
         }
 
         #region 整数相关
@@ -464,7 +464,7 @@ namespace Game
         {
             if (first == null || second == null)
                 return first ?? second ?? Array.Empty<object>();
-            return first.Union(second).ToArray();
+            return first.Union(second, GraphTypeHelper.graphEqualityComparer).ToArray();
         }
         /// <summary>
         /// 获取交集
@@ -480,7 +480,7 @@ namespace Game
         {
             if (first == null || second == null)
                 return first ?? second ?? Array.Empty<object>();
-            return first.Intersect(second).ToArray();
+            return first.Intersect(second, GraphTypeHelper.graphEqualityComparer).ToArray();
         }
         /// <summary>
         /// 是否是某集合的子集
