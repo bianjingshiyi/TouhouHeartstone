@@ -279,24 +279,32 @@ namespace Game
                         foreach (var sound in soundFiles)
                         {
                             var fileName = $"{soundDirName}/{sound}";
-                            var imgEntry = archive.GetEntry(fileName);
+                            var sndEntry = archive.GetEntry(fileName);
 
-                            if (imgEntry == null)
+                            if (sndEntry == null)
                             {
                                 Debug.Log($"导入的音频{fileName}不存在");
                                 game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), game.i18n._(ERROR_WRONG_FORMAT));
                                 return false;
                             }
-                            soundEntries.Add(imgEntry);
+                            soundEntries.Add(sndEntry);
                         }
 
-                        // 写出所有文件
+                        // 写出卡池文件。
                         var definePath = Path.Combine(_persistentDataPath, _cardPoolDirName, $"{manifest.CardPoolID}.{_cardPoolFilePostfix}");
                         await defineEntry.SaveToAsync(definePath);
+
+                        // 写出所有图像。
                         foreach (var image in imageEntries)
                         {
                             var fileName = image.FullName;
                             await image.SaveToAsync(Path.Combine(_persistentDataPath, fileName));
+                        }
+                        // 写出所有音频。
+                        foreach (var sound in soundEntries)
+                        {
+                            var fileName = sound.FullName;
+                            await sound.SaveToAsync(Path.Combine(_persistentDataPath, fileName));
                         }
 
                         // 加载卡池
