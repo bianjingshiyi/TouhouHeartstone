@@ -1,16 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using TouhouHeartstone;
-using TouhouCardEngine.Interfaces;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Card = TouhouCardEngine.Card;
-using System;
+using System.Threading.Tasks;
 using TouhouCardEngine;
-using static UnityEngine.GraphicsBuffer;
-using UI;
-using System.Security.Cryptography;
-using Game.BattleTable;
+using TouhouCardEngine.Interfaces;
+using TouhouHeartstone;
 using UnityEngine;
+using Card = TouhouCardEngine.Card;
 
 namespace Game
 {
@@ -576,9 +572,6 @@ namespace Game
                     return true;
                 case ClassicCardID.ReisenUdongeinInaba_N:
                     value += calcDamageValue(game, player, opponent, opponent.getMaster(), 4);
-                    return true;
-                case ClassicCardID.MedicineSellman:
-                    value += calcHealingValue(game, player, opponent, target, 4);
                     return true;
                 case ClassicCardID.TewiInaba:
                     value += calcDrawCardsValue(game, player, opponent, 1);
