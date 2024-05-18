@@ -8,8 +8,11 @@ namespace Libopus
 {
     public static class LibraryWrapper
     {
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
         const string dllName = "opus.dll";
-
+#else
+        const string dllName = "libopus";
+#endif
         public enum EncoderCtlID
         {
             SetApplicationRequest = 4000,
@@ -120,7 +123,6 @@ namespace Libopus
         [DllImport(dllName)]
         public static extern void opus_encoder_destroy(IntPtr encoder);
         #endregion
-
         #region Decoder
         /// <summary>
         /// Allocates and initializes a decoder state.
