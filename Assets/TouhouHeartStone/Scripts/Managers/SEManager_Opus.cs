@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using UnityOpus;
-using Decoder = UnityOpus.Decoder;
-using Encoder = UnityOpus.Encoder;
+using Libopus;
+using Decoder = Libopus.Decoder;
+using Encoder = Libopus.Encoder;
 
 namespace Game
 {
@@ -43,11 +43,11 @@ namespace Game
             }
 
             // 新建编码器。
-            using var encoder = new Encoder((SamplingFrequency)frequency, (NumChannels)channels, OpusApplication.Audio)
+            using var encoder = new Encoder((SamplingRate)frequency, channels, Libopus.Application.Audio)
             {
                 Bitrate = bitrate,
                 Complexity = 10,
-                Signal = OpusSignal.Music
+                Signal = Libopus.Signal.Music
             };
 
             writeOpusHeaderPage(frequency, channels, stream);
@@ -122,7 +122,7 @@ namespace Game
             var samples = new List<float>();
 
             // 创建解码器。
-            using var decoder = new Decoder((SamplingFrequency)frequency, (NumChannels)channels);
+            using var decoder = new Decoder((SamplingRate)frequency, channels);
 
             // 创建缓冲区字节。
             var sampleBufferSize = getSampleBufferSize(frequency, channels, frameSizeLevel);
@@ -137,7 +137,7 @@ namespace Game
 
                 // 将音频帧解码为采样。
                 var samplePosition = page.granulePosition * channels;
-                var decodedLength = decoder.Decode(page.content, page.content.Length, sampleBuffer);
+                var decodedLength = decoder.Decode(page.content, sampleBuffer);
                 for (int i = 0; i < samplePosition - lastGranule; i++)
                 {
                     samples.Add(sampleBuffer[i]);
