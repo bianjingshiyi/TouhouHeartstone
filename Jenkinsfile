@@ -71,11 +71,7 @@ pipeline {
                     env.BUILD_GIT_TAG = gitTag.trim()
                     
                     // 获取提交日志
-                    def commitMsg = sh label: '', returnStdout: true, script: 'git log HEAD -n 1 --format=%B'
-                    if (commitMsg.startsWith('[ci release]')) {
-						env.BUILD_RELEASE = 'true'
-                        echo "Build release package trigger from commit"
-                    }
+                    env.COMMIT_MSG = sh label: '', returnStdout: true, script: 'git log HEAD -n 1 --format=%B'
 
                     // 生成文本 Git 日志
                     def logVar = [
@@ -108,56 +104,60 @@ pipeline {
                 }
             }
         }
-
-        stage('Build Windows Debug') {
+		stage('condition') {
+			steps {
+                script {
+					if (env.COMMIT_MSG.contains('[ci release]')) {
+						env.BUILD_RELEASE = 'true'
+                        echo "Build release package trigger from commit"
+                    }
+					
+					env.WINDOWS_PACKAGES = "win64-debug"
+					env.LINUX_PACKAGES = ""
+					env.ANDROID_PACKAGES = "android-debug"
+					if (env.BUILD_RELEASE == 'true') {
+						env.WINDOWS_PACKAGES += ';win64-release;win32-release'
+						env.LINUX_PACKAGES += ';linux-debug;linux-release'
+						env.ANDROID_PACKAGES += ';android-release'
+					}
+					if (env.COMMIT_MSG.contains('[ci win32]') && !env.WINDOWS_PACKAGES.contains('win32-debug')) {
+						env.WINDOWS_PACKAGES += ';win32-debug'
+					}
+					if (env.COMMIT_MSG.contains('[ci linux]') && !env.LINUX_PACKAGES.contains('linux-debug')) {
+						env.LINUX_PACKAGES += ';linux-debug'
+					}
+					if (env.LINUX_PACKAGES.length() > 0) {
+						env.BUILD_LINUX = 'true'
+					}
+                }
+			}
+		}
+        stage('Build Windows') {
             steps {
                 script {
 					env.ADDITIONAL_BUILD_FLAGS = env.GLOBAL_BUILD_FLAGS + ';STEAM_BUILD'
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.buildPlatform('2022.3.11f1-windows-mono-3', 'win64-debug')
+                    unitybuilder.buildPlatform('2022.3.11f1-windows-mono-3', env.WINDOWS_PACKAGES)
                 }
             }
         }
-        stage('Build Windows Release') {
-            when {
-                environment name: 'BUILD_RELEASE', value: 'true'
-            }
-            steps {
-                script {
-					env.ADDITIONAL_BUILD_FLAGS = env.GLOBAL_BUILD_FLAGS + ';STEAM_BUILD'
-                    UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.buildPlatform('2022.3.11f1-windows-mono-3', 'win64-release;win32-release')
-                }
-            }
-        }
-        stage('Build Android Debug') {
+        stage('Build Android') {
             steps {
                 script {
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER, 'zmcs_android')
-                    unitybuilder.buildPlatform('2022.3.11f1-android-3', 'android-debug')
-                }
-            }
-        }
-        stage('Build Android Release') {
-            when {
-                environment name: 'BUILD_RELEASE', value: 'true'
-            }
-            steps {
-                script {
-                    UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER, 'zmcs_android')
-                    unitybuilder.buildPlatform('2022.3.11f1-android-3', 'android-release')
+                    unitybuilder.buildPlatform('2022.3.11f1-android-3', env.ANDROID_PACKAGES)
                 }
             }
         }
         stage('Build Linux') {
             when {
-                environment name: 'BUILD_RELEASE', value: 'true'
+                environment name: 'BUILD_LINUX', value: 'true'
             }
             steps {
                 script {
 					env.ADDITIONAL_BUILD_FLAGS = env.GLOBAL_BUILD_FLAGS + ';STEAM_BUILD'
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.buildPlatform('2022.3.11f1-android-3', 'linux-debug;linux-release')
+                    unitybuilder.buildPlatform('2022.3.11f1-android-3', env.LINUX_PACKAGES)
                 }
             }
         }
