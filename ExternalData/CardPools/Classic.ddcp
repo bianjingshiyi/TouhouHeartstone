@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 3, "cardPoolId" : NumberLong(1), "editTime" : 599, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [] }
+{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 3, "cardPoolId" : NumberLong(1), "editTime" : 601, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -10053,6 +10053,10 @@
                     "name" : "condition",
                     "paramIndex" : -1,
                     "value" : true
+                  }, {
+                    "name" : "priority",
+                    "paramIndex" : -1,
+                    "value" : 0
                   }],
                 "propDict" : { },
                 "tags" : null,
@@ -11588,27 +11592,6 @@
                 "targetCheckerList" : []
               }, {
                 "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "posX" : 775.52484130859375,
-                "posY" : 33.320632934570313,
-                "inputDefaultValues" : [{
-                    "name" : "variableName",
-                    "paramIndex" : -1,
-                    "value" : "其他仆从"
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 212004
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
                 "_id" : 3,
                 "posX" : 102.1131591796875,
                 "posY" : -488.42333984375,
@@ -11717,18 +11700,13 @@
                 "consts" : null
               }],
             "connections" : [{
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 2
-              }, {
                 "sourceName" : "卡牌",
                 "sourceNodeId" : 1,
                 "destName" : "B",
                 "destNodeId" : 7
               }, {
-                "sourceName" : "exit",
-                "sourceNodeId" : 2,
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
                 "destName" : "enter",
                 "destNodeId" : 8
               }, {
@@ -11736,11 +11714,6 @@
                 "sourceNodeId" : 3,
                 "destName" : "array",
                 "destNodeId" : 5
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 5,
-                "destName" : "value",
-                "destNodeId" : 2
               }, {
                 "sourceName" : "element",
                 "sourceNodeId" : 5,
@@ -15813,6 +15786,10 @@
                     "name" : "condition",
                     "paramIndex" : -1,
                     "value" : true
+                  }, {
+                    "name" : "priority",
+                    "paramIndex" : -1,
+                    "value" : 0
                   }],
                 "propDict" : { },
                 "consts" : null,
@@ -21087,6 +21064,10 @@
                     "name" : "condition",
                     "paramIndex" : -1,
                     "value" : true
+                  }, {
+                    "name" : "priority",
+                    "paramIndex" : -1,
+                    "value" : 0
                   }],
                 "propDict" : { },
                 "tags" : null,
@@ -41077,6 +41058,10 @@
                     "name" : "condition",
                     "paramIndex" : -1,
                     "value" : true
+                  }, {
+                    "name" : "priority",
+                    "paramIndex" : -1,
+                    "value" : 0
                   }],
                 "propDict" : { },
                 "tags" : null,
@@ -47379,6 +47364,10 @@
                       "Type" : "TouhouCardEngine.EffectTagCollection",
                       "Content" : new BinData(0, "kA==")
                     }
+                  }, {
+                    "name" : "priority",
+                    "paramIndex" : -1,
+                    "value" : 0
                   }],
                 "propDict" : { },
                 "tags" : null,
@@ -49009,7 +48998,9 @@
                     "paramIndex" : -1,
                     "value" : 0
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_1"
+                },
                 "tags" : null,
                 "consts" : null,
                 "targetCheckerList" : []
@@ -49133,7 +49124,9 @@
                 "posX" : -157.17076110839844,
                 "posY" : 221.78866577148438,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_8"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 201003
@@ -49167,7 +49160,9 @@
                 "posX" : 783.2462158203125,
                 "posY" : 162.67742919921875,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_10"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 210007
@@ -49192,7 +49187,9 @@
                     "paramIndex" : -1,
                     "value" : 0
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_11"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 202037
@@ -53592,6 +53589,11 @@
                 "destName" : "toPile",
                 "destNodeId" : 3
               }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 2,
+                "destName" : "enter",
+                "destNodeId" : 15
+              }, {
                 "sourceName" : "action",
                 "sourceNodeId" : 4,
                 "destName" : "enter",
@@ -53626,6 +53628,11 @@
                 "sourceNodeId" : 6,
                 "destName" : "array",
                 "destNodeId" : 4
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 6,
+                "destName" : "value",
+                "destNodeId" : 15
               }, {
                 "sourceName" : "return",
                 "sourceNodeId" : 7,
@@ -53676,16 +53683,6 @@
                 "sourceNodeId" : 13,
                 "destName" : "card",
                 "destNodeId" : 10
-              }, {
-                "sourceName" : "exit",
-                "sourceNodeId" : 2,
-                "destName" : "enter",
-                "destNodeId" : 15
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 6,
-                "destName" : "value",
-                "destNodeId" : 15
               }, {
                 "sourceName" : "exit",
                 "sourceNodeId" : 15,
@@ -55713,13 +55710,12 @@
           },
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
-            "eventName" : "MassDamageEvent"
+            "eventName" : "DamageEvent"
           }
         }],
       "_soundRefs" : []
     }, {
       "_id" : -2147418063,
-      "_skinName" : "Reisen Udongein Inaba",
       "_name" : "Reisen Udongein Inaba",
       "_imagePath" : "711cc6a0aa3ab02438773f6af1c70dd96c58775a13419da1464e2eaa7409b1c1.jpg",
       "_desc" : "<b>Declare</b>: Deal 2 damage to the enemy master twice.",
@@ -55728,7 +55724,6 @@
       "_soundRefs" : []
     }, {
       "_id" : -2147418063,
-      "_skinName" : "鈴仙・優曇華院・イナバ",
       "_name" : "鈴仙・優曇華院・イナバ",
       "_imagePath" : "711cc6a0aa3ab02438773f6af1c70dd96c58775a13419da1464e2eaa7409b1c1.jpg",
       "_desc" : "<b>宣言</b>：相手のヒ\u30fcロ\u30fcに２ダメ\u30fcジを与える、これを２回行う。",
@@ -56089,6 +56084,8 @@
       "_animationRefs" : [{
           "sourcePosition" : 2,
           "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
           "key" : "AnimRef0_4",
           "animRef" : {
             "cardPoolId" : NumberLong(0),
@@ -56096,13 +56093,12 @@
           },
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
-            "eventName" : "MassDamageEvent"
+            "eventName" : "DamageEvent"
           }
         }],
       "_soundRefs" : []
     }, {
       "_id" : -2147418050,
-      "_skinName" : "Flame Fairy",
       "_name" : "Flame Fairy",
       "_imagePath" : "ab198d76d4135df47a0a776e506929d88bd4e3ef183b4ec337677fd684ab4383.jpg",
       "_desc" : "<b>Declare</b>: Deal 1 damage to a random enemy servant.",
@@ -56111,7 +56107,6 @@
       "_soundRefs" : []
     }, {
       "_id" : -2147418050,
-      "_skinName" : "炎の妖精",
       "_name" : "炎の妖精",
       "_imagePath" : "ab198d76d4135df47a0a776e506929d88bd4e3ef183b4ec337677fd684ab4383.jpg",
       "_desc" : "<b>宣言</b>：ランダムな敵のミニオン１体に１ダメ\u30fcジを与える。",
@@ -56403,8 +56398,8 @@
       "_desc" : "<b>唯一</b>\n<b>宣言</b>：将其它仆从移回其拥有者的手牌。",
       "_language" : "zh-Hans",
       "_animationRefs" : [{
-          "sourcePosition" : 4,
-          "targetPosition" : 3,
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
           "sourcePositionVarName" : "其他仆从",
           "targetPositionVarName" : "",
           "key" : "AnimRef0_9",
@@ -56420,7 +56415,6 @@
       "_soundRefs" : []
     }, {
       "_id" : -2147418039,
-      "_skinName" : "Yukari Yakumo",
       "_name" : "Yukari Yakumo",
       "_subname" : "Mastermind behind the Spiriting Away",
       "_imagePath" : "1b7853b2b03541f991209e9b8db5086425f6606681e4b714bd81687f6d9506c5.jpg",
@@ -56430,7 +56424,6 @@
       "_soundRefs" : []
     }, {
       "_id" : -2147418039,
-      "_skinName" : "八雲紫",
       "_name" : "八雲紫",
       "_subname" : "神隠しの主犯",
       "_imagePath" : "1b7853b2b03541f991209e9b8db5086425f6606681e4b714bd81687f6d9506c5.jpg",
@@ -57136,8 +57129,10 @@
       "_desc" : "<b>遗言</b>：对敌方英雄造成2点伤害。",
       "_language" : "zh-Hans",
       "_animationRefs" : [{
-          "sourcePosition" : 3,
+          "sourcePosition" : 2,
           "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
           "key" : "AnimRef0_2",
           "animRef" : {
             "cardPoolId" : NumberLong(0),
@@ -57145,13 +57140,12 @@
           },
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
-            "eventName" : "MassDamageEvent"
+            "eventName" : "DamageEvent"
           }
         }],
       "_soundRefs" : []
     }, {
       "_id" : 20,
-      "_skinName" : "Will-o'-the-wisp",
       "_name" : "Will-o'-the-wisp",
       "_imagePath" : "693e1b5e30d2559806c2a859d365b60923ed5e08b71b1f5128e95f223f98320c.jpg",
       "_desc" : "<b>Lastword</b>: Deal 2 damage to the enemy master.",
@@ -57160,7 +57154,6 @@
       "_soundRefs" : []
     }, {
       "_id" : 20,
-      "_skinName" : "燐火",
       "_name" : "燐火",
       "_imagePath" : "693e1b5e30d2559806c2a859d365b60923ed5e08b71b1f5128e95f223f98320c.jpg",
       "_desc" : "<b>遺言</b>：相手のヒ\u30fcロ\u30fcは２ダメ\u30fcジを与える。",
@@ -57906,6 +57899,8 @@
             "eventName" : "SetArmorEvent"
           }
         }, {
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
           "key" : "AnimRef1_3",
           "animRef" : {
             "cardPoolId" : NumberLong(0),
@@ -57913,13 +57908,12 @@
           },
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
-            "eventName" : "MassAddBuffEvent"
+            "eventName" : "AddBuffEvent"
           }
         }],
       "_soundRefs" : []
     }, {
       "_id" : 44,
-      "_skinName" : "The Fifth Sign of Decay",
       "_name" : "The Fifth Sign of Decay",
       "_imagePath" : "1ad9195f2c32beb83ccda4adbf1684950fbfe8176c42d5cb106e00f085eedae1.jpg",
       "_desc" : "Gain 5 Armor. Give your master +5 Attack this turn.",
@@ -57938,7 +57932,6 @@
       "_soundRefs" : []
     }, {
       "_id" : 44,
-      "_skinName" : "天人の五衰",
       "_name" : "天人の五衰",
       "_imagePath" : "1ad9195f2c32beb83ccda4adbf1684950fbfe8176c42d5cb106e00f085eedae1.jpg",
       "_desc" : "ア\u30fcマ\u30fcを５得る。このタ\u30fcン間、自分のヒ\u30fcロ\u30fcに攻撃力＋５を付与する。",
@@ -60129,6 +60122,8 @@
       "_animationRefs" : [{
           "sourcePosition" : 3,
           "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
           "key" : "AnimRef0_2",
           "animRef" : {
             "cardPoolId" : NumberLong(0),
@@ -60136,13 +60131,12 @@
           },
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
-            "eventName" : "MassDamageEvent"
+            "eventName" : "DamageEvent"
           }
         }],
       "_soundRefs" : []
     }, {
       "_id" : 114,
-      "_skinName" : "Miracle of Tempest",
       "_name" : "Miracle of Tempest",
       "_imagePath" : "ee5da93d76686ba70bff2a1c575c32b98788038943c42967f607b15c9aac1f22.jpg",
       "_desc" : "Deal 3 damage to all enemy servants. Deal 1 more damage for each <b>Faithduel</b> you have done this game.",
@@ -60151,7 +60145,6 @@
       "_soundRefs" : []
     }, {
       "_id" : 114,
-      "_skinName" : "風雨の御業",
       "_name" : "風雨の御業",
       "_imagePath" : "ee5da93d76686ba70bff2a1c575c32b98788038943c42967f607b15c9aac1f22.jpg",
       "_desc" : "敵のミニオン全てに３ダメ\u30fcジを与える、この対戦で自分の１度<b>信仰対決</b>したにつき、ダメ\u30fcジを１加える。",
@@ -60388,6 +60381,8 @@
       "_desc" : "<b>宣言</b>：直到你的回合开始后，使一个仆从的攻击力变为1。",
       "_language" : "zh-Hans",
       "_animationRefs" : [{
+          "sourcePosition" : 3,
+          "targetPosition" : 3,
           "sourcePositionVarName" : "",
           "targetPositionVarName" : "",
           "key" : "AnimRef0_3",
@@ -60397,13 +60392,12 @@
           },
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
-            "eventName" : "MassAddBuffEvent"
+            "eventName" : "AddBuffEvent"
           }
         }],
       "_soundRefs" : []
     }, {
       "_id" : 123,
-      "_skinName" : "Mystia Lorelei",
       "_name" : "Mystia Lorelei",
       "_imagePath" : "5c520c94d56828bc58fa27d545b22f5f2a8149cde975d3db0eac61495bd80398.jpg",
       "_desc" : "<b>Declare</b>: Set a servant's Attack to 1 until the start of your turn.",
@@ -60412,7 +60406,6 @@
       "_soundRefs" : []
     }, {
       "_id" : 123,
-      "_skinName" : "ミスティア・ロ\u30fcレライ",
       "_name" : "ミスティア・ロ\u30fcレライ",
       "_imagePath" : "5c520c94d56828bc58fa27d545b22f5f2a8149cde975d3db0eac61495bd80398.jpg",
       "_desc" : "<b>宣言</b>：次の自分のタ\u30fcン開始時、ミニオン１体に攻撃力を１変える。",
@@ -61295,7 +61288,6 @@
     }, {
       "_id" : 151,
       "_skinId" : 1,
-      "_skinName" : "新建皮肤",
       "_name" : "未来永劫斩",
       "_imagePath" : "07e621e172ef8506c5a4dcacc91d024c4f196b657976ebe9f7520dc5a46c96f0.jpg",
       "_desc" : "<b>唯一</b>，对敌方英雄造成8点伤害。你的英雄每连续攻击过一个回合，此牌的灵力值消耗便减少(1)点。",
@@ -61303,6 +61295,8 @@
       "_animationRefs" : [{
           "sourcePosition" : 3,
           "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
           "key" : "AnimRef0_2",
           "animRef" : {
             "cardPoolId" : NumberLong(0),
@@ -61310,14 +61304,13 @@
           },
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
-            "eventName" : "MassDamageEvent"
+            "eventName" : "DamageEvent"
           }
         }],
       "_soundRefs" : []
     }, {
       "_id" : 151,
       "_skinId" : 1,
-      "_skinName" : "Slash of Eternity",
       "_name" : "Slash of Eternity",
       "_imagePath" : "07e621e172ef8506c5a4dcacc91d024c4f196b657976ebe9f7520dc5a46c96f0.jpg",
       "_desc" : "<b>Unique</b>, Deal 8 damage to the enemy master. Costs (1) less for each turn in a row your master have attacked.",
@@ -61327,7 +61320,6 @@
     }, {
       "_id" : 151,
       "_skinId" : 1,
-      "_skinName" : "未来永劫斬",
       "_name" : "未来永劫斬",
       "_imagePath" : "07e621e172ef8506c5a4dcacc91d024c4f196b657976ebe9f7520dc5a46c96f0.jpg",
       "_desc" : "<b>唯一</b>、相手のヒ\u30fcロ\u30fcに８ダメ\u30fcジを与える。自分のヒ\u30fcロ\u30fcの毎連続攻撃したタ\u30fcンにつき霊力が（１）減る。",
@@ -61397,7 +61389,6 @@
     }, {
       "_id" : 154,
       "_skinId" : 1,
-      "_skinName" : "新建皮肤",
       "_name" : "宫本雅志",
       "_imagePath" : "ebeeb4cbd78ab44da5170eee3e9e14286c54b9f01a5d306e6d3988be47dab8d5.jpg",
       "_desc" : "<b>宣言</b>：抽一张道具牌。如果你装备着道具，则将其替换为抽到的道具牌，并重置你英雄的攻击次数。",
@@ -61417,7 +61408,6 @@
     }, {
       "_id" : 154,
       "_skinId" : 1,
-      "_skinName" : "Masashi Miyamoto",
       "_name" : "Masashi Miyamoto",
       "_imagePath" : "ebeeb4cbd78ab44da5170eee3e9e14286c54b9f01a5d306e6d3988be47dab8d5.jpg",
       "_desc" : "<b>Declare</b>: Draw an item. If you have item, replace it with the drawn item, then reset your master's attacked times.",
@@ -61427,7 +61417,6 @@
     }, {
       "_id" : 154,
       "_skinId" : 1,
-      "_skinName" : "宮本雅志",
       "_name" : "宮本雅志",
       "_imagePath" : "ebeeb4cbd78ab44da5170eee3e9e14286c54b9f01a5d306e6d3988be47dab8d5.jpg",
       "_desc" : "<b>宣言</b>：抽一张道具牌。如果你装备着道具，则将其替换为抽到的道具牌，并重置你英雄的攻击次数。",
@@ -70668,6 +70657,23 @@
                 "piles" : null
               }, {
                 "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "posX" : 14.6849365234375,
+                "posY" : 141.88079833984375,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(1),
+                  "defineId" : 11
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
                 "_id" : 3,
                 "posX" : -283.81857299804688,
                 "posY" : -254.17308044433594,
@@ -70717,25 +70723,23 @@
                 "inputs" : null,
                 "regVar" : null,
                 "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "posX" : 14.6849365234375,
-                "posY" : 141.88079833984375,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(1),
-                  "defineId" : 11
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
               }],
             "connections" : [{
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 2,
+                "destName" : "enter",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 3,
+                "destName" : "卡牌",
+                "destNodeId" : 2
+              }, {
                 "sourceName" : "return",
                 "sourceNodeId" : 3,
                 "destName" : "card",
@@ -70744,21 +70748,6 @@
                 "sourceName" : "return",
                 "sourceNodeId" : 6,
                 "destName" : "buff",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "卡牌",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "exit",
-                "sourceNodeId" : 2,
-                "destName" : "enter",
                 "destNodeId" : 5
               }]
           }
@@ -71193,6 +71182,11 @@
                 "destName" : "card",
                 "destNodeId" : 4
               }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 7,
+                "destName" : "enter",
+                "destNodeId" : 4
+              }, {
                 "sourceName" : "action",
                 "sourceNodeId" : 7,
                 "destName" : "enter",
@@ -71223,15 +71217,15 @@
                 "destName" : "array",
                 "destNodeId" : 18
               }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 20,
-                "destName" : "A",
-                "destNodeId" : 19
-              }, {
                 "sourceName" : "element",
                 "sourceNodeId" : 18,
                 "destName" : "buff",
                 "destNodeId" : 20
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 18,
+                "destName" : "array",
+                "destNodeId" : 21
               }, {
                 "sourceName" : "result",
                 "sourceNodeId" : 19,
@@ -71239,9 +71233,9 @@
                 "destNodeId" : 18
               }, {
                 "sourceName" : "return",
-                "sourceNodeId" : 18,
-                "destName" : "array",
-                "destNodeId" : 21
+                "sourceNodeId" : 20,
+                "destName" : "A",
+                "destNodeId" : 19
               }, {
                 "sourceName" : "return",
                 "sourceNodeId" : 21,
@@ -71251,11 +71245,6 @@
                 "sourceName" : "return",
                 "sourceNodeId" : 21,
                 "destName" : "buff",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "exit",
-                "sourceNodeId" : 7,
-                "destName" : "enter",
                 "destNodeId" : 4
               }]
           }
