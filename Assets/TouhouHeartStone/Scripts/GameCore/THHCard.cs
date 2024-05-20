@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
-using System;
-using MukioI18n;
-using System.IO;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TouhouHeartstone
 {
@@ -392,7 +390,7 @@ namespace TouhouHeartstone
                 if (!card.isReady(game) && //还没准备好
                     !card.isCharge(game) && //且没有冲锋
                     !(card.isRush(game) && game.getOpponent(player).getField().Any(c => card.isAttackable(game, c, out _)))// 没有速攻，或者对手没有可以作为攻击目标的仆从。
-                ) 
+                )
                     return false;
             }
             if (card.getAttackTimes(game) >= card.getMaxAttackTimes(game))//已经攻击过了
@@ -1196,18 +1194,22 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static async Task<EventArg> moveToHand(this Card card, CardEngine game, Pile from, Pile to, int position = -1)
         {
-            if (!Pile.canMove(card, from, to))
+            if (!Pile.isMoveSourceValid(card, from))
+                // 源位置不正确，退出。
                 return null;
             var player = to?.owner;
-            if (to.isFull && from != to) // 手牌已满
+            if (to.isFull && from != to)
             {
+                // 手牌已满，并且不是在手牌内部移动。
                 game.logger.logTrace($"{player}的手牌已满，无法将{card}置入手牌");
-                if (from?.name == PILE.FIELD) // 仆从直接将其消灭
+                if (from?.name == PILE.FIELD)
                 {
+                    // 仆从直接将其消灭
                     await kill(card, game);
                 }
-                else //否则移入墓地。
+                else
                 {
+                    // 否则移入墓地。
                     var grave = player.getGrave();
                     if (from != grave)
                     {
@@ -1216,6 +1218,11 @@ namespace TouhouHeartstone
                 }
                 return null;
             }
+
+            // 移动。
+            if (!Pile.canMove(card, from, to))
+                // 无法进行移动，退出。
+                return null;
             // 手牌未满
             if (position < 0)
                 position = to.count;
@@ -1499,7 +1506,7 @@ namespace TouhouHeartstone
         [TranslateMsg]
         const string INFO_TARGET_IS_STEALTH = "目标具有隐匿";
         [TranslateMsg]
-        const string INFO_TARGET_IS_INVULNERABLE = "目标具有无敌"; 
+        const string INFO_TARGET_IS_INVULNERABLE = "目标具有无敌";
         [TranslateMsg]
         const string INFO_INVALID_TARGET = "无法攻击目标";
         [TranslateMsg("目标选择的错误信息")]
