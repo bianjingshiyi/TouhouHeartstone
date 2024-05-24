@@ -173,6 +173,9 @@ namespace Game
             // 对缓存的图片进行保存
             await saveExternalResources(cardPoolInfo, cardPool);
 
+            // 移除无效的本地化内容
+            removeInvalidLocalizations(cardPool);
+
             // 打成序列化对象。
             SerializableCardPoolInfo seriCardPoolInfo = new(cardPoolInfo);
             SerializableCardPool seriCardPool = new(cardPool);
@@ -599,6 +602,35 @@ namespace Game
                         continue;
                     paths.Add(path);
                 }
+            }
+            return paths.ToArray();
+        }
+        public static string[] getCardPoolLocalizedStringKeys(CardPool cardPool)
+        {
+            HashSet<string> strings = new HashSet<string>();
+            foreach (var cardSkin in cardPool.cardSkinList)
+            {
+                strings.Add(cardSkin.nameKey);
+                strings.Add(cardSkin.subnameKey);
+                strings.Add(cardSkin.descKey);
+            }
+            foreach (var buffSkin in cardPool.buffSkinList)
+            {
+                strings.Add(buffSkin.nameKey);
+                strings.Add(buffSkin.descKey);
+            }
+            return strings.ToArray();
+        }
+        public static string[] getCardPoolLocalizedResourceKeys(CardPool cardPool)
+        {
+            HashSet<string> paths = new HashSet<string>();
+            foreach (var cardSkin in cardPool.cardSkinList)
+            {
+                paths.Add(cardSkin.imagePathKey);
+            }
+            foreach (var buffSkin in cardPool.buffSkinList)
+            {
+                paths.Add(buffSkin.imagePathKey);
             }
             return paths.ToArray();
         }
@@ -1933,6 +1965,13 @@ namespace Game
             {
                 targetDict.Remove(key);
             }
+        }
+        private void removeInvalidLocalizations(CardPool cardPool)
+        {
+            var localizedStringKeys = getCardPoolLocalizedStringKeys(cardPool);
+            var localizedResourceKeys = getCardPoolLocalizedResourceKeys(cardPool);
+            cardPool.localizedStringList.RemoveAll(localized => !localizedStringKeys.Contains(localized.value));
+            cardPool.localizedResourceList.RemoveAll(localized => !localizedResourceKeys.Contains(localized.value));
         }
         #endregion
 
