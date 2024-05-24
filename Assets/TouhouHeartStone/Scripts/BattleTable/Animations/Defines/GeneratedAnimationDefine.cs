@@ -23,5 +23,9 @@ namespace Game.Animations
         {
             throw new NotImplementedException();
         }
+        public override ColorTargetGroup[] getColorTargetGroups()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

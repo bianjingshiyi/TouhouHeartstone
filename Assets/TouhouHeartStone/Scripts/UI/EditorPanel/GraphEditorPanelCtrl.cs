@@ -95,7 +95,7 @@ namespace UI
         {
             _editVisualEffectDialog.initEvents(eventNames);
         }
-        public void updateAnimationDialog(VisualEffectDialogInfo viewData)
+        public void updateAnimationDialog(VisualEffectDialogViewData viewData)
         {
             _editVisualEffectDialog.update(viewData);
         }

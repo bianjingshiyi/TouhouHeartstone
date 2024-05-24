@@ -40,6 +40,7 @@ namespace Game.Animations
             return hashCode;
         }
         public abstract TableEffect createEffect(BattleTableManager table, Transform parent);
+        public abstract ColorTargetGroup[] getColorTargetGroups();
         public virtual void setProp<T>(string propName, T value)
         {
             if (propName == nameof(id))

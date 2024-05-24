@@ -30,6 +30,7 @@ namespace Game.Animations
                     destTransform = targetTransform,
                 };
                 effect = table.createEffect(define, info);
+                onEffectCreated(effect);
             }
             while (!effect.isFinished() && !(effect.state == EffectState.None && _duration >= 10f)) // 十秒没播放算超时
             {
@@ -57,6 +58,10 @@ namespace Game.Animations
                 return true;
             var blockTime = effect.blockTime;
             return _duration > blockTime && blockTime >= 0;
+        }
+        protected virtual void onEffectCreated(TableEffect effect)
+        {
+
         }
         private Transform initSourceTransform(BattleTableManager table)
         {

@@ -100,6 +100,49 @@ namespace Game.Animations
             testMode = value;
 #endif
         }
+        public void modifyColorTarget(ColorTarget target, Color color)
+        {
+            var child = transform.Find(target.path);
+            switch (target.type)
+            {
+                case ColorTargetType.MeshRenderer:
+                    var mesh = child.GetComponent<MeshRendererController>();
+                    if (!mesh)
+                    {
+                        mesh = child.gameObject.AddComponent<MeshRendererController>();
+                    }
+                    mesh.color = color;
+                    break;
+                case ColorTargetType.Light:
+                    var light = child.GetComponent<Light>();
+                    if (light)
+                    {
+                        light.color = color;
+                    }
+                    break;
+                case ColorTargetType.ParticleSystem:
+                    var particle = child.GetComponent<ParticleSystem>();
+                    if (particle)
+                    {
+                        switch (target.particleType)
+                        {
+                            case ParticleColorTarget.StartColor:
+                                var main = particle.main;
+                                main.startColor = color;
+                                break;
+                            case ParticleColorTarget.ColorOverLifetime:
+                                var colorOverLifetime = particle.colorOverLifetime;
+                                colorOverLifetime.color = color;
+                                break;
+                            case ParticleColorTarget.ColorBySpeed:
+                                var colorBySpeed = particle.colorBySpeed;
+                                colorBySpeed.color = color;
+                                break;
+                        }
+                    }
+                    break;
+            }
+        }
         #endregion
 
         #region 私有方法
@@ -147,7 +190,7 @@ namespace Game.Animations
                     _state = EffectState.Dormant;
                     stopParticles();
                 }
-            } 
+            }
             else if (_state == EffectState.Dormant)
             {
                 _state = EffectState.Started;

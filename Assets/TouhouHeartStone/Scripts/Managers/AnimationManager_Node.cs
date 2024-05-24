@@ -6,6 +6,7 @@ using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using UI;
+using UnityEngine;
 
 namespace Game
 {
@@ -32,7 +33,7 @@ namespace Game
                 }
             }
         }
-        public VisualEffectDialogInfo getNodeAnimationViewData(Node node, ISkin skin)
+        public VisualEffectDialogViewData getNodeAnimationViewData(Node node, ISkin skin)
         {
             var defines = getAnimationDefinesForNode();
             var key = getOrInitNodeAnimationKey(node, skin);
@@ -45,6 +46,7 @@ namespace Game
             int targetPosition = 0;
             string sourcePositionVarName = string.Empty;
             string targetPositionVarName = string.Empty;
+            ColorModifyViewData[] colorModifies = null;
             if (animRef != null)
             {
                 var animEventRef = animRef.eventReference;
@@ -64,6 +66,25 @@ namespace Game
                 {
                     var define = defines.FirstOrDefault(d => d.cardPoolId == animDefRef.cardPoolId && d.id == animDefRef.defineId);
                     animIndex = Array.IndexOf(defines, define);
+
+                    var possibleTargets = define.getColorTargetGroups();
+                    colorModifies = new ColorModifyViewData[possibleTargets.Length];
+                    for (int i = 0; i < colorModifies.Length; i++)
+                    {
+                        var targetWithColor = possibleTargets[i];
+                        var targets = targetWithColor.targets;
+                        var modify = animRef.colorModifies?.FirstOrDefault(m => m.targetIndex == i);
+
+                        var modifiedColor = targetWithColor.color;
+                        if (modify != null)
+                        {
+                            modifiedColor = modify.getColor();
+                        }
+                        colorModifies[i] = new ColorModifyViewData()
+                        {
+                            color = modifiedColor
+                        };
+                    }
                 }
                 sourcePosition = animRef.sourcePosition;
                 targetPosition = animRef.targetPosition;
@@ -71,7 +92,7 @@ namespace Game
                 targetPositionVarName = animRef.targetPositionVarName;
             }
 
-            var eventViewData = new VisualEffectDialogInfo()
+            var eventViewData = new VisualEffectDialogViewData()
             {
                 eventIndex = eventIndex,
                 animIndex = animIndex + 1,
@@ -80,7 +101,8 @@ namespace Game
                 sourcePositionVarName = sourcePositionVarName,
                 targetPositionVarName = targetPositionVarName,
                 sourcePositionVarNameVisible = sourcePosition == VisualEffectPosition.TEMP_VAR,
-                targetPositionVarNameVisible = targetPosition == VisualEffectPosition.TEMP_VAR
+                targetPositionVarNameVisible = targetPosition == VisualEffectPosition.TEMP_VAR,
+                colorModifies = colorModifies
             };
             return eventViewData;
         }

@@ -5,6 +5,8 @@ using Game.BattleTable;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using UI;
+using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Game.Animations
 {
@@ -30,6 +32,20 @@ namespace Game.Animations
                     break;
             }
             yield return base.update(table);
+        }
+        protected override void onEffectCreated(TableEffect effect)
+        {
+            if (animRef.colorModifies == null)
+                return;
+            foreach (var modify in animRef.colorModifies)
+            {
+                var targetGroups = define.getColorTargetGroups();
+                var targetGroup = targetGroups[modify.targetIndex];
+                foreach (var target in targetGroup.targets)
+                {
+                    effect.modifyColorTarget(target, new Color(modify.r, modify.g, modify.b, modify.a));
+                }
+            }
         }
         public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
         {

@@ -1,5 +1,7 @@
-﻿using MessagePack;
+﻿using Game.Animations;
+using MessagePack;
 using System;
+using System.Linq;
 using TouhouCardEngine;
 using UI;
 
@@ -23,6 +25,7 @@ namespace Game
             targetPosition = animRef.targetPosition;
             sourcePositionVarName = animRef.sourcePositionVarName;
             targetPositionVarName = animRef.targetPositionVarName;
+            colorModifies = animRef.colorModifies?.Select(d => new SerializableColorModifyData(d))?.ToArray();
             if (animRef.eventReference != null)
                 eventReference = animRef.eventReference;
         }
@@ -34,7 +37,8 @@ namespace Game
                 sourcePosition = sourcePosition,
                 targetPosition = targetPosition,
                 sourcePositionVarName = sourcePositionVarName,
-                targetPositionVarName = targetPositionVarName
+                targetPositionVarName = targetPositionVarName,
+                colorModifies = colorModifies?.Select(d => d.deserialize())?.ToArray(),
             };
         }
         [Key(0)]
@@ -51,5 +55,7 @@ namespace Game
         public DefineReference animRef;
         [Key(6)]
         public EventReference eventReference;
+        [Key(7)]
+        public SerializableColorModifyData[] colorModifies;
     }
 }

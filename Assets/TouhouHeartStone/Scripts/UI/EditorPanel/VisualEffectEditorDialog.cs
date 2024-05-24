@@ -31,7 +31,7 @@ namespace UI
             _targetPositionDropdown.ClearOptions();
             _targetPositionDropdown.AddOptions(new List<string>(options));
         }
-        public void update(VisualEffectDialogInfo viewData)
+        public void update(VisualEffectDialogViewData viewData)
         {
             setEvent(viewData.eventIndex);
             setAnimation(viewData.animIndex);
@@ -47,6 +47,11 @@ namespace UI
             {
                 obj.SetActive(viewData.targetPositionVarNameVisible);
             }
+            _colorModifyItems.updateList(viewData.colorModifies.Length, (i, rect) =>
+            {
+                var colorModifyItem = rect.GetComponent<ColorModifyItem>();
+                colorModifyItem.update(viewData.colorModifies[i]);
+            });
         }
         public void setEvent(int index)
         {
@@ -129,6 +134,8 @@ namespace UI
         [SerializeField]
         private InputField _targetPositionVarNameField;
         [SerializeField]
+        private ElementList _colorModifyItems;
+        [SerializeField]
         private Button _confirmButton;
         #endregion
     }
@@ -140,7 +147,17 @@ namespace UI
         public int targetPosition;
         public string sourcePositionVarName;
         public string targetPositionVarName;
+    }
+    public struct VisualEffectDialogViewData
+    {
+        public int eventIndex;
+        public int animIndex;
+        public int sourcePosition;
+        public int targetPosition;
+        public string sourcePositionVarName;
+        public string targetPositionVarName;
         public bool sourcePositionVarNameVisible;
         public bool targetPositionVarNameVisible;
+        public ColorModifyViewData[] colorModifies;
     }
 }

@@ -1,4 +1,6 @@
-﻿using TouhouCardEngine;
+﻿using System.Linq;
+using Game.Animations;
+using TouhouCardEngine;
 
 namespace UI
 {
@@ -20,6 +22,7 @@ namespace UI
             targetPosition = other.targetPosition;
             sourcePositionVarName = other.sourcePositionVarName;
             targetPositionVarName = other.targetPositionVarName;
+            colorModifies = other.colorModifies?.ToArray();
             eventReference = other.eventReference;
         }
         public static string getNodeKey(Node node)
@@ -37,6 +40,7 @@ namespace UI
         public string targetPositionVarName;
         public EventReference eventReference;
         public DefineReference animRef;
+        public ColorModifyData[] colorModifies;
         public const string NODE_CONST_KEY = "EDITOR_ANIMATION_REF";
     }
 }

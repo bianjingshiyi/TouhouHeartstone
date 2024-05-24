@@ -22,6 +22,11 @@ namespace Game.Animations
                 return null;
             return Object.Instantiate(prefab, parent, false);
         }
+        public override ColorTargetGroup[] getColorTargetGroups()
+        {
+            return colorTargets;
+        }
         public TableEffect prefab;
+        public ColorTargetGroup[] colorTargets;
     }
 }
