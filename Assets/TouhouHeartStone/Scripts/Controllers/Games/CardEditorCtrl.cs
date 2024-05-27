@@ -25,7 +25,6 @@ namespace Controllers
             _curCardNameLang = LangManager.SOURCE;
             _curCardSubnameLang = LangManager.SOURCE;
             _curCardDescLang = LangManager.SOURCE;
-            _ui.resetInputFieldLanguages();
 
             _selectableCharacters = await getSelectableCharacters();
             _cardDefine = cardDefine;

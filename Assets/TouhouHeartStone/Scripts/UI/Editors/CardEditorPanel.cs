@@ -282,6 +282,7 @@ namespace UI
         public override void reset()
         {
             displayPage(_cardPage, _cardPageIndicator);
+            resetInputFieldLanguages();
             hideCopyHint();
             _skinDropdown.Hide();
             _characterDropdown.Hide();

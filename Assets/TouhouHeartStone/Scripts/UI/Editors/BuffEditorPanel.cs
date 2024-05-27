@@ -272,6 +272,7 @@ namespace UI
         public override void reset()
         {
             displayPage(_buffPage, _buffPageIndicator);
+            resetInputFieldLanguages();
             _skinDropdown.Hide();
             _skinNameInputField.DeactivateInputField();
             _persistentAnimDropdown.Hide();

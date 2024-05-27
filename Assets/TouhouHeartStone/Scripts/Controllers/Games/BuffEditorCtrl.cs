@@ -24,7 +24,6 @@ namespace Controllers
             // 设置数据。
             _curBuffNameLang = LangManager.SOURCE;
             _curBuffDescLang = LangManager.SOURCE;
-            _ui.resetInputFieldLanguages();
 
             _buffDefine = buffDefine;
             _buffSkins.Clear();
