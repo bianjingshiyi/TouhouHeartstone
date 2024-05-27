@@ -11,6 +11,15 @@ namespace Game
             this.value = value;
             dictionary = new Dictionary<string, T>();
         }
+        public LocalizedObject(LocalizedObject<T> other)
+        {
+            this.value = other.value;
+            dictionary = new Dictionary<string, T>();
+            foreach (var pair in other.dictionary)
+            {
+                dictionary.Add(pair.Key, pair.Value);
+            }
+        }
         public void setTranslation(string language, T translation)
         {
             dictionary[language] = translation;
@@ -52,12 +61,16 @@ namespace Game
     }
     public static class LocalizeHelper
     {
-        public static LocalizedObject<T> getLocalizedObject<T>(this IEnumerable<LocalizedObject<T>> set, T key)
+        public static T2 getLocalizedObject<T1, T2>(this IEnumerable<T2> set, T1 key) where T2: LocalizedObject<T1>
         {
             if (set == null)
                 return null;
-            var localizedString = set.FirstOrDefault(s => s.value.Equals(key));
-            return localizedString;
+            var obj = set.FirstOrDefault(s => s.value.Equals(key));
+            return obj;
+        }
+        public static LocalizedObject<T> getLocalizedObject<T>(this IEnumerable<LocalizedObject<T>> set, T key)
+        {
+            return set.getLocalizedObject<T, LocalizedObject<T>>(key);
         }
         public static T localize<T>(this IEnumerable<LocalizedObject<T>> set, T key, string language)
         {

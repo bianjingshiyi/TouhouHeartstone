@@ -32,8 +32,8 @@ namespace Game
             long cardPoolId = game.NewSnowflakeId();
             cardPoolInfo = new CardPoolInfo();
             cardPoolInfo.cardPoolId = cardPoolId;
-            cardPoolInfo.cardPoolName = game.lang._(StringTable.EDITOR_NEW_CARDPOOL_DEFAULT_NAME);
-            cardPoolInfo.imageResPath = null;
+            cardPoolInfo.cardPoolNameKey = game.lang._(StringTable.EDITOR_NEW_CARDPOOL_DEFAULT_NAME);
+            cardPoolInfo.imageResPathKey = null;
             cardPoolInfo.versionNumber = CURRENT_CARD_POOL_VERSION;
             cardPool = new CardPool();
             CardPoolReference cardPoolRef = new CardPoolReference(cardPoolId, 0);
@@ -174,6 +174,7 @@ namespace Game
             await saveExternalResources(cardPoolInfo, cardPool);
 
             // 移除无效的本地化内容
+            removeInfoInvalidLocalizations(cardPoolInfo);
             removeInvalidLocalizations(cardPool);
 
             // 打成序列化对象。
@@ -559,21 +560,21 @@ namespace Game
         public static string[] getCardPoolImages(CardPoolInfo info, CardPool cardPool)
         {
             HashSet<string> imageFiles = new HashSet<string>();
-            addImagePath(info.imageResPath);
+            addLocalizedResource(info.localizedResources, info.imageResPathKey);
             foreach (var item in cardPool.cardSkinList)
             {
-                addLocalizedResource(item.imagePathKey);
+                addLocalizedResource(cardPool.localizedResourceList, item.imagePathKey);
             }
             foreach (var buffSkin in cardPool.buffSkinList)
             {
-                addLocalizedResource(buffSkin.imagePathKey);
+                addLocalizedResource(cardPool.localizedResourceList, buffSkin.imagePathKey);
             }
 
             return imageFiles.ToArray();
 
-            void addLocalizedResource(string key)
+            void addLocalizedResource(IEnumerable<LocalizedResource> resources, string key)
             {
-                var localizedRes = cardPool.getLocalizedResource(key);
+                var localizedRes = resources.getLocalizedObject<string, LocalizedResource>(key);
                 if (localizedRes == null)
                     return;
                 foreach (var path in localizedRes.getAllLocalizations())
@@ -605,6 +606,18 @@ namespace Game
             }
             return paths.ToArray();
         }
+        public static string[] getCardPoolInfoLocalizedStringKeys(CardPoolInfo cardPoolInfo)
+        {
+            HashSet<string> strings = new HashSet<string>();
+            strings.Add(cardPoolInfo.cardPoolNameKey);
+            return strings.ToArray();
+        }
+        public static string[] getCardPoolInfoLocalizedResourceKeys(CardPoolInfo cardPoolInfo)
+        {
+            HashSet<string> paths = new HashSet<string>();
+            paths.Add(cardPoolInfo.imageResPathKey);
+            return paths.ToArray();
+        }
         public static string[] getCardPoolLocalizedStringKeys(CardPool cardPool)
         {
             HashSet<string> strings = new HashSet<string>();
@@ -633,26 +646,6 @@ namespace Game
                 paths.Add(buffSkin.imagePathKey);
             }
             return paths.ToArray();
-        }
-        public string getCardPoolName(CardPoolInfo info)
-        {
-            if (info == null)
-                return null;
-            if (info.cardPoolId == CardManager.STANDARD_POOL_ID)
-            {
-                return game.lang._(STANDARD_POOL_NAME);
-            }
-            return info.cardPoolName ?? game.lang._(StringTable.EDITOR_UNKNOWN_CARD_POOL);
-        }
-        public string getCardPoolName(CardPoolInfoPack info)
-        {
-            if (info == null)
-                return null;
-            if (info.cardPoolId == CardManager.STANDARD_POOL_ID)
-            {
-                return game.lang._(STANDARD_POOL_NAME);
-            }
-            return info.cardPoolName ?? game.lang._(StringTable.EDITOR_UNKNOWN_CARD_POOL);
         }
         #endregion
 
@@ -848,7 +841,7 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    throw new FormatException(string.Format("反序列化卡池{0}失败：{1}", cardPoolInfo.cardPoolName, e), e);
+                    throw new FormatException(string.Format("反序列化卡池{0}失败：{1}", getCardPoolName(cardPoolInfo), e), e);
                 }
             }
             else
@@ -1966,6 +1959,13 @@ namespace Game
                 targetDict.Remove(key);
             }
         }
+        private void removeInfoInvalidLocalizations(CardPoolInfo cardPoolInfo)
+        {
+            var localizedStringKeys = getCardPoolInfoLocalizedStringKeys(cardPoolInfo);
+            var localizedResourceKeys = getCardPoolInfoLocalizedResourceKeys(cardPoolInfo);
+            cardPoolInfo.localizedStrings.RemoveAll(localized => !localizedStringKeys.Contains(localized.value));
+            cardPoolInfo.localizedResources.RemoveAll(localized => !localizedResourceKeys.Contains(localized.value));
+        }
         private void removeInvalidLocalizations(CardPool cardPool)
         {
             var localizedStringKeys = getCardPoolLocalizedStringKeys(cardPool);
@@ -1977,7 +1977,7 @@ namespace Game
 
         private string allocCardPoolPath(CardPoolInfo cardPool)
         {
-            var cardPoolName = cardPool.cardPoolName;
+            var cardPoolName = cardPool.cardPoolNameKey;
             string path = Path.Combine(_persistentDataPath, cardPoolDirName, $"{cardPoolName}.{cardPoolFilePostfix}");
             for (int i = 0; i < 100 && File.Exists(path); i++)
             {

@@ -42,19 +42,19 @@ namespace Game
         /// <returns></returns>
         public async Task fixIncorrectPathImages(CardPoolInfo cardPoolInfo, CardPool cardPool)
         {
-            cardPoolInfo.imageResPath = await fixImage(cardPoolInfo.imageResPath);
+            cardPoolInfo.imageResPathKey = await fixLocalizedResourcePath(cardPoolInfo.localizedResources, cardPoolInfo.imageResPathKey);
             foreach (var skin in cardPool.cardSkinList)
             {
-                skin.imagePathKey = await fixLocalizedResourcePath(skin.imagePathKey);
+                skin.imagePathKey = await fixLocalizedResourcePath(cardPool.localizedResourceList, skin.imagePathKey);
             }
             foreach (var buffSkin in cardPool.buffSkinList)
             {
-                buffSkin.imagePathKey = await fixLocalizedResourcePath(buffSkin.imagePathKey);
+                buffSkin.imagePathKey = await fixLocalizedResourcePath(cardPool.localizedResourceList, buffSkin.imagePathKey);
             }
 
-            async Task<string> fixLocalizedResourcePath(string key)
+            async Task<string> fixLocalizedResourcePath(IEnumerable<LocalizedResource> resources, string key)
             {
-                var localizedRes = cardPool.getLocalizedResource(key);
+                var localizedRes = resources.getLocalizedObject<string, LocalizedResource>(key);
                 if (localizedRes == null)
                     return key;
                 localizedRes.value = await fixImage(localizedRes.value);
@@ -98,24 +98,22 @@ namespace Game
 
             // 卡池封面图
             {
-                var newPath = await replaceImage(cardPoolInfo.imageResPath);
-                if (!string.IsNullOrEmpty(newPath))
-                    cardPoolInfo.imageResPath = newPath;
+                cardPoolInfo.imageResPathKey = await replaceLocalizedResourceImage(cardPoolInfo.localizedResources, cardPoolInfo.imageResPathKey);
             }
             foreach (var skin in cardPool.cardSkinList)
             {
-                skin.imagePathKey = await replaceLocalizedResourceImage(skin.imagePathKey);
+                skin.imagePathKey = await replaceLocalizedResourceImage(cardPool.localizedResourceList, skin.imagePathKey);
             }
             foreach (var skin in cardPool.buffSkinList)
             {
-                skin.imagePathKey = await replaceLocalizedResourceImage(skin.imagePathKey);
+                skin.imagePathKey = await replaceLocalizedResourceImage(cardPool.localizedResourceList, skin.imagePathKey);
             }
 
 
 
-            async Task<string> replaceLocalizedResourceImage(string key)
+            async Task<string> replaceLocalizedResourceImage(IEnumerable<LocalizedResource> resources, string key)
             {
-                var localizedRes = cardPool.getLocalizedResource(key);
+                var localizedRes = resources.getLocalizedObject<string, LocalizedResource>(key);
                 if (localizedRes == null)
                     return key;
 
@@ -252,7 +250,8 @@ namespace Game
         }
         public Task<Sprite> loadCardPoolImage(CardPoolInfo cardPoolInfo)
         {
-            return loadImage(cardPoolInfo, cardPoolInfo.imageResPath, false);
+            var imagePath = getCardPoolImagePath(cardPoolInfo);
+            return loadImage(cardPoolInfo, imagePath, false);
         }
         public async Task<Sprite> loadImage(ICardPoolReference cardPoolRef, string imagePath, bool fallbackDefault = true)
         {

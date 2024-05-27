@@ -766,7 +766,7 @@ namespace Controllers
             {
                 name = deck.name,
                 image = await loadDeckImage(deck),
-                mode = DeckListItem.Mode.CanEditName
+                canEditName = true,
             };
             _ui.updateDeckInfo(viewData);
         }

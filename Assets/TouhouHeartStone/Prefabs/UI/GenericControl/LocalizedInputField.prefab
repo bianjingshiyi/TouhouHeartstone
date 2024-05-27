@@ -350,7 +350,7 @@ MonoBehaviour:
   m_Value: 0
   m_Options:
     m_Options:
-    - m_Text: \udf10
+    - m_Text: "\U0001F310"
       m_Image: {fileID: 0}
     - m_Text: ZH
       m_Image: {fileID: 0}
@@ -714,7 +714,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: \udf10
+  m_text: "\U0001F310"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3de40a4a6b2d37d44bc4f271882c05e8, type: 2}
   m_sharedMaterial: {fileID: 435689446246557497, guid: 3de40a4a6b2d37d44bc4f271882c05e8,

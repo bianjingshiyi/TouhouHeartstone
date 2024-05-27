@@ -66,6 +66,9 @@ namespace Controllers
                 {
                     endWaiting();
                 }
+                _curCardPoolImageLang = LangManager.SOURCE;
+                _curCardPoolNameLang = LangManager.SOURCE;
+                _ui.setCardPoolNameLanguage(0);
                 //设置当前卡池
                 var poolInfo = getCardPoolInfo(poolId);
                 await setCurrentCardPool(poolInfo);
@@ -74,7 +77,7 @@ namespace Controllers
                     _firstOpenedCardPoolId = poolId;
                 }
                 //更新牌库信息
-                Sprite image = await game.card.loadCardPoolImage(poolInfo);
+                await updateCardPoolImageButton();
 
                 // 事件
                 updateAllEvents();
@@ -95,8 +98,6 @@ namespace Controllers
                 gameObject.SetActive(true);
                 _ui.setCardPoolListActive(false);
                 _ui.setEditCardPoolPanelActive(true);
-                var poolName = game.card.getCardPoolName(poolInfo);
-                _ui.updateCurCardPoolInfo(poolName, image);
                 updatePasteButton();
                 await _cardPoolViewPanelCtrl.display(cardPoolsRange: new long[] { poolId }, cardFilter: c =>
                 {
@@ -252,6 +253,7 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<EditorPanel>();
             }
+            _ui.initLanguages(game.lang.getLanguagesWithSource().Select(lang => game.lang.getLanguageShortCode(lang)).ToArray());
             // 卡池列表
             _ui.onClickReturnButton += onClickReturnButton;
             _ui.onClickAddCardPoolButton += onClickAddCardPoolButton;
@@ -265,6 +267,7 @@ namespace Controllers
             _ui.onClickDeleteCurCardPoolButton += onClickDeleteCurCardPoolButton;
             _ui.onClickEditCardPoolImageButton += onClickEditCardPoolImageButtonCallback;
             _ui.onCardPoolNameInputFieldValueChanged += onCardPoolNameInputFieldValueChanged;
+            _ui.onCardPoolNameInputFieldLanguageChanged += onCardPoolNameInputFieldLanguageChanged;
             _ui.onClickNewCardButton += onClickNewCardButton;
             _ui.onClickPasteCardButton += onClickPasteCardButton;
             _ui.onClickExportCardPoolButton += onClickExportCardPoolButton;
@@ -514,17 +517,21 @@ namespace Controllers
             {
                 markCardPoolUnsaved(curCardPoolId);
                 var poolInfo = getCurrentCardPoolInfo();
-                poolInfo.imageResPath = game.card.getResourcePath(sprite);
-                var poolName = game.card.getCardPoolName(poolInfo);
-                _ui.updateCurCardPoolInfo(poolName, sprite);
+                game.card.setCardPoolImagePath(poolInfo, _curCardPoolImageLang, game.card.getResourcePath(sprite));
+                await updateCardPoolImageButton();
             }
         }
-        private void onCardPoolNameInputFieldValueChanged(string value)
+        private async void onCardPoolNameInputFieldValueChanged(string value)
         {
             markCardPoolUnsaved(curCardPoolId);
             var poolInfo = getCurrentCardPoolInfo();
-            poolInfo.cardPoolName = value;
-            _cardPoolViewPanelCtrl.updateCardPoolFilterNames();
+            game.card.setCardPoolName(poolInfo, _curCardPoolNameLang, value);
+            await updateCardPoolImageButton();
+        }
+        private async void onCardPoolNameInputFieldLanguageChanged(int index)
+        {
+            _curCardPoolNameLang = game.lang.getLanguagesWithSource()[index];
+            await updateCardPoolImageButton();
         }
 
         #region 自定义规则
@@ -817,8 +824,10 @@ namespace Controllers
             var poolInfo = getCurrentCardPoolInfo();
             if (poolInfo == null)
                 return false;
-            var poolName = poolInfo.cardPoolName;
-            return Path.GetInvalidFileNameChars().Intersect(poolName).Count() > 0;
+            var localizedString = poolInfo.getLocalizedString(poolInfo.cardPoolNameKey);
+            if (localizedString == null)
+                return false;
+            return localizedString.getAllTranslations(true).Any(poolName => poolName != null && Path.GetInvalidFileNameChars().Intersect(poolName).Count() > 0);
         }
         private void showCardPoolNameInvalidDialog()
         {
@@ -1450,6 +1459,13 @@ namespace Controllers
         {
             _ui.setCardPoolListWaiting(false);
         }
+        private async Task updateCardPoolImageButton()
+        {
+            var poolInfo = getCurrentCardPoolInfo();
+            var poolName = game.card.getLocalizedCardPoolName(poolInfo, _curCardPoolNameLang);
+            var sprite = await game.card.loadImage(poolInfo, game.card.getLocalizedCardPoolImagePath(poolInfo, _curCardPoolImageLang));
+            _ui.updateCurCardPoolInfo(poolName, sprite);
+        }
         #endregion
 
         #region 属性字段
@@ -1517,6 +1533,8 @@ namespace Controllers
         private CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         [SerializeField]
         private bool _hasUnsavedChanges;
+        private string _curCardPoolNameLang;
+        private string _curCardPoolImageLang;
 
         #region 事件
         public EventTriggerTime[] eventTriggerTimes { get; private set; }

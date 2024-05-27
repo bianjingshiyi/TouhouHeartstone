@@ -188,7 +188,7 @@ namespace Game
         public const string SOURCE = "SOURCE";
         private static readonly Dictionary<string, string> shortCodes = new Dictionary<string, string>()
         {
-            { SOURCE, "\udf10" },
+            { SOURCE, "🌐" },
             { CN, "CN" },
             { EN, "EN" },
             { JP, "JP" },

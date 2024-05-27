@@ -220,6 +220,11 @@ namespace UI
             _nameInputField.setLanguages(codes);
             _descInputField.setLanguages(codes);
         }
+        public void resetInputFieldLanguages()
+        {
+            _nameInputField.setLanguageWithoutNotify(0);
+            _descInputField.setLanguageWithoutNotify(0);
+        }
         #endregion
 
         #region 特效

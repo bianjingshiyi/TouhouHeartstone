@@ -183,7 +183,7 @@ namespace Game
         }
         public static CardPoolInfoPack ToCardPoolInfoPack(this CardPoolInfo info)
         {
-            return new CardPoolInfoPack(info.cardPoolId, info.cardPoolName, info.editTime, info.dependencyRefs ?? new CardPoolReference[0]);
+            return new CardPoolInfoPack(info.cardPoolId, info.cardPoolNameKey, info.editTime, info.dependencyRefs ?? new CardPoolReference[0]);
         }
     }
 }

@@ -27,11 +27,11 @@ namespace Game
 
         public LocalizedString getLocalizedString(string key)
         {
-            return localizedStringList.FirstOrDefault(res => res.value == key);
+            return localizedStringList.getLocalizedObject<string, LocalizedString>(key);
         }
         public LocalizedResource getLocalizedResource(string key)
         {
-            return localizedResourceList.FirstOrDefault(res => res.value == key);
+            return localizedResourceList.getLocalizedObject<string, LocalizedResource>(key);
         }
     }
 }

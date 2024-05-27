@@ -52,6 +52,12 @@ namespace UI
             _subnameInputField.setLanguages(codes);
             _descInputField.setLanguages(codes);
         }
+        public void resetInputFieldLanguages()
+        {
+            _nameInputField.setLanguageWithoutNotify(0);
+            _subnameInputField.setLanguageWithoutNotify(0);
+            _descInputField.setLanguageWithoutNotify(0);
+        }
         /// <summary>
         /// 设置可选的卡牌类型
         /// </summary>

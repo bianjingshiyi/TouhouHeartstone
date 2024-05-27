@@ -41,26 +41,44 @@ namespace Game
                     //另存为资源
 
                     // 获取使用这张资源的所有皮肤
+                    var infoResourcesUsedThis = cardPoolInfo.localizedResources.Where(res => res.getAllTranslations(true).Contains(cachePath));
                     var resourcesUsedThis = cardPool.localizedResourceList.Where(res => res.getAllTranslations(true).Contains(cachePath));
 
                     // 没有皮肤使用，跳过
-                    if (resourcesUsedThis.Count() <= 0)
+                    if (infoResourcesUsedThis.Count() + resourcesUsedThis.Count() <= 0)
                         continue;
 
                     string path = await saveImage(cardPoolId, sprite.texture);
                     removeResourcesPathList.Add(cachePath);
                     savedPathSpritePairList.Add(new KeyValuePair<string, UnityEngine.Object>(path, sprite));
                     //替换所有引用这个资源的皮肤的资源地址
-                    if (cardPoolInfo.imageResPath == cachePath)
+                    // 卡池文件头。
+                    foreach (var resource in infoResourcesUsedThis)
                     {
-                        cardPoolInfo.imageResPath = path;
+                        if (resource.value == cachePath)
+                        {
+                            resource.value = path;
+                            if (cardPoolInfo.imageResPathKey == cachePath)
+                            {
+                                cardPoolInfo.imageResPathKey = path;
+                            }
+                        }
+                        foreach (var lang in resource.getAllLanguages())
+                        {
+                            if (resource.getTranslation(lang) == cachePath)
+                            {
+                                resource.setTranslation(lang, path);
+                            }
+                        }
                     }
+                    // 卡尺文件内部。
                     foreach (var resource in resourcesUsedThis)
                     {
                         if (resource.value == cachePath)
                         {
                             resource.value = path;
 
+                            // 替换卡牌和增益中所有引用该贴图的地址。
                             var cardSkins = cardPool.cardSkinList.Where(s => s.imagePathKey == cachePath);
                             var buffSkins = cardPool.buffSkinList.Where(s => s.imagePathKey == cachePath);
                             foreach (var otherCardSkin in cardSkins)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -91,7 +92,12 @@ namespace Game.PVE
             };
             info.texturesDir = _generatedTexturesPath;
             info.soundsDir = _generatedSoundsPath;
-            info.cardPoolName = main.lang._(DEFAULT_GEN_POOL_NAME);
+            main.card.setCardPoolName(info, LangManager.SOURCE, DEFAULT_GEN_POOL_NAME);
+            foreach (var langauge in main.lang.getLanguages())
+            {
+                var catalog = main.lang.i18n.GetCatalog(new CultureInfo(langauge));
+                main.card.setCardPoolName(info, langauge, catalog.GetString(DEFAULT_GEN_POOL_NAME));
+            }
             _pvePoolDict.Add(dataName, info);
         }
         public async Task<bool> saveGeneratedCardPool(string dataName)

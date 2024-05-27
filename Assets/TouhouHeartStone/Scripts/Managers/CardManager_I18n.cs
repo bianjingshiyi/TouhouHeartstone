@@ -22,7 +22,7 @@ namespace Game
         {
             if (skin == null)
                 return;
-            skin.nameKey = setLocalizedString(poolRef, skin.nameKey, language, translation);
+            skin.nameKey = setCardPoolLocalizedString(poolRef, skin.nameKey, language, translation);
         }
         public string getBuffName(ICardPoolReference poolRef, int id)
         {
@@ -47,7 +47,7 @@ namespace Game
         {
             if (skin == null)
                 return;
-            skin.descKey = setLocalizedString(poolRef, skin.descKey, language, translation);
+            skin.descKey = setCardPoolLocalizedString(poolRef, skin.descKey, language, translation);
         }
         public string getBuffDesc(ICardPoolReference poolRef, int id)
         {
@@ -72,7 +72,7 @@ namespace Game
         {
             if (skin == null)
                 return;
-            skin.imagePathKey = setLocalizedResource(poolRef, skin.imagePathKey, language, translation);
+            skin.imagePathKey = setCardPoolLocalizedResource(poolRef, skin.imagePathKey, language, translation);
         }
         public string getBuffImagePath(ICardPoolReference poolRef, int id)
         {
@@ -97,7 +97,7 @@ namespace Game
         {
             if (skin == null)
                 return;
-            skin.nameKey = setLocalizedString(poolRef, skin.nameKey, language, translation);
+            skin.nameKey = setCardPoolLocalizedString(poolRef, skin.nameKey, language, translation);
         }
         public string getCardName(ICardPoolReference poolRef, int id)
         {
@@ -122,7 +122,7 @@ namespace Game
         {
             if (skin == null)
                 return;
-            skin.subnameKey = setLocalizedString(poolRef, skin.subnameKey, language, translation);
+            skin.subnameKey = setCardPoolLocalizedString(poolRef, skin.subnameKey, language, translation);
         }
         public string getCardSubname(ICardPoolReference poolRef, int cardId)
         {
@@ -147,7 +147,7 @@ namespace Game
         {
             if (skin == null)
                 return;
-            skin.descKey = setLocalizedString(poolRef, skin.descKey, language, translation);
+            skin.descKey = setCardPoolLocalizedString(poolRef, skin.descKey, language, translation);
         }
         public string getCardDesc(ICardPoolReference poolRef, int id)
         {
@@ -172,7 +172,7 @@ namespace Game
         {
             if (skin == null)
                 return;
-            skin.imagePathKey = setLocalizedResource(poolRef, skin.imagePathKey, language, translation);
+            skin.imagePathKey = setCardPoolLocalizedResource(poolRef, skin.imagePathKey, language, translation);
         }
         public string getCardImagePath(ICardPoolReference poolRef, int id)
         {
@@ -192,6 +192,51 @@ namespace Game
         }
         #endregion
 
+        #region 卡池名称
+        public void setCardPoolName(CardPoolInfo info, string language, string translation)
+        {
+            if (info == null)
+                return;
+            info.cardPoolNameKey = setCardPoolInfoLocalizedString(info, info.cardPoolNameKey, language, translation);
+        }
+        public string getCardPoolName(CardPoolInfo info)
+        {
+            return getLocalizedCardPoolName(info, game.lang.getLanguage());
+        }
+        public string getCardPoolName(ICardPoolReference poolRef)
+        {
+            if (poolRef == null)
+                return game.lang._(StringTable.EDITOR_UNKNOWN_CARD_POOL);
+            return getLocalizedCardPoolName(getCardPoolInfo(poolRef), game.lang.getLanguage());
+        }
+        public string getLocalizedCardPoolName(CardPoolInfo info, string language)
+        {
+            if (info == null)
+                return game.lang._(StringTable.EDITOR_UNKNOWN_CARD_POOL);
+            return info.getCardPoolName(language);
+        }
+        #endregion
+
+
+        #region 卡池名称
+        public void setCardPoolImagePath(CardPoolInfo info, string language, string translation)
+        {
+            if (info == null)
+                return;
+            info.imageResPathKey = setCardPoolInfoLocalizedResource(info, info.imageResPathKey, language, translation);
+        }
+        public string getCardPoolImagePath(CardPoolInfo info)
+        {
+            return getLocalizedCardPoolImagePath(info, game.lang.getLanguage());
+        }
+        public string getLocalizedCardPoolImagePath(CardPoolInfo info, string language)
+        {
+            if (info == null)
+                return null;
+            return info.getCardPoolImagePath(language);
+        }
+        #endregion
+
         public (string language, string path)[] getTranslationResourcesFromPool(ICardPoolReference poolRef, string key)
         {
             if (!tryGetCardPool(poolRef, out CardPool cardPool))
@@ -205,39 +250,59 @@ namespace Game
         #endregion
 
         #region 私有方法
-        private string setLocalizedString(ICardPoolReference poolRef, string key, string language, string translation)
+        private string setLocalizedString(List<LocalizedString> set, string key, string language, string translation)
         {
-            if (!tryGetCardPool(poolRef, out CardPool cardPool))
-                return key;
             if (language == LangManager.SOURCE)
             {
                 return translation;
             }
-            var localizedString = cardPool.getLocalizedString(key);
-            if (localizedString == null)
+            var obj = set.getLocalizedObject<string, LocalizedString>(key);
+            if (obj == null)
             {
-                localizedString = new LocalizedString(key);
-                cardPool.localizedStringList.Add(localizedString);
+                obj = new LocalizedString(key);
+                set.Add(obj);
             }
-            localizedString.setTranslation(language, translation);
+            obj.setTranslation(language, translation);
             return key;
         }
-        private string setLocalizedResource(ICardPoolReference poolRef, string key, string language, string translation)
+        private string setLocalizedResource(List<LocalizedResource> set, string key, string language, string translation)
         {
-            if (!tryGetCardPool(poolRef, out CardPool cardPool))
-                return key;
             if (language == LangManager.SOURCE)
             {
                 return translation;
             }
-            var localizedResource = cardPool.getLocalizedResource(key);
-            if (localizedResource == null)
+            var obj = set.getLocalizedObject<string, LocalizedResource>(key);
+            if (obj == null)
             {
-                localizedResource = new LocalizedResource(key);
-                cardPool.localizedResourceList.Add(localizedResource);
+                obj = new LocalizedResource(key);
+                set.Add(obj);
             }
-            localizedResource.setTranslation(language, translation);
+            obj.setTranslation(language, translation);
             return key;
+        }
+        private string setCardPoolLocalizedString(ICardPoolReference poolRef, string key, string language, string translation)
+        {
+            if (!tryGetCardPool(poolRef, out CardPool cardPool))
+                return key;
+            return setLocalizedString(cardPool.localizedStringList, key, language, translation);
+        }
+        private string setCardPoolLocalizedResource(ICardPoolReference poolRef, string key, string language, string translation)
+        {
+            if (!tryGetCardPool(poolRef, out CardPool cardPool))
+                return key;
+            return setLocalizedResource(cardPool.localizedResourceList, key, language, translation);
+        }
+        private string setCardPoolInfoLocalizedString(CardPoolInfo cardPoolInfo, string key, string language, string translation)
+        {
+            if (cardPoolInfo == null)
+                return key;
+            return setLocalizedString(cardPoolInfo.localizedStrings, key, language, translation);
+        }
+        private string setCardPoolInfoLocalizedResource(CardPoolInfo cardPoolInfo, string key, string language, string translation)
+        {
+            if (cardPoolInfo == null)
+                return key;
+            return setLocalizedResource(cardPoolInfo.localizedResources, key, language, translation);
         }
 
         private (I18n i18n, CultureInfo[] cultures) getOrLoadCardPoolI18n(CardPoolInfo poolInfo, CardPool pool)
@@ -286,7 +351,7 @@ namespace Game
             }
             catch (Exception e)
             {
-                Debug.LogError($"加载卡池{poolInfo.cardPoolName}翻译文件失败：{e.Message}");
+                Debug.LogError($"加载卡池{getCardPoolName(poolInfo)}翻译文件失败：{e.Message}");
             }
             return (null, null);
         }

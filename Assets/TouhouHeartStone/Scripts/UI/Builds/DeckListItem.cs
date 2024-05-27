@@ -10,8 +10,9 @@ namespace UI
         #region 公有方法
         public void updateView(DeckListItemViewData viewData)
         {
+            _canEditName = viewData.canEditName;
             _nameText.text = viewData.name;
-            _nameInputField.text = viewData.name;
+            _nameInputField.inputField.text = viewData.name;
             _image.sprite = viewData.image;
             _imageButton.interactable = !viewData.banned;
             _warningImage.gameObject.SetActive(viewData.isWarning);
@@ -22,14 +23,22 @@ namespace UI
 
             SetMode(viewData.mode);
         }
+        public void initLanguages(string[] languageCodes)
+        {
+            _nameInputField.setLanguages(languageCodes);
+        }
+        public void setLanguageIndex(int index)
+        {
+            _nameInputField.setLanguageWithoutNotify(index);
+        }
         public void setNameInputFieldVisible(bool visible)
         {
             _nameInputFieldVisible = visible;
             updateNameInputFieldVisible();
             if (visible)
-                _nameInputField.ActivateInputField();
+                _nameInputField.inputField.ActivateInputField();
             else
-                _nameInputField.DeactivateInputField();
+                _nameInputField.inputField.DeactivateInputField();
         }
         public void SetMode(Mode mode)
         {
@@ -51,7 +60,9 @@ namespace UI
             _imageButton.onClick.AddListener(() => onClick?.Invoke(this));
             _deleteButton.onClick.AddListener(() => onClickDeleteButton?.Invoke(this));
             _nameButton.onClick.AddListener(() => onClickNameButton?.Invoke(this));
-            _nameInputField.onEndEdit.AddListener(value => onNameInputFieldValueChanged?.Invoke(this, value));
+            _nameInputField.onEndEdit += value => onNameInputFieldValueChanged?.Invoke(this, value);
+            _nameInputField.onDeselect += () => onNameInputFieldDeselect?.Invoke(this);
+            _nameInputField.OnLanguageChanged += value => onNameInputFieldLanguageChanged?.Invoke(this, value);
             _fullButton.onClick.AddListener(() => onClick?.Invoke(this));
             if (_toggle)
                 _toggle.onValueChanged.AddListener((value) => onToggleValueChanged?.Invoke(this, value));
@@ -60,8 +71,8 @@ namespace UI
 
         private void updateNameInputFieldVisible()
         {
-            _nameInputField.gameObject.SetActive(_nameInputFieldVisible && _mode == Mode.CanEditName);
-            _nameButton.gameObject.SetActive(!_nameInputFieldVisible && _mode == Mode.CanEditName);
+            _nameInputField.gameObject.SetActive(_nameInputFieldVisible && _canEditName);
+            _nameButton.gameObject.SetActive(!_nameInputFieldVisible && _canEditName);
             _nameText.gameObject.SetActive(!_nameInputFieldVisible);
         }
 
@@ -71,12 +82,15 @@ namespace UI
         public event Action<DeckListItem> onClick;
         public event Action<DeckListItem> onClickDeleteButton;
         public event Action<DeckListItem, string> onNameInputFieldValueChanged;
+        public event Action<DeckListItem> onNameInputFieldDeselect;
+        public event Action<DeckListItem, int> onNameInputFieldLanguageChanged;
         public event Action<DeckListItem> onClickNameButton;
         public event Action<DeckListItem, bool> onToggleValueChanged;
         #endregion
 
         #region 属性字段
         private Mode _mode;
+        private bool _canEditName;
         private bool _nameInputFieldVisible;
 
         [Header("主体")]
@@ -91,7 +105,7 @@ namespace UI
         [SerializeField]
         Button _deleteButton;
         [SerializeField]
-        InputField _nameInputField;
+        LocalizedInputField _nameInputField;
         [SerializeField]
         Button _nameButton;
         [SerializeField]
@@ -126,10 +140,6 @@ namespace UI
             /// </summary>
             CanDelete,
             /// <summary>
-            /// 可以修改名称
-            /// </summary>
-            CanEditName,
-            /// <summary>
             /// 可以选择
             /// </summary>
             CanSelect,
@@ -149,6 +159,7 @@ namespace UI
         public DeckListItem.Mode mode;
         public bool banned;
         public bool selected;
+        public bool canEditName;
         public string buttonText;
     }
 }

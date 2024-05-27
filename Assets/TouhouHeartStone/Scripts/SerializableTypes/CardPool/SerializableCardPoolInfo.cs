@@ -1,6 +1,7 @@
 ﻿using Controllers;
 using MessagePack;
 using System;
+using System.Collections.Generic;
 using TouhouCardEngine;
 
 namespace Game
@@ -18,26 +19,30 @@ namespace Game
         public SerializableCardPoolInfo(CardPoolInfo info)
         {
             cardPoolId = info.cardPoolId;
-            cardPoolName = info.cardPoolName;
-            imageResPath = info.imageResPath;
+            cardPoolName = info.cardPoolNameKey;
+            imageResPath = info.imageResPathKey;
             versionNumber = info.versionNumber;
             editTime = info.editTime;
             dependencyRefs = info.dependencyRefs;
             texturesDir = info.texturesDir;
             soundsDir = info.soundsDir;
+            localizedStrings = info.localizedStrings.Count >= 0 ? info.localizedStrings.ConvertAll(r => new SerializableLocalizedString(r)) : null;
+            localizedResources = info.localizedResources.Count >= 0 ? info.localizedResources.ConvertAll(r => new SerializableLocalizedResource(r)) : null;
         }
         public CardPoolInfo toInfo()
         {
             return new CardPoolInfo()
             {
                 cardPoolId = cardPoolId,
-                cardPoolName = cardPoolName,
-                imageResPath = imageResPath,
+                cardPoolNameKey = cardPoolName,
+                imageResPathKey = imageResPath,
                 versionNumber = versionNumber,
                 editTime = editTime,
                 dependencyRefs = dependencyRefs,
                 texturesDir = texturesDir,
-                soundsDir = soundsDir
+                soundsDir = soundsDir,
+                localizedStrings = localizedStrings?.ConvertAll(s => s.deserialize()) ?? new List<LocalizedString>(),
+                localizedResources = localizedResources?.ConvertAll(s => s.deserialize()) ?? new List<LocalizedResource>(),
             };
         }
         [Key(0)]
@@ -52,6 +57,10 @@ namespace Game
         public string imageResPath;
         [Key(5)]
         public CardPoolReference[] dependencyRefs;
+        [Key(6)]
+        public List<SerializableLocalizedString> localizedStrings;
+        [Key(7)]
+        public List<SerializableLocalizedResource> localizedResources;
         [IgnoreMember]
         public string texturesDir;
         [IgnoreMember]

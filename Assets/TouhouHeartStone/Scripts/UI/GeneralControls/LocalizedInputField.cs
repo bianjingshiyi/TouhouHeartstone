@@ -10,10 +10,14 @@ namespace UI
 {
     public class LocalizedInputField : Selectable
     {
-        public void setLanguages(string[] names)
+        public void setLanguages(string[] languageCodes)
         {
             _languageDropdown.ClearOptions();
-            _languageDropdown.AddOptions(names.ToList());
+            _languageDropdown.AddOptions(languageCodes.ToList());
+        }
+        public void setLanguageWithoutNotify(int index)
+        {
+            _languageDropdown.SetValueWithoutNotify(index);
         }
         protected override void Awake()
         {

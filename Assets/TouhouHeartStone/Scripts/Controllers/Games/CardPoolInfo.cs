@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Game;
 using MongoDB.Bson.Serialization.Attributes;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
@@ -21,18 +24,36 @@ namespace Controllers
             if (origin == null)
                 throw new ArgumentNullException(nameof(origin));
             cardPoolId = origin.cardPoolId;
-            cardPoolName = origin.cardPoolName;
-            imageResPath = origin.imageResPath;
+            cardPoolNameKey = origin.cardPoolNameKey;
+            imageResPathKey = origin.imageResPathKey;
             version = origin.version;
             versionNumber = origin.versionNumber;
             editTime = origin.editTime;
             dependencyRefs = origin.dependencyRefs != null ? Array.ConvertAll(origin.dependencyRefs, r => new CardPoolReference(r)) : null;
             texturesDir = origin.texturesDir;
             dependencies = (long[])origin.dependencies?.Clone();
+            localizedStrings.AddRange(origin.localizedStrings.Select(s => new LocalizedString(s)));
+            localizedResources.AddRange(origin.localizedResources.Select(s => new LocalizedResource(s)));
+        }
+        public string getCardPoolName(string language)
+        {
+            return localizedStrings.localize(cardPoolNameKey, language);
+        }
+        public string getCardPoolImagePath(string language)
+        {
+            return localizedResources.localize(imageResPathKey, language);
+        }
+        public LocalizedString getLocalizedString(string key)
+        {
+            return localizedStrings.getLocalizedObject<string, LocalizedString>(key);
+        }
+        public LocalizedResource getLocalizedResource(string key)
+        {
+            return localizedResources.getLocalizedObject<string, LocalizedResource>(key);
         }
         public long cardPoolId;
-        public string cardPoolName;
-        public string imageResPath;
+        public string cardPoolNameKey;
+        public string imageResPathKey;
         [Obsolete("使用versionNumber。")]
         public float version;
         public int versionNumber;
@@ -45,6 +66,8 @@ namespace Controllers
         [BsonIgnoreIfNull]
         [Obsolete("使用dependencyRefs。")]
         public long[] dependencies;
+        public List<LocalizedString> localizedStrings = new List<LocalizedString>();
+        public List<LocalizedResource> localizedResources = new List<LocalizedResource>();
         long ICardPoolReference.CardPoolID => cardPoolId;
 
         int ICardPoolReference.CardPoolVersion => editTime;

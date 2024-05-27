@@ -17,6 +17,14 @@ namespace UI
         {
             _pasteCardButton.interactable = value;
         }
+        public void initLanguages(string[] languageCodes)
+        {
+            _cardPoolHeader.initLanguages(languageCodes);
+        }
+        public void setCardPoolNameLanguage(int value)
+        {
+            _cardPoolHeader.setLanguageIndex(value);
+        }
         public void initEventNames(string[] names)
         {
             _createEventRuleDialog.setTypes(names);
@@ -36,9 +44,12 @@ namespace UI
         }
         public void updateCurCardPoolInfo(string name, Sprite image)
         {
-            _curCardPoolNameText.text = name;
-            _curCardPoolImage.sprite = image;
-            _cardPoolNameInputField.SetTextWithoutNotify(name);
+            _cardPoolHeader.updateView(new DeckListItemViewData()
+            {
+                name = name,
+                image = image,
+                canEditName = true,
+            });
         }
         /// <summary>
         /// 更新卡池列表
@@ -143,11 +154,14 @@ namespace UI
             _addCardPoolButton.onClick.AddListener(onClickAddCardPoolButtonCallback);
             _saveCardPoolButton.onClick.AddListener(onClickSaveCardPoolButtonCallback);
             _returnToCardPoolViewButton.onClick.AddListener(onClickReturnToCardPoolViewButtonCallback);
-            _deleteCurCardPoolButton.onClick.AddListener(onClickDeleteCurCardPoolButtonCallback);
 
-            _curCardPoolImageButton.onClick.AddListener(onClickEditCardPoolImageButtonCallback);
-            _curCardPoolNameButton.onClick.AddListener(onClickEditCardPoolNameButtonCallback);
-            _cardPoolNameInputField.onEndEdit.AddListener(onEndEditCardPoolNameInputFieldCallback);
+            
+            _cardPoolHeader.onClickDeleteButton += onClickDeleteCurCardPoolButtonCallback;
+            _cardPoolHeader.onClick += onClickEditCardPoolImageButtonCallback;
+            _cardPoolHeader.onClickNameButton += onClickEditCardPoolNameButtonCallback;
+            _cardPoolHeader.onNameInputFieldValueChanged += onEndEditCardPoolNameInputFieldCallback;
+            _cardPoolHeader.onNameInputFieldDeselect += onCardPoolNameInputFieldDeselectCallback;
+            _cardPoolHeader.onNameInputFieldLanguageChanged += onCardPoolNameInputFieldLanguageChangedCallback;
 
             _newCardButton.onClick.AddListener(onClickNewCardButtonCallback);
             _pasteCardButton.onClick.AddListener(onClickPasteCardButtonCallback);
@@ -182,29 +196,29 @@ namespace UI
         {
             onClickReturnToCardPoolViewButton?.Invoke();
         }
-        private void onClickDeleteCurCardPoolButtonCallback()
+        private void onClickDeleteCurCardPoolButtonCallback(DeckListItem item)
         {
             onClickDeleteCurCardPoolButton?.Invoke();
         }
-        private void onClickEditCardPoolImageButtonCallback()
+        private void onClickEditCardPoolImageButtonCallback(DeckListItem item)
         {
             onClickEditCardPoolImageButton?.Invoke();
         }
-        private void onClickEditCardPoolNameButtonCallback()
+        private void onClickEditCardPoolNameButtonCallback(DeckListItem item)
         {
-            //编辑名称模式
-            _cardPoolNameInputField.gameObject.SetActive(true);
-            _cardPoolNameInputField.ActivateInputField();
-            _curCardPoolNameButton.gameObject.SetActive(false);
-            _curCardPoolNameText.gameObject.SetActive(false);
+            _cardPoolHeader.setNameInputFieldVisible(true);
         }
-        private void onEndEditCardPoolNameInputFieldCallback(string value)
+        private void onEndEditCardPoolNameInputFieldCallback(DeckListItem item, string value)
         {
-            _cardPoolNameInputField.gameObject.SetActive(false);
-            _curCardPoolNameButton.gameObject.SetActive(true);
-            _curCardPoolNameText.gameObject.SetActive(true);
-            _curCardPoolNameText.text = value;
             onCardPoolNameInputFieldValueChanged?.Invoke(value);
+        }
+        private void onCardPoolNameInputFieldDeselectCallback(DeckListItem item)
+        {
+            _cardPoolHeader.setNameInputFieldVisible(false);
+        }
+        private void onCardPoolNameInputFieldLanguageChangedCallback(DeckListItem item, int value)
+        {
+            onCardPoolNameInputFieldLanguageChanged?.Invoke(value);
         }
         private void onClickNewCardButtonCallback()
         {
@@ -285,6 +299,7 @@ namespace UI
         /// </summary>
         public event Action onClickEditCardPoolImageButton;
         public event Action<string> onCardPoolNameInputFieldValueChanged;
+        public event Action<int> onCardPoolNameInputFieldLanguageChanged;
         /// <summary>
         /// 当点击右侧卡组列表添加按钮
         /// </summary>
@@ -334,22 +349,14 @@ namespace UI
         [Header("编辑器")]
         [SerializeField]
         GameObject _cardPoolEditPanel;
+
         [SerializeField]
-        InputField _cardPoolNameInputField;
+        DeckListItem _cardPoolHeader;
+
         [SerializeField]
         Button _saveCardPoolButton;
         [SerializeField]
         Button _returnToCardPoolViewButton;
-        [SerializeField]
-        Button _deleteCurCardPoolButton;
-        [SerializeField]
-        Text _curCardPoolNameText;
-        [SerializeField]
-        Image _curCardPoolImage;
-        [SerializeField]
-        Button _curCardPoolImageButton;
-        [SerializeField]
-        Button _curCardPoolNameButton;
         [SerializeField]
         Text _editorTitle;
         [SerializeField]
