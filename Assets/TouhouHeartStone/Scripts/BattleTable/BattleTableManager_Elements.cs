@@ -2680,7 +2680,10 @@ namespace Game.BattleTable
                     ? (pileName == PILE.GRAVE ? _selfGraveList : _selfDeckList)
                     : (pileName != PILE.GRAVE ? _enemyDeckList : _enemyGraveList);
             if (orderByCost)
-                cards = cards.OrderBy(c => game.getCard(c).define.getCost());
+                cards = cards
+                    .OrderBy(c => game.getCard(c).define.getCost())
+                    .ThenBy(c => game.getCard(c).define.cardPoolId)
+                    .ThenBy(c => game.getCard(c).define.id);
             return cards;
         }
         private void zoomHand(Gem gem, HandList handList, bool expand)

@@ -312,11 +312,14 @@ namespace Game
                 await getOrLoadCardPool(poolRef);
             }
             return deckItems.OrderBy(item =>
-            {
-                var cardRef = item.cardRef;
-                var poolRef = getLocalCardPoolReference(cardRef.cardPoolId);
-                return getCardDefine(poolRef, cardRef.defineId) is CardDefine cardDefine ? cardDefine.getCost() : 0;
-            }).ToArray();
+                {
+                    var cardRef = item.cardRef;
+                    var poolRef = getLocalCardPoolReference(cardRef.cardPoolId);
+                    return getCardDefine(poolRef, cardRef.defineId) is CardDefine cardDefine ? cardDefine.getCost() : 0;
+                })
+                .ThenBy(item => item.cardRef.cardPoolId)
+                .ThenBy(item => item.cardRef.defineId)
+                .ToArray();
         }
         public async Task<DeckItem[]> orderDeckItemsByPoolsInEnv(IEnumerable<DeckItem> deckItems, IEnumerable<ICardPoolReference> env)
         {
@@ -327,11 +330,14 @@ namespace Game
                 await getOrLoadCardPool(poolRef);
             }
             return deckItems.OrderBy(item =>
-            {
-                var cardRef = item.cardRef;
-                var poolRef = getCardPoolReferenceInEnv(cardRef.cardPoolId, env);
-                return getCardDefine(poolRef, cardRef.defineId) is CardDefine cardDefine ? cardDefine.getCost() : 0;
-            }).ToArray();
+                {
+                    var cardRef = item.cardRef;
+                    var poolRef = getCardPoolReferenceInEnv(cardRef.cardPoolId, env);
+                    return getCardDefine(poolRef, cardRef.defineId) is CardDefine cardDefine ? cardDefine.getCost() : 0;
+                })
+                .ThenBy(item => item.cardRef.cardPoolId)
+                .ThenBy(item => item.cardRef.defineId)
+                .ToArray();
         }
         #endregion
 

@@ -656,7 +656,14 @@ namespace Controllers
                 var defineB = game.card.getLocalCardDefine(b.cardRef);
                 if (defineA != null && defineB != null)
                 {
-                    return defineA.getCost().CompareTo(defineB.getCost());
+                    var costCompare = defineA.getCost().CompareTo(defineB.getCost());
+                    if (costCompare != 0)
+                        return costCompare;
+                    var poolCompare = defineA.cardPoolId.CompareTo(defineB.cardPoolId);
+                    if (poolCompare != 0)
+                        return poolCompare;
+                    var idCompare = defineA.id.CompareTo(defineB.id);
+                    return idCompare;
                 }
                 return 0;
             });
@@ -855,7 +862,7 @@ namespace Controllers
             }
 
             //获取拖拽卡牌
-            var orderedCards = deckList.OrderBy(e => game.card.getLocalCardDefine(e.cardRef)?.getCost() ?? 0).ToArray();
+            var orderedCards = await game.card.orderDeckItemsByLocalPools(deckList);
             var deckItem = orderedCards[index];
             _deck.removeCard(deckItem);
             //刷新卡池显示
