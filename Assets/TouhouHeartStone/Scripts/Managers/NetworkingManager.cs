@@ -274,6 +274,10 @@ namespace Game
         {
             return logic.getWorkshopCardPoolReviews(id, version);
         }
+        public Task<string> getWorkshopEULA()
+        {
+            return logic.getWorkshopEULA();
+        }
         #endregion
 
         #endregion 公有方法

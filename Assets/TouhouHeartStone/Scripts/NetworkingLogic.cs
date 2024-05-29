@@ -390,6 +390,10 @@ namespace Game
         {
             return ServerClient.WorkshopGetCardPoolReviews(id, version);
         }
+        public Task<string> getWorkshopEULA()
+        {
+            return ServerClient.WorkshopGetEULA();
+        }
         #endregion
 
         /// <summary>

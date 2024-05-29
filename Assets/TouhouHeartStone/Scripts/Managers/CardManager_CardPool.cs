@@ -586,10 +586,11 @@ namespace Game
 
             void addLocalizedResource(IEnumerable<LocalizedResource> resources, string key)
             {
+                addImagePath(key);
                 var localizedRes = resources.getLocalizedObject<string, LocalizedResource>(key);
                 if (localizedRes == null)
                     return;
-                foreach (var path in localizedRes.getAllLocalizations())
+                foreach (var path in localizedRes.getAllTranslations(false))
                 {
                     addImagePath(path);
                 }

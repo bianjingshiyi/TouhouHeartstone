@@ -293,10 +293,23 @@ namespace Controllers
         #endregion
 
         #region 上传卡池界面
-        private void onClickWorkshopRuleViewButtonCallback()
+        private async void onClickWorkshopRuleViewButtonCallback()
         {
-            var content = string.Empty;
-            _ui.showWorkshopRule(content);
+            try
+            {
+                startWaiting();
+                var content = await game.network.getWorkshopEULA();
+                _ui.showWorkshopRule(content);
+            }
+            catch (Exception e)
+            {
+                var title = game.lang._(StringTable.ERROR);
+                game.ui.dialog.ShowConfirm(title, e.Message);
+            }
+            finally
+            {
+                stopWaiting();
+            }
         }
         private void onClickUploadCloseButtonCallback()
         {
