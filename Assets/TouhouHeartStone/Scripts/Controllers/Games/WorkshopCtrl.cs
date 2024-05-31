@@ -325,6 +325,13 @@ namespace Controllers
                 game.ui.dialog.ShowConfirm(title, quote);
                 return;
             }
+            if (string.IsNullOrEmpty(desc))
+            {
+                var title = game.lang._(StringTable.HINT_TITLE);
+                var quote = game.lang._(HINT_INPUT_DESCRIPTION);
+                game.ui.dialog.ShowConfirm(title, quote);
+                return;
+            }
 
             startWaiting(true);
 
@@ -1070,6 +1077,8 @@ namespace Controllers
         [TranslateMsg("创意工坊-尝试删除卡池时出现的警告，{0}为卡池名字")]
         private const string WARNING_DELETE_CARD_POOL = "您确认要删除卡池“{0}”吗？";
 
+        [TranslateMsg("创意工坊-尝试不输入描述时上传卡池时出现的提示描述")]
+        private const string HINT_INPUT_DESCRIPTION = "请输入卡池描述。";
         [TranslateMsg("创意工坊-尝试不勾选同意创意工坊规则上传卡池时出现的提示描述")]
         private const string HINT_AGREE_RULE_FIRST = "请先同意<b>创意工坊使用规则</b>。";
         [TranslateMsg("创意工坊-上传卡池成功后的提示描述")]
