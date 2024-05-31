@@ -37,13 +37,17 @@ namespace Game.Animations
         {
             if (animRef.colorModifies == null)
                 return;
+            var targetGroups = define.getColorTargetGroups();
             foreach (var modify in animRef.colorModifies)
             {
-                var targetGroups = define.getColorTargetGroups();
+                if (modify.animationRef != define.getDefineRef())
+                    continue;
+                if (modify.targetIndex < 0 || modify.targetIndex >= targetGroups.Length)
+                    continue;
                 var targetGroup = targetGroups[modify.targetIndex];
                 foreach (var target in targetGroup.targets)
                 {
-                    effect.modifyColorTarget(target, new Color(modify.r, modify.g, modify.b, modify.a));
+                    effect.modifyColorTarget(target, modify.getColor());
                 }
             }
         }

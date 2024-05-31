@@ -1,6 +1,8 @@
 ﻿using System;
 using Game.Animations;
 using MessagePack;
+using TouhouCardEngine;
+using UnityEngine;
 
 namespace Game
 {
@@ -10,32 +12,32 @@ namespace Game
     {
         public SerializableColorModifyData(ColorModifyData colorTarget)
         {
+            animationRef = colorTarget.animationRef;
             targetIndex = colorTarget.targetIndex;
             r = colorTarget.r;
             g = colorTarget.g;
             b = colorTarget.b;
-            a = colorTarget.a;
         }
         public ColorModifyData deserialize()
         {
             return new ColorModifyData()
             {
+                animationRef = animationRef,
                 targetIndex = targetIndex,
                 r = r,
                 g = g,
                 b = b,
-                a = a
             };
         }
         [Key(0)]
-        public int targetIndex;
+        public DefineReference animationRef;
         [Key(1)]
-        public float r;
+        public int targetIndex;
         [Key(2)]
-        public float g;
+        public float r;
         [Key(3)]
-        public float b;
+        public float g;
         [Key(4)]
-        public float a;
+        public float b;
     }
 }

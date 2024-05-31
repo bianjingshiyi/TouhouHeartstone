@@ -3,6 +3,7 @@ using System.Linq;
 using BJSYGameCore;
 using Game.BattleTable;
 using UnityEngine;
+using TargetColorPair = System.Tuple<Game.Animations.ColorTarget, UnityEngine.Color>;
 
 namespace Game.Animations
 {
@@ -14,7 +15,7 @@ namespace Game.Animations
             anim.duration = duration;
             anim.blockTime = blockTime;
             anim.isPersistent = isPersistent;
-            anim.colorTargets = getPossibleColorTargets();
+            anim.colorTargets = colorTargets;
             var comp = GetComponent<TableEffect>();
             anim.prefab = comp;
             switch (comp)
@@ -34,22 +35,34 @@ namespace Game.Animations
             }
             return anim;
         }
-        public ColorTargetGroup[] getPossibleColorTargets()
+        public ColorTargetGroup[] getPossibleColorTargets(float aberration = 0)
         {
             var meshes = GetComponentsInChildren<MeshRenderer>(true);
             var lights = GetComponentsInChildren<Light>(true);
             var particles = GetComponentsInChildren<ParticleSystem>(true);
 
-            List<(ColorTarget target, Color color)> targets = new List<(ColorTarget target, Color color)>();
+            List<TargetColorPair> targets = new List<TargetColorPair>();
             foreach (var mesh in meshes)
             {
                 var meshColorController = mesh.GetComponent<MeshRendererController>();
-                var meshColor = meshColorController ? meshColorController.color : Color.white;
-                targets.Add((ColorTarget.FromMesh(transform.getChildPath(mesh.transform)), meshColor));
+                var animator = meshColorController.GetComponent<MeshRendererAnimator>();
+                if (animator)
+                {
+                    for (int i = 0; i < animator.gradient.colorKeys.Length; i++)
+                    {
+                        var colorKey = animator.gradient.colorKeys[i];
+                        targets.Add(new TargetColorPair(ColorTarget.FromMeshAnimator(transform.getChildPath(mesh.transform), i), colorKey.color));
+                    }
+                }
+                else
+                {
+                    Color meshColor = meshColorController ? meshColorController.color : Color.white;
+                    targets.Add(new TargetColorPair(ColorTarget.FromMesh(transform.getChildPath(mesh.transform)), meshColor));
+                }
             }
             foreach (var light in lights)
             {
-                targets.Add((ColorTarget.FromLight(transform.getChildPath(light.transform)), light.color));
+                targets.Add(new TargetColorPair(ColorTarget.FromLight(transform.getChildPath(light.transform)), light.color));
             }
             foreach (var particle in particles)
             {
@@ -57,11 +70,45 @@ namespace Game.Animations
             }
 
             // 按照颜色的相似度进行分组。
-            var groups = targets.GroupBy(t => t.color, t => t.target).Select(t => new ColorTargetGroup(t.ToArray(), t.Key)).ToArray();
+            var resultGroups = new List<ColorTargetGroup>();
 
-            return groups;
+            var groupingTargets = new List<TargetColorPair>(targets);
+            while (groupingTargets.Count > 0)
+            {
+                var colorGroups = new Dictionary<int, List<int>>();
+                for (int i1 = 0; i1 < groupingTargets.Count; i1++)
+                {
+                    var pair1 = groupingTargets[i1];
+                    var group = new List<int>();
+                    colorGroups.Add(i1, group);
+                    for (int i2 = 0; i2 < groupingTargets.Count; i2++)
+                    {
+                        if (i1 == i2)
+                            continue;
+                        var pair2 = groupingTargets[i2];
+                        if (pair1.Item2.getColorDifferenceRGB(pair2.Item2) <= aberration)
+                        {
+                            group.Add(i2);
+                        }
+                    }
+                }
+                // 找到相似色彩最多的那个颜色。
+                var mostColorTargetPair = colorGroups.OrderByDescending(g => g.Value.Count).FirstOrDefault();
+                var mostColorTarget = groupingTargets[mostColorTargetPair.Key];
+                var mostColor = mostColorTarget.Item2;
+                mostColor.a = 1f;
+                var mostColorTargetGroupedTargets = mostColorTargetPair.Value.Select(i => groupingTargets[i].Item1).Prepend(mostColorTarget.Item1).ToArray();
+                resultGroups.Add(new ColorTargetGroup()
+                {
+                    color = mostColor,
+                    targets = mostColorTargetGroupedTargets
+                });
+                // 去掉被包括的这些颜色。
+                groupingTargets.RemoveAll(pair => mostColorTargetGroupedTargets.Contains(pair.Item1));
+            }
+            return resultGroups.ToArray();
         }
-        public IEnumerable<(ColorTarget target, Color color)> getParticleColorTargets(ParticleSystem particle)
+        public IEnumerable<TargetColorPair> getParticleColorTargets(ParticleSystem particle)
         {
             var main = particle.main;
             var colorOverLifetime = particle.colorOverLifetime;
@@ -87,35 +134,35 @@ namespace Game.Animations
                 }
             }
         }
-        public IEnumerable<(ColorTarget target, Color color)> GetMinMaxGradientColorTargets(string path, ParticleColorTarget target, ParticleSystem.MinMaxGradient gradient)
+        public IEnumerable<TargetColorPair> GetMinMaxGradientColorTargets(string path, ParticleColorTarget target, ParticleSystem.MinMaxGradient gradient)
         {
             switch (gradient.mode)
             {
                 case ParticleSystemGradientMode.Color:
-                    yield return (ColorTarget.FromParticle(path, target, 0), gradient.color);
+                    yield return new TargetColorPair(ColorTarget.FromParticle(path, target, 0), gradient.color);
                     break;
                 case ParticleSystemGradientMode.TwoColors:
-                    yield return (ColorTarget.FromParticle(path, target, 0), gradient.colorMin);
-                    yield return (ColorTarget.FromParticle(path, target, 1), gradient.colorMax);
+                    yield return new TargetColorPair(ColorTarget.FromParticle(path, target, 0), gradient.colorMin);
+                    yield return new TargetColorPair(ColorTarget.FromParticle(path, target, 1), gradient.colorMax);
                     break;
                 case ParticleSystemGradientMode.Gradient:
                 case ParticleSystemGradientMode.RandomColor:
                     for (int i = 0; i < gradient.gradient.colorKeys.Length; i++)
                     {
                         var colorKey = gradient.gradient.colorKeys[i];
-                        yield return (ColorTarget.FromParticle(path, target, i), colorKey.color);
+                        yield return new TargetColorPair(ColorTarget.FromParticle(path, target, i), colorKey.color);
                     }
                     break;
                 case ParticleSystemGradientMode.TwoGradients:
                     for (int i = 0; i < gradient.gradientMin.colorKeys.Length; i++)
                     {
                         var colorKey = gradient.gradientMin.colorKeys[i];
-                        yield return (ColorTarget.FromParticle(path, target, i), colorKey.color);
+                        yield return new TargetColorPair(ColorTarget.FromParticle(path, target, i), colorKey.color);
                     }
                     for (int i = 0; i < gradient.gradientMax.colorKeys.Length; i++)
                     {
                         var colorKey = gradient.gradientMax.colorKeys[i];
-                        yield return (ColorTarget.FromParticle(path, target, i + gradient.gradientMin.colorKeys.Length), colorKey.color);
+                        yield return new TargetColorPair(ColorTarget.FromParticle(path, target, i + gradient.gradientMin.colorKeys.Length), colorKey.color);
                     }
                     break;
             }
@@ -124,5 +171,6 @@ namespace Game.Animations
         public float duration;
         public float blockTime;
         public bool isPersistent;
+        public ColorTargetGroup[] colorTargets;
     }
 }

@@ -47,10 +47,23 @@ namespace UI
             {
                 obj.SetActive(viewData.targetPositionVarNameVisible);
             }
-            _colorModifyItems.updateList(viewData.colorModifies.Length, (i, rect) =>
+        }
+        public void updateColors(ColorModifyViewData[] colors)
+        {
+            _colorModifyItems.updateList(colors.Length, (i, rect) =>
             {
                 var colorModifyItem = rect.GetComponent<ColorModifyItem>();
-                colorModifyItem.update(viewData.colorModifies[i]);
+                colorModifyItem.update(colors[i]);
+            },
+            rect =>
+            {
+                var colorModifyItem = rect.GetComponent<ColorModifyItem>();
+                colorModifyItem.onClick += onColorModifyItemClickedCallback;
+            },
+            rect =>
+            {
+                var colorModifyItem = rect.GetComponent<ColorModifyItem>();
+                colorModifyItem.onClick -= onColorModifyItemClickedCallback;
             });
         }
         public void setEvent(int index)
@@ -93,6 +106,10 @@ namespace UI
         {
             onPropValueChanged?.Invoke(toInfo());
         }
+        private void onColorModifyItemClickedCallback(ColorModifyItem item)
+        {
+            onColorModifyItemClicked?.Invoke(_colorModifyItems.indexOf(item));
+        }
         private void OnConfirmCallback()
         {
             onConfirm?.Invoke();
@@ -112,6 +129,7 @@ namespace UI
         #endregion
         #region 事件
         public event Action<VisualEffectDialogInfo> onPropValueChanged;
+        public event Action<int> onColorModifyItemClicked;
         public event Action onConfirm;
         #endregion
         #region 属性字段
@@ -158,6 +176,5 @@ namespace UI
         public string targetPositionVarName;
         public bool sourcePositionVarNameVisible;
         public bool targetPositionVarNameVisible;
-        public ColorModifyViewData[] colorModifies;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using Game.BattleTable;
 using UnityEngine;
 
@@ -111,12 +112,22 @@ namespace Game.Animations
                     {
                         mesh = child.gameObject.AddComponent<MeshRendererController>();
                     }
+                    color.a = mesh.color.a;
                     mesh.color = color;
+                    break;
+                case ColorTargetType.MeshAnimator:
+                    var meshAnimator = child.GetComponent<MeshRendererAnimator>();
+                    if (!meshAnimator)
+                    {
+                        mesh = child.gameObject.AddComponent<MeshRendererController>();
+                    }
+                    meshAnimator.gradient = modifyGradient(meshAnimator.gradient, target.index, color);
                     break;
                 case ColorTargetType.Light:
                     var light = child.GetComponent<Light>();
                     if (light)
                     {
+                        color.a = light.color.a;
                         light.color = color;
                     }
                     break;
@@ -128,15 +139,15 @@ namespace Game.Animations
                         {
                             case ParticleColorTarget.StartColor:
                                 var main = particle.main;
-                                main.startColor = color;
+                                main.startColor = modifyMinMaxGradient(main.startColor, target.index, color);
                                 break;
                             case ParticleColorTarget.ColorOverLifetime:
                                 var colorOverLifetime = particle.colorOverLifetime;
-                                colorOverLifetime.color = color;
+                                colorOverLifetime.color = modifyMinMaxGradient(colorOverLifetime.color, target.index, color);
                                 break;
                             case ParticleColorTarget.ColorBySpeed:
                                 var colorBySpeed = particle.colorBySpeed;
-                                colorBySpeed.color = color;
+                                colorBySpeed.color = modifyMinMaxGradient(colorOverLifetime.color, target.index, color);
                                 break;
                         }
                     }
@@ -246,6 +257,61 @@ namespace Game.Animations
                     continue;
                 particleSystem.Play(true);
             }
+        }
+        private static ParticleSystem.MinMaxGradient modifyMinMaxGradient(ParticleSystem.MinMaxGradient input, int index, Color color)
+        {
+            var result = new ParticleSystem.MinMaxGradient()
+            {
+                mode = input.mode
+            };
+            switch (input.mode)
+            {
+                case ParticleSystemGradientMode.Color:
+                    color.a = input.color.a;
+                    result.color = color;
+                    break;
+                case ParticleSystemGradientMode.TwoColors:
+                    if (index == 0)
+                    {
+                        color.a = input.colorMin.a;
+                        result.colorMin = color;
+                    }
+                    else
+                    {
+                        color.a = input.colorMax.a;
+                        result.colorMax = color;
+                    }
+                    break;
+                case ParticleSystemGradientMode.Gradient:
+                case ParticleSystemGradientMode.RandomColor:
+                    result.gradient = modifyGradient(input.gradient, index, color);
+                    break;
+                case ParticleSystemGradientMode.TwoGradients:
+                    var minLength = input.gradientMin.colorKeys.Length;
+                    if (index < minLength)
+                        result.gradientMin = modifyGradient(input.gradientMin, index, color);
+                    else
+                        result.gradientMax = modifyGradient(input.gradientMax, index - minLength, color);
+                    break;
+            }
+            return result;
+        }
+        private static Gradient modifyGradient(Gradient input, int index, Color color)
+        {
+            var colorKeys = input.colorKeys.ToArray();
+
+            var colorKey = colorKeys[index];
+            colorKey.color = color;
+            colorKeys[index] = colorKey;
+
+            var output = new Gradient()
+            {
+                mode = input.mode,
+                colorSpace = input.colorSpace,
+                alphaKeys = input.alphaKeys.ToArray(),
+                colorKeys = colorKeys,
+            };
+            return output;
         }
         #endregion
 

@@ -15,6 +15,13 @@ namespace UI
         {
             _image.color = viewData.color;
         }
+        private void Awake()
+        {
+            _button.onClick.AddListener(() => onClick?.Invoke(this));
+        }
+        public event Action<ColorModifyItem> onClick;
+        [SerializeField]
+        private Button _button;
         [SerializeField]
         private Image _image;
     }

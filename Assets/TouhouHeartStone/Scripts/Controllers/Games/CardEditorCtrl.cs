@@ -227,6 +227,9 @@ namespace Controllers
             // 节点图。
             _graphEditor.onOpenNodeAnimationDialog += onOpenNodeAnimationDialogCallback;
             _graphEditor.onAnimationPropChanged += onNodeAnimationPropChangedCallback;
+            _graphEditor.onAnimationResetColorClicked += onAnimationResetColorClickedCallback;
+            _graphEditor.onOpenNodeAnimationColorPicker += onOpenNodeAnimationColorPickerCallback;
+            _graphEditor.onColorPickerValueChanged += onColorPickerValueChangedCallback;
         }
         #endregion
 
@@ -799,12 +802,17 @@ namespace Controllers
         {
             markUnsaved();
         }
+        #endregion
+
+        #region 特效
         private void onOpenNodeAnimationDialogCallback(Node node)
         {
             var eventNames = game.anims.getNodeVisualEffectEventEditorNames(node);
             var viewData = game.anims.getNodeAnimationViewData(node, _curCardSkin);
+            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curCardSkin);
             _graphEditor.initNodeAnimationDialogEvents(eventNames);
             _graphEditor.updateAnimationDialog(viewData);
+            _graphEditor.updateAnimationDialogColors(colorViewData);
             _graphEditor.displayNodeAnimationDialog(node);
         }
         private void onNodeAnimationPropChangedCallback(Node node, VisualEffectDialogInfo info)
@@ -812,7 +820,28 @@ namespace Controllers
             game.anims.updateNodeAnimRef(node, _curCardSkin, info);
             markUnsaved();
             var eventViewData = game.anims.getNodeAnimationViewData(node, _curCardSkin);
+            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curCardSkin);
             _graphEditor.updateAnimationDialog(eventViewData);
+            _graphEditor.updateAnimationDialogColors(colorViewData);
+        }
+        private void onAnimationResetColorClickedCallback(Node node)
+        {
+            game.anims.resetNodeAnimColor(node, _curCardSkin);
+            markUnsaved();
+            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curCardSkin);
+            _graphEditor.updateAnimationDialogColors(colorViewData);
+        }
+        private void onOpenNodeAnimationColorPickerCallback(Node node, int index)
+        {
+            var color = game.anims.getNodeAnimationColor(node, _curCardSkin, index);
+            _graphEditor.displayColorPicker(color);
+        }
+        private void onColorPickerValueChangedCallback(Node node, int colorIndex, Color color)
+        {
+            game.anims.setNodeAnimColor(node, _curCardSkin, colorIndex, color);
+            markUnsaved();
+            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curCardSkin);
+            _graphEditor.updateAnimationDialogColors(colorViewData);
         }
         #endregion
 

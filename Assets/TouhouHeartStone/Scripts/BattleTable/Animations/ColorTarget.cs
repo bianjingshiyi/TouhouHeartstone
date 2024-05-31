@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using TouhouCardEngine;
+using UnityEngine;
 
 namespace Game.Animations
 {
+    [Serializable]
     public class ColorTarget
     {
         public string path;
@@ -42,6 +45,15 @@ namespace Game.Animations
                 type = ColorTargetType.MeshRenderer
             };
         }
+        public static ColorTarget FromMeshAnimator(string path, int index)
+        {
+            return new ColorTarget()
+            {
+                path = path,
+                type = ColorTargetType.MeshAnimator,
+                index = index
+            };
+        }
         public static ColorTarget FromLight(string path)
         {
             return new ColorTarget()
@@ -61,6 +73,7 @@ namespace Game.Animations
             };
         }
     }
+    [Serializable]
     public struct ColorTargetGroup
     {
         public ColorTarget[] targets;
@@ -73,19 +86,20 @@ namespace Game.Animations
     }
     public class ColorModifyData
     {
+        public DefineReference animationRef;
         public int targetIndex;
         public float r;
         public float g;
         public float b;
-        public float a;
         public Color getColor()
         {
-            return new Color(r, g, b, a);
+            return new Color(r, g, b, 1);
         }
     }
     public enum ColorTargetType
     {
         MeshRenderer,
+        MeshAnimator,
         Light,
         ParticleSystem
     }

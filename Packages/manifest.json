@@ -6,9 +6,17 @@
       "scopes": [
         "com.unity.uiextensions"
       ]
+    },
+    {
+      "name": "package.openupm.com",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "com.judahperez.hsvcolorpicker"
+      ]
     }
   ],
   "dependencies": {
+    "com.judahperez.hsvcolorpicker": "3.3.0",
     "com.rlabrecque.steamworks.net": "https://github.com/rlabrecque/Steamworks.NET.git?path=/com.rlabrecque.steamworks.net",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "1.1.5",

@@ -175,6 +175,9 @@ namespace Controllers
 
             _graphEditor.onOpenNodeAnimationDialog += onOpenNodeAnimationDialogCallback;
             _graphEditor.onAnimationPropChanged += onNodeAnimationPropChangedCallback;
+            _graphEditor.onAnimationResetColorClicked += onAnimationResetColorClickedCallback;
+            _graphEditor.onOpenNodeAnimationColorPicker += onOpenNodeAnimationColorPickerCallback;
+            _graphEditor.onColorPickerValueChanged += onColorPickerValueChangedCallback;
         }
         #endregion
         #region 事件回调
@@ -356,8 +359,10 @@ namespace Controllers
         {
             var eventNames = game.anims.getNodeVisualEffectEventEditorNames(node);
             var eventViewData = game.anims.getNodeAnimationViewData(node, _curBuffSkin);
+            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curBuffSkin);
             _graphEditor.initNodeAnimationDialogEvents(eventNames);
             _graphEditor.updateAnimationDialog(eventViewData);
+            _graphEditor.updateAnimationDialogColors(colorViewData);
             _graphEditor.displayNodeAnimationDialog(node);
         }
         private void onNodeAnimationPropChangedCallback(Node node, VisualEffectDialogInfo info)
@@ -365,7 +370,28 @@ namespace Controllers
             game.anims.updateNodeAnimRef(node, _curBuffSkin, info);
             markUnsaved();
             var eventViewData = game.anims.getNodeAnimationViewData(node, _curBuffSkin);
+            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curBuffSkin);
             _graphEditor.updateAnimationDialog(eventViewData);
+            _graphEditor.updateAnimationDialogColors(colorViewData);
+        }
+        private void onAnimationResetColorClickedCallback(Node node)
+        {
+            game.anims.resetNodeAnimColor(node, _curBuffSkin);
+            markUnsaved();
+            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curBuffSkin);
+            _graphEditor.updateAnimationDialogColors(colorViewData);
+        }
+        private void onOpenNodeAnimationColorPickerCallback(Node node, int index)
+        {
+            var color = game.anims.getNodeAnimationColor(node, _curBuffSkin, index);
+            _graphEditor.displayColorPicker(color);
+        }
+        private void onColorPickerValueChangedCallback(Node node, int colorIndex, Color color)
+        {
+            game.anims.setNodeAnimColor(node, _curBuffSkin, colorIndex, color);
+            markUnsaved();
+            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curBuffSkin);
+            _graphEditor.updateAnimationDialogColors(colorViewData);
         }
         #endregion
 

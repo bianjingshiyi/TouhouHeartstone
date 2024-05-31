@@ -1,6 +1,7 @@
 ﻿using Game.Animations;
 using MessagePack;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
 using UI;
@@ -38,7 +39,7 @@ namespace Game
                 targetPosition = targetPosition,
                 sourcePositionVarName = sourcePositionVarName,
                 targetPositionVarName = targetPositionVarName,
-                colorModifies = colorModifies?.Select(d => d.deserialize())?.ToArray(),
+                colorModifies = colorModifies?.Select(d => d.deserialize())?.ToList() ?? new List<ColorModifyData>(),
             };
         }
         [Key(0)]

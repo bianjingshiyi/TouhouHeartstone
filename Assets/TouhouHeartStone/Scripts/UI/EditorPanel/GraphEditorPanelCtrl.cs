@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Controllers;
 using Game;
+using HSVPicker;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
@@ -99,10 +100,19 @@ namespace UI
         {
             _editVisualEffectDialog.update(viewData);
         }
+        public void updateAnimationDialogColors(ColorModifyViewData[] viewDatas)
+        {
+            _editVisualEffectDialog.updateColors(viewDatas);
+        }
         public void displayNodeAnimationDialog(Node node)
         {
             _editVisualEffectDialogObj.SetActive(true);
             _curEditingVisualEffectNode = node;
+        }
+        public void displayColorPicker(Color color)
+        {
+            _colorPickerPanelObj.SetActive(true);
+            _colorPicker.CurrentColor = color;
         }
         public async Task displayCardSelectPanel(long[] cardPoolFiltersId = null, DefineReference[] characterRefs = null, Predicate<CardDefine> cardFilter = null)
         {
@@ -147,6 +157,12 @@ namespace UI
 
             _editVisualEffectDialog.onPropValueChanged += onAnimationPropChangedCallback;
             _editVisualEffectDialog.onConfirm += onAnimationConfirmButtonClickedCallback;
+            _editVisualEffectDialog.onColorModifyItemClicked += onAnimationColorModifyItemClickedCallback;
+            _editVisualEffectDialogResetColorButton.onClick.AddListener(onAnimationResetColorClickedCallback);
+
+            _colorPicker.onValueChanged.AddListener((color) => onColorPickerValueChanged?.Invoke(_curEditingVisualEffectNode, _curEditingAnimationColorIndex, color));
+            _colorPicker.onHSVChanged.AddListener((h, s, v) => onColorPickerValueChanged?.Invoke(_curEditingVisualEffectNode, _curEditingAnimationColorIndex, Color.HSVToRGB(h,s,v)));
+            _colorPickerConfirmButton.onClick.AddListener(onColorPickerConfirmButtonClickedCallback);
 
             _createEffectPropDialog.onConfirm += onConfirmCreateEffectPropertyCallback;
 
@@ -401,6 +417,21 @@ namespace UI
         {
             _editVisualEffectDialogObj.SetActive(false);
             _curEditingVisualEffectNode = null;
+            _curEditingAnimationColorIndex = -1;
+        }
+        private void onAnimationColorModifyItemClickedCallback(int index)
+        {
+            _curEditingAnimationColorIndex = index;
+            onOpenNodeAnimationColorPicker?.Invoke(_curEditingVisualEffectNode, index);
+        }
+        private void onAnimationResetColorClickedCallback()
+        {
+            onAnimationResetColorClicked?.Invoke(_curEditingVisualEffectNode);
+        }
+        private void onColorPickerConfirmButtonClickedCallback()
+        {
+            _colorPickerPanelObj.SetActive(false);
+            _curEditingAnimationColorIndex = -1;
         }
         #endregion
 
@@ -741,10 +772,14 @@ namespace UI
         #region 事件
         public event Action<Node> onOpenNodeAnimationDialog;
         public event Action<Node, VisualEffectDialogInfo> onAnimationPropChanged;
+        public event Action<Node> onAnimationResetColorClicked;
+        public event Action<Node, int> onOpenNodeAnimationColorPicker;
+        public event Action<Node, int, Color> onColorPickerValueChanged;
         #endregion
 
         private bool _deleteButtonDirty;
         private Node _curEditingVisualEffectNode;
+        private int _curEditingAnimationColorIndex;
         [SerializeField]
         ActionNodeGraphCtrl _actionGraphCtrl;
         [SerializeField]
@@ -754,9 +789,17 @@ namespace UI
         [SerializeField]
         CreateActionDefineDialog _createActionDefineDialog;
         [SerializeField]
+        GameObject _editVisualEffectDialogObj;
+        [SerializeField]
         VisualEffectEditorDialog _editVisualEffectDialog;
         [SerializeField]
-        GameObject _editVisualEffectDialogObj;
+        Button _editVisualEffectDialogResetColorButton;
+        [SerializeField]
+        GameObject _colorPickerPanelObj;
+        [SerializeField]
+        ColorPicker _colorPicker;
+        [SerializeField]
+        Button _colorPickerConfirmButton;
 
         [Header("按钮")]
         [SerializeField]

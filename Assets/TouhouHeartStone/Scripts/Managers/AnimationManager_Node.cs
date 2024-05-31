@@ -46,7 +46,6 @@ namespace Game
             int targetPosition = 0;
             string sourcePositionVarName = string.Empty;
             string targetPositionVarName = string.Empty;
-            ColorModifyViewData[] colorModifies = null;
             if (animRef != null)
             {
                 var animEventRef = animRef.eventReference;
@@ -66,25 +65,6 @@ namespace Game
                 {
                     var define = defines.FirstOrDefault(d => d.cardPoolId == animDefRef.cardPoolId && d.id == animDefRef.defineId);
                     animIndex = Array.IndexOf(defines, define);
-
-                    var possibleTargets = define.getColorTargetGroups();
-                    colorModifies = new ColorModifyViewData[possibleTargets.Length];
-                    for (int i = 0; i < colorModifies.Length; i++)
-                    {
-                        var targetWithColor = possibleTargets[i];
-                        var targets = targetWithColor.targets;
-                        var modify = animRef.colorModifies?.FirstOrDefault(m => m.targetIndex == i);
-
-                        var modifiedColor = targetWithColor.color;
-                        if (modify != null)
-                        {
-                            modifiedColor = modify.getColor();
-                        }
-                        colorModifies[i] = new ColorModifyViewData()
-                        {
-                            color = modifiedColor
-                        };
-                    }
                 }
                 sourcePosition = animRef.sourcePosition;
                 targetPosition = animRef.targetPosition;
@@ -102,9 +82,66 @@ namespace Game
                 targetPositionVarName = targetPositionVarName,
                 sourcePositionVarNameVisible = sourcePosition == VisualEffectPosition.TEMP_VAR,
                 targetPositionVarNameVisible = targetPosition == VisualEffectPosition.TEMP_VAR,
-                colorModifies = colorModifies
             };
             return eventViewData;
+        }
+        public ColorModifyViewData[] getNodeAnimationColorViewData(Node node, ISkin skin)
+        {
+            var defines = getAnimationDefinesForNode();
+            var key = getOrInitNodeAnimationKey(node, skin);
+            SkinAnimationRef animRef = skin.getAnimRef(key);
+
+            if (animRef == null)
+                return Array.Empty<ColorModifyViewData>();
+
+            var animDefRef = animRef.animRef;
+            if (animDefRef == null)
+                return Array.Empty<ColorModifyViewData>();
+
+            var define = defines.FirstOrDefault(d => d.cardPoolId == animDefRef.cardPoolId && d.id == animDefRef.defineId);
+            if (define == null)
+                return Array.Empty<ColorModifyViewData>();
+            var possibleTargets = define.getColorTargetGroups();
+            ColorModifyViewData[] colorModifies = new ColorModifyViewData[possibleTargets.Length];
+            for (int i = 0; i < colorModifies.Length; i++)
+            {
+                var targetWithColor = possibleTargets[i];
+                var targets = targetWithColor.targets;
+                var modify = animRef.colorModifies?.FirstOrDefault(m => m.animationRef == animDefRef && m.targetIndex == i);
+
+                var modifiedColor = targetWithColor.color;
+                if (modify != null)
+                {
+                    modifiedColor = modify.getColor();
+                }
+                colorModifies[i] = new ColorModifyViewData()
+                {
+                    color = modifiedColor
+                };
+            }
+            return colorModifies;
+        }
+        public Color getNodeAnimationColor(Node node, ISkin skin, int index)
+        {
+            var defines = getAnimationDefinesForNode();
+            var key = getOrInitNodeAnimationKey(node, skin);
+            SkinAnimationRef animRef = skin.getAnimRef(key);
+
+            if (animRef == null)
+                return Color.red;
+
+            var animDefRef = animRef.animRef;
+            if (animDefRef == null)
+                return Color.red;
+
+            var define = defines.FirstOrDefault(d => d.cardPoolId == animDefRef.cardPoolId && d.id == animDefRef.defineId);
+            if (define == null)
+                return Color.red;
+
+            var possibleTargets = define.getColorTargetGroups();
+            var targetWithColor = possibleTargets[index];
+            var modify = animRef.colorModifies?.FirstOrDefault(m => m.animationRef == animDefRef && m.targetIndex == index);
+            return modify != null ? modify.getColor() : targetWithColor.color;
         }
 
         public EventReference[] getNodeVisualEffectEventRefs(Node node, IEnumerable<ICardPoolReference> cardPoolset)
@@ -176,6 +213,31 @@ namespace Game
             animRef.targetPosition = info.targetPosition;
             animRef.sourcePositionVarName = info.sourcePositionVarName;
             animRef.targetPositionVarName = info.targetPositionVarName;
+        }
+        public void resetNodeAnimColor(Node node, ISkin skin)
+        {
+            var key = getOrInitNodeAnimationKey(node, skin);
+            var animRef = skin.getAnimRef(key);
+            if (animRef == null)
+                return;
+            animRef.colorModifies.RemoveAll(m => m.animationRef == animRef.animRef);
+        }
+        public void setNodeAnimColor(Node node, ISkin skin, int index, Color color)
+        {
+            var animRef = getOrInitNodeAnimationRef(node, skin);
+            var colorModify = animRef.colorModifies.Find(m => m.animationRef == animRef.animRef && m.targetIndex == index);
+            if (colorModify == null)
+            {
+                colorModify = new ColorModifyData()
+                {
+                    animationRef = animRef.animRef,
+                    targetIndex = index
+                };
+                animRef.colorModifies.Add(colorModify);
+            }
+            colorModify.r = color.r;
+            colorModify.g = color.g;
+            colorModify.b = color.b;
         }
         [TranslateMsg("默认的特效名称")]
         public const string VFX_DEFAULT_NAME = "特效";
