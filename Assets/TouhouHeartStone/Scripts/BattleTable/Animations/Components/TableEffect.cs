@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Linq;
 using Game.BattleTable;
+using TouhouCardEngine;
+using TouhouHeartstone;
 using UnityEngine;
 
 namespace Game.Animations
@@ -149,6 +151,14 @@ namespace Game.Animations
                                 var colorBySpeed = particle.colorBySpeed;
                                 colorBySpeed.color = modifyMinMaxGradient(colorOverLifetime.color, target.index, color);
                                 break;
+                            case ParticleColorTarget.TrailColorOverLifetime:
+                                var trail = particle.trails;
+                                trail.colorOverLifetime = modifyMinMaxGradient(trail.colorOverLifetime, target.index, color);
+                                break;
+                            case ParticleColorTarget.ColorOverTrail:
+                                var trail2 = particle.trails;
+                                trail2.colorOverTrail = modifyMinMaxGradient(trail2.colorOverTrail, target.index, color);
+                                break;
                         }
                     }
                     break;
@@ -165,6 +175,23 @@ namespace Game.Animations
             if (_animator)
             {
                 _animator.enabled = false;
+            }
+            if (isTestMode())
+            {
+                var builtinEffect = GetComponent<BuiltinEffect>();
+                if (builtinEffect)
+                {
+                    var targetGroups = builtinEffect.colorTargets;
+                    foreach (var targetGroup in targetGroups)
+                    {
+                        foreach (var target in targetGroup.targets)
+                        {
+                            modifyColorTarget(target, getTestColor());
+                        }
+                    }
+                }
+                _time = 0;
+                _state = EffectState.None;
             }
         }
         private void Start()
@@ -190,6 +217,14 @@ namespace Game.Animations
             return testMode;
 #else
             return false;
+#endif
+        }
+        protected Color getTestColor()
+        {
+#if UNITY_EDITOR
+            return testColor;
+#else
+            return Color.white;
 #endif
         }
         private void updatePersistentAnim()
@@ -354,6 +389,8 @@ namespace Game.Animations
 #if UNITY_EDITOR
         [SerializeField]
         private bool testMode;
+        [SerializeField]
+        private Color testColor = Color.magenta;
 #endif
         private ParticleSystem[] _particleSystems;
         private ParticleSystem[] particleSystems

@@ -29499,6 +29499,7 @@ MonoBehaviour:
   _animator: {fileID: 65972746486911399}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 0
   testMode: 0
   _flyCurve:
     serializedVersion: 2
@@ -29548,6 +29549,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _projectileRoot: {fileID: 0}
+  _faceToTarget: 1
 --- !u!114 &5768425862695132109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29563,6 +29566,190 @@ MonoBehaviour:
   defineName: "\u7687\u5BB6\u70C8\u7130"
   duration: 6
   blockTime: 4
+  isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/Sun
+      type: 0
+      particleType: 0
+      index: 0
+    - path: Root/Sun/crown
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Sun/crown
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Sun/crown/flow1
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Sun/crown/flow1
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Sun/crown/flow2
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Sun/crown/flow2
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Sun/crown/flow3
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Sun/crown/flow3
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Sun/crown/flow4
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Sun/crown/flow4
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Explosion
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Explosion
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Explosion/StartSFlash
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Explosion/StartSFlash
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Explosion/EndShockWave
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Explosion/EndShockWave
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Explosion/EndShockWave2
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Explosion/EndShockWave2
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Explosion/EndShockWave3
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Explosion/EndShockWave3
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Explosion/EndSmoke
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Explosion/EndSmoke
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Explosion/EndSTrails
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Explosion/EndSTrails
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Explosion/EndSFlash
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Explosion/EndSFlash
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Trail
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Trail
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - targets:
+    - path: Root/Explosion/EndShockWave
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Light
+      type: 2
+      particleType: 0
+      index: 0
+    - path: Root/Sun/crown
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Sun/crown/flow1
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Sun/crown/flow2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Sun/crown/flow3
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Sun/crown/flow4
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Explosion/EndShockWave2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Explosion/EndShockWave3
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.45819736, b: 0.09019607, a: 1}
+  - targets:
+    - path: Root/Explosion/EndSmoke
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Explosion
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Explosion/StartSFlash
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Explosion/EndSTrails
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Explosion/EndSFlash
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Trail
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.60443044, b: 0.25, a: 1}
 --- !u!114 &2202774157301251145
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29592,8 +29779,8 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 0}
-  playOnEnable: 0
   _fadeoutTime: 1
+  _pitch: 1
 --- !u!114 &1106877053339764160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44996,8 +45183,31 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 7953115006768269178}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 136d38a11899c7f4d96a879caddbe3f6,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8361127969495148368}
   m_SourcePrefab: {fileID: 100100000, guid: 136d38a11899c7f4d96a879caddbe3f6, type: 3}
+--- !u!1 &1334438123119105652 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: 136d38a11899c7f4d96a879caddbe3f6,
+    type: 3}
+  m_PrefabInstance: {fileID: 1334438123119136980}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8361127969495148368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1334438123119105652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ef80267b33ad7f488762eae674682b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &1334438123119528532 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 136d38a11899c7f4d96a879caddbe3f6,

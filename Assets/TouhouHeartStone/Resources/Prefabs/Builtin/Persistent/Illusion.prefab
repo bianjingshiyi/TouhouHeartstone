@@ -68,6 +68,13 @@ MonoBehaviour:
   duration: -1
   blockTime: 0
   isPersistent: 1
+  colorTargets:
+  - targets:
+    - path: Root/Illusion
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.75, g: 0.1875, b: 0.1875, a: 1}
 --- !u!1 &649734852387413773
 GameObject:
   m_ObjectHideFlags: 0

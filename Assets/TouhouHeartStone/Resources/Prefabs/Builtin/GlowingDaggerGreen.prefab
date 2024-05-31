@@ -27,17 +27,18 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1987240774234661669}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 3}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1987240775008907646}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &1987240774234661673
 Animator:
-  serializedVersion: 3
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -50,10 +51,12 @@ Animator:
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &1987240774234661672
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69,7 +72,8 @@ MonoBehaviour:
   _animator: {fileID: 1987240774234661673}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
-  _testMode: 0
+  _playSoundOnStart: 0
+  testMode: 0
   _flyCurve:
     serializedVersion: 2
     m_Curve:
@@ -118,6 +122,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _projectileRoot: {fileID: 0}
+  _faceToTarget: 1
 --- !u!114 &1987240774234661675
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,6 +139,72 @@ MonoBehaviour:
   defineName: "\u53D1\u5149\u5315\u9996_\u7EFF\u8272"
   duration: 3
   blockTime: 0.1
+  isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/DaggerHit/Crater(Optional)
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/DaggerHit/Crater(Optional)
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Hit_Line1
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Hit_Line1/glow
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Hit_Line1/glow
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - targets:
+    - path: Root/DaggerProjectile
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/DaggerHit
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/DaggerHit/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/DaggerHit/Crater(Optional)
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0.79607844, b: 0.4392157, a: 1}
+  - targets:
+    - path: Root/Hit_Line1/lines-1
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Hit_Line1/lines-1
+      type: 3
+      particleType: 0
+      index: 1
+    - path: Root/Hit_Line1/glow
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 1, b: 0.5, a: 1}
+  - targets:
+    - path: Root/Hit_Line1/flash
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Hit_Line1/particles
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0.9882353, b: 0.62352943, a: 1}
 --- !u!114 &1086891024196867769
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,7 +220,8 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 0}
-  playOnEnable: 0
+  _fadeoutTime: 1
+  _pitch: 1
 --- !u!1 &1987240775008907641
 GameObject:
   m_ObjectHideFlags: 0
@@ -172,21 +245,23 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1987240775008907641}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1982934404125963157}
   - {fileID: 1989380971498182179}
   - {fileID: 8924724468357233086}
   m_Father: {fileID: 1987240774234661674}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1987240775018161275
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 1987240775008907646}
     m_Modifications:
     - target: {fileID: 1105495686751570, guid: 4328596502e67c1468c5794bdd5067b4, type: 3}
@@ -241,7 +316,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 198163100417107604, guid: 4328596502e67c1468c5794bdd5067b4,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 198429577173499160, guid: 4328596502e67c1468c5794bdd5067b4,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198789061025031344, guid: 4328596502e67c1468c5794bdd5067b4,
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.r
       value: 0
@@ -252,6 +337,9 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4328596502e67c1468c5794bdd5067b4, type: 3}
 --- !u!4 &1989380971498182179 stripped
 Transform:
@@ -264,6 +352,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 1987240775008907646}
     m_Modifications:
     - target: {fileID: 1790603423183058, guid: 346ba3a1eaf376a4ca0795fa2bf70d7f, type: 3}
@@ -325,6 +414,9 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 346ba3a1eaf376a4ca0795fa2bf70d7f, type: 3}
 --- !u!4 &1982934404125963157 stripped
 Transform:
@@ -337,6 +429,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 1987240775008907646}
     m_Modifications:
     - target: {fileID: 1008842686038376, guid: 42c427f9d12527f4b86f4e770b4ce034, type: 3}
@@ -487,6 +580,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 0da5638457460cc46b39ea3ea526e6ff, type: 2}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 42c427f9d12527f4b86f4e770b4ce034, type: 3}
 --- !u!4 &8924724468357233086 stripped
 Transform:

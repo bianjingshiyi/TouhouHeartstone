@@ -52,6 +52,7 @@ MonoBehaviour:
   _destTransform: {fileID: 0}
   _playSoundOnStart: 1
   testMode: 0
+  testColor: {r: 1, g: 0, b: 1, a: 1}
   _useSourceScale: 0
 --- !u!114 &3357318705534277009
 MonoBehaviour:
@@ -69,6 +70,21 @@ MonoBehaviour:
   duration: 2
   blockTime: 2
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/PatchouliMagicCircle
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/PatchouliMagicCircle
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/PatchouliMagicCircle
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &57655315720220865
 MonoBehaviour:
   m_ObjectHideFlags: 0

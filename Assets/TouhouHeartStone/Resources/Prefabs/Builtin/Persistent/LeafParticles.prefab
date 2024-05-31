@@ -9624,3 +9624,16 @@ MonoBehaviour:
   duration: -1
   blockTime: 0
   isPersistent: 1
+  colorTargets:
+  - targets:
+    - path: Root/Leaves
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.32830942, g: 1, b: 0.15686274, a: 1}
+  - targets:
+    - path: Root/Leaves2
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0.6320754, b: 0.06424293, a: 1}

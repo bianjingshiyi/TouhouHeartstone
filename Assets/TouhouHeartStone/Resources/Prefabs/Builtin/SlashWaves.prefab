@@ -84,6 +84,7 @@ MonoBehaviour:
   _destTransform: {fileID: 0}
   _playSoundOnStart: 1
   testMode: 0
+  testColor: {r: 1, g: 0, b: 1, a: 1}
   _useSourceScale: 0
 --- !u!114 &4183102731042709933
 MonoBehaviour:
@@ -101,6 +102,49 @@ MonoBehaviour:
   duration: 1.5
   blockTime: 0.5
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/SwordSlashThinGreen
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/SwordSlashThinGreen
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/SwordSlashThinGreen/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/SwordSlashThinGreen/Sparks
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/SwordSlashThinGreen/Dark
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/SwordSlashThinGreen/Dark
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - targets:
+    - path: Root/SwordSlashThinGreen
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/SwordSlashThinGreen/Sparks
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 0, g: 1, b: 0, a: 1}
+  - targets:
+    - path: Root/SwordSlashThinGreen/Dark
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0.5, b: 0.25, a: 1}
 --- !u!114 &7415116640658268504
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -103,6 +103,71 @@ MonoBehaviour:
   duration: 3
   blockTime: 0
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/EarthCrack
+      type: 3
+      particleType: 1
+      index: 2
+    - path: Root/EarthCrack/dust_long
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/EarthCrack/particle
+      type: 3
+      particleType: 0
+      index: 1
+    - path: Root/EarthCrack/crack
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.15, b: 0, a: 1}
+  - targets:
+    - path: Root/EarthCrack
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/EarthCrack/dust_long
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/EarthCrack/particle
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.5, b: 0, a: 1}
+  - targets:
+    - path: Root/EarthCrack
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/EarthCrack
+      type: 3
+      particleType: 1
+      index: 3
+    color: {r: 0.3, g: 0.15, b: 0, a: 1}
+  - targets:
+    - path: Root/EarthCrack/particle
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/EarthCrack/crack
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 0, g: 0, b: 0, a: 1}
+  - targets:
+    - path: Root/EarthCrack/particle_splash
+      type: 3
+      particleType: 1
+      index: 0
+    color: {r: 0.41509432, g: 0.3537439, b: 0.32306868, a: 1}
+  - targets:
+    - path: Root/EarthCrack/particle_splash
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 0.20754719, g: 0.20405078, b: 0.2026522, a: 1}
 --- !u!114 &4625844764271996108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,7 +242,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1292150477, guid: f33c8b39e34a71843917c97c59db5f60, type: 3}
       propertyPath: InitialModule.startColor.maxColor.g
-      value: 0.35
+      value: 0.14901961
       objectReference: {fileID: 0}
     - target: {fileID: 1292150477, guid: f33c8b39e34a71843917c97c59db5f60, type: 3}
       propertyPath: InitialModule.startColor.maxColor.r
@@ -412,18 +477,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3593545184995652915, guid: f33c8b39e34a71843917c97c59db5f60,
         type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.14901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 3593545184995652915, guid: f33c8b39e34a71843917c97c59db5f60,
+        type: 3}
       propertyPath: InitialModule.startColor.maxColor.r
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3593545184995652915, guid: f33c8b39e34a71843917c97c59db5f60,
         type: 3}
       propertyPath: InitialModule.startColor.minColor.b
-      value: 0.1666
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3593545184995652915, guid: f33c8b39e34a71843917c97c59db5f60,
         type: 3}
       propertyPath: InitialModule.startColor.minColor.g
-      value: 0.6
+      value: 0.5019608
       objectReference: {fileID: 0}
     - target: {fileID: 3593545184995652915, guid: f33c8b39e34a71843917c97c59db5f60,
         type: 3}

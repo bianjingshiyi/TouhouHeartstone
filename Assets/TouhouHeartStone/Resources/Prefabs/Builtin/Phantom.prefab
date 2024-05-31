@@ -15013,7 +15013,9 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 0
   testMode: 0
+  testColor: {r: 1, g: 0, b: 1, a: 1}
   _flyCurve:
     serializedVersion: 2
     m_Curve:
@@ -15080,6 +15082,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _projectileRoot: {fileID: 0}
+  _faceToTarget: 1
 --- !u!114 &8870694013726260511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15095,6 +15099,56 @@ MonoBehaviour:
   defineName: "\u5E7D\u7075\u6295\u5C04\u7269"
   duration: 1.5
   blockTime: 1.1
+  isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/Particle
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Particle
+      type: 3
+      particleType: 3
+      index: 0
+    - path: Root/Particle
+      type: 3
+      particleType: 3
+      index: 1
+    - path: Root/Particle
+      type: 3
+      particleType: 4
+      index: 0
+    - path: Root/Particle/Smoke
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Particle/Smoke
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Particle/Burst
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Particle/Burst
+      type: 3
+      particleType: 1
+      index: 0
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - targets:
+    - path: Root/Particle
+      type: 3
+      particleType: 4
+      index: 1
+    - path: Root/Particle/Smoke
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Particle/Burst
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 0.06608224, g: 0.26694334, b: 0.5188679, a: 1}
 --- !u!114 &5911738962650608348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15110,8 +15164,8 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 0}
-  playOnEnable: 0
   _fadeoutTime: 1
+  _pitch: 1
 --- !u!95 &1355552310837524824
 Animator:
   serializedVersion: 5

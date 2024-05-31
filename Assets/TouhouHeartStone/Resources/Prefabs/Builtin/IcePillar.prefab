@@ -52,6 +52,7 @@ MonoBehaviour:
   _destTransform: {fileID: 0}
   _playSoundOnStart: 1
   testMode: 0
+  testColor: {r: 1, g: 0, b: 1, a: 1}
   _useSourceScale: 0
 --- !u!114 &9036407537124663389
 MonoBehaviour:
@@ -69,6 +70,43 @@ MonoBehaviour:
   duration: 3
   blockTime: 0.5
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/IcePillar
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/IcePillar/StartSnow
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/IcePillar/Glow
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/IcePillar/Glow
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/IcePillar/Glow
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/IcePillar/Flares
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/IcePillar/IceExpl
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - targets:
+    - path: Root/IcePillar/Snow
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.4237718, g: 0.6014295, b: 0.8396226, a: 1}
 --- !u!114 &5876030516301372623
 MonoBehaviour:
   m_ObjectHideFlags: 0

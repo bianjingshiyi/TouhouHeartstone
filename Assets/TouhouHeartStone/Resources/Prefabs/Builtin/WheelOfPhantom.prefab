@@ -52,6 +52,7 @@ MonoBehaviour:
   _destTransform: {fileID: 0}
   _playSoundOnStart: 1
   testMode: 0
+  testColor: {r: 1, g: 0, b: 1, a: 1}
   _useSourceScale: 0
 --- !u!114 &2705811923670505146
 MonoBehaviour:
@@ -69,6 +70,75 @@ MonoBehaviour:
   duration: 3
   blockTime: 1.3
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/Phantom
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Phantom
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Phantom
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Phantom
+      type: 3
+      particleType: 3
+      index: 0
+    - path: Root/Phantom
+      type: 3
+      particleType: 3
+      index: 1
+    - path: Root/Phantom
+      type: 3
+      particleType: 4
+      index: 0
+    - path: Root/Phantom/SmokeTrail
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Phantom/SmokeTrail
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Phantom/SmokeTrail
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Phantom/SmokeBurst
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Phantom/SmokeBurst
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Phantom/SmokeBurst
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Phantom/SmokeBurst
+      type: 3
+      particleType: 1
+      index: 2
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - targets:
+    - path: Root/Phantom
+      type: 3
+      particleType: 4
+      index: 1
+    - path: Root/Phantom/SmokeTrail
+      type: 3
+      particleType: 1
+      index: 2
+    - path: Root/Phantom/SmokeBurst
+      type: 3
+      particleType: 1
+      index: 3
+    color: {r: 0.06608224, g: 0.26694334, b: 0.5188679, a: 1}
 --- !u!114 &4864941049208423671
 MonoBehaviour:
   m_ObjectHideFlags: 0

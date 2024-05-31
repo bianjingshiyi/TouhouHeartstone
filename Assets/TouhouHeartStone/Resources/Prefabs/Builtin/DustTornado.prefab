@@ -101,6 +101,41 @@ MonoBehaviour:
   duration: 3.25
   blockTime: 0
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/DustTornado
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/DustTornado/TornadoBorders
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/DustTornado/Mesh ground
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/DustTornado/Ground
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/DustTornado/Fie ground/Fire
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.3207547, g: 0.28111428, b: 0.122552514, a: 1}
+  - targets:
+    - path: Root/DustTornado/Light
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.5815866, b: 0.051886797, a: 1}
+  - targets:
+    - path: Root/DustTornado/Smoke pivot/Smoke
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.30882353, g: 0.2505041, b: 0.19755623, a: 1}
 --- !u!114 &4561842903228377974
 MonoBehaviour:
   m_ObjectHideFlags: 0

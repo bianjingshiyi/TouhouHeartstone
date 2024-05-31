@@ -139,7 +139,9 @@ MonoBehaviour:
   _animator: {fileID: 7527580489375798917}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 0
   testMode: 0
+  testColor: {r: 1, g: 0, b: 1, a: 1}
   _flyCurve:
     serializedVersion: 2
     m_Curve:
@@ -188,6 +190,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _projectileRoot: {fileID: 0}
+  _faceToTarget: 1
 --- !u!114 &3842044945674065406
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,6 +208,65 @@ MonoBehaviour:
   duration: 1.25
   blockTime: 0.25
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/BulletLaunch
+      type: 2
+      particleType: 0
+      index: 0
+    - path: Root/Projectile/BulletHit
+      type: 2
+      particleType: 0
+      index: 0
+    - path: Root/BulletLaunch
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/BulletLaunch/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/BulletLaunch/Flash
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Projectile/BulletHit
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Projectile/BulletHit/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Projectile/BulletHit/Flash
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0, b: 0.29411766, a: 1}
+  - targets:
+    - path: Root/Projectile/Bullet
+      type: 3
+      particleType: 3
+      index: 0
+    - path: Root/Projectile/Bullet
+      type: 3
+      particleType: 4
+      index: 0
+    - path: Root/Projectile/Bullet
+      type: 3
+      particleType: 4
+      index: 1
+    color: {r: 1, g: 0.5, b: 0.91418386, a: 1}
+  - targets:
+    - path: Root/Projectile/Bullet/Light
+      type: 2
+      particleType: 0
+      index: 0
+    - path: Root/Projectile/Bullet/Light
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.21568628, b: 0.87058824, a: 1}
 --- !u!114 &2807646428212169696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -219,8 +282,8 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 0}
-  playOnEnable: 0
   _fadeoutTime: 1
+  _pitch: 1
 --- !u!114 &8258228769030809904
 MonoBehaviour:
   m_ObjectHideFlags: 0

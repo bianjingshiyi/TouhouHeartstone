@@ -74,7 +74,9 @@ MonoBehaviour:
   _animator: {fileID: 1425561409847800160}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 0
   testMode: 0
+  _useSourceScale: 0
 --- !u!114 &1425561409847800161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90,6 +92,86 @@ MonoBehaviour:
   defineName: "\u6C89\u9759\u6708\u795E"
   duration: 4.25
   blockTime: 3.25
+  isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/SilentSelene/Light
+      type: 2
+      particleType: 0
+      index: 0
+    - path: Root/SilentSelene/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/SilentSelene/GroundWave2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/SilentSelene/FireCore2
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.09803922, g: 0.25882354, b: 1, a: 1}
+  - targets:
+    - path: Root/SilentSelene
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/SilentSelene/SparksEnd
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/SilentSelene/FireCore
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.41960785, g: 0.52156866, b: 1, a: 1}
+  - targets:
+    - path: Root/SilentSelene/ShockWave
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/SilentSelene/GroundWave
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.2028302, g: 0.38742873, b: 1, a: 1}
+  - targets:
+    - path: Root/SilentSelene
+      type: 3
+      particleType: 1
+      index: 2
+    color: {r: 0, g: 0, b: 0, a: 1}
+  - targets:
+    - path: Root/SilentSelene/StartFlash
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.76862746, g: 0.8095409, b: 1, a: 1}
+  - targets:
+    - path: Root/SilentSelene/Light
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.48584908, g: 0.5767661, b: 1, a: 1}
+  - targets:
+    - path: Root/SilentSelene/Stones
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.46422216, g: 0.4952336, b: 0.6037736, a: 1}
+  - targets:
+    - path: Root/SilentSelene/Stones
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 0.3490566, g: 0.3490566, b: 0.3490566, a: 1}
+  - targets:
+    - path: Root/SilentSelene/Derbis
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.20087217, g: 0.288799, b: 0.6981132, a: 1}
 --- !u!114 &7498019034328864820
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,8 +201,8 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 0}
-  playOnEnable: 0
   _fadeoutTime: 1
+  _pitch: 1
 --- !u!114 &808891397542433398
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,12 +350,12 @@ PrefabInstance:
     - target: {fileID: 108527894965479678, guid: aa640b9e87b32814cb9ae49e1ac7463d,
         type: 3}
       propertyPath: m_Color.g
-      value: 0
+      value: 0.25882354
       objectReference: {fileID: 0}
     - target: {fileID: 108527894965479678, guid: aa640b9e87b32814cb9ae49e1ac7463d,
         type: 3}
       propertyPath: m_Color.r
-      value: 0
+      value: 0.09803922
       objectReference: {fileID: 0}
     - target: {fileID: 108527894965479678, guid: aa640b9e87b32814cb9ae49e1ac7463d,
         type: 3}
@@ -304,6 +386,16 @@ PrefabInstance:
         type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].time
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 198166618825378990, guid: aa640b9e87b32814cb9ae49e1ac7463d,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.25882354
+      objectReference: {fileID: 0}
+    - target: {fileID: 198166618825378990, guid: aa640b9e87b32814cb9ae49e1ac7463d,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.09803922
       objectReference: {fileID: 0}
     - target: {fileID: 198198867934107448, guid: aa640b9e87b32814cb9ae49e1ac7463d,
         type: 3}
@@ -365,6 +457,16 @@ PrefabInstance:
       propertyPath: ColorModule.gradient.maxGradient.m_NumAlphaKeys
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 198282381223673002, guid: aa640b9e87b32814cb9ae49e1ac7463d,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.52156866
+      objectReference: {fileID: 0}
+    - target: {fileID: 198282381223673002, guid: aa640b9e87b32814cb9ae49e1ac7463d,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.41960785
+      objectReference: {fileID: 0}
     - target: {fileID: 198412409991627690, guid: aa640b9e87b32814cb9ae49e1ac7463d,
         type: 3}
       propertyPath: VelocityModule.x.scalar
@@ -399,6 +501,16 @@ PrefabInstance:
         type: 3}
       propertyPath: ShapeModule.angle
       value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 198603092373024064, guid: aa640b9e87b32814cb9ae49e1ac7463d,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.3882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 198603092373024064, guid: aa640b9e87b32814cb9ae49e1ac7463d,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.20392157
       objectReference: {fileID: 0}
     - target: {fileID: 198603092373024064, guid: aa640b9e87b32814cb9ae49e1ac7463d,
         type: 3}

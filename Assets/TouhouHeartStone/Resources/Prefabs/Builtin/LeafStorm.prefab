@@ -23,15 +23,16 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4687749341051232112}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9122210760836569398}
   - {fileID: 8574703362260817527}
   - {fileID: 851044000901015486}
   m_Father: {fileID: 3885400720277652299}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6548975100610074673
 GameObject:
@@ -60,17 +61,18 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6548975100610074673}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 3}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3843543848515221310}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &1824822448450497998
 Animator:
-  serializedVersion: 3
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -83,10 +85,12 @@ Animator:
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &-8766098841063494062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102,7 +106,9 @@ MonoBehaviour:
   _animator: {fileID: 1824822448450497998}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
-  _testMode: 0
+  _playSoundOnStart: 0
+  testMode: 0
+  _useSourceScale: 0
 --- !u!114 &8312322311565465712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,6 +124,92 @@ MonoBehaviour:
   defineName: "\u6811\u53F6\u98CE\u66B4"
   duration: 2
   blockTime: 1
+  isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/Flower slash/Light
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flower slash/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flower slash/Flash
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.42745098, g: 1, b: 0.42745098, a: 1}
+  - targets:
+    - path: Root/Flower slash/GroundMap
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flower slash/ShockWave
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flower slash/GroundWave(Optional)
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.32549024, g: 1, b: 0.32549024, a: 1}
+  - targets:
+    - path: Root/LeavesStorm/Point light
+      type: 2
+      particleType: 0
+      index: 0
+    - path: Root/LeavesBurst/Point light
+      type: 2
+      particleType: 0
+      index: 0
+    color: {r: 0.52205884, g: 1, b: 0.5846856, a: 1}
+  - targets:
+    - path: Root/Flower slash/Flower
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flower slash/Flower/FlowerExpl
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.42745098, b: 0.7019608, a: 1}
+  - targets:
+    - path: Root/LeavesStorm/Leaves
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/LeavesBurst/Leaves
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.32830942, g: 1, b: 0.15686274, a: 1}
+  - targets:
+    - path: Root/LeavesStorm/Leaves2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/LeavesBurst/Leaves2
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0.6320754, b: 0.06424293, a: 1}
+  - targets:
+    - path: Root/LeavesStorm/Buff
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/LeavesBurst/Buff
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.40689635, g: 1, b: 0, a: 1}
+  - targets:
+    - path: Root/Flower slash/EndSparks
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.29803923, g: 0.69803923, b: 0.29803923, a: 1}
 --- !u!114 &6586489816320512515
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,13 +225,14 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 0}
-  playOnEnable: 0
   _fadeoutTime: 1
+  _pitch: 1
 --- !u!1001 &8570138213661046783
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 3843543848515221310}
     m_Modifications:
     - target: {fileID: 1379869714807356, guid: c2a533df9a75e204193a02d059f9ec27, type: 3}
@@ -296,6 +389,9 @@ PrefabInstance:
       value: 0.33333334
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c2a533df9a75e204193a02d059f9ec27, type: 3}
 --- !u!4 &8574703362260817527 stripped
 Transform:
@@ -308,6 +404,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 3843543848515221310}
     m_Modifications:
     - target: {fileID: 8973048138646792975, guid: f6761ccb33059e046bf7ef67b66c96f9,
@@ -386,6 +483,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f6761ccb33059e046bf7ef67b66c96f9, type: 3}
 --- !u!4 &851044000901015486 stripped
 Transform:
@@ -398,6 +498,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 3843543848515221310}
     m_Modifications:
     - target: {fileID: 1492667978523942, guid: bd76aad308d231743b8d95dd2c02d6b1, type: 3}
@@ -642,7 +743,7 @@ PrefabInstance:
     - target: {fileID: 198571008869356118, guid: bd76aad308d231743b8d95dd2c02d6b1,
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.b
-      value: 0.48627448
+      value: 0.42745098
       objectReference: {fileID: 0}
     - target: {fileID: 198571008869356118, guid: bd76aad308d231743b8d95dd2c02d6b1,
         type: 3}
@@ -652,7 +753,7 @@ PrefabInstance:
     - target: {fileID: 198571008869356118, guid: bd76aad308d231743b8d95dd2c02d6b1,
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.r
-      value: 0.48627448
+      value: 0.42745098
       objectReference: {fileID: 0}
     - target: {fileID: 198582531501696138, guid: bd76aad308d231743b8d95dd2c02d6b1,
         type: 3}
@@ -685,6 +786,9 @@ PrefabInstance:
       value: 0.33333337
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd76aad308d231743b8d95dd2c02d6b1, type: 3}
 --- !u!4 &9122210760836569398 stripped
 Transform:

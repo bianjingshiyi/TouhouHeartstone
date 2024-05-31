@@ -69,6 +69,49 @@ MonoBehaviour:
   duration: 2
   blockTime: 1
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/CherryBlossom/Light
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/CherryBlossom/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/CherryBlossom/Flower
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/CherryBlossom/Flower/FlowerExpl
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/CherryBlossom/Flash
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.42745098, b: 0.7019608, a: 1}
+  - targets:
+    - path: Root/CherryBlossom/GroundMap
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/CherryBlossom/ShockWave
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/CherryBlossom/GroundWave(Optional)
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.33333334, b: 0.7490196, a: 1}
+  - targets:
+    - path: Root/CherryBlossom/EndSparks
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.6981132, g: 0.29966182, b: 0.4907002, a: 1}
 --- !u!114 &6638521050545581877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -173,6 +216,16 @@ PrefabInstance:
     - target: {fileID: 4427193703434510, guid: bd76aad308d231743b8d95dd2c02d6b1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198187525246143542, guid: bd76aad308d231743b8d95dd2c02d6b1,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0.7490196
+      objectReference: {fileID: 0}
+    - target: {fileID: 198187525246143542, guid: bd76aad308d231743b8d95dd2c02d6b1,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.33333334
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

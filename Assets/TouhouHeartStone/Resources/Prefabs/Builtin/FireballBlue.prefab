@@ -4985,6 +4985,7 @@ MonoBehaviour:
   _animator: {fileID: 2250661385940154382}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 0
   testMode: 0
   _flyCurve:
     serializedVersion: 2
@@ -5034,6 +5035,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _projectileRoot: {fileID: 0}
+  _faceToTarget: 1
 --- !u!114 &4763978879939230581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5049,6 +5052,98 @@ MonoBehaviour:
   defineName: "\u706B\u7403_\u84DD\u8272"
   duration: 1.75
   blockTime: 1
+  isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/Hit 7/Glow
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Fireball
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flash 7/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flash 7/Glow
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0.5917661, b: 1, a: 1}
+  - targets:
+    - path: Root/Hit 7/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Hit 7/ShockWave
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Fireball/Smoke/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0.5039347, b: 1, a: 1}
+  - targets:
+    - path: Root/Hit 7/EndlDesbis
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Hit 7/SparksCore
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flash 7
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0, b: 0, a: 1}
+  - targets:
+    - path: Root/Fireball/Smoke/Sparks
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Fireball/Smoke
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Flash 7/Sparks
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 0, g: 0.8666668, b: 1, a: 1}
+  - targets:
+    - path: Root/Hit 7
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 0, g: 0.32627457, b: 0.5019608, a: 1}
+  - targets:
+    - path: Root/Hit 7/DarkSmoke
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0.067836836, b: 0.28235295, a: 1}
+  - targets:
+    - path: Root/Hit 7/SideTrails
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0.15225314, b: 1, a: 1}
+  - targets:
+    - path: Root/Hit 7/Shine
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.14509805, g: 0.6412901, b: 1, a: 1}
+  - targets:
+    - path: Root/Flash 7/Smoke
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 0.41176474, g: 0.94117653, b: 1, a: 1}
 --- !u!114 &8928075989534206491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5064,8 +5159,8 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 0}
-  playOnEnable: 0
   _fadeoutTime: 1
+  _pitch: 1
 --- !u!114 &4468482170366075363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6465,7 +6560,7 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 1, g: 0.19713593, b: 0, a: 1}
+        key1: {r: 0, g: 0.7999997, b: 1, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -6489,7 +6584,7 @@ ParticleSystem:
         atime6: 0
         atime7: 0
         m_Mode: 0
-        m_ColorSpace: -1
+        m_ColorSpace: 0
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
       minGradient:
@@ -11365,7 +11460,7 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 0}
-        key1: {r: 1, g: 0.47512028, b: 0.41037738, a: 1}
+        key1: {r: 0.41176474, g: 0.94117653, b: 1, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 1}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -11389,7 +11484,7 @@ ParticleSystem:
         atime6: 0
         atime7: 0
         m_Mode: 0
-        m_ColorSpace: -1
+        m_ColorSpace: 0
         m_NumColorKeys: 2
         m_NumAlphaKeys: 4
       minGradient:
@@ -21151,7 +21246,7 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 0}
-        key1: {r: 1, g: 0.108383924, b: 0, a: 1}
+        key1: {r: 0, g: 0.8833332, b: 1, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 1}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -21175,7 +21270,7 @@ ParticleSystem:
         atime6: 0
         atime7: 0
         m_Mode: 0
-        m_ColorSpace: -1
+        m_ColorSpace: 0
         m_NumColorKeys: 2
         m_NumAlphaKeys: 4
       minGradient:
@@ -24907,7 +25002,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0, g: 0.4273501, b: 1, a: 1}
+      maxColor: {r: 0, g: 0.5058824, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -26002,7 +26097,7 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 1, g: 0.12452645, b: 0, a: 1}
+        key1: {r: 0, g: 0.8666668, b: 1, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 1}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -26026,7 +26121,7 @@ ParticleSystem:
         atime6: 0
         atime7: 0
         m_Mode: 0
-        m_ColorSpace: -1
+        m_ColorSpace: 0
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
       minGradient:
@@ -64104,7 +64199,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.078431375, g: 0.59339666, b: 1, a: 1}
+      maxColor: {r: 0, g: 0.5058824, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -70156,7 +70251,7 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 0}
-        key1: {r: 0.5019608, g: 0.17339027, b: 0, a: 1}
+        key1: {r: 0, g: 0.32627457, b: 0.5019608, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 1}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -70180,7 +70275,7 @@ ParticleSystem:
         atime6: 0
         atime7: 0
         m_Mode: 0
-        m_ColorSpace: -1
+        m_ColorSpace: 0
         m_NumColorKeys: 2
         m_NumAlphaKeys: 4
       minGradient:

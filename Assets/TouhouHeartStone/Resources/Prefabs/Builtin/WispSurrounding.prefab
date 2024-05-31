@@ -19746,6 +19746,57 @@ MonoBehaviour:
   duration: 2.25
   blockTime: 1.75
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/WispSurrounding/Point Light
+      type: 2
+      particleType: 0
+      index: 0
+    - path: Root/WispSurrounding/Burst/Point Light
+      type: 2
+      particleType: 0
+      index: 0
+    color: {r: 0.16509432, g: 0.36554474, b: 1, a: 1}
+  - targets:
+    - path: Root/WispSurrounding/Wisp
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/WispSurrounding/Burst/Wisp
+      type: 3
+      particleType: 1
+      index: 0
+    color: {r: 0.7797704, g: 0.9339623, b: 0.9163455, a: 1}
+  - targets:
+    - path: Root/WispSurrounding/Wisp
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/WispSurrounding/Burst/Wisp
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 0.6023496, g: 0.85420585, b: 0.9056604, a: 1}
+  - targets:
+    - path: Root/WispSurrounding/Wisp
+      type: 3
+      particleType: 1
+      index: 2
+    - path: Root/WispSurrounding/Burst/Wisp
+      type: 3
+      particleType: 1
+      index: 2
+    color: {r: 0.21181916, g: 0.3340253, b: 0.5283019, a: 1}
+  - targets:
+    - path: Root/WispSurrounding/Wisp
+      type: 3
+      particleType: 1
+      index: 3
+    - path: Root/WispSurrounding/Burst/Wisp
+      type: 3
+      particleType: 1
+      index: 3
+    color: {r: 0.083704144, g: 0.35712078, b: 0.9339623, a: 1}
 --- !u!114 &6877269624027671776
 MonoBehaviour:
   m_ObjectHideFlags: 0

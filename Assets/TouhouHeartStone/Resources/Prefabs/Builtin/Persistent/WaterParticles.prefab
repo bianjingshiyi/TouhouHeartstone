@@ -223,7 +223,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.5647059, g: 0.5647059, b: 0.5647059, a: 0.78431374}
+      maxColor: {r: 0.37254903, g: 0.7254902, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -4798,7 +4798,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 991ce8ab7d217524583108593e2ac2da, type: 2}
+  - {fileID: 2100000, guid: e369440d224fe8243a6429b84434d872, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4934,6 +4934,7 @@ MonoBehaviour:
   _destTransform: {fileID: 0}
   _playSoundOnStart: 0
   testMode: 0
+  testColor: {r: 1, g: 0, b: 1, a: 1}
   _useSourceScale: 0
 --- !u!114 &6242813279263085005
 MonoBehaviour:
@@ -4951,3 +4952,10 @@ MonoBehaviour:
   duration: -1
   blockTime: 0
   isPersistent: 1
+  colorTargets:
+  - targets:
+    - path: Root/Bubbles2
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.37254903, g: 0.7254902, b: 1, a: 1}

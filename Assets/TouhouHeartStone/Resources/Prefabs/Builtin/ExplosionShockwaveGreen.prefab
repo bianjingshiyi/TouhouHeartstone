@@ -124,6 +124,25 @@ MonoBehaviour:
   duration: 1
   blockTime: 0.5
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/ExploisionShockwave
+      type: 2
+      particleType: 0
+      index: 0
+    - path: Root/ExploisionShockwave
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/ExploisionShockwave/SparksTrails
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/ExploisionShockwave/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 1, b: 0.001734972, a: 1}
 --- !u!114 &2807646428212169696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,13 +243,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 287703167395249259, guid: 400b94599f09b94478bb3343c7aee976,
         type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 287703167395249259, guid: 400b94599f09b94478bb3343c7aee976,
+        type: 3}
       propertyPath: InitialModule.startColor.maxColor.g
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 287703167395249259, guid: 400b94599f09b94478bb3343c7aee976,
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.r
-      value: 0.18431371
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 627679704020528761, guid: 400b94599f09b94478bb3343c7aee976,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 627679704020528761, guid: 400b94599f09b94478bb3343c7aee976,
         type: 3}
@@ -240,7 +269,7 @@ PrefabInstance:
     - target: {fileID: 627679704020528761, guid: 400b94599f09b94478bb3343c7aee976,
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.r
-      value: 0.18431371
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7204395792874718510, guid: 400b94599f09b94478bb3343c7aee976,
         type: 3}

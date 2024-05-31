@@ -107,6 +107,8 @@ namespace Game.Animations
     {
         StartColor,
         ColorOverLifetime,
-        ColorBySpeed
+        ColorBySpeed,
+        TrailColorOverLifetime,
+        ColorOverTrail
     }
 }

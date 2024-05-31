@@ -84,6 +84,7 @@ MonoBehaviour:
   _destTransform: {fileID: 0}
   _playSoundOnStart: 1
   testMode: 0
+  testColor: {r: 1, g: 0, b: 1, a: 1}
   _useSourceScale: 0
 --- !u!114 &6242813279263085005
 MonoBehaviour:
@@ -101,6 +102,39 @@ MonoBehaviour:
   duration: 1
   blockTime: 0
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/WaterballHit/Bubbles
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/WaterballHit/Glow
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.56078434, g: 0.8404079, b: 1, a: 1}
+  - targets:
+    - path: Root/WaterballHit/Bubbles2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/WaterballHit/Water
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.37254903, g: 0.7254902, b: 1, a: 1}
+  - targets:
+    - path: Root/WaterballHit
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.7216981, g: 0.9095124, b: 1, a: 1}
+  - targets:
+    - path: Root/WaterballHit/ShockWave
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.3726415, g: 0.7982613, b: 1, a: 1}
 --- !u!114 &6608949014324208705
 MonoBehaviour:
   m_ObjectHideFlags: 0

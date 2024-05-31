@@ -101,6 +101,13 @@ MonoBehaviour:
   duration: 1
   blockTime: 0.7
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/LightWave
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &6407183681354382781
 MonoBehaviour:
   m_ObjectHideFlags: 0

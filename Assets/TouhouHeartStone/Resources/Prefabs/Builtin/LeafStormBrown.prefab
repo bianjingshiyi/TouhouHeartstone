@@ -23,15 +23,16 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 642868891523891552}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3998436377684903718}
   - {fileID: 4547124548535257191}
   - {fileID: 4767714325079980462}
   m_Father: {fileID: 8939189749507300699}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1371193041343055393
 GameObject:
@@ -60,17 +61,18 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1371193041343055393}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 3}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8985477499389700398}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &5816052231858598878
 Animator:
-  serializedVersion: 3
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -83,10 +85,12 @@ Animator:
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &5745846990213886018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102,7 +106,9 @@ MonoBehaviour:
   _animator: {fileID: 5816052231858598878}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
-  _testMode: 0
+  _playSoundOnStart: 0
+  testMode: 0
+  _useSourceScale: 0
 --- !u!114 &4232992170411918944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,6 +124,82 @@ MonoBehaviour:
   defineName: "\u6811\u53F6\u98CE\u66B4_\u68D5\u8272"
   duration: 2
   blockTime: 1
+  isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/LeavesStorm/Point light
+      type: 2
+      particleType: 0
+      index: 0
+    - path: Root/LeavesBurst/Point light
+      type: 2
+      particleType: 0
+      index: 0
+    - path: Root/Flower slash/Light
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flower slash/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flower slash/ShockWave
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flower slash/Flash
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flower slash/GroundWave(Optional)
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/LeavesStorm/Leaves
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/LeavesStorm/Buff
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/LeavesBurst/Leaves
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/LeavesBurst/Buff
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.7, g: 0.5, b: 0, a: 1}
+  - targets:
+    - path: Root/Flower slash/GroundMap
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flower slash/EndSparks
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/LeavesStorm/Leaves2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/LeavesBurst/Leaves2
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.35, g: 0.25, b: 0, a: 1}
+  - targets:
+    - path: Root/Flower slash/Flower
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flower slash/Flower/FlowerExpl
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.42745098, b: 0.7019608, a: 1}
 --- !u!114 &7618017130442664927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,12 +215,14 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 0}
-  playOnEnable: 0
+  _fadeoutTime: 1
+  _pitch: 1
 --- !u!1001 &3995526510565068328
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8985477499389700398}
     m_Modifications:
     - target: {fileID: 1492667978523942, guid: bd76aad308d231743b8d95dd2c02d6b1, type: 3}
@@ -441,6 +525,9 @@ PrefabInstance:
       value: 0.7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd76aad308d231743b8d95dd2c02d6b1, type: 3}
 --- !u!4 &3998436377684903718 stripped
 Transform:
@@ -453,6 +540,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8985477499389700398}
     m_Modifications:
     - target: {fileID: 8973048138646792975, guid: f6761ccb33059e046bf7ef67b66c96f9,
@@ -731,6 +819,9 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f6761ccb33059e046bf7ef67b66c96f9, type: 3}
 --- !u!4 &4767714325079980462 stripped
 Transform:
@@ -743,6 +834,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8985477499389700398}
     m_Modifications:
     - target: {fileID: 1379869714807356, guid: c2a533df9a75e204193a02d059f9ec27, type: 3}
@@ -1044,6 +1136,9 @@ PrefabInstance:
       value: 0.33333334
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c2a533df9a75e204193a02d059f9ec27, type: 3}
 --- !u!4 &4547124548535257191 stripped
 Transform:

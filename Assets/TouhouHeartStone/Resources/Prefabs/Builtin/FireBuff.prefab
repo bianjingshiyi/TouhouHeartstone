@@ -101,6 +101,25 @@ MonoBehaviour:
   duration: 2
   blockTime: 1
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/FireBuff/SparksNoise
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/FireBuff
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/FireBuff/Trails
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/FireBuff/Fire
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.45620915, b: 0.18431371, a: 1}
 --- !u!114 &1245566683130408204
 MonoBehaviour:
   m_ObjectHideFlags: 0

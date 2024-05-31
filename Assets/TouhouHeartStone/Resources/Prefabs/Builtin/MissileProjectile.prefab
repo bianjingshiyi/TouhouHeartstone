@@ -139,6 +139,7 @@ MonoBehaviour:
   _animator: {fileID: 7527580489375798917}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 0
   testMode: 0
   _flyCurve:
     serializedVersion: 2
@@ -189,6 +190,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _projectileRoot: {fileID: 4070782790279059538}
+  _faceToTarget: 1
 --- !u!114 &3842044945674065406
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -205,6 +207,97 @@ MonoBehaviour:
   duration: 1.5
   blockTime: 0.5
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/MissileLaunch/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/MissileLaunch/Flare
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Projectile/Missile/Smoke
+      type: 3
+      particleType: 1
+      index: 2
+    - path: Root/Projectile/MissileHit/Shine
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Projectile/MissileHit/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.43921566, b: 0.6074511, a: 1}
+  - targets:
+    - path: Root/MissileLaunch/Sparks
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/MissileLaunch/Glow
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Projectile/MissileHit/Glow
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Projectile/MissileHit/Sparks
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 1, g: 0, b: 0.3000002, a: 1}
+  - targets:
+    - path: Root/MissileLaunch/Smoke
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Projectile/Missile/Smoke
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Projectile/MissileHit/Smoke
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 0.67058825, g: 0, b: 0.2011766, a: 1}
+  - targets:
+    - path: Root/Projectile/Missile/Smoke
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Projectile/Missile/Smoke/Sparks
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Projectile/MissileHit/ShockWave
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.078431375, b: 0.35686275, a: 1}
+  - targets:
+    - path: Root/MissileLaunch
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Projectile/MissileHit
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0, b: 0, a: 1}
+  - targets:
+    - path: Root/Projectile/Missile
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.99215686, g: 0.85882354, b: 0.9843137, a: 1}
+  - targets:
+    - path: Root/Projectile/MissileHit/Flare
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.23921567, b: 0.46745113, a: 1}
 --- !u!114 &2807646428212169696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,8 +313,8 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 0}
-  playOnEnable: 0
   _fadeoutTime: 1
+  _pitch: 1
 --- !u!114 &8258228769030809904
 MonoBehaviour:
   m_ObjectHideFlags: 0

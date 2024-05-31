@@ -68,6 +68,31 @@ MonoBehaviour:
   duration: -1
   blockTime: 0
   isPersistent: 1
+  colorTargets:
+  - targets:
+    - path: Root/Illusion
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.5, g: 0.25, b: 0.25, a: 1}
+  - targets:
+    - path: Root/Illusion/SparksNoise
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.05660379, g: 0, b: 0, a: 1}
+  - targets:
+    - path: Root/Illusion/MoonClouds
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.49411765, g: 0, b: 0, a: 1}
+  - targets:
+    - path: Root/Waves
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.5, g: 0.099999994, b: 0.099999994, a: 1}
 --- !u!1 &649734852387413773
 GameObject:
   m_ObjectHideFlags: 0

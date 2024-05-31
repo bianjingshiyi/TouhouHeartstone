@@ -105,6 +105,7 @@ MonoBehaviour:
   _animator: {fileID: 7527580489375798917}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 0
   testMode: 0
   _flyCurve:
     serializedVersion: 2
@@ -155,6 +156,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _projectileRoot: {fileID: 0}
+  _faceToTarget: 1
 --- !u!114 &3842044945674065406
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,6 +173,55 @@ MonoBehaviour:
   duration: 2
   blockTime: 1
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/BottleProjectile
+      type: 0
+      particleType: 0
+      index: 0
+    - path: Root/LiquidSplatGreen/SplatVelocity
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/LiquidSplatGreen/SplatDirectional
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/LiquidSplatGreen/Cone
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/LiquidSplatGreen/Droplets
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/LiquidSplatGreen/Droplets
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 0, g: 0.8, b: 0.105882354, a: 1}
+  - targets:
+    - path: Root/LiquidSplatGreen/SplatVelocity
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/LiquidSplatGreen/SplatDirectional
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/LiquidSplatGreen/Cone
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/LiquidSplatGreen/Radial
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/LiquidSplatGreen/Radial
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 0, g: 0.6397059, b: 0.004411729, a: 1}
 --- !u!114 &2807646428212169696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,8 +237,8 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 0}
-  playOnEnable: 0
   _fadeoutTime: 1
+  _pitch: 1
 --- !u!1001 &1386879714828302943
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -290,7 +341,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 0b4dec0d95d858e45bd56691e93768bd,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5427537857488256392}
   m_SourcePrefab: {fileID: 100100000, guid: 0b4dec0d95d858e45bd56691e93768bd, type: 3}
 --- !u!4 &4617369524833912032 stripped
 Transform:
@@ -298,3 +353,22 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 4617369524834311776}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4617369524834343104 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: 0b4dec0d95d858e45bd56691e93768bd,
+    type: 3}
+  m_PrefabInstance: {fileID: 4617369524834311776}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5427537857488256392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4617369524834343104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ef80267b33ad7f488762eae674682b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _color: {r: 0, g: 0.8, b: 0.105882354, a: 1}

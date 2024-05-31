@@ -51,6 +51,19 @@ MonoBehaviour:
   duration: 1
   blockTime: 0.01
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/Clouds
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.25, b: 0.25, a: 1}
+  - targets:
+    - path: Root/Clouds
+      type: 3
+      particleType: 1
+      index: 2
+    color: {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &5848198977864678274
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66,7 +79,6 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 0}
-  playOnEnable: 0
   _fadeoutTime: 1
   _pitch: 1
 --- !u!114 &5056704096064180207
@@ -84,6 +96,7 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 0
   testMode: 0
   _useSourceScale: 0
 --- !u!1 &6963852963075178319

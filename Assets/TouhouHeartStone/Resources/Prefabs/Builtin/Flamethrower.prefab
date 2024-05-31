@@ -173,6 +173,49 @@ MonoBehaviour:
   duration: 2
   blockTime: 0.5
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/FlamethrowerAdditiveRed/Point light
+      type: 2
+      particleType: 0
+      index: 0
+    - path: Root/FlamethrowerAdditiveRed
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/FlamethrowerAdditiveRed
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/FlamethrowerAdditiveRed/Long
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 1, g: 0.5176471, b: 0, a: 1}
+  - targets:
+    - path: Root/FlamethrowerAdditiveRed
+      type: 3
+      particleType: 1
+      index: 2
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - targets:
+    - path: Root/FlamethrowerAdditiveRed/Sparkles
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.68235296, b: 0, a: 1}
+  - targets:
+    - path: Root/FlamethrowerAdditiveRed/Smoke
+      type: 3
+      particleType: 1
+      index: 0
+    color: {r: 1, g: 0.80784315, b: 0, a: 1}
+  - targets:
+    - path: Root/FlamethrowerAdditiveRed/Smoke
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 0.654902, g: 0.2901961, b: 0.09019608, a: 1}
 --- !u!114 &2882366054065771026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -258,6 +301,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 428734, guid: 066053404d559854a8850fd56b0c728e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 10806778, guid: 066053404d559854a8850fd56b0c728e, type: 3}
+      propertyPath: m_Color.g
+      value: 0.5176471
+      objectReference: {fileID: 0}
+    - target: {fileID: 19824182, guid: 066053404d559854a8850fd56b0c728e, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.5176471
+      objectReference: {fileID: 0}
+    - target: {fileID: 19824182, guid: 066053404d559854a8850fd56b0c728e, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key1.g
+      value: 0.5176471
+      objectReference: {fileID: 0}
+    - target: {fileID: 19824182, guid: 066053404d559854a8850fd56b0c728e, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.m_ColorSpace
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 19877488, guid: 066053404d559854a8850fd56b0c728e, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.m_ColorSpace
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

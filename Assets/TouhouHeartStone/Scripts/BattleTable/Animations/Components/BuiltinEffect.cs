@@ -113,6 +113,7 @@ namespace Game.Animations
             var main = particle.main;
             var colorOverLifetime = particle.colorOverLifetime;
             var colorbySpeed = particle.colorBySpeed;
+            var trails = particle.trails;
 
             var path = transform.getChildPath(particle.transform);
             foreach (var target in GetMinMaxGradientColorTargets(path, ParticleColorTarget.StartColor, main.startColor))
@@ -129,6 +130,17 @@ namespace Game.Animations
             if (colorbySpeed.enabled)
             {
                 foreach (var target in GetMinMaxGradientColorTargets(path, ParticleColorTarget.ColorBySpeed, colorbySpeed.color))
+                {
+                    yield return target;
+                }
+            }
+            if (trails.enabled)
+            {
+                foreach (var target in GetMinMaxGradientColorTargets(path, ParticleColorTarget.TrailColorOverLifetime, trails.colorOverLifetime))
+                {
+                    yield return target;
+                }
+                foreach (var target in GetMinMaxGradientColorTargets(path, ParticleColorTarget.ColorOverTrail, trails.colorOverTrail))
                 {
                     yield return target;
                 }

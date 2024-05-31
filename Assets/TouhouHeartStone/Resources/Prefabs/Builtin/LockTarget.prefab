@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 879853174930520053}
   - component: {fileID: 9102850190069514544}
   - component: {fileID: 8379428272497897725}
+  - component: {fileID: 9214066671685335125}
   m_Layer: 0
   m_Name: Target
   m_TagString: Untagged
@@ -97,7 +98,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ef80267b33ad7f488762eae674682b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _color: {r: 1, g: 1, b: 1, a: 1}
+  _color: {r: 1, g: 1, b: 1, a: 0}
+--- !u!114 &9214066671685335125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262042912883383117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16171c6f268325541a8773cdd274d228, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gradient:
+    serializedVersion: 2
+    key0: {r: 1, g: 1, b: 1, a: 0}
+    key1: {r: 1, g: 0, b: 0, a: 0.93640864}
+    key2: {r: 0, g: 0, b: 0, a: 1}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 21843
+    ctime1: 43692
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 10922
+    atime2: 58261
+    atime3: 65535
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 4
+  _time: 0
 --- !u!1 &5799493892358463797
 GameObject:
   m_ObjectHideFlags: 0
@@ -142,6 +186,7 @@ GameObject:
   - component: {fileID: 2855032584924731650}
   - component: {fileID: 1359798249217843857}
   - component: {fileID: 5006749088836442336}
+  - component: {fileID: 530350327373243555}
   m_Layer: 0
   m_Name: Arrows
   m_TagString: Untagged
@@ -226,7 +271,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ef80267b33ad7f488762eae674682b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _color: {r: 1, g: 1, b: 1, a: 1}
+  _color: {r: 1, g: 1, b: 1, a: 0}
+--- !u!114 &530350327373243555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6651581970107431991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16171c6f268325541a8773cdd274d228, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gradient:
+    serializedVersion: 2
+    key0: {r: 1, g: 1, b: 1, a: 0}
+    key1: {r: 1, g: 0, b: 0, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 1}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 21843
+    ctime1: 43692
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 21819
+    atime1: 43692
+    atime2: 58261
+    atime3: 65535
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 4
+  _time: 0
 --- !u!1 &7527580489375798939
 GameObject:
   m_ObjectHideFlags: 0
@@ -300,6 +388,27 @@ MonoBehaviour:
   duration: 1.5
   blockTime: 1
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/Target
+      type: 1
+      particleType: 0
+      index: 0
+    - path: Root/Target/Arrows
+      type: 1
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - targets:
+    - path: Root/Target
+      type: 1
+      particleType: 0
+      index: 1
+    - path: Root/Target/Arrows
+      type: 1
+      particleType: 0
+      index: 1
+    color: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &2807646428212169696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -315,7 +424,6 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 8300000, guid: 03645a53d1a299949a6e7c255cdf91f4, type: 3}
-  playOnEnable: 0
   _fadeoutTime: 1
   _pitch: 1
 --- !u!114 &6264526712375110143
@@ -333,4 +441,6 @@ MonoBehaviour:
   _animator: {fileID: 7527580489375798917}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 0
   testMode: 0
+  _useSourceScale: 0

@@ -10050,7 +10050,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 0.5896226, g: 0.7516908, b: 1, a: 1}
-      maxColor: {r: 1, g: 0.5039347, b: 0, a: 1}
+      maxColor: {r: 1, g: 0.42745098, b: 0, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -19859,7 +19859,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0.59339666, b: 0.07843137, a: 1}
+      maxColor: {r: 1, g: 0.6431373, b: 0.14509805, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -24767,7 +24767,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.7735849, g: 0.7735849, b: 0.7735849, a: 1}
+      maxColor: {r: 1, g: 0.5921569, b: 0, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -49246,7 +49246,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.8301887, g: 0.8301887, b: 0.8301887, a: 1}
+      maxColor: {r: 1, g: 0.42745098, b: 0, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -50332,7 +50332,7 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 0}
-        key1: {r: 1, g: 0.108383924, b: 0, a: 1}
+        key1: {r: 1, g: 1, b: 1, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 1}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -50356,7 +50356,7 @@ ParticleSystem:
         atime6: 0
         atime7: 0
         m_Mode: 0
-        m_ColorSpace: -1
+        m_ColorSpace: 0
         m_NumColorKeys: 2
         m_NumAlphaKeys: 4
       minGradient:
@@ -53812,7 +53812,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 13652c21ac9e0c0419a23ddb06f683fc, type: 2}
+  - {fileID: 2100000, guid: 4cf1ea0b08d689245942a3788a4267f4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -59023,7 +59023,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 1, a: 1}
+      maxColor: {r: 1, g: 0.42745098, b: 0, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -63647,7 +63647,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 13652c21ac9e0c0419a23ddb06f683fc, type: 2}
+  - {fileID: 2100000, guid: 4cf1ea0b08d689245942a3788a4267f4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -78512,6 +78512,7 @@ MonoBehaviour:
   _animator: {fileID: 7527580489375798917}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _playSoundOnStart: 0
   testMode: 0
   _flyCurve:
     serializedVersion: 2
@@ -78561,6 +78562,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _projectileRoot: {fileID: 0}
+  _faceToTarget: 1
 --- !u!114 &3842044945674065406
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78576,6 +78579,104 @@ MonoBehaviour:
   defineName: "\u5C0F\u706B\u7403"
   duration: 1.75
   blockTime: 1
+  isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/Hit 7
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Hit 7/Glow
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Fireball
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flash 7/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flash 7/Glow
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.5921569, b: 0, a: 1}
+  - targets:
+    - path: Root/Hit 7/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Fireball/Smoke
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Fireball/Smoke/Sparks
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flash 7/Smoke
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.42745098, b: 0, a: 1}
+  - targets:
+    - path: Root/Hit 7/EndlDesbis
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Hit 7/SparksCore
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Flash 7
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0, b: 0, a: 1}
+  - targets:
+    - path: Root/Hit 7/SideTrails
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Fireball/Smoke/Sparks
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Flash 7/Sparks
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 1, g: 0.15225314, b: 0, a: 1}
+  - targets:
+    - path: Root/Hit 7/Shine
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Hit 7/ShockWave
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0.6412901, b: 0.14509803, a: 1}
+  - targets:
+    - path: Root/Hit 7
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 0.5019608, g: 0.17339027, b: 0, a: 1}
+  - targets:
+    - path: Root/Hit 7/DarkSmoke
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.2830189, g: 0.067836836, b: 0, a: 1}
+  - targets:
+    - path: Root/Flash 7/Smoke
+      type: 3
+      particleType: 1
+      index: 1
+    color: {r: 1, g: 0.47512028, b: 0.41037738, a: 1}
 --- !u!114 &2807646428212169696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78591,8 +78692,8 @@ MonoBehaviour:
   _manager: {fileID: 0}
   se_name: 
   clip: {fileID: 0}
-  playOnEnable: 0
   _fadeoutTime: 1
+  _pitch: 1
 --- !u!114 &8258228769030809904
 MonoBehaviour:
   m_ObjectHideFlags: 0
