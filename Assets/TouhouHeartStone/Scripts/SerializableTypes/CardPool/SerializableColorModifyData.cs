@@ -10,6 +10,10 @@ namespace Game
     [Serializable]
     public class SerializableColorModifyData
     {
+        public SerializableColorModifyData()
+        {
+            // 序列化使用
+        }
         public SerializableColorModifyData(ColorModifyData colorTarget)
         {
             animationRef = colorTarget.animationRef;
