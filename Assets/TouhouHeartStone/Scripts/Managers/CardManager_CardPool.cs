@@ -2092,6 +2092,10 @@ namespace Game
             var picDir = Path.Combine(_persistentDataPath, textureDirName);
             if (!Directory.Exists(picDir))
                 Directory.CreateDirectory(picDir);
+
+            var sndDir = Path.Combine(_persistentDataPath, soundDirName);
+            if (!Directory.Exists(sndDir))
+                Directory.CreateDirectory(sndDir);
         }
         /// <summary>
         /// 向一个字典内读取的所有卡池信息。
