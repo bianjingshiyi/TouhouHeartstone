@@ -1967,6 +1967,9 @@ namespace Controllers
                 case ActionNodeValueType.cardPropertyNameSet:
                     value = EditorManager.cardProps.FirstOrDefault(p => p.canSet).value;
                     break;
+                case ActionNodeValueType.keyword:
+                    value = EditorManager.editorKeywords.FirstOrDefault();
+                    break;
                 case ActionNodeValueType.effectTag:
                     value = getAllEffectTagValues()[0];
                     break;
