@@ -559,9 +559,25 @@ namespace UI
         private void onBackgroundScroll(BaseEventData eventData)
         {
             var delta = Vector3.one * (Input.GetAxis("Mouse ScrollWheel") * zoomSpeed);//读取滚轮的变化           
-            var desiredScale = _content.localScale + delta;//进行缩放
+            var lastScale = _content.localScale;
+            var desiredScale = lastScale + delta;//进行缩放
             desiredScale = ClampDesiredScale(desiredScale);//对缩放目标进行一个数据的clamp以保证成倍缩放
             _content.localScale = desiredScale;
+
+            // 调整缩放中心位置
+            var scaleCenter = _content.parent.InverseTransformPoint(_viewPort.position);
+            if (eventData is PointerEventData pointer)
+            {
+                if (pointer.pointerCurrentRaycast.isValid)
+                {
+                    scaleCenter = _content.parent.InverseTransformPoint(pointer.pointerCurrentRaycast.worldPosition);
+                }
+            }
+            var posOffset = _content.localPosition - scaleCenter;
+            posOffset.x *= desiredScale.x / lastScale.x;
+            posOffset.y *= desiredScale.y / lastScale.y;
+            _content.localPosition = scaleCenter + posOffset;
+
             clearFreePlaceCheckRegion();
             setFocused();
         }
