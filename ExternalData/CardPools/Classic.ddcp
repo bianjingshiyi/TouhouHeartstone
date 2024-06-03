@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 3, "cardPoolId" : NumberLong(1), "editTime" : 602, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
+{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 4, "cardPoolId" : NumberLong(1), "editTime" : 603, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -32104,415 +32104,6 @@
         }],
       "effectList" : []
     }, {
-      "_id" : 89,
-      "type" : "Servant",
-      "propDict" : {
-        "cost" : 2,
-        "attack" : 1,
-        "life" : 3,
-        "tags" : {
-          "_t" : "ObjectProxy",
-          "Type" : "System.String[]",
-          "Content" : new BinData(0, "kcA=")
-        }
-      },
-      "effects" : [{
-          "_t" : "SerializableAuraEffect",
-          "name" : "光环效果1",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableAuraEntryNode",
-                "_id" : 1,
-                "posX" : 199.83633422851563,
-                "posY" : -922.2391357421875,
-                "inputDefaultValues" : [{
-                    "name" : "pileList",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameRange",
-                      "Content" : new BinData(0, "kaVGaWVsZA==")
-                    }
-                  }, {
-                    "name" : "rangeList",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
-                      "Content" : new BinData(0, "kaRIYW5k")
-                    }
-                  }, {
-                    "name" : "buffDefine",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.DefineReference",
-                      "Content" : new BinData(0, "kgE6")
-                    }
-                  }],
-                "propDict" : { },
-                "consts" : null,
-                "piles" : null,
-                "ranges" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "posX" : -2497.20751953125,
-                "posY" : -203.71710205078125,
-                "inputDefaultValues" : [{
-                    "name" : "argRef",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.EventReference",
-                      "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
-                    }
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 108004
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "posX" : -2646.82080078125,
-                "posY" : -937.4866943359375,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 108006
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "posX" : -1513.6651611328125,
-                "posY" : -569.7740478515625,
-                "inputDefaultValues" : [{
-                    "name" : "operator",
-                    "paramIndex" : -1,
-                    "value" : 1
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112005
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 6,
-                "posX" : -2184.98876953125,
-                "posY" : -977.60076904296875,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 111012
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 8,
-                "posX" : -2657.9013671875,
-                "posY" : -1610.2054443359375,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 101005
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 9,
-                "posX" : -2149.6083984375,
-                "posY" : -608.36810302734375,
-                "inputDefaultValues" : [{
-                    "name" : "operator",
-                    "paramIndex" : -1
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112002
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 10,
-                "posX" : -1684.8577880859375,
-                "posY" : -1118.2979736328125,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 111004
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 11,
-                "posX" : -1145.3179931640625,
-                "posY" : -1553.248046875,
-                "inputDefaultValues" : [{
-                    "name" : "operator",
-                    "paramIndex" : -1
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112002
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 12,
-                "posX" : -1647.5565185546875,
-                "posY" : -1501.684814453125,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102010
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 13,
-                "posX" : -1093.226318359375,
-                "posY" : -1215.4908447265625,
-                "inputDefaultValues" : [{
-                    "name" : "operator",
-                    "paramIndex" : -1,
-                    "value" : 4
-                  }, {
-                    "name" : "B",
-                    "paramIndex" : -1,
-                    "value" : 1
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112002
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 15,
-                "posX" : -505.95999145507813,
-                "posY" : -1227.0191650390625,
-                "inputDefaultValues" : [{
-                    "name" : "operator",
-                    "paramIndex" : -1,
-                    "value" : 1
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112005
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 16,
-                "posX" : -3337.693359375,
-                "posY" : -563.92559814453125,
-                "inputDefaultValues" : [{
-                    "name" : "eventReference",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.EventReference",
-                      "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
-                    }
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 108003
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 17,
-                "posX" : -2751.59814453125,
-                "posY" : -562.58209228515625,
-                "inputDefaultValues" : [{
-                    "name" : "varName",
-                    "paramIndex" : -1,
-                    "value" : "玩家"
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 108002
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "targetCard",
-                "sourceNodeId" : 1,
-                "destName" : "card",
-                "destNodeId" : 12
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "value",
-                "destParamIndex" : 1,
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 4,
-                "destName" : "array",
-                "destNodeId" : 6
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 5,
-                "destName" : "condition",
-                "destNodeId" : 6
-              }, {
-                "sourceName" : "element",
-                "sourceNodeId" : 6,
-                "destName" : "eventArg",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 6,
-                "destName" : "collection",
-                "destNodeId" : 10
-              }, {
-                "sourceName" : "element",
-                "sourceNodeId" : 6,
-                "destName" : "eventArg",
-                "destNodeId" : 16
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 8,
-                "destName" : "B",
-                "destNodeId" : 9
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 8,
-                "destName" : "B",
-                "destNodeId" : 11
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 9,
-                "destName" : "value",
-                "destParamIndex" : 2,
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 10,
-                "destName" : "A",
-                "destNodeId" : 13
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 11,
-                "destName" : "value",
-                "destParamIndex" : 2,
-                "destNodeId" : 15
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 12,
-                "destName" : "A",
-                "destNodeId" : 11
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 13,
-                "destName" : "value",
-                "destParamIndex" : 1,
-                "destNodeId" : 15
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 15,
-                "destName" : "condition",
-                "destNodeId" : 1
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 16,
-                "destName" : "eventArg",
-                "destNodeId" : 17
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 17,
-                "destName" : "A",
-                "destNodeId" : 9
-              }]
-          }
-        }],
-      "effectList" : []
-    }, {
       "_id" : 90,
       "type" : "Spell",
       "propDict" : {
@@ -53697,6 +53288,523 @@
           }
         }],
       "effectList" : []
+    }, {
+      "_id" : 89,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 2,
+        "attack" : 1,
+        "life" : 3,
+        "tags" : {
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kcA=")
+        }
+      },
+      "effects" : [{
+          "_t" : "SerializableAuraEffect",
+          "name" : "光环效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableAuraEntryNode",
+                "_id" : 1,
+                "posX" : 208.0030517578125,
+                "posY" : 245.60400390625,
+                "inputDefaultValues" : [{
+                    "name" : "pileList",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameRange",
+                      "Content" : new BinData(0, "kaVGaWVsZA==")
+                    }
+                  }, {
+                    "name" : "rangeList",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Content" : new BinData(0, "kaRIYW5k")
+                    }
+                  }, {
+                    "name" : "buffDefine",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.DefineReference",
+                      "Content" : new BinData(0, "kgE6")
+                    }
+                  }],
+                "propDict" : { },
+                "consts" : null,
+                "piles" : null,
+                "ranges" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "posX" : -3060.712646484375,
+                "posY" : 1058.860107421875,
+                "inputDefaultValues" : [{
+                    "name" : "argRef",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
+                    }
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 108004
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "posX" : -2635.38720703125,
+                "posY" : 67.021759033203125,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 108006
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "posX" : -1485.8983154296875,
+                "posY" : 1012.9390258789063,
+                "inputDefaultValues" : [{
+                    "name" : "operator",
+                    "paramIndex" : -1,
+                    "value" : 1
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112005
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "posX" : -2173.55517578125,
+                "posY" : 26.907745361328125,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 111012
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 8,
+                "posX" : -2649.734619140625,
+                "posY" : -442.3624267578125,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 101005
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 9,
+                "posX" : -2141.441650390625,
+                "posY" : 709.74298095703125,
+                "inputDefaultValues" : [{
+                    "name" : "operator",
+                    "paramIndex" : -1
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112002
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 10,
+                "posX" : -1676.6910400390625,
+                "posY" : 49.545196533203125,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 111004
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 11,
+                "posX" : -1137.1512451171875,
+                "posY" : -385.4049072265625,
+                "inputDefaultValues" : [{
+                    "name" : "operator",
+                    "paramIndex" : -1
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112002
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 12,
+                "posX" : -1639.3897705078125,
+                "posY" : -333.8416748046875,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102010
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 13,
+                "posX" : -1085.0595703125,
+                "posY" : -47.647674560546875,
+                "inputDefaultValues" : [{
+                    "name" : "operator",
+                    "paramIndex" : -1,
+                    "value" : 4
+                  }, {
+                    "name" : "B",
+                    "paramIndex" : -1,
+                    "value" : 1
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112002
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 15,
+                "posX" : -497.793212890625,
+                "posY" : -59.175994873046875,
+                "inputDefaultValues" : [{
+                    "name" : "operator",
+                    "paramIndex" : -1,
+                    "value" : 1
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112005
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 16,
+                "posX" : -3349.127197265625,
+                "posY" : 685.58489990234375,
+                "inputDefaultValues" : [{
+                    "name" : "eventReference",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCoVXNlRXZlbnQ=")
+                    }
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 108003
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 17,
+                "posX" : -2743.431396484375,
+                "posY" : 690.195068359375,
+                "inputDefaultValues" : [{
+                    "name" : "varName",
+                    "paramIndex" : -1,
+                    "value" : "玩家"
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 108002
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "posX" : -2734.22509765625,
+                "posY" : 434.4698486328125,
+                "inputDefaultValues" : [{
+                    "name" : "varName",
+                    "paramIndex" : -1,
+                    "value" : "卡牌"
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 108002
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 7,
+                "posX" : -2197.22509765625,
+                "posY" : 434.4698486328125,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 108008
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 14,
+                "posX" : -1710.22509765625,
+                "posY" : 434.4698486328125,
+                "inputDefaultValues" : [{
+                    "name" : "type",
+                    "paramIndex" : -1,
+                    "value" : "Skill"
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 104017
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 18,
+                "posX" : -1135.22509765625,
+                "posY" : 434.4698486328125,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112005
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "targetCard",
+                "sourceNodeId" : 1,
+                "destName" : "card",
+                "destNodeId" : 12
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 3,
+                "destName" : "value",
+                "destParamIndex" : 1,
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 4,
+                "destName" : "array",
+                "destNodeId" : 6
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 5,
+                "destName" : "condition",
+                "destNodeId" : 6
+              }, {
+                "sourceName" : "element",
+                "sourceNodeId" : 6,
+                "destName" : "eventArg",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 6,
+                "destName" : "collection",
+                "destNodeId" : 10
+              }, {
+                "sourceName" : "element",
+                "sourceNodeId" : 6,
+                "destName" : "eventArg",
+                "destNodeId" : 16
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 8,
+                "destName" : "B",
+                "destNodeId" : 9
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 8,
+                "destName" : "B",
+                "destNodeId" : 11
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 9,
+                "destName" : "value",
+                "destParamIndex" : 2,
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 10,
+                "destName" : "A",
+                "destNodeId" : 13
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 11,
+                "destName" : "value",
+                "destParamIndex" : 2,
+                "destNodeId" : 15
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 12,
+                "destName" : "A",
+                "destNodeId" : 11
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 13,
+                "destName" : "value",
+                "destParamIndex" : 1,
+                "destNodeId" : 15
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 15,
+                "destName" : "condition",
+                "destNodeId" : 1
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 16,
+                "destName" : "eventArg",
+                "destNodeId" : 17
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 17,
+                "destName" : "A",
+                "destNodeId" : 9
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 16,
+                "destName" : "eventArg",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 2,
+                "destName" : "card",
+                "destNodeId" : 7
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 16,
+                "destName" : "eventArg",
+                "destNodeId" : 7
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 7,
+                "destName" : "card",
+                "destNodeId" : 14
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 14,
+                "destName" : "value",
+                "destParamIndex" : 1,
+                "destNodeId" : 18
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 18,
+                "destName" : "value",
+                "destParamIndex" : 3,
+                "destNodeId" : 5
+              }]
+          }
+        }],
+      "effectList" : []
     }],
   "cardSkinList" : [{
       "_id" : -2147418111,
@@ -55449,13 +55557,6 @@
       "_animationRefs" : [],
       "_soundRefs" : []
     }, {
-      "_id" : 89,
-      "_name" : "蕾蒂·怀特洛克",
-      "_imagePath" : "ba1d411a2a6a08b723f4187f85ce7cad0adec87d8e135df320d6b0f6a55a13ac.jpg",
-      "_desc" : "所有玩家每个回合中使用的第一张牌灵力值消耗增加(1)点。",
-      "_animationRefs" : [],
-      "_soundRefs" : []
-    }, {
       "_id" : 90,
       "_name" : "幻象震爆",
       "_imagePath" : "512ded9424839979c4393c58a438433fa9a70ce3a12ea82d18abfff00ec39168.jpg",
@@ -56572,6 +56673,13 @@
             "eventName" : "MoveCardEvent"
           }
         }],
+      "_soundRefs" : []
+    }, {
+      "_id" : 89,
+      "_name" : "蕾蒂·怀特洛克",
+      "_imagePath" : "ba1d411a2a6a08b723f4187f85ce7cad0adec87d8e135df320d6b0f6a55a13ac.jpg",
+      "_desc" : "所有玩家每个回合中使用的第一张牌灵力值消耗增加(1)点。",
+      "_animationRefs" : [],
       "_soundRefs" : []
     }],
   "buffDefineList" : [{
