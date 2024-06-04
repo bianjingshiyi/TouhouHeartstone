@@ -30,13 +30,15 @@ namespace TouhouHeartstone
         [TranslateMsg("事件变量名", CONTEXT_EVENT_VAR)]
         public const string VALUE = "值";
         [TranslateMsg("事件变量名", CONTEXT_EVENT_VAR)]
-        public const string BEFORE_VALUE = "原数值";
+        public const string BEFORE_VALUE = "原值";
         [TranslateMsg("事件变量名", CONTEXT_EVENT_VAR)]
         public const string TARGET_CARD = "目标卡牌";
         [TranslateMsg("事件变量名", CONTEXT_EVENT_VAR)]
         public const string TARGETS = "目标";
         [TranslateMsg("事件变量名", CONTEXT_EVENT_VAR)]
         public const string COST = "花费";
+        [TranslateMsg("事件变量名", CONTEXT_EVENT_VAR)]
+        public const string PROP_NAME = "属性名称";
 
         // 伤害事件
         [TranslateMsg("伤害事件/变量名", CONTEXT_EVENT_VAR)]

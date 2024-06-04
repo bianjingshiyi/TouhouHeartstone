@@ -3798,6 +3798,34 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>102035</defineId>
+    <obsoleteNames />
+    <editorName>获取卡牌属性名</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>CardPropertyGetterName</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取的卡牌属性名称。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>String</type>
+        <name>return</name>
+        <displayName>值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的卡牌属性名。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[获取一个卡牌属性的名称。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>102004</defineId>
     <obsoleteNames>
       <string>GetProperty</string>
@@ -6196,7 +6224,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>206048</defineId>
+    <defineId>202048</defineId>
     <obsoleteNames />
     <editorName>设置卡牌属性可见性</editorName>
     <category>卡牌</category>
@@ -6292,7 +6320,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>206049</defineId>
+    <defineId>202049</defineId>
     <obsoleteNames />
     <editorName>设置卡牌可见性</editorName>
     <category>卡牌</category>

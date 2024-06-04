@@ -185,7 +185,6 @@ namespace Game
             "SelectCardDefineEvent",
             "BeChargedEvent",
             "TestEvent",
-            "CardPropChangeEvent",
             "SetCardPropEvent",
             "BuffPropertyChangeEvent",
             "ElementMixEvent",

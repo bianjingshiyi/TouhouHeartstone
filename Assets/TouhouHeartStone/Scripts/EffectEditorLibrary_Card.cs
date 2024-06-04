@@ -54,6 +54,8 @@ namespace Game
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_SET_CARD_PROPERTY = "设置卡牌属性";
         [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_CARD_PROPERTY_NAME = "获取卡牌属性名";
+        [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_SEAL = "封印";
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_CLONE_CARD = "复制卡牌";
@@ -403,6 +405,16 @@ namespace Game
             }
             outEvent = await card.setProp(game, propName, value);
             setOutParam(flow, node, nameof(outEvent), outEvent);
+        }
+        /// <summary>
+        /// 获取卡牌属性名
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.GetCardPropName, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_CARD_PROPERTY_NAME)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static string getCardPropName(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] CardPropertyGetterName propName)
+        {
+            return propName;
         }
         /// <summary>
         /// 获取属性
