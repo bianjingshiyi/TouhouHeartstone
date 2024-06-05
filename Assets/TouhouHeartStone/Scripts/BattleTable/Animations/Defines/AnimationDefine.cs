@@ -39,7 +39,7 @@ namespace Game.Animations
             hashCode = hashCode * 31 + id.GetHashCode();
             return hashCode;
         }
-        public abstract TableEffect createEffect(BattleTableManager table, Transform parent);
+        public abstract TableEffect createEffect(Transform parent);
         public abstract ColorTargetGroup[] getColorTargetGroups();
         public virtual void setProp<T>(string propName, T value)
         {

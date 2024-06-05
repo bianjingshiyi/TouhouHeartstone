@@ -90,6 +90,31 @@ namespace UI
         {
             _targetPositionVarNameField.SetTextWithoutNotify(varName);
         }
+
+        public void resetPreview()
+        {
+            _previewContent.localScale = Vector3.one;
+            _previewTable.stop();
+            updatePreviewPaused();
+        }
+        public void setPreviewVisible(bool value)
+        {
+            _previewRoot.SetActive(value);
+            _previewTableRoot.SetActive(value);
+        }
+        public bool isPreviewVisible()
+        {
+            return _previewRoot.activeSelf;
+        }
+        public void setShowPreviewButtonText(string text)
+        {
+            _showPreviewButtonText.text = text;
+        }
+        public void updatePreviewPaused()
+        {
+            _pausePreviewActiveImage.color = _previewTable.isPaused() ? _pausePreviewActiveColor : _pausePreviewInactiveColor;
+        }
+
         #endregion
         #region 私有方法
         protected void Awake()
@@ -101,7 +126,14 @@ namespace UI
             _sourcePositionVarNameField.onEndEdit.AddListener(v => onValueChangedCallback());
             _targetPositionVarNameField.onEndEdit.AddListener(v => onValueChangedCallback());
             _confirmButton.onClick.AddListener(OnConfirmCallback);
+            _showPreviewButton.onClick.AddListener(() => onShowPreviewButtonClicked?.Invoke());
+            _playPreviewButton.onClick.AddListener(() => onPreviewPlayButtonClicked?.Invoke());
+            _pausePreviewButton.onClick.AddListener(() => onPreviewPauseButtonClicked?.Invoke());
+            _stopPreviewButton.onClick.AddListener(() => onPreviewStopButtonClicked?.Invoke());
+            _previewTable.onFinished += () => updatePreviewPaused();
+            setPreviewVisible(false);
         }
+        #region 事件回调
         private void onValueChangedCallback()
         {
             onPropValueChanged?.Invoke(toInfo());
@@ -114,6 +146,7 @@ namespace UI
         {
             onConfirm?.Invoke();
         }
+        #endregion
         private VisualEffectDialogInfo toInfo()
         {
             return new VisualEffectDialogInfo()
@@ -131,8 +164,14 @@ namespace UI
         public event Action<VisualEffectDialogInfo> onPropValueChanged;
         public event Action<int> onColorModifyItemClicked;
         public event Action onConfirm;
+
+        public event Action onShowPreviewButtonClicked;
+        public event Action onPreviewPlayButtonClicked;
+        public event Action onPreviewPauseButtonClicked;
+        public event Action onPreviewStopButtonClicked;
         #endregion
         #region 属性字段
+        public AnimationPreviewTable previewTable => _previewTable;
         [SerializeField]
         private Dropdown _eventDropdown;
         [SerializeField]
@@ -155,6 +194,34 @@ namespace UI
         private ElementList _colorModifyItems;
         [SerializeField]
         private Button _confirmButton;
+
+        [Header("Preview")]
+        [SerializeField]
+        private Button _showPreviewButton;
+        [SerializeField]
+        private Text _showPreviewButtonText;
+        [SerializeField]
+        private GameObject _previewRoot;
+        [SerializeField]
+        private GameObject _previewTableRoot;
+        [SerializeField]
+        private Transform _previewContent;
+        [SerializeField]
+        private AnimationPreviewTable _previewTable;
+
+        [SerializeField]
+        private Button _playPreviewButton;
+        [SerializeField]
+        private Button _pausePreviewButton;
+        [SerializeField]
+        private Button _stopPreviewButton;
+
+        [SerializeField]
+        private Image _pausePreviewActiveImage;
+        [SerializeField]
+        private Color _pausePreviewActiveColor;
+        [SerializeField]
+        private Color _pausePreviewInactiveColor;
         #endregion
     }
     public struct VisualEffectDialogInfo

@@ -19,7 +19,7 @@ namespace Game.Animations
         {
 
         }
-        public override TableEffect createEffect(BattleTableManager table, Transform parent)
+        public override TableEffect createEffect(Transform parent)
         {
             throw new NotImplementedException();
         }

@@ -1106,7 +1106,7 @@ namespace Game.BattleTable
         {
             if (animDef == null)
                 return null;
-            var effect = animDef.createEffect(this, table.EffectsParent);
+            var effect = animDef.createEffect(table.EffectsParent);
             if (effect)
                 effect.init(this, animDef, info);
             return effect;

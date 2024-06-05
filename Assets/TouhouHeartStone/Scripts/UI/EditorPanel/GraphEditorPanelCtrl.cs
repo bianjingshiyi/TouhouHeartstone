@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Controllers;
 using Game;
+using Game.Animations;
 using HSVPicker;
 using MukioI18n;
 using TouhouCardEngine;
@@ -17,6 +18,7 @@ namespace UI
 {
     internal class GraphEditorPanelCtrl : GameObjectCtrl<MainSceneCtrl>
     {
+        #region 公有方法
         public void display()
         {
             var categoryNames = categories.Select(c => _actionGraphCtrl.translateCategoryName(c)).ToArray();
@@ -87,6 +89,8 @@ namespace UI
             _undoButton.interactable = _actionGraphCtrl.canUndo();
             _redoButton.interactable = _actionGraphCtrl.canRedo();
         }
+
+        #region 特效对话框
         public void initNodeAnimationDialog(string[] animations, string[] positions)
         {
             _editVisualEffectDialog.initEffects(animations);
@@ -107,13 +111,53 @@ namespace UI
         public void displayNodeAnimationDialog(Node node)
         {
             _editVisualEffectDialogObj.SetActive(true);
+            _editVisualEffectDialog.resetPreview();
             _curEditingVisualEffectNode = node;
         }
+        #endregion
+
+        #region 特效调色板
         public void displayColorPicker(Color color)
         {
             _colorPickerPanelObj.SetActive(true);
             _colorPicker.CurrentColor = color;
         }
+        #endregion
+
+        #region 特效预览
+        public void playAnimationPreview(AnimationDefine define, VisualEffectInfo info)
+        {
+            _editVisualEffectDialog.previewTable.play(define, info);
+            _editVisualEffectDialog.updatePreviewPaused();
+        }
+        public void pauseAnimationPreview()
+        {
+            _editVisualEffectDialog.previewTable.pause();
+            _editVisualEffectDialog.updatePreviewPaused();
+        }
+        public void resumeAnimationPreview()
+        {
+            _editVisualEffectDialog.previewTable.resume();
+            _editVisualEffectDialog.updatePreviewPaused();
+        }
+        public void switchAnimationPreviewPaused()
+        {
+            if (_editVisualEffectDialog.previewTable.isPaused())
+                resumeAnimationPreview();
+            else
+                pauseAnimationPreview();
+        }
+        public void stopAnimationPreview()
+        {
+            _editVisualEffectDialog.previewTable.stop();
+            _editVisualEffectDialog.updatePreviewPaused();
+        }
+        public Transform getPreviewTableTransform(int position)
+        {
+            return _editVisualEffectDialog.previewTable.getPreviewTableTransform(position);
+        }
+        #endregion
+
         public async Task displayCardSelectPanel(long[] cardPoolFiltersId = null, DefineReference[] characterRefs = null, Predicate<CardDefine> cardFilter = null)
         {
             var cardPoolsRange = getCardPoolEnv()
@@ -123,6 +167,9 @@ namespace UI
             await _cardSelectPanel.display(cardPoolsRange, cardPoolFiltersId, characterRefs, cardFilter);
             _cardSelectPanelObj.SetActive(true);
         }
+
+        #endregion
+
         #region 私有方法
         #region 生命周期
         void Awake()
@@ -159,6 +206,11 @@ namespace UI
             _editVisualEffectDialog.onConfirm += onAnimationConfirmButtonClickedCallback;
             _editVisualEffectDialog.onColorModifyItemClicked += onAnimationColorModifyItemClickedCallback;
             _editVisualEffectDialogResetColorButton.onClick.AddListener(onAnimationResetColorClickedCallback);
+
+            _editVisualEffectDialog.onShowPreviewButtonClicked += onAnimationShowPreviewButtonClickedCallback;
+            _editVisualEffectDialog.onPreviewPlayButtonClicked += onAnimationPreviewPlayButtonClickedCallback;
+            _editVisualEffectDialog.onPreviewPauseButtonClicked += onAnimationPreviewPauseButtonClickedCallback;
+            _editVisualEffectDialog.onPreviewStopButtonClicked += onAnimationPreviewStopButtonClickedCallback;
 
             _colorPicker.onValueChanged.AddListener((color) => onColorPickerValueChanged?.Invoke(_curEditingVisualEffectNode, _curEditingAnimationColorIndex, color));
             _colorPicker.onHSVChanged.AddListener((h, s, v) => onColorPickerValueChanged?.Invoke(_curEditingVisualEffectNode, _curEditingAnimationColorIndex, Color.HSVToRGB(h,s,v)));
@@ -432,6 +484,25 @@ namespace UI
         {
             _colorPickerPanelObj.SetActive(false);
             _curEditingAnimationColorIndex = -1;
+        }
+        private void onAnimationShowPreviewButtonClickedCallback()
+        {
+            var value = !_editVisualEffectDialog.isPreviewVisible();
+            _editVisualEffectDialog.setPreviewVisible(value);
+            var text = game.lang._p(CONTEXT_VISUAL_EFFECT, value ? VISUAL_EFFECT_HIDE_PREVIEW : VISUAL_EFFECT_SHOW_PREVIEW);
+            _editVisualEffectDialog.setShowPreviewButtonText(text);
+        }
+        private void onAnimationPreviewPlayButtonClickedCallback()
+        {
+            onAnimationPreviewPlayButtonClicked?.Invoke(_curEditingVisualEffectNode);
+        }
+        private void onAnimationPreviewPauseButtonClickedCallback()
+        {
+            switchAnimationPreviewPaused();
+        }
+        private void onAnimationPreviewStopButtonClickedCallback()
+        {
+            stopAnimationPreview();
         }
         #endregion
 
@@ -775,6 +846,8 @@ namespace UI
         public event Action<Node> onAnimationResetColorClicked;
         public event Action<Node, int> onOpenNodeAnimationColorPicker;
         public event Action<Node, int, Color> onColorPickerValueChanged;
+
+        public event Action<Node> onAnimationPreviewPlayButtonClicked;
         #endregion
 
         private bool _deleteButtonDirty;
@@ -881,6 +954,11 @@ namespace UI
         public const string VISUAL_EFFECT_POSITION_TARGET_CARD = "目标卡牌";
         [TranslateMsg("特效动画的始末位置选项", CONTEXT_VISUAL_EFFECT)]
         public const string VISUAL_EFFECT_POSITION_TEMP_VAR = "临时变量";
+
+        [TranslateMsg("特效动画的预览特效按钮", CONTEXT_VISUAL_EFFECT)]
+        public const string VISUAL_EFFECT_HIDE_PREVIEW = "隐藏预览";
+        [TranslateMsg("特效动画的预览特效按钮", CONTEXT_VISUAL_EFFECT)]
+        public const string VISUAL_EFFECT_SHOW_PREVIEW = "显示预览";
 
         public static readonly string[] categories = new string[]
         {

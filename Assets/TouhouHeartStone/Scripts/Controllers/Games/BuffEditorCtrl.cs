@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore;
 using Game;
+using Game.Animations;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouHeartstone;
@@ -178,6 +179,8 @@ namespace Controllers
             _graphEditor.onAnimationResetColorClicked += onAnimationResetColorClickedCallback;
             _graphEditor.onOpenNodeAnimationColorPicker += onOpenNodeAnimationColorPickerCallback;
             _graphEditor.onColorPickerValueChanged += onColorPickerValueChangedCallback;
+
+            _graphEditor.onAnimationPreviewPlayButtonClicked += onAnimationPreviewPlayButtonClickedCallback;
         }
         #endregion
         #region 事件回调
@@ -392,6 +395,25 @@ namespace Controllers
             markUnsaved();
             var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curBuffSkin);
             _graphEditor.updateAnimationDialogColors(colorViewData);
+        }
+        private void onAnimationPreviewPlayButtonClickedCallback(Node node)
+        {
+            var animRef = node.getNodeAnimationRef(_curBuffSkin);
+            if (animRef == null)
+                return;
+
+            var animDef = game.anims.findAnimationDefineForNode(animRef.animRef);
+            if (animDef == null)
+                return;
+
+            var srcTrans = _graphEditor.getPreviewTableTransform(animRef.sourcePosition);
+            var destTrans = _graphEditor.getPreviewTableTransform(animRef.targetPosition);
+            var info = new VisualEffectInfo()
+            {
+                srcTransform = srcTrans,
+                destTransform = destTrans,
+            };
+            _graphEditor.playAnimationPreview(animDef, info);
         }
         #endregion
 

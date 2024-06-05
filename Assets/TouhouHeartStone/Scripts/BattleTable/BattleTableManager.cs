@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore;
+using Game.Animations;
 using Game.BattleTable.UI;
 using NGettext.Plural.Ast;
 using TouhouCardEngine;
@@ -15,7 +16,7 @@ using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
 {
-    public partial class BattleTableManager : MonoBehaviour
+    public partial class BattleTableManager : MonoBehaviour, IVFXTable
     {
         /// <summary>
         /// 设置游戏对象和玩家

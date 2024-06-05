@@ -12,6 +12,7 @@ namespace Game
 {
     public partial class AnimationManager
     {
+        #region 节点的可用特效列表
         public AnimationDefine[] getAnimationDefinesForNode()
         {
             return getAllAnimationDefines(false);
@@ -20,24 +21,20 @@ namespace Game
         {
             return getAnimationDefinesForNode().Select(d => main.lang._(d.name)).Prepend(main.lang._(StringTable.NONE)).ToArray();
         }
-        public static void cleanUnusedVisualEffects(ISkin skin, IEnumerable<GeneratedEffect> effects)
+        public AnimationDefine findAnimationDefineForNode(DefineReference defRef)
         {
-            var allAnimRefs = skin.getAllAnimRefs();
-            foreach (var animRef in allAnimRefs)
-            {
-                var key = animRef.key;
-                var keys = effects.Where(e => e != null).SelectMany(e => e.graph.nodes).Select(n => SkinAnimationRef.getNodeKey(n));
-                if (keys == null || !keys.Contains(key))
-                {
-                    skin.removeAnimRef(key);
-                }
-            }
+            if (defRef == null)
+                return null;
+            var defines = getAnimationDefinesForNode();
+            return defines.FirstOrDefault(d => d.cardPoolId == defRef.cardPoolId && d.id == defRef.defineId);
         }
+        #endregion
+
+        #region 特效选项
         public VisualEffectDialogViewData getNodeAnimationViewData(Node node, ISkin skin)
         {
             var defines = getAnimationDefinesForNode();
-            var key = getOrInitNodeAnimationKey(node, skin);
-            SkinAnimationRef animRef = skin.getAnimRef(key);
+            SkinAnimationRef animRef = node.getOrInitNodeAnimationRef(skin);
 
             var eventRefs = getLocalNodeVisualEffectEventRefs(node);
             var eventIndex = 0;
@@ -85,11 +82,62 @@ namespace Game
             };
             return eventViewData;
         }
+        public void updateNodeAnimRef(Node node, ISkin skin, VisualEffectDialogInfo info)
+        {
+            var animRef = node.getOrInitNodeAnimationRef(skin);
+            var defines = getAnimationDefinesForNode();
+            var eventRefs = getLocalNodeVisualEffectEventRefs(node);
+            var animIndex = info.animIndex;
+            if (animIndex < 0)
+            {
+                animRef.animRef = new DefineReference(0, 0);
+            }
+            else
+            {
+                var define = defines[animIndex];
+                animRef.animRef = new DefineReference(define.cardPoolId, define.id);
+            }
+            animRef.eventReference = eventRefs == null || info.eventIndex < 0 ? null : eventRefs[info.eventIndex];
+            animRef.sourcePosition = info.sourcePosition;
+            animRef.targetPosition = info.targetPosition;
+            animRef.sourcePositionVarName = info.sourcePositionVarName;
+            animRef.targetPositionVarName = info.targetPositionVarName;
+        }
+        #endregion
+
+        #region 节点的可用事件类型
+        public EventReference[] getNodeVisualEffectEventRefs(Node node, IEnumerable<ICardPoolReference> cardPoolset)
+        {
+            if (node is ActionNode action)
+            {
+                var actionRef = action.defineRef;
+                return main.card.getActionBindedEventsRecursive(actionRef, cardPoolset);
+            }
+            return null;
+        }
+        public EventReference[] getLocalNodeVisualEffectEventRefs(Node node)
+        {
+            return getNodeVisualEffectEventRefs(node, main.card.getLocalCardPoolReferences());
+        }
+        public string[] getNodeVisualEffectEventEditorNames(Node node)
+        {
+            var eventRefs = getLocalNodeVisualEffectEventRefs(node);
+            if (eventRefs == null)
+                return null;
+            return eventRefs.Select(r =>
+            {
+                var def = main.card.getLocalEventDefine(r);
+                return main.eventManager.translateEventDefineNameForEditor(def);
+            }).ToArray();
+        }
+        #endregion
+
+
+        #region 调色
         public ColorModifyViewData[] getNodeAnimationColorViewData(Node node, ISkin skin)
         {
             var defines = getAnimationDefinesForNode();
-            var key = getOrInitNodeAnimationKey(node, skin);
-            SkinAnimationRef animRef = skin.getAnimRef(key);
+            SkinAnimationRef animRef = node.getOrInitNodeAnimationRef(skin);
 
             if (animRef == null)
                 return Array.Empty<ColorModifyViewData>();
@@ -124,8 +172,7 @@ namespace Game
         public Color getNodeAnimationColor(Node node, ISkin skin, int index)
         {
             var defines = getAnimationDefinesForNode();
-            var key = getOrInitNodeAnimationKey(node, skin);
-            SkinAnimationRef animRef = skin.getAnimRef(key);
+            SkinAnimationRef animRef = node.getOrInitNodeAnimationRef(skin);
 
             if (animRef == null)
                 return Color.red;
@@ -143,88 +190,16 @@ namespace Game
             var modify = animRef.colorModifies?.FirstOrDefault(m => m.animationRef == animDefRef && m.targetIndex == index);
             return modify != null ? modify.getColor() : targetWithColor.color;
         }
-
-        public EventReference[] getNodeVisualEffectEventRefs(Node node, IEnumerable<ICardPoolReference> cardPoolset)
-        {
-            if (node is ActionNode action)
-            {
-                var actionRef = action.defineRef;
-                return main.card.getActionBindedEventsRecursive(actionRef, cardPoolset);
-            }
-            return null;
-        }
-        public EventReference[] getLocalNodeVisualEffectEventRefs(Node node)
-        {
-            return getNodeVisualEffectEventRefs(node, main.card.getLocalCardPoolReferences());
-        }
-        public string[] getNodeVisualEffectEventEditorNames(Node node)
-        {
-            var eventRefs = getLocalNodeVisualEffectEventRefs(node);
-            if (eventRefs == null)
-                return null;
-            return eventRefs.Select(r =>
-            {
-                var def = main.card.getLocalEventDefine(r);
-                return main.eventManager.translateEventDefineNameForEditor(def);
-            }).ToArray();
-        }
-        public string getOrInitNodeAnimationKey(Node node, ISkin skin)
-        {
-            var key = SkinAnimationRef.getNodeKey(node);
-            if (string.IsNullOrEmpty(key))
-            {
-                var animRefs = skin.getAllAnimRefs();
-                key = $"AnimRef{animRefs.Length}_{node.id}";
-                SkinAnimationRef.setNodeKey(node, key);
-            }
-            return key;
-        }
-        public SkinAnimationRef getOrInitNodeAnimationRef(Node node, ISkin skin)
-        {
-            var key = getOrInitNodeAnimationKey(node, skin);
-            var animRef = skin.getAnimRef(key);
-            if (animRef == null)
-            {
-                var defines = getAnimationDefinesForNode();
-                var defaultDefine = defines.FirstOrDefault();
-                var defRef = new DefineReference(defaultDefine?.cardPoolId ?? 0, defaultDefine?.id ?? 1);
-                animRef = new SkinAnimationRef(key, defRef);
-                skin.addAnimRef(animRef);
-            }
-            return animRef;
-        }
-        public void updateNodeAnimRef(Node node, ISkin skin, VisualEffectDialogInfo info)
-        {
-            var animRef = getOrInitNodeAnimationRef(node, skin);
-            var defines = getAnimationDefinesForNode();
-            var eventRefs = getLocalNodeVisualEffectEventRefs(node);
-            var animIndex = info.animIndex;
-            if (animIndex < 0)
-            {
-                animRef.animRef = new DefineReference(0, 0);
-            }
-            else
-            {
-                var define = defines[animIndex];
-                animRef.animRef = new DefineReference(define.cardPoolId, define.id);
-            }
-            animRef.eventReference = eventRefs == null || info.eventIndex < 0 ? null : eventRefs[info.eventIndex];
-            animRef.sourcePosition = info.sourcePosition;
-            animRef.targetPosition = info.targetPosition;
-            animRef.sourcePositionVarName = info.sourcePositionVarName;
-            animRef.targetPositionVarName = info.targetPositionVarName;
-        }
         public void resetNodeAnimColor(Node node, ISkin skin)
         {
-            var key = getOrInitNodeAnimationKey(node, skin);
-            var animRef = skin.getAnimRef(key);
+            var animRef = node.getOrInitNodeAnimationRef(skin);
             if (animRef == null)
                 return;
             animRef.colorModifies.RemoveAll(m => m.animationRef == animRef.animRef);
         }
         public void setNodeAnimColor(Node node, ISkin skin, int index, Color color)
         {
-            var animRef = getOrInitNodeAnimationRef(node, skin);
+            var animRef = node.getOrInitNodeAnimationRef(skin);
             var colorModify = animRef.colorModifies.Find(m => m.animationRef == animRef.animRef && m.targetIndex == index);
             if (colorModify == null)
             {
@@ -239,6 +214,23 @@ namespace Game
             colorModify.g = color.g;
             colorModify.b = color.b;
         }
+        #endregion
+
+        public static void cleanUnusedVisualEffects(ISkin skin, IEnumerable<GeneratedEffect> effects)
+        {
+            var allAnimRefs = skin.getAllAnimRefs();
+            foreach (var animRef in allAnimRefs)
+            {
+                var key = animRef.key;
+                var keys = effects.Where(e => e != null).SelectMany(e => e.graph.nodes).Select(n => SkinAnimationRef.getNodeKey(n));
+                if (keys == null || !keys.Contains(key))
+                {
+                    skin.removeAnimRef(key);
+                }
+            }
+        }
+
+
         [TranslateMsg("默认的特效名称")]
         public const string VFX_DEFAULT_NAME = "特效";
     }

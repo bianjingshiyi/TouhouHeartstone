@@ -11,7 +11,7 @@ namespace Game.Animations
     public abstract class TableEffect : MonoBehaviour
     {
         #region 公有方法
-        public virtual void init(BattleTableManager table, AnimationDefine define, VisualEffectInfo info)
+        public virtual void init(IVFXTable table, AnimationDefine define, VisualEffectInfo info)
         {
             _table = table;
             _srcTransform = info.srcTransform;
@@ -52,21 +52,24 @@ namespace Game.Animations
                     sePlayer.Play();
                 }
             }
-            // 更新动画器。
-            if (_animator)
-            {
-                _animator.Update(deltaTime);
-            }
-            // 更新动画。
-            updateAnim(deltaTime);
-            if (_isPersistent)
-            {
-                updatePersistentAnim();
-            }
-            _time += deltaTime;
 
-            // 动画结束判断。
-            checkFinished();
+            if (_state != EffectState.Paused)
+            {
+                // 更新动画器。
+                if (_animator)
+                {
+                    _animator.Update(deltaTime);
+                }
+                // 更新动画。
+                updateAnim(deltaTime);
+                if (_isPersistent)
+                {
+                    updatePersistentAnim();
+                }
+                _time += deltaTime;
+                // 动画结束判断。
+                checkFinished();
+            }
         }
         public void end()
         {
@@ -76,6 +79,20 @@ namespace Game.Animations
             if (_animator)
                 _animator.SetTrigger("End");
             stopParticles();
+        }
+        public void pause()
+        {
+            if (_state != EffectState.Started)
+                return;
+            _state = EffectState.Paused;
+            pauseParticles();
+        }
+        public void unpause()
+        {
+            if (_state != EffectState.Paused)
+                return;
+            _state = EffectState.Started;
+            unpauseParticles();
         }
         public void finish()
         {
@@ -240,7 +257,7 @@ namespace Game.Animations
             else if (_state == EffectState.Dormant)
             {
                 _state = EffectState.Started;
-                resumeParticles();
+                replayParticles();
             }
         }
         private void checkFinished()
@@ -284,11 +301,29 @@ namespace Game.Animations
                 particleSystem.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             }
         }
-        private void resumeParticles()
+        private void replayParticles()
         {
             foreach (var particleSystem in particleSystems)
             {
                 if (particleSystem.isEmitting)
+                    continue;
+                particleSystem.Play(true);
+            }
+        }
+        private void pauseParticles()
+        {
+            foreach (var particleSystem in particleSystems)
+            {
+                if (particleSystem.isPaused)
+                    continue;
+                particleSystem.Pause(true);
+            }
+        }
+        private void unpauseParticles()
+        {
+            foreach (var particleSystem in particleSystems)
+            {
+                if (!particleSystem.isPaused)
                     continue;
                 particleSystem.Play(true);
             }
@@ -372,7 +407,7 @@ namespace Game.Animations
                 return _rootObj;
             }
         }
-        public BattleTableManager table => _table;
+        public IVFXTable table => _table;
         public float time => _time;
         public float duration => _duration;
         public float blockTime => _blockTime;
@@ -417,7 +452,7 @@ namespace Game.Animations
         protected float _blockTime;
         protected bool _isPersistent;
         protected GameObject _rootObj;
-        protected BattleTableManager _table;
+        protected IVFXTable _table;
         protected EffectState _state;
         protected bool _visible = true;
         #endregion
@@ -433,6 +468,10 @@ namespace Game.Animations
         /// </summary>
         Started,
         /// <summary>
+        /// 暂停状态。暂停所有粒子。
+        /// </summary>
+        Paused,
+        /// <summary>
         /// 停止播放状态。不再产生新的粒子，并在所有粒子都消失后被清理。
         /// </summary>
         Stopped,
@@ -444,6 +483,11 @@ namespace Game.Animations
         /// 休眠状态。不存在有效源位置的持续性特效会进入休眠，停止所有粒子，直到源位置再次有效。
         /// </summary>
         Dormant
+    }
+    public interface IVFXTable
+    {
+        Vector3 WorldToTablePosition(Vector3 worldPos);
+        Vector3 TableToWorldPosition(Vector3 tablePos);
     }
     public class VisualEffectInfo
     {
