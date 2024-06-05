@@ -453,6 +453,7 @@ namespace UI
         {
             _backgroundEventTrigger.onPointerDown += onPointerDownBackgroundImage;
             _backgroundEventTrigger.onPointerUp += onPointerUpBackgroundImage;
+            _scaleScrollHandler.onScroll += onScaleScrollCallback;
             if (_actionNodeItemTemplate.transform.parent == _actionNodesRoot)
             {
                 _actionNodeItemTemplate.gameObject.SetActive(false);
@@ -465,57 +466,24 @@ namespace UI
             {
                 _ActionNodeGraphLineTemplate.gameObject.SetActive(false);
             }
-            // 效果属性。
-            #region 缩放函数所需要的初始化参数及eventTrigger相关By断剑君
-            _backgroundOriginScale = _content.localScale;//读取目前的缩放比例 
-
-            ///UnityAction <BaseEventData> zoomingAction =  new UnityAction <BaseEventData> (EditorZooming);
-            EventTrigger.Entry scrollZooming = new EventTrigger.Entry();
-            scrollZooming.eventID = EventTriggerType.Scroll;
-            scrollZooming.callback.AddListener(onBackgroundScroll);
-            EventTrigger addTriggerIntoBackgrond = _backgroundImage.gameObject.AddComponent<EventTrigger>();
-            addTriggerIntoBackgrond.triggers.Add(scrollZooming);
 
             EventTrigger.Entry BackgroundonDrag = new EventTrigger.Entry();
             BackgroundonDrag.eventID = EventTriggerType.Drag;
             BackgroundonDrag.callback.AddListener(onBackgroundDrag);
-            EventTrigger addOnDragIntoBackground = _backgroundImage.gameObject.AddComponent<EventTrigger>();
+            EventTrigger addOnDragIntoBackground = _scaleScrollHandler.gameObject.AddComponent<EventTrigger>();
             addOnDragIntoBackground.triggers.Add(BackgroundonDrag);
 
             EventTrigger.Entry BackgroundBeginDrag = new EventTrigger.Entry();
             BackgroundBeginDrag.eventID = EventTriggerType.BeginDrag;
             BackgroundBeginDrag.callback.AddListener(onBackgroundBeginDrag);
-            EventTrigger addBeginDragIntoBackground = _backgroundImage.gameObject.AddComponent<EventTrigger>();
+            EventTrigger addBeginDragIntoBackground = _scaleScrollHandler.gameObject.AddComponent<EventTrigger>();
             addBeginDragIntoBackground.triggers.Add(BackgroundBeginDrag);
 
             EventTrigger.Entry BackgroundEndDrag = new EventTrigger.Entry();
             BackgroundEndDrag.eventID = EventTriggerType.EndDrag;
             BackgroundEndDrag.callback.AddListener(OnBackgroundEndDrag);
-            EventTrigger addEndDragIntoBackground = _backgroundImage.gameObject.AddComponent<EventTrigger>();
+            EventTrigger addEndDragIntoBackground = _scaleScrollHandler.gameObject.AddComponent<EventTrigger>();
             addEndDragIntoBackground.triggers.Add(BackgroundEndDrag);
-
-            EventTrigger.Entry ScreenOnTouch = new EventTrigger.Entry();
-            ScreenOnTouch.eventID = EventTriggerType.PointerDown;
-            ScreenOnTouch.callback.AddListener(OnFingertouch);
-            EventTrigger addScreenTouchIntoBackground =
-                _backgroundImage.gameObject.AddComponent<EventTrigger>();
-            addScreenTouchIntoBackground.triggers.Add(ScreenOnTouch);
-
-            EventTrigger.Entry ScreenDuringTouch = new EventTrigger.Entry();
-            ScreenDuringTouch.eventID = EventTriggerType.Drag;
-            ScreenDuringTouch.callback.AddListener(onFingerDragging);
-            EventTrigger addScreenDuringTouchIntoBackground =
-                _backgroundImage.gameObject.AddComponent<EventTrigger>();
-            addScreenDuringTouchIntoBackground.triggers.Add(ScreenDuringTouch);
-
-            EventTrigger.Entry ScreenEndTouch = new EventTrigger.Entry();
-            ScreenEndTouch.eventID = EventTriggerType.PointerUp;
-            ScreenEndTouch.callback.AddListener(onFigerEndTouch);
-            EventTrigger addEndTouchIntoBackground =
-                _backgroundImage.gameObject.AddComponent<EventTrigger>();
-            addScreenTouchIntoBackground.triggers.Add(ScreenEndTouch);
-
-            #endregion
         }
         private void Update()
         {
@@ -556,93 +524,10 @@ namespace UI
             }
             setFocused();
         }
-        private void onBackgroundScroll(BaseEventData eventData)
+        private void onScaleScrollCallback(ScaleScrollHandler handler, PointerEventData eventData)
         {
-            var delta = Vector3.one * (Input.GetAxis("Mouse ScrollWheel") * zoomSpeed);//读取滚轮的变化           
-            var lastScale = _content.localScale;
-            var desiredScale = lastScale + delta;//进行缩放
-            desiredScale = ClampDesiredScale(desiredScale);//对缩放目标进行一个数据的clamp以保证成倍缩放
-            _content.localScale = desiredScale;
-
-            // 调整缩放中心位置
-            var scaleCenter = _content.parent.InverseTransformPoint(_viewPort.position);
-            if (eventData is PointerEventData pointer)
-            {
-                if (pointer.pointerCurrentRaycast.isValid)
-                {
-                    scaleCenter = _content.parent.InverseTransformPoint(pointer.pointerCurrentRaycast.worldPosition);
-                }
-            }
-            var posOffset = _content.localPosition - scaleCenter;
-            posOffset.x *= desiredScale.x / lastScale.x;
-            posOffset.y *= desiredScale.y / lastScale.y;
-            _content.localPosition = scaleCenter + posOffset;
-
             clearFreePlaceCheckRegion();
             setFocused();
-        }
-
-        private void OnFingertouch(BaseEventData eventData)
-        {
-            if (Input.touchCount > 1)
-            {
-                var _currentTouch1 = Input.GetTouch(0);
-                var _currentTouch2 = Input.GetTouch(1);
-                if (_currentTouch1.phase == TouchPhase.Began || _currentTouch2.phase == TouchPhase.Began)
-                {
-                    _perviousTouch1 = _currentTouch1;
-                    _perviousTouch2 = _currentTouch2;
-                }
-            }
-        }
-        /// <summary>
-        /// 此方法下的debuglog暂且以注释形式保留，为后续优化做准备
-        /// </summary>
-        /// <param name="eventData"></param>
-        private void onFingerDragging(BaseEventData eventData)
-        {
-            if (Input.touchCount > 1)
-            {
-                _isTouchZooming = true;
-                var _currentTouch1 = Input.GetTouch(0);
-                var _currentTouch2 = Input.GetTouch(1);
-                var camera = Camera.main;
-                Vector2 _perviousPosition1 = camera.ScreenToWorldPoint(_perviousTouch1.position);
-                Vector2 _perviousPosition2 = camera.ScreenToWorldPoint(_perviousTouch2.position);
-                Vector2 _currentPosition1 = camera.ScreenToWorldPoint(_currentTouch1.position);
-                Vector2 _currentPosition2 = camera.ScreenToWorldPoint(_currentTouch2.position);
-
-                float leng1 = Vector2.Distance(_perviousPosition1, _perviousPosition2);
-                float leng2 = Vector2.Distance(_currentPosition1, _currentPosition2);
-                var scaleFactor = leng2 / leng1;
-                Vector3 prevCenter = (_perviousPosition1 + _perviousPosition2) / 2;
-                Vector3 currCenter = (_currentPosition1 + _currentPosition2) / 2;
-                Vector3 _localScale = _content.localScale;
-                Vector3 desiredScale = _localScale * scaleFactor;
-
-                if (scaleFactor != 1 && desiredScale.x < _maxScale && desiredScale.y < _maxScale && desiredScale.x > _minScale && desiredScale.y > _minScale)
-                {
-                    var localPos = _content.position;
-                    var targetPos = (1 - scaleFactor) * prevCenter + scaleFactor * localPos;
-                    //Debug.Log($"c1: {prevCenter}, c2: {currCenter}, factor: {scaleFactor}, delta: {targetPos - localPos}, prev: {localPos}");
-
-                    _content.localScale = desiredScale;
-                    _content.position = targetPos;
-                }
-
-                _content.position += currCenter - prevCenter;
-                clearFreePlaceCheckRegion();
-
-                _perviousTouch1 = _currentTouch1;
-                _perviousTouch2 = _currentTouch2;
-            }
-        }
-        public void onFigerEndTouch(BaseEventData eventData)
-        {
-            if (Input.touchCount <= 1)
-            {
-                _isTouchZooming = false;
-            }
         }
         public void onBackgroundDrag(BaseEventData eventData)
         {
@@ -657,7 +542,7 @@ namespace UI
                 return;
             }
             _longPressTimer.reset();
-            if (!_isTouchZooming)
+            if (!isTouchZooming)
             {
                 _content.position = worldPos - _backgroundDragStartPosition;
                 clearFreePlaceCheckRegion();
@@ -692,7 +577,7 @@ namespace UI
         {
             if (eventData is not PointerEventData pointer || !pointer.pointerCurrentRaycast.isValid)
                 return;
-            if (_isTouchZooming) return;
+            if (isTouchZooming) return;
 
             setFocused();
             if (_isReadonly) return;
@@ -727,7 +612,7 @@ namespace UI
         {
             if (eventData is not PointerEventData pointer)
                 return;
-            if (_isTouchZooming) return;
+            if (isTouchZooming) return;
 
             setFocused();
             if (_isReadonly) return;
@@ -823,7 +708,7 @@ namespace UI
         {
             if (eventData is not PointerEventData pointer || !pointer.pointerCurrentRaycast.isValid)
                 return;
-            if (_isTouchZooming) return;
+            if (isTouchZooming) return;
             setFocused();
             if (_isReadonly) return;
             int outputIndex = item.indexOfOutput(output);
@@ -856,7 +741,7 @@ namespace UI
         {
             if (eventData is not PointerEventData pointer)
                 return;
-            if (_isTouchZooming) return;
+            if (isTouchZooming) return;
 
             setFocused();
             if (_isReadonly) return;
@@ -944,7 +829,7 @@ namespace UI
         }
         private void onPointerDownActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
-            if (_isTouchZooming) return;
+            if (isTouchZooming) return;
             setFocused();
             _pointerOverActionNodeItem = item;
         }
@@ -959,7 +844,7 @@ namespace UI
         private void onBeginDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
             if (!eventData.pointerCurrentRaycast.isValid) return;
-            if (_isTouchZooming) return;
+            if (isTouchZooming) return;
 
             setFocused();
             if (_pointerOverActionNodeItem == item)
@@ -1173,12 +1058,6 @@ namespace UI
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
         }
-        private Vector3 ClampDesiredScale(Vector3 desiredScale)//clamp函数
-        {
-            desiredScale = Vector3.Max(_backgroundOriginScale / maxZoom, desiredScale);//最大倍率和最小倍率
-            desiredScale = Vector3.Min(_backgroundOriginScale * maxZoom, desiredScale);
-            return desiredScale;
-        }
         private Vector2 findNearestPosInRect(Vector2 target, Rect range)
         {
             // 大小完全超出范围
@@ -1347,15 +1226,8 @@ namespace UI
         #endregion
         #endregion
         #region 属性字段
-        /// <summary>
-        /// 自动生成位置的宽度间隔
-        /// </summary>
-        public float autoPosSpacingWidth => _autoPosSpacingWidth;
-        /// <summary>
-        /// 自动生成位置的高度间隔
-        /// </summary>
-        public float autoPosSpacingHeight => _autoPosSpacingHeight;
         public bool IsDragging => _isDragging;
+        public bool isTouchZooming => _scaleScrollHandler.isTouchZooming;
 
         #region 多选/操作模式
         HashSet<ActionNodeItem> _selectedNodes = new HashSet<ActionNodeItem>();
@@ -1365,11 +1237,7 @@ namespace UI
 
         [Header("模板属性和UI控件")]
         [SerializeField]
-        float _autoPosSpacingWidth = 600;
-        [SerializeField]
-        float _autoPosSpacingHeight = 300;
-        [SerializeField]
-        Image _backgroundImage;
+        ScaleScrollHandler _scaleScrollHandler;
         [SerializeField]
         EventTriggerWithoutUseEvent _backgroundEventTrigger;
         [SerializeField]
@@ -1378,16 +1246,6 @@ namespace UI
         RectTransform _selectFrameTrans;
         [SerializeField]
         RectTransform _viewPort;
-
-        [Header("缩放")]
-        [SerializeField]
-        private float zoomSpeed = 0.1f;
-        [SerializeField]
-        private float maxZoom = 10f;
-        [SerializeField]
-        float _maxScale = 1.7f;
-        [SerializeField]
-        float _minScale = 0.3f;
 
         [Header("节点")]
         [SerializeField]
@@ -1407,8 +1265,6 @@ namespace UI
         [SerializeField]
         List<ActionNodeConnectionData> _connectionList = new List<ActionNodeConnectionData>();
 
-
-
         [Header("杂项字段")]
         [SerializeField]
         ActionNodeItem _pointerOverActionNodeItem;
@@ -1420,14 +1276,9 @@ namespace UI
         ActionNodeGraphLine _dragLine;
         // ActionNodeGraphLine _dragLine;
         [SerializeField]
-        private Vector3 _backgroundOriginScale;
-        [SerializeField]
         private Vector2 _backgroundDragStartPosition;
         private bool _isDragging;
         private BJSYGameCore.Timer _longPressTimer = new BJSYGameCore.Timer() { duration = .5f };
-        private Touch _perviousTouch1;
-        private Touch _perviousTouch2;
-        private bool _isTouchZooming;
         private bool _isReadonly;
         private ActionNodeItemKnob _currentSelectedPort;
         /// <summary>
