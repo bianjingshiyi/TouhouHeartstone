@@ -845,6 +845,9 @@ namespace Controllers
             markUnsaved();
             var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curCardSkin);
             _graphEditor.updateAnimationDialogColors(colorViewData);
+
+            if (_graphEditor.isPreviewPlaying())
+                _graphEditor.stopAnimationPreview();
         }
         private void onAnimationPreviewPlayButtonClickedCallback(Node node)
         {
@@ -864,6 +867,22 @@ namespace Controllers
                 destTransform = destTrans,
             };
             _graphEditor.playAnimationPreview(animDef, info);
+
+            if (animRef.colorModifies == null)
+                return;
+            var targetGroups = animDef.getColorTargetGroups();
+            foreach (var modify in animRef.colorModifies)
+            {
+                if (modify.animationRef != animRef.animRef)
+                    continue;
+                if (modify.targetIndex < 0 || modify.targetIndex >= targetGroups.Length)
+                    continue;
+                var targetGroup = targetGroups[modify.targetIndex];
+                foreach (var target in targetGroup.targets)
+                {
+                    _graphEditor.modifyAnimationPreviewEffectColor(target, modify.getColor());
+                }
+            }
         }
         #endregion
 

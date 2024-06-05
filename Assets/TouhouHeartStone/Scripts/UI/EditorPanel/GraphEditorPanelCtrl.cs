@@ -125,10 +125,18 @@ namespace UI
         #endregion
 
         #region 特效预览
+        public bool isPreviewPlaying()
+        {
+            return _editVisualEffectDialog.previewTable.isPlaying();
+        }
         public void playAnimationPreview(AnimationDefine define, VisualEffectInfo info)
         {
             _editVisualEffectDialog.previewTable.play(define, info);
             _editVisualEffectDialog.updatePreviewPaused();
+        }
+        public void modifyAnimationPreviewEffectColor(ColorTarget target, Color color)
+        {
+            _editVisualEffectDialog.previewTable.modifyColor(target, color);
         }
         public void pauseAnimationPreview()
         {

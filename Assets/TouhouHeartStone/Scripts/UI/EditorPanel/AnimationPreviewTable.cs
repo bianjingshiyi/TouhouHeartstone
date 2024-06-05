@@ -30,6 +30,7 @@ namespace UI
             if (!isPlaying())
                 return false;
             Destroy(_effect.gameObject);
+            _effect = null;
             return true;
         }
         public Transform getPreviewTableTransform(int position)
