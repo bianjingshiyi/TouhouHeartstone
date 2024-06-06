@@ -163,6 +163,7 @@ namespace Game
             {
                 //如果不存在皮肤，那就创建一个
                 buffSkin = game.card.createBuffSkin(buffDefine.cardPoolId, buffDefine.id);
+                buffSkin.nameKey = buffDefine.ToString();
                 game.card.addBuffSkin(curCardPoolId, buffSkin);
                 needUpdateBuffs = true;
             }
