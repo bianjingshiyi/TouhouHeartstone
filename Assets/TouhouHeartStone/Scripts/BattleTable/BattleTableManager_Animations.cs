@@ -179,6 +179,14 @@ namespace Game.BattleTable
             effect = null;
             return false;
         }
+        public bool hasBuffEffect(int cardId, DefineReference animRef)
+        {
+            if (cardBuffEffects.TryGetValue(cardId, out var effectDict))
+            {
+                return effectDict.Any(p => p.Value.define.getDefineRef() == animRef);
+            }
+            return false;
+        }
         public void clearCardBuffEffects()
         {
             foreach (var cardPair in cardBuffEffects)

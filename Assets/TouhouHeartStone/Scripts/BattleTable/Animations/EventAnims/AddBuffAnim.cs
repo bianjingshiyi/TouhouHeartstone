@@ -19,7 +19,7 @@ namespace Game.BattleTable
             var buffDefine = buff.define;
             var buffSkin = table.getBuffSkin(buffDefine);
             DefineReference animRef = buffSkin?.persistentAnimRef;
-            if (animRef != null)
+            if (animRef != null && !table.hasBuffEffect(card.id, animRef))
             {
                 var srcTransform = table.getCardTransform(card.id, true);
                 var info = new VisualEffectInfo()

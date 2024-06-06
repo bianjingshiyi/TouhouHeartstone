@@ -18,6 +18,7 @@ namespace Game.Animations
             if (_srcTransform)
                 transform.position = _srcTransform.position;
             _destTransform = info.destTransform;
+            _define = define;
             _duration = define.duration;
             _blockTime = define.blockTime;
             _isPersistent = define.isPersistent;
@@ -412,6 +413,7 @@ namespace Game.Animations
         public float duration => _duration;
         public float blockTime => _blockTime;
         public EffectState state => _state;
+        public AnimationDefine define => _define;
         public event Action<TableEffect> onFinished;
         [SerializeField]
         protected Animator _animator;
@@ -447,6 +449,7 @@ namespace Game.Animations
                 return _sePlayer;
             }
         }
+        protected AnimationDefine _define;
         protected float _time;
         protected float _duration;
         protected float _blockTime;
