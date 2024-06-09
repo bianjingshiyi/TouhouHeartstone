@@ -5001,7 +5001,35 @@ MonoBehaviour:
   duration: 2
   blockTime: 1.05
   isPersistent: 0
-  colorTargets: []
+  colorTargets:
+  - targets:
+    - path: Root/Eye/Waves
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/Eye/Waves
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/Lasers
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Lasers
+      type: 3
+      particleType: 0
+      index: 1
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - targets:
+    - path: Root/Eye
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Eye/Waves
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &1245566683130408204
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5057,6 +5085,7 @@ MonoBehaviour:
   _destTransform: {fileID: 0}
   _playSoundOnStart: 0
   testMode: 0
+  testColor: {r: 1, g: 0, b: 1, a: 1}
   _scaleByDistance: 0
   _scaleFactors: {x: 0, y: 1, z: 0}
   _scaleMultiplier: {x: 1, y: 1, z: 1}
