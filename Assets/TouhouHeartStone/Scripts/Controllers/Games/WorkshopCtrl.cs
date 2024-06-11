@@ -463,6 +463,8 @@ namespace Controllers
         }
         private async Task<string[]> uploadCardPoolResources(CardPoolInfo poolInfo, string[] resources)
         {
+            if (resources == null)
+                return Array.Empty<string>();
             var (_, pool) = await game.card.getOrLoadCardPool(poolInfo);
             var cardPoolResources = CardManager.getCardPoolResources(poolInfo, pool);
             int totalResources = resources.Length;
