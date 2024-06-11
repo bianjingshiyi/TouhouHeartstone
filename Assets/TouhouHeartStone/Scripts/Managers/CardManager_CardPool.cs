@@ -1371,7 +1371,7 @@ namespace Game
                     var imagePathKey = mainSkin._imagePath;
                     foreach (var skin in skinGroup)
                     {
-                        if (skin == mainSkin)
+                        if (string.IsNullOrEmpty(skin._language) || skin._language == mainLang)
                             // 主语言皮肤，保留。
                             continue;
 
@@ -1397,7 +1397,7 @@ namespace Game
                 var imagePathKey = mainSkin.imagePath;
                 foreach (var skin in skins)
                 {
-                    if (skin == mainSkin)
+                    if (string.IsNullOrEmpty(skin.language) || skin.language == mainLang)
                         // 主语言皮肤，保留。
                         continue;
 
