@@ -555,7 +555,7 @@ namespace Game
         /// <summary>
         /// 是否为游客状态
         /// </summary>
-        bool isGuest => userInfo != null && userInfo.UID >= 1000000000;
+        public bool isGuest => userInfo != null && userInfo.UID >= 1000000000;
         int IClient.id => localPlayer.id;
         /// <summary>
         /// 本地联网游戏逻辑

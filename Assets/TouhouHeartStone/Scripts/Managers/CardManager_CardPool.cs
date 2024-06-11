@@ -2289,7 +2289,7 @@ namespace Game
         private const int CARD_POOL_VERSION_4 = 4;
         public const byte CARD_POOL_VERSION_3_HEADER_BYTE_0 = (byte)'z';
         public const byte CARD_POOL_VERSION_3_HEADER_BYTE_1 = (byte)'p';
-        private const int CURRENT_CARD_POOL_VERSION = CARD_POOL_VERSION_4;
+        public const int CURRENT_CARD_POOL_VERSION = CARD_POOL_VERSION_4;
         #endregion
     }
 
