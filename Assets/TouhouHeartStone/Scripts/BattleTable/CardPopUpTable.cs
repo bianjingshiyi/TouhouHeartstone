@@ -11,11 +11,9 @@ namespace Game.BattleTable.UI
         {
             table = tbl;
         }
-        protected override async Task setTokenCardDefine(CardDefine card, CardSkinData skin, CardManager cardManager)
+        protected override Task setTokenCardDefine(CardDefine card, CardSkinData skin, CardManager cardManager)
         {
-            _tokenCard.setCardDefine(card, skin, cardManager);
-            _tokenCard.setImageSprite(null);
-            _tokenCard.setImageSprite(await table.loadCardImage(card));
+            return _tokenCard.setCardDefine(card, skin, cardManager);
         }
         #region 属性字段
         private BattleTableManager table;

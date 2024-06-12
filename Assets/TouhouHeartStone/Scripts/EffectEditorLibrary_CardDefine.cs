@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MukioI18n;
 using TouhouCardEngine;
@@ -50,6 +53,12 @@ namespace Game
         public const string EDITOR_NODE_CARD_DEFINE_IS_TRAP = "卡牌定义是否是陷阱";
         [TranslateMsg("节点名称")]
         public const string EDITOR_NODE_REVEAL_CARD_DEFINE = "展示卡牌定义";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_CLONE_CARD_DEFINE = "复制卡牌定义";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_SET_CARD_DEFINE_PROP = "设置卡牌定义属性";
+
+
         [TranslateMsg("编辑器-动作节点-触发法术或技能卡牌定义效果")]
         public const string EDITOR_NODE_TRIGGER_SPELL_CARD_DEFINE = "触发法术或技能卡牌定义效果";
         [TranslateMsg("编辑器-节点名称-获取卡牌定义的标签列表")]
@@ -526,6 +535,32 @@ namespace Game
                 return Task.CompletedTask;
             return game.revealCardDefine(cardDefine, player, invisibleForSelf, invisibleForOppo);
         }
+        #region 对局内创建卡牌定义
+        /// <summary>
+        /// 复制卡牌定义
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.CloneCardDefine, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CLONE_CARD_DEFINE)]
+        public static CardDefine cloneCardDefine(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
+        {
+            if (cardDefine == null)
+                return null;
+            return game.cloneCardDefine(cardDefine);
+        }
+        /// <summary>
+        /// 设置卡牌定义属性
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.SetCardDefineProp, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_SET_CARD_DEFINE_PROP)]
+        public static void setCardDefineProp(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] CardDefinePropertyGetterName name,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
+        {
+            if (cardDefine == null || name == null || !cardDefine.isEditable())
+                return;
+            cardDefine.setProp(name, value);
+        }
+        #endregion
     }
     [Obsolete]
     public enum CardDefineSelect

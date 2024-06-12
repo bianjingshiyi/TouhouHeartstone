@@ -25,5 +25,7 @@
         public const string CARD_PROP_SKILL_REF = "skillRef";
         public const string TARGET_TYPE_CHARACTER = "Character";
         public const string TARGET_TYPE_SERVANT = "Servant";
+        public const string CLONE_SOURCE = "_CLONE_SOURCE";
+        public const string EDITABLE = "_EDITABLE";
     }
 }

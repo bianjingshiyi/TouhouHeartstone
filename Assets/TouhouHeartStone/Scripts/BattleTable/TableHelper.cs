@@ -23,18 +23,17 @@ namespace Game.BattleTable
             ui.setAttack(0);
             ui.setLife(0);
         }
-        public static void setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, CardManager cardManager)
+        public static Task setCardDefine(this UICard ui, CardDefine card, CardManager cardManager)
         {
-            string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
-            string subName = string.Empty;
-            string desc = string.Empty;
-            if (skin != null)
-            {
-                var poolRef = cardManager.getCardPoolReferenceOfCard(card);
-                name = cardManager.getCardName(poolRef, card.id);
-                subName = cardManager.getCardSubname(poolRef, card.id);
-                desc = cardManager.getCardDesc(poolRef, card.id);
-            }
+            var skin = cardManager.getCardSkin(card);
+            return ui.setCardDefine(card, skin, cardManager);
+        }
+        public static async Task setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, CardManager cardManager)
+        {
+            var poolRef = cardManager.getCardPoolReferenceOfCard(card);
+            var name = cardManager.getCardName(poolRef, skin);
+            var subName = cardManager.getCardSubname(poolRef, skin);
+            var desc = cardManager.getCardDesc(poolRef, skin);
             ui.setName(name);
             ui.setSubname(subName);
             ui.setDesc(desc);
@@ -48,19 +47,38 @@ namespace Game.BattleTable
             ui.setLifeColor(PropertyNumberColor.White);
             ui.setType(card.type);
             ui.setTranslatedTag(cardManager, card.getTags().FirstOrDefault());
+
+            ui.setImageSprite(null);
+            ui.setImageSprite(await cardManager.loadCardImage(poolRef, skin));
         }
-        public static void setCard(this UICard ui, CardDescriptor desc, CardSkinData skin, BattleTableManager table)
+        public static async Task setCardDefine(this UICard ui, CardDefine card, BattleTableManager table)
         {
-            string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
-            string subName = string.Empty;
-            string description = string.Empty;
-            if (skin != null)
-            {
-                var define = desc.define;
-                name = table.getCardName(define);
-                subName = table.getCardSubname(define);
-                description = table.getCardDescription(define);
-            }
+            var name = table.getCardName(card);
+            var subName = table.getCardSubname(card);
+            var desc = table.getCardDescription(card);
+            ui.setName(name);
+            ui.setSubname(subName);
+            ui.setDesc(desc);
+
+            ui.setCostVisible(!card.hasKeyword(KEYWORD.UNPLAYABLE));
+            ui.setCost(card.getCost());
+            ui.setAttack(card.getAttack());
+            ui.setLife(card.getLife());
+            ui.setCostColor(PropertyNumberColor.White);
+            ui.setAttackColor(PropertyNumberColor.White);
+            ui.setLifeColor(PropertyNumberColor.White);
+            ui.setType(card.type);
+            ui.setTranslatedTag(table.cardManager, card.getTags().FirstOrDefault());
+
+            ui.setImageSprite(null);
+            ui.setImageSprite(await table.loadCardImage(card));
+        }
+        public static async Task setCard(this UICard ui, CardDescriptor desc, BattleTableManager table)
+        {;
+            var define = desc.define;
+            var name = table.getCardName(define);
+            var subName = table.getCardSubname(define);
+            var description = table.getCardDescription(define);
             ui.setName(name);
             ui.setSubname(subName);
             ui.setDesc(description);
@@ -83,21 +101,6 @@ namespace Game.BattleTable
             ui.setLifeColor(lifeColor);
             ui.setType(desc.define.type);
             ui.setTranslatedTag(table.cardManager, desc.getTags().FirstOrDefault());
-        }
-
-        public static async Task setCardDefine(this UICard ui, CardDefine card, BattleTableManager table)
-        {
-            var skin = table.getCardSkin(card);
-            ui.setCardDefine(card, skin, table.cardManager);
-
-            ui.setImageSprite(null);
-            ui.setImageSprite(await table.loadCardImage(card));
-        }
-        public static async Task setCard(this UICard ui, CardDescriptor desc, BattleTableManager table)
-        {
-            var define = desc.define;
-            var skin = table.getCardSkin(define);
-            ui.setCard(desc, skin, table);
 
             ui.setImageSprite(null);
             ui.setImageSprite(await table.loadCardImage(define));

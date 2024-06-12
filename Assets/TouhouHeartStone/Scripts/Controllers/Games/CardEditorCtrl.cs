@@ -1465,6 +1465,8 @@ namespace Controllers
             DEFINE.TAGS,
             DEFINE.CARD_PROP_SKILL_ID,
             DEFINE.CARD_PROP_SKILL_REF,
+            DEFINE.EDITABLE,
+            DEFINE.CLONE_SOURCE,
             CARD.ISDEAD,
             CARD.CURRENT_LIFE,
             CARD.ARMOR,

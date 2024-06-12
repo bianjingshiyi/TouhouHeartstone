@@ -175,6 +175,26 @@ namespace TouhouHeartstone
             return game.getRule().gameEnd(game, winners);
         }
         #endregion
+
+        #region 卡牌定义
+        public static CardDefine cloneCardDefine(this CardEngine game, CardDefine cardDefine)
+        {
+            if (cardDefine == null)
+                return null;
+            var cloned = new CardDefine(cardDefine);
+            cloned.setIsToken(true);
+            cloned.setCloneSource(cardDefine.getDefineRef());
+            cloned.setEditable(true);
+
+            cloned.cardPoolId = TEMPORARY_CARD_POOL_ID;
+
+            var tempCards = game.getDefines().Where(d => d.cardPoolId == TEMPORARY_CARD_POOL_ID);
+            cloned.id = tempCards.Count() > 0 ? tempCards.Max(c => c.id) + 1 : 1;
+            game.addCardDefine(cloned);
+            return cloned;
+        }
+        #endregion
+
         /// <summary>
         /// 向玩家发出一个选择请求，玩家从提供的卡牌中选择一张，返回玩家选择的结果
         /// </summary>
@@ -295,6 +315,8 @@ namespace TouhouHeartstone
         }
 
         #endregion
+
+        public const int TEMPORARY_CARD_POOL_ID = -1;
     }
 
     [Serializable]

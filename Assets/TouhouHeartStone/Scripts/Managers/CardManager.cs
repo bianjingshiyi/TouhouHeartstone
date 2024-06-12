@@ -208,6 +208,8 @@ namespace Game
             }
             foreach (var propName in define.getPropNames())
             {
+                if (propName == DEFINE.CLONE_SOURCE)
+                    continue;
                 addDefRefByObject(define.getProp<object>(propName));
             }
             return cardDefines.ToArray();

@@ -9,7 +9,7 @@ namespace UI
     {
         protected override Task setTokenCardDefine(CardDefine card, CardSkinData skin, CardManager cardManager)
         {
-            return _tokenCard.setCardDefine(card, cardManager);
+            return _tokenCard.setCardDefine(card, skin, cardManager);
         }
         #region 属性字段
         [SerializeField]

@@ -7272,6 +7272,69 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>203002</defineId>
+    <obsoleteNames />
+    <editorName>复制卡牌定义</editorName>
+    <category>卡牌定义</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要复制的卡牌定义。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>return</name>
+        <displayName>Value</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[复制出的卡牌定义。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[在当前游戏中临时复制一个卡牌定义，并允许玩家通过节点修改这个复制的各种属性。<br/>该复制始终为衍生卡。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>203003</defineId>
+    <obsoleteNames />
+    <editorName>设置卡牌定义属性</editorName>
+    <category>卡牌定义</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置属性的卡牌定义。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>CardDefinePropertyGetterName</type>
+        <name>name</name>
+        <displayName>属性名称</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置的属性名称。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>value</name>
+        <displayName>值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置的属性值。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <summary><![CDATA[设置一个卡牌定义的某项属性。（只限“复制卡牌定义”创造出的可编辑复制）]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>104001</defineId>
     <obsoleteNames />
     <editorName>获取卡牌快照对应卡牌</editorName>

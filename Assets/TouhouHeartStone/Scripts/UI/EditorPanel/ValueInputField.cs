@@ -778,6 +778,15 @@ namespace UI
                         updateInputDropdownValue<CardDefinePropertyGetterName>(names, values);
                         break;
                     }
+                // 设置卡牌定义属性
+                case ActionNodeValueType.cardDefinePropertyNameSet:
+                    {
+                        var nameItems = _cardPropertyNameItems.Where(v => v.canDefineSet);
+                        var names = nameItems.Select(v => v.name).ToArray();
+                        var values = nameItems.Select(v => v.value).ToArray();
+                        updateInputDropdownValue<CardDefinePropertySetterName>(names, values);
+                        break;
+                    }
                 // 效果标签
                 case ActionNodeValueType.effectTag:
                     updateInputDropdownValue<EffectTag>(_effectTagNames, _effectTagValues);

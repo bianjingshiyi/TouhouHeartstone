@@ -103,6 +103,22 @@ namespace TouhouHeartstone
         {
             cardDefine.setProp(DEFINE.ISTOKEN, value);
         }
+        public static void setCloneSource(this CardDefine cardDefine, DefineReference source)
+        {
+            cardDefine.setProp(DEFINE.CLONE_SOURCE, source);
+        }
+        public static DefineReference getCloneSource(this CardDefine cardDefine)
+        {
+            return cardDefine.getProp<DefineReference>(DEFINE.CLONE_SOURCE);
+        }
+        public static void setEditable(this CardDefine cardDefine, bool source)
+        {
+            cardDefine.setProp(DEFINE.EDITABLE, source);
+        }
+        public static bool isEditable(this CardDefine cardDefine)
+        {
+            return cardDefine.getProp<bool>(DEFINE.EDITABLE);
+        }
         /// <summary>
         /// 通过位运算获取卡牌Id中的卡池Id。卡池Id的掩码为0x7FFF0000
         /// </summary>

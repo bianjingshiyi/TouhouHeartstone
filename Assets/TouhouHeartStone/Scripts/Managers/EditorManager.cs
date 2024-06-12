@@ -211,20 +211,18 @@ namespace Game
             KEYWORD.PERMANENT_FROZEN,
             KEYWORD.UNPLAYABLE,
             KEYWORD.CAN_BE_CHARGED,
-            DEFINE.SPELL_DAMAGE,
-            DEFINE.DAMAGE_REDUCE,
         };
         public static readonly List<CardPropertyNameItem> cardProps = new List<CardPropertyNameItem>
         {
-            new CardPropertyNameItem(CARD.ISDEAD, StringTable.CARD_PROP_NAME_ISDEAD, true, true, false),
-            new CardPropertyNameItem(CARD.CURRENT_LIFE, StringTable.CARD_PROP_NAME_CURRENT_LIFE, true, true, false),
-            new CardPropertyNameItem(CARD.ARMOR, StringTable.CARD_PROP_NAME_ARMOR, true, true, false),
-            new CardPropertyNameItem(CARD.SILENCE, StringTable.CARD_PROP_NAME_SILENCED, true, true, false),
-            new CardPropertyNameItem(CARD.ISREADY, StringTable.CARD_PROP_NAME_ISREADY, true, true, false),
-            new CardPropertyNameItem(CARD.ATTACK_TIMES, StringTable.CARD_PROP_NAME_ATTACK_TIMES, true, true, false),
-            new CardPropertyNameItem(CARD.HAS_STEALTH, StringTable.CARD_PROP_NAME_HAS_STEALTH, true, true, false),
-            new CardPropertyNameItem(CARD.HAS_SHIELD, StringTable.CARD_PROP_NAME_HAS_BARRIER, true, true, false),
-            new CardPropertyNameItem(CARD.IS_FROZEN, StringTable.CARD_PROP_NAME_IS_SHACKLED, true, true, false),
+            new CardPropertyNameItem(CARD.ISDEAD, StringTable.CARD_PROP_NAME_ISDEAD, true, true, false, false),
+            new CardPropertyNameItem(CARD.CURRENT_LIFE, StringTable.CARD_PROP_NAME_CURRENT_LIFE, true, true, false, false),
+            new CardPropertyNameItem(CARD.ARMOR, StringTable.CARD_PROP_NAME_ARMOR, true, true, false, false),
+            new CardPropertyNameItem(CARD.SILENCE, StringTable.CARD_PROP_NAME_SILENCED, true, true, false, false),
+            new CardPropertyNameItem(CARD.ISREADY, StringTable.CARD_PROP_NAME_ISREADY, true, true, false, false),
+            new CardPropertyNameItem(CARD.ATTACK_TIMES, StringTable.CARD_PROP_NAME_ATTACK_TIMES, true, true, false, false),
+            new CardPropertyNameItem(CARD.HAS_STEALTH, StringTable.CARD_PROP_NAME_HAS_STEALTH, true, true, false, false),
+            new CardPropertyNameItem(CARD.HAS_SHIELD, StringTable.CARD_PROP_NAME_HAS_BARRIER, true, true, false, false),
+            new CardPropertyNameItem(CARD.IS_FROZEN, StringTable.CARD_PROP_NAME_IS_SHACKLED, true, true, false, false),
 
             // 只读
             new CardPropertyNameItem(DEFINE.ATTACK, StringTable.CARD_PROP_NAME_ATTACK),

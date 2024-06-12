@@ -62,9 +62,6 @@ namespace Game.BattleTable
                     table.setSkill(skillUI, _card);
                 }
             }
-
-            // 播放音效。
-            CardSkinData skin = table.getCardSkin(_card);
             // 播放指向目标动画。
             yield return tryTargetedAnim(table, sourceTransform);
         }

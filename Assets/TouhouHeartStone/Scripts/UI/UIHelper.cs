@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Game.BattleTable;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -31,8 +32,14 @@ namespace Game
             ui.setLifeColor(PropertyNumberColor.White);
             ui.setTag(string.Empty);
         }
-        private static void setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, bool isFaceUp = true)
+        public static Task setCardDefine(this UICard ui, CardDefine card, CardManager cardManager, bool isFaceUp = true)
         {
+            var skin = cardManager.getCardSkin(card);
+            return ui.setCardDefine(card, skin, cardManager, isFaceUp);
+        }
+        public static async Task setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, CardManager cardManager, bool isFaceUp = true)
+        {
+            var poolRef = cardManager.getCardPoolReferenceOfCard(card);
             ui.setTypeByName(card.type);
             ui.setFaceup(isFaceUp);
             ui.setCostVisible(!card.hasKeyword(KEYWORD.UNPLAYABLE));
@@ -40,18 +47,12 @@ namespace Game
             ui.setAttack(card.getAttack().ToString());
             ui.setLife(card.getLife().ToString());
             ui.setTag(card.getTags().FirstOrDefault());
-        }
-        public static async Task setCardDefine(this UICard ui, CardDefine card, CardManager cardManager, bool isFaceUp = true)
-        {
-            var skin = cardManager.getCardSkin(card);
-            ui.setCardDefine(card, skin, isFaceUp);
 
             string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
             string subName = string.Empty;
             string desc = string.Empty;
             if (skin != null)
             {
-                var poolRef = cardManager.getCardPoolReferenceOfCard(card);
                 name = cardManager.getCardName(poolRef, skin);
                 subName = cardManager.getCardSubname(poolRef, skin);
                 desc = cardManager.getCardDesc(poolRef, skin);
@@ -62,22 +63,21 @@ namespace Game
 
             // 先设置卡牌定义再加载卡图，不然卡框会和卡图一起被突然改变，看起来会有些别扭
             ui.setImage(null);
-            ui.setImage(await cardManager.loadCardImage(card));
+            ui.setImage(await cardManager.loadCardImage(poolRef, skin));
         }
         public static async Task setCardDefine(this UICard ui, CardDefine card, BattleTableManager table, bool isFaceUp = true)
         {
-            var skin = table.getCardSkin(card);
-            ui.setCardDefine(card, skin, isFaceUp);
+            ui.setTypeByName(card.type);
+            ui.setFaceup(isFaceUp);
+            ui.setCostVisible(!card.hasKeyword(KEYWORD.UNPLAYABLE));
+            ui.setCost(card.getCost().ToString());
+            ui.setAttack(card.getAttack().ToString());
+            ui.setLife(card.getLife().ToString());
+            ui.setTag(card.getTags().FirstOrDefault());
 
-            string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
-            string subName = string.Empty;
-            string desc = string.Empty;
-            if (skin != null)
-            {
-                name = table.getCardName(card);
-                subName = table.getCardSubname(card);
-                desc = table.getCardDescription(card);
-            }
+            var name = table.getCardName(card);
+            var subName = table.getCardSubname(card);
+            var desc = table.getCardDescription(card);
             ui.setName(name);
             ui.setSubname(subName);
             ui.setDesc(desc);
@@ -86,51 +86,39 @@ namespace Game
             ui.setImage(null);
             ui.setImage(await table.loadCardImage(card));
         }
-        private static void setCard(this UICard ui, CardDescriptor card, CardSkinData skin, bool isFaceUp = true)
+        public static async Task setCard(this UICard ui, CardDescriptor desc, BattleTableManager table, bool isFaceUp = true)
         {
-            ui.setTypeByName(card.define.type);
-            ui.setFaceup(isFaceUp);;
-            var attack = card.getAttack();
-            var curLife = card.getCurrentLife();
-            var life = card.getLife();
-            var cost = card.getCost();
-            ui.setCostVisible(!card.define.hasKeyword(KEYWORD.UNPLAYABLE));
+            var define = desc.define;
+            ui.setTypeByName(define.type);
+            ui.setFaceup(isFaceUp);
+            var attack = desc.getAttack();
+            var curLife = desc.getCurrentLife();
+            var life = desc.getLife();
+            var cost = desc.getCost();
+            ui.setCostVisible(!define.hasKeyword(KEYWORD.UNPLAYABLE));
             ui.setCost(cost.ToString());
             ui.setAttack(attack.ToString());
             ui.setLife(curLife.ToString());
-
             var costColor =
-                cost > card.define.getCost() ? PropertyNumberColor.Red :
-                cost < card.define.getCost() ? PropertyNumberColor.Green :
+                cost > define.getCost() ? PropertyNumberColor.Red :
+                cost < define.getCost() ? PropertyNumberColor.Green :
                 PropertyNumberColor.White;
             var attackColor =
-                attack > card.define.getAttack() ? PropertyNumberColor.Green :
+                attack > define.getAttack() ? PropertyNumberColor.Green :
                 PropertyNumberColor.White;
             var lifeColor =
                 curLife < life ? PropertyNumberColor.Red :
-                life > card.define.getLife() ? PropertyNumberColor.Green :
+                life > define.getLife() ? PropertyNumberColor.Green :
                 PropertyNumberColor.White;
             ui.setCostColor(costColor);
             ui.setAttackColor(attackColor);
             ui.setLifeColor(lifeColor);
 
-            setTag(ui, card.getTags().FirstOrDefault());
-        }
-        public static async Task setCard(this UICard ui, CardDescriptor desc, BattleTableManager table, bool isFaceUp = true)
-        {
-            var define = desc.define;
-            var skin = table.getCardSkin(define);
-            ui.setCard(desc, skin, isFaceUp);
+            setTag(ui, desc.getTags().FirstOrDefault());
 
-            string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
-            string subName = string.Empty;
-            string description = string.Empty;
-            if (skin != null)
-            {
-                name = table.getCardName(desc.define);
-                subName = table.getCardSubname(desc.define);
-                description = table.getCardDescription(desc.define);
-            }
+            var name = table.getCardName(desc.define);
+            var subName = table.getCardSubname(desc.define);
+            var description = table.getCardDescription(desc.define);
             ui.setName(name);
             ui.setSubname(subName);
             ui.setDesc(description);

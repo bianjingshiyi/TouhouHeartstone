@@ -153,79 +153,68 @@ namespace Game.BattleTable
             var poolRefs = getCardPoolSet();
             return cardManager.getCardPoolReferenceInEnv(cardPoolId, poolRefs);
         }
+        public CardDefine getCardDefine(DefineReference defRef)
+        {
+            if (defRef == null)
+                return null;
+            return getCardDefine(defRef.cardPoolId, defRef.defineId);
+        }
         public CardDefine getCardDefine(long cardPoolId, int id)
         {
-            var poolRef = getCardPoolReference(cardPoolId);
-            return cardManager.getCardDefine(poolRef, id);
+            return game.getDefine(cardPoolId, id);
         }
-        public CardSkinData getCardSkin(ICardData card)
-        {
-            return getCardSkin(card.define);
-        }
-        public CardSkinData getCardSkin(CardDescriptor desc)
-        {
-            return getCardSkin(desc.define);
-        }
+
+        #region 皮肤
         public CardSkinData getCardSkin(CardDefine define)
         {
             if (define == null)
                 return null;
-            CardSkinData skin = getCardSkin(define.cardPoolId, define.id);
+            var key = getCardSkinKey(define);
+            var skin = key.skin;
             if (skin != null)
                 return skin;
-            else
+
+            game.logger.logError($"没有找到{define}对应的皮肤");
+            skin = new CardSkinData()
             {
-                game.logger.logError($"没有找到{define}对应的皮肤");
-                skin = new CardSkinData()
-                {
-                    id = define.id,
-                    descKey = $"{define}（这张卡随时可能爆炸！）",
-                    imagePathKey = cardManager.getDefaultImagePath(),
-                    nameKey = define.GetType().Name
-                };
-                foreach (var soundName in CardSkinData.getSoundNamesByType(define.type))
-                {
-                    skin.addSoundRef(new SkinSoundRef(soundName, null));
-                }
-                return skin;
+                id = define.id,
+                descKey = $"{define}（这张卡随时可能爆炸！）",
+                imagePathKey = cardManager.getDefaultImagePath(),
+                nameKey = define.GetType().Name
+            };
+            foreach (var soundName in CardSkinData.getSoundNamesByType(define.type))
+            {
+                skin.addSoundRef(new SkinSoundRef(soundName, null));
             }
-        }
-        public CardSkinData getCardSkin(long cardPoolId, int id)
-        {
-            var poolRef = getCardPoolReference(cardPoolId);
-            return cardManager.getCardSkin(poolRef, id);
+            return skin;
         }
         public string getCardName(CardDefine define)
         {
             if (define == null)
                 return define.ToString();
-            var poolRef = getCardPoolReference(define.cardPoolId);
-            var skin = getCardSkin(define);
-            return cardManager.getCardName(poolRef, skin);
+            var key = getCardSkinKey(define);
+            return cardManager.getCardName(key.poolRef, key.skin);
         }
         public string getCardSubname(CardDefine define)
         {
             if (define == null)
-                return define.ToString();
-            var poolRef = getCardPoolReference(define.cardPoolId);
-            var skin = getCardSkin(define);
-            return cardManager.getCardSubname(poolRef, skin);
+                return string.Empty;
+            var key = getCardSkinKey(define);
+            return cardManager.getCardSubname(key.poolRef, key.skin);
         }
         public string getCardDescription(CardDefine define)
         {
             if (define == null)
-                return define.ToString();
-            var poolRef = getCardPoolReference(define.cardPoolId);
-            var skin = getCardSkin(define);
-            return cardManager.getCardDesc(poolRef, skin);
+                return string.Empty;
+            var key = getCardSkinKey(define);
+            return cardManager.getCardDesc(key.poolRef, key.skin);
         }
         public string getCardImagePath(CardDefine define)
         {
             if (define == null)
-                return define.ToString();
-            var poolRef = getCardPoolReference(define.cardPoolId);
-            var skin = getCardSkin(define);
-            return cardManager.getCardImagePath(poolRef, skin);
+                return null;
+            var key = getCardSkinKey(define);
+            return cardManager.getCardImagePath(key.poolRef, key.skin);
         }
         public BuffSkin getBuffSkin(BuffDefine define)
         {
@@ -271,18 +260,40 @@ namespace Game.BattleTable
         }
         public Task<Sprite> loadCardImage(CardDefine define)
         {
-            var poolRef = getCardPoolReference(define.cardPoolId);
-            return cardManager.loadCardImage(poolRef, define.id);
+            if (define == null)
+                return Task.FromResult<Sprite>(cardManager.getDefaultSprite());
+            var key = getCardSkinKey(define);
+            return cardManager.loadCardImage(key.poolRef, key.skin);
         }
         public Task<Sprite> loadBuffImage(BuffDefine define)
         {
             var poolRef = getCardPoolReference(define.cardPoolId);
-            return cardManager.loadBuffImage(poolRef, define.id);
+            var skin = getBuffSkin(define);
+            return cardManager.loadBuffImage(poolRef, skin);
         }
         public Task<AudioClip> loadSound(long cardPoolId, string path)
         {
             return cardManager.loadSound(getCardPoolReference(cardPoolId), path);
         }
+        public PoolCardSkinKey getCardSkinKey(CardDefine define)
+        {
+            var skinSource = define.getCloneSource();
+            ICardPoolReference poolRef;
+            CardSkinData skin;
+            if (skinSource != null)
+            {
+                poolRef = getCardPoolReference(skinSource.cardPoolId);
+                skin = cardManager.getCardSkin(poolRef, skinSource.defineId);
+            }
+            else
+            {
+                poolRef = getCardPoolReference(define.cardPoolId);
+                skin = cardManager.getCardSkin(poolRef, define.id);
+            }
+            return new PoolCardSkinKey(poolRef, skin);
+        }
+        #endregion
+
         #endregion
 
         #region 衍生物&关键词
@@ -823,5 +834,15 @@ namespace Game.BattleTable
         AnimationCurve _toDeckCurveStart = new AnimationCurve(new Keyframe(0, 0), new Keyframe(0.6f, 1));
         [SerializeField]
         AnimationCurve _toDeckCurveEnd = new AnimationCurve(new Keyframe(0, 0), new Keyframe(0.6f, 1));
+    }
+    public struct PoolCardSkinKey
+    {
+        public ICardPoolReference poolRef;
+        public CardSkinData skin;
+        public PoolCardSkinKey(ICardPoolReference poolRef, CardSkinData skin)
+        {
+            this.poolRef = poolRef;
+            this.skin = skin;
+        }
     }
 }

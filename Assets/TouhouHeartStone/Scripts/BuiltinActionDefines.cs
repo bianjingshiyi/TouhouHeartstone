@@ -328,6 +328,8 @@ namespace Game
 
         // 卡牌定义
         public const int RevealCardDefine = Type_Action + Category_CardDefine + 1; // 展示卡牌定义
+        public const int CloneCardDefine = Type_Action + Category_CardDefine + 2; // 复制卡牌定义
+        public const int SetCardDefineProp = Type_Action + Category_CardDefine + 3; // 设置卡牌定义属性
 
         // 增益
         public const int AddBuff = Type_Action + Category_Buff + 1;    // 添加增益

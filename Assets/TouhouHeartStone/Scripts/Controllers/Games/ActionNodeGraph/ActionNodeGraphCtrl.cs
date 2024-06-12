@@ -1961,6 +1961,9 @@ namespace Controllers
                 case ActionNodeValueType.cardDefinePropertyNameGet:
                     value = EditorManager.cardProps.FirstOrDefault(p => p.canDefineGet).value;
                     break;
+                case ActionNodeValueType.cardDefinePropertyNameSet:
+                    value = EditorManager.cardProps.FirstOrDefault(p => p.canDefineSet).value;
+                    break;
                 case ActionNodeValueType.cardPropertyNameGet:
                     value = EditorManager.cardProps.FirstOrDefault(p => p.canGet).value;
                     break;

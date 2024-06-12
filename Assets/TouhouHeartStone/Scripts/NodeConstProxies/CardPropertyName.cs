@@ -36,6 +36,17 @@ namespace Game
             return new CardDefinePropertyGetterName(str);
         }
     }
+    public class CardDefinePropertySetterName : NodeConstProxyString
+    {
+        public CardDefinePropertySetterName(string name) : base(name)
+        {
+        }
+
+        public static explicit operator CardDefinePropertySetterName(string str)
+        {
+            return new CardDefinePropertySetterName(str);
+        }
+    }
     [Serializable]
     public struct CardPropertyNameItem
     {
@@ -44,13 +55,15 @@ namespace Game
         public bool canGet;
         public bool canSet;
         public bool canDefineGet;
-        public CardPropertyNameItem(string value, string name, bool canGet = true, bool canSet = false, bool canDefineGet = true)
+        public bool canDefineSet;
+        public CardPropertyNameItem(string value, string name, bool canGet = true, bool canSet = false, bool canDefineGet = true, bool canDefineSet = true)
         {
             this.value = value;
             this.name = name;
             this.canGet = canGet;
             this.canSet = canSet;
             this.canDefineGet = canDefineGet;
+            this.canDefineSet = canDefineSet;
         }
     }
 }

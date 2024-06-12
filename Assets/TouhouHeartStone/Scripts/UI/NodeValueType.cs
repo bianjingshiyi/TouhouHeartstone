@@ -296,6 +296,10 @@ namespace UI
         /// </summary>
         cardPropertyNameGet,
         /// <summary>
+        /// 卡牌定义属性（可设置）
+        /// </summary>
+        cardDefinePropertyNameSet,
+        /// <summary>
         /// 卡牌定义属性（可读取）
         /// </summary>
         cardDefinePropertyNameGet,
