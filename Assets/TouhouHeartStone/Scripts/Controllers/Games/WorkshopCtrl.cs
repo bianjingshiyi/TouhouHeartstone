@@ -186,6 +186,14 @@ namespace Controllers
         }
         private async void onUploadClickCallback()
         {
+            if (game.network.logic.isGuest)
+            {
+                var title = game.lang._(StringTable.HINT_TITLE);
+                var desc = game.lang._(HINT_GUEST_TRY_UPLOAD);
+                game.ui.dialog.ShowConfirm(title, desc);
+                return;
+            }
+
             startWaiting();
             try
             {
@@ -346,7 +354,8 @@ namespace Controllers
                 }
 
                 await startUploadCardPool(desc);
-                await updatePage();
+                _ui.setUploadPoolPanelVisible(false);
+                _ui.setSelectUploadPoolPanelVisible(false);
             }
             catch (Exception e)
             {
@@ -359,6 +368,7 @@ namespace Controllers
             {
                 stopWaiting();
             }
+            await updatePage();
         }
         #endregion
 
@@ -410,6 +420,12 @@ namespace Controllers
             setWaitingProgress(0);
 
             var info = game.card.getLocalCardPoolInfo(_uploadingPoolId);
+
+            if (info.versionNumber < CardManager.CURRENT_CARD_POOL_VERSION)
+            {
+                var msg = game.lang._(ERROR_CARD_POOL_VERSION_OUTDATED);
+                throw new FormatException(msg);
+            }
 
             // 读取远端的卡池信息。
             var workshopInfo = await getWorkshopCardPoolFile(info);
@@ -1073,6 +1089,8 @@ namespace Controllers
         private const string ERROR_DELETING_CARDPOOL = "删除卡池时出现错误：{0}";
         [TranslateMsg("创意工坊-尝试删除正在下载的卡池时")]
         private const string ERROR_CANNOT_DELETE_DOWNLOADING_CARDPOOL = "你不能删除正在下载的卡池。";
+        [TranslateMsg("创意工坊-尝试上传低格式版本卡池")]
+        private const string ERROR_CARD_POOL_VERSION_OUTDATED = "卡池格式过旧，请尝试重新保存卡池以更新卡池格式。";
 
         [TranslateMsg("创意工坊-尝试在下载时离开的警告")]
         private const string WARNING_QUIT_WHILE_DOWNLOADING = "正在下载卡池，退出创意工坊会取消下载。\n您确认要退出吗？";
@@ -1089,6 +1107,9 @@ namespace Controllers
         private const string HINT_UPLOAD_RESOURCE_FAILED = "卡池上传失败，有{0}个资源未上传。";
         [TranslateMsg("创意工坊-尝试上传已经上传的卡池后的提示描述")]
         private const string HINT_CARD_POOL_ALREADY_UPLOADED = "该卡池的同一版本已被上传至创意工坊，无需再次上传。\n请考虑提升卡池版本再试。";
+
+        [TranslateMsg]
+        private const string HINT_GUEST_TRY_UPLOAD = "游客不能上传卡池";
         [TranslateMsg("创意工坊-上传进度-上传卡池文件")]
         private const string UPLOAD_PROGRESS_UPLOADING_POOL_FILE = "上传卡池文件中……";
         [TranslateMsg("创意工坊-上传进度-上传卡池资源")]
