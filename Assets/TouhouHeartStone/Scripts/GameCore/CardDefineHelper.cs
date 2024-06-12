@@ -119,6 +119,14 @@ namespace TouhouHeartstone
         {
             return cardDefine.getProp<bool>(DEFINE.EDITABLE);
         }
+        public static void setConjoinedCards(this CardDefine cardDefine, DefineReference[] cards)
+        {
+            cardDefine.setProp(DEFINE.CONJOINED_CARDS, cards);
+        }
+        public static DefineReference[] getConjoinedCards(this CardDefine cardDefine)
+        {
+            return cardDefine.getProp<DefineReference[]>(DEFINE.CONJOINED_CARDS);
+        }
         /// <summary>
         /// 通过位运算获取卡牌Id中的卡池Id。卡池Id的掩码为0x7FFF0000
         /// </summary>

@@ -193,6 +193,38 @@ namespace TouhouHeartstone
             game.addCardDefine(cloned);
             return cloned;
         }
+        public static CardDefine conjoinCardDefines(this CardEngine game, params CardDefine[] cardDefines)
+        {
+            if (cardDefines == null || cardDefines.Length <= 0)
+                return null;
+            var cloned = game.cloneCardDefine(cardDefines.First());
+            if (cardDefines.Length <= 1)
+                return cloned;
+
+            var keywordList = new List<string>();
+            var effectList = new List<Effect>();
+
+            foreach (var cardDefine in cardDefines)
+            {
+                var keywords = cardDefine.getKeywords();
+                if (keywords != null)
+                    keywordList.AddRange(keywords);
+
+                var effects = cardDefine.getEffects();
+                if (effects != null)
+                    effectList.AddRange(effects);
+
+                cloned.setSpellDamage(cloned.getSpellDamage() + cardDefine.getSpellDamage());
+                cloned.setDamageReduce(cloned.getDamageReduce() + cardDefine.getDamageReduce());
+
+            }
+            cloned.setKeywords(keywordList.Distinct().ToArray());
+            cloned.setEffects(effectList.ToArray());
+
+            var conjoinedCardList = cloned.getConjoinedCards() ?? Array.Empty<DefineReference>();
+            cloned.setConjoinedCards(cardDefines.Skip(1).Select(c => c.getDefineRef()).ToArray());
+            return cloned;
+        }
         #endregion
 
         /// <summary>

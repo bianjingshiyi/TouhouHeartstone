@@ -7335,6 +7335,34 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>203004</defineId>
+    <obsoleteNames />
+    <editorName>拼接卡牌定义</editorName>
+    <category>卡牌定义</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>cardDefines</name>
+        <displayName>卡牌定义</displayName>
+        <isParams>true</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要拼接的卡牌定义列表。其中的第一个会被视为最主要的卡牌定义，并使用其卡牌皮肤。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>return</name>
+        <displayName>Value</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[拼接出的卡牌定义。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[将两张或者多张卡牌定义的关键词、效果和描述拼接成一个新的卡牌定义。（该卡牌定义可编辑）]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>104001</defineId>
     <obsoleteNames />
     <editorName>获取卡牌快照对应卡牌</editorName>

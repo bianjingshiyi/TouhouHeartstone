@@ -57,6 +57,8 @@ namespace Game
         public const string EDITOR_NODE_CLONE_CARD_DEFINE = "复制卡牌定义";
         [TranslateMsg("节点名称")]
         public const string EDITOR_NODE_SET_CARD_DEFINE_PROP = "设置卡牌定义属性";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_CONJOIN_CARD_DEFINES = "拼接卡牌定义";
 
 
         [TranslateMsg("编辑器-动作节点-触发法术或技能卡牌定义效果")]
@@ -559,6 +561,17 @@ namespace Game
             if (cardDefine == null || name == null || !cardDefine.isEditable())
                 return;
             cardDefine.setProp(name, value);
+        }
+        /// <summary>
+        /// 拼接卡牌定义
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.ConjoinCardDefines, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CONJOIN_CARD_DEFINES)]
+        public static CardDefine conjoinCardDefines(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE, isParams:true)] CardDefine[] cardDefines)
+        {
+            if (cardDefines == null)
+                return null;
+            return game.conjoinCardDefines(cardDefines);
         }
         #endregion
     }

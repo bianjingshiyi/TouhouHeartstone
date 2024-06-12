@@ -27,5 +27,6 @@
         public const string TARGET_TYPE_SERVANT = "Servant";
         public const string CLONE_SOURCE = "_CLONE_SOURCE";
         public const string EDITABLE = "_EDITABLE";
+        public const string CONJOINED_CARDS = "_CONJOINED_CARDS";
     }
 }

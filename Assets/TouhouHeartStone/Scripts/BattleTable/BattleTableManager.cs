@@ -207,7 +207,21 @@ namespace Game.BattleTable
             if (define == null)
                 return string.Empty;
             var key = getCardSkinKey(define);
-            return cardManager.getCardDesc(key.poolRef, key.skin);
+            var desc = cardManager.getCardDesc(key.poolRef, key.skin);
+            var conjoinedCards = define.getConjoinedCards();
+            if (conjoinedCards != null && conjoinedCards.Length > 0)
+            {
+                foreach (var conjoined in conjoinedCards)
+                {
+                    var conjoinedDef = getCardDefine(conjoined);
+                    var conjoinedDesc = getCardDescription(conjoinedDef);
+                    if (!string.IsNullOrEmpty(conjoinedDesc))
+                    {
+                        desc += conjoinedDesc;
+                    }
+                }
+            }
+            return desc;
         }
         public string getCardImagePath(CardDefine define)
         {
