@@ -809,8 +809,7 @@ namespace Controllers
                 {
                     foreach (var skin in pool.cardSkinList)
                     {
-                        var translationResources = game.card.getTranslationResourcesFromPool(poolRef, skin.imagePathKey);
-                        if (translationResources.Any(r => !game.card.isExternalImageExists(r.path)))
+                        if (!isImageKeyValid(poolRef, skin.imagePathKey))
                         {
                             missingCardSkins.Add((poolRef, skin));
                             valid = false;
@@ -818,8 +817,7 @@ namespace Controllers
                     }
                     foreach (var skin in pool.buffSkinList)
                     {
-                        var translationResources = game.card.getTranslationResourcesFromPool(poolRef, skin.imagePathKey);
-                        if (translationResources.Any(r => !game.card.isExternalImageExists(r.path)))
+                        if (!isImageKeyValid(poolRef, skin.imagePathKey))
                         {
                             missingBuffSkins.Add((poolRef, skin));
                             valid = false;
@@ -853,6 +851,23 @@ namespace Controllers
                 errorMessage = sb.ToString();
             }
             return valid;
+
+            bool isImageKeyValid(ICardPoolReference poolRef, string key)
+            {
+                if (!string.IsNullOrEmpty(key) && !game.card.isExternalImageExists(key))
+                    return false;
+
+                var resource = game.card.getLocalizedResourceFromPool(poolRef, key);
+                if (resource != null)
+                {
+                    foreach (var translation in resource.getAllTranslations(false))
+                    {
+                        if (!string.IsNullOrEmpty(translation) && !game.card.isExternalImageExists(translation))
+                            return false;
+                    }
+                }
+                return true;
+            }
         }
         /// <summary>
         /// 检测房间在添加、删除某些卡池后，卡池的合法性。

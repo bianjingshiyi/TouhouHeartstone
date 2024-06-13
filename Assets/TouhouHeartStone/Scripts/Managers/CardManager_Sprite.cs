@@ -257,7 +257,7 @@ namespace Game
         /// <returns>绝对路径。</returns>
         public string getExternalImagePath(string path)
         {
-            return getExternalResourcePath(ResourceType.Sound, path);
+            return getExternalResourcePath(ResourceType.Picture, path);
         }
         /// <summary>
         /// 判断一张外部图片是否存在。

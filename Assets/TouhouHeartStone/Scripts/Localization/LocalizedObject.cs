@@ -79,10 +79,5 @@ namespace Game
                 return localizedString.localize(language);
             return key;
         }
-        public static T[] getAllLocalizations<T>(this LocalizedObject<T> obj)
-        {
-            var languages = obj.getAllLanguages();
-            return languages.Select(l => obj.getTranslation(l)).Where(e => e != null).Prepend(obj.value).ToArray();
-        }
     }
 }
