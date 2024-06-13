@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 4, "cardPoolId" : NumberLong(1), "editTime" : 603, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
+{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 4, "cardPoolId" : NumberLong(1), "editTime" : 605, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -240,225 +240,6 @@
                 "sourceNodeId" : 3,
                 "destName" : "enter",
                 "destNodeId" : 2
-              }]
-          }
-        }],
-      "effectList" : []
-    }, {
-      "_id" : -2147418109,
-      "type" : "Spell",
-      "propDict" : {
-        "characterId" : {
-          "_t" : "ObjectProxy",
-          "Type" : "TouhouCardEngine.DefineReference",
-          "Content" : new BinData(0, "kgHMiw==")
-        },
-        "cost" : 2
-      },
-      "effects" : [{
-          "_t" : "SerializableActiveEffect",
-          "name" : "主动效果1",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableActiveEntryNode",
-                "_id" : 1,
-                "inputDefaultValues" : [{
-                    "name" : "tags",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.EffectTagCollection",
-                      "Content" : new BinData(0, "kA==")
-                    }
-                  }, {
-                    "name" : "EDITOR_ANIMATION_REF",
-                    "paramIndex" : -1,
-                    "value" : "AnimRef1_1"
-                  }, {
-                    "name" : "condition",
-                    "paramIndex" : -1,
-                    "value" : true
-                  }],
-                "propDict" : { },
-                "tags" : null,
-                "consts" : null,
-                "targetCheckerList" : []
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "posX" : 1334.2774658203125,
-                "posY" : 30.045074462890625,
-                "inputDefaultValues" : [],
-                "propDict" : {
-                  "EDITOR_ANIMATION_REF" : "AnimRef0_2"
-                },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 201003
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "posX" : 850.0054931640625,
-                "posY" : -108.31683349609375,
-                "inputDefaultValues" : [{
-                    "name" : "count",
-                    "paramIndex" : -1,
-                    "value" : 5
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 201016
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "posX" : 283.9163818359375,
-                "posY" : -405.5797119140625,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 111012
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "posX" : -53.249786376953125,
-                "posY" : -340.47796630859375,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 101008
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 6,
-                "posX" : 769.8870849609375,
-                "posY" : -435.15020751953125,
-                "inputDefaultValues" : [{
-                    "name" : "type",
-                    "paramIndex" : -1,
-                    "value" : "Spell"
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102032
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 7,
-                "posX" : 50.0054931640625,
-                "posY" : -108.31683349609375,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102001
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 8,
-                "posX" : 350.0054931640625,
-                "posY" : -108.31683349609375,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102010
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "玩家",
-                "sourceNodeId" : 1,
-                "destName" : "player",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "targetCard",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 4,
-                "destName" : "cards",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "element",
-                "sourceNodeId" : 4,
-                "destName" : "card",
-                "destNodeId" : 6
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 5,
-                "destName" : "array",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 6,
-                "destName" : "condition",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 7,
-                "destName" : "card",
-                "destNodeId" : 8
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 8,
-                "destName" : "player",
-                "destNodeId" : 3
               }]
           }
         }],
@@ -5575,207 +5356,6 @@
                 "sourceNodeId" : 9,
                 "destName" : "A",
                 "destNodeId" : 8
-              }]
-          }
-        }],
-      "effectList" : []
-    }, {
-      "_id" : -2147418081,
-      "type" : "Spell",
-      "propDict" : {
-        "cost" : 4,
-        "characterId" : {
-          "_t" : "ObjectProxy",
-          "Type" : "TouhouCardEngine.DefineReference",
-          "Content" : new BinData(0, "kgHMiw==")
-        }
-      },
-      "effects" : [{
-          "_t" : "SerializableActiveEffect",
-          "name" : "主动效果1",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableActiveEntryNode",
-                "_id" : 1,
-                "inputDefaultValues" : [{
-                    "name" : "tags",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.EffectTagCollection",
-                      "Content" : new BinData(0, "kA==")
-                    }
-                  }, {
-                    "name" : "EDITOR_ANIMATION_REF",
-                    "paramIndex" : -1,
-                    "value" : "AnimRef1_1"
-                  }, {
-                    "name" : "condition",
-                    "paramIndex" : -1,
-                    "value" : true
-                  }, {
-                    "name" : "priority",
-                    "paramIndex" : -1,
-                    "value" : 0
-                  }],
-                "propDict" : { },
-                "tags" : null,
-                "consts" : null,
-                "targetCheckerList" : []
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "posX" : 586.7965087890625,
-                "posY" : 31.366790771484375,
-                "inputDefaultValues" : [{
-                    "name" : "count",
-                    "paramIndex" : -1,
-                    "value" : 2
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 212002
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "posX" : 224.5594482421875,
-                "posY" : 18.029754638671875,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102001
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "posX" : 1024.5594482421875,
-                "posY" : 18.029754638671875,
-                "inputDefaultValues" : [{
-                    "name" : "count",
-                    "paramIndex" : -1,
-                    "value" : 5
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 201016
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "posX" : 597.6524658203125,
-                "posY" : -268.88433837890625,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 101008
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 6,
-                "posX" : 1468.4432373046875,
-                "posY" : -13.3642578125,
-                "inputDefaultValues" : [],
-                "propDict" : {
-                  "EDITOR_ANIMATION_REF" : "AnimRef0_6"
-                },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 201003
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 7,
-                "posX" : 524.5594482421875,
-                "posY" : 18.029754638671875,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102010
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "玩家",
-                "sourceNodeId" : 1,
-                "destName" : "player",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 2,
-                "destName" : "enter",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "card",
-                "destNodeId" : 7
-              }, {
-                "sourceName" : "exit",
-                "sourceNodeId" : 4,
-                "destName" : "enter",
-                "destNodeId" : 6
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 4,
-                "destName" : "targetCard",
-                "destNodeId" : 6
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 5,
-                "destName" : "cards",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 7,
-                "destName" : "player",
-                "destNodeId" : 4
               }]
           }
         }],
@@ -53805,6 +53385,405 @@
           }
         }],
       "effectList" : []
+    }, {
+      "_id" : -2147418081,
+      "type" : "Spell",
+      "propDict" : {
+        "cost" : 4,
+        "characterId" : {
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMiw==")
+        }
+      },
+      "effects" : [{
+          "_t" : "SerializableActiveEffect",
+          "name" : "主动效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableActiveEntryNode",
+                "_id" : 1,
+                "inputDefaultValues" : [{
+                    "name" : "tags",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
+                    }
+                  }, {
+                    "name" : "EDITOR_ANIMATION_REF",
+                    "paramIndex" : -1,
+                    "value" : "AnimRef1_1"
+                  }, {
+                    "name" : "condition",
+                    "paramIndex" : -1,
+                    "value" : true
+                  }, {
+                    "name" : "priority",
+                    "paramIndex" : -1,
+                    "value" : 0
+                  }],
+                "propDict" : { },
+                "tags" : null,
+                "consts" : null,
+                "targetCheckerList" : []
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "posX" : 820.03277587890625,
+                "posY" : 264.60299682617188,
+                "inputDefaultValues" : [{
+                    "name" : "count",
+                    "paramIndex" : -1,
+                    "value" : 2
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 212002
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "posX" : 1663.6268310546875,
+                "posY" : 22.694503784179688,
+                "inputDefaultValues" : [{
+                    "name" : "count",
+                    "paramIndex" : -1,
+                    "value" : 5
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 201016
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "posX" : 746.92364501953125,
+                "posY" : -247.89311218261719,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 101008
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "posX" : 2200.02685546875,
+                "posY" : 6.0722465515136719,
+                "inputDefaultValues" : [],
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_6"
+                },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 201003
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "posX" : 1206.2093505859375,
+                "posY" : -468.27984619140625,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 111012
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 7,
+                "posX" : 1236.530517578125,
+                "posY" : -727.1719970703125,
+                "inputDefaultValues" : [{
+                    "name" : "type",
+                    "paramIndex" : -1,
+                    "value" : "Spell"
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102032
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "player",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 2,
+                "destName" : "enter",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 4,
+                "destName" : "enter",
+                "destNodeId" : 6
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 4,
+                "destName" : "targetCard",
+                "destNodeId" : 6
+              }, {
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "player",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 5,
+                "destName" : "array",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 3,
+                "destName" : "cards",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "element",
+                "sourceNodeId" : 3,
+                "destName" : "card",
+                "destNodeId" : 7
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 7,
+                "destName" : "condition",
+                "destNodeId" : 3
+              }]
+          }
+        }],
+      "effectList" : []
+    }, {
+      "_id" : -2147418109,
+      "type" : "Spell",
+      "propDict" : {
+        "characterId" : {
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMiw==")
+        },
+        "cost" : 2
+      },
+      "effects" : [{
+          "_t" : "SerializableActiveEffect",
+          "name" : "主动效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableActiveEntryNode",
+                "_id" : 1,
+                "inputDefaultValues" : [{
+                    "name" : "tags",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kA==")
+                    }
+                  }, {
+                    "name" : "EDITOR_ANIMATION_REF",
+                    "paramIndex" : -1,
+                    "value" : "AnimRef1_1"
+                  }, {
+                    "name" : "condition",
+                    "paramIndex" : -1,
+                    "value" : true
+                  }, {
+                    "name" : "priority",
+                    "paramIndex" : -1,
+                    "value" : 0
+                  }],
+                "propDict" : { },
+                "tags" : null,
+                "consts" : null,
+                "targetCheckerList" : []
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "posX" : 1334.2774658203125,
+                "posY" : 30.045074462890625,
+                "inputDefaultValues" : [],
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_2"
+                },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 201003
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "posX" : 850.0054931640625,
+                "posY" : -108.31683349609375,
+                "inputDefaultValues" : [{
+                    "name" : "count",
+                    "paramIndex" : -1,
+                    "value" : 5
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 201016
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "posX" : 283.9163818359375,
+                "posY" : -405.5797119140625,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 111012
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "posX" : -53.249786376953125,
+                "posY" : -340.47796630859375,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 101008
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "posX" : 769.8870849609375,
+                "posY" : -435.15020751953125,
+                "inputDefaultValues" : [{
+                    "name" : "type",
+                    "paramIndex" : -1,
+                    "value" : "Spell"
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102032
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "player",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 3,
+                "destName" : "targetCard",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 4,
+                "destName" : "cards",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "element",
+                "sourceNodeId" : 4,
+                "destName" : "card",
+                "destNodeId" : 6
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 5,
+                "destName" : "array",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 6,
+                "destName" : "condition",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "player",
+                "destNodeId" : 3
+              }]
+          }
+        }],
+      "effectList" : []
     }],
   "cardSkinList" : [{
       "_id" : -2147418111,
@@ -53817,7 +53796,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 0
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -53832,20 +53812,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 19
-          }
-        }],
-      "_soundRefs" : []
-    }, {
-      "_id" : -2147418109,
-      "_name" : "大图书馆",
-      "_imagePath" : "560d58711a8b3583137faca6eeb64ed9c705e7b24c878b0570d5306a4f04010a.jpg",
-      "_desc" : "检视你牌库中的五张法术牌，选择一张并抽取。",
-      "_animationRefs" : [{
-          "key" : "AnimRef0_2",
-          "animRef" : {
-            "cardPoolId" : NumberLong(0),
-            "defineId" : 0
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -53860,7 +53828,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 5
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -53874,7 +53843,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 3
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -53889,7 +53859,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 2
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -53904,7 +53875,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 15
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -53925,7 +53897,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 3
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -53940,7 +53913,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 5
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -53953,7 +53927,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 18
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -53968,7 +53943,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 8
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -53983,7 +53959,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 7
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -53998,7 +53975,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 15
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54019,13 +53997,15 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 18
-          }
+          },
+          "colorModifies" : []
         }, {
           "key" : "AnimRef1_1",
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 18
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54054,7 +54034,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 6
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54069,7 +54050,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 4
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54100,14 +54082,16 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 9
-          }
+          },
+          "colorModifies" : []
         }, {
           "targetPosition" : 3,
           "key" : "AnimRef1_4",
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 9
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54122,7 +54106,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 11
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54137,7 +54122,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 16
-          }
+          },
+          "colorModifies" : []
         }, {
           "sourcePosition" : 3,
           "targetPosition" : 3,
@@ -54145,7 +54131,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 16
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54167,7 +54154,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 12
-          }
+          },
+          "colorModifies" : []
         }, {
           "sourcePosition" : 3,
           "targetPosition" : 3,
@@ -54175,7 +54163,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 5
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54191,7 +54180,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 13
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54205,7 +54195,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 1
-          }
+          },
+          "colorModifies" : []
         }, {
           "sourcePosition" : 3,
           "targetPosition" : 3,
@@ -54213,7 +54204,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 8
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54228,20 +54220,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 14
-          }
-        }],
-      "_soundRefs" : []
-    }, {
-      "_id" : -2147418081,
-      "_name" : "奥术知识",
-      "_imagePath" : "f375e7bf10ef7fb154fd6fc261d2d70444639c427404407fae06291636edb101.jpg",
-      "_desc" : "检视你牌库中的五张法术牌，选择一张抽取。触发两次。",
-      "_animationRefs" : [{
-          "key" : "AnimRef0_6",
-          "animRef" : {
-            "cardPoolId" : NumberLong(0),
-            "defineId" : 0
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54256,7 +54236,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 10
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54278,7 +54259,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 2
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54300,7 +54282,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 17
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54315,7 +54298,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 1
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54335,7 +54319,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "SetCardPropEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54355,7 +54340,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "ShackleEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54418,7 +54404,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "MassAddBuffEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54446,7 +54433,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "DamageEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54515,7 +54503,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 13
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54536,7 +54525,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "DrawEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54578,7 +54568,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "DamageEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54642,7 +54633,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "DamageEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54685,7 +54677,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "MassReturnHandEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54705,7 +54698,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "ShackleEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54720,7 +54714,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 13
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54856,7 +54851,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "EnterFieldEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54878,7 +54874,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "EnterFieldEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -54927,7 +54924,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "DamageEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55035,7 +55033,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 22
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55050,7 +55049,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 0
-          }
+          },
+          "colorModifies" : []
         }, {
           "sourcePosition" : 2,
           "targetPosition" : 3,
@@ -55062,7 +55062,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "MoveCardEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55082,7 +55083,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 24
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55111,7 +55113,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 21
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55126,7 +55129,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 23
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55141,7 +55145,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 25
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55165,7 +55170,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "SetArmorEvent"
-          }
+          },
+          "colorModifies" : []
         }, {
           "sourcePositionVarName" : "",
           "targetPositionVarName" : "",
@@ -55177,7 +55183,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "AddBuffEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55290,7 +55297,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "SetEventVarEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55314,7 +55322,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "SetArmorEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55331,7 +55340,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "SetArmorEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55346,7 +55356,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 26
-          }
+          },
+          "colorModifies" : []
         }, {
           "sourcePosition" : 3,
           "targetPosition" : 3,
@@ -55354,7 +55365,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 26
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55374,7 +55386,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "SetCardPropEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55573,7 +55586,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "DamageEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55612,7 +55626,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 0
-          }
+          },
+          "colorModifies" : []
         }, {
           "sourcePosition" : 2,
           "targetPosition" : 2,
@@ -55626,7 +55641,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "MassMoveToHeadEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55655,7 +55671,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "SetCardDefineEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55677,7 +55694,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "AddBuffEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55692,7 +55710,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 38
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55712,7 +55731,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "AddBuffEvent"
-          }
+          },
+          "colorModifies" : []
         }, {
           "sourcePosition" : 4,
           "sourcePositionVarName" : "目标卡牌",
@@ -55725,7 +55745,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "MassDamageEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55746,7 +55767,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "DamageEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55765,7 +55787,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "MoveCardEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55787,7 +55810,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "SetEventVarEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55805,7 +55829,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 0
-          }
+          },
+          "colorModifies" : []
         }, {
           "sourcePosition" : 4,
           "targetPosition" : 4,
@@ -55819,7 +55844,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "SetEventVarEvent"
-          }
+          },
+          "colorModifies" : []
         }, {
           "sourcePosition" : 2,
           "targetPosition" : 4,
@@ -55833,7 +55859,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "SetEventVarEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55848,7 +55875,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 38
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55870,7 +55898,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "AddBuffEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55949,7 +55978,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "DamageEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -55968,7 +55998,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "EnterFieldEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56039,7 +56070,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "AddBuffEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56068,7 +56100,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "SetEventVarEvent"
-          }
+          },
+          "colorModifies" : []
         }, {
           "sourcePosition" : 4,
           "targetPosition" : 4,
@@ -56082,7 +56115,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "SetEventVarEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56112,7 +56146,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 0
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56169,7 +56204,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "SplitDamageEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56193,7 +56229,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 18
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56221,7 +56258,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "DamageEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56242,7 +56280,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 1
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56273,7 +56312,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "SetArmorEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56313,7 +56353,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "DamageEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56357,7 +56398,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "DamageEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56393,7 +56435,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "MassAddBuffEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56469,7 +56512,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "MoveCardEvent"
-          }
+          },
+          "colorModifies" : []
         }, {
           "sourcePosition" : 2,
           "targetPosition" : 2,
@@ -56479,7 +56523,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 45
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56498,7 +56543,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 13
-          }
+          },
+          "colorModifies" : []
         }, {
           "sourcePosition" : 3,
           "targetPosition" : 3,
@@ -56512,7 +56558,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "DrawEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56544,7 +56591,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "MoveCardEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56562,7 +56610,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 46
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56578,7 +56627,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 43
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56595,7 +56645,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 36
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56618,7 +56669,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "MoveCardEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56641,7 +56693,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "MoveCardEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56657,7 +56710,8 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 44
-          }
+          },
+          "colorModifies" : []
         }, {
           "sourcePosition" : 3,
           "targetPosition" : 3,
@@ -56671,7 +56725,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "MoveCardEvent"
-          }
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : []
     }, {
@@ -56680,6 +56735,34 @@
       "_imagePath" : "ba1d411a2a6a08b723f4187f85ce7cad0adec87d8e135df320d6b0f6a55a13ac.jpg",
       "_desc" : "所有玩家每个回合中使用的第一张牌灵力值消耗增加(1)点。",
       "_animationRefs" : [],
+      "_soundRefs" : []
+    }, {
+      "_id" : -2147418081,
+      "_name" : "奥术知识",
+      "_imagePath" : "f375e7bf10ef7fb154fd6fc261d2d70444639c427404407fae06291636edb101.jpg",
+      "_desc" : "检视你牌库中的五张法术牌，选择一张抽取。触发两次。",
+      "_animationRefs" : [{
+          "key" : "AnimRef0_6",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 0
+          },
+          "colorModifies" : []
+        }],
+      "_soundRefs" : []
+    }, {
+      "_id" : -2147418109,
+      "_name" : "大图书馆",
+      "_imagePath" : "560d58711a8b3583137faca6eeb64ed9c705e7b24c878b0570d5306a4f04010a.jpg",
+      "_desc" : "检视你牌库中的五张法术牌，选择一张并抽取。",
+      "_animationRefs" : [{
+          "key" : "AnimRef0_2",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 0
+          },
+          "colorModifies" : []
+        }],
       "_soundRefs" : []
     }],
   "buffDefineList" : [{
@@ -66371,7 +66454,8 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "MoveCardEvent"
-          }
+          },
+          "colorModifies" : []
         }]
     }, {
       "buffId" : 88,
@@ -69403,7 +69487,7 @@
       "value" : "<b>宣言</b>：随机将一张灵力值消耗为(0)点的<b>元素法术</b>置入你的手牌。",
       "dictionary" : {
         "en-US" : "<b>Declare</b>: Add a random 0-Cost <b>Elemental Spell</b> to your hand.",
-        "ja" : "<b>宣言</b>：随机将一张灵力值消耗为(0)点的<b>元素法术</b>置入你的手牌。"
+        "ja" : "<b>宣言</b>：ランダムな霊力（０）の<b>エレメンタルスペル</b>１体を自分の手札に追加する。"
       }
     }, {
       "value" : "金符【秋之刃】",
@@ -69493,7 +69577,7 @@
       "value" : "<b>唯一</b>，<b>宣言</b>和每当你的回合结束时，失去1点耐久度，将一张灵力值消耗为(5)点的<b>元素法术</b>置入你的手牌。",
       "dictionary" : {
         "en-US" : "<b>Unique</b>, <b>Declare</b> and at the end of your turn, lose 1 Durability, add an <b>Elemental Spell</b> that costs (5) to your hand.",
-        "ja" : "<b>唯一</b>，<b>宣言</b>和每当你的回合结束时，失去1点耐久度，将一张灵力值消耗为(5)点的<b>元素法术</b>置入你的手牌。"
+        "ja" : "<b>唯一</b>，<b>宣言</b>と自分のタ\u30fcン開始時、耐久度を１失う、霊力は（５）の<b>エレメンタルスペル</b>を１枚得る。"
       }
     }, {
       "value" : "巨石元素",
@@ -69523,7 +69607,7 @@
       "value" : "<b>唯一</b>\r\n<b>宣言</b>：检视你墓地中的三张法术牌，选择一张，使其灵力消耗减少(3)点并置入你的手牌。",
       "dictionary" : {
         "en-US" : "<b>Unique</b>\n<b>Declare</b>: Look at three spells in your graveyard, return one to your hand. It costs (3) less.",
-        "ja" : "<b>唯一</b>\r\n<b>宣言</b>：检视你墓地中的三张法术牌，选择一张，使其灵力消耗减少(3)点并置入你的手牌。"
+        "ja" : "<b>唯一</b>\n<b>宣言</b>：墓地から３枚スペルを見る、手札に１枚を追加してから霊力を（３）減らす。"
       }
     }, {
       "value" : "日符【皇家烈焰】",
@@ -69595,7 +69679,7 @@
       "value" : "<b>元素法术：水、火</b>\n造成7点伤害并随机分配给所有敌人。",
       "dictionary" : {
         "en-US" : "<b>Elemental Spell: Water & Fire</b>\nDeal 7 damage randomly split among all enemies.",
-        "ja" : "<b>元素法术：水、火</b>\n造成7点伤害并随机分配给所有敌人。"
+        "ja" : "<b>エレメンタルスペル：水、火</b>\n合計７ダメ\u30fcジを全ての敵にランダムに振り分ける。"
       }
     }, {
       "value" : "土水符【诺亚洪水】",
@@ -69679,7 +69763,7 @@
       "value" : "检视你牌库中的五张法术牌，选择一张抽取。触发两次。",
       "dictionary" : {
         "en-US" : "Look at five spells in your deck and draw one, trigger twice.",
-        "ja" : "检视你牌库中的五张法术牌，选择一张抽取。触发两次。"
+        "ja" : "自分のデッキから５枚のスペルを見て、１枚を引く。これを２回行う。"
       }
     }, {
       "value" : "土金符【淡黄阵风】",
@@ -69798,14 +69882,14 @@
     }, {
       "value" : "贩药货郎",
       "dictionary" : {
-        "en-US" : "Drug Seller",
+        "en-US" : "Medicine Seller",
         "ja" : "贩药货郎"
       }
     }, {
       "value" : "<b>速攻</b>，<b>吸血</b>\r\n<b>宣言</b>：你每控制一个<b>陷阱</b>，此牌便获得+1攻击力。",
       "dictionary" : {
         "en-US" : "<b>Rush</b>, <b>Drain</b>\n<b>Declare</b>: Gain +1 Attack for each <b>Trap</b> you control.",
-        "ja" : "<b>速攻</b>，<b>吸血</b>\r\n<b>宣言</b>：你每控制一个<b>陷阱</b>，此牌便获得+1攻击力。"
+        "ja" : "<b>急襲</b>、<b>生命奪取</b>\n<b>宣言</b>：自分の準備中の<b>罠</b>１つにつき攻撃力＋１を得る。"
       }
     }, {
       "value" : "橙",
@@ -69841,7 +69925,7 @@
       "value" : "<b>唯一</b>\r\n每当你的回合开始时，召唤一个1/1并具有<b>守卫</b>的<u>人偶</u>。",
       "dictionary" : {
         "en-US" : "<b>Unique</b>\nAt the end of your turn, summon a 1/1 <u>Doll</u> with <b>Guard</b>.",
-        "ja" : "<b>唯一</b>\r\n每当你的回合开始时，召唤一个1/1并具有<b>守卫</b>的<u>人偶</u>。"
+        "ja" : "<b>唯一</b>\n自分のタ\u30fcン開始時、<b>守り</b>を持つ１/１の<u>「人型」</u>を１体召喚する。"
       }
     }, {
       "value" : "人偶",
@@ -70081,7 +70165,7 @@
       "value" : "造成6点伤害并随机分配给所有仆从。",
       "dictionary" : {
         "en-US" : "Deal 6 damage randomly split among all servants.",
-        "ja" : "造成6点伤害并随机分配给所有仆从。"
+        "ja" : "合計６ダメ\u30fcジをミニオンにランダムに振り分ける。"
       }
     }, {
       "value" : "凶签炸弹",
@@ -70141,7 +70225,7 @@
       "value" : "每当你使用英雄技能后，随机对一个敌人造成2点伤害。",
       "dictionary" : {
         "en-US" : "After you use your skill, deal 2 damage to a random enemy.",
-        "ja" : "每当你使用英雄技能后，随机对一个敌人造成2点伤害。"
+        "ja" : "自分がヒ\u30fcロ\u30fcパワ\u30fcを使用した後ランダムな敵のキャラクタ\u30fcに２ダメ\u30fcジを与える。"
       }
     }, {
       "value" : "野兔兽妖",
@@ -70153,7 +70237,7 @@
       "value" : "每当你使用英雄技能后，此牌的攻击力变为3。",
       "dictionary" : {
         "en-US" : "After you use your skill, set Attack of this to 3.",
-        "ja" : "每当你使用英雄技能后，此牌的攻击力变为3。"
+        "ja" : "自分がヒ\u30fcロ\u30fcパワ\u30fcを使用した後このミニオンの攻撃力を３が変わる。"
       }
     }, {
       "value" : "残像",
@@ -70231,7 +70315,7 @@
       "value" : "<b>速攻</b>\r\n<b>宣言</b>：抽一张牌并使其在本回合中灵力值消耗变为(0)点。",
       "dictionary" : {
         "en-US" : "<b>Rush</b>\n<b>Declare</b>: Draw a card, it costs (0) this turn.",
-        "ja" : "<b>速攻</b>\r\n<b>宣言</b>：抽一张牌并使其在本回合中灵力值消耗变为(0)点。"
+        "ja" : "<b>急襲</b>\n<b>宣言</b>：カ\u30fcドを１枚引き，このタ\u30fcン終了時まで、霊力が（０）を変わる。"
       }
     }, {
       "value" : "键山雏",
@@ -70303,7 +70387,7 @@
       "value" : "<b>宣言</b>：检视你牌库中的三张牌，选择一张置于你的牌库顶。",
       "dictionary" : {
         "en-US" : "<b>Declare</b>: Look at three cards in your deck, choose one to put on the top.",
-        "ja" : "<b>宣言</b>：检视你牌库中的三张牌，选择一张置于你的牌库顶。"
+        "ja" : "<b>宣言</b>：自分のデッキのカ\u30fcド３枚を見る、１枚を選びデッキの一番上に置く。"
       }
     }, {
       "value" : "八意永琳",
@@ -70459,7 +70543,7 @@
       "value" : "<b>守卫</b>\r\n在对手使用一张灵力值消耗≥(4)点的仆从牌后，将此牌从你的手牌置入战场。",
       "dictionary" : {
         "en-US" : "<b>Guard</b>\nAfter your opponent plays a servant with Cost ≥ (4), summon this from your hand.",
-        "ja" : "<b>守卫</b>\r\n在对手使用一张灵力值消耗≥(4)点的仆从牌后，将此牌从你的手牌置入战场。"
+        "ja" : "<b>守り</b>\n相手は霊力≥（４）のミニオンを使用して、このミニオンは自分の手札から召喚する。"
       }
     }, {
       "value" : "丧尸妖精",
@@ -70513,7 +70597,7 @@
       "value" : "复活三个灵力值消耗≤(3)点的仆从。",
       "dictionary" : {
         "en-US" : "Revive three servants with Cost ≤ (3).",
-        "ja" : "复活三个灵力值消耗≤(3)点的仆从。"
+        "ja" : "霊力≤（３）のミニオンを3体復活する。"
       }
     }, {
       "value" : "食人怨灵",
@@ -70657,7 +70741,7 @@
       "value" : "对一个仆从造成等同于你护甲值的伤害。",
       "dictionary" : {
         "en-US" : "Deal damage equal to your Armor to a servant.",
-        "ja" : "对一个仆从造成等同于你护甲值的伤害。"
+        "ja" : "ミニオン１体に自分のヒ\u30fcロ\u30fcのア\u30fcマ\u30fcに等しいダメ\u30fcジを与える。"
       }
     }, {
       "value" : "冥界住人",
@@ -70669,13 +70753,13 @@
       "value" : "<b>遗言</b>：将一张1/1的<u>小幽灵</u>置入你的手牌并使其获得+1/+1。",
       "dictionary" : {
         "en-US" : "<b>Lastword</b>: Add a 1/1 <u>Lil Ghost</u> to your hand and give it +1/+1.",
-        "ja" : "<b>遗言</b>：将一张1/1的<u>小幽灵</u>置入你的手牌并使其获得+1/+1。"
+        "ja" : "<b>遺言</b>：１/１の<u>小幽霊</u>に自分の手札を追加し、+1/+1を付与する。"
       }
     }, {
       "value" : "小幽灵",
       "dictionary" : {
         "en-US" : "Lil Ghost",
-        "ja" : "小幽灵"
+        "ja" : "小幽霊"
       }
     }, {
       "value" : "二百由旬一闪",
@@ -70723,7 +70807,7 @@
       "value" : "每当你的回合结束时，如果你拥有护甲值，则召唤一个1/1的<u>小幽灵</u>。",
       "dictionary" : {
         "en-US" : "At the end of your turn, if you have Armor, summon a 1/1 <u>Lil Ghost</u>.",
-        "ja" : "每当你的回合结束时，如果你拥有护甲值，则召唤一个1/1的<u>小幽灵</u>。"
+        "ja" : "自分のタ\u30fcン終了時、自分のア\u30fcマ\u30fcがある場合、１/１の<u>小幽霊</u>を召喚する。"
       }
     }, {
       "value" : "樱花闪闪",
@@ -70759,7 +70843,7 @@
       "value" : "你每拥有1点护甲值，此牌便具有+1/+1。",
       "dictionary" : {
         "en-US" : "Has +1/+1 for each Armor you have.",
-        "ja" : "你每拥有1点护甲值，此牌便具有+1/+1。"
+        "ja" : "自分のヒ\u30fcロ\u30fcのア\u30fcマ\u30fcが1あるにつき＋１/＋１ある。"
       }
     }, {
       "value" : "天人亦五衰",
@@ -70855,7 +70939,7 @@
       "value" : "<b>信仰对决(仆从牌)</b>\n对一个仆从造成3点伤害。获胜时为你的英雄恢复4点生命值。",
       "dictionary" : {
         "en-US" : "<b>Faithduel (Servant)</b>\nDeal 3 damage to a servant. Restore 4 health for your master if win.",
-        "ja" : "<b>信仰对决(仆从牌)</b>\n对一个仆从造成3点伤害。获胜时为你的英雄恢复4点生命值。"
+        "ja" : "<b>信仰対決（ミニオンカ\u30fcド）</b>\nミニオン１体に３ダメ\u30fcジを与える；勝つ場合、自分のヒ\u30fcロ\u30fcの体力を４回復する。"
       }
     }, {
       "value" : "五谷丰穰",
@@ -70867,7 +70951,7 @@
       "value" : "恢复5点生命值并随机分配给所有已受伤的友方角色。",
       "dictionary" : {
         "en-US" : "Restore 5 Health randomly split among all damaged friendly characters.",
-        "ja" : "恢复5点生命值并随机分配给所有已受伤的友方角色。"
+        "ja" : "全ての味方の受けているキャラクタ\u30fcの体力をランダムに合計５回復する。"
       }
     }, {
       "value" : "客星之奇迹",
@@ -70879,7 +70963,7 @@
       "value" : "<b>信仰对决(仆从牌)</b>\n对所有敌方仆从造成2点伤害。获胜时抽一张牌。",
       "dictionary" : {
         "en-US" : "<b>Faithduel (Servant)</b>\nDeal 2 damage to all enemy servants. Draw a card if win.",
-        "ja" : "<b>信仰对决(仆从牌)</b>\n对所有敌方仆从造成2点伤害。获胜时抽一张牌。"
+        "ja" : "<b>信仰対決（ミニオンカ\u30fcド）</b>\n敵のミニオン全てに３ダメ\u30fcジを与える；勝つ場合、カ\u30fcドを１枚引く。"
       }
     }, {
       "value" : "开海之奇迹",
@@ -70891,7 +70975,7 @@
       "value" : "<b>信仰对决(仆从牌)</b>\n选择一个仆从，对与其相邻的仆从造成4点伤害。获胜时对选择的目标造成2点伤害。",
       "dictionary" : {
         "en-US" : "<b>Faithduel (Servant)</b>\nSelect a servant, deal 4 damage to adjacent servants of it. Also deal 2 damage to it if win.",
-        "ja" : "<b>信仰对决(仆从牌)</b>\n选择一个仆从，对与其相邻的仆从造成4点伤害。获胜时对选择的目标造成2点伤害。"
+        "ja" : "<b>信仰対決（ミニオンカ\u30fcド）</b>\nミニオン１体の隣接するミニオンに４ダメ\u30fcジを与える；勝つ場合、このミニオンに２ダメ\u30fcジを与える。"
       }
     }, {
       "value" : "神明招来",
@@ -70951,7 +71035,7 @@
       "value" : "<b>宣言</b>：检视对手在上个回合中使用过的三张牌，选择一张，将其原始复制置入你的手牌。",
       "dictionary" : {
         "en-US" : "<b>Declare</b>: Look at three cards your opponent played last turn, choose one to add its plain copy to your hand.",
-        "ja" : "<b>宣言</b>：检视对手在上个回合中使用过的三张牌，选择一张，将其原始复制置入你的手牌。"
+        "ja" : "<b>宣言</b>：相手が前のタ\u30fcン間で使用したカ\u30fcドを３枚見る、１枚を選びこのカ\u30fcドのコピ\u30fc１枚を自分の手札に追加する。"
       }
     }, {
       "value" : "冥想",
@@ -71059,7 +71143,7 @@
       "value" : "<b>无法攻击</b>。每当你的回合结束时，如果你在本回合中召唤过其他仆从，将一张<u>奶酪</u>置入你的手牌。",
       "dictionary" : {
         "en-US" : "<b>Can't Attack</b>. At the end of your turn, if you've summoned any other servant this turn, add a <u>Cheese</u> to you hand.",
-        "ja" : "<b>无法攻击</b>。每当你的回合结束时，如果你在本回合中召唤过其他仆从，将一张<u>奶酪</u>置入你的手牌。"
+        "ja" : "<b>攻撃できない</b>。自分のタ\u30fcン終了時、このタ\u30fcンに自身を除くミニオンを召喚した場合、<u>「チ\u30fcズ」</u>１体に自分の手札を追加する。"
       }
     }, {
       "value" : "奶酪",
@@ -71155,7 +71239,7 @@
       "value" : "<b>宣言</b>：吃掉你手牌中的一张灵力值消耗≤(1)点的法术牌并获得+2/+1。",
       "dictionary" : {
         "en-US" : "<b>Declare</b>: Eat a spell with Cost ≤ (1) in your hand to gain +2/+1.",
-        "ja" : "<b>宣言</b>：吃掉你手牌中的一张灵力值消耗≤(1)点的法术牌并获得+2/+1。"
+        "ja" : "<b>宣言</b>：自分の手札の霊力≤（１）のスペルを食べ＋２/＋１を得る。"
       }
     }, {
       "value" : "全体出击！",
@@ -71203,7 +71287,7 @@
       "value" : "<b>唯一</b>\r\n<b>宣言</b>：将一张4/2的<u>宝塔</u>洗入你的牌库。",
       "dictionary" : {
         "en-US" : "<b>Unique</b>\n<b>Declare</b>: Shuffle a 4/2 <u>Pagota</u> into your deck.",
-        "ja" : "<b>唯一</b>\r\n<b>宣言</b>：将一张4/2的<u>宝塔</u>洗入你的牌库。"
+        "ja" : "<b>唯一</b>\n<b>宣言</b>：４/２の<u>宝塔</u>１枚を自分のデッキに混ぜる。"
       }
     }, {
       "value" : "宝塔",
@@ -71239,7 +71323,7 @@
       "value" : "<b>寻觅</b><br>每当你抽到一张具有<b>寻觅</b>的牌后，获得+1攻击力。",
       "dictionary" : {
         "en-US" : "<b>Dowse</b><br>After you draws a card with <b>Dowse</b>, gain +1 Attack.",
-        "ja" : "<b>寻觅</b><br>每当你抽到一张具有<b>寻觅</b>的牌后，获得+1攻击力。"
+        "ja" : "<b>探し求め</b><br><b>探し求め</b>持つカ\u30fcドを引いた後、攻撃力＋１を得る。"
       }
     }, {
       "value" : "灵摆探测",
@@ -71311,7 +71395,7 @@
       "value" : "对一个仆从造成3点伤害。\n在本回合中，你每使用过一次技能，此牌的灵力值消耗便减少(2)点。",
       "dictionary" : {
         "en-US" : "Deal 3 damage to a servant. Costs (2) less for each skill you have used this turn.",
-        "ja" : "对一个仆从造成3点伤害。\n在本回合中，你每使用过一次技能，此牌的灵力值消耗便减少(2)点。"
+        "ja" : "ミニオン１体に３ダメ\u30fcジを与える。\nこのタ\u30fcン間、自分が使用したスキル１回につき霊力が（１）減る。"
       }
     }, {
       "value" : "被操纵的巨蛙",
@@ -71341,7 +71425,7 @@
       "value" : "<b>唯一</b>\n你的治疗效果和技能造成的伤害翻倍，你的技能具有<b>吸血</b>。",
       "dictionary" : {
         "en-US" : "<b>Unique</b>\nDouble your healing effects, and damages dealt by your skill. Your skill has <b>Drain</b>.",
-        "ja" : "<b>唯一</b>\n你的治疗效果和技能造成的伤害翻倍，你的技能具有<b>吸血</b>。"
+        "ja" : "<b>唯一</b>\n自分の回復とヒ\u30fcロ\u30fcパワ\u30fcが与えるダメ\u30fcジの効果を２倍にする、自分のヒ\u30fcロ\u30fcパワ\u30fcは<b>生命奪取</b>を得る。"
       }
     }, {
       "value" : "<b>唯一</b>\r\n<b>宣言</b>：随机将你牌库中一张<b>陷阱</b>牌置入延迟区。每当你的回合结束时，触发此牌的<b>宣言</b>。",
@@ -71359,7 +71443,7 @@
       "value" : "每当你使用一张<b>陷阱</b>牌后，此牌便获得+1耐久度。",
       "dictionary" : {
         "en-US" : "After you plays a <b>Trap</b>, gain +1 Durability.",
-        "ja" : "每当你使用一张<b>陷阱</b>牌后，此牌便获得+1耐久度。"
+        "ja" : "自分が<b>罠</b>を手札から使用した後、耐久度＋１を得る。"
       }
     }, {
       "value" : "精神投弹",
@@ -71371,7 +71455,7 @@
       "value" : "将你的技能替换为“造成2点伤害“且会对仆从额外造成1点伤害，持续两回合。",
       "dictionary" : {
         "en-US" : "Replace your skill with \"Deal 2 damage\" and deals 1 more damage to servants. Lasts 2 turns.",
-        "ja" : "将你的技能替换为“造成2点伤害“且会对仆从额外造成1点伤害，持续两回合。"
+        "ja" : "自分のヒ\u30fcロ\u30fcパワ\u30fcが「２ダメ\u30fcジを与える」に変化する、ミニオンにエキストラ１ダメ\u30fcジを与える。２タ\u30fcン持続可。"
       }
     }, {
       "value" : "紫外线场",
@@ -71383,7 +71467,7 @@
       "value" : "复原你的技能，使你下两次技能的灵力值消耗减少(2)点。",
       "dictionary" : {
         "en-US" : "Refresh your skill, it costs (2) less next 2 uses.",
-        "ja" : "复原你的技能，使你下两次技能的灵力值消耗减少(2)点。"
+        "ja" : "自分のヒ\u30fcロ\u30fcパワ\u30fcを再度使用可能にする。次の２回、自分のヒ\u30fcロ\u30fcパワ\u30fcの霊力が（２）減る。"
       }
     }, {
       "value" : "虚假幻象",
@@ -71395,7 +71479,7 @@
       "value" : "将在你本回合中使用的上一张法术牌的复制置入你的手牌，它会在回合结束后从手牌中<b>消失</b>。",
       "dictionary" : {
         "en-US" : "Add a copy of the last spell you played this turn to your hand. It will <b>Disappear</b> after the end of this turn.",
-        "ja" : "将在你本回合中使用的上一张法术牌的复制置入你的手牌，它会在回合结束后从手牌中<b>消失</b>。"
+        "ja" : "このタ\u30fcン間自分が最後に手札から使用したスペルのコピ\u30fc1枚を自分の手札に追加する。それはこのタ\u30fcン終了時手札から<b>消失</b>する。"
       }
     }, {
       "value" : "国士无双之药",
@@ -71407,7 +71491,7 @@
       "value" : "使一个友方仆从获得+3/+3，<b>速攻</b>和“在你的回合开始时死亡”。<i>(警告：过量服用会导致爆炸性后果！)</i>",
       "dictionary" : {
         "en-US" : "Give a friendly servant +3/+3 and <b>Rush</b>, it will die at the start of your turn. <i>(WARNING: Overdose can cause EXPLOSIVE consequences!)</i>",
-        "ja" : "使一个友方仆从获得+3/+3，<b>速攻</b>和“在你的回合开始时死亡”。<i>(警告：过量服用会导致爆炸性后果！)</i>"
+        "ja" : "ミニオン１体に＋３/＋３と<b>急襲</b>と「自分のタ\u30fcン開始時死ぬ」を付与する。<i>（警告：過度の使用は爆発的な結果につながります！）</i>"
       }
     }, {
       "value" : "超短脑波",
@@ -71431,7 +71515,7 @@
       "value" : "<b>陷阱</b>：当一个攻击力≤2的敌方仆从攻击时，取消此攻击并获得其控制权。",
       "dictionary" : {
         "en-US" : "<b>Trap</b>: When an enemy servant with Attack ≤ 2 attacks, stop this attack and take control of it.",
-        "ja" : "<b>陷阱</b>：当一个攻击力≤2的敌方仆从攻击时，取消此攻击并获得其控制权。"
+        "ja" : "<b>罠</b>：攻撃力≤（２）の敵のミニオンが攻撃した時、攻撃が取消し、それを味方にする。"
       }
     }, {
       "value" : "幻视调律",
@@ -71443,7 +71527,7 @@
       "value" : "<b>陷阱</b>：当对手使用一张指向性法术牌时，使其目标改为另一个合法目标。<i>(尽可能以敌人为目标)</i>",
       "dictionary" : {
         "en-US" : "<b>Trap</b>: When your opponent plays a targeted spell, instead it targets another random valid target.<i>(Choose enemy if possible)</i>",
-        "ja" : "<b>陷阱</b>：当对手使用一张指向性法术牌时，使其目标改为另一个合法目标。<i>(尽可能以敌人为目标)</i>"
+        "ja" : "<b>罠</b>：相手が指向性のスペルを使用する時、目標は他の合法的な目標を変える。<i>（可能な限り敵を標的にする）</i>"
       }
     }, {
       "value" : "生神停止",
@@ -71467,7 +71551,7 @@
       "value" : "<b>陷阱</b>：当一个敌人攻击时，召唤三个0/2并具有<b>守卫</b>的<u>残像</u>且随机使其中一个成为攻击的目标。",
       "dictionary" : {
         "en-US" : "<b>Trap</b>: When an enemy attacks, summon three 0/2 <u>After Images</u> with <b>Guard</b>, the random one of them becomes the new target.",
-        "ja" : "<b>陷阱</b>：当一个敌人攻击时，召唤三个0/2并具有<b>守卫</b>的<u>残像</u>且随机使其中一个成为攻击的目标。"
+        "ja" : "<b>罠</b>：敵が攻撃した時、<b>守り</b>を持つ０/２の<u>「残り幻像」</u>を３体召喚し、ランダムな１体に攻撃の目標を変える。"
       }
     }, {
       "value" : "红外线场",
@@ -71479,7 +71563,7 @@
       "value" : "复原你的技能，使你下两次技能的伤害提高2点。",
       "dictionary" : {
         "en-US" : "Refresh your skill, it deals 2 more damage next 2 uses.",
-        "ja" : "复原你的技能，使你下两次技能的伤害提高2点。"
+        "ja" : "自分のヒ\u30fcロ\u30fcパワ\u30fcを再度使用可能にする。次の２回、自分のヒ\u30fcロ\u30fcパワ\u30fcのダメ\u30fcジは２をたす。"
       }
     }, {
       "value" : "神之风",
@@ -71521,7 +71605,7 @@
       "value" : "你的对手每控制一个仆从，便召唤一个2/2并具有<b>守卫</b>的<u>青蛙</u>。",
       "dictionary" : {
         "en-US" : "Summon a 2/2 <u>Frog</u> with <b>Guard</b> for each enemy servant.",
-        "ja" : "你的对手每控制一个仆从，便召唤一个2/2并具有<b>守卫</b>的<u>青蛙</u>。"
+        "ja" : "敵のミニオン１体につき、<b>守り</b>を持つ ２/２の<u>「蛙」</u>を１体召喚する。"
       }
     }, {
       "value" : "荒芜之灾祸",
@@ -71533,7 +71617,7 @@
       "value" : "直到你的回合开始时，使对手手牌中的仆从牌灵力值消耗增加(5)点。",
       "dictionary" : {
         "en-US" : "Servants in your opponent's hand cost (5) more until the start of your turn.",
-        "ja" : "直到你的回合开始时，使对手手牌中的仆从牌灵力值消耗增加(5)点。"
+        "ja" : "次の自分のタ\u30fcン開始時まで敵のミニオンの霊力が（５）増える。"
       }
     }, {
       "value" : "休眠之灾祸",
@@ -71611,7 +71695,7 @@
       "value" : "恢复8点生命值，在本回合中你下一次<b>信仰对决</b>后，再为其恢复4点生命值。",
       "dictionary" : {
         "en-US" : "Restore 8 Health. Restore 4 more after your next <b>Faithduel</b> this turn.",
-        "ja" : "恢复8点生命值，在本回合中你下一次<b>信仰对决</b>后，再为其恢复4点生命值。"
+        "ja" : "体力を８回復する。このタ\u30fcンに次の<b>信仰対決</b>すること後、体力をもう４回復する。"
       }
     }, {
       "value" : "神代大蛇",
@@ -71683,7 +71767,7 @@
       "value" : "<b>宣言</b>：在本回合中每有一个仆从死亡过，便获得+1攻击力。",
       "dictionary" : {
         "en-US" : "<b>Declare</b>: Gain +1 Attack for each servants that's died this turn.",
-        "ja" : "<b>宣言</b>：在本回合中每有一个仆从死亡过，便获得+1攻击力。"
+        "ja" : "<b>宣言</b>：このタ\u30fcンに死亡したミニオン1体につき攻撃力＋１を得る。"
       }
     }, {
       "value" : "古明地恋",
@@ -71737,7 +71821,7 @@
       "value" : "在一张仆从牌被使用后，此牌变形为被使用仆从牌的原始复制。\r",
       "dictionary" : {
         "en-US" : "After a servant is played, this transforms into the servant's plain copy.\n",
-        "ja" : "在一张仆从牌被使用后，此牌变形为被使用仆从牌的原始复制。\r"
+        "ja" : "ミニオンを手札から使用した後そのミニオンの新しいコピ\u30fcになる。\n"
       }
     }, {
       "value" : "多多良小伞",
@@ -71785,7 +71869,7 @@
       "value" : "每当你的回合结束时，随机使一个敌方仆从获得-2/-2，如果其攻击力为0点，还会将其消灭。",
       "dictionary" : {
         "en-US" : "At the end of your turn, give a random enemy servant -2/-2. If it has 0 Attack, destroy it.",
-        "ja" : "每当你的回合结束时，随机使一个敌方仆从获得-2/-2，如果其攻击力为0点，还会将其消灭。"
+        "ja" : "自分のタ\u30fcン終了時、ランダムな敵のミニオン１体に－２/－２を付与する。それの攻撃力は０の場合、それを破壊する。"
       }
     }, {
       "value" : "毘沙门天的弟子",
@@ -71797,7 +71881,7 @@
       "value" : "<b>宣言</b>：造成5点伤害并随机分配给所有敌方仆从。每消灭一个仆从便将随机一张<b>唯一</b>仆从牌置入你的手牌。",
       "dictionary" : {
         "en-US" : "<b>Declare</b>: Deal 5 damage randomly split among all enemy servants. Add a random<b>Unique</b> servant to your hand for each kills.",
-        "ja" : "<b>宣言</b>：造成5点伤害并随机分配给所有敌方仆从。每消灭一个仆从便将随机一张<b>唯一</b>仆从牌置入你的手牌。"
+        "ja" : "<b>宣言</b>：合計５ダメ\u30fcジを全ての敵のミニオンにランダムに振り分ける。破壊したミニオン１体につきランダムな<b>唯一</b>ミニオン１枚を自分の手札に追加する。"
       }
     }, {
       "value" : "圣白莲",
@@ -71899,7 +71983,7 @@
       "value" : "狂月投弹",
       "dictionary" : {
         "en-US" : "Lunatic Projectile",
-        "ja" : "狂月投弹"
+        "ja" : "狂い月爆弾投下"
       }
     }, {
       "value" : "造成2点伤害。",
@@ -71917,7 +72001,7 @@
       "value" : "获得一点灵力值。",
       "dictionary" : {
         "en-US" : "Gain 1 Spirit.",
-        "ja" : "获得一点灵力值。"
+        "ja" : "霊力ボ\u30fcルを１つ獲得する。"
       }
     }, {
       "value" : "哮喘",
@@ -72055,49 +72139,49 @@
       "value" : "基因工程士兵",
       "dictionary" : {
         "en-US" : "Gene Soldier",
-        "ja" : "基因工程士兵"
+        "ja" : "基因工程兵隊"
       }
     }, {
       "value" : "<b>宣言</b>：召唤此牌的一个复制并随机使其中的一个成为<b>幻象</b>。",
       "dictionary" : {
         "en-US" : "<b>Declare</b>: Summon a copy of this, and make this or the copy to be <b>Phantom</b>.",
-        "ja" : "<b>宣言</b>：召唤此牌的一个复制并随机使其中的一个成为<b>幻象</b>。"
+        "ja" : "<b>宣言</b>：このミニオンのコピ\u30fcを１体召喚して、その二つにはランダムな一つが<b>幻像</b>になる。"
       }
     }, {
       "value" : "三月兔",
       "dictionary" : {
         "en-US" : "March Hare",
-        "ja" : "三月兔"
+        "ja" : "三月兎"
       }
     }, {
       "value" : "<b>遗言</b>：抽一张<b>陷阱</b>牌。",
       "dictionary" : {
         "en-US" : "<b>Lastword</b>: Draw a <b>Trap</b>.",
-        "ja" : "<b>遗言</b>：抽一张<b>陷阱</b>牌。"
+        "ja" : "<b>遺言</b>：<b>罠</b>を１枚引く。"
       }
     }, {
       "value" : "月战老兵",
       "dictionary" : {
         "en-US" : "Moon Veteran",
-        "ja" : "月战老兵"
+        "ja" : "月の戦争の老兵"
       }
     }, {
       "value" : "你每控制一个<b>陷阱</b>，此牌的灵力值消耗便减少(1)点。",
       "dictionary" : {
         "en-US" : "Costs (1) less for each <b>Trap</b> you control.",
-        "ja" : "你每控制一个<b>陷阱</b>，此牌的灵力值消耗便减少(1)点。"
+        "ja" : "自分の準備中の<b>罠</b>１つにつき霊力が（１）減る。"
       }
     }, {
       "value" : "异色眼精神支配者",
       "dictionary" : {
         "en-US" : "Heterochromia Dominator",
-        "ja" : "异色眼精神支配者"
+        "ja" : "異瞳精神支配者"
       }
     }, {
       "value" : "<b>宣言</b>：随机获得一个攻击力≤(2)的敌方仆从的控制权。",
       "dictionary" : {
         "en-US" : "<b>Declare</b>: Take control of a random enemy servant with Attack ≤ (2).",
-        "ja" : "<b>宣言</b>：随机获得一个攻击力≤(2)的敌方仆从的控制权。"
+        "ja" : "<b>宣言</b>：ランダムな攻撃力≤（２）の敵のミニオン１体を味方にする。"
       }
     }, {
       "value" : "丧心丧意",
@@ -72109,7 +72193,7 @@
       "value" : "使所有仆从获得\n-2攻击力并消灭攻击力为0的仆从。",
       "dictionary" : {
         "en-US" : "Give all servants -2 Attack and destroy all 0-Attack servants.",
-        "ja" : "使所有仆从获得\n-2攻击力并消灭攻击力为0的仆从。"
+        "ja" : "ミニオン全てに 攻撃力‐２を付与する。\n攻撃力０のミニオンを全て破壊する。"
       }
     }, {
       "value" : "真实之月",
@@ -72121,55 +72205,55 @@
       "value" : "使所有仆从<b>消失</b>，它们会在你的回合开始后重新出现。",
       "dictionary" : {
         "en-US" : "Make all servants <b>Disappear</b>, they will reappear after the start of your next turn.",
-        "ja" : "使所有仆从<b>消失</b>，它们会在你的回合开始后重新出现。"
+        "ja" : "全てのミニオンを<b>消失</b>する、これらは次の自分のタ\u30fcン開始時が現れ直す。"
       }
     }, {
       "value" : "兔耳通讯技术",
       "dictionary" : {
         "en-US" : "Ear Communication",
-        "ja" : "兔耳通讯技术"
+        "ja" : "ウサ耳通信技術"
       }
     }, {
       "value" : "随机将你牌库中两张牌的复制置入你的手牌，它们会在回合结束后从手牌中<b>消失</b>。",
       "dictionary" : {
         "en-US" : "Add copies of 2 random cards in your deck into your hand. They will <b>Disappear</b> after the end of your turn from your hand.",
-        "ja" : "随机将你牌库中两张牌的复制置入你的手牌，它们会在回合结束后从手牌中<b>消失</b>。"
+        "ja" : "自分のデッキからランダムなカ\u30fcドのコピ\u30fcを２枚まで自分の手札を追加する。このタ\u30fcン終了時、それらが<b>消失</b>する。"
       }
     }, {
       "value" : "红移幻象",
       "dictionary" : {
         "en-US" : "Redshift",
-        "ja" : "红移幻象"
+        "ja" : "レッドシフト幻像"
       }
     }, {
       "value" : "召唤一个友方仆从的复制并随机使其中一个成为<b>幻象</b>。<i>(只有你知道哪个是真的！)</i>",
       "dictionary" : {
         "en-US" : "Summon a copy of a friendly servant, and make it or the copy to be <b>Phantom</b>. <i>(Only you know who's true!)</i>",
-        "ja" : "召唤一个友方仆从的复制并随机使其中一个成为<b>幻象</b>。<i>(只有你知道哪个是真的！)</i>"
+        "ja" : "自分のミニオンのコピ\u30fcを召喚して、その二つにはランダムな一つが<b>幻像</b>になる。<i>（誰か本物か知っているのは君のみ！）</i>"
       }
     }, {
       "value" : "幻胧月睨",
       "dictionary" : {
         "en-US" : "Stare of the Hazy Moon",
-        "ja" : "幻胧月睨"
+        "ja" : "幻朧月睨"
       }
     }, {
       "value" : "<b>唯一</b>，分别为所有友方仆从召唤一个复制并随机使其中的一个成为\n<b>幻象</b>。",
       "dictionary" : {
         "en-US" : "<b>Unique</b>, Summon a copy for each friendly servant, and make them or the copies to be<b>Phantom</b>.",
-        "ja" : "<b>唯一</b>，分别为所有友方仆从召唤一个复制并随机使其中的一个成为\n<b>幻象</b>。"
+        "ja" : "<b>唯一</b>、全ての自分のミニオンにそのミニオンのコピ\u30fcを各\u3005召喚して、その二つにはランダムな一つが\n<b>幻像</b>になる。"
       }
     }, {
       "value" : "荣华之梦",
       "dictionary" : {
         "en-US" : "Dream of Prosperity",
-        "ja" : "荣华之梦"
+        "ja" : "栄華之夢"
       }
     }, {
       "value" : "<b>唯一</b>\n将你的手牌替换为你牌库中六张卡牌的复制，回合结束后换回。",
       "dictionary" : {
         "en-US" : "<b>Unique</b>\nReplace your hand with copies of 6 cards in your deck. Swap back after the end of this turn.",
-        "ja" : "<b>唯一</b>\n将你的手牌替换为你牌库中六张卡牌的复制，回合结束后换回。"
+        "ja" : "<b>唯一</b>\n自分の手札を自分のデッキのカ\u30fcド６枚と入れ替える。このタ\u30fcン終了時入れ替え前の手札に戻す。"
       }
     }, {
       "value" : "在本回合中，使用的下一张法术牌灵力值消耗减少(5)点。",
