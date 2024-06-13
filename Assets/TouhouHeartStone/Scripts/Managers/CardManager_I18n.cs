@@ -237,14 +237,11 @@ namespace Game
         }
         #endregion
 
-        public (string language, string path)[] getTranslationResourcesFromPool(ICardPoolReference poolRef, string key)
+        public LocalizedResource getLocalizedResourceFromPool(ICardPoolReference poolRef, string key)
         {
             if (!tryGetCardPool(poolRef, out CardPool cardPool))
                 return null;
-            var resource = cardPool.localizedResourceList.FirstOrDefault(res => res.value == key);
-            if (resource == null)
-                return null;
-            return resource.getAllLanguages().Select(l => (l, resource.getTranslation(l))).ToArray();
+            return cardPool.localizedResourceList.FirstOrDefault(res => res.value == key);
         }
 
         #endregion
