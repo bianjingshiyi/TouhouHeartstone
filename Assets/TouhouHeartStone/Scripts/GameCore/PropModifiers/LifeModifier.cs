@@ -17,6 +17,14 @@ namespace TouhouHeartstone
         {
         }
         #endregion
+        public override Task afterAdd(IGame game, Card card, Buff buff)
+        {
+            var value = getValueGeneric(buff);
+            if (isSet)
+                return card.setCurrentLife(game, value);
+            else
+                return card.setCurrentLife(game, card.getCurrentLife(game) + value);
+        }
         public override async Task updateModifierValue(IGame game, Card card, Buff buff, int beforeValue)
         {
             int value = getValueGeneric(buff);
@@ -54,14 +62,6 @@ namespace TouhouHeartstone
                     }
                 }
             }
-        }
-        public override Task afterAdd(IGame game, Card card, Buff buff)
-        {
-            var value = getValueGeneric(buff);
-            if (isSet)
-                return card.setCurrentLife(game, value);
-            else
-                return card.setCurrentLife(game, card.getCurrentLife(game) + value);
         }
         public override Task afterRemove(IGame game, Card card, Buff buff)
         {
