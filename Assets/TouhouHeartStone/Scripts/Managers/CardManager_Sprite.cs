@@ -54,18 +54,20 @@ namespace Game
 
             async Task<string> fixLocalizedResourcePath(IEnumerable<LocalizedResource> resources, string key)
             {
+                var newKey = await fixImage(key);
                 var localizedRes = resources.getLocalizedObject<string, LocalizedResource>(key);
-                if (localizedRes == null)
-                    return key;
-                localizedRes.value = await fixImage(localizedRes.value);
-                foreach (var lang in localizedRes.getAllLanguages())
+                if (localizedRes != null)
                 {
-                    var path = localizedRes.getTranslation(lang);
-                    if (path == null)
-                        continue;
-                    localizedRes.setTranslation(lang, await fixImage(path));
+                    localizedRes.value = newKey;
+                    foreach (var lang in localizedRes.getAllLanguages())
+                    {
+                        var path = localizedRes.getTranslation(lang);
+                        if (path == null)
+                            continue;
+                        localizedRes.setTranslation(lang, await fixImage(path));
+                    }
                 }
-                return localizedRes.value;
+                return newKey;
             }
 
             async Task<string> fixImage(string path)
