@@ -425,6 +425,8 @@ namespace TouhouHeartstone
             var skillDef = game.getDefine(skillRef.cardPoolId, skillRef.defineId);
             var masterCard = game.createCard(master);
             await Pile.moveCard(game, masterCard, null, player[PILE.MASTER], 0);
+            await masterCard.resetBattlefieldProps(game);
+
             var skillCard = game.createCard(skillDef);
             await Pile.moveCard(game, skillCard, null, player[PILE.SKILL], 0);
 
