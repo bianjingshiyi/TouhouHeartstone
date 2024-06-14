@@ -113,6 +113,11 @@ namespace Game.BattleTable
         {
             return pile.isGeneralizedBattlefield() || pile?.name == PILE.HAND;
         }
+        public Vector3 startPosition
+        {
+            get => _startTablePos;
+            set => _startTablePos = value;
+        }
         protected bool _startVisible;
         protected CardDescriptor _cardDesc;
         protected Vector3 _startTablePos;

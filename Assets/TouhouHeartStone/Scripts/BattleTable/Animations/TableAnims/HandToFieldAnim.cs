@@ -13,6 +13,10 @@ namespace Game.BattleTable
         }
         public override IEnumerator update(BattleTableManager table)
         {
+            if (table.tryGetHand(_cardDesc.id, out var hand))
+            {
+                _anim.startPosition = table.WorldToTablePosition(hand.transform.position);
+            }
             table.removeHand(_cardDesc.id);
             while (!_anim.update(table, _deltaTime))
             {
