@@ -161,7 +161,11 @@ namespace Controllers
         }
         public string translatePortName(PortDefine portDefine)
         {
-            return translatePortName(portDefine?.getDisplayName());
+            var args = portDefine?.getDisplayNameArgs();
+            if (args == null || args.Length <= 0)
+                return translatePortName(portDefine?.getDisplayName());
+            else
+                return translatePortName(portDefine?.getDisplayName(), args);
         }
         public string translatePortName(string portName)
         {
@@ -172,6 +176,16 @@ namespace Controllers
                 return game.lang._p(StringTable.CONTEXT_NODE_PARAM_NAME, text);
             }
             return game.lang._p(StringTable.CONTEXT_NODE_PARAM_NAME, portName);
+        }
+        public string translatePortName(string portName, params string[] args)
+        {
+            if (string.IsNullOrEmpty(portName))
+                return string.Empty;
+            if (_nameTextDict.TryGetValue(portName, out string text))
+            {
+                return game.lang._p(StringTable.CONTEXT_NODE_PARAM_NAME, text, args);
+            }
+            return game.lang._p(StringTable.CONTEXT_NODE_PARAM_NAME, portName, args);
         }
         public string translateEventVarName(string eventVarName)
         {

@@ -80,6 +80,8 @@ namespace TouhouHeartstone
         public const string EDITOR_PARAM_NAME_BUFF_DEFINE = "增益定义";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_TARGET_CARD = "目标卡牌";
+        [TranslateMsg("编辑器/参数名称，{0}为目标号码", CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_TARGET_CARD_NUMBER = "目标卡牌{0}";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_TARGET_BUFF = "目标增益";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]

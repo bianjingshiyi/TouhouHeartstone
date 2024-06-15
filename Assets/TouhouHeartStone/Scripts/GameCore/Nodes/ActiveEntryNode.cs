@@ -20,9 +20,18 @@ namespace TouhouHeartstone
         }
         public override Task<ControlOutput> run(Flow flow)
         {
-            foreach (var output in outputPorts.OfType<ValueOutput>())
+            flow.setValue(getOutputPort<ValueOutput>(playerPortName), flow.env.eventArg.getVar(EffectTriggerEventDefine.VAR_PLAYER));
+            flow.setValue(getOutputPort<ValueOutput>(cardPortName), flow.env.eventArg.getVar(EffectTriggerEventDefine.VAR_CARD));
+            var targets = flow.env.eventArg.getVar<Card[]>(EffectTriggerEventDefine.VAR_TARGETS);
+            if (targets != null)
             {
-                flow.setValue(output, flow.env.eventArg.getVar(output.name));
+                for (int i = 0; i < targets.Length; i++)
+                {
+                    var output = getOutputPort<ValueOutput>(getTargetPortName(i));
+                    if (output == null)
+                        continue;
+                    flow.setValue(output, targets[i]);
+                }
             }
             return Task.FromResult(getOutputPort<ControlOutput>(actionPortName));
         }
@@ -124,21 +133,19 @@ namespace TouhouHeartstone
         }
         private void DefinitionOutputs()
         {
-            ValueOutput valueOutput(PortDefine portDefine)
-                 => outputList.OfType<ValueOutput>().FirstOrDefault(d => d != null && d.define.Equals(portDefine)) ??
-                 new ValueOutput(this, portDefine);
-            ControlOutput controlOutput()
-                 => outputList.OfType<ControlOutput>().FirstOrDefault() ??
-                 new ControlOutput(this, actionPortDefine);
-
-
             var outputs = new List<IPort>()
             {
-                controlOutput(),
-                valueOutput(playerPortDefine),
-                valueOutput(cardPortDefine),
-                valueOutput(targetsPortDefine)
+                getOrCreateOutputPort(actionPortDefine),
+                getOrCreateOutputPort(playerPortDefine),
+                getOrCreateOutputPort(cardPortDefine),
             };
+
+            for (int i = 0; i < targetCheckerList.Count; i++)
+            {
+                var portDefine =  PortDefine.Value(typeof(Card), getTargetPortName(i), Translations.EDITOR_PARAM_NAME_TARGET_CARD_NUMBER);
+                portDefine.displayNameArgs = new string[1] { (i + 1).ToString() };
+                outputs.Add(getOrCreateOutputPort(portDefine));
+            }
 
             foreach (var lostPort in outputList.Except(outputs))
             {
@@ -146,6 +153,10 @@ namespace TouhouHeartstone
             }
             outputList.Clear();
             outputList.AddRange(outputs);
+        }
+        public static string getTargetPortName(int index)
+        {
+            return string.Format(targetPortName, index);
         }
 
         #endregion
@@ -156,7 +167,7 @@ namespace TouhouHeartstone
         public const string actionPortName = "action";
         public const string playerPortName = EffectTriggerEventDefine.VAR_PLAYER;
         public const string cardPortName = EffectTriggerEventDefine.VAR_CARD;
-        public const string targetsPortName = EffectTriggerEventDefine.VAR_TARGETS;
+        public const string targetPortName = "target{0}";
         public const string tagsPortName = "tags";
         public const string priorityPortName = "priority";
 
@@ -165,7 +176,6 @@ namespace TouhouHeartstone
         private static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
         private static PortDefine playerPortDefine = PortDefine.Value(typeof(Player), playerPortName, Translations.EDITOR_PARAM_NAME_PLAYER);
         private static PortDefine cardPortDefine = PortDefine.Value(typeof(Card), cardPortName, Translations.EDITOR_PARAM_NAME_CARD);
-        private static PortDefine targetsPortDefine = PortDefine.Value(typeof(Card[]), targetsPortName, Translations.EDITOR_PARAM_NAME_TARGET_CARD);
         private static PortDefine tagsPortDefine = PortDefine.Value(typeof(EffectTagCollection), tagsPortName, Translations.EDITOR_PARAM_NAME_TAG_LIST, isConst: true);
         private static PortDefine priorityPortDefine = PortDefine.Value(typeof(int), priorityPortName, Translations.EDITOR_PARAM_NAME_PRIORITY, isConst: true);
     }

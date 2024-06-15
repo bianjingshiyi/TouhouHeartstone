@@ -1655,6 +1655,24 @@ namespace Game
                         targetChecker.targetType = DEFINE.TARGET_TYPE_SERVANT;
                     }
                 }
+
+                // 目标卡牌集合改为单一目标卡牌。
+                var graph = activeEntry.graph;
+                var targetCardConnections = graph.connections
+                    .OfType<InvalidNodeConnection>()
+                    .Where(c => c.srcNodeId == activeEntry.id && c.srcPortName == EffectTriggerEventDefine.VAR_TARGETS)
+                    .ToArray();
+                var targetPort1 = activeEntry.getOutputPort<ValueOutput>(ActiveEntryNode.getTargetPortName(0));
+                foreach (var connection in targetCardConnections)
+                {
+                    var inputNode = graph.findNodeById(connection.destNodeId);
+                    var inputPort = connection.destParamIndex >= 0 ? inputNode.getParamInputPort(connection.destPortName, connection.destParamIndex) : inputNode.getInputPort(connection.destPortName);
+                    if (targetPort1 != null && inputPort != null)
+                    {
+                        graph.connect(targetPort1, inputPort);
+                    }
+                    graph.disconnect(connection);
+                }
             }
             // 将旧版的“筛选”、“排序”、“重复动作直到”和“信仰对决”换为新的节点。
             void fixConditionalNode(ActionNode actionNode)
