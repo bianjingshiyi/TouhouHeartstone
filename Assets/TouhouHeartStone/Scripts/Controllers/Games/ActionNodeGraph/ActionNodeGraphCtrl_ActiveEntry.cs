@@ -122,6 +122,7 @@ namespace Controllers
         }
         private void updateActiveEntryNode(ActionNodeItem item, ActiveEntryNode activeEntry)
         {
+            activeEntry.Define();
             item.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getActiveEntryTargetCheckerViewData(activeEntry));
 
             var inputViewDatas = getActiveEntryInputViewData(activeEntry);

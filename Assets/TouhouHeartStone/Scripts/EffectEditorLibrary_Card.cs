@@ -84,6 +84,8 @@ namespace Game
         public const string EDITOR_PARAM_NAME_CHARGED_LEVEL = "蓄力层数";
         [TranslateMsg("编辑器节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_VALID_TARGETS = "合法目标集合";
+        [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_SELECTED_CARDS = "已选卡牌";
 
         [TranslateMsg("节点参数", StringTable.CONTEXT_NODE_PARAM_NAME)]
         const string EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT = "卡牌属性更改事件";
@@ -1448,11 +1450,14 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetValidCardTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_GET_CARD_TARGETS)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_VALID_TARGETS)]
         public static Card[] getAllLegalCardTargets(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(EDITOR_PARAM_NAME_SELECTED_CARDS)] Card[] selectedTargets)
         {
             if (card == null)
                 return Array.Empty<Card>();
-            var legalTargets = card.getAvaliableTargets(game).Where(c => c != card).ToArray();
+            var fullEffects = card.getFullTargetActiveEffects(game);
+            var effects = card.filterTargetEffects(game, fullEffects, selectedTargets);
+            var legalTargets = card.getAvaliableTargets(game, effects, selectedTargets).ToArray();
 
             return legalTargets;
         }

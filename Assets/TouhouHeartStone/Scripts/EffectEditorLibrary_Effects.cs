@@ -135,11 +135,13 @@ namespace Game
         [return: ActionNodeParam(EDITOR_PARAM_NAME_VALID_TARGETS)]
         public static Card[] getAllLegalEffectTargets(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
-            [ActionNodeParam(EDITOR_PARAM_NAME_SOURCE_CARD)] Card source)
+            [ActionNodeParam(EDITOR_PARAM_NAME_SOURCE_CARD)] Card source,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff,
+            [ActionNodeParam(EDITOR_PARAM_NAME_SELECTED_CARDS)] Card[] selectedTargets)
         {
             if (effect == null || source == null)
                 return Array.Empty<Card>();
-            return effect.getAvaliableTargets(game, source);
+            return effect.getAvaliableTargets(game, source, buff, selectedTargets);
         }
         /// <summary>
         /// 效果类型判断

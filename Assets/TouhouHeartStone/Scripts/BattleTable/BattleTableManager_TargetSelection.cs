@@ -1,18 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using BJSYGameCore;
-using Game.Animations;
+using Game.BattleTable.UI;
 using MukioI18n;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
-using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Card = TouhouCardEngine.Card;
-using UICard = Game.BattleTable.TableCard;
-using Timer = BJSYGameCore.Timer;
 
 namespace Game.BattleTable
 {
@@ -34,7 +28,10 @@ namespace Game.BattleTable
             _servantUsingPosition = 0;
             targetSelectType = TargetSelectType.None;
             targetSelectMode = TargetSelectMode.Click;
-            _selectableTargetsID.Clear();
+            _selectableTargets.Clear();
+            _selectedTargets.Clear();
+            _selectingBuffEffects.Clear();
+            hideAllSelectionTargets();
             updateAllHighlight();
             hideArrow();
         }
@@ -77,20 +74,29 @@ namespace Game.BattleTable
             {
                 hand.setSpellReady(true);
             }
-            enterTargetSelectMode(TargetSelectType.Use, mode, card, card.getAvaliableTargets(game));
+            var fullEffects = card.getFullTargetActiveEffects(game);
+            _selectingBuffEffects.Clear();
+            _selectingBuffEffects.AddRange(fullEffects);
+            enterTargetSelectMode(TargetSelectType.Use, mode, card, card.getAvaliableTargets(game, _selectingBuffEffects));
         }
         private void startSelectingTargetForServantBattlecry(Card card, int index, Vector3 tablePos, TargetSelectMode mode)
         {
             if (isSelectingTarget())
                 return;
-            enterTargetSelectMode(TargetSelectType.ServantBattlecry, mode, card, card.getAvaliableTargets(game));
+            var fullEffects = card.getFullTargetActiveEffects(game);
+            _selectingBuffEffects.Clear();
+            _selectingBuffEffects.AddRange(fullEffects);
+            enterTargetSelectMode(TargetSelectType.ServantBattlecry, mode, card, card.getAvaliableTargets(game, _selectingBuffEffects));
             addServantPreviewAnim(card, index, tablePos);
         }
         private void startSelectingTargetForUse(Card card, TargetSelectMode mode)
         {
             if (isSelectingTarget())
                 return;
-            enterTargetSelectMode(TargetSelectType.Use, mode, card, card.getAvaliableTargets(game));
+            var fullEffects = card.getFullTargetActiveEffects(game);
+            _selectingBuffEffects.Clear();
+            _selectingBuffEffects.AddRange(fullEffects);
+            enterTargetSelectMode(TargetSelectType.Use, mode, card, card.getAvaliableTargets(game, _selectingBuffEffects));
         }
         private void startSelectingTargetForAttack(Card card, Card[] targets, TargetSelectMode mode)
         {
@@ -104,11 +110,16 @@ namespace Game.BattleTable
             targetSelectingCard = card;
             targetSelectType = type;
             targetSelectMode = mode;
-            _selectableTargetsID.Clear();
-            _selectableTargetsID.AddRange(targets.Select(t => t.id).ToArray());
+            setSelectableTargets(targets);
+            _selectedTargets.Clear();
             //高亮标记所有目标
             updateAllHighlight();
             hideAllHands();//手牌缩小
+        }
+        private void setSelectableTargets(Card[] targets)
+        {
+            _selectableTargets.Clear();
+            _selectableTargets.AddRange(targets);
         }
         #endregion
 
@@ -142,16 +153,36 @@ namespace Game.BattleTable
             if (target == null)
                 return false;
 
+            int targetIndex = _selectedTargets.Count;
             var source = targetSelectingCard;
-            if (!source.isValidTarget(game, target, out string invalidMsg))
+            var selectedCards = _selectedTargets.ToArray();
+            if (!source.isValidTargetForEffects(game, _selectingBuffEffects, target, out string invalidMsg, selectedCards))
             {
                 //非法目标，跳出非法信息
                 showErrorTip(invalidMsg);
                 return false;
             }
-            //合法目标，生效
-            player.cmdUse(game, source, _servantUsingPosition, target);
-            resetUse(resetHandItem: false, finishSelectTarget: true);
+            //合法目标，选中
+            _selectedTargets.Add(target);
+            selectedCards = _selectedTargets.ToArray();
+
+            var filteredEffects = source.filterTargetEffects(game, _selectingBuffEffects, selectedCards);
+            if (filteredEffects.Count() > 0)
+            {
+                // 没有选择完目标，继续选择
+                _selectingBuffEffects.Clear();
+                _selectingBuffEffects.AddRange(filteredEffects);
+                targetSelectMode = TargetSelectMode.Click;
+                setSelectableTargets(source.getAvaliableTargets(game, filteredEffects, selectedCards));
+                updateAllHighlight();
+                displaySelectionTarget(target, targetIndex);
+            }
+            else
+            {
+                // 目标选择完毕，使用卡牌
+                player.cmdUse(game, source, _servantUsingPosition, _selectedTargets.ToArray());
+                resetUse(resetHandItem: false, finishSelectTarget: true);
+            }
             return true;
         }
         private bool tryConfirmTargetForAttack(Card target)
@@ -200,7 +231,7 @@ namespace Game.BattleTable
 
             int index = calcIndexInField(tablePos.x);
             table.SelfField.setPreviewPosition(-1);
-            if (card.getAvaliableTargets(game) is Card[] targets && targets.Length > 0)
+            if (card.hasFullTargetActiveEffect(game))
             {
                 //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
                 startSelectingTargetForServantBattlecry(card, index, tablePos, TargetSelectMode.Click);
@@ -214,7 +245,7 @@ namespace Game.BattleTable
         }
         private void playItemHand(Card card)
         {
-            if (card.getAvaliableTargets(game) is Card[] targets && targets.Length > 0)
+            if (card.hasFullTargetActiveEffect(game))
             {
                 //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
                 startSelectingTargetForUse(card, TargetSelectMode.Click);
@@ -384,6 +415,32 @@ namespace Game.BattleTable
         }
         #endregion
 
+        #region 锁定准星
+        private void displaySelectionTarget(Card card, int targetIndex)
+        {
+            Transform transform = null;
+            if (tryGetMaster(card, out var masterUI))
+            {
+                transform = masterUI.transform;
+            }
+            else if (tryGetServant(card, out var servantUI))
+            {
+                transform = servantUI.transform;
+            }
+            var tablePos = WorldToTablePosition(transform.position) + _selectionTargetOffset;
+            var target = Instantiate(table.SelectionTargetTemplate, TableToWorldPosition(tablePos), Quaternion.identity, transform).GetComponent<SelectionTarget>();
+            _selectionTargetDict.Add(card.id, target);
+        }
+        private void hideAllSelectionTargets()
+        {
+            foreach (var pair in _selectionTargetDict)
+            {
+                Destroy(pair.Value.gameObject);
+            }
+            _selectionTargetDict.Clear();
+        }
+        #endregion
+
         /// <summary>
         /// 判断鼠标是否在某张卡上，并返回卡
         /// </summary>
@@ -426,7 +483,14 @@ namespace Game.BattleTable
         /// 目标选择模式
         /// </summary>
         public TargetSelectMode targetSelectMode { get; set; }
-        private List<int> _selectableTargetsID = new List<int>();
+
+        [SerializeField]
+        private Vector3 _selectionTargetOffset = new Vector3(0, 500, 0);
+
+        private List<Card> _selectableTargets = new List<Card>();
+        private List<Card> _selectedTargets = new List<Card>();
+        private List<BuffEffectPair> _selectingBuffEffects = new List<BuffEffectPair>();
+        private Dictionary<int, SelectionTarget> _selectionTargetDict = new Dictionary<int, SelectionTarget>();
         #endregion
     }
 

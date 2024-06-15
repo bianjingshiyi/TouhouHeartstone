@@ -155,20 +155,28 @@ namespace TouhouHeartstone
         }
 
 
-        /// <summary>
-        /// 这张卡牌定义的主动效果的可选目标
-        /// </summary>
-        /// <param name="cardDefine"></param>
-        /// <param name="game"></param>
-        /// <returns></returns>
-        public static Card[] getAvaliableTargets(this CardDefine cardDefine, CardEngine game, Card source)
+        public static Effect[] getActiveEffects(this CardDefine cardDefine)
         {
-            List<Card> targetList = new List<Card>();
-            if (cardDefine.getEffects().OfType<GeneratedActiveEffect>().FirstOrDefault() is GeneratedActiveEffect generatedEffect)
-            {
-                targetList.AddRange(generatedEffect.getAvaliableTargets(game, source));
-            }
-            return targetList.ToArray();
+            return cardDefine.getEffects().getActiveEffects();
+        }
+        public static Card[] getAvaliableTargets(this CardDefine cardDefine, CardEngine game, Card source, Card[] selectedTargets)
+        {
+            return cardDefine.getActiveEffects().SelectMany(e => e.getAvaliableTargets(game, source, null, selectedTargets)).Distinct().ToArray();
+        }
+        public static Effect[] getFullTargetActiveEffects(this CardDefine cardDefine, CardEngine game, Card source)
+        {
+            return cardDefine.getActiveEffects().Where(e => e.hasFullTargets(game, source, null)).ToArray();
+        }
+        public static bool hasFullTargetActiveEffect(this CardDefine cardDefine, CardEngine game, Card source)
+        {
+            return cardDefine.getActiveEffects().Any(e => e.hasFullTargets(game, source, null));
+        }
+        public static int getTargetCheckerCount(this CardDefine cardDefine)
+        {
+            var activeEffects = cardDefine.getActiveEffects();
+            if (activeEffects.Length <= 0)
+                return 0;
+            return activeEffects.Max(e => e.getTargetCheckerCount());
         }
     }
 }

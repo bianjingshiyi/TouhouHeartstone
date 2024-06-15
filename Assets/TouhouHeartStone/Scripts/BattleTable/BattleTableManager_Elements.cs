@@ -2395,7 +2395,7 @@ namespace Game.BattleTable
                 return;
 
             bool greenHighlight = canCardBeControlled(card) && usingCard != card;
-            bool yellowHighlight = isSelectingTarget() && _selectableTargetsID.Contains(card.id);
+            bool yellowHighlight = isSelectingTarget() && _selectableTargets.Contains(card);
             var highlight = greenHighlight || yellowHighlight;
             if (tryGetMaster(desc.id, out Master master))
             {

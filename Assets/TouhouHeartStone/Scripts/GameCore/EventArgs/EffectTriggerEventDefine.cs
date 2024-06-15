@@ -53,6 +53,21 @@ namespace TouhouHeartstone
             var env = getEffectEnv(arg);
             if (!env.effect.checkCondition(env))
                 return null;
+            if (effect is GeneratedActiveEffect activeEffect)
+            {
+                var targetCount = effect.getTargetCheckerCount();
+                if (targetCount > 0)
+                {
+                    if (targets == null)
+                        return null;
+                    if (targets.Length < targetCount)
+                        // 目标数量不足
+                        return null;
+                    if (!card.isValidTargetSet(game, buff, activeEffect, targets))
+                        // 目标不符合条件
+                        return null;
+                }
+            }
             return await game.triggers.doEvent(arg);
         }
         public static Task<EventArg> doEvent(CardEngine game, Card card, Buff buff, Effect effect, EventArg eventArg = null, Card[] targets = null)

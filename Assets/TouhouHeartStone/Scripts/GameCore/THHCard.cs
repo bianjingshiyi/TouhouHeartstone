@@ -223,7 +223,7 @@ namespace TouhouHeartstone
                     info = NOT_ENOUGH_SPIRIT;
                     return false;
                 }
-                if (card.isNeedTarget(game) && card.getAvaliableTargets(game).Length < 1)
+                if (card.isNeedTarget(game) && !card.hasFullTargetActiveEffect(game))
                 {
                     info = NO_TARGET;
                     return false;
@@ -264,49 +264,207 @@ namespace TouhouHeartstone
         }
         public static bool isNeedTarget(this Card card, CardEngine game)
         {
-            if (card.isSilenced(game))
-                return false;
-            else if (card.define.getEffects().OfType<GeneratedActiveEffect>().FirstOrDefault() is GeneratedActiveEffect activeEffect)
+            if (!card.isSilenced(game))
             {
-                var entryNode = activeEffect.entryNode;
-                return entryNode != null && entryNode.targetCheckerList != null && entryNode.targetCheckerList.Count > 0;
+                var activeEffects = card.define.getEffects().OfType<GeneratedActiveEffect>();
+                if (activeEffects.Any(e => e.entryNode?.targetCheckerList != null && e.entryNode.targetCheckerList.Count > 0))
+                {
+                    return true;
+                }
             }
-            else
-                return false;
+            foreach (var buff in card.getBuffs())
+            {
+                var activeEffects = card.define.getEffects().OfType<GeneratedActiveEffect>();
+                if (activeEffects.Any(e => e.entryNode?.targetCheckerList != null && e.entryNode.targetCheckerList.Count > 0))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
+
         /// <summary>
-        /// 这张卡的主动效果的可选目标
+        /// 获取一张卡牌中，能完全选择所有目标的效果，以及其对应的增益。
         /// </summary>
         /// <param name="card"></param>
         /// <param name="game"></param>
         /// <returns></returns>
-        public static Card[] getAvaliableTargets(this Card card, CardEngine game)
+        public static BuffEffectPair[] getFullTargetActiveEffects(this Card card, CardEngine game)
         {
-            if (card.isSilenced(game))
-                return Array.Empty<Card>();
-            List<Card> targetList = new List<Card>();
-            targetList.AddRange(card.define.getAvaliableTargets(game, card));
-            return targetList.ToArray();
+            List<BuffEffectPair> effects = new List<BuffEffectPair>();
+            if (!card.isSilenced(game))
+            {
+                effects.AddRange(card.define.getFullTargetActiveEffects(game, card).Select(e => new BuffEffectPair(null, e)));
+            }
+            foreach (var buff in card.getBuffs())
+            {
+                effects.AddRange(buff.getFullTargetActiveEffects(game, card).Select(e => new BuffEffectPair(buff, e)));
+            }
+            return effects.ToArray();
         }
-        public static bool isValidTarget(this Card card, CardEngine game, Card target)
+        /// <summary>
+        /// 获取一张卡牌中，是否存在能完全选择所有目标的效果。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static bool hasFullTargetActiveEffect(this Card card, CardEngine game)
         {
-            return isValidTarget(card, game, target, out _);
+            if (!card.isSilenced(game))
+            {
+                if (card.define.hasFullTargetActiveEffect(game, card))
+                    return true;
+            }
+            foreach (var buff in card.getBuffs())
+            {
+                if (buff.hasFullTargetActiveEffect(game, card))
+                    return true;
+            }
+            return false;
         }
-        public static bool isValidTarget(this Card card, CardEngine game, Card target, out string invalidMsg)
+        /// <summary>
+        /// 获取一张卡牌可选择的所有可能的目标卡牌排列。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static Card[][] getAllPossibleTargetSets(this Card card, CardEngine game)
         {
-            invalidMsg = null;
-            if (card.isSilenced(game))
+            List<List<Card>> chains = new List<List<Card>>();
+            var fullEffects = card.getFullTargetActiveEffects(game);
+            var avaliableTargets = card.getAvaliableTargets(game, fullEffects);
+            for (int i = 0; i < avaliableTargets.Length; i++)
+            {
+                var target = avaliableTargets[i];
+                var newChain = new List<Card>();
+                card.getPossibleTargetsChain(game, target, fullEffects, newChain, chains);
+            }
+            return chains.Select(c => c.ToArray()).ToArray();
+        }
+        /// <summary>
+        /// 获得一张卡牌的最大目标选择数量。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static int getTargetCheckerCount(this Card card, CardEngine game)
+        {
+            int count = 0;
+            if (!card.isSilenced(game))
+            {
+                count = Math.Max(count, card.define.getTargetCheckerCount());
+            }
+            foreach (var buff in card.getBuffs())
+            {
+                count = Math.Max(count, buff.getTargetCheckerCount());
+            }
+            return count;
+        }
+
+
+
+        /// <summary>
+        /// 根据已经选择的目标卡牌，获取一张卡牌接下来可以选择什么卡牌。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <param name="effects"></param>
+        /// <param name="selectedTargets"></param>
+        /// <returns></returns>
+        public static Card[] getAvaliableTargets(this Card card, CardEngine game, IEnumerable<BuffEffectPair> effects, params Card[] selectedTargets)
+        {
+            return effects.SelectMany(e => e.effect.getAvaliableTargets(game, card, e.buff, selectedTargets)).Distinct().ToArray();
+        }
+        /// <summary>
+        /// 根据已经选择的目标卡牌，筛掉已经不能完全选择目标的效果。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <param name="effects"></param>
+        /// <param name="targets"></param>
+        /// <returns></returns>
+        public static IEnumerable<BuffEffectPair> filterTargetEffects(this Card card, CardEngine game, IEnumerable<BuffEffectPair> effects, params Card[] targets)
+        {
+            int currentIndex = targets?.Length ?? 0;
+            return effects.Where(e => e.effect is GeneratedActiveEffect active && currentIndex < (active.targetCheckers?.Count() ?? 0) && card.isValidTargetSet(game, e.buff, active, targets)).ToArray();
+        }
+
+
+        /// <summary>
+        /// 检测一段目标选择集合对于目标效果是否有效。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <param name="buff"></param>
+        /// <param name="generatedEffect"></param>
+        /// <param name="targets"></param>
+        /// <returns></returns>
+        public static bool isValidTargetSet(this Card card, CardEngine game, Buff buff, GeneratedActiveEffect generatedEffect, params Card[] targets)
+        {
+            if (generatedEffect == null)
                 return false;
-            GeneratedActiveEffect generatedEffect = card.define.getEffects().OfType<GeneratedActiveEffect>().FirstOrDefault();
-            return isValidTarget(card, game, target, generatedEffect, out invalidMsg);
+            if (generatedEffect.targetCheckers == null)
+                // 无需目标
+                return true;
+            for (int i = 0; i < targets.Length; i++)
+            {
+                var targetChecker = generatedEffect.targetCheckers.ElementAtOrDefault(i);
+                if (targetChecker == null)
+                    continue;
+                if (!card.isValidTarget(game, buff, targets[i], generatedEffect, targets.Take(i).ToArray()))
+                    return false;
+            }
+            return true;
         }
-        public static bool isValidTarget(this Card card, CardEngine game, Card target, GeneratedActiveEffect generatedEffect)
-        {
-            return isValidTarget(card, game, target, generatedEffect, out _);
-        }
-        public static bool isValidTarget(this Card card, CardEngine game, Card target, GeneratedActiveEffect generatedEffect, out string invalidMsg)
+        /// <summary>
+        /// 检测一张目标卡牌是否是多个卡牌效果的有效目标。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <param name="effects"></param>
+        /// <param name="target"></param>
+        /// <param name="invalidMsg"></param>
+        /// <param name="selectedTargets"></param>
+        /// <returns></returns>
+        public static bool isValidTargetForEffects(this Card card, CardEngine game, IEnumerable<BuffEffectPair> effects, Card target, out string invalidMsg, params Card[] selectedTargets)
         {
             invalidMsg = null;
+            foreach (var effectPair in effects)
+            {
+                if (effectPair.effect is not GeneratedActiveEffect active)
+                    continue;
+                if (!card.isValidTarget(game, effectPair.buff, target, active, out var msg, selectedTargets))
+                {
+                    if (string.IsNullOrEmpty(invalidMsg) && !string.IsNullOrEmpty(msg))
+                        invalidMsg = msg;
+                }
+                else
+                {
+                    invalidMsg = null;
+                    return true;
+                }
+            }
+            return false;
+        }
+        /// <summary>
+        /// 检测一张目标卡牌是否是一个卡牌效果的有效目标。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <param name="buff"></param>
+        /// <param name="selectedTargets"></param>
+        /// <param name="target"></param>
+        /// <param name="generatedEffect"></param>
+        /// <returns></returns>
+        public static bool isValidTarget(this Card card, CardEngine game, Buff buff, Card target, GeneratedActiveEffect generatedEffect, params Card[] selectedTargets)
+        {
+            return isValidTarget(card, game, buff, target, generatedEffect, out _, selectedTargets);
+        }
+        public static bool isValidTarget(this Card card, CardEngine game, Buff buff, Card target, GeneratedActiveEffect generatedEffect, out string invalidMsg, params Card[] selectedTargets)
+        {
+            invalidMsg = null;
+            if (generatedEffect == null)
+                return false;
             //不能是自己
             if (card == target)
                 return false;
@@ -331,11 +489,11 @@ namespace TouhouHeartstone
                 invalidMsg = INFO_TARGET_IS_ELUSIVE;
                 return false;
             }
-            var eventArg = EffectTriggerEventDefine.newEvent(game, card, null, generatedEffect, null, new Card[] { target });
-            if (generatedEffect != null && !generatedEffect.checkTarget(game, card, null, eventArg, out invalidMsg))
+            if (!generatedEffect.checkTarget(game, card, buff, selectedTargets, target, out invalidMsg))
                 return false;
             return true;
         }
+
         #endregion
 
         #region 攻击
@@ -1528,6 +1686,24 @@ namespace TouhouHeartstone
                 }
             }
         }
+        private static void getPossibleTargetsChain(this Card card, CardEngine game, Card target, IEnumerable<BuffEffectPair> effects, List<Card> currentChain, List<List<Card>> chains)
+        {
+            currentChain.Add(target);
+            var currentChainArray = currentChain.ToArray();
+            var filteredEffects = card.filterTargetEffects(game, effects, currentChainArray);
+            if (filteredEffects.Count() <= 0)
+            {
+                chains.Add(currentChain);
+                return; 
+            }
+            var avaliableTargets = card.getAvaliableTargets(game, filteredEffects, currentChainArray);
+            for (int i = 0; i < avaliableTargets.Length; i++)
+            {
+                var newTarget = avaliableTargets[i];
+                var newChain = new List<Card>(currentChain);
+                card.getPossibleTargetsChain(game, newTarget, filteredEffects, newChain, chains);
+            }
+        }
         #endregion
 
         #region 属性字段
@@ -1591,5 +1767,15 @@ namespace TouhouHeartstone
             CARD.ISDEAD,
         };
         #endregion
+    }
+    public struct BuffEffectPair
+    {
+        public Buff buff;
+        public Effect effect;
+        public BuffEffectPair(Buff buff, Effect effect)
+        {
+            this.buff = buff;
+            this.effect = effect;
+        }
     }
 }

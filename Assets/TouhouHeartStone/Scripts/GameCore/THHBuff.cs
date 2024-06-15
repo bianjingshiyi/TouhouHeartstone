@@ -24,6 +24,25 @@ namespace TouhouHeartstone
             return buff.getProp<bool>(BUFF.HIDDEN_TO_VISIBLE);
         }
 
+        public static Effect[] getActiveEffects(this Buff buff)
+        {
+            return buff.getEffects().getActiveEffects();
+        }
+        public static Effect[] getFullTargetActiveEffects(this Buff buff, CardEngine game, Card source)
+        {
+            return buff.getActiveEffects().Where(e => e.hasFullTargets(game, source, buff)).ToArray();
+        }
+        public static bool hasFullTargetActiveEffect(this Buff buff, CardEngine game, Card source)
+        {
+            return buff.getActiveEffects().Any(e => e.hasFullTargets(game, source, buff));
+        }
+        public static int getTargetCheckerCount(this Buff buff)
+        {
+            var activeEffects = buff.getActiveEffects();
+            if (activeEffects.Length <= 0)
+                return 0;
+            return activeEffects.Max(e => e.getTargetCheckerCount());
+        }
         #endregion
     }
 }

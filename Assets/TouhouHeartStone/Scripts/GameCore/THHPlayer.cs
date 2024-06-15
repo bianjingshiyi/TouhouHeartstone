@@ -154,7 +154,7 @@ namespace TouhouHeartstone
         #region 自动施放
         public static Task<EventArg> autocast(this Player player, CardEngine game, Card card)
         {
-            var targets = new Card[] { card.getAvaliableTargets(game).random(game) };
+            var targets = card.getAllPossibleTargetSets(game).random(game);
             return AutocastEventDefine.doEvent(game, player, card, targets);
         }
         #endregion

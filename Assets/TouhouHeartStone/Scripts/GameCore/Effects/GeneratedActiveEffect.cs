@@ -51,41 +51,51 @@ namespace TouhouHeartstone
         /// <param name="eventArg"></param>
         /// <param name="invalidMsg"></param>
         /// <returns></returns>
-        public virtual bool checkTarget(IGame game, ICard card, IBuff buff, EventArg eventArg, out string invalidMsg)
+        public virtual bool checkTarget(CardEngine game, Card card, Buff buff, Card[] selectedTargets, Card target, out string invalidMsg)
         {
-            var entryNode = this.entryNode;
-            if (entryNode != null)
-            {
-                invalidMsg = null;
-                //如果触发不包含任何目标，那么目标肯定不是合法目标
-                if (targetCheckers == null || targetCheckers.Count() < 1)
-                    return false;
-                var targets = eventArg.getVar<Card[]>(EffectTriggerEventDefine.VAR_TARGETS);
-                // 目前只检查第一个目标。
-                var targetChecker = targetCheckers.FirstOrDefault();
-                var target = targets.FirstOrDefault();
-                if (target == null || targetChecker == null)
-                    return false;
-                //检查目标条件
-                if (target.isMaster() && targetChecker.targetType == DEFINE.SERVANT)
-                {
-                    // 目标类型是仆从，但是卡牌是英雄。
-                    return false;
-                }
-                FlowEnv env = new FlowEnv(game as CardEngine, card, buff, eventArg, this);
-                if (!targetChecker.isValidTarget(env, out invalidMsg))
-                {
-                    //有条件没有通过，不是合法目标
-                    return false;
-                }
-                //有目标并且没有条件不通过或者没有条件，返回真
-                return true;
-            }
-            else
-            {
-                invalidMsg = null;
+            invalidMsg = null;
+            if (target == null)
                 return false;
+            var entryNode = this.entryNode;
+            if (entryNode == null)
+                return false;
+
+            //如果触发不包含任何目标，那么目标肯定不是合法目标
+            var targetIndex = selectedTargets?.Length ?? 0;
+            if (!hasTargetIndex(targetIndex))
+                return false;
+
+            var targetChecker = targetCheckers.ElementAtOrDefault(targetIndex);
+            if (targetChecker == null)
+                return false;
+
+            //检查目标条件
+            if (target.pile?.name == PILE.MASTER && targetChecker.targetType == DEFINE.SERVANT)
+                // 目标类型是仆从，但是卡牌是英雄。
+                return false;
+
+            var targets = new Card[targetCheckers.Count()];
+            if (selectedTargets != null)
+            {
+                for (int i = 0; i < Math.Min(targets.Length, selectedTargets.Length); i++)
+                {
+                    targets[i] = selectedTargets[i];
+                }
             }
+            targets[targetIndex] = target;
+
+            var eventArg = EffectTriggerEventDefine.newEvent(game, card, buff, this, null, targets);
+            FlowEnv env = new FlowEnv(game as CardEngine, card, buff, eventArg, this);
+            if (!targetChecker.isValidTarget(env, out invalidMsg))
+                //有条件没有通过，不是合法目标
+                return false;
+
+            //有目标并且没有条件不通过或者没有条件，返回真
+            return true;
+        }
+        public bool hasTargetIndex(int index)
+        {
+            return targetCheckers != null && targetCheckers.Count() > index;
         }
         public override void setTags(params string[] tags)
         {

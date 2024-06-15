@@ -505,11 +505,15 @@ namespace Game
         [return: ActionNodeParam(EDITOR_PARAM_NAME_VALID_TARGETS)]
         public static Card[] getAllLegalCardDefineTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
-            [ActionNodeParam(EDITOR_PARAM_NAME_SOURCE_CARD)] Card source)
+            [ActionNodeParam(EDITOR_PARAM_NAME_SOURCE_CARD)] Card source,
+            [ActionNodeParam(EDITOR_PARAM_NAME_SELECTED_CARDS)] Card[] selectedCards)
         {
             if (cardDefine == null || source == null)
                 return Array.Empty<Card>();
-            return cardDefine.getAvaliableTargets(game, source);
+
+            var fullEffects = cardDefine.getFullTargetActiveEffects(game, source);
+            var effects = source.filterTargetEffects(game, fullEffects.Select(e => new BuffEffectPair(null, e)), selectedCards);
+            return cardDefine.getAvaliableTargets(game, source, selectedCards);
         }
         /// <summary>
         /// 获取卡牌定义类型

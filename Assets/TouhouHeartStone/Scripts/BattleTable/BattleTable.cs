@@ -55,6 +55,7 @@ namespace Game.BattleTable
         #region 属性字段
         public Camera Camera => _camera;
         public GameObject CardTemplate => _cardTemplate;
+        public GameObject SelectionTargetTemplate => _selectionTargetTemplate;
         public Master SelfMaster => _selfMaster;
         public Master EnemyMaster => _enemyMaster;
         public Gem SelfGem => _selfGem;
@@ -100,6 +101,8 @@ namespace Game.BattleTable
         private TableBackground _tableBackground;
         [SerializeField]
         private GameObject _cardTemplate;
+        [SerializeField]
+        private GameObject _selectionTargetTemplate;
         [SerializeField]
         private Master _selfMaster;
         [SerializeField]

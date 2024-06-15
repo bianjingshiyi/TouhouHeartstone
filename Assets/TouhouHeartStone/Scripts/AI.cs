@@ -141,9 +141,10 @@ namespace Game
             {
                 if (card.isNeedTarget(game))
                 {
-                    foreach (var target in card.getAvaliableTargets(game).Where(t => card.isValidTarget(game, t)))
+                    var targetSets = card.getAllPossibleTargetSets(game);
+                    foreach (var targets in targetSets)
                     {
-                        var use = new UseResponse() { cardId = card.id, position = position, targetsId = new int[] { target.id } };
+                        var use = new UseResponse() { cardId = card.id, position = position, targetsId = targets.Select(t => t.id).ToArray() };
                         responseDic.Add(use, calcUseValue(use, game, player, game.getOpponent(player)));
                     }
                 }
@@ -735,6 +736,7 @@ namespace Game
             return true;
         }
         #endregion
+
 
         float calcSummonValue(Player player, int attack, int life)
         {
