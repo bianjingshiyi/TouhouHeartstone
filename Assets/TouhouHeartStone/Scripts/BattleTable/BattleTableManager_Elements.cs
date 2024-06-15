@@ -24,22 +24,22 @@ namespace Game.BattleTable
         /// 设置所有卡牌的控制绿光需要更新。
         /// </summary>
         /// <param name="card">卡牌。</param>
-        public void setAllCardControlDirty() => _allControlDirty = true;
+        public void setAllCardHighlightDirty() => _allControlDirty = true;
         /// <summary>
         /// 设置某张卡牌的控制绿光需要更新。
         /// </summary>
         /// <param name="card">卡牌。</param>
-        public void setCardControlDirty(ICardData card)
+        public void setCardHighlightDirty(ICardData card)
         {
             if (card == null)
                 return;
-            setCardControlDirty(card.id);
+            setCardHighlightDirty(card.id);
         }
         /// <summary>
         /// 设置某张卡牌的控制绿光需要更新。
         /// </summary>
         /// <param name="cardId">卡牌ID。</param>
-        public void setCardControlDirty(int cardId)
+        public void setCardHighlightDirty(int cardId)
         {
             _controlDirtyCards.Add(cardId);
         }
@@ -92,7 +92,7 @@ namespace Game.BattleTable
         public void startLocalTurn()
         {
             isLocalTurn = true;
-            setAllCardControlDirty();
+            setAllCardHighlightDirty();
         }
         public void endLocalTurn()
         {
@@ -198,7 +198,7 @@ namespace Game.BattleTable
             master.setStealth(desc.isStealth);
             master.setShackle(desc.isFrozen);
             master.setImageSprite(await loadCardImage(desc));
-            setCardControlDirty(desc.id);
+            setCardHighlightDirty(desc.id);
         }
         /// <summary>
         /// 从Master获取对应的牌
@@ -253,7 +253,7 @@ namespace Game.BattleTable
 
             skill.setImageSprite(await loadCardImage(desc));
 
-            setCardControlDirty(desc.id);
+            setCardHighlightDirty(desc.id);
         }
         public Card getSkillCard(Skill skill)
         {
@@ -557,7 +557,7 @@ namespace Game.BattleTable
             UberDebug.LogChannel(servant, "UI", $"为{desc.id}创建{servant}");
             setServant(servant, desc);
             cardServantDic.Add(desc.id, servant);
-            setCardControlDirty(desc.id);
+            setCardHighlightDirty(desc.id);
             return servant;
         }
         /// <summary>
@@ -592,7 +592,7 @@ namespace Game.BattleTable
             servant.setSealed(desc.isSilenced);
 
             servant.setImageSprite(await loadCardImage(desc));
-            setCardControlDirty(desc.id);
+            setCardHighlightDirty(desc.id);
         }
         /// <summary>
         /// 从卡获取对应的随从UI
@@ -2341,18 +2341,18 @@ namespace Game.BattleTable
             zoomHand(table.EnemyGem, table.EnemyHandList, false);
         }
         #region 更新可控制高光
-        private void updateAllControlable()
+        private void updateAllHighlight()
         {
             _requesting = _animationQueue.Any(a => a is RequestAnimation);
             foreach (var player in game.players)
             {
-                updateCardControlable(player.getMaster());
-                updateCardControlable(player.getSkill());
+                updateCardHighlight(player.getMaster());
+                updateCardHighlight(player.getSkill());
             }
             foreach (var id in cardServantDic.Keys.ToArray())
             {
                 var card = game.getCard(id);
-                updateCardControlable(card);
+                updateCardHighlight(card);
             }
             table.TurnEndButton.setInteractable(game.getCurrentPlayer() == player && !_requesting && isLocalTurn);
         }
@@ -2386,7 +2386,7 @@ namespace Game.BattleTable
             }
             return false;
         }
-        private void updateCardControlable(Card card)
+        private void updateCardHighlight(Card card)
         {
             if (card == null)
                 return;
@@ -2394,10 +2394,12 @@ namespace Game.BattleTable
             if (desc == null)
                 return;
 
-            var highlight = canCardBeControlled(card) && !isSelectingTarget();
+            bool greenHighlight = canCardBeControlled(card) && usingCard != card;
+            bool yellowHighlight = isSelectingTarget() && _selectableTargetsID.Contains(card.id);
+            var highlight = greenHighlight || yellowHighlight;
             if (tryGetMaster(desc.id, out Master master))
             {
-                master.setHighlight(highlight);
+                master.setHighlight(highlight, yellowHighlight);
             }
             else if (tryGetSkill(desc.id, out Skill skill))
             {
@@ -2405,14 +2407,14 @@ namespace Game.BattleTable
             }
             else if (tryGetServant(desc.id, out Servant servant))
             {
-                servant.setHighlight(highlight);
+                servant.setHighlight(highlight, yellowHighlight);
             }
 
         }
-        private void updateCardControlable(int cardId)
+        private void updateCardHighlight(int cardId)
         {
             var card = game.getCard(cardId);
-            updateCardControlable(card);
+            updateCardHighlight(card);
         }
         #endregion
         #endregion

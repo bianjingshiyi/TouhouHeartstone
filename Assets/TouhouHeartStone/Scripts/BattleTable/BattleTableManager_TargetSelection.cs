@@ -34,7 +34,8 @@ namespace Game.BattleTable
             _servantUsingPosition = 0;
             targetSelectType = TargetSelectType.None;
             targetSelectMode = TargetSelectMode.Click;
-            updateAllControlable();
+            _selectableTargetsID.Clear();
+            updateAllHighlight();
             hideArrow();
         }
         /// <summary>
@@ -103,28 +104,11 @@ namespace Game.BattleTable
             targetSelectingCard = card;
             targetSelectType = type;
             targetSelectMode = mode;
+            _selectableTargetsID.Clear();
+            _selectableTargetsID.AddRange(targets.Select(t => t.id).ToArray());
             //高亮标记所有目标
-            updateAllControlable();
-            highlightTargets(targets);
+            updateAllHighlight();
             hideAllHands();//手牌缩小
-        }
-        /// <summary>
-        /// 高亮所有指定的目标（标记为可选择）
-        /// </summary>
-        /// <param name="targets"></param>
-        private void highlightTargets(Card[] targets)
-        {
-            foreach (var target in targets)
-            {
-                if (tryGetMaster(target, out var master))
-                {
-                    master.setHighlight(true, true);
-                }
-                else if (tryGetServant(target, out var servant))
-                {
-                    servant.setHighlight(true, true);
-                }
-            }
         }
         #endregion
 
@@ -442,6 +426,7 @@ namespace Game.BattleTable
         /// 目标选择模式
         /// </summary>
         public TargetSelectMode targetSelectMode { get; set; }
+        private List<int> _selectableTargetsID = new List<int>();
         #endregion
     }
 

@@ -18,7 +18,7 @@ namespace Game.BattleTable
                 yield return null;
             }
             table.closeDiscoverDialog();
-            table.setAllCardControlDirty();
+            table.setAllCardHighlightDirty();
         }
     }
 }

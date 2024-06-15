@@ -551,7 +551,7 @@ namespace Game.BattleTable
             updateAnim();
             if (_allControlDirty)
             {
-                updateAllControlable();
+                updateAllHighlight();
                 _allControlDirty = false;
 
                 _controlDirtyCards.Clear();
@@ -560,7 +560,7 @@ namespace Game.BattleTable
             {
                 foreach (var cardId in _controlDirtyCards)
                 {
-                    updateCardControlable(cardId);
+                    updateCardHighlight(cardId);
                 }
                 _controlDirtyCards.Clear();
             }
