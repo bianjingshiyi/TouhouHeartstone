@@ -5981,6 +5981,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[要获取使用目标的卡牌。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>selectedTargets</name>
+        <displayName>已选卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[用于决定多目标选择时的可选目标。如果卡牌只有一个目标可选，请留空。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -7249,6 +7257,14 @@
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[以哪张卡牌为源获取这张卡牌定义的合法目标。这会导致合法目标中不包括这张牌，并影响<b>隐匿</b>、<b>无敌</b>以及其他更复杂的检测。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>selectedCards</name>
+        <displayName>已选卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[用于决定多目标选择时的可选目标。如果卡牌定义只有一个目标可选，请留空。]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs>
@@ -9489,6 +9505,22 @@
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[以哪张卡牌为源获取这个效果的合法目标。这会导致合法目标中不包括这张牌，并影响<b>隐匿</b>、<b>无敌</b>以及其他更复杂的检测。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Buff</type>
+        <name>buff</name>
+        <displayName>增益</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[以哪个增益为载体执行这个效果的合法目标判断。这会影响效果节点图中的“该增益”节点的输出值。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>selectedTargets</name>
+        <displayName>已选卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[用于决定多目标选择时的可选目标。如果效果只有一个目标可选，请留空。]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs>
