@@ -544,6 +544,13 @@ namespace Game.BattleTable
             {
                 _servantPreviewAnimDict.Remove(key);
             }
+
+            // 选择目标准星
+            foreach (var pair in _selectionTargetDict)
+            {
+                pair.Value.updateNumberPosition(Time.deltaTime);
+            }
+
             //游戏事件处理
             eventCache.poll();
             //动画

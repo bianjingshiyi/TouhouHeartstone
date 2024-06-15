@@ -418,18 +418,23 @@ namespace Game.BattleTable
         #region 锁定准星
         private void displaySelectionTarget(Card card, int targetIndex)
         {
-            Transform transform = null;
-            if (tryGetMaster(card, out var masterUI))
+            SelectionTarget target;
+            if (!_selectionTargetDict.TryGetValue(card.id, out target))
             {
-                transform = masterUI.transform;
+                Transform transform = null;
+                if (tryGetMaster(card, out var masterUI))
+                {
+                    transform = masterUI.transform;
+                }
+                else if (tryGetServant(card, out var servantUI))
+                {
+                    transform = servantUI.transform;
+                }
+                var tablePos = WorldToTablePosition(transform.position) + _selectionTargetOffset;
+                target = Instantiate(table.SelectionTargetTemplate, TableToWorldPosition(tablePos), Quaternion.identity, transform).GetComponent<SelectionTarget>();
+                _selectionTargetDict.Add(card.id, target);
             }
-            else if (tryGetServant(card, out var servantUI))
-            {
-                transform = servantUI.transform;
-            }
-            var tablePos = WorldToTablePosition(transform.position) + _selectionTargetOffset;
-            var target = Instantiate(table.SelectionTargetTemplate, TableToWorldPosition(tablePos), Quaternion.identity, transform).GetComponent<SelectionTarget>();
-            _selectionTargetDict.Add(card.id, target);
+            target.addNumber(targetIndex + 1);
         }
         private void hideAllSelectionTargets()
         {
