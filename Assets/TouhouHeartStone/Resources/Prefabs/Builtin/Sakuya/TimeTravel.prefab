@@ -38684,6 +38684,59 @@ MonoBehaviour:
   duration: 4.5
   blockTime: 4
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/Gears
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeHaste/Edge1
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeHaste/Edge2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeHaste/Edge3
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeHaste/PonteiroMinute
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeHaste/PonteiroHour
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeHaste/BG
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeHaste/BG2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/Edge2
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0, b: 0, a: 1}
+  - targets:
+    - path: Root/TimeHaste/Numbers1
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeHaste/Numbers2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeHaste/Numbers3
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.25, g: 0.25, b: 0.25, a: 1}
 --- !u!114 &4366023524010833073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38767,6 +38820,7 @@ MonoBehaviour:
   _destTransform: {fileID: 0}
   _playSoundOnStart: 0
   testMode: 0
+  testColor: {r: 1, g: 0, b: 1, a: 1}
 --- !u!1 &2533134846016881983
 GameObject:
   m_ObjectHideFlags: 0

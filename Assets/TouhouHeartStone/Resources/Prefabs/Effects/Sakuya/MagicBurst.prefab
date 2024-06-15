@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1840910365998424, guid: 9f423c73d6fd3e542a42b41623e81db1, type: 3}
       propertyPath: m_Name
-      value: MissileHit Variant
+      value: MagicBurst
       objectReference: {fileID: 0}
     - target: {fileID: 1840910365998424, guid: 9f423c73d6fd3e542a42b41623e81db1, type: 3}
       propertyPath: m_IsActive
@@ -34,15 +34,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4117834404742586, guid: 9f423c73d6fd3e542a42b41623e81db1, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4117834404742586, guid: 9f423c73d6fd3e542a42b41623e81db1, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4117834404742586, guid: 9f423c73d6fd3e542a42b41623e81db1, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4117834404742586, guid: 9f423c73d6fd3e542a42b41623e81db1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -55,6 +55,16 @@ PrefabInstance:
     - target: {fileID: 4117834404742586, guid: 9f423c73d6fd3e542a42b41623e81db1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198250514776705810, guid: 9f423c73d6fd3e542a42b41623e81db1,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0.46666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 198250514776705810, guid: 9f423c73d6fd3e542a42b41623e81db1,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.23921569
       objectReference: {fileID: 0}
     - target: {fileID: 198250514776705810, guid: 9f423c73d6fd3e542a42b41623e81db1,
         type: 3}
@@ -310,6 +320,11 @@ PrefabInstance:
         type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
       value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 198980669488087824, guid: 9f423c73d6fd3e542a42b41623e81db1,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

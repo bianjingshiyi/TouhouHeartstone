@@ -52,6 +52,7 @@ MonoBehaviour:
   _destTransform: {fileID: 0}
   _playSoundOnStart: 1
   testMode: 0
+  testColor: {r: 1, g: 0, b: 1, a: 1}
   _useSourceScale: 0
 --- !u!114 &3199554128934442166
 MonoBehaviour:
@@ -69,6 +70,189 @@ MonoBehaviour:
   duration: 3
   blockTime: 1.5
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/TimeRewind
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeRewind/Edge1
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeRewind/Edge1
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/TimeRewind/Edge1
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/TimeRewind/Edge1
+      type: 3
+      particleType: 1
+      index: 2
+    - path: Root/TimeRewind/Edge2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeRewind/Edge2
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/TimeRewind/Edge2
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/TimeRewind/Edge2
+      type: 3
+      particleType: 1
+      index: 2
+    - path: Root/TimeRewind/Edge3
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeRewind/Edge3
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/TimeRewind/Edge3
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/TimeRewind/Edge3
+      type: 3
+      particleType: 1
+      index: 2
+    - path: Root/TimeRewind/Edge4
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeRewind/Edge4
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/TimeRewind/Edge4
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/TimeRewind/Edge4
+      type: 3
+      particleType: 1
+      index: 2
+    - path: Root/TimeRewind/Edge5
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeRewind/Edge5
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/TimeRewind/Edge5
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/TimeRewind/Edge5
+      type: 3
+      particleType: 1
+      index: 2
+    - path: Root/TimeRewind/Edge6
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeRewind/Edge6
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/TimeRewind/Edge6
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/TimeRewind/Edge6
+      type: 3
+      particleType: 1
+      index: 2
+    - path: Root/TimeRewind/Edge7
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeRewind/Edge7
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/TimeRewind/Edge7
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/TimeRewind/Edge7
+      type: 3
+      particleType: 1
+      index: 2
+    - path: Root/TimeRewind/Glow
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeRewind/Glow
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/TimeRewind/Glow
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/TimeRewind/Glow
+      type: 3
+      particleType: 1
+      index: 2
+    - path: Root/TimeRewind/Pointer
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeRewind/Pointer
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/TimeRewind/Pointer
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/TimeRewind/Pointer
+      type: 3
+      particleType: 1
+      index: 2
+    - path: Root/TimeRewind/Pointer2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeRewind/Pointer2
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/TimeRewind/Pointer2
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/TimeRewind/Pointer2
+      type: 3
+      particleType: 1
+      index: 2
+    - path: Root/TimeRewind/Numbers
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeRewind/Numbers
+      type: 3
+      particleType: 1
+      index: 0
+    - path: Root/TimeRewind/Numbers
+      type: 3
+      particleType: 1
+      index: 1
+    - path: Root/TimeRewind/Numbers
+      type: 3
+      particleType: 1
+      index: 2
+    color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &7237644625902133916
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -52,6 +52,7 @@ MonoBehaviour:
   _destTransform: {fileID: 0}
   _playSoundOnStart: 1
   testMode: 0
+  testColor: {r: 1, g: 0, b: 1, a: 1}
   _useSourceScale: 0
 --- !u!114 &156811965856688663
 MonoBehaviour:
@@ -69,6 +70,81 @@ MonoBehaviour:
   duration: 2
   blockTime: 1
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/TimeStop/Edge2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeStop/Numbers2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeStop/Numbers4
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeStop/BG
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeStop/NumbersRing1
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeStop/NumbersRing2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeStop/EdgeRing2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeStop/BGRing
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.54811853, g: 0.9883501, b: 1, a: 1}
+  - targets:
+    - path: Root/TimeStop/Edge1
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeStop/Numbers1
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeStop/Numbers3
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeStop/Glow
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeStop/EdgeRing1
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.61764705, g: 0.93671393, b: 1, a: 1}
+  - targets:
+    - path: Root/TimeStop/Pointer
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeStop/Pointer2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeStop/PointerRing1
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeStop/PointerRing2
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0.745026, g: 0.94715726, b: 0.9558824, a: 1}
 --- !u!114 &4534002339963233051
 MonoBehaviour:
   m_ObjectHideFlags: 0

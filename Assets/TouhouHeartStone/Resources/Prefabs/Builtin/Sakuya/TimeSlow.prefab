@@ -84,6 +84,7 @@ MonoBehaviour:
   _destTransform: {fileID: 0}
   _playSoundOnStart: 1
   testMode: 0
+  testColor: {r: 1, g: 0, b: 1, a: 1}
   _useSourceScale: 0
 --- !u!114 &6939860427688017269
 MonoBehaviour:
@@ -101,6 +102,53 @@ MonoBehaviour:
   duration: 2
   blockTime: 1.5
   isPersistent: 0
+  colorTargets:
+  - targets:
+    - path: Root/TimeSlow/BG
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeSlow/BG2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeSlow/Edge1
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeSlow/Edge2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeSlow/Edge3
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0.5, b: 1, a: 1}
+  - targets:
+    - path: Root/TimeSlow/Numbers1
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeSlow/Numbers2
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeSlow/Numbers3
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0.14901961, b: 0.29803923, a: 1}
+  - targets:
+    - path: Root/TimeSlow/PointerMinute
+      type: 3
+      particleType: 0
+      index: 0
+    - path: Root/TimeSlow/PointerHour
+      type: 3
+      particleType: 0
+      index: 0
+    color: {r: 0, g: 0.3, b: 0.6, a: 1}
 --- !u!114 &1285225496349173574
 MonoBehaviour:
   m_ObjectHideFlags: 0
