@@ -115,24 +115,27 @@ namespace Game
 
             async Task<string> replaceLocalizedResourceImage(IEnumerable<LocalizedResource> resources, string key)
             {
-                var localizedRes = resources.getLocalizedObject<string, LocalizedResource>(key);
-                if (localizedRes == null)
-                    return key;
+                var oldKey = key;
+                var newKey = await replaceImage(key);
+                if (!string.IsNullOrEmpty(newKey))
+                    key = newKey;
 
-                var newValue = await replaceImage(localizedRes.value);
-                if (!string.IsNullOrEmpty(newValue))
-                    localizedRes.value = newValue;
-
-                foreach (var lang in localizedRes.getAllLanguages())
+                var localizedRes = resources.getLocalizedObject<string, LocalizedResource>(oldKey);
+                if (localizedRes != null)
                 {
-                    var path = localizedRes.getTranslation(lang);
-                    if (path == null)
-                        continue;
-                    var replaced = await replaceImage(path);
-                    if (!string.IsNullOrEmpty(replaced))
-                        localizedRes.setTranslation(lang, replaced);
+                    localizedRes.value = key;
+
+                    foreach (var lang in localizedRes.getAllLanguages())
+                    {
+                        var path = localizedRes.getTranslation(lang);
+                        if (path == null)
+                            continue;
+                        var replaced = await replaceImage(path);
+                        if (!string.IsNullOrEmpty(replaced))
+                            localizedRes.setTranslation(lang, replaced);
+                    }
                 }
-                return localizedRes.value;
+                return key;
             }
             async Task<string> replaceImage(string imagePath)
             {
