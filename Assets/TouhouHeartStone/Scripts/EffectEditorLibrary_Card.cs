@@ -65,6 +65,10 @@ namespace Game
         private const string EDITOR_NODE_NAME_SET_CARD_VISIBILITY = "设置卡牌可见性";
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_IS_CARD_VISIBLE_TO = "卡牌是否可见";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_GET_CARD_TAG_LIST = "获取卡牌标签列表";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_CARD_HAS_TAG = "卡牌拥有标签";
 
         [TranslateMsg("是否濒死节点-常量", StringTable.CONTEXT_NODE_PARAM_NAME)]
         private const string EDITOR_PARAM_NAME_CHECK_HEALTH_ZERO = "检查生命值<=0";
@@ -474,6 +478,28 @@ namespace Game
             return card.getCurrentLife(game);
         }
 
+        /// 是否具有标签
+        [THHActionMethod(BuiltinActionDefineID.CardHasTag, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CARD_HAS_TAG)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static bool cardHasTag(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TAG)] CardTagName tag)
+        {
+            if (card == null || tag == null)
+                return false;
+            return card.hasTag(game, tag);
+        }
+
+        /// 获取卡牌定义标签列表
+        [THHActionMethod(BuiltinActionDefineID.GetCardTagList, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_CARD_TAG_LIST)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TAG_LIST)]
+        public static string[] getCardTagList(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            if (card == null)
+                return Array.Empty<string>();
+            return card.getTags(game);
+        }
         /// <summary>
         /// 丢弃卡牌（群体事件过时）
         /// </summary>

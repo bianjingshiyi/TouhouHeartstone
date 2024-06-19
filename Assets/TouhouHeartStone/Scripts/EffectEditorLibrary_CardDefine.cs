@@ -124,9 +124,9 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool cardDefineHasTag(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TAG)] string tag)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TAG)] CardTagName tag)
         {
-            if (cardDefine == null)
+            if (cardDefine == null || tag == null)
                 return false;
             return cardDefine.hasTag(tag);
         }

@@ -35,7 +35,11 @@ namespace Game
         public const string EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_DEATHRATTLE = "卡牌快照具有遗言";
         [TranslateMsg("节点名称")]
         public const string EDITOR_NODE_NAME_CARD_SNAPSHOT_IS_TRAP = "卡牌快照是否是陷阱";
-        
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_GET_CARD_SNAPSHOT_TAG_LIST = "获取卡牌快照标签列表";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_TAG = "卡牌快照拥有标签";
+
         [TranslateMsg("编辑器/卡牌快照-节点名称")]
         public const string EDITOR_NODE_CARD_SNAPSHOT_IS_CHARGED = "卡牌快照是否已蓄力";
         [TranslateMsg("编辑器/卡牌快照-节点名称")]
@@ -128,6 +132,29 @@ namespace Game
             if (card == null)
                 return false;
             return card.hasKeyword(game, select);
+        }
+
+        /// 卡牌快照是否具有标签
+        [THHActionMethod(BuiltinActionDefineID.CardSnapshotHasTag, StringTable.EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_TAG)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static bool cardSnapshotHasTag(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_SNAPSHOT)] CardSnapshot card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TAG)] CardTagName tag)
+        {
+            if (card == null || tag == null)
+                return false;
+            return card.hasTag(game, tag);
+        }
+
+        /// 获取卡牌快照标签列表
+        [THHActionMethod(BuiltinActionDefineID.GetCardSnapshotTagList, StringTable.EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_NAME_GET_CARD_SNAPSHOT_TAG_LIST)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TAG_LIST)]
+        public static string[] getCardSnapshotTagList(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_SNAPSHOT)] CardSnapshot card)
+        {
+            if (card == null)
+                return Array.Empty<string>();
+            return card.getTags(game);
         }
         /// <summary>
         /// 获取卡牌快照属性

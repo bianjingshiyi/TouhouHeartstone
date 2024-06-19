@@ -55,13 +55,16 @@ namespace Controllers
             _ui.setCustomPropertyTypes(customPropTypes, customPropTypeNames);
             // 输入控件。
             var keywords = EditorManager.editorKeywords;
-            var keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray();
+            var cardTags = EditorManager.editorCardTags;
             var fieldProps = new ValueInputFieldProperties()
             {
                 backText = game.lang._(StringTable.RETURN),
 
-                keywordNames = keywordNames,
+                keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray(),
                 keywordValues = keywords.ToArray(),
+
+                cardTagNames = cardTags.Select(t => game.card.getCardTagName(t)).ToArray(),
+                cardTagValues = cardTags.ToArray(),
 
                 anyPileName = game.editor.getAnyPileName(),
                 pileNames = game.editor.getAllPileNames(),

@@ -176,13 +176,21 @@ namespace Game
         /// <returns>是否成功获取。</returns>
         public bool tryGetTranslatedTag(string tag, out string text)
         {
-            if (tag != null && _translateTagDic.TryGetValue(tag, out string translatedTag))
+            if (tag != null && _cardTagNames.TryGetValue(tag, out string translatedTag))
             {
                 text = game.lang._(translatedTag);
                 return true;
             }
             text = null;
             return false;
+        }
+        public string getCardTagName(string cardTag)
+        {
+            if (tryGetTranslatedTag(cardTag, out var text))
+            {
+                return text;
+            }
+            return game.lang._(StringTable.GAME_TAG_UNKNOWN);
         }
         public INodeDefiner getNodeDefiner(IEnumerable<ICardPoolReference> env)
         {
@@ -369,7 +377,7 @@ namespace Game
             get { return _game; }
             set { _game = value; }
         }
-        private static Dictionary<string, string> _translateTagDic = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> _cardTagNames = new Dictionary<string, string>
         {
             { TAG.FAIRY, StringTable.CARD_TAG_FAIRY },
             { TAG.MACHINE, StringTable.CARD_TAG_MECH },

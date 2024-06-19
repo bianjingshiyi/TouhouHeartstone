@@ -110,6 +110,7 @@ namespace UI
                         new NodeValueType(ActionNodeValueType.integer),
                         new NodeValueType(ActionNodeValueType.text),
                         new NodeValueType(ActionNodeValueType.keyword),
+                        new NodeValueType(ActionNodeValueType.cardTag),
                         new NodeValueType(ActionNodeValueType.cardReference),
                         new NodeValueType(ActionNodeValueType.buffReference),
                     };
@@ -176,6 +177,7 @@ namespace UI
             { typeof(PileNameCollection), ActionNodeValueType.pileNameCollection },
             { typeof(PileNameRange), ActionNodeValueType.pileNameRange },
             { typeof(KeywordName), ActionNodeValueType.keyword },
+            { typeof(CardTagName), ActionNodeValueType.cardTag },
             { typeof(KeywordCollection), ActionNodeValueType.keywordCollection },
             { typeof(EventArgReference), ActionNodeValueType.eventReference },
             { typeof(EventReference), ActionNodeValueType.eventReference },
@@ -205,6 +207,7 @@ namespace UI
             { ActionNodeValueType.pileNameCollection, () => new PileNameCollection() },
             { ActionNodeValueType.pileNameRange, () => new PileNameRange() },
             { ActionNodeValueType.keyword, () => new KeywordName(string.Empty) },
+            { ActionNodeValueType.cardTag, () => new CardTagName(string.Empty) },
             { ActionNodeValueType.keywordCollection, () => new KeywordCollection() },
             { ActionNodeValueType.eventReference, () => new EventReference(0, string.Empty) },
             { ActionNodeValueType.eventTriggerTime, () => new EventTriggerTime(new EventReference(0, string.Empty), EventTriggerTimeType.Before) },
@@ -271,6 +274,10 @@ namespace UI
         /// 关键词
         /// </summary>
         keyword,
+        /// <summary>
+        /// 卡牌标签
+        /// </summary>
+        cardTag,
         /// <summary>
         /// 关键词列表
         /// </summary>

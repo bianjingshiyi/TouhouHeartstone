@@ -33,6 +33,7 @@ namespace Controllers
             // 初始化输入
             var typeInfos = GraphTypes.getAllPortTypeInfos();
             var keywords = EditorManager.editorKeywords;
+            var cardTags = EditorManager.editorCardTags;
             cardTypeValues = game.editor.getCardTypes();
             typeValues = typeInfos.Select(i => i.type.Name).ToArray();
             var fieldProps = new ValueInputFieldProperties()
@@ -59,6 +60,9 @@ namespace Controllers
 
                 keywordNames = keywords.Select(k => game.card.getKeywordName(k)).ToArray(),
                 keywordValues = keywords.ToArray(),
+
+                cardTagNames = cardTags.Select(t => game.card.getCardTagName(t)).ToArray(),
+                cardTagValues = cardTags.ToArray(),
 
                 effectTagNames = getAllEffectTagNames(),
                 effectTagValues = getAllEffectTagValues(),
@@ -1972,6 +1976,9 @@ namespace Controllers
                     break;
                 case ActionNodeValueType.keyword:
                     value = EditorManager.editorKeywords.FirstOrDefault();
+                    break;
+                case ActionNodeValueType.cardTag:
+                    value = EditorManager.editorCardTags.FirstOrDefault();
                     break;
                 case ActionNodeValueType.effectTag:
                     value = getAllEffectTagValues()[0];

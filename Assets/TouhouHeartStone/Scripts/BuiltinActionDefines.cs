@@ -94,6 +94,8 @@ namespace Game
         public const int IsCardPropVisibleTo = Type_Function + Category_Buff + 30; // 卡牌属性是否可见
         public const int IsCardVisibleTo = Type_Function + Category_Buff + 31; // 卡牌是否可见
         public const int IsCardOfType = Type_Function + Category_Card + 32;    // 卡牌类型判断
+        public const int CardHasTag = Type_Function + Category_Card + 33;    // 卡牌拥有标签
+        public const int GetCardTagList = Type_Function + Category_Card + 34;    // 获取卡牌标签列表
 
 
         // 卡牌定义
@@ -141,6 +143,8 @@ namespace Game
         public const int DoesCardSnapshotHaveDeathrattle = Type_Function + Category_CardSnapshot + 15;    // 卡牌快照具有遗言
         public const int CardSnapshotIsTrap = Type_Function + Category_CardSnapshot + 16;    // 卡牌快照是否是陷阱
         public const int CheckCardSnapshotType = Type_Function + Category_CardSnapshot + 17;    // 卡牌快照类型判断
+        public const int CardSnapshotHasTag = Type_Function + Category_CardSnapshot + 18;    // 卡牌快照拥有标签
+        public const int GetCardSnapshotTagList = Type_Function + Category_CardSnapshot + 19;    // 获取卡牌快照标签列表
 
 
         // 牌堆

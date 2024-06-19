@@ -227,6 +227,8 @@ namespace Game
         public const string GAME_TAG_SUN = "日";
         [TranslateMsg("游戏中的法术标签月")]
         public const string GAME_TAG_MOON = "月";
+        [TranslateMsg("游戏中的卡牌标签")]
+        public const string GAME_TAG_UNKNOWN = "未知标签";
         #endregion
 
         #region 卡牌属性

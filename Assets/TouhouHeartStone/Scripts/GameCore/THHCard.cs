@@ -120,10 +120,6 @@ namespace TouhouHeartstone
                 return false;
             return tags.Contains(tag);
         }
-        public static string getTag(this ICardData card, IGame game, int index)
-        {
-            return card.getTags(game)[index];
-        }
         public static string[] getTags(this ICardData card, IGame game)
         {
             string[] tags = card.getProp<string[]>(game, DEFINE.TAGS);

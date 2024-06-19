@@ -22,6 +22,7 @@ namespace Game
     [Union(8, typeof(NodeConstProxyString))]
     [Union(9, typeof(PileName))]
     [Union(10, typeof(TypeName))]
+    [Union(11, typeof(CardTagName))]
     public abstract class NodeConstProxyString : INodeConstProxy<string>
     {
         [Obsolete("仅用于序列化兼容，之后会移除该属性")]

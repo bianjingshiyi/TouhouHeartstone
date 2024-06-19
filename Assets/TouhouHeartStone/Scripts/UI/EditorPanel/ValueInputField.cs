@@ -77,6 +77,9 @@ namespace UI
             setProp(ref _keywordNames, props.keywordNames);
             setProp(ref _keywordValues, props.keywordValues);
 
+            setProp(ref _cardTagNames, props.cardTagNames);
+            setProp(ref _cardTagValues, props.cardTagValues);
+
             setProp(ref _buffValues, props.buffValues);
 
             setProp(ref _cardPropertyNameItems, props.cardProperties);
@@ -126,6 +129,9 @@ namespace UI
 
                 keywordNames = _keywordNames,
                 keywordValues = _keywordValues,
+
+                cardTagNames = _cardTagNames,
+                cardTagValues = _cardTagValues,
 
                 buffValues = _buffValues,
 
@@ -355,7 +361,48 @@ namespace UI
         }
         private void onInputDropdownValueChangedCallback(string value)
         {
-            callValueChangedCallback(value);
+            switch (valueType)
+            {
+                // 牌堆名称
+                case ActionNodeValueType.pileName:
+                    callValueChangedCallback((PileName)value);
+                    break;
+                // 关键词名称
+                case ActionNodeValueType.keyword:
+                    callValueChangedCallback((KeywordName)value);
+                    break;
+                // 标签名称
+                case ActionNodeValueType.cardTag:
+                    callValueChangedCallback((CardTagName)value);
+                    break;
+                // 设置卡牌属性
+                case ActionNodeValueType.cardPropertyNameSet:
+                    callValueChangedCallback((CardPropertySetterName)value);
+                    break;
+                // 获取卡牌属性
+                case ActionNodeValueType.cardPropertyNameGet:
+                    callValueChangedCallback((CardPropertyGetterName)value);
+                    break;
+                // 获取卡牌定义属性
+                case ActionNodeValueType.cardDefinePropertyNameGet:
+                    callValueChangedCallback((CardDefinePropertyGetterName)value);
+                    break;
+                // 设置卡牌定义属性
+                case ActionNodeValueType.cardDefinePropertyNameSet:
+                    callValueChangedCallback((CardDefinePropertySetterName)value);
+                    break;
+                // 效果标签
+                case ActionNodeValueType.effectTag:
+                    callValueChangedCallback((EffectTag)value);
+                    break;
+                // 事件变量名
+                case ActionNodeValueType.eventVarName:
+                    callValueChangedCallback((EventVarName)value);
+                    break;
+                default:
+                    callValueChangedCallback(value);
+                    break;
+            }
         }
         private void onMultiInputDropdownValueChangedCallback(string[] values)
         {
@@ -747,9 +794,13 @@ namespace UI
                 case ActionNodeValueType.pileName:
                     updateInputDropdownValue<PileName>(_pileNames, _pileValues);
                     break;
-                // 牌堆名称
+                // 关键词名称
                 case ActionNodeValueType.keyword:
                     updateInputDropdownValue<KeywordName>(_keywordNames, _keywordValues);
+                    break;
+                // 标签名称
+                case ActionNodeValueType.cardTag:
+                    updateInputDropdownValue<CardTagName>(_cardTagNames, _cardTagValues);
                     break;
                 // 设置卡牌属性
                 case ActionNodeValueType.cardPropertyNameSet:
@@ -805,8 +856,8 @@ namespace UI
             //可自定义多选下拉菜单
             if (valueType == ActionNodeValueType.pileNameCollection || valueType == ActionNodeValueType.pileNameRange)
             {
-                _multiInputDropdown.gameObject.SetActive(true);
-                string[] pileNames, pileValues;
+                string[] pileNames;
+                string[] pileValues;
                 if (valueType == ActionNodeValueType.pileNameRange)
                 {
                     pileNames = _pileNames.Prepend(_anyPileName).ToArray();
@@ -817,35 +868,15 @@ namespace UI
                     pileNames = _pileNames;
                     pileValues = _pileValues;
                 }
-                _multiInputDropdown.setDropdownValues(pileNames, pileValues);
-                if (_valueInfo.value is PileNameCollection pileNameCollection)
-                {
-                    _multiInputDropdown.setValuesWithoutNotify(pileNameCollection.ToArray());
-                }
-                else
-                    _multiInputDropdown.setValuesWithoutNotify(Array.Empty<string>());
+                updateMultiInputDropdownValue<PileName>(pileNames, pileValues);
             }
             else if (valueType == ActionNodeValueType.effectTagCollection)
             {
-                _multiInputDropdown.gameObject.SetActive(true);
-                _multiInputDropdown.setDropdownValues(_effectTagNames, _effectTagValues);
-                if (_valueInfo.value is EffectTagCollection effectTagCol)
-                {
-                    _multiInputDropdown.setValuesWithoutNotify(effectTagCol.ToArray());
-                }
-                else
-                    _multiInputDropdown.setValuesWithoutNotify(Array.Empty<string>());
+                updateMultiInputDropdownValue<EffectTag>(_effectTagNames, _effectTagValues);
             }
             else if (valueType == ActionNodeValueType.keywordCollection)
             {
-                _multiInputDropdown.gameObject.SetActive(true);
-                _multiInputDropdown.setDropdownValues(_keywordNames, _keywordValues);
-                if (_valueInfo.value is KeywordCollection keywordCol)
-                {
-                    _multiInputDropdown.setValuesWithoutNotify(keywordCol.ToArray());
-                }
-                else
-                    _multiInputDropdown.setValuesWithoutNotify(Array.Empty<string>());
+                updateMultiInputDropdownValue<KeywordName>(_keywordNames, _keywordValues);
             }
             else
             {
@@ -901,6 +932,10 @@ namespace UI
             }
         }
 
+        private void updateInputDropdownValue<T>(string[] names, T[] values) where T : INodeConstProxy<string>
+        {
+            updateInputDropdownValue<T>(names, values.Select(v => v.value).ToArray());
+        }
         private void updateInputDropdownValue<T>(string[] names, string[] values) where T : INodeConstProxy<string>
         {
             _inputDropdown.gameObject.SetActive(true);
@@ -921,6 +956,25 @@ namespace UI
             if (value == null)
                 value = values.FirstOrDefault();
             _inputDropdown.setValueWithoutNotify(value);
+        }
+        private void updateMultiInputDropdownValue<T>(string[] names, T[] values) where T : INodeConstProxy<string>
+        {
+            updateMultiInputDropdownValue<T>(names, values.Select(v => v.value).ToArray());
+        }
+        private void updateMultiInputDropdownValue<T>(string[] names, string[] values) where T : INodeConstProxy<string>
+        {
+            _multiInputDropdown.gameObject.SetActive(true);
+            _multiInputDropdown.setDropdownValues(names, values);
+            if (_valueInfo.value is IList<string> stringList)
+            {
+                _multiInputDropdown.setValuesWithoutNotify(stringList.ToArray());
+            }
+            else if(_valueInfo.value is IList<T> value)
+            {
+                _multiInputDropdown.setValuesWithoutNotify(value.Select(v => v.value).ToArray());
+            }
+            else
+                _multiInputDropdown.setValuesWithoutNotify(Array.Empty<string>());
         }
         private void addListItemCallbacks(ValueInputFieldListItem listItem)
         {
@@ -996,40 +1050,54 @@ namespace UI
         string[] _pileNames;
         [SerializeField]
         private string[] _pileValues;
+
         [SerializeField]
         private string[] _effectTagNames;
         [SerializeField]
         private string[] _effectTagValues;
+
         [SerializeField]
         private string[] _keywordNames;
         [SerializeField]
         private string[] _keywordValues;
+
+        [SerializeField]
+        private string[] _cardTagNames;
+        [SerializeField]
+        private string[] _cardTagValues;
+
         [SerializeField]
         private string[] _eventNames;
         [SerializeField]
         private EventReference[] _eventValues;
+
         [SerializeField]
         private string[] _eventTriggerTimeNames;
         [SerializeField]
         private EventTriggerTime[] _eventTriggerTimeValues;
+
         [SerializeField]
         private string[] _eventVarNameNames;
         [SerializeField]
         private string[] _eventVarNameValues;
+
         [SerializeField]
         private CardPropertyNameItem[] _cardPropertyNameItems;
         [SerializeField]
         private BuffReferenceRecursion[] _buffValues;
+
         [SerializeField]
         private string _defaultValueTypeName;
         [SerializeField]
         private ValueTypeNameMap[] _valueTypeNames;
         [SerializeField]
         private NodeValueType[] _valueTypeValues;
+
         [SerializeField]
         private string[] _typeNames;
         [SerializeField]
         private string[] _typeValues;
+
         [SerializeField]
         private string[] _cardTypeNames;
         [SerializeField]
@@ -1166,6 +1234,9 @@ namespace UI
 
         public string[] keywordNames;
         public string[] keywordValues;
+
+        public string[] cardTagNames;
+        public string[] cardTagValues;
 
         public CardPropertyNameItem[] cardProperties;
 

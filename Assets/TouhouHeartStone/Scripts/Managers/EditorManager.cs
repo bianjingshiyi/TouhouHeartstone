@@ -172,6 +172,7 @@ namespace Game
             { ActionNodeValueType.integer, StringTable.EDITOR_TYPE_NAME_INT },
             { ActionNodeValueType.text, StringTable.EDITOR_TYPE_NAME_STRING },
             { ActionNodeValueType.keyword, StringTable.EDITOR_TYPE_NAME_KEYWORD },
+            { ActionNodeValueType.cardTag, StringTable.EDITOR_TYPE_NAME_CARD_TAG },
             { ActionNodeValueType.cardReference, StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE },
             { ActionNodeValueType.buffReference, StringTable.EDITOR_TYPE_NAME_BUFF_REFERENCE },
             { ActionNodeValueType.pileNameCollection, StringTable.EDITOR_TYPE_NAME_PILE },
@@ -184,6 +185,7 @@ namespace Game
             ActionNodeValueType.boolean,
             ActionNodeValueType.text,
             ActionNodeValueType.keyword,
+            ActionNodeValueType.cardTag,
             ActionNodeValueType.cardReference,
             ActionNodeValueType.pileNameCollection,
             ActionNodeValueType.keywordCollection,
@@ -211,6 +213,16 @@ namespace Game
             KEYWORD.PERMANENT_FROZEN,
             KEYWORD.UNPLAYABLE,
             KEYWORD.CAN_BE_CHARGED,
+        };
+        public static readonly List<string> editorCardTags = new List<string>
+        {
+            TAG.FAIRY,
+            TAG.MACHINE,
+            TAG.DEMON,
+            TAG.ELEMENT,
+            TAG.BEAST,
+            TAG.GOD,
+            TAG.GHOST,
         };
         public static readonly List<CardPropertyNameItem> cardProps = new List<CardPropertyNameItem>
         {

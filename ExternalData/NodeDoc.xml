@@ -4004,6 +4004,70 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>102033</defineId>
+    <obsoleteNames />
+    <editorName>卡牌拥有标签</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>CardTagName</type>
+        <name>tag</name>
+        <displayName>标签</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[标签名。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌是否拥有标签。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[判断卡牌是否具有某种标签。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>102034</defineId>
+    <obsoleteNames />
+    <editorName>获取卡牌标签列表</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取标签列表的卡牌。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>String</type>
+        <name>return</name>
+        <displayName>标签列表</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[获取到的标签列表。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[获取一张卡牌具有的所有标签所组成的列表。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>202002</defineId>
     <obsoleteNames />
     <editorName>丢弃卡牌</editorName>
@@ -6390,7 +6454,7 @@
         <summary><![CDATA[要判断的卡牌定义。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>String</type>
+        <type>CardTagName</type>
         <name>tag</name>
         <displayName>标签</displayName>
         <isParams>false</isParams>
@@ -7525,6 +7589,70 @@
       </ActionParameterComment>
     </outputs>
     <summary><![CDATA[判断一个卡牌快照在当时是否有某种关键词。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>104018</defineId>
+    <obsoleteNames />
+    <editorName>卡牌快照拥有标签</editorName>
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断的卡牌快照。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>CardTagName</type>
+        <name>tag</name>
+        <displayName>标签</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[标签名。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌快照在当时是否拥有标签。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[判断一个卡牌快照在当时是否拥有某个标签。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>104019</defineId>
+    <obsoleteNames />
+    <editorName>获取卡牌快照标签列表</editorName>
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取标签列表的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>String</type>
+        <name>return</name>
+        <displayName>标签列表</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[获取到的标签列表。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[获取一个卡牌快照在当时所具有的所有标签所组成的列表。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
