@@ -74,18 +74,17 @@ namespace TouhouHeartstone
                 // 目标类型是仆从，但是卡牌是英雄。
                 return false;
 
-            var targets = new Card[targetCheckers.Count()];
+            FlowEnv env = new FlowEnv(game as CardEngine, card, buff, null, this);
+            env.SetArgument(ActiveEntryNode.cardPortName, card);
+            env.SetArgument(ActiveEntryNode.playerPortName, card?.getOwner());
             if (selectedTargets != null)
             {
-                for (int i = 0; i < Math.Min(targets.Length, selectedTargets.Length); i++)
+                for (int i = 0; i < selectedTargets.Length; i++)
                 {
-                    targets[i] = selectedTargets[i];
+                    env.SetArgument(ActiveEntryNode.getTargetPortName(i), selectedTargets[i]);
                 }
+                env.SetArgument(ActiveEntryNode.getTargetPortName(selectedTargets.Length), target);
             }
-            targets[targetIndex] = target;
-
-            var eventArg = EffectTriggerEventDefine.newEvent(game, card, buff, this, null, targets);
-            FlowEnv env = new FlowEnv(game as CardEngine, card, buff, eventArg, this);
             if (!targetChecker.isValidTarget(env, out invalidMsg))
                 //有条件没有通过，不是合法目标
                 return false;

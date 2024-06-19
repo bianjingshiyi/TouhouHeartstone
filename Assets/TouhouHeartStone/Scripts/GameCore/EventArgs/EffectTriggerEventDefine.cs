@@ -6,7 +6,7 @@ namespace TouhouHeartstone
 {
     public class EffectTriggerEventDefine : EventDefine, IEffectEventDefine
     {
-        public EffectTriggerEventDefine() 
+        public EffectTriggerEventDefine()
         {
             beforeVariableInfos = new EventVariableInfo[]
             {
@@ -25,8 +25,12 @@ namespace TouhouHeartstone
         }
         public override async Task execute(IEventArg effectTriggerArg)
         {
+            var game = effectTriggerArg.game;
+            var card = effectTriggerArg.getVar<Card>(VAR_CARD);
+            var buff = effectTriggerArg.getVar<Buff>(VAR_BUFF);
             var effect = effectTriggerArg.getVar<Effect>(VAR_EFFECT);
-            var effectEnv = getEffectEnv(effectTriggerArg);
+            var targets = effectTriggerArg.getVar<Card[]>(VAR_TARGETS);
+            var effectEnv = getEffectEnv(game, card, buff, effect, effectTriggerArg as EventArg, targets);
             await effect.execute(effectEnv);
         }
         public override string toString(EventArg arg)
@@ -35,23 +39,10 @@ namespace TouhouHeartstone
             var effect = arg.getVar<Effect>(VAR_EFFECT);
             return $"卡牌{card}发动效果{effect}";
         }
-        public static EventArg newEvent(CardEngine game, Card card, Buff buff, Effect effect, EventArg eventArg = null, Card[] targets = null)
+        public static async Task<EventArg> doEventIfValid(CardEngine game, Card card, Buff buff, Effect effect, Card[] targets = null)
         {
-            var define = game.getEventDefine<EffectTriggerEventDefine>();
-            var arg = new EventArg(game, define);
-            arg.setVar(VAR_CARD, card);
-            arg.setVar(VAR_PLAYER, card?.getOwner());
-            arg.setVar(VAR_TARGETS, targets);
-            arg.setVar(VAR_EFFECT, effect);
-            arg.setVar(VAR_BUFF, buff);
-            arg.setVar(VAR_EVENT, eventArg ?? arg);
-            return arg;
-        }
-        public static async Task<EventArg> doEventIfValid(CardEngine game, Card card, Buff buff, Effect effect, EventArg eventArg = null, Card[] targets = null)
-        {
-            var arg = newEvent(game, card, buff, effect, eventArg, targets);
-            var env = getEffectEnv(arg);
-            if (!env.effect.checkCondition(env))
+            var env = getEffectEnv(game, card, buff, effect, null, targets);
+            if (!effect.checkCondition(env))
                 return null;
             if (effect is GeneratedActiveEffect activeEffect)
             {
@@ -68,16 +59,21 @@ namespace TouhouHeartstone
                         return null;
                 }
             }
-            return await game.triggers.doEvent(arg);
+            return await doEvent(game, card, buff, effect, targets);
         }
-        public static Task<EventArg> doEvent(CardEngine game, Card card, Buff buff, Effect effect, EventArg eventArg = null, Card[] targets = null)
+        public static Task<EventArg> doEvent(CardEngine game, Card card, Buff buff, Effect effect, Card[] targets = null)
         {
-            var arg = newEvent(game, card, buff, effect, eventArg, targets);
+            var define = game.getEventDefine<EffectTriggerEventDefine>();
+            var arg = new EventArg(game, define);
+            arg.setVar(VAR_CARD, card);
+            arg.setVar(VAR_TARGETS, targets);
+            arg.setVar(VAR_EFFECT, effect);
+            arg.setVar(VAR_BUFF, buff);
             return game.triggers.doEvent(arg);
         }
         public static Task<EventArg> doEvent(EffectEnv env, Card[] targets = null)
         {
-            return doEvent(env.game, env.card, env.buff, env.effect, env.eventArg, targets);
+            return doEvent(env.game, env.card, env.buff, env.effect, targets);
         }
         Card IEffectEventDefine.getCard(EventArg arg)
         {
@@ -87,20 +83,18 @@ namespace TouhouHeartstone
         {
             return arg.getVar<Effect>(VAR_EFFECT);
         }
-        private static EffectEnv getEffectEnv(IEventArg effectTriggerArg)
+        private static EffectEnv getEffectEnv(CardEngine game, Card card, Buff buff, Effect effect, EventArg eventArg = null, Card[] targets = null)
         {
-            var game = effectTriggerArg.game;
-            var card = effectTriggerArg.getVar<Card>(VAR_CARD);
-            var buff = effectTriggerArg.getVar<Buff>(VAR_BUFF);
-            var effect = effectTriggerArg.getVar<Effect>(VAR_EFFECT);
-            var envArg = effectTriggerArg.getVar<EventArg>(VAR_EVENT);
-            return new EffectEnv(game, card, buff, envArg, effect);
+            var env = new EffectEnv(game, card, buff, eventArg, effect);
+            env.setArgument(VAR_CARD, card);
+            env.setArgument(VAR_PLAYER, card?.getOwner());
+            env.setArgument(VAR_TARGETS, targets);
+            return env;
         }
         public const string VAR_PLAYER = EVENTVAR.PLAYER;
         public const string VAR_CARD = EVENTVAR.CARD;
         public const string VAR_BUFF = EVENTVAR.BUFF;
         public const string VAR_EFFECT = EVENTVAR.EFFECT;
-        public const string VAR_EVENT = EVENTVAR.EVENT;
         public const string VAR_TARGETS = EVENTVAR.TARGET_CARD;
     }
 }

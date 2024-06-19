@@ -20,9 +20,11 @@ namespace TouhouHeartstone
         }
         public override Task<ControlOutput> run(Flow flow)
         {
-            flow.setValue(getOutputPort<ValueOutput>(playerPortName), flow.env.eventArg.getVar(EffectTriggerEventDefine.VAR_PLAYER));
-            flow.setValue(getOutputPort<ValueOutput>(cardPortName), flow.env.eventArg.getVar(EffectTriggerEventDefine.VAR_CARD));
-            var targets = flow.env.eventArg.getVar<Card[]>(EffectTriggerEventDefine.VAR_TARGETS);
+            foreach (var output in outputPorts.OfType<ValueOutput>())
+            {
+                flow.setValue(output, flow.env.GetArgument(output.name));
+            }
+            var targets = flow.env.GetArgument(EffectTriggerEventDefine.VAR_TARGETS) as Card[];
             if (targets != null)
             {
                 for (int i = 0; i < targets.Length; i++)
