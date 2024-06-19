@@ -284,7 +284,7 @@ namespace TouhouHeartstone
         }
 
         /// <summary>
-        /// 获取一张卡牌中，能完全选择所有目标的效果，以及其对应的增益。
+        /// 获取一张卡牌中，能完全选择所有目标的主动效果，以及其对应的增益。（不包括不能触发的主动效果）
         /// </summary>
         /// <param name="card"></param>
         /// <param name="game"></param>
@@ -303,7 +303,7 @@ namespace TouhouHeartstone
             return effects.ToArray();
         }
         /// <summary>
-        /// 获取一张卡牌中，是否存在能完全选择所有目标的效果。
+        /// 获取一张卡牌中，是否存在能完全选择所有目标的主动效果。（不包括不能触发的主动效果）
         /// </summary>
         /// <param name="card"></param>
         /// <param name="game"></param>
@@ -341,26 +341,6 @@ namespace TouhouHeartstone
             }
             return chains.Select(c => c.ToArray()).ToArray();
         }
-        /// <summary>
-        /// 获得一张卡牌的最大目标选择数量。
-        /// </summary>
-        /// <param name="card"></param>
-        /// <param name="game"></param>
-        /// <returns></returns>
-        public static int getTargetCheckerCount(this Card card, CardEngine game)
-        {
-            int count = 0;
-            if (!card.isSilenced(game))
-            {
-                count = Math.Max(count, card.define.getTargetCheckerCount());
-            }
-            foreach (var buff in card.getBuffs())
-            {
-                count = Math.Max(count, buff.getTargetCheckerCount());
-            }
-            return count;
-        }
-
 
 
         /// <summary>
