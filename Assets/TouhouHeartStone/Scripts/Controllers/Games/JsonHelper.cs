@@ -39,6 +39,7 @@ namespace Controllers
             registerClass<SerializableAttackModifier>();
             registerClass<SerializableLifeModifier>();
             registerClass<SerializableCostModifier>();
+            registerClass<SerializableTagModifier>();
             registerClass<SerializableKeywordsModifier>();
             registerClass<SerializableSpellDamageModifier>();
             registerClass<SerializableDamageReduceModifier>();

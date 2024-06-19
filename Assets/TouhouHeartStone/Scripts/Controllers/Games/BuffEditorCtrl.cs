@@ -493,6 +493,10 @@ namespace Controllers
                 {
                     keywordsModifier.defaultValue = ((KeywordCollection)value).ToArray();
                 }
+                else if (propModifier is TagModifier tagModifier)
+                {
+                    tagModifier.defaultValue = ((CardTagCollection)value).ToArray();
+                }
                 else if (propModifier is CustomPropertyModifier customPropModifier)
                 {
                     customPropModifier.defaultValue = value;
@@ -834,30 +838,30 @@ namespace Controllers
         }
         private string[] getBuffDefineModifyTypeNames(int typeIndex)
         {
-            if (typeIndex == MODIFY_TYPE_KEYWORDS) // Keywords.
-                return Array.ConvertAll(keywordModifierTypeNames, s => game.langManager.getString(s));
+            if (typeIndex == MODIFY_TYPE_KEYWORDS || typeIndex == MODIFY_TYPE_TAG) // Keywords.
+                return Array.ConvertAll(stringArrayModifierTypeNames, s => game.langManager.getString(s));
             else
                 return Array.ConvertAll(intModifierTypeNames, s => game.langManager.getString(s));
         }
         private int getModifyTypeIndex(PropModifier propModifier)
         {
-            if (propModifier is KeywordsModifier keywordsModifier)
+            if (propModifier is StringArrayModifier stringArrayModifier)
             {
-                if (keywordsModifier.modifyType == KeywordsModifier.ModifyType.set)
+                if (stringArrayModifier.modifyType == StringArrayModifier.ModifyType.set)
                 {
                     if (string.IsNullOrWhiteSpace(propModifier.relatedPropName))
                         return 2;
                     else
                         return 5;
                 }
-                else if (keywordsModifier.modifyType == KeywordsModifier.ModifyType.remove)
+                else if (stringArrayModifier.modifyType == StringArrayModifier.ModifyType.remove)
                 {
                     if (string.IsNullOrWhiteSpace(propModifier.relatedPropName))
                         return 1;
                     else
                         return 4;
                 }
-                else if (keywordsModifier.modifyType == KeywordsModifier.ModifyType.add)
+                else if (stringArrayModifier.modifyType == StringArrayModifier.ModifyType.add)
                 {
                     if (string.IsNullOrWhiteSpace(propModifier.relatedPropName))
                         return 0;
@@ -891,52 +895,52 @@ namespace Controllers
         }
         private void setModifyTypeByIndex(PropModifier propModifier, int index)
         {
-            if (propModifier is KeywordsModifier keywordsModifier)
+            if (propModifier is StringArrayModifier stringArrayModifier)
             {
-                if (index == 5)
+                if (index == STRING_ARRAY_OPERATOR_SET_PROP)
                 {
                     propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
-                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.set;
+                    stringArrayModifier.modifyType = KeywordsModifier.ModifyType.set;
                 }
-                else if (index == 4)
+                else if (index == STRING_ARRAY_OPERATOR_REMOVE_PROP)
                 {
                     propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
-                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.remove;
+                    stringArrayModifier.modifyType = KeywordsModifier.ModifyType.remove;
                 }
-                else if (index == 3)
+                else if (index == STRING_ARRAY_OPERATOR_ADD_PROP)
                 {
                     propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
-                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.add;
+                    stringArrayModifier.modifyType = KeywordsModifier.ModifyType.add;
                 }
-                else if (index == 2)
+                else if (index == STRING_ARRAY_OPERATOR_SET)
                 {
                     propModifier.relatedPropName = null;
-                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.set;
+                    stringArrayModifier.modifyType = KeywordsModifier.ModifyType.set;
                 }
-                else if (index == 1)
+                else if (index == STRING_ARRAY_OPERATOR_REMOVE)
                 {
                     propModifier.relatedPropName = null;
-                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.remove;
+                    stringArrayModifier.modifyType = KeywordsModifier.ModifyType.remove;
                 }
                 else
                 {
                     propModifier.relatedPropName = null;
-                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.add;
+                    stringArrayModifier.modifyType = KeywordsModifier.ModifyType.add;
                 }
             }
             else if (propModifier is IntPropModifier intPropModifier)
             {
-                if (index == 3)
+                if (index == INT_OPERATOR_SET_PROP)
                 {
                     propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
                     intPropModifier.isSet = true;
                 }
-                else if (index == 2)
+                else if (index == INT_OPERATOR_ADD_PROP)
                 {
                     propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
                     intPropModifier.isSet = false;
                 }
-                else if (index == 1)
+                else if (index == INT_OPERATOR_SET)
                 {
                     propModifier.relatedPropName = null;
                     intPropModifier.isSet = true;
@@ -949,17 +953,17 @@ namespace Controllers
             }
             else if (propModifier is CustomPropertyModifier customPropModifier)
             {
-                if (index == 3)
+                if (index == INT_OPERATOR_SET_PROP)
                 {
                     propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
                     customPropModifier.isSet = true;
                 }
-                else if (index == 2)
+                else if (index == INT_OPERATOR_ADD_PROP)
                 {
                     propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
                     customPropModifier.isSet = false;
                 }
-                else if (index == 1)
+                else if (index == INT_OPERATOR_SET)
                 {
                     propModifier.relatedPropName = null;
                     customPropModifier.isSet = true;
@@ -987,6 +991,8 @@ namespace Controllers
                     return ActionNodeValueType.integer;
                 else if (propModifier is DamageReduceModifier)
                     return ActionNodeValueType.integer;
+                else if (propModifier is TagModifier)
+                    return ActionNodeValueType.cardTagCollection;
                 else if (propModifier is KeywordsModifier)
                     return ActionNodeValueType.keywordCollection;
                 else if (propModifier is SpellDamageModifier)
@@ -1000,6 +1006,8 @@ namespace Controllers
         {
             if (!string.IsNullOrWhiteSpace(propModifier.relatedPropName))
                 return propModifier.relatedPropName;
+            else if (propModifier is TagModifier tagModifier)
+                return new CardTagCollection(tagModifier.defaultValue);
             else if (propModifier is KeywordsModifier keywordsModifier)
                 return new KeywordCollection(keywordsModifier.defaultValue);
             else
@@ -1007,35 +1015,39 @@ namespace Controllers
         }
         private PropModifier createPropertyModifierByIndex(int index)
         {
-            if (index == 6)
+            if (index == MODIFY_TYPE_CUSTOM_PROPERTY)
                 return new CustomPropertyModifier(string.Empty, 0);
-            if (index == 5)
+            if (index == MODIFY_TYPE_TAG)
+                return new TagModifier(TagModifier.ModifyType.add);
+            if (index == MODIFY_TYPE_SPELL_DAMAGE)
                 return new SpellDamageModifier(0);
             if (index == MODIFY_TYPE_KEYWORDS)
                 return new KeywordsModifier(KeywordsModifier.ModifyType.add);
-            if (index == 3)
+            if (index == MODIFY_TYPE_DAMAGE_REDUCE)
                 return new DamageReduceModifier(0);
-            if (index == 2)
+            if (index == MODIFY_TYPE_LIFE)
                 return new LifeModifier(0);
-            if (index == 1)
+            if (index == MODIFY_TYPE_ATTACK)
                 return new AttackModifier(0);
             return new CostModifier(0);
         }
         private int getPropertyModifierIndex(PropModifier propModifier)
         {
             if (propModifier is CustomPropertyModifier)
-                return 6;
+                return MODIFY_TYPE_CUSTOM_PROPERTY;
+            if (propModifier is TagModifier)
+                return MODIFY_TYPE_TAG;
             if (propModifier is SpellDamageModifier)
-                return 5;
+                return MODIFY_TYPE_SPELL_DAMAGE;
             if (propModifier is KeywordsModifier)
-                return 4;
+                return MODIFY_TYPE_KEYWORDS;
             if (propModifier is DamageReduceModifier)
-                return 3;
+                return MODIFY_TYPE_DAMAGE_REDUCE;
             if (propModifier is LifeModifier)
-                return 2;
+                return MODIFY_TYPE_LIFE;
             if (propModifier is AttackModifier)
-                return 1;
-            return 0;
+                return MODIFY_TYPE_ATTACK;
+            return MODIFY_TYPE_COST;
         }
         private string getPropertyModifierCustomPropName(PropModifier propModifier)
         {
@@ -1204,15 +1216,36 @@ namespace Controllers
         [TranslateMsg("增益编辑器/持续限制/标题（{0}为序号）")]
         public const string BUFF_EXISTLIMIT_HEADER = "限制{0}";
 
-        public const int MODIFY_TYPE_KEYWORDS = 4;
+        public const int MODIFY_TYPE_COST = 0;
+        public const int MODIFY_TYPE_ATTACK = 1;
+        public const int MODIFY_TYPE_LIFE = 2;
+        public const int MODIFY_TYPE_DAMAGE_REDUCE = 3;
+        public const int MODIFY_TYPE_SPELL_DAMAGE = 4;
+        public const int MODIFY_TYPE_KEYWORDS = 5;
+        public const int MODIFY_TYPE_TAG = 6;
+        public const int MODIFY_TYPE_CUSTOM_PROPERTY = 7;
+
+        public const int INT_OPERATOR_ADD = 0;
+        public const int INT_OPERATOR_SET = 1;
+        public const int INT_OPERATOR_ADD_PROP = 2;
+        public const int INT_OPERATOR_SET_PROP = 3;
+
+        public const int STRING_ARRAY_OPERATOR_ADD = 0;
+        public const int STRING_ARRAY_OPERATOR_REMOVE = 1;
+        public const int STRING_ARRAY_OPERATOR_SET = 2;
+        public const int STRING_ARRAY_OPERATOR_ADD_PROP = 3;
+        public const int STRING_ARRAY_OPERATOR_REMOVE_PROP = 4;
+        public const int STRING_ARRAY_OPERATOR_SET_PROP = 5;
+
         public static string[] propertyTypeNames = new string[]
         {
             StringTable.CARD_PROP_NAME_COST,
             StringTable.CARD_PROP_NAME_ATTACK,
             StringTable.CARD_PROP_NAME_LIFE,
             StringTable.CARD_PROP_NAME_DAMAGE_REDUCE,
-            StringTable.CARD_PROP_NAME_KEYWORDS,
             StringTable.CARD_PROP_NAME_SPELL_DAMAGE,
+            StringTable.CARD_PROP_NAME_KEYWORDS,
+            StringTable.CARD_PROP_NAME_CARD_TAG,
             StringTable.CARD_PROP_NAME_CUSTOM_PROPERTY,
         };
         public static string[] intModifierTypeNames = new string[]
@@ -1222,7 +1255,7 @@ namespace Controllers
             StringTable.GAME_CARD_PROP_MODIFY_ADD_PROP,
             StringTable.GAME_CARD_PROP_MODIFY_SETTO_PROP
         };
-        public static string[] keywordModifierTypeNames = new string[]
+        public static string[] stringArrayModifierTypeNames = new string[]
         {
             StringTable.GAME_CARD_PROP_MODIFY_ADD,
             StringTable.GAME_CARD_PROP_MODIFY_SUB,

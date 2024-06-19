@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Game;
 using TouhouCardEngine;
+using TouhouHeartstone;
 
 namespace UI
 {
@@ -179,6 +180,7 @@ namespace UI
             { typeof(KeywordName), ActionNodeValueType.keyword },
             { typeof(CardTagName), ActionNodeValueType.cardTag },
             { typeof(KeywordCollection), ActionNodeValueType.keywordCollection },
+            { typeof(CardTagCollection), ActionNodeValueType.cardTagCollection },
             { typeof(EventArgReference), ActionNodeValueType.eventReference },
             { typeof(EventReference), ActionNodeValueType.eventReference },
             { typeof(EventTriggerTime), ActionNodeValueType.eventTriggerTime },
@@ -209,6 +211,7 @@ namespace UI
             { ActionNodeValueType.keyword, () => new KeywordName(string.Empty) },
             { ActionNodeValueType.cardTag, () => new CardTagName(string.Empty) },
             { ActionNodeValueType.keywordCollection, () => new KeywordCollection() },
+            { ActionNodeValueType.cardTagCollection, () => new CardTagCollection() },
             { ActionNodeValueType.eventReference, () => new EventReference(0, string.Empty) },
             { ActionNodeValueType.eventTriggerTime, () => new EventTriggerTime(new EventReference(0, string.Empty), EventTriggerTimeType.Before) },
             { ActionNodeValueType.cardPropertyNameSet, () => new CardPropertySetterName(string.Empty) },
@@ -282,6 +285,10 @@ namespace UI
         /// 关键词列表
         /// </summary>
         keywordCollection,
+        /// <summary>
+        /// 卡牌标签列表
+        /// </summary>
+        cardTagCollection,
         /// <summary>
         /// 单个效果标签
         /// </summary>

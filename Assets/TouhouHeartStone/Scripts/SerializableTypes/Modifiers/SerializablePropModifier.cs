@@ -12,6 +12,7 @@ namespace Game
     [Union(4, typeof(SerializableCostModifier))]
     [Union(5, typeof(SerializableLifeModifier))]
     [Union(6, typeof(SerializableSpellDamageModifier))]
+    [Union(7, typeof(SerializableTagModifier))]
     [MessagePackObject]
     [Serializable]
     public abstract class SerializablePropModifier

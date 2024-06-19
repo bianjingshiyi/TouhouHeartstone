@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
+using TouhouHeartstone;
 
 namespace Game
 {
@@ -160,12 +161,14 @@ namespace Game
             {
                 return typeof(PileNameCollection).IsAssignableFrom(from) ||
                     typeof(KeywordCollection).IsAssignableFrom(from) ||
+                    typeof(CardTagCollection).IsAssignableFrom(from) ||
                     typeof(CardReferenceCollection).IsAssignableFrom(from);
             }
             else if (typeof(string).IsAssignableFrom(to))
             {
                 return typeof(PileNameCollection).IsAssignableFrom(from) ||
-                    typeof(KeywordCollection).IsAssignableFrom(from);
+                    typeof(KeywordCollection).IsAssignableFrom(from) ||
+                    typeof(CardTagCollection).IsAssignableFrom(from);
             }
             else if (typeof(DefineReference).IsAssignableFrom(to) || typeof(CardDefine).IsAssignableFrom(to))
             {
@@ -183,6 +186,8 @@ namespace Game
                         return pileNames.ToArray();
                     case KeywordCollection keywords:
                         return keywords.ToArray();
+                    case CardTagCollection cardTags:
+                        return cardTags.ToArray();
                     case CardReferenceCollection cardReferences:
                         return cardReferences.ToArray();
                 }
@@ -195,6 +200,8 @@ namespace Game
                         return pileNames.FirstOrDefault();
                     case KeywordCollection keywords:
                         return keywords.FirstOrDefault();
+                    case CardTagCollection cardTags:
+                        return cardTags.FirstOrDefault();
                 }
             }
             else if (typeof(DefineReference).IsAssignableFrom(to))

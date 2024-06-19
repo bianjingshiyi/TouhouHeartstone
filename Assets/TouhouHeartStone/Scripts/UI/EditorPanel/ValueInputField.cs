@@ -406,128 +406,55 @@ namespace UI
         }
         private void onMultiInputDropdownValueChangedCallback(string[] values)
         {
-            if (valueType == ActionNodeValueType.pileNameCollection)
+            switch (valueType)
             {
-                if (_valueInfo.value is not PileNameCollection pileNameCollection)
-                {
-                    pileNameCollection = new PileNameCollection();
-                }
-                bool isValueChanged = false;
-                if (values.Length != pileNameCollection.Count)
-                {
-                    isValueChanged = true;
-                }
-                else
-                {
-                    for (int i = 0; i < values.Length; i++)
+                case ActionNodeValueType.pileNameCollection:
+                    callMultiInputDropdownValueChangedCallback<PileNameCollection>(values);
+                    break;
+                case ActionNodeValueType.pileNameRange:
+                    if (_valueInfo.value is not PileNameRange pileNameRange)
                     {
-                        if (values[i] != pileNameCollection[i])
-                        {
-                            isValueChanged = true;
-                            break;
-                        }
+                        pileNameRange = _valueInfo.value is PileNameCollection pileNameCollection ? new PileNameRange(pileNameCollection) : new PileNameRange();
                     }
-                }
-                if (isValueChanged)
-                {
-                    pileNameCollection.Clear();
-                    pileNameCollection.AddRange(values);
-                    callValueChangedCallback(pileNameCollection);
-                }
-            }
-            if (valueType == ActionNodeValueType.pileNameRange)
-            {
-                if (_valueInfo.value is not PileNameRange pileNameRange)
-                {
-                    pileNameRange = _valueInfo.value is PileNameCollection pileNameCollection ? new PileNameRange(pileNameCollection) : new PileNameRange();
-                }
-                var selected = values.Where(v => !pileNameRange.Contains(v)).ToArray();
-                var deselected = pileNameRange.Where(v => !values.Contains(v)).ToArray();
-                bool isValueChanged = selected.Length + deselected.Length > 0;
-                if (isValueChanged)
-                {
-                    if (selected.Contains(Pile.PILE_RANGE_ANY))
+                    var selected = values.Where(v => !pileNameRange.Contains(v)).ToArray();
+                    var deselected = pileNameRange.Where(v => !values.Contains(v)).ToArray();
+                    bool isValueChanged = selected.Length + deselected.Length > 0;
+                    if (isValueChanged)
                     {
-                        bool selectedOther = pileNameRange.Any(p => p != Pile.PILE_RANGE_ANY);
-                        pileNameRange.Clear();
-                        pileNameRange.Add(Pile.PILE_RANGE_ANY);
-                        if (selectedOther)
+                        if (selected.Contains(Pile.PILE_RANGE_ANY))
                         {
-                            _multiInputDropdown.setValuesWithoutNotify(pileNameRange.ToArray());
-                            _multiInputDropdown.updateOptionToggles();
+                            bool selectedOther = pileNameRange.Any(p => p != Pile.PILE_RANGE_ANY);
+                            pileNameRange.Clear();
+                            pileNameRange.Add(Pile.PILE_RANGE_ANY);
+                            if (selectedOther)
+                            {
+                                _multiInputDropdown.setValuesWithoutNotify(pileNameRange.ToArray());
+                                _multiInputDropdown.updateOptionToggles();
+                            }
                         }
-                    }
-                    else
-                    {
-                        bool selectedAny = pileNameRange.Contains(Pile.PILE_RANGE_ANY);
-                        pileNameRange.Clear();
-                        pileNameRange.AddRange(values.Where(v => v != Pile.PILE_RANGE_ANY));
-                        if (selectedAny)
+                        else
                         {
-                            _multiInputDropdown.setValuesWithoutNotify(pileNameRange.ToArray());
-                            _multiInputDropdown.updateOptionToggles();
+                            bool selectedAny = pileNameRange.Contains(Pile.PILE_RANGE_ANY);
+                            pileNameRange.Clear();
+                            pileNameRange.AddRange(values.Where(v => v != Pile.PILE_RANGE_ANY));
+                            if (selectedAny)
+                            {
+                                _multiInputDropdown.setValuesWithoutNotify(pileNameRange.ToArray());
+                                _multiInputDropdown.updateOptionToggles();
+                            }
                         }
+                        callValueChangedCallback(pileNameRange);
                     }
-                    callValueChangedCallback(pileNameRange);
-                }
-            }
-            else if (valueType == ActionNodeValueType.effectTagCollection)
-            {
-                if (!(_valueInfo.value is EffectTagCollection effectTagCol))
-                {
-                    effectTagCol = new EffectTagCollection();
-                }
-                bool isValueChanged = false;
-                if (values.Length != effectTagCol.Count)
-                {
-                    isValueChanged = true;
-                }
-                else
-                {
-                    for (int i = 0; i < values.Length; i++)
-                    {
-                        if (values[i] != effectTagCol[i])
-                        {
-                            isValueChanged = true;
-                            break;
-                        }
-                    }
-                }
-                if (isValueChanged)
-                {
-                    effectTagCol.Clear();
-                    effectTagCol.AddRange(values);
-                    callValueChangedCallback(effectTagCol);
-                }
-            }
-            else if (valueType == ActionNodeValueType.keywordCollection)
-            {
-                if (!(_valueInfo.value is KeywordCollection keywordCol))
-                {
-                    keywordCol = new KeywordCollection();
-                }
-                bool isValueChanged = false;
-                if (values.Length != keywordCol.Count)
-                {
-                    isValueChanged = true;
-                }
-                else
-                {
-                    for (int i = 0; i < values.Length; i++)
-                    {
-                        if (values[i] != keywordCol[i])
-                        {
-                            isValueChanged = true;
-                            break;
-                        }
-                    }
-                }
-                if (isValueChanged)
-                {
-                    keywordCol.Clear();
-                    keywordCol.AddRange(values);
-                    callValueChangedCallback(keywordCol);
-                }
+                    break;
+                case ActionNodeValueType.effectTagCollection:
+                    callMultiInputDropdownValueChangedCallback<EffectTagCollection>(values);
+                    break;
+                case ActionNodeValueType.keywordCollection:
+                    callMultiInputDropdownValueChangedCallback<KeywordCollection>(values);
+                    break;
+                case ActionNodeValueType.cardTagCollection:
+                    callMultiInputDropdownValueChangedCallback<CardTagCollection>(values);
+                    break;
             }
         }
         #endregion
@@ -854,33 +781,39 @@ namespace UI
         private void updateMultiInputDropdown()
         {
             //可自定义多选下拉菜单
-            if (valueType == ActionNodeValueType.pileNameCollection || valueType == ActionNodeValueType.pileNameRange)
+            switch (valueType)
             {
-                string[] pileNames;
-                string[] pileValues;
-                if (valueType == ActionNodeValueType.pileNameRange)
-                {
-                    pileNames = _pileNames.Prepend(_anyPileName).ToArray();
-                    pileValues = _pileValues.Prepend(Pile.PILE_RANGE_ANY).ToArray();
-                }
-                else
-                {
-                    pileNames = _pileNames;
-                    pileValues = _pileValues;
-                }
-                updateMultiInputDropdownValue<PileName>(pileNames, pileValues);
-            }
-            else if (valueType == ActionNodeValueType.effectTagCollection)
-            {
-                updateMultiInputDropdownValue<EffectTag>(_effectTagNames, _effectTagValues);
-            }
-            else if (valueType == ActionNodeValueType.keywordCollection)
-            {
-                updateMultiInputDropdownValue<KeywordName>(_keywordNames, _keywordValues);
-            }
-            else
-            {
-                _multiInputDropdown.gameObject.SetActive(false);
+                case ActionNodeValueType.pileNameCollection:
+                case ActionNodeValueType.pileNameRange:
+                    {
+                        string[] pileNames;
+                        string[] pileValues;
+                        if (valueType == ActionNodeValueType.pileNameRange)
+                        {
+                            pileNames = _pileNames.Prepend(_anyPileName).ToArray();
+                            pileValues = _pileValues.Prepend(Pile.PILE_RANGE_ANY).ToArray();
+                        }
+                        else
+                        {
+                            pileNames = _pileNames;
+                            pileValues = _pileValues;
+                        }
+                        updateMultiInputDropdownValue<PileName>(pileNames, pileValues);
+                        break;
+                    }
+
+                case ActionNodeValueType.effectTagCollection:
+                    updateMultiInputDropdownValue<EffectTag>(_effectTagNames, _effectTagValues);
+                    break;
+                case ActionNodeValueType.keywordCollection:
+                    updateMultiInputDropdownValue<KeywordName>(_keywordNames, _keywordValues);
+                    break;
+                case ActionNodeValueType.cardTagCollection:
+                    updateMultiInputDropdownValue<CardTagName>(_cardTagNames, _cardTagValues);
+                    break;
+                default:
+                    _multiInputDropdown.gameObject.SetActive(false);
+                    break;
             }
         }
         private void updateButton()
@@ -991,6 +924,35 @@ namespace UI
         private void callValueChangedCallback(object value)
         {
             onValueChanged?.Invoke(this, value);
+        }
+        private void callMultiInputDropdownValueChangedCallback<T>(string[] values) where T : List<string>, new()
+        {
+            if (_valueInfo.value is not T collection)
+            {
+                collection = new T();
+            }
+            bool isValueChanged = false;
+            if (values.Length != collection.Count)
+            {
+                isValueChanged = true;
+            }
+            else
+            {
+                for (int i = 0; i < values.Length; i++)
+                {
+                    if (values[i] != collection[i])
+                    {
+                        isValueChanged = true;
+                        break;
+                    }
+                }
+            }
+            if (isValueChanged)
+            {
+                collection.Clear();
+                collection.AddRange(values);
+                callValueChangedCallback(collection);
+            }
         }
         #endregion
         #region 事件

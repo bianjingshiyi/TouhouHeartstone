@@ -1,19 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
-    public class KeywordsModifier : PropModifier<string[]>
+    public class KeywordsModifier : StringArrayModifier
     {
-        public KeywordsModifier(ModifyType modifyType, params string[] keywords)
+        public KeywordsModifier(ModifyType modifyType, params string[] keywords) : base(DEFINE.KEYWORDS, modifyType, keywords)
         {
-            propertyName = DEFINE.KEYWORDS;
-            this.modifyType = modifyType;
-            defaultValue = keywords;
         }
         public override async Task afterAdd(IGame game, Card card, Buff buff)
         {
@@ -22,18 +16,6 @@ namespace TouhouHeartstone
             if (modifyType != ModifyType.remove)
             {
                 await card.InitConsumableKeywords(value, game);
-            }
-        }
-        public override string[] calcGeneric(IGame game, ICardData card, string[] prop, string[] value)
-        {
-            switch (modifyType)
-            {
-                case ModifyType.set:
-                    return value;
-                case ModifyType.remove:
-                    return prop != null ? prop.Except(value).ToArray() : new string[0];
-                default:
-                    return prop != null ? prop.Union(value).ToArray() : value;
             }
         }
         public override string ToString()
@@ -48,11 +30,6 @@ namespace TouhouHeartstone
                 default:
                     return $"keywords + {(value.Length > 0 ? string.Join(",", value) : "empty")}";
             }
-        }
-        public ModifyType modifyType;
-        public enum ModifyType
-        {
-            add, remove, set
         }
     }
 }

@@ -265,6 +265,8 @@ namespace Game
         public const string CARD_PROP_NAME_KEYWORDS = "关键词";
         [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
         public const string CARD_PROP_NAME_CUSTOM_PROPERTY = "自定义属性";
+        [TranslateMsg("卡牌属性名", CONTEXT_CARD_PROPERTY)]
+        public const string CARD_PROP_NAME_CARD_TAG = "标签";
         #endregion
 
         #region 错误

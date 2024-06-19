@@ -59,6 +59,8 @@ namespace Game
                 return new SerializableCustomPropertyModifier(customPropertyModifier);
             else if (propModifier is KeywordsModifier keywordsModifier)
                 return new SerializableKeywordsModifier(keywordsModifier);
+            else if (propModifier is TagModifier tagModifier)
+                return new SerializableTagModifier(tagModifier);
             else if (propModifier is AttackModifier attackModifier)
                 return new SerializableAttackModifier(attackModifier);
             else if (propModifier is DamageReduceModifier damageReduceModifier)

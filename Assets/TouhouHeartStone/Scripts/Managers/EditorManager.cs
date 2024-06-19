@@ -176,7 +176,8 @@ namespace Game
             { ActionNodeValueType.cardReference, StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE },
             { ActionNodeValueType.buffReference, StringTable.EDITOR_TYPE_NAME_BUFF_REFERENCE },
             { ActionNodeValueType.pileNameCollection, StringTable.EDITOR_TYPE_NAME_PILE },
-            { ActionNodeValueType.keywordCollection, StringTable.EDITOR_TYPE_NAME_KEYWORD_COLLECTION }
+            { ActionNodeValueType.keywordCollection, StringTable.EDITOR_TYPE_NAME_KEYWORD_COLLECTION },
+            { ActionNodeValueType.cardTagCollection, StringTable.EDITOR_TYPE_NAME_CARD_TAG_COLLECTION }
         };
 
         private static readonly ActionNodeValueType[] customPropTypes = new ActionNodeValueType[]
@@ -189,6 +190,7 @@ namespace Game
             ActionNodeValueType.cardReference,
             ActionNodeValueType.pileNameCollection,
             ActionNodeValueType.keywordCollection,
+            ActionNodeValueType.cardTagCollection,
             ActionNodeValueType.buffReference,
         };
 
