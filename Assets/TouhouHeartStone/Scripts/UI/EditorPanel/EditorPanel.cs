@@ -103,18 +103,6 @@ namespace UI
         #endregion
 
         #region 卡池依赖
-        public void openSelectCardPoolDependencyDialog()
-        {
-            _addCardPoolDepDialogObj.SetActive(true);
-        }
-        public void hideSelectCardPoolDependencyDialog()
-        {
-            _addCardPoolDepDialogObj.SetActive(false);
-        }
-        public void updateSelectCardPoolDependencyDialog(DeckListItemViewData[] viewDatas)
-        {
-            _addCardPoolDepDialog.update(viewDatas);
-        }
         public void setAutoUpdateDepButtonInteractable(bool interactable)
         {
             _updateCardPoolDepsButton.interactable = interactable;
@@ -175,10 +163,7 @@ namespace UI
             _cardPoolDepTabButton.onClick.AddListener(() => displayTabPage(_cardPoolDepTabPage));
 
             _addCardPoolDepButton.onClick.AddListener(() => onClickAddCardPoolDepButton?.Invoke());
-            _addCardPoolDepDialog.onClickItemButton += index => onClickAddCardPoolDepItem?.Invoke(index);
-            _addCardPoolDepDialog.onItemToggleValueChanged += (index, value) => onClickAddCardPoolDepItem?.Invoke(index);
-            _cancelAddCardPoolDepButton.onClick.AddListener(() => hideSelectCardPoolDependencyDialog());
-            _confirmAddCardPoolDepButton.onClick.AddListener(() => onClickConfirmAddCardPoolDepButton?.Invoke());
+
             _updateCardPoolDepsButton.onClick.AddListener(() => onClickUpdateCardPoolDepsButton?.Invoke());
         }
         #endregion
@@ -321,8 +306,6 @@ namespace UI
 
         public event Action onClickAddCardPoolDepButton;
         public event Action<int> onClickRemoveCardPoolDepButton;
-        public event Action<int> onClickAddCardPoolDepItem;
-        public event Action onClickConfirmAddCardPoolDepButton;
         public event Action onClickUpdateCardPoolDepsButton;
         #endregion
 
@@ -391,14 +374,6 @@ namespace UI
         Button _addCardPoolDepButton;
         [SerializeField]
         ElementList _cardPoolDepList;
-        [SerializeField]
-        GameObject _addCardPoolDepDialogObj;
-        [SerializeField]
-        DeckViewPanel _addCardPoolDepDialog;
-        [SerializeField]
-        Button _cancelAddCardPoolDepButton;
-        [SerializeField]
-        Button _confirmAddCardPoolDepButton;
         [SerializeField]
         Button _updateCardPoolDepsButton;
 

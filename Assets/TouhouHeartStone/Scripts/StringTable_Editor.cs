@@ -585,6 +585,8 @@ namespace Game
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_CARD_REFERENCE = "卡牌定义引用";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
+        public const string EDITOR_TYPE_NAME_CARD_POOL_REFERENCE = "卡池引用";
+        [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_CARD = "卡牌";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_CARD_SNAPSHOT = "卡牌快照";

@@ -113,6 +113,7 @@ namespace UI
                         new NodeValueType(ActionNodeValueType.keyword),
                         new NodeValueType(ActionNodeValueType.cardTag),
                         new NodeValueType(ActionNodeValueType.cardReference),
+                        new NodeValueType(ActionNodeValueType.cardPoolReference),
                         new NodeValueType(ActionNodeValueType.buffReference),
                     };
             }
@@ -173,6 +174,7 @@ namespace UI
             { typeof(EffectTag), ActionNodeValueType.effectTag },
             { typeof(EffectTagCollection), ActionNodeValueType.effectTagCollection },
             { typeof(DefineReference), ActionNodeValueType.cardReference },
+            { typeof(CardPoolIDProxy), ActionNodeValueType.cardPoolReference },
             { typeof(BuffReference), ActionNodeValueType.buffReference },
             { typeof(PileName), ActionNodeValueType.pileName },
             { typeof(PileNameCollection), ActionNodeValueType.pileNameCollection },
@@ -204,6 +206,7 @@ namespace UI
             { ActionNodeValueType.effectTag, () => new EffectTag(string.Empty) },
             { ActionNodeValueType.effectTagCollection, () => new EffectTagCollection() },
             { ActionNodeValueType.cardReference, () => new DefineReference() },
+            { ActionNodeValueType.cardPoolReference, () => new CardPoolIDProxy(0) },
             { ActionNodeValueType.buffReference, () => new BuffReference(0, 0) },
             { ActionNodeValueType.pileName, () => new PileName(string.Empty) },
             { ActionNodeValueType.pileNameCollection, () => new PileNameCollection() },
@@ -273,6 +276,10 @@ namespace UI
         /// 卡牌引用
         /// </summary>
         cardReference,
+        /// <summary>
+        /// 卡池引用
+        /// </summary>
+        cardPoolReference,
         /// <summary>
         /// 关键词
         /// </summary>

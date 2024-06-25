@@ -806,6 +806,9 @@ namespace Controllers
                 case ValueInputFieldButton.BuffEditButton:
                     onClickNodeDefaultValueBuffEditButton(actionNodeItem, inputIndex, itemIndexes);
                     break;
+                case ValueInputFieldButton.CardPoolButton:
+                    onClickNodeInputDefaultValueCardPoolButton(actionNodeItem, inputIndex, itemIndexes);
+                    break;
             }
         }
         private async void onClickNodeInputDefaultValueCardButton(ActionNodeItem actionNodeItem, int inputIndex, int[] itemIndexes)
@@ -832,6 +835,28 @@ namespace Controllers
             _curEditNodeInputDefaultValueName = inputDefine.name;
             _curEditNodeInputDefaultValueParamIndex = paramIndex;
             _curEditNodeInputDefaultValueItemIndexes = itemIndexes;
+        }
+        private async void onClickNodeInputDefaultValueCardPoolButton(ActionNodeItem actionNodeItem, int inputIndex, int[] itemIndexes)
+        {
+            if (isReadonly)
+                return;
+            Node actionNode = getActionNode(actionNodeItem);
+            var inputPort = actionNode.getInputPortAt(inputIndex);
+            if (inputPort == null)
+                return;
+            var inputDefine = inputPort.define;
+            if (inputDefine == null)
+                return;
+            var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
+            var source = new CardPoolSelectSourceInputDefaultValue(this, getCardPoolEnv())
+            {
+                title = game.lang._(EditorCtrl.EDITOR_TITLE_SELECT_CARD_POOL),
+                node = actionNode,
+                portName = inputDefine.name,
+                paramIndex = paramIndex,
+                itemIndexes = itemIndexes
+            };
+            await scene.displayCardPoolSingleSelectPanel(source);
         }
         private void onClickNodeDefaultValueCardEditButton(ActionNodeItem actionNodeItem, int index, int[] itemIndexes)
         {
@@ -1065,12 +1090,16 @@ namespace Controllers
                 {
                     var inputPort = actionNode.getInputPortAt(i);
                     var valueInfo = getDefaultValueInfoFromInput(inputPort);
+                    var name = inputPort.name;
+                    var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
+                    var defaultValue = actionNode.getInputDefaultValue(name, paramIndex);
                     if (valueInfo.type.type == ActionNodeValueType.cardReference)
                     {
-                        var name = inputPort.name;
-                        var paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
-                        var defaultValue = actionNode.getInputDefaultValue(name, paramIndex);
                         await updateCardDefineDefaultValue(actionNodeItem, i, defaultValue);
+                    }
+                    else if (valueInfo.type.type == ActionNodeValueType.cardPoolReference)
+                    {
+                        await updateCardPoolRefDefaultValue(actionNodeItem, i, defaultValue);
                     }
                 }
             }
@@ -1306,6 +1335,20 @@ namespace Controllers
                 setNodeDefaultValue(_curEditNode, name, paramIndex, newDefValue);
                 // 更新UI.
                 updateUINodeItemInputPorts(_curEditNode);
+                addRecordBreakpoint();
+            }
+        }
+        private void selectCardPoolForNodeInputDefaultValue(Node node, string name, int paramIndex, int[] itemIndexes, CardPoolReference poolRef)
+        {
+            if (node == null)
+                return;
+
+            var defValue = node.getInputDefaultValue(name, paramIndex);
+            if (defValue.replaceListElementByIndexes(itemIndexes, new CardPoolIDProxy(poolRef.cardPoolId), out var newDefValue))
+            {
+                setNodeDefaultValue(node, name, paramIndex, newDefValue);
+                // 更新UI.
+                updateUINodeItemInputPorts(node);
                 addRecordBreakpoint();
             }
         }
@@ -1955,6 +1998,7 @@ namespace Controllers
             foreach (var defValue in node.inputDefaultValues)
             {
                 await updateCardDefineDefaultValue(item, node, defValue.name, defValue.paramIndex, defValue.value);
+                await updateCardPoolRefDefaultValue(item, node, defValue.name, defValue.paramIndex, defValue.value);
             }
         }
         private Task updateCardDefineDefaultValue(ActionNodeItem item, Node node, string name, int paramIndex, object value)
@@ -1970,6 +2014,20 @@ namespace Controllers
             ValueInputField cardInputField = item.getInputDefaultValueInputField(portIndex);
             var env = getCardPoolEnv();
             await cardInputField.setInputFieldCardByValue(value, env, game);
+        }
+        private Task updateCardPoolRefDefaultValue(ActionNodeItem item, Node node, string name, int paramIndex, object value)
+        {
+            var inputPort = paramIndex < 0 ? node.getInputPort(name) : node.getParamInputPort(name, paramIndex);
+            if (inputPort == null)
+                return Task.CompletedTask;
+            var portIndex = inputPort.GetPortIndex();
+            return updateCardPoolRefDefaultValue(item, portIndex, value);
+        }
+        private async Task updateCardPoolRefDefaultValue(ActionNodeItem item, int portIndex, object value)
+        {
+            ValueInputField cardInputField = item.getInputDefaultValueInputField(portIndex);
+            var env = getCardPoolEnv();
+            await cardInputField.setInputFieldCardPoolByValue(value, env, game);
         }
         private bool tryGetValueTypeDefaultValue(ActionNodeValueType valueType, out object value)
         {
@@ -2474,6 +2532,23 @@ namespace Controllers
                 this.editObject = editObject;
             }
             public object editObject;
+        }
+        public class CardPoolSelectSourceInputDefaultValue : CardPoolSelectSource
+        {
+            public CardPoolSelectSourceInputDefaultValue(ActionNodeGraphCtrl editor, IEnumerable<ICardPoolReference> poolRef) : base(poolRef)
+            {
+                _editor = editor;
+            }
+            public override bool Confirm()
+            {
+                _editor.selectCardPoolForNodeInputDefaultValue(node, portName, paramIndex, itemIndexes, _selectedCardPools.FirstOrDefault()?.ToReference());
+                return true;
+            }
+            public Node node;
+            public string portName;
+            public int paramIndex;
+            public int[] itemIndexes;
+            private ActionNodeGraphCtrl _editor;
         }
         #endregion
     }

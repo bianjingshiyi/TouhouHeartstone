@@ -9,6 +9,7 @@ using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
+using UnityEditor;
 using UnityEngine;
 
 namespace Controllers
@@ -280,9 +281,7 @@ namespace Controllers
 
             // 卡池依赖
             _ui.onClickAddCardPoolDepButton += onClickAddCardPoolDepButtonCallback;
-            _ui.onClickRemoveCardPoolDepButton += onClickRemoveCardPoolDefButtonCallback;
-            _ui.onClickAddCardPoolDepItem += onClickAddCardPoolDepItemCallback;
-            _ui.onClickConfirmAddCardPoolDepButton += onClickConfirmAddCardPoolDepButtonCallback;
+            _ui.onClickRemoveCardPoolDepButton += onClickRemoveCardPoolDepButtonCallback;
             _ui.onClickUpdateCardPoolDepsButton += onClickUpdateCardPoolDepsButtonCallback;
 
             _cardPoolViewPanelCtrl.onClickCard += onClickCard;
@@ -586,8 +585,7 @@ namespace Controllers
         #region 卡池依赖
         private async void onClickAddCardPoolDepButtonCallback()
         {
-            _viewingAddCardPoolDependencies.Clear();
-            _selectedAddingCardPoolDependencies.Clear();
+            var cardPools = new List<CardPoolReference>();
             var cardPoolInfos = game.card.getLocalCardPoolInfos();
             var curDeps = getCurrentCardPoolInfo().dependencyRefs;
             foreach (var info in cardPoolInfos)
@@ -596,13 +594,15 @@ namespace Controllers
                     continue;
                 if (curDeps != null && curDeps.Any(d => d.CompareCardPool(info)))
                     continue;
-                _viewingAddCardPoolDependencies.Add(info.ToReference());
+                cardPools.Add(info.ToReference());
             }
-
-            _ui.openSelectCardPoolDependencyDialog();
-            await updateAddCardPoolDependenciesDialog();
+            var source = new CardPoolSelectSourceDependency(this, cardPools)
+            {
+                title = game.lang._(EDITOR_TITLE_SELECT_CARD_POOL_DEPENDENCY)
+            };
+            await scene.displayCardPoolMultiSelectPanel(source);
         }
-        private void onClickRemoveCardPoolDefButtonCallback(int index)
+        private void onClickRemoveCardPoolDepButtonCallback(int index)
         {
             var poolInfo = getCurrentCardPoolInfo();
             var depRefs = poolInfo.dependencyRefs;
@@ -627,42 +627,6 @@ namespace Controllers
 
                 updateUIDependencyList();
             });
-        }
-        private async void onClickAddCardPoolDepItemCallback(int index)
-        {
-            var depRef = _viewingAddCardPoolDependencies[index];
-            if (_selectedAddingCardPoolDependencies.Contains(depRef))
-            {
-                _selectedAddingCardPoolDependencies.Remove(depRef);
-            }
-            else
-            {
-                _selectedAddingCardPoolDependencies.Add(depRef);
-            }
-            await updateAddCardPoolDependenciesDialog();
-        }
-        private void onClickConfirmAddCardPoolDepButtonCallback()
-        {
-            if (checkDependencyCycle(_selectedAddingCardPoolDependencies, out var cyclePools))
-            {
-                showDependencyCycleDialog(cyclePools);
-                return;
-            }
-
-            markCardPoolUnsaved(curCardPoolId);
-
-            var poolInfo = getCurrentCardPoolInfo();
-            var depRefs = poolInfo.dependencyRefs;
-
-            var newRefs = new List<CardPoolReference>();
-            if (depRefs != null)
-                newRefs.AddRange(depRefs);
-            newRefs.AddRange(_selectedAddingCardPoolDependencies);
-            poolInfo.dependencyRefs = newRefs.ToArray();
-
-            _ui.hideSelectCardPoolDependencyDialog();
-
-            updateUIDependencyList();
         }
         private void onClickUpdateCardPoolDepsButtonCallback()
         {
@@ -693,6 +657,28 @@ namespace Controllers
         #endregion
 
         #region 卡池依赖
+        private bool setCardPoolDependencies(IEnumerable<ICardPoolReference> selected)
+        {
+            if (checkDependencyCycle(selected, out var cyclePools))
+            {
+                showDependencyCycleDialog(cyclePools);
+                return false;
+            }
+
+            markCardPoolUnsaved(curCardPoolId);
+
+            var poolInfo = getCurrentCardPoolInfo();
+            var depRefs = poolInfo.dependencyRefs;
+
+            var newRefs = new List<CardPoolReference>();
+            if (depRefs != null)
+                newRefs.AddRange(depRefs);
+            newRefs.AddRange(selected.Select(s => s.ToReference()));
+            poolInfo.dependencyRefs = newRefs.ToArray();
+
+            updateUIDependencyList();
+            return true;
+        }
         private ICardPoolReference[] getUpdateableDependencies()
         {
             var poolInfo = getCurrentCardPoolInfo();
@@ -729,25 +715,6 @@ namespace Controllers
                 newDeps[i] = newDep;
             }
             curPoolInfo.dependencyRefs = newDeps;
-        }
-        private async Task updateAddCardPoolDependenciesDialog()
-        {
-            var deps = _viewingAddCardPoolDependencies;
-            var viewDatas = new DeckListItemViewData[deps.Count];
-            for (int i = 0; i < viewDatas.Length; i++)
-            {
-                var dep = deps[i];
-                var info = game.card.getCardPoolInfo(dep);
-                var cardPoolName = game.card.getCardPoolName(info);
-                viewDatas[i] = new DeckListItemViewData()
-                {
-                    name = cardPoolName,
-                    image = await game.card.loadCardPoolImage(info),
-                    selected = _selectedAddingCardPoolDependencies.Contains(dep),
-                    mode = DeckListItem.Mode.CanSelect
-                };
-            }
-            _ui.updateSelectCardPoolDependencyDialog(viewDatas);
         }
         private void updateUIDependencyList()
         {
@@ -1503,6 +1470,10 @@ namespace Controllers
         [TranslateMsg("卡池编辑器-删除卡池依赖警告，{0}为卡池的名字+卡池版本")]
         public const string EDITOR_WARNING_DELETE_DEPENDENCY = "确定要删除卡池依赖“{0}”？";
 
+        [TranslateMsg("卡池编辑器-选择卡池面板的标题")]
+        public const string EDITOR_TITLE_SELECT_CARD_POOL = "选择卡池";
+        public const string EDITOR_TITLE_SELECT_CARD_POOL_DEPENDENCY = "选择要添加的依赖卡池";
+
         public string nodeClipboard { get; set; }
         private long curCardPoolId => game.editor.currentCardPoolId;
         private EditorPanel _ui;
@@ -1511,8 +1482,6 @@ namespace Controllers
         private HashSet<long> _unsavedCardPools = new HashSet<long>();
         private long _firstOpenedCardPoolId;
         private List<CardPoolInfo> _cardPoolInfoClones = new List<CardPoolInfo>();
-        private List<CardPoolReference> _viewingAddCardPoolDependencies = new List<CardPoolReference>();
-        private List<CardPoolReference> _selectedAddingCardPoolDependencies = new List<CardPoolReference>();
         /// <summary>
         /// 编辑器对于显示物体的引用栈，用于返回上一个编辑器。
         /// </summary>
@@ -1543,6 +1512,21 @@ namespace Controllers
         public string[] eventEditorNames { get; private set; }
         #endregion
 
+        #endregion
+
+        #region 内嵌类
+        public class CardPoolSelectSourceDependency : CardPoolSelectSource
+        {
+            public CardPoolSelectSourceDependency(EditorCtrl editor, IEnumerable<CardPoolReference> poolRef) : base(poolRef)
+            {
+                _editor = editor;
+            }
+            public override bool Confirm()
+            {
+                return _editor.setCardPoolDependencies(_selectedCardPools);
+            }
+            private EditorCtrl _editor;
+        }
         #endregion
     }
 }

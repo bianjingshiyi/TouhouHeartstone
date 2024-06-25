@@ -1,14 +1,51 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using BJSYGameCore;
 using Game;
-using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using UI;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Controllers
 {
     partial class MainSceneCtrl : SceneCtrl
     {
+        public async Task displayCardPoolSingleSelectPanel(CardPoolSelectSource source)
+        {
+            cardPoolSelectSource = source;
+            _singleSelectCardPoolDialogTitle.text = source.title;
+            _singleSelectCardPoolDialogObj.SetActive(true);
+            await updateSingleSelectCardPoolDialog();
+        }
+        public async Task displayCardPoolMultiSelectPanel(CardPoolSelectSource source)
+        {
+            cardPoolSelectSource = source;
+            _multiSelectCardPoolDialogTitle.text = source.title;
+            _multiSelectCardPoolDialogObj.SetActive(true);
+            await updateMultiSelectCardPoolDialog();
+        }
+        public void hideCardPoolSingleSelectPanel()
+        {
+            cardPoolSelectSource = null;
+            _singleSelectCardPoolDialogObj.SetActive(false);
+        }
+        public void hideCardPoolMultiSelectPanel()
+        {
+            cardPoolSelectSource = null;
+            _multiSelectCardPoolDialogObj.SetActive(false);
+        }
+        private void Awake()
+        {
+            _multiSelectCardPoolDialog.onClickItemButton += onClickMultiSelectCardPoolItemCallback;
+            _multiSelectCardPoolDialog.onItemToggleValueChanged += (index, value) => onClickMultiSelectCardPoolItemCallback(index);
+            _multiSelectCardPoolConfirmButton.onClick.AddListener(onClickMultiSelectCardPoolConfirmButtonCallback);
+            _multiSelectCardPoolCancelButton.onClick.AddListener(() => hideCardPoolSingleSelectPanel());
+
+            _singleSelectCardPoolDialog.onClickItemButton += onClickSingleSelectCardPoolItemCallback;
+            _singleSelectCardPoolCancelButton.onClick.AddListener(() => hideCardPoolMultiSelectPanel());
+        }
         protected override void Start()
         {
             if (_menu == null)
@@ -96,6 +133,96 @@ namespace Controllers
         {
             await updateCardPopup();
         }
+
+        #region 卡池单选面板
+        private void onClickSingleSelectCardPoolItemCallback(int index)
+        {
+            var selecting = getAllSelectingCardPools();
+            var depRef = selecting[index];
+            cardPoolSelectSource.select(depRef);
+            if (cardPoolSelectSource.Confirm())
+            {
+                hideCardPoolSingleSelectPanel();
+            }
+        }
+        private Task updateSingleSelectCardPoolDialog()
+        {
+            return updateSingleSelectCardPoolDialog(getAllSelectingCardPools(), getSelectedCardPools());
+        }
+        private async Task updateSingleSelectCardPoolDialog(IEnumerable<ICardPoolReference> cardPoolRefs, IEnumerable<ICardPoolReference> selected = null)
+        {
+            var viewDatas = new DeckListItemViewData[cardPoolRefs.Count()];
+            for (int i = 0; i < viewDatas.Length; i++)
+            {
+                var dep = cardPoolRefs.ElementAt(i);
+                var info = game.card.getCardPoolInfo(dep);
+                var cardPoolName = game.card.getCardPoolName(info);
+                viewDatas[i] = new DeckListItemViewData()
+                {
+                    name = cardPoolName,
+                    image = await game.card.loadCardPoolImage(info),
+                    selected = selected?.Contains(dep) ?? false,
+                    mode = DeckListItem.Mode.Default
+                };
+            }
+            _singleSelectCardPoolDialog.update(viewDatas);
+        }
+        #endregion
+
+        #region 卡池多选面板
+        private async void onClickMultiSelectCardPoolItemCallback(int index)
+        {
+            var selecting = getAllSelectingCardPools();
+            var selected = getSelectedCardPools();
+            var depRef = selecting[index];
+            if (selected.Contains(depRef))
+            {
+                cardPoolSelectSource.deselect(depRef);
+            }
+            else
+            {
+                cardPoolSelectSource.select(depRef);
+            }
+            await updateMultiSelectCardPoolDialog();
+        }
+        private void onClickMultiSelectCardPoolConfirmButtonCallback()
+        {
+            if (cardPoolSelectSource.Confirm())
+            {
+                hideCardPoolMultiSelectPanel();
+            }
+        }
+        private Task updateMultiSelectCardPoolDialog()
+        {
+            return updateMultiSelectCardPoolDialog(getAllSelectingCardPools(), getSelectedCardPools());
+        }
+        private async Task updateMultiSelectCardPoolDialog(IEnumerable<ICardPoolReference> cardPoolRefs, IEnumerable<ICardPoolReference> selected = null)
+        {
+            var viewDatas = new DeckListItemViewData[cardPoolRefs.Count()];
+            for (int i = 0; i < viewDatas.Length; i++)
+            {
+                var dep = cardPoolRefs.ElementAt(i);
+                var info = game.card.getCardPoolInfo(dep);
+                var cardPoolName = game.card.getCardPoolName(info);
+                viewDatas[i] = new DeckListItemViewData()
+                {
+                    name = cardPoolName,
+                    image = await game.card.loadCardPoolImage(info),
+                    selected = selected?.Contains(dep) ?? false,
+                    mode = DeckListItem.Mode.CanSelect
+                };
+            }
+            _multiSelectCardPoolDialog.update(viewDatas);
+        }
+        #endregion
+        private ICardPoolReference[] getAllSelectingCardPools()
+        {
+            return cardPoolSelectSource.getAllCardPools();
+        }
+        private ICardPoolReference[] getSelectedCardPools()
+        {
+            return cardPoolSelectSource.getSelectedCardPools();
+        }
         public MainMenuCtrl menu => _menu;
         public RoomCtrl room => _room;
         public BuildCtrl build => _build;
@@ -141,5 +268,30 @@ namespace Controllers
         WorkshopCtrl _workshop;
         [SerializeField]
         WaitingBlocker _waitingBlocker;
+
+
+        [Header("卡池单选")]
+        [SerializeField]
+        GameObject _singleSelectCardPoolDialogObj;
+        [SerializeField]
+        Text _singleSelectCardPoolDialogTitle;
+        [SerializeField]
+        DeckViewPanel _singleSelectCardPoolDialog;
+        [SerializeField]
+        Button _singleSelectCardPoolCancelButton;
+
+        [Header("卡池多选")]
+        [SerializeField]
+        GameObject _multiSelectCardPoolDialogObj;
+        [SerializeField]
+        Text _multiSelectCardPoolDialogTitle;
+        [SerializeField]
+        DeckViewPanel _multiSelectCardPoolDialog;
+        [SerializeField]
+        Button _multiSelectCardPoolConfirmButton;
+        [SerializeField]
+        Button _multiSelectCardPoolCancelButton;
+
+        private CardPoolSelectSource cardPoolSelectSource;
     }
 }

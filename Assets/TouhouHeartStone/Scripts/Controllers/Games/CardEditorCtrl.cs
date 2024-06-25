@@ -8,6 +8,7 @@ using Game;
 using Game.Animations;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -604,6 +605,9 @@ namespace Controllers
                 case ValueInputFieldButton.BuffEditButton:
                     onClickPropertyBuffEditButtonCallback(isCustom, name, itemIndexes);
                     break;
+                case ValueInputFieldButton.CardPoolButton:
+                    onClickPropertyCardPoolButtonCallback(name, itemIndexes);
+                    break;
             }
         }
         private async void onClickPropertyCardButtonCallback(bool isCustom, string name, int[] itemIndexes)
@@ -659,6 +663,20 @@ namespace Controllers
                     await scene.editor.openBuffEditor(buffDefine);
                 }
             }
+        }
+        private async void onClickPropertyCardPoolButtonCallback(string name, int[] itemIndexes)
+        {
+            var prop = _cardDefine.getProp<object>(name);
+            if (prop == null)
+                return;
+            //打开卡池选择界面
+            var source = new CardPoolSelectSourceCustomProperty(this, getCardPoolReferenceEnv())
+            {
+                title = game.lang._(EditorCtrl.EDITOR_TITLE_SELECT_CARD_POOL),
+                propName = name,
+                propIndexes = itemIndexes
+            };
+            await scene.displayCardPoolSingleSelectPanel(source);
         }
         private async void onDeleteCustomPropertyCallback(string name)
         {
@@ -1100,7 +1118,7 @@ namespace Controllers
             var fields = _ui.keywordsFoldout.getPropertyItemFields();
             for (int i = 0; i < itemInfos.Length; i++)
             {
-                await fields[i].valueInputField.setInputFieldCardByValue(itemInfos[i].value, env, game);
+                await fields[i].valueInputField.setInputFieldByValue(itemInfos[i].value, env, game);
             }
         }
         /// <summary>
@@ -1132,7 +1150,7 @@ namespace Controllers
             var fields = _ui.getCustomPropertyItemFields();
             for (int i = 0; i < itemInfos.Length; i++)
             {
-                await fields[i].valueInputField.setInputFieldCardByValue(itemInfos[i].value, env, game);
+                await fields[i].valueInputField.setInputFieldByValue(itemInfos[i].value, env, game);
             }
         }
         /// <summary>
@@ -1155,7 +1173,7 @@ namespace Controllers
                 propertyItemField = _ui.keywordsFoldout.getPropertyItemField(name);
             }
             propertyItemField.updateItem(itemInfo);
-            await propertyItemField.valueInputField.setInputFieldCardByValue(itemInfo.value, getCardPoolReferenceEnv(), game);
+            await propertyItemField.valueInputField.setInputFieldByValue(itemInfo.value, getCardPoolReferenceEnv(), game);
         }
         private PropertyItemInfo[] GetCardDefineCustomProps()
         {
@@ -1358,6 +1376,17 @@ namespace Controllers
                 scene.waitingBlocker.removeWaitingTask(WaitingTask.CardEditor);
             }
         }
+        private void setCustomPropertyCardPool(string propName, int[] itemIndexes, CardPoolReference poolRef)
+        {
+            var prop = _cardDefine.getProp<object>(propName);
+            var isCustom = !isPropertyNameBuiltin(propName);
+            if (prop.replaceListElementByIndexes(itemIndexes, new CardPoolIDProxy(poolRef.cardPoolId), out var newProp))
+            {
+                setCardProp(isCustom, propName, newProp);
+            }
+            updatePropertyItem(isCustom, propName);
+            markUnsaved();
+        }
 
         #endregion
 
@@ -1487,6 +1516,30 @@ namespace Controllers
         CardEditorPanel _ui;
         #endregion
 
+        #endregion
+
+        #region 内嵌类
+        public class CardPoolSelectSourceCustomProperty : CardPoolSelectSource
+        {
+            public CardPoolSelectSourceCustomProperty(CardEditorCtrl editor, IEnumerable<ICardPoolReference> poolRef) : base(poolRef)
+            {
+                _editor = editor;
+            }
+            public override bool Confirm()
+            {
+                _editor.setCustomPropertyCardPool(propName, propIndexes, _selectedCardPools.FirstOrDefault()?.ToReference());
+                return true;
+            }
+            /// <summary>
+            /// 当前正在选择的卡牌引用属性的属性名称。
+            /// </summary>
+            public string propName;
+            /// <summary>
+            /// 当前正在选择的卡牌引用属性的列表索引。
+            /// </summary>
+            public int[] propIndexes;
+            private CardEditorCtrl _editor;
+        }
         #endregion
     }
     public struct CardSelectSourceSkill : ICardSelectSource

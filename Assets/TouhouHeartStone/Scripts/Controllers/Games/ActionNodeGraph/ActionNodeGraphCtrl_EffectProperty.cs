@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ExcelLibrary.BinaryFileFormat;
 using Game;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -56,7 +57,7 @@ namespace Controllers
                 if (!field)
                     return;
                 field.updateItem(itemInfo);
-                await field.valueInputField.setInputFieldCardByValue(itemInfo.value, getCardPoolEnv(), game);
+                await field.valueInputField.setInputFieldByValue(itemInfo.value, getCardPoolEnv(), game);
             }
         }
         #region 事件回调
@@ -88,6 +89,9 @@ namespace Controllers
                 case ValueInputFieldButton.BuffEditButton:
                     onClickEffectPropertyBuffEditButtonCallback(name, itemIndexs);
                     break;
+                case ValueInputFieldButton.CardPoolButton:
+                    onClickEffectPropertyCardPoolButtonCallback(name, itemIndexs);
+                    break;
             }
         }
         private async void onClickEffectPropertyCardButtonCallback(string name, int[] itemIndexs)
@@ -109,6 +113,22 @@ namespace Controllers
             await displayCardSelectPanel(poolId);
             _curCardSeekingEffectPropName = name;
             _curCardSeekingEffectPropIndexes = itemIndexs;
+        }
+        private async void onClickEffectPropertyCardPoolButtonCallback(string name, int[] itemIndexes)
+        {
+            if (isReadonly)
+                return;
+            var prop = _effect.getProp(name);
+            if (prop == null)
+                return;
+            //打开卡牌选择界面
+            var source = new CardPoolSelectSourceEffectProperty(this, getCardPoolEnv())
+            {
+                title = game.lang._(EditorCtrl.EDITOR_TITLE_SELECT_CARD_POOL),
+                propName = name,
+                propIndexes = itemIndexes
+            };
+            await scene.displayCardPoolSingleSelectPanel(source);
         }
         private void onClickEffectPropertyCardEditButtonCallback(string name, int[] itemIndexs)
         {
@@ -182,7 +202,7 @@ namespace Controllers
                     var itemInfo = itemInfos[i];
                     if (!field)
                         return;
-                    await field.valueInputField.setInputFieldCardByValue(itemInfo.value, env, game);
+                    await field.valueInputField.setInputFieldByValue(itemInfo.value, env, game);
                 }
             }
         }
@@ -232,6 +252,15 @@ namespace Controllers
             var itemIndexes = _curCardSeekingEffectPropIndexes;
             var prop = _effect.getProp(propName);
             if (prop.replaceListElementByIndexes(itemIndexes, defRef, out var newProp))
+            {
+                setEffectProp(propName, newProp);
+                addRecordBreakpoint();
+            }
+        }
+        private void selectCardPoolForEffectProperty(string propName, int[] itemIndexes, CardPoolReference cardPoolRef)
+        {
+            var prop = _effect.getProp(propName);
+            if (prop.replaceListElementByIndexes(itemIndexes, new CardPoolIDProxy(cardPoolRef.cardPoolId), out var newProp))
             {
                 setEffectProp(propName, newProp);
                 addRecordBreakpoint();
@@ -313,6 +342,28 @@ namespace Controllers
             private string _name;
             private object _beforeValue;
             private object _afterValue;
+        }
+
+        public class CardPoolSelectSourceEffectProperty : CardPoolSelectSource
+        {
+            public CardPoolSelectSourceEffectProperty(ActionNodeGraphCtrl editor, IEnumerable<ICardPoolReference> poolRef) : base(poolRef)
+            {
+                _editor = editor;
+            }
+            public override bool Confirm()
+            {
+                _editor.selectCardPoolForEffectProperty(propName, propIndexes, _selectedCardPools.FirstOrDefault()?.ToReference());
+                return true;
+            }
+            /// <summary>
+            /// 当前正在选择的卡牌引用属性的属性名称。
+            /// </summary>
+            public string propName;
+            /// <summary>
+            /// 当前正在选择的卡牌引用属性的列表索引。
+            /// </summary>
+            public int[] propIndexes;
+            private ActionNodeGraphCtrl _editor;
         }
         #endregion
 

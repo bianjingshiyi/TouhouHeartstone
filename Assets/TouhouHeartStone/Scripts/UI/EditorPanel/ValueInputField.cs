@@ -50,6 +50,14 @@ namespace UI
                 _buildItem.updateView(name, image, 0);
             }
         }
+        public void setCardPool(string name, Sprite image)
+        {
+            var valueType = _valueInfo.type;
+            if (valueType.type == ActionNodeValueType.cardPoolReference && !valueType.isArray())
+            {
+                _cardPoolItem.updateView(name, image, 0);
+            }
+        }
         public ValueInputFieldListItem getItemAt(int index)
         {
             return _childrenElementList.getElement<ValueInputFieldListItem>(index);
@@ -159,6 +167,7 @@ namespace UI
             _buffItemEditButton.interactable = canEdit;
             _buildItem.interactable = canEdit;
             _buildItemEditButton.interactable = canEdit;
+            _cardPoolItem.interactable = canEdit;
             _inputDropdown.interactable = canEdit;
             _multiInputDropdown.interactable = canEdit;
             _addItemButton.interactable = canEdit;
@@ -185,6 +194,8 @@ namespace UI
             _buildItem.onClick += (item, data) => callButtonCallback(ValueInputFieldButton.CardButton);
             _buildItemEditButton.onClick.AddListener(() => callButtonCallback(ValueInputFieldButton.CardEditButton));
             _buffItemEditButton.onClick.AddListener(() => callButtonCallback(ValueInputFieldButton.BuffEditButton));
+
+            _cardPoolItem.onClick += (item, data) => callButtonCallback(ValueInputFieldButton.CardPoolButton);
         }
         #region 事件回调
         private void onTypeDropdownValueChangedCallback(int index)
@@ -511,6 +522,7 @@ namespace UI
                 _multiInputDropdown.gameObject.SetActive(false);
                 _button.gameObject.SetActive(false);
                 _buildItem.gameObject.SetActive(false);
+                _cardPoolItem.gameObject.SetActive(false);
                 _multiInputDropdown.gameObject.SetActive(false);
 
                 _listRoot.gameObject.SetActive(true);
@@ -831,14 +843,8 @@ namespace UI
         private void updateCard()
         {
             //卡牌
-            if (valueType == ActionNodeValueType.cardReference)
-            {
-                _buildItem.gameObject.SetActive(true);
-            }
-            else
-            {
-                _buildItem.gameObject.SetActive(false);
-            }
+            _buildItem.gameObject.SetActive(valueType == ActionNodeValueType.cardReference);
+            _cardPoolItem.gameObject.SetActive(valueType == ActionNodeValueType.cardPoolReference);
         }
         private void updateBuff()
         {
@@ -994,6 +1000,8 @@ namespace UI
         RecursiveDropdown _buffDropdown;
         [SerializeField]
         Button _buffItemEditButton;
+        [SerializeField]
+        CardViewDeckCardListItem _cardPoolItem;
 
         [Header("列表")]
         [SerializeField]
@@ -1131,8 +1139,13 @@ namespace UI
         }
     }
 
-    public static class ValueInputFieldHelper 
+    public static class ValueInputFieldHelper
     {
+        public static async Task setInputFieldByValue(this ValueInputField inputField, object value, IEnumerable<ICardPoolReference> env, MainManager game)
+        {
+            await inputField.setInputFieldCardByValue(value, env, game);
+            await inputField.setInputFieldCardPoolByValue(value, env, game);
+        }
         public static async Task setInputFieldCardByValue(this ValueInputField inputField, object value, IEnumerable<ICardPoolReference> env, MainManager game)
         {
             if (value is DefineReference cardReference)
@@ -1147,7 +1160,7 @@ namespace UI
                     var childInputField = inputField.getItemAt(i)?.valueField;
                     if (childInputField == null)
                         continue;
-                    await childInputField.setInputFieldCardByValue(element, env, game);
+                    await childInputField.setInputFieldByValue(element, env, game);
                 }
             }
         }
@@ -1177,6 +1190,48 @@ namespace UI
             inputField.setCard(cardName, image);
         }
 
+        public static async Task setInputFieldCardPoolByValue(this ValueInputField inputField, object value, IEnumerable<ICardPoolReference> env, MainManager game)
+        {
+            if (value is CardPoolIDProxy cardPoolID)
+            {
+                await inputField.setInputFieldCardPool(cardPoolID, env, game);
+            }
+            else if (value is IList list)
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var element = list[i];
+                    var childInputField = inputField.getItemAt(i)?.valueField;
+                    if (childInputField == null)
+                        continue;
+                    await childInputField.setInputFieldCardPoolByValue(element, env, game);
+                }
+            }
+        }
+        public static async Task setInputFieldCardPool(this ValueInputField inputField, CardPoolIDProxy cardPoolID, IEnumerable<ICardPoolReference> env, MainManager game)
+        {
+            if (!inputField)
+                return;
+            string poolName = string.Empty;
+            Sprite image = null;
+            if (cardPoolID != null)
+            {
+                var cardPoolRef = game.card.getCardPoolReferenceInEnv(cardPoolID.value, env);
+                if (cardPoolRef != null)
+                {
+                    // 如果卡池没有被加载，加载卡池。
+                    await game.card.getOrLoadCardPool(cardPoolRef, true);
+                    poolName = game.card.getCardPoolName(cardPoolRef) ?? game.lang._(StringTable.EDITOR_UNKNOWN_CARD_POOL);
+                    image = await game.card.loadCardPoolImage(cardPoolRef);
+                }
+                else
+                {
+                    poolName = game.lang._(StringTable.EDITOR_UNKNOWN_CARD_POOL);
+                    image = game.card.getDefaultSprite();
+                }
+            }
+            inputField.setCardPool(poolName, image);
+        }
     }
 
     public enum ValueInputFieldButton
@@ -1184,7 +1239,8 @@ namespace UI
         EditButton,
         CardButton,
         CardEditButton,
-        BuffEditButton
+        BuffEditButton,
+        CardPoolButton,
     }
     [Serializable]
     public struct ValueInputFieldProperties
