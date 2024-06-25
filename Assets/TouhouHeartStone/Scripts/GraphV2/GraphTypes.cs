@@ -139,6 +139,7 @@ namespace Game
             new GraphTypeInfo() { type = typeof(CardType), typeName = StringTable.EDITOR_TYPE_NAME_CARD_TYPE, color = new Color(.7f, .8f, .2f, 1) },
 
             new GraphTypeInfo() { type = typeof(EventReference), typeName = StringTable.EDITOR_TYPE_NAME_EVENT_TYPE, color = new Color(1, 1, .2f, 1) },
+            new GraphTypeInfo() { type = typeof(CardPoolIDProxy), typeName = StringTable.EDITOR_TYPE_NAME_CARD_POOL_REFERENCE, color = new Color(.1f, .5f, .1f, 1) },
             #endregion
 
             #region 隐藏类型

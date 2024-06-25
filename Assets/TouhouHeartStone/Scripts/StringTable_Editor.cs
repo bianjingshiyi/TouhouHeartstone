@@ -195,6 +195,8 @@ namespace Game
         public const string EDITOR_PARAM_NAME_KEYWORD = "关键词";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_CARD_TYPE = "卡牌类型";
+        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_CARD_POOL_REFERENCE = "卡池引用";
 
         #endregion
 

@@ -69,6 +69,8 @@ namespace Game
         public const string EDITOR_NODE_GET_CARD_DEFINE_TARGETS = "获取卡牌定义的合法使用目标";
         [TranslateMsg("节点名称")]
         public const string EDITOR_NODE_GET_CARD_DEFINE_TYPE = "获取卡牌定义的类型";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_GET_CARD_POOL_OF_CARD_DEFINE = "获取卡牌定义所属卡池";
 
         [TranslateMsg("编辑器-参数名称-源卡牌", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_SOURCE_CARD = "源卡牌";
@@ -526,6 +528,18 @@ namespace Game
             if (cardDefine == null)
                 return null;
             return cardDefine.type;
+        }
+        /// <summary>
+        /// 获取卡牌定义所属卡池
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.GetCardPoolOfCardDefine, StringTable.EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_GET_CARD_POOL_OF_CARD_DEFINE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_POOL_REFERENCE)]
+        public static CardPoolIDProxy getCardPoolOfCardDefine(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
+        {
+            if (cardDefine == null)
+                return null;
+            return new CardPoolIDProxy(cardDefine.cardPoolId);
         }
         /// <summary>
         /// 展示卡牌定义

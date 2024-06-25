@@ -7309,6 +7309,34 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>103025</defineId>
+    <obsoleteNames />
+    <editorName>获取卡牌定义所属卡池</editorName>
+    <category>卡牌定义</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取所属卡池的卡牌定义。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>CardPoolIDProxy</type>
+        <name>return</name>
+        <displayName>卡池引用</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的所属卡池。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[获取一个卡牌定义的所属卡池。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>203001</defineId>
     <obsoleteNames />
     <editorName>展示卡牌定义</editorName>

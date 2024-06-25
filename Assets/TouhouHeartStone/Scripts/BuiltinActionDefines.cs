@@ -123,6 +123,7 @@ namespace Game
         public const int GetValidCardDefineTargets = Type_Function + Category_CardDefine + 22;    // 获取卡牌定义的合法使用目标
         public const int GetCardDefineType = Type_Function + Category_CardDefine + 23; // 获取卡牌定义类型
         public const int IsCardDefineOfType = Type_Function + Category_CardDefine + 24;    // 卡牌定义类型判断
+        public const int GetCardPoolOfCardDefine = Type_Function + Category_CardDefine + 25;    // 获取卡牌定义所属卡池
 
 
         // 卡牌快照
