@@ -51,6 +51,14 @@ namespace UI
         {
             _IPFieldImage.gameObject.SetActive(visible);
         }
+        public void setRoomRuleDropdownListVisible(bool visible)
+        {
+            _createRoomDropdownListObj.SetActive(visible);
+        }
+        public void switchRoomRuleDropdownListVisible()
+        {
+            setRoomRuleDropdownListVisible(!_createRoomDropdownListObj.activeSelf);
+        }
         #endregion
         #region 私有方法
 
@@ -64,6 +72,12 @@ namespace UI
             _createRoomButton.onClick.AddListener(onCreateRoomClickedCallback);
             _returnButton.onClick.AddListener(onReturnButtonClickedCallback);
             _connectButton.onClick.AddListener(onConnectButtonClickedCallback);
+
+            for (int i = 0; i < _createRoomDropdownListItems.Length; i++)
+            {
+                var button = _createRoomDropdownListItems[i];
+                button.onClick.AddListener(() => onCreateRoomDropdownListItemClicked?.Invoke(Array.IndexOf(_createRoomDropdownListItems, button)));
+            }
         }
         #endregion
 
@@ -105,6 +119,7 @@ namespace UI
         public event Action onCreateRoomClicked;
         public event Action onReturnButtonClicked;
         public event Action<string> onConnectButtonClicked;
+        public event Action<int> onCreateRoomDropdownListItemClicked;
         #endregion
         #region 私有字段
         [SerializeField]
@@ -115,6 +130,11 @@ namespace UI
         private Button _connectButton;
         [SerializeField]
         private Button _createRoomButton;
+        [SerializeField]
+        private GameObject _createRoomDropdownListObj;
+        [SerializeField]
+        private Button[] _createRoomDropdownListItems;
+
         [SerializeField]
         private Button _refreshRoomButton;
         [SerializeField]

@@ -246,9 +246,9 @@ namespace Game
         /// 创建一个远程房间
         /// </summary>
         /// <returns></returns>
-        public async Task CreateRoom(string name = "", string password = "")
+        public async Task CreateRoom(string name = "", string password = "", int rule = 0)
         {
-            await clientLogic.createOnlineRoom(name, password);
+            await clientLogic.createOnlineRoom(name, password, rule);
 
             // 初始化房间设置
             var option = new HearthstoneOption();

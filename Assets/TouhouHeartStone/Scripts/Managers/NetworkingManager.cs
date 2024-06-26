@@ -81,9 +81,9 @@ namespace Game
         /// 创建一个房间
         /// </summary>
         /// <returns></returns>
-        public Task createRoom(string name = "", string password = "")
+        public Task createRoom(string name = "", string password = "", int rule = 0)
         {
-            return logic.CreateRoom(name, password);
+            return logic.CreateRoom(name, password, rule);
         }
         /// <summary>
         /// 创建本地房间

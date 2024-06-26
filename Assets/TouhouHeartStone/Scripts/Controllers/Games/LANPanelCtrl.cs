@@ -5,6 +5,7 @@ using Game;
 using MukioI18n;
 using NitoriNetwork.Common;
 using TouhouCardEngine;
+using TouhouHeartstone;
 using UI;
 using UnityEngine;
 
@@ -25,6 +26,7 @@ namespace Controllers
             _ui.setCreateRoomButtonInteractable(!logic.RoomIsValid);
             _ui.setIPFieldVisible(isLan);
             _ui.setRoomInfos(null, null, null);
+            _ui.setRoomRuleDropdownListVisible(false);
 
             if (logic.RoomIsValid)
             {
@@ -56,6 +58,7 @@ namespace Controllers
         {
             _ui.onRefreshRoomList += onRefreshRoomListCallback;
             _ui.onCreateRoomClicked += onCreateRoomClickedCallback;
+            _ui.onCreateRoomDropdownListItemClicked += onRoomRuleDropdownListItemClickedCallback;
             _ui.onReturnButtonClicked += onReturnButtonClickedCallback;
             _ui.onConnectButtonClicked += onConnectButtonClickedCallback;
             _ui.onConfirmPassword += onConfirmPasswordCallback;
@@ -124,8 +127,21 @@ namespace Controllers
         }
         private async void onCreateRoomClickedCallback()
         {
+            if (isLan)
+            {
+                string name = lang._(NETMANAGER_HOME, network.logic.GetSelfInfo().name);
+                await createRoom(name);
+            }
+            else
+            {
+                _ui.switchRoomRuleDropdownListVisible();
+            }
+        }
+        private async void onRoomRuleDropdownListItemClickedCallback(int index)
+        {
+            var rule = createRoomRules[index];
             string name = lang._(NETMANAGER_HOME, network.logic.GetSelfInfo().name);
-            await createRoom(name);
+            await createRoom(name, rule: rule);
         }
         private void onReturnButtonClickedCallback()
         {
@@ -178,7 +194,8 @@ namespace Controllers
             {
                 roomName = obj.RoomName,
                 canJoin = obj.PlayerCount < obj.MaxPlayerCount,
-                locked = obj.IsLocked
+                locked = obj.IsLocked,
+                homebrew = obj.Mode == GameRuleMode.HOMEBREW
             };
             item.update(viewData);
         }
@@ -187,12 +204,12 @@ namespace Controllers
             var index = _roomListItemList.IndexOf(item);
             return _roomDataList[index];
         }
-        private async Task createRoom(string name = "", string password = "")
+        private async Task createRoom(string name = "", string password = "", int rule = 0)
         {
             _ui.setLoadingImageVisible(true);
             try
             {
-                await network.createRoom(name, password);
+                await network.createRoom(name, password, rule);
                 displayRoomPanel();
             }
             catch (Exception e)
@@ -289,6 +306,11 @@ namespace Controllers
         private List<LobbyRoomData> _roomDataList = new List<LobbyRoomData>();
         private List<RoomListItem> _roomListItemList = new List<RoomListItem>();
         private bool isLan => game.network.logic.isLan;
+        private static readonly int[] createRoomRules = new int[]
+        {
+            GameRuleMode.CUSTOM,
+            GameRuleMode.HOMEBREW
+        };
         #region 密码相关
         private string _enteringRoomAddress;
         private string _enteringRoomID;

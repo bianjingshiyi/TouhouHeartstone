@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/TouhouHeartStone/Scripts/GameRuleMode.cs.meta
+guid: 9a8661ff972eebd4a8a226b2e4907260
+========
+guid: e9972cb6618041a48ab6d7d1d500a2a1
+>>>>>>>> 46050917e (添加私酿模式对战中起始手牌界面，和游戏结束界面的逻辑。):Assets/TouhouHeartStone/Scripts/BattleTable/UI/CardList/CardUIItem.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

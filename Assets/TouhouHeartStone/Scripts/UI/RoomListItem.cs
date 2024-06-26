@@ -13,6 +13,7 @@ namespace UI
             _roomNameText.text = viewData.roomName;
             _joinButton.interactable = viewData.canJoin;
             _lockedIcon.SetActive(viewData.locked);
+            _homebrewIcon.SetActive(viewData.homebrew);
         }
         #endregion
         #region 私有方法
@@ -48,6 +49,8 @@ namespace UI
         private Text _roomNameText;
         [SerializeField]
         private GameObject _lockedIcon;
+        [SerializeField]
+        private GameObject _homebrewIcon;
         #endregion
     }
     public struct RoomItemViewData
@@ -55,5 +58,6 @@ namespace UI
         public string roomName;
         public bool canJoin;
         public bool locked;
+        public bool homebrew;
     }
 }
