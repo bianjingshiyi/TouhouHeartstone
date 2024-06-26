@@ -39,6 +39,8 @@ namespace TouhouHeartstone
         public const string COST = "花费";
         [TranslateMsg("事件变量名", CONTEXT_EVENT_VAR)]
         public const string PROP_NAME = "属性名称";
+        [TranslateMsg("事件变量名", CONTEXT_EVENT_VAR)]
+        public const string BEFORE_CARD_DEFINE = "原卡牌定义";
 
         // 伤害事件
         [TranslateMsg("伤害事件/变量名", CONTEXT_EVENT_VAR)]
