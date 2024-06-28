@@ -10,7 +10,7 @@ namespace Game.BattleTable
             if (!request.playersId.Contains(table.player.id))
                 yield break;
 
-            table.showInitReplaceDialog(request);
+            table.showStartDialog(request);
         }
     }
 }

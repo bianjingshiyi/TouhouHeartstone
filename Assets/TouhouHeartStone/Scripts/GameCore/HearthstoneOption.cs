@@ -1,5 +1,5 @@
-﻿using MessagePack;
-using System;
+﻿using System;
+using MessagePack;
 using TouhouCardEngine;
 
 namespace TouhouHeartstone
@@ -14,6 +14,7 @@ namespace TouhouHeartstone
         public float timeoutForInitReplace = 30;
         public float timeoutForTurn = 75;
         public int startGem = 0;
+        public int gameRuleMode = GameRuleMode.CUSTOM;
         public CardPoolInfoPack[] cardPools = new CardPoolInfoPack[0];
 
         public HearthstoneOption()
@@ -28,6 +29,7 @@ namespace TouhouHeartstone
             timeoutForInitReplace = copyTarget.timeoutForInitReplace;
             timeoutForTurn = copyTarget.timeoutForTurn;
             cardPools = copyTarget.cardPools;
+            gameRuleMode = copyTarget.gameRuleMode;
         }
     }
     [MessagePackObject]
@@ -48,6 +50,7 @@ namespace TouhouHeartstone
             timeoutForInitReplace = option.timeoutForInitReplace;
             timeoutForTurn = option.timeoutForTurn;
             startGem = option.startGem;
+            gameRule = option.gameRuleMode;
             cardPools = option.cardPools;
         }
         public HearthstoneOption toOption()
@@ -60,6 +63,7 @@ namespace TouhouHeartstone
                 timeoutForInitReplace = timeoutForInitReplace,
                 timeoutForTurn = timeoutForTurn,
                 startGem = startGem,
+                gameRuleMode = gameRule,
                 cardPools = cardPools
             };
         }
@@ -77,5 +81,7 @@ namespace TouhouHeartstone
         public int startGem;
         [Key(6)]
         public CardPoolInfoPack[] cardPools;
+        [Key(7)]
+        public int gameRule;
     }
 }

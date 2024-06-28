@@ -12,67 +12,48 @@ namespace Game.BattleTable
         {
             gameObject.SetActive(active);
         }
-        public void setAcceptButtonText(string text)
-        {
-            _acceptButtonText.text = text;
-        }
         public void setWaiting(bool waiting)
         {
             _waitingText.gameObject.SetActive(waiting);
             _acceptButton.gameObject.SetActive(!waiting);
         }
-        public void setTitleText(string title)
-        {
-            _title.text = title;
-        }
         public MulliganCardItem getItem(int index)
         {
-            return _choices[index];
+            return _cardList.getItem(index);
         }
         public int indexOf(MulliganCardItem item)
         {
-            return _choices.IndexOf(item);
+            return _cardList.indexOf(item);
         }
         public MulliganCardItem addChoice()
         {
-            var choice = Instantiate(_itemTemplate, _itemRoot).GetComponent<MulliganCardItem>();
-            choice.gameObject.SetActive(true);
-            _choices.Add(choice);
-            choice.onPointerEnter += onItemPointerEnterCallback;
-            choice.onPointerExit += onItemPointerExitCallback;
-            choice.onClick += onItemClickCallback;
-            return choice;
+            return _cardList.add();
         }
         public void clearChoices()
         {
-            foreach (var choice in _choices)
-            {
-                choice.onPointerEnter -= onItemPointerEnterCallback;
-                choice.onPointerExit -= onItemPointerExitCallback;
-                choice.onClick -= onItemClickCallback;
-                choice.destroy();
-            }
-            _choices.Clear();
+            _cardList.clear();
         }
         #region 私有方法
         #region 生命周期
         private void Awake()
         {
             _acceptButton.onClick.AddListener(onAcceptButtonClickCallback);
-            _itemTemplate.SetActive(false);
+            _cardList.onItemPointerEnter += onItemPointerEnterCallback;
+            _cardList.onItemPointerExit += onItemPointerExitCallback;
+            _cardList.onItemClicked += onItemClickCallback;
         }
         #endregion
-        private void onItemPointerEnterCallback(MulliganCardItem card, PointerEventData pointer)
+        private void onItemPointerEnterCallback(int index)
         {
-            onItemPointerEnter?.Invoke(_choices.IndexOf(card));
+            onItemPointerEnter?.Invoke(index);
         }
-        private void onItemPointerExitCallback(MulliganCardItem card, PointerEventData pointer)
+        private void onItemPointerExitCallback(int index)
         {
-            onItemPointerExit?.Invoke(_choices.IndexOf(card));
+            onItemPointerExit?.Invoke(index);
         }
-        private void onItemClickCallback(MulliganCardItem card, PointerEventData pointer)
+        private void onItemClickCallback(int index)
         {
-            onItemClicked?.Invoke(_choices.IndexOf(card));
+            onItemClicked?.Invoke(index);
         }
         private void onAcceptButtonClickCallback()
         {
@@ -88,21 +69,12 @@ namespace Game.BattleTable
         #endregion
 
         #region 属性字段
-        public bool isShowing => gameObject.activeSelf;
         [SerializeField]
-        private GameObject _itemTemplate;
-        [SerializeField]
-        private Transform _itemRoot;
-        [SerializeField]
-        private List<MulliganCardItem> _choices = new List<MulliganCardItem>();
-        [SerializeField]
-        private Text _title;
+        private MulliganCardList _cardList;
         [SerializeField]
         private Text _waitingText;
         [SerializeField]
         private Button _acceptButton;
-        [SerializeField]
-        private Text _acceptButtonText;
         #endregion
     }
 }

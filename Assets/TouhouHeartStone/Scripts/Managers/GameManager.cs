@@ -99,10 +99,6 @@ namespace Game
         }
         #endregion
         #region 事件回调
-        private void onGameEndCallback()
-        {
-            endGame();
-        }
         private void onGameQuitButtonCallback()
         {
             var title = main.lang._(StringTable.HINT_TITLE);
@@ -130,6 +126,7 @@ namespace Game
             if (eventArg.define is GameEndEventDefine)
             {
                 onGameFinished?.Invoke(eventArg.getVar<Player[]>(GameEndEventDefine.VAR_WINNERS));
+                endGame();
             }
         }
         #endregion
@@ -377,14 +374,12 @@ namespace Game
             if (tableUI)
             {
                 tableUI.showSurrenderButton(mode == GameMode.remote || isPVE);
-                tableUI.LogCtrl.setGame(game, main, battleTableManager, localPlayer);
-                tableUI.LogCtrl.reset();
+                tableUI.GameResultDialog.setReplayButtonVisible(mode != GameMode.replay);
+
                 tableUI.onQuit += onGameQuitButtonCallback;
                 tableUI.onSurrender += onSurrenderCallback;
-                tableUI.GameResultDialog.onGameEnd += onGameEndCallback;
-                tableUI.GameResultDialog.onQuitButtonClicked += onGameResultQuitGameButtonClicked;
-                tableUI.GameResultDialog.setReplayButtonVisible(mode != GameMode.replay);
-                tableUI.GameResultDialog.onSaveReplayButtonClicked += onSaveReplayButtonClickCallback; // 保存并退出
+                tableUI.onGameResultQuitClick += onGameResultQuitGameButtonClicked;
+                tableUI.onSaveReplayClick += onSaveReplayButtonClickCallback; // 保存并退出
             }
         }
         private void disposeTableUI()
@@ -393,9 +388,8 @@ namespace Game
             {
                 tableUI.onQuit -= onGameQuitButtonCallback;
                 tableUI.onSurrender -= onSurrenderCallback;
-                tableUI.GameResultDialog.onGameEnd -= onGameEndCallback;
-                tableUI.GameResultDialog.onQuitButtonClicked -= onGameResultQuitGameButtonClicked;
-                tableUI.GameResultDialog.onSaveReplayButtonClicked -= onSaveReplayButtonClickCallback;
+                tableUI.onGameResultQuitClick -= onGameResultQuitGameButtonClicked;
+                tableUI.onSaveReplayClick -= onSaveReplayButtonClickCallback;
             }
         }
         /// <summary>

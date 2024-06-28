@@ -682,6 +682,7 @@ namespace Game
                 shuffle = room.getShuffle(),
                 sortedPlayers = room.getSortedPlayers(),
                 startGem = room.getStartGem(),
+                gameRuleMode = room.getGameRuleMode(),
                 timeoutForInitReplace = room.getTimeoutForInitReplace(),
                 timeoutForTurn = room.getTimeoutForTurn(),
                 cardPools = room.getCardPools()
@@ -754,9 +755,11 @@ namespace Game
         {
             return room.getOption<int>(Option.StartGem);
         }
-        public static bool getAllowCustomCards(this RoomData room)
+        public static int getGameRuleMode(this RoomData room)
         {
-            return room.getOption<bool>(Option.AllowCustomCards);
+            if (room.tryGetProp<int>(RoomData.PROP_ROOM_MODE, out int data))
+                return data;
+            return GameRuleMode.CUSTOM;
         }
         public static CardPoolInfoPack[] getCardPools(this RoomData roomData)
         {

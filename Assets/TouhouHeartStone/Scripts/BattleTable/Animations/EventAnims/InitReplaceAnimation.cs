@@ -8,7 +8,7 @@ namespace Game.BattleTable
     {
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
-            table.ui.InitReplaceDialog.setActive(false);
+            table.ui.StartDialog.setActive(false);
             table.completeMulligan();
             yield break;
         }

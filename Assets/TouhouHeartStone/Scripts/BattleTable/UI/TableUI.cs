@@ -13,6 +13,8 @@ namespace Game.BattleTable.UI
         {
             _quitButton.onClick.AddListener(onQuitClickedCallback);
             _surrenderButton.onClick.AddListener(onSurrenderClickedCallback);
+            _gameResultDialog.onQuitButtonClicked += () => onGameResultQuitClick?.Invoke();
+            _gameResultDialog.onSaveReplayButtonClicked += () => onSaveReplayClick?.Invoke();
         }
         private void onQuitClickedCallback()
         {
@@ -30,13 +32,15 @@ namespace Game.BattleTable.UI
         #region 事件
         public event Action onQuit;
         public event Action onSurrender;
+        public event Action onGameResultQuitClick;
+        public event Action onSaveReplayClick;
         #endregion
         #region 属性字段
         public GameObject CardDisplayerObj => _cardDisplayerObj;
         public CardDisplayer CardDisplayer => _cardDisplayer;
         public GameObject OpponentWaitingObj => _opponentWaitingObj;
         public PilePanel PilePanel => _pilePanel;
-        public MulliganDialog InitReplaceDialog => _mulliganDialog;
+        public StartDialog StartDialog => _startDialog;
         public TurnTipImage TurnTipImage => _turnTipImage;
         public GameResultDialog GameResultDialog => _gameResultDialog;
         public TipBox TipBox => _tipBox;
@@ -56,7 +60,7 @@ namespace Game.BattleTable.UI
         [SerializeField]
         private PilePanel _pilePanel;
         [SerializeField]
-        private MulliganDialog _mulliganDialog;
+        private StartDialog _startDialog;
         [SerializeField]
         private TurnTipImage _turnTipImage;
         [SerializeField]

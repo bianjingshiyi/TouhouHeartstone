@@ -1099,7 +1099,7 @@ namespace Game.BattleTable
         #endregion
 
         #region 初始换牌
-        public Card getInitCard(MulliganCardItem init)
+        public Card getInitCard(CardUIItem init)
         {
             foreach (var pair in initDic)
             {
@@ -1108,7 +1108,7 @@ namespace Game.BattleTable
             }
             return null;
         }
-        public void setInitCard(MulliganCardItem init, int cardID)
+        public void setInitCard(CardUIItem init, int cardID)
         {
             if (initDic.ContainsKey(cardID))
             {
@@ -1119,26 +1119,45 @@ namespace Game.BattleTable
                 initDic.Add(cardID, init);
             }
         }
-        public void showInitReplaceDialog(InitReplaceRequest request)
+        public void showStartDialog(InitReplaceRequest request)
         {
-            var dialog = ui.InitReplaceDialog;
+            var dialog = ui.StartDialog;
             if (dialog.isShowing)
                 return;
 
-            dialog.setActive(true);
-
-            var initPile = player.getInit();
             dialog.clearChoices();
+
+            if (isHomebrewMode())
+            {
+                dialog.setHomebrewMode();
+
+                var opponentCards = dialog.getOpponentCustomCards();
+                opponentCards.clear();
+                foreach (var card in _opponentCustomCards)
+                {
+                    var item = opponentCards.add();
+                    setCardDefine(item.card, card);
+                    item.card.setFaceup(true);
+                }
+            }
+            else
+            {
+                dialog.setCustomMode();
+            }
+
+            var mulligan = dialog.getMulliganDialog();
+            var initPile = player.getInit();
             foreach (var card in initPile)
             {
                 var snapshot = newSnapshot(card);
-                var item = dialog.addChoice();
+                var item = mulligan.addChoice();
                 item.setMarkVisible(false);
                 setCard(item.card, snapshot);
                 item.card.setFaceup(true);
                 setInitCard(item, card.id);
             }
-            dialog.setWaiting(false);
+            mulligan.setWaiting(false);
+            dialog.setActive(true);
         }
         #endregion
 
@@ -1905,10 +1924,20 @@ namespace Game.BattleTable
             startHoverTimer();
             _hoveredDiscoverCard = card;
         }
-        private void startHoverMulliganItem(MulliganCardItem card)
+        private void startHoverMulliganItem(CardUIItem card)
         {
             startHoverTimer();
             _hoveredMulliganItem = card;
+        }
+        private void startHoverOpponentCustomCardsItem(CardUIItem card)
+        {
+            startHoverTimer();
+            _hoveredOpponentCustomCardsItem = card;
+        }
+        private void startHoverRatingCardItem(RatingCardItem card)
+        {
+            startHoverTimer();
+            _hoveredRatingCardItem = card;
         }
         private void stopHover()
         {
@@ -1919,6 +1948,8 @@ namespace Game.BattleTable
             _hoveredPileCard = null;
             _hoveredDiscoverCard = null;
             _hoveredMulliganItem = null;
+            _hoveredOpponentCustomCardsItem = null;
+            _hoveredRatingCardItem = null;
             clearCardDisplayerData();
             clearPopUpData();
         }
@@ -2050,6 +2081,10 @@ namespace Game.BattleTable
                 transform = _hoveredDiscoverCard.transform;
             else if (_hoveredMulliganItem != null)
                 transform = _hoveredMulliganItem.transform;
+            else if (_hoveredOpponentCustomCardsItem != null)
+                transform = _hoveredOpponentCustomCardsItem.transform;
+            else if (_hoveredRatingCardItem != null)
+                transform = _hoveredRatingCardItem.transform; 
 
             if (transform && transform.gameObject.activeInHierarchy)
             {
@@ -2080,9 +2115,9 @@ namespace Game.BattleTable
                 var cardId = _choosingCards.ElementAt(index);
                 return game.getCard(cardId);
             }
-            else if (_hoveredMulliganItem != null)
+            else if (_hoveredMulliganItem is MulliganCardItem mulliganItem)
             {
-                var index = ui.InitReplaceDialog.indexOf(_hoveredMulliganItem);
+                var index = ui.StartDialog.getMulliganDialog().indexOf(mulliganItem);
                 return player.getInit()[index];
             }
             return null;
@@ -2098,6 +2133,16 @@ namespace Game.BattleTable
                 var index = table.Discover.indexOf(_hoveredDiscoverCard);
                 var defRef = _choosingCardDefineRefs.ElementAt(index);
                 cardDefine = game.getDefine(defRef);
+            }
+            else if (_hoveredOpponentCustomCardsItem != null)
+            {
+                var index = ui.StartDialog.getOpponentCustomCards().indexOf(_hoveredOpponentCustomCardsItem);
+                cardDefine = _opponentCustomCards[index];
+            }
+            else if (_hoveredRatingCardItem != null)
+            {
+                var index = ui.GameResultDialog.ratingDialog.indexOf(_hoveredRatingCardItem);
+                cardDefine = _opponentCustomCards[index];
             }
             if (cardDefine == null)
                 return null;
@@ -2467,7 +2512,7 @@ namespace Game.BattleTable
         private Dictionary<int, Servant> cardServantDic = new Dictionary<int, Servant>();
         private Dictionary<int, Secret> cardSecretDic = new Dictionary<int, Secret>();
         private Dictionary<int, HandItem> cardHandDic = new Dictionary<int, HandItem>();
-        private Dictionary<int, MulliganCardItem> initDic = new Dictionary<int, MulliganCardItem>();
+        private Dictionary<int, CardUIItem> initDic = new Dictionary<int, CardUIItem>();
         private List<int> _selfDeckList = new List<int>();
         private List<int> _enemyDeckList = new List<int>();
         private List<int> _selfGraveList = new List<int>();
@@ -2507,7 +2552,9 @@ namespace Game.BattleTable
         HandItem _hoveredHand;
         UICard _hoveredPileCard;
         UICard _hoveredDiscoverCard;
-        MulliganCardItem _hoveredMulliganItem;
+        CardUIItem _hoveredMulliganItem;
+        CardUIItem _hoveredOpponentCustomCardsItem;
+        RatingCardItem _hoveredRatingCardItem;
         bool _isDisplayingCard;
         #endregion
 

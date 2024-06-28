@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using BJSYGameCore;
 using Game.Animations;
 using Game.BattleTable.UI;
-using NGettext.Plural.Ast;
+using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
+using static Game.RoomDataPropName;
 using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
@@ -43,6 +44,8 @@ namespace Game.BattleTable
                 game.answers.onRequest += onRequestHandler;
                 game.answers.onResponse += onResponseHandler;
             }
+            ui.LogCtrl.setGame(game, main, this, player);
+            ui.LogCtrl.reset();
         }
         /// <summary>
         /// 初始化UI
@@ -62,6 +65,9 @@ namespace Game.BattleTable
             setSkill(table.EnemySkill, newSnapshot(oppo.getSkill()));
 
             initDecksAndGraves();
+
+            var oppoStartDeck = game.getOpponent(player).getStartDeck();
+            _opponentCustomCards = oppoStartDeck.Where(d => !d.isMaster() && !cardManager.isInnateCardPool(d.cardPoolId)).ToArray();
         }
         public void showTurnTipImage(bool friendly)
         {
@@ -95,9 +101,29 @@ namespace Game.BattleTable
                 ui.TipBox.hide();
             }
         }
-        public void showGameResult(bool result)
+        public bool isHomebrewMode()
         {
-            ui.GameResultDialog.ShowGameResult(result);
+            var option = game.getOption();
+            if (option == null)
+                return false;
+            return option.gameRuleMode == GameRuleMode.HOMEBREW;
+        }
+        public async void showGameResult(bool result)
+        {
+            var dialog = ui.GameResultDialog;
+            bool homebrew = isHomebrewMode() && _opponentCustomCards.Length > 0;
+            dialog.setRatingDialogVisible(homebrew);
+            dialog.setButtonGroupVisible(!homebrew);
+            if (homebrew)
+            {
+                foreach (var cardDefine in _opponentCustomCards)
+                {
+                    var card = dialog.ratingDialog.addChoice();
+                    await card.card.setCardDefine(cardDefine, this);
+                }
+            }
+            dialog.ShowGameResult(result);
+            stopHover();
         }
         public void setOpponentWaiting(bool waiting)
         {
@@ -424,10 +450,21 @@ namespace Game.BattleTable
             table.Discover.onItemPointerEnter += onCardChooseItemPointerEnterCallback;
             table.Discover.onItemPointerExit += onCardChooseItemPointerExitCallback;
 
-            ui.InitReplaceDialog.onItemPointerEnter += onMulliganItemPointerEnterCallback;
-            ui.InitReplaceDialog.onItemPointerExit += onMulliganItemPointerExitCallback;
-            ui.InitReplaceDialog.onItemClicked += onMulliganItemClickCallback;
-            ui.InitReplaceDialog.onAccept += onMulliganAcceptCallback;
+            ui.StartDialog.onMulliganItemPointerEnter += onMulliganItemPointerEnterCallback;
+            ui.StartDialog.onMulliganItemPointerExit += onMulliganItemPointerExitCallback;
+            ui.StartDialog.onMulliganItemClicked += onMulliganItemClickCallback;
+            ui.StartDialog.onMulliganAccept += onMulliganAcceptCallback;
+
+            var opponentCustomCards = ui.StartDialog.getOpponentCustomCards();
+            opponentCustomCards.onItemPointerEnter += onOpponentCustomCardsItemPointerEnterCallback;
+            opponentCustomCards.onItemPointerExit += onOpponentCustomCardsItemPointerExitCallback;
+
+            var gameResultDialog = ui.GameResultDialog;
+            var cardRatingDialog = gameResultDialog.ratingDialog;
+            cardRatingDialog.onItemPointerEnter += onRatingItemPointerEnterCallback;
+            cardRatingDialog.onItemPointerExit += onRatingItemPointerExitCallback;
+            cardRatingDialog.onItemVoteClick += onRatingItemVoteCallback;
+            cardRatingDialog.onAccept += onRatingAcceptCallback;
 
             ui.PilePanel.onCloseButtonClicked += onClosePilePanelClickCallback;
             ui.PilePanel.onItemPointerEnter += onPilePanelItemPointerEnterCallback;
@@ -581,7 +618,7 @@ namespace Game.BattleTable
         #region 换牌
         private void onMulliganItemPointerEnterCallback(int index)
         {
-            startHoverMulliganItem(ui.InitReplaceDialog.getItem(index));
+            startHoverMulliganItem(ui.StartDialog.getMulliganDialog().getItem(index));
         }
         private void onMulliganItemPointerExitCallback(int index)
         {
@@ -602,7 +639,7 @@ namespace Game.BattleTable
             {
                 _mulliganedCards.Add(card);
             }
-            ui.InitReplaceDialog.getItem(index).setMarkVisible(_mulliganedCards.Contains(card));
+            ui.StartDialog.getMulliganDialog().getItem(index).setMarkVisible(_mulliganedCards.Contains(card));
         }
         private async void onMulliganAcceptCallback()
         {
@@ -610,9 +647,55 @@ namespace Game.BattleTable
                 return;
             await player.cmdInitReplace(game, _mulliganedCards.ToArray());
             _mulliganConfirmed = true;
-            ui.InitReplaceDialog.setWaiting(true);
+            ui.StartDialog.getMulliganDialog().setWaiting(true);
         }
         #endregion
+
+        #region 私酿模式对手卡牌
+        private void onOpponentCustomCardsItemPointerEnterCallback(int index)
+        {
+            startHoverOpponentCustomCardsItem(ui.StartDialog.getOpponentCustomCards().getItem(index));
+        }
+        private void onOpponentCustomCardsItemPointerExitCallback(int index)
+        {
+            stopHover();
+        }
+        #endregion
+
+        #region 私酿模式对手卡牌打分
+        private void onRatingItemPointerEnterCallback(int index)
+        {
+            startHoverRatingCardItem(ui.GameResultDialog.ratingDialog.getItem(index));
+        }
+        private void onRatingItemPointerExitCallback(int index)
+        {
+            stopHover();
+        }
+        private void onRatingItemVoteCallback(int index, bool vote)
+        {
+            var cardDefine = _opponentCustomCards[index];
+            if (_customCardRating.TryGetValue(cardDefine, out var voted) && vote == voted)
+            {
+                _customCardRating.Remove(cardDefine);
+                var item = ui.GameResultDialog.ratingDialog.getItem(index);
+                item.cancelRating();
+            }
+            else
+            {
+                _customCardRating[cardDefine] = vote;
+                var item = ui.GameResultDialog.ratingDialog.getItem(index);
+                item.setRating(vote);
+            }
+        }
+        private void onRatingAcceptCallback()
+        {
+            // TODO: 发送打分信息
+            var resultDialog = ui.GameResultDialog;
+            resultDialog.setButtonGroupVisible(true);
+            resultDialog.setRatingDialogVisible(false);
+        }
+        #endregion
+
         #region 选牌
         private void onCardChooseCallback(int index)
         {
@@ -749,8 +832,8 @@ namespace Game.BattleTable
         #endregion
         private void reset()
         {
-            ui.InitReplaceDialog.setActive(false);
-            ui.InitReplaceDialog.clearChoices();
+            ui.StartDialog.setActive(false);
+            ui.StartDialog.clearChoices();
             ui.TurnTipImage.setActive(false);
 
             table.SelfMaster.setArmor(0);
@@ -808,6 +891,7 @@ namespace Game.BattleTable
             DestroyInvokeCard();
         }
         #endregion
+
         public TableUI ui => _ui;
         public BattleTable table => _table;
         public CardEngine game { get; private set; }
@@ -846,6 +930,8 @@ namespace Game.BattleTable
         public AnimationCurve cardShowCurve => _cardShowCurve;
         public AnimationCurve toDeckCurveStart => _toDeckCurveStart;
         public AnimationCurve toDeckCurveEnd => _toDeckCurveEnd;
+        private CardDefine[] _opponentCustomCards;
+        private Dictionary<CardDefine, bool> _customCardRating = new Dictionary<CardDefine, bool>();
         [SerializeField]
         AnimationCurve _cardShowCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(0.2f, 1));
         [SerializeField]
