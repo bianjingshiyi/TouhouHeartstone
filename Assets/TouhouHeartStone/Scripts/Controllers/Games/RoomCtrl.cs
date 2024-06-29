@@ -51,7 +51,7 @@ namespace Controllers
                     var classicPool = game.card.getLocalCardPoolInfo(CardManager.STANDARD_POOL_ID);
                     CardPoolInfoPack[] roomPools = new CardPoolInfoPack[] { classicPool.ToCardPoolInfoPack() };
                     _currentRoomData.setOption(Option.CardPools, roomPools);
-                    setNotifyRoomSetting(Option.CardPools, roomPools);
+                    setNotifyRoomOption(Option.CardPools, roomPools);
                     needCheckCardPools = false; // 设置远端卡池会有回调，在里面检测卡池，所以这里不检测
                 }
                 if (needCheckCardPools)
@@ -75,7 +75,6 @@ namespace Controllers
         {
             return _displayInfo;
         }
-
         public RoomPlayerData getLocalPlayerData()
         {
             if (_currentRoomData == null || _currentRoomData.playerDataList == null)
@@ -106,7 +105,7 @@ namespace Controllers
                     LoadCardPoolsByFromCache(roomData.getCardPools());
                 }
             }
-            updateRoomOptions();
+            updateRoomProps();
             updatePlayerReadyStates();
         }
         #endregion
@@ -157,7 +156,6 @@ namespace Controllers
             game.network.onRoomPropChanged += onReceiveRoomPropChangedCallback;
             game.network.onReceiveCardPoolSuggestionAnwser += onReceiveCardPoolsSuggestionAnwserCallback;
         }
-
         private async void Update()
         {
             if (_cardPoolPanelDirty)
@@ -179,54 +177,54 @@ namespace Controllers
         {
             if (string.IsNullOrEmpty(value))
             {
-                setNotifyRoomSetting(Option.RandomSeed, 0);
+                setNotifyRoomOption(Option.RandomSeed, 0);
                 return;
             }
 
             if (int.TryParse(value, out int i))
             {
-                setNotifyRoomSetting(Option.RandomSeed, i);
+                setNotifyRoomOption(Option.RandomSeed, i);
             }
             else
             {
-                updateRoomOptions();
+                updateRoomProps();
             }
         }
         private void onShuffleToggleValueChanged(bool value)
         {
-            setNotifyRoomSetting(Option.Shuffle, value);
+            setNotifyRoomOption(Option.Shuffle, value);
         }
         private void onInitReplaceTimeInputFieldValueChanged(string value)
         {
             if (int.TryParse(value, out int i) && 5 < i)
             {
-                setNotifyRoomSetting(Option.TimeoutForInitReplace, i);
+                setNotifyRoomOption(Option.TimeoutForInitReplace, i);
             }
             else
             {
-                updateRoomOptions();
+                updateRoomProps();
             }
         }
         private void onTurnTimeInputFieldValueChanged(string value)
         {
             if (int.TryParse(value, out int i) && 5 < i)
             {
-                setNotifyRoomSetting(Option.TimeoutForTurn, i);
+                setNotifyRoomOption(Option.TimeoutForTurn, i);
             }
             else
             {
-                updateRoomOptions();
+                updateRoomProps();
             }
         }
         private void onDisableRandomPlayerActOrderToggleValueChanged(bool value)
         {
             if (value)
             {
-                setNotifyRoomSetting(Option.SortedPlayers, _currentRoomData.playerDataList.Select(p => p.id).ToArray());
+                setNotifyRoomOption(Option.SortedPlayers, _currentRoomData.playerDataList.Select(p => p.id).ToArray());
             }
             else
             {
-                setNotifyRoomSetting(Option.SortedPlayers, null);
+                setNotifyRoomOption(Option.SortedPlayers, null);
             }
         }
         private void onClickRoomNameEditButtonCallback()
@@ -541,7 +539,7 @@ namespace Controllers
             if (players != null &&
                 players.Length != _currentRoomData.playerDataList.Count)
             {
-                setNotifyRoomSetting(Option.SortedPlayers, _currentRoomData.playerDataList.Select(p => p.id).ToArray());
+                setNotifyRoomOption(Option.SortedPlayers, _currentRoomData.playerDataList.Select(p => p.id).ToArray());
             }
 
             // 处理数值为0的种子。
@@ -549,7 +547,7 @@ namespace Controllers
             {
                 var rand = new byte[4];
                 System.Security.Cryptography.RandomNumberGenerator.Create().GetBytes(rand);
-                setNotifyRoomSetting(Option.RandomSeed, BitConverter.ToInt32(rand, 0));
+                setNotifyRoomOption(Option.RandomSeed, BitConverter.ToInt32(rand, 0));
             }
 
             _gameStarted = true;
@@ -710,26 +708,26 @@ namespace Controllers
 
         #region 玩家属性
         /// <summary>
-        /// 设置本地的房间值，并发送房间值改变的通知
+        /// 设置本地的房间设置，并发送房间设置改变的通知
         /// </summary>
-        /// <param name="prop"></param>
+        /// <param name="option"></param>
         /// <param name="value"></param>
-        private void setNotifyRoomSetting(Option prop, object value)
+        private void setNotifyRoomOption(Option option, object value)
         {
-            setNotifyRoomProp(prop.ToString(), value);
+            setNotifyRoomProp(option.ToString(), value);
         }
         /// <summary>
         /// 设置本地的房间值，并发送房间值改变的通知
         /// </summary>
-        /// <param name="propName"></param>
+        /// <param name="prop"></param>
         /// <param name="value"></param>
-        private void setNotifyRoomProp(string propName, object value)
+        private void setNotifyRoomProp(string name, object value)
         {
-            _currentRoomData?.setProp(propName, value);
-            updateRoomOptions();
+            _currentRoomData?.setProp(name, value);
             try
             {
-                game.network.logic.roomClient.SetRoomProp(propName, value);
+                roomClient.SetRoomProp(name, value);
+                updateRoomProps();
             }
             catch (Exception e)
             {
@@ -1025,7 +1023,7 @@ namespace Controllers
         }
         private void ApplyCardPools()
         {
-            setNotifyRoomSetting(Option.CardPools, _currentRoomData.getCardPools());
+            setNotifyRoomOption(Option.CardPools, _currentRoomData.getCardPools());
             _cardPoolPanelDirty = true;
         }
         private void SuggestCardPools(CardPoolSuggestion suggestion)
@@ -1208,8 +1206,8 @@ namespace Controllers
                 }
                 viewDatas[i] = new DeckListItemViewData()
                 {
-                    name = name, 
-                    image = await game.card.loadCardPoolImage(pool), 
+                    name = name,
+                    image = await game.card.loadCardPoolImage(pool),
                     selected = selected,
                     mode = DeckListItem.Mode.CanSelect
                 };
@@ -1273,15 +1271,7 @@ namespace Controllers
             Deck deck = player.getDeck();
             if (deck != null)
             {
-                bool deckValid;
-                if (_isLocalGame)
-                {
-                    deckValid = game.deck.isValidDeck(deck);
-                }
-                else
-                {
-                    deckValid = game.deck.isValidDeckForOnlineGame(deck);
-                }
+                bool deckValid = isValidDeck(deck);
                 // 卡组内的卡牌必须存在于房间内的卡池。
                 return deckValid && !HasNotSharedPools(getDeckCardPools(deck, out _), out _);
             }
@@ -1335,7 +1325,7 @@ namespace Controllers
             _ui.updatePlayerList(viewDatas);
             _ui.displayAddAIButton(_currentRoomData.playerDataList.Count < _currentRoomData.maxPlayerCount && _isLocalGame);
         }
-        private void updateRoomOptions()
+        private void updateRoomProps()
         {
             var room = _currentRoomData;
             var seed = room.getRandomSeed();
@@ -1348,12 +1338,17 @@ namespace Controllers
             var initReplaceTime = room.getTimeoutForInitReplace().ToString();
             var turnTime = room.getTimeoutForTurn().ToString();
             var disableRandomPlayerOrder = room.getSortedPlayers() != null;
+            var gameRule = room.getGameRuleMode();
+            var homebrew = gameRule == GameRuleMode.HOMEBREW;
             var viewData = new RoomOptionsViewData()
             {
                 roomName = roomName,
                 roomNameEditable = isNetOwner,
                 password = password,
                 passwordEditable = isNetOwner,
+
+                homebrew = homebrew,
+
                 seed = randomSeed,
                 seedEditable = isRoomOwner,
                 shuffle = shuffle,
@@ -1365,7 +1360,7 @@ namespace Controllers
                 disableRandomPlayerOrder = disableRandomPlayerOrder,
                 disableRandomPlayerOrderEditable = isRoomOwner,
             };
-            _ui.updateRoomOptions(viewData);
+            _ui.updateRoomProps(viewData);
         }
         private async Task displaySelectDeckPanel()
         {
@@ -1388,12 +1383,7 @@ namespace Controllers
                 var masterPoolRef = game.card.getLocalCardPoolReference(deck.masterCardRef.cardPoolId);
                 var image = await game.card.loadCardImage(masterPoolRef, deck.masterCardRef.defineId);
 
-                bool warning;
-                // 判断牌组是否合法。
-                if (_isLocalGame)
-                    warning = !game.deck.isValidDeck(deck);
-                else
-                    warning = !game.deck.isValidDeckForOnlineGame(deck);
+                bool warning = !isValidDeck(deck);
 
                 viewData[i] = new DeckListItemViewData()
                 {
@@ -1406,7 +1396,10 @@ namespace Controllers
                 };
             }
             _ui.displayDeckSelectPanel(viewData);
-        }        
+        }
+        #endregion
+
+        #region 对话框
         /// <summary>
         /// 显示卡池依赖丢失的窗口。
         /// </summary>
@@ -1491,6 +1484,24 @@ namespace Controllers
                 scene.menu.clearUserInfo();
                 scene.menu.showUnauthorizedDialog();
             }
+        }
+
+        private bool isValidDeck(Deck deck)
+        {
+            bool valid;
+            // 判断牌组是否合法。
+            if (_isLocalGame)
+                valid = game.deck.isValidDeck(deck);
+            else
+                valid = game.deck.isValidDeckForOnlineGame(deck);
+            if (!valid)
+                return false;
+            if (_currentRoomData.getGameRuleMode() == GameRuleMode.HOMEBREW)
+            {
+                if (game.deck.getCustomCards(deck).Length > 5)
+                    return false;
+            }
+            return true;
         }
 
         #endregion

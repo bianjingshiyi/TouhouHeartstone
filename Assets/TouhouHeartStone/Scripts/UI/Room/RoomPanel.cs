@@ -135,7 +135,7 @@ namespace UI
         }
         #endregion
 
-        public void updateRoomOptions(RoomOptionsViewData viewData)
+        public void updateRoomProps(RoomOptionsViewData viewData)
         {
             //设置房间选项
             try
@@ -158,6 +158,9 @@ namespace UI
 
                 _title.text = viewData.roomName;
                 _passwordInputField.text = viewData.password;
+
+                _homebrewIcon.SetActive(viewData.homebrew);
+
                 _randomSeedInputField.text = viewData.seed;
                 _shuffleToggle.isOn = viewData.shuffle;
                 _initReplaceTimeInputField.text = viewData.initReplaceTime;
@@ -203,6 +206,19 @@ namespace UI
             // 房间名编辑
             _titleEditButton.onClick.AddListener(onClickTitleEditButtonCallback);
             _confirmTitleEditButton.onClick.AddListener(onClickConfirmTitleEditButtonCallback);
+
+
+            EventTrigger homebrewIconTrigger = _homebrewIcon.AddComponent<EventTrigger>();
+
+            EventTrigger.Entry homebrewIconPointerEnter = new EventTrigger.Entry();
+            homebrewIconPointerEnter.eventID = EventTriggerType.PointerEnter;
+            homebrewIconPointerEnter.callback.AddListener(onHomebrewIconPointerEnterCallback);
+            homebrewIconTrigger.triggers.Add(homebrewIconPointerEnter);
+
+            EventTrigger.Entry homebrewIconPointerExit = new EventTrigger.Entry();
+            homebrewIconPointerExit.eventID = EventTriggerType.PointerExit;
+            homebrewIconPointerExit.callback.AddListener(onHomebrewIconPointerExitCallback);
+            homebrewIconTrigger.triggers.Add(homebrewIconPointerExit);
 
             _deckPanel.SetActive(false);
             _rightRegionObj.SetActive(true);
@@ -269,6 +285,17 @@ namespace UI
         private void onDisableRandomPlayerActOrderValueChangedCallback(bool value)
         {
             onDisableRandomPlayerActOrderToggleValueChanged?.Invoke(value);
+        }
+        #endregion
+
+        #region 私酿模式图标
+        private void onHomebrewIconPointerEnterCallback(BaseEventData pointer)
+        {
+            _homebrewDescriptionObj.SetActive(true);
+        }
+        private void onHomebrewIconPointerExitCallback(BaseEventData pointer)
+        {
+            _homebrewDescriptionObj.SetActive(false);
         }
         #endregion
 
@@ -473,6 +500,12 @@ namespace UI
         [SerializeField]
         Button _confirmTitleEditButton;
 
+        [Header("私酿模式")]
+        [SerializeField]
+        GameObject _homebrewIcon;
+        [SerializeField]
+        GameObject _homebrewDescriptionObj;
+
         [Header("查看卡组")]
         [SerializeField]
         private DeckCardList _deckViewCardList;
@@ -560,6 +593,9 @@ namespace UI
         public string password;
         public string seed;
         public bool shuffle;
+
+        public bool homebrew;
+
         public string initReplaceTime;
         public string turnTime;
         public bool disableRandomPlayerOrder;

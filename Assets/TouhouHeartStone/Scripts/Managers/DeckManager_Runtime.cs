@@ -87,6 +87,15 @@ namespace Game
             return isValidDeck(deck);
         }
         /// <summary>
+        /// 获取卡组内的自定义卡牌数量
+        /// </summary>
+        /// <param name="deck"></param>
+        /// <returns></returns>
+        public DefineReference[] getCustomCards(Deck deck)
+        {
+            return deck.toDefRefArray(false).Where(d => !main.card.isInnateCardPool(d.cardPoolId)).ToArray();
+        }
+        /// <summary>
         /// 卡组中是否有自定义卡牌。
         /// </summary>
         /// <param name="deck"></param>

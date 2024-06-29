@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 namespace Game.BattleTable
 {
-    public class CardUIItem : MonoBehaviour
+    public class CardUIItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
         public void destroy()
         {
@@ -28,6 +28,20 @@ namespace Game.BattleTable
         }
 
         void onPointerExitCallback(TableCard card, PointerEventData eventData)
+        {
+            onPointerExit?.Invoke(this, eventData);
+        }
+        void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
+        {
+            onClick?.Invoke(this, eventData);
+        }
+
+        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
+        {
+            onPointerEnter?.Invoke(this, eventData);
+        }
+
+        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
             onPointerExit?.Invoke(this, eventData);
         }

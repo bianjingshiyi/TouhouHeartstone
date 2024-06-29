@@ -1127,7 +1127,7 @@ namespace Game.BattleTable
 
             dialog.clearChoices();
 
-            if (isHomebrewMode())
+            if (isHomebrewMode() && _opponentCustomCards.Length > 0)
             {
                 dialog.setHomebrewMode();
 

@@ -2155,7 +2155,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 950
+  m_SortingOrder: 1100
   m_TargetDisplay: 0
 --- !u!1001 &449531846
 PrefabInstance:
@@ -5039,8 +5039,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 1501993716986638924, guid: 0c8c633ea15226d40890e4c5844a5577,
         type: 3}
       propertyPath: m_IsActive
