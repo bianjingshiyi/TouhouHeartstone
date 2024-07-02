@@ -67,7 +67,7 @@ namespace Game.BattleTable
             initDecksAndGraves();
 
             var oppoStartDeck = game.getOpponent(player).getStartDeck();
-            _opponentCustomCards = oppoStartDeck.Where(d => !d.isMaster() && !cardManager.isInnateCardPool(d.cardPoolId)).ToArray();
+            _opponentCustomCards = oppoStartDeck.Where(d => !d.isMaster() && !cardManager.isInnateCardPool(d.cardPoolId)).Distinct().ToArray();
         }
         public void showTurnTipImage(bool friendly)
         {

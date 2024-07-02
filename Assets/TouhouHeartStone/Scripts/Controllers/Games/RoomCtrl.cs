@@ -726,7 +726,7 @@ namespace Controllers
             _currentRoomData?.setProp(name, value);
             try
             {
-                roomClient.SetRoomProp(name, value);
+                game.network.roomClient.SetRoomProp(name, value);
                 updateRoomProps();
             }
             catch (Exception e)
@@ -1498,7 +1498,7 @@ namespace Controllers
                 return false;
             if (_currentRoomData.getGameRuleMode() == GameRuleMode.HOMEBREW)
             {
-                if (game.deck.getCustomCards(deck).Length > 5)
+                if (game.deck.getCustomCardRefs(deck).Length > 5)
                     return false;
             }
             return true;

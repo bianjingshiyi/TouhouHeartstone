@@ -91,9 +91,9 @@ namespace Game
         /// </summary>
         /// <param name="deck"></param>
         /// <returns></returns>
-        public DefineReference[] getCustomCards(Deck deck)
+        public DefineReference[] getCustomCardRefs(Deck deck)
         {
-            return deck.toDefRefArray(false).Where(d => !main.card.isInnateCardPool(d.cardPoolId)).ToArray();
+            return deck.toDefRefArray(false).Where(d => !main.card.isInnateCardPool(d.cardPoolId)).Distinct().ToArray();
         }
         /// <summary>
         /// 卡组中是否有自定义卡牌。
