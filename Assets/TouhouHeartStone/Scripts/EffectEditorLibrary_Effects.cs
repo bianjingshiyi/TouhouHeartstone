@@ -237,6 +237,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff,
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] Effect effect,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGETS)] Card[] targets,
             [ActionNodeParam(EDITOR_PARAM_NAME_IGNORE_TRIGGER_CONDITION)] bool ignoreTriggerCondition,
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_TRIGGER_EVENT, isOut: true)][NodeParamEventType(typeof(EffectTriggerEventDefine))] EventArg outEvent)
@@ -247,9 +248,9 @@ namespace Game
                 return;
             }
             if (ignoreTriggerCondition)
-                outEvent = await EffectTriggerEventDefine.doEvent(game, card, buff, effect, targets: targets);
+                outEvent = await EffectTriggerEventDefine.doEvent(game, card, buff, effect, eventArg, targets: targets);
             else
-                outEvent = await EffectTriggerEventDefine.doEventIfValid(game, card, buff, effect, targets: targets);
+                outEvent = await EffectTriggerEventDefine.doEventIfValid(game, card, buff, effect, eventArg, targets: targets);
             setOutParam(flow, node, nameof(outEvent), outEvent);
         }
         #endregion

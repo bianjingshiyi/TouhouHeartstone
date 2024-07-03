@@ -30,7 +30,8 @@ namespace TouhouHeartstone
             var buff = effectTriggerArg.getVar<Buff>(VAR_BUFF);
             var effect = effectTriggerArg.getVar<Effect>(VAR_EFFECT);
             var targets = effectTriggerArg.getVar<Card[]>(VAR_TARGETS);
-            var effectEnv = getEffectEnv(game, card, buff, effect, effectTriggerArg as EventArg, targets);
+            var effectEvent = effectTriggerArg.getVar<EventArg>(VAR_EVENT);
+            var effectEnv = getEffectEnv(game, card, buff, effect, effectEvent, targets);
             await effect.execute(effectEnv);
         }
         public override string toString(EventArg arg)
@@ -39,29 +40,62 @@ namespace TouhouHeartstone
             var effect = arg.getVar<Effect>(VAR_EFFECT);
             return $"卡牌{card}发动效果{effect}";
         }
-        public static async Task<EventArg> doEventIfValid(CardEngine game, Card card, Buff buff, Effect effect, Card[] targets = null)
+        public static async Task<EventArg> triggerActiveEffectIfValid(CardEngine game, Card card, Buff buff, GeneratedActiveEffect effect, Card[] targets = null)
         {
             var env = getEffectEnv(game, card, buff, effect, null, targets);
             if (!effect.checkCondition(env))
                 return null;
-            if (effect is GeneratedActiveEffect activeEffect)
+            var targetCount = effect.getTargetCheckerCount();
+            if (targetCount > 0)
             {
-                var targetCount = effect.getTargetCheckerCount();
-                if (targetCount > 0)
-                {
-                    if (targets == null)
-                        return null;
-                    if (targets.Length < targetCount)
-                        // 目标数量不足
-                        return null;
-                    if (!card.isValidTargetSet(game, buff, activeEffect, targets))
-                        // 目标不符合条件
-                        return null;
-                }
+                if (targets == null)
+                    return null;
+                if (targets.Length < targetCount)
+                    // 目标数量不足
+                    return null;
+                if (!card.isValidTargetSet(game, buff, effect, targets))
+                    // 目标不符合条件
+                    return null;
             }
-            return await doEvent(game, card, buff, effect, targets);
+            return await doEvent(game, card, buff, effect, null, targets);
         }
-        public static Task<EventArg> doEvent(CardEngine game, Card card, Buff buff, Effect effect, Card[] targets = null)
+        public static async Task<EventArg> triggerPassiveEffectIfValid(CardEngine game, Card card, Buff buff, GeneratedPassiveEffect effect)
+        {
+            var env = getEffectEnv(game, card, buff, effect, null);
+            if (!effect.checkCondition(env))
+                return null;
+            return await doEvent(game, card, buff, effect, null);
+        }
+        public static async Task<EventArg> triggerEventEffectIfValid(CardEngine game, Card card, Buff buff, GeneratedEventEffect effect, EventArg eventArg)
+        {
+            var env = getEffectEnv(game, card, buff, effect, eventArg);
+            if (!effect.checkCondition(env))
+                return null;
+            return await doEvent(game, card, buff, effect, eventArg);
+        }
+        public static async Task<EventArg> triggerAuraEffectIfValid(CardEngine game, Card card, Buff buff, GeneratedAura effect)
+        {
+            var env = getEffectEnv(game, card, buff, effect, null);
+            if (!effect.checkCondition(env))
+                return null;
+            return await doEvent(game, card, buff, effect, null);
+        }
+        public static Task<EventArg> doEventIfValid(CardEngine game, Card card, Buff buff, Effect effect, EventArg effectEvent, Card[] targets)
+        {
+            switch (effect)
+            {
+                case GeneratedActiveEffect active:
+                    return triggerActiveEffectIfValid(game, card, buff, active, targets);
+                case GeneratedAura aura:
+                    return triggerAuraEffectIfValid(game, card, buff, aura);
+                case GeneratedEventEffect evt:
+                    return triggerEventEffectIfValid(game, card, buff, evt, effectEvent);
+                case GeneratedPassiveEffect passive:
+                    return triggerPassiveEffectIfValid(game, card, buff, passive);
+            }
+            return Task.FromResult<EventArg>(null);
+        }
+        public static Task<EventArg> doEvent(CardEngine game, Card card, Buff buff, Effect effect, EventArg effectEvent, Card[] targets = null)
         {
             var define = game.getEventDefine<EffectTriggerEventDefine>();
             var arg = new EventArg(game, define);
@@ -69,11 +103,12 @@ namespace TouhouHeartstone
             arg.setVar(VAR_TARGETS, targets);
             arg.setVar(VAR_EFFECT, effect);
             arg.setVar(VAR_BUFF, buff);
+            arg.setVar(VAR_EVENT, effectEvent);
             return game.triggers.doEvent(arg);
         }
         public static Task<EventArg> doEvent(EffectEnv env, Card[] targets = null)
         {
-            return doEvent(env.game, env.card, env.buff, env.effect, targets);
+            return doEvent(env.game, env.card, env.buff, env.effect, env.eventArg, targets);
         }
         Card IEffectEventDefine.getCard(EventArg arg)
         {
@@ -83,7 +118,7 @@ namespace TouhouHeartstone
         {
             return arg.getVar<Effect>(VAR_EFFECT);
         }
-        private static EffectEnv getEffectEnv(CardEngine game, Card card, Buff buff, Effect effect, EventArg eventArg = null, Card[] targets = null)
+        private static EffectEnv getEffectEnv(CardEngine game, Card card, Buff buff, Effect effect, EventArg eventArg, Card[] targets = null)
         {
             var env = new EffectEnv(game, card, buff, eventArg, effect);
             env.setArgument(VAR_CARD, card);
@@ -95,6 +130,13 @@ namespace TouhouHeartstone
         public const string VAR_CARD = EVENTVAR.CARD;
         public const string VAR_BUFF = EVENTVAR.BUFF;
         public const string VAR_EFFECT = EVENTVAR.EFFECT;
+        /// <summary>
+        /// 给主动效果用
+        /// </summary>
         public const string VAR_TARGETS = EVENTVAR.TARGET_CARD;
+        /// <summary>
+        /// 给事件效果用
+        /// </summary>
+        public const string VAR_EVENT = EVENTVAR.EVENT;
     }
 }

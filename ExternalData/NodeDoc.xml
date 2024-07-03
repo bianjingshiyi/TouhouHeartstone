@@ -9711,6 +9711,14 @@
         <summary><![CDATA[要发动的效果。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
+        <type>EventArg</type>
+        <name>eventArg</name>
+        <displayName>事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[发动效果所使用的事件。如果不是事件效果，可以为空。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>Card</type>
         <name>targets</name>
         <displayName>目标卡牌集合</displayName>
