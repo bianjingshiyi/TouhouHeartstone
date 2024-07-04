@@ -71,6 +71,10 @@ namespace Game
         {
             logic.StartGame();
         }
+        public bool checkExceptionUnauthorized(Exception e)
+        {
+            return e is NetClientException netException && netException.StatusCode == System.Net.HttpStatusCode.Unauthorized;
+        }
 
         #region 房间相关
         /// <summary>
@@ -160,6 +164,10 @@ namespace Game
         public Task updateUserInfo()
         {
             return logic.updateUserInfo();
+        }
+        public void clearUserInfo()
+        {
+            logic.clearUserInfo();
         }
         public async Task register(AccountInfo accountInfo)
         {

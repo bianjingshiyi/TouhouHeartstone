@@ -96,6 +96,14 @@ namespace Game
             if (ServerClient == null)
                 return;
             await ServerClient.LogoutKratos();
+            clearUserInfo();
+        }
+        /// <summary>
+        /// 清除用户信息
+        /// </summary>
+        /// <returns></returns>
+        public void clearUserInfo()
+        {
             userInfo = null;
         }
 
@@ -406,7 +414,7 @@ namespace Game
         public void setServerAddress(string address)
         {
             ServerClient.SetClientBaseUri(address);
-            userInfo = null;
+            clearUserInfo();
         }
         public async Task<bool> NewKratosClient()
         {

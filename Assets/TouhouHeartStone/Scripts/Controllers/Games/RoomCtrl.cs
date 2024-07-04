@@ -34,6 +34,7 @@ namespace Controllers
                     cardPoolManager.onProgressChanged += onCardPoolProgressChanged;
                     cardPoolManager.onLoadStateChanged += onCardPoolStateChanged;
                     cardPoolManager.onOutOfRetry += onOutOfRetry;
+                    cardPoolManager.onException += onCardPoolExceptionCallback;
                 }
                 cardPoolManager.Reset();
 
@@ -172,9 +173,7 @@ namespace Controllers
         #region 房间设置
         private void onPasswordInputFieldValueChanged(string value)
         {
-            _currentRoomData?.setRoomPassword(value);
-            updateRoomOptions();
-            game.network.roomClient.SetRoomProp(RoomData.PROP_ROOM_PASSWORD, value);
+            setNotifyRoomProp(RoomData.PROP_ROOM_PASSWORD, value);
         }
         private void onRandomSeedInputFieldValueChanged(string value)
         {
@@ -238,9 +237,7 @@ namespace Controllers
         private void onClickRoomNameConfirmEditButtonCallback(string name)
         {
             _ui.setEditingRoomName(false);
-            _currentRoomData.setRoomName(name);
-            updateRoomOptions();
-            game.network.roomClient.SetRoomProp(RoomData.PROP_ROOM_NAME, name);
+            setNotifyRoomProp(RoomData.PROP_ROOM_NAME, name);
         }
         #endregion
 
@@ -310,7 +307,7 @@ namespace Controllers
             }
             await openEditCardPoolsPanel();
         }
-        private void onConfirmAddCardPools()
+        private async void onConfirmAddCardPools()
         {
             var roomPools = _currentRoomData.getCardPools();
             var addedCardPools = _selectedEditCardPools.Except(roomPools);
@@ -327,8 +324,8 @@ namespace Controllers
             {
                 // 添加卡池
                 var conflictPools = GetConflictCardPools(addedCardPools.ToArray(), out var addPools);
-                ShowRoomConflictDialogs(conflictPools, addPools, ConfirmSuggestion);
-                void ConfirmSuggestion()
+                bool resolved = await ShowRoomConflictDialogsAsync(conflictPools, addPools);
+                if (resolved)
                 {
                     if (CheckRoomPoolsValidation(addPools, removedCardPools, out var missingDeps))
                     {
@@ -342,7 +339,6 @@ namespace Controllers
                     {
                         ShowDependencyMissingDialog(missingDeps);
                     }
-
                 }
             }
             else
@@ -365,34 +361,36 @@ namespace Controllers
                 {
                     List<(CardPoolInfoPack roomPool, CardPoolInfoPack comingPool)> conflictPools;
                     List<CardPoolInfoPack> addPools;
-                    void ConfirmSuggestion()
-                    {
-                        if (CheckRoomPoolsValidation(addPools, removedCardPools, out var missingDeps))
-                        {
-                            AddCardPools(addPools);
-                            RemoveCardPools(removedCardPools);
-                            ApplyCardPools();
-                            closeEditCardPoolsPanel();
-                        }
-                        else
-                        {
-                            ShowDependencyMissingDialog(missingDeps);
-                        }
-                    }
 
-                    game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
+                    bool questionResult = await game.ui.dialog.ShowQuestionAsync(game.lang._(StringTable.HINT_TITLE), desc);
+
+                    if (questionResult)
                     {
                         if (CanUploadCardPools(addedArray, out string errorMessage))
                         {
                             conflictPools = GetConflictCardPools(addedArray, out addPools);
-                            ShowRoomConflictDialogs(conflictPools, addPools, ConfirmSuggestion);
+                            bool resolved = await ShowRoomConflictDialogsAsync(conflictPools, addPools);
+                            if (resolved)
+                            {
+                                if (CheckRoomPoolsValidation(addPools, removedCardPools, out var missingDeps))
+                                {
+                                    AddCardPools(addPools);
+                                    RemoveCardPools(removedCardPools);
+                                    ApplyCardPools();
+                                    closeEditCardPoolsPanel();
+                                }
+                                else
+                                {
+                                    ShowDependencyMissingDialog(missingDeps);
+                                }
+                            }
                         }
                         else
                         {
                             string title = game.lang._(StringTable.ERROR);
                             game.ui.dialog.ShowConfirm(title, errorMessage);
                         }
-                    });
+                    };
                 }
             }
         }
@@ -452,7 +450,7 @@ namespace Controllers
             _selectDeckPlayerId = GetSelfID();
             await displaySelectDeckPanel();
         }
-        private void onClickDeckSelectPanelItem(int index)
+        private async void onClickDeckSelectPanelItem(int index)
         {
             //选择卡组
             var deck = game.deck.getOrLoadDeckList()[index];
@@ -483,33 +481,34 @@ namespace Controllers
 
                     List<(CardPoolInfoPack roomPool, CardPoolInfoPack comingPool)> conflictPools;
                     List<CardPoolInfoPack> addPools;
-                    void ConfirmSuggestion()
-                    {
-                        if (CheckRoomPoolsValidation(addPools, null, out var missingDeps))
-                        {
-                            AddCardPools(addPools);
-                            ApplyCardPools();
-                            setPlayerDeck(_selectDeckPlayerId, deck);
-                        }
-                        else
-                        {
-                            ShowDependencyMissingDialog(missingDeps);
-                        }
-                    }
 
-                    game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
+                    bool questionResult = await game.ui.dialog.ShowQuestionAsync(game.lang._(StringTable.HINT_TITLE), desc);
+                    if (questionResult)
                     {
                         if (CanUploadCardPools(packs, out string errorMessage))
                         {
                             conflictPools = GetConflictCardPools(packs, out addPools);
-                            ShowRoomConflictDialogs(conflictPools, addPools, ConfirmSuggestion);
+                            bool resolved = await ShowRoomConflictDialogsAsync(conflictPools, addPools);
+                            if (resolved)
+                            {
+                                if (CheckRoomPoolsValidation(addPools, null, out var missingDeps))
+                                {
+                                    AddCardPools(addPools);
+                                    ApplyCardPools();
+                                    setPlayerDeck(_selectDeckPlayerId, deck);
+                                }
+                                else
+                                {
+                                    ShowDependencyMissingDialog(missingDeps);
+                                }
+                            }
                         }
                         else
                         {
                             string title = game.lang._(StringTable.ERROR);
                             game.ui.dialog.ShowConfirm(title, errorMessage);
                         }
-                    });
+                    };
                 }
                 // 否则，向房主提议加入卡池。
                 else
@@ -518,12 +517,13 @@ namespace Controllers
                     string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL, poolsString);
                     desc += $"\n{game.lang._(ROOM_CARD_POOL_WARNING_FOR_CUSTOMER)}";
 
-                    game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
+                    bool questionResult = await game.ui.dialog.ShowQuestionAsync(game.lang._(StringTable.HINT_TITLE), desc);
+                    if (questionResult)
                     {
                         SuggestCardPools(new CardPoolSuggestion(packs));
                         //隐藏选择卡组界面
                         _ui.hideDeckSelectPanel();
-                    });
+                    };
                 }
                 return;
             }
@@ -560,36 +560,37 @@ namespace Controllers
             }
             else
             {
-                game.network.StartRemoteGame();
+                try
+                {
+                    game.network.StartRemoteGame();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"开始远程游戏时出现异常：{e}");
+                    checkUnauthorized(e);
+                }
             }
         }
         private void onClickReadyButton()
         {
             var localPlayer = getLocalPlayerData();
             localPlayer.setReady(true);
-            setLocalPlayerProp(THHRoomPlayerDataHelper.PROP_READY, true);
+            sendSelfPlayerProp(THHRoomPlayerDataHelper.PROP_READY, true);
             updatePlayerReadyStates();
         }
         private void onClickCancelReadyButton()
         {
             var localPlayer = getLocalPlayerData();
             localPlayer.setReady(false);
-            setLocalPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
+            sendSelfPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
             updatePlayerReadyStates();
         }
         private void onClickQuitButton()
         {
-            _currentRoomData = null;
-            game.network.logic.QuitRoom();
+            quitRoomLogic();
 
             _ui.gameObject.SetActive(false);
             scene.menu.display();
-
-
-            if (cardPoolManager != null && cardPoolManager.running)
-            {
-                cardPoolManager.Cancel();
-            }
 
             if (!_isLocalGame)
             {
@@ -602,6 +603,8 @@ namespace Controllers
         #region 卡池管理器回调
         private void onCardPoolProgressChanged(float value)
         {
+            if (_currentRoomData == null)
+                return;
             var player = _currentRoomData.getPlayer(GetSelfID());
             var index = _currentRoomData.playerDataList.IndexOf(player);
             _ui.setCardPoolLoadProgress(index, value);
@@ -616,12 +619,12 @@ namespace Controllers
             if (state != localPlayer.getLoadState())
             {
                 localPlayer.setLoadState(state);
-                setLocalPlayerProp(RoomPlayerDataHelper.PROP_LOAD_STATE, (int)state);
+                sendSelfPlayerProp(RoomPlayerDataHelper.PROP_LOAD_STATE, (int)state);
             }
             if (localPlayer.getReady())
             {
                 localPlayer.setReady(false);
-                setLocalPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
+                sendSelfPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
             }
             updatePlayerReadyStates();
         }
@@ -631,6 +634,10 @@ namespace Controllers
 
             game.ui.dialog.ShowConfirm(title, e.Message);
         }
+        private void onCardPoolExceptionCallback(Exception e)
+        {
+            checkUnauthorized(e);
+        }
         #endregion
 
         #region 网络回调
@@ -638,7 +645,7 @@ namespace Controllers
         {
             updateRoomData(roomData);
         }
-        private void onReceiveCardPoolsSuggestionCallback(int playerId, CardPoolSuggestion suggestion)
+        private async void onReceiveCardPoolsSuggestionCallback(int playerId, CardPoolSuggestion suggestion)
         {
             string poolsString = PoolsToString(suggestion.cardPools);
             var suggester = _currentRoomData.getPlayer(playerId);
@@ -652,32 +659,29 @@ namespace Controllers
             List<(CardPoolInfoPack roomPool, CardPoolInfoPack comingPool)> conflictPools;
             List<CardPoolInfoPack> addPools;
 
-            game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
+            var result = await game.ui.dialog.ShowQuestionAsync(game.lang._(StringTable.HINT_TITLE), desc);
+            if (!result)
             {
-                conflictPools = GetConflictCardPools(suggestion.cardPools, out addPools);
-                ShowRoomConflictDialogs(conflictPools, addPools, ConfirmSuggestion, CancelSuggestion);
-            },
-            CancelSuggestion);
-
-
-            async void ConfirmSuggestion()
+                await anwserCardPoolsSuggestion(playerId, suggestion, false);
+                return;
+            }
+            conflictPools = GetConflictCardPools(suggestion.cardPools, out addPools);
+            var resolved = await ShowRoomConflictDialogsAsync(conflictPools, addPools);
+            if (!resolved)
             {
-                if (CheckRoomPoolsValidation(addPools, null, out var missingDeps))
-                {
-                    AddCardPools(addPools);
-                    ApplyCardPools();
-                    await game.network.roomClient.AnwserCardPoolsSuggestion(playerId, suggestion, true);
-                }
-                else
-                {
-                    ShowDependencyMissingDialog(missingDeps);
-                }
+                await anwserCardPoolsSuggestion(playerId, suggestion, false);
+                return;
             }
 
-            void CancelSuggestion()
+            if (!CheckRoomPoolsValidation(addPools, null, out var missingDeps))
             {
-                game.network.roomClient.AnwserCardPoolsSuggestion(playerId, suggestion, false);
+                ShowDependencyMissingDialog(missingDeps);
+                return;
             }
+
+            AddCardPools(addPools);
+            ApplyCardPools();
+            await anwserCardPoolsSuggestion(playerId, suggestion, true);
         }
         private async void onReceiveRoomPropChangedCallback(string key, object value)
         {
@@ -712,20 +716,43 @@ namespace Controllers
         /// <param name="value"></param>
         private void setNotifyRoomSetting(Option prop, object value)
         {
-            _currentRoomData?.setOption(prop, value);
+            setNotifyRoomProp(prop.ToString(), value);
+        }
+        /// <summary>
+        /// 设置本地的房间值，并发送房间值改变的通知
+        /// </summary>
+        /// <param name="propName"></param>
+        /// <param name="value"></param>
+        private void setNotifyRoomProp(string propName, object value)
+        {
+            _currentRoomData?.setProp(propName, value);
             updateRoomOptions();
-            var roomClient = game.network.logic.roomClient;
-            roomClient.SetRoomProp(prop.ToString(), value);
+            try
+            {
+                game.network.logic.roomClient.SetRoomProp(propName, value);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"设置房间属性时出现异常：{e}");
+                checkUnauthorized(e);
+            }
         }
         /// <summary>
         /// 设置本地玩家的属性，并将其发送到远端服务器
         /// </summary>
         /// <param name="name">属性名</param>
         /// <param name="value">属性</param>
-        private void setLocalPlayerProp(string name, object value)
+        private void sendSelfPlayerProp(string name, object value)
         {
-            var roomClient = game.network.logic.roomClient;
-            roomClient.SetPlayerProp(name, value);
+            try
+            {
+                game.network.logic.roomClient.SetPlayerProp(name, value);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"向服务器发送玩家自身的属性时出现异常：{e}");
+                checkUnauthorized(e);
+            }
         }
         private async void setPlayerDeck(int playerId, Deck deck)
         {
@@ -735,7 +762,7 @@ namespace Controllers
                 player.setDeck(deck);
                 if (playerId == GetSelfID())
                 {
-                    setLocalPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, deck.toDefRefArray(true));
+                    sendSelfPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, deck.toDefRefArray(true));
                     var cardPoolRef = getCardPoolReference(deck.masterCardRef.cardPoolId);
                     _ui.setLocalPlayerDeck(deck.name, await game.card.loadCardImage(cardPoolRef, deck.masterCardRef.defineId));
                 }
@@ -1005,7 +1032,15 @@ namespace Controllers
         {
             if (CanUploadCardPools(suggestion.cardPools, out string errorMessage))
             {
-                game.network.roomClient.SuggestCardPools(suggestion);
+                try
+                {
+                    game.network.roomClient.SuggestCardPools(suggestion);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"提议卡池时出现异常：{e}");
+                    checkUnauthorized(e);
+                }
             }
             else
             {
@@ -1020,6 +1055,19 @@ namespace Controllers
             await cardPoolManager.StartPlan(pools);
         }
         #endregion
+
+        private async Task anwserCardPoolsSuggestion(int playerId, CardPoolSuggestion suggestion, bool result)
+        {
+            try
+            {
+                await game.network.roomClient.AnwserCardPoolsSuggestion(playerId, suggestion, result);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"回应卡池提议时出现错误：{e}");
+                checkUnauthorized(e);
+            }
+        }
 
         #endregion
 
@@ -1369,50 +1417,81 @@ namespace Controllers
             string desc = game.lang._(ROOM_CARD_POOL_DEPENDENCY_MISSING, PoolsToString(missingDeps, true));
             game.ui.dialog.ShowConfirm(title, desc);
         }
-        private void ShowRoomConflictDialogs(List<(CardPoolInfoPack roomPool, CardPoolInfoPack comingPool)> conflictPools,
-            List<CardPoolInfoPack> addingPools,
-            Action confirmAction = null,
-            Action cancelAction = null)
+        private async Task<bool> ShowRoomConflictDialogsAsync(List<(CardPoolInfoPack roomPool, CardPoolInfoPack comingPool)> conflictPools, List<CardPoolInfoPack> addingPools)
         {
-            if (conflictPools.Count > 0)
+            while (conflictPools.Count > 0)
             {
                 var pools = conflictPools[0];
-                CardPoolInfoPack roomPool = pools.roomPool;
-                CardPoolInfoPack comingPool = pools.comingPool;
-                var poolName = game.card.getCardPoolName(roomPool);
-                string conflictDesc = game.lang._(ROOM_CARD_POOLS_CONFLICTED, poolName, comingPool.version, roomPool.version);
-                string[] options = new string[]
+                var selectedIndex = await ShowRoomConflictDialogAsync(pools);
+                if (selectedIndex == 0)
+                    return false;
+
+                if (selectedIndex < 0)
                 {
-                    game.lang._(ROOM_CARD_POOLS_USE_POOL_BUTTON, roomPool.version),
-                    game.lang._(StringTable.CANCEL),
-                    game.lang._(ROOM_CARD_POOLS_USE_POOL_BUTTON, comingPool.version)
-                };
-                game.ui.dialog.ShowOptions(game.lang._(ROOM_CARD_POOLS_CONFLICTED_TITLE), conflictDesc, options, (index) =>
+                    addingPools.Add(pools.roomPool);
+                }
+                else
                 {
-                    switch (index)
-                    {
-                        case 0:
-                            addingPools.Add(roomPool);
-                            conflictPools.RemoveAt(0);
-                            ShowRoomConflictDialogs(conflictPools, addingPools, confirmAction, cancelAction);
-                            break;
-                        case 1:
-                            cancelAction?.Invoke();
-                            break;
-                        case 2:
-                            addingPools.Add(comingPool);
-                            conflictPools.RemoveAt(0);
-                            ShowRoomConflictDialogs(conflictPools, addingPools, confirmAction, cancelAction);
-                            break;
-                    }
-                });
+                    addingPools.Add(pools.comingPool);
+                }
+                conflictPools.RemoveAt(0);
             }
-            else
+            return true;
+        }
+        private async Task<int> ShowRoomConflictDialogAsync((CardPoolInfoPack roomPool, CardPoolInfoPack comingPool) pools)
+        {
+            CardPoolInfoPack roomPool = pools.roomPool;
+            CardPoolInfoPack comingPool = pools.comingPool;
+            var poolName = game.card.getCardPoolName(roomPool);
+            string conflictDesc = game.lang._(ROOM_CARD_POOLS_CONFLICTED, poolName, comingPool.version, roomPool.version);
+            string[] options = new string[]
             {
-                confirmAction?.Invoke();
+                game.lang._(ROOM_CARD_POOLS_USE_POOL_BUTTON, roomPool.version),
+                game.lang._(StringTable.CANCEL),
+                game.lang._(ROOM_CARD_POOLS_USE_POOL_BUTTON, comingPool.version)
+            };
+            var selectedIndex = await game.ui.dialog.ShowOptionsAsync(game.lang._(ROOM_CARD_POOLS_CONFLICTED_TITLE), conflictDesc, options);
+            switch (selectedIndex)
+            {
+                case 0:
+                    return -1;
+                case 1:
+                    return 0;
+                case 2:
+                    return 1;
             }
+            return 0;
         }
         #endregion
+
+        private void quitRoomLogic()
+        {
+            _currentRoomData = null;
+            try
+            {
+                game.network.logic.QuitRoom();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"退出房间时出现异常：{e}");
+            }
+
+            if (cardPoolManager != null && cardPoolManager.running)
+            {
+                cardPoolManager.Cancel();
+            }
+        }
+        private void checkUnauthorized(Exception e)
+        {
+            if (game.network.checkExceptionUnauthorized(e))
+            {
+                quitRoomLogic();
+                _ui.gameObject.SetActive(false);
+                scene.menu.display();
+                scene.menu.clearUserInfo();
+                scene.menu.showUnauthorizedDialog();
+            }
+        }
 
         #endregion
 

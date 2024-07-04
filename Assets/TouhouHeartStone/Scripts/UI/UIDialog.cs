@@ -92,6 +92,19 @@ namespace UI
 
         List<Button> btnList = new List<Button>();
 
+        /// <summary>
+        /// 显示一个只有两个选项的询问对话框
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="content"></param>
+        /// <param name="options"></param>
+        /// <returns>选择结果</returns>
+        public Task<int> ShowOptionsAsync(string title, string content, string[] options)
+        {
+            TaskCompletionSource<int> tcs = new TaskCompletionSource<int>();
+            ShowOptions(title, content, options, (index) => tcs.SetResult(index));
+            return tcs.Task;
+        }
         public void ShowOptions(string title, string content, string[] options, Action<int> onSelectOption)
         {
             titleText.text = title;

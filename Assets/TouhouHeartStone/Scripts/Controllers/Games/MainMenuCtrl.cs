@@ -35,6 +35,18 @@ namespace Controllers
         {
             gameObject.SetActive(false);
         }
+
+        public void clearUserInfo()
+        {
+            game.network.clearUserInfo();
+            updatePlayerInfo();
+        }
+        public void showUnauthorizedDialog()
+        {
+            string title = lang._(LOGIN_STATE_INVALID_TITLE);
+            string quote = lang._(LOGIN_STATE_INVALID_DESC);
+            game.ui.dialog.ShowConfirm(title, quote);
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -441,6 +453,11 @@ namespace Controllers
             catch (Exception e)
             {
                 Debug.LogError($"登出失败：{e}");
+                if (game.network.checkExceptionUnauthorized(e))
+                {
+                    clearUserInfo();
+                    _ui.setPlayerEditPanelVisible(false);
+                }
             }
             finally
             {
@@ -518,6 +535,12 @@ namespace Controllers
             catch (NetClientException e)
             {
                 showErrorMessage(panel, e);
+                if (game.network.checkExceptionUnauthorized(e))
+                {
+                    clearUserInfo();
+                    showUnauthorizedDialog();
+                    _ui.setPlayerEditPanelVisible(false);
+                }
             }
             finally
             {
@@ -549,7 +572,16 @@ namespace Controllers
             }
             catch (NetClientException e)
             {
-                showErrorMessage(panel, e);
+                if (game.network.checkExceptionUnauthorized(e))
+                {
+                    clearUserInfo();
+                    showUnauthorizedDialog();
+                    _ui.setPlayerEditPanelVisible(false);
+                }
+                else
+                {
+                    showErrorMessage(panel, e);
+                }
             }
             finally
             {
@@ -579,7 +611,16 @@ namespace Controllers
             }
             catch (Exception e)
             {
-                showErrorMessage(panel, e);
+                if (game.network.checkExceptionUnauthorized(e))
+                {
+                    clearUserInfo();
+                    showUnauthorizedDialog();
+                    _ui.setPlayerEditPanelVisible(false);
+                }
+                else
+                {
+                    showErrorMessage(panel, e);
+                }
             }
             finally
             {
@@ -769,6 +810,10 @@ namespace Controllers
         private const string STEAMBINDING_UNBOND_SUCCESSFULLY = "成功解绑Steam帐号。";
         [TranslateMsg]
         private const string STEAMBINDING_GETTING_STATE = "获取中...";
+        [TranslateMsg]
+        private const string LOGIN_STATE_INVALID_TITLE = "登陆状态失效";
+        [TranslateMsg]
+        private const string LOGIN_STATE_INVALID_DESC = "登陆状态失效，请重新进行登录";
 
         private const string KEY_STEAM_ACCOUNT_NOTED = "SteamAccountNoted";
         private LangManager lang => game.lang;

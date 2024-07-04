@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Game;
 using MukioI18n;
+using NitoriNetwork.Common;
 using TouhouCardEngine;
 using UI;
 using UnityEngine;
@@ -153,6 +154,7 @@ namespace Controllers
             }
         }
         #endregion
+
         private void updateRoomList(LobbyRoomDataList list)
         {
             clearRooms();
@@ -195,8 +197,7 @@ namespace Controllers
             }
             catch (Exception e)
             {
-                showCreateRoomException(e);
-                Debug.LogException(e);
+                onException(e, lang._(CANNOT_CREATE_ROOM));
             }
             finally
             {
@@ -213,8 +214,7 @@ namespace Controllers
             }
             catch (Exception e)
             {
-                showJoinRoomException(e);
-                Debug.LogException(e);
+                onException(e, lang._(CANNOT_JOIN_ROOM));
             }
             finally
             {
@@ -231,8 +231,7 @@ namespace Controllers
             }
             catch (Exception e)
             {
-                showJoinRoomException(e);
-                Debug.LogException(e);
+                onException(e, lang._(CANNOT_JOIN_ROOM));
             }
             finally
             {
@@ -252,14 +251,24 @@ namespace Controllers
             //  加载聊天框
             scene.chatCtrl.display(roomData);
         }
-        private void showCreateRoomException(Exception e)
-        {
-            dialog.ShowConfirm(lang._(CANNOT_CREATE_ROOM), e.Message, null);
-        }
 
         private void showJoinRoomException(Exception e)
         {
             dialog.ShowConfirm(lang._(CANNOT_JOIN_ROOM), e.Message, null);
+        }
+        private void onException(Exception e, string dialogTitle)
+        {
+            Debug.LogException(e);
+            if (game.network.checkExceptionUnauthorized(e))
+            {
+                game.ui.mainUI.display(game.ui.mainUI.MainMenu);
+                scene.menu.clearUserInfo();
+                scene.menu.showUnauthorizedDialog();
+            }
+            else
+            {
+                dialog.ShowConfirm(dialogTitle, e.Message, null);
+            }
         }
         #endregion
 

@@ -290,8 +290,8 @@ namespace Controllers
             {
                 var title = game.lang._(StringTable.ERROR);
                 var desc = game.lang._(ERROR_UPLOADING_CARDPOOL, e.Message);
-                game.ui.dialog.ShowConfirm(title, desc);
                 Debug.LogError($"选择上传卡池时出现错误：{e}");
+                onExceptionDialog(e, title, desc);
             }
             finally
             {
@@ -312,7 +312,7 @@ namespace Controllers
             catch (Exception e)
             {
                 var title = game.lang._(StringTable.ERROR);
-                game.ui.dialog.ShowConfirm(title, e.Message);
+                onExceptionDialog(e, title, e.Message);
             }
             finally
             {
@@ -361,8 +361,8 @@ namespace Controllers
             {
                 var title = game.lang._(StringTable.ERROR);
                 var quote = game.lang._(ERROR_UPLOADING_CARDPOOL, e.Message);
-                game.ui.dialog.ShowConfirm(title, quote);
                 Debug.LogError($"上传卡池时出现错误：{e}");
+                onExceptionDialog(e, title, quote);
             }
             finally
             {
@@ -746,9 +746,9 @@ namespace Controllers
             {
                 var title = game.lang._(StringTable.ERROR);
                 var quote = game.lang._(ERROR_DOWNLOADING_CARDPOOL, e.Message);
-                game.ui.dialog.ShowConfirm(title, quote);
                 Debug.LogError($"下载卡池时出现错误：{e}");
                 deleteDownloadedFiles();
+                onExceptionDialog(e, title, quote);
             }
             finally
             {
@@ -887,8 +887,8 @@ namespace Controllers
             {
                 var title = game.lang._(StringTable.ERROR);
                 var desc = game.lang._(ERROR_DELETING_CARDPOOL, e.Message);
-                game.ui.dialog.ShowConfirm(title, desc);
                 Debug.LogError($"删除卡池时出现错误：{e}");
+                onExceptionDialog(e, title, desc);
             }
             finally
             {
@@ -896,6 +896,30 @@ namespace Controllers
             }
         }
         #endregion
+
+        private bool checkUnauthorized(Exception e)
+        {
+            if (game.network.checkExceptionUnauthorized(e))
+            {
+                if (_downloadCts != null && !_downloadCts.IsCancellationRequested)
+                {
+                    _downloadCts.Cancel();
+                }
+                hide();
+                scene.menu.display();
+                scene.menu.clearUserInfo();
+                scene.menu.showUnauthorizedDialog();
+                return true;
+            }
+            return false;
+        }
+        private void onExceptionDialog(Exception e, string dialogTitle, string message = null)
+        {
+            if (!checkUnauthorized(e))
+            {
+                game.ui.dialog.ShowConfirm(dialogTitle, message ?? e.Message, null);
+            }
+        }
         private Color getStateColor(WorkshopCardPoolState state)
         {
             switch (state)
@@ -980,6 +1004,7 @@ namespace Controllers
             {
                 Debug.LogError($"加载创意工坊页面{_page}失败：{e}");
                 _ui.setLoadingState(WorkshopPanel.LoadingState.Warning);
+                checkUnauthorized(e);
             }
         }
         private async Task loadPage(int page)

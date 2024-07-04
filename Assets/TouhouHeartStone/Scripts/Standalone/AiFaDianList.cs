@@ -48,7 +48,7 @@ namespace IGensoukyo.Utilities
 
             var result = queryAifadian<ItemList<SponsorItem>>(SponsorURL, doc.ToJson());
             if (!result.IsSuccessful)
-                throw new NetClientException(result.ErrorMessage);
+                throw new NetClientException(result.ErrorMessage, result.StatusCode);
 
             return result.Data;
         }

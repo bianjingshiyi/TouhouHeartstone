@@ -24,6 +24,7 @@ namespace Game
             runner.onDownloadCompleted += onDownloadCompletedCallback;
             runner.onLoadStateChanged += onLoadStateChangedCallback;
             runner.onOutOfRetry += onOutOfRetryCallback;
+            runner.onException += onExceptionCallback;
             runner.onProgressChanged += onProgressChangedCallback;
             runner.onFinished += onFinishedCallback;
             _runners.Add(runner);
@@ -75,6 +76,10 @@ namespace Game
         {
             onOutOfRetry?.Invoke(exception);
         }
+        private void onExceptionCallback(Exception exception)
+        {
+            onException?.Invoke(exception);
+        }
         private async void onFinishedCallback(PlanRunner runner)
         {
             await updateRunners();
@@ -102,6 +107,7 @@ namespace Game
         public event Action<CardPoolPlan> onUploadCompleted;
         public event Action<CardPoolPlan> onDownloadCompleted;
         public event Action<Exception> onOutOfRetry;
+        public event Action<Exception> onException;
         #endregion
         #region 属性字段
         private MainManager game;
@@ -161,6 +167,11 @@ namespace Game
             {
                 logger.logError(e.ToString());
                 onOutOfRetry?.Invoke(e);
+            }
+            catch (Exception e)
+            {
+                logger.logError($"卡池传输时出现异常：{e}");
+                onException?.Invoke(e);
             }
             finally
             {
@@ -299,10 +310,6 @@ namespace Game
                 {
                     // 取消事件丢给下面处理。
                     throw e;
-                }
-                catch (Exception e)
-                {
-                    logger.logError($"检查房间卡池时出现异常：{e}");
                 }
             }
             AddUploadPools(uploadPools.ToArray());
@@ -844,6 +851,7 @@ namespace Game
         public event Action<CardPoolPlan> onUploadCompleted;
         public event Action<CardPoolPlan> onDownloadCompleted;
         public event Action<Exception> onOutOfRetry;
+        public event Action<Exception> onException;
         public event Action<PlanRunner> onFinished;
         #endregion
         #region 字段属性
