@@ -39,6 +39,7 @@ namespace TouhouHeartstone
                 await effect.disable(game, card, null);
             }
             await card.setKeywords(game, new string[0]);
+            await card.clearConsumableKeywords(game);
             await card.setSpellDamage(game, 0);
             await card.setDamageReduce(game, 0);
         }
