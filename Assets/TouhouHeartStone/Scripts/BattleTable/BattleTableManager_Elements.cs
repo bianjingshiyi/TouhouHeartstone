@@ -2174,15 +2174,15 @@ namespace Game.BattleTable
                 if (buffDefine == null)
                 {
                     sprite = cardManager.getDefaultSprite();
-                    name = lang._(StringTable.BUFF_NAME_UNKNOWN);
-                    desc = lang._(StringTable.BUFF_DESC_UNKNOWN);
+                    name = lang._(StringTable.BUFF_NAME_UNKNOWN) ?? string.Empty;
+                    desc = lang._(StringTable.BUFF_DESC_UNKNOWN) ?? string.Empty;
                 }
                 else
                 {
                     var poolRef = getCardPoolReference(buffDefine.cardPoolId);
                     sprite = await loadBuffImage(buffDefine);
-                    name = cardManager.getBuffName(poolRef, buffDefine.id);
-                    desc = cardManager.getBuffDesc(poolRef, buffDefine.id);
+                    name = getBuffName(buffDefine) ?? string.Empty;
+                    desc = getBuffDescription(buffDefine) ?? string.Empty;
                 }
                 if (name.Length > _maxBuffNameLength)
                     name = lang._(StringTable.TRIMMED_COTENTS, name.Substring(0, _maxBuffNameLength));
