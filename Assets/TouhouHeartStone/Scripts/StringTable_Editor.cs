@@ -103,6 +103,7 @@ namespace Game
         public const string EDITOR_PARAM_NAME_CARD = Translations.EDITOR_PARAM_NAME_CARD;
         public const string EDITOR_PARAM_NAME_BUFF_DEFINE = Translations.EDITOR_PARAM_NAME_BUFF_DEFINE;
         public const string EDITOR_PARAM_NAME_TAG_LIST = Translations.EDITOR_PARAM_NAME_TAG_LIST;
+        public const string EDITOR_PARAM_NAME_TARGET_CARD = Translations.EDITOR_PARAM_NAME_TARGET_CARD;
 
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_BUFF = "增益";
@@ -179,8 +180,6 @@ namespace Game
         public const string EDITOR_PARAM_NAME_ELSE_ACTION = "否则动作";
         [TranslateMsg("编辑器-参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_TARGETS = "目标卡牌集合";
-        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
-        public const string EDITOR_PARAM_NAME_TARGET_CARD = "目标卡牌";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_CARD_REFERENCE = "卡牌引用";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]

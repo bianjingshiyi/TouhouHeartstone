@@ -811,9 +811,9 @@ namespace Controllers
         [TranslateMsg]
         private const string STEAMBINDING_GETTING_STATE = "获取中...";
         [TranslateMsg]
-        private const string LOGIN_STATE_INVALID_TITLE = "登陆状态失效";
+        private const string LOGIN_STATE_INVALID_TITLE = "登录状态失效";
         [TranslateMsg]
-        private const string LOGIN_STATE_INVALID_DESC = "登陆状态失效，请重新进行登录";
+        private const string LOGIN_STATE_INVALID_DESC = "登录状态失效，请重新进行登录";
 
         private const string KEY_STEAM_ACCOUNT_NOTED = "SteamAccountNoted";
         private LangManager lang => game.lang;
