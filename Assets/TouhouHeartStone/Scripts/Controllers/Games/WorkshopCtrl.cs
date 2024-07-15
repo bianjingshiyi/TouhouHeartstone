@@ -830,7 +830,7 @@ namespace Controllers
             int downloadedCount = 0;
             int resourceCount = poolResources.Length;
             var workshopResources = workshopInfo.Resources.Prepend(workshopInfo.CoverImage);
-            foreach (var resId in workshopInfo.Resources)
+            foreach (var resId in workshopResources)
             {
                 if (!string.IsNullOrEmpty(resId))
                 {
