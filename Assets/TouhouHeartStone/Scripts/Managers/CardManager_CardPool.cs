@@ -1103,6 +1103,36 @@ namespace Game
             return info != null && info.editTime == cardPoolRef.CardPoolVersion;
         }
         #endregion
+        public async Task clearUnusedResources()
+        {
+            var safeImages = new List<string>();
+            var safeSounds = new List<string>();
+            foreach (var poolInfo in getLocalCardPoolInfos())
+            {
+                var (_, pool) = await getOrLoadCardPool(poolInfo, true);
+                if (pool == null)
+                    continue;
+                safeImages.AddRange(getCardPoolImages(poolInfo, pool));
+                safeSounds.AddRange(getCardPoolSounds(pool));
+            }
+
+            var texturesDir = getExternalImageDirectory();
+            foreach (var file in Directory.GetFiles(texturesDir))
+            {
+                var relativePath = Path.GetRelativePath(texturesDir, file);
+                if (safeImages.Contains(relativePath))
+                    continue;
+                File.Delete(file);
+            }
+            var soundsDir = getExternalSoundDirectory();
+            foreach (var file in Directory.GetFiles(soundsDir))
+            {
+                var relativePath = Path.GetRelativePath(soundsDir, file);
+                if (safeSounds.Contains(relativePath))
+                    continue;
+                File.Delete(file);
+            }
+        }
         public string allocCardPoolPathByName(CardPoolInfo cardPool)
         {
             var cardPoolName = game.card.getCardPoolName(cardPool);

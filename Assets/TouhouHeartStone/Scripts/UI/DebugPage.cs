@@ -13,6 +13,7 @@ namespace UI
         {
             backBtn.onClick.AddListener(onBack);
             _clearTutorialDataButton.onClick.AddListener(onClickClearTutorialDataButtonCallback);
+            _clearUnusedResourceButton.onClick.AddListener(onClickClearUnusedResourceButtonCallback);
         }
 
         protected override void onDisplay()
@@ -39,6 +40,10 @@ namespace UI
             main.tutorial.clearTutorialFinishedData();
             scene.guide.hide();
         }
+        private async void onClickClearUnusedResourceButtonCallback()
+        {
+            await main.card.clearUnusedResources();
+        }
 
         MainManager main => this.findInstance<MainManager>();
         MainSceneCtrl scene => this.findInstance<MainSceneCtrl>();
@@ -51,6 +56,8 @@ namespace UI
         Toggle skipCardNumCheckField;
         [SerializeField]
         Button _clearTutorialDataButton;
+        [SerializeField]
+        Button _clearUnusedResourceButton;
         [SerializeField]
         Button backBtn;
     }

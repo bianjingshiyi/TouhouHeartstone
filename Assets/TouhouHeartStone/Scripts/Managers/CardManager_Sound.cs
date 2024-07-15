@@ -48,6 +48,14 @@ namespace Game
             return game.fileManager.isFileExist(getExternalSoundPath(path));
         }
         /// <summary>
+        /// 获取外部音频的目录路径。
+        /// </summary>
+        /// <returns>目录路径。</returns>
+        public string getExternalSoundDirectory()
+        {
+            return getExternalResourceDirectory(ResourceType.Sound);
+        }
+        /// <summary>
         /// 获取外部音频的绝对路径。
         /// </summary>
         /// <param name="path">音频名</param>

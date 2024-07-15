@@ -255,6 +255,16 @@ namespace Game
             return loadResource(cardPoolRef, ResourceType.Picture, imagePath, defaultImage);
         }
         #endregion
+
+        /// <summary>
+        /// 获取外部图片的目录。
+        /// </summary>
+        /// <returns>目录路径。</returns>
+        public string getExternalImageDirectory()
+        {
+            return getExternalResourceDirectory(ResourceType.Picture);
+        }
+
         /// <summary>
         /// 获取外部图片的绝对路径。
         /// </summary>

@@ -307,6 +307,10 @@ namespace Game
         #endregion
 
         #region 路径
+        public string getExternalResourceDirectory(ResourceType resourceType)
+        {
+            return Path.Combine(_persistentDataPath, getResourceDirectoryName(resourceType));
+        }
         public string getExternalResourcePath(ResourceType resourceType, string path)
         {
             return Path.Combine(_persistentDataPath, getResourceDirectoryName(resourceType), path);
