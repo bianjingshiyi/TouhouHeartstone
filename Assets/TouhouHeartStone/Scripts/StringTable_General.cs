@@ -44,7 +44,11 @@ namespace Game
         [TranslateMsg("找不到某些内容时的占位符")]
         public const string UNKNOWN = "未知";
         [TranslateMsg("找不到用户时的占位符")]
-        public const string UNKNOWN_USER = "未知用户"; 
+        public const string UNKNOWN_USER = "未知用户";
+        [TranslateMsg("所有提示通用的重试")]
+        public const string RETRY = "重试";
+        [TranslateMsg("所有提示通用的跳过")]
+        public const string SKIP = "跳过";
         #endregion
 
         #region 帐号

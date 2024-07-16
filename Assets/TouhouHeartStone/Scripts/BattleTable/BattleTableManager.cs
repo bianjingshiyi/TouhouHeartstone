@@ -687,12 +687,9 @@ namespace Game.BattleTable
                 item.setRating(vote);
             }
         }
-        private void onRatingAcceptCallback()
+        private async void onRatingAcceptCallback()
         {
-            // TODO: 发送打分信息
-            var resultDialog = ui.GameResultDialog;
-            resultDialog.setButtonGroupVisible(true);
-            resultDialog.setRatingDialogVisible(false);
+            await acceptRating();
         }
         #endregion
 
@@ -890,8 +887,53 @@ namespace Game.BattleTable
             clearCardBuffEffects();
             DestroyInvokeCard();
         }
+        private async Task acceptRating()
+        {
+            try
+            {
+                ui.WaitingBlocker.addWaitingTask(WaitingTask.Battle);
+                var groups = _customCardRating.GroupBy(c => c.Key.cardPoolId);
+                foreach (var group in groups)
+                {
+                    var ratingParams = string.Join(",", group.Select(p => $"{p.Key.id}:{p.Value}"));
+                    await _main.network.rateCardPoolCards(group.Key, ratingParams);
+                }
+                var resultDialog = ui.GameResultDialog;
+                resultDialog.setButtonGroupVisible(true);
+                resultDialog.setRatingDialogVisible(false);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"卡牌评分失败：{e}");
+                var title = lang._(StringTable.ERROR);
+                var desc = lang._(CARD_RATING_ERROR, e.Message);
+                var options = new string[]
+                {
+                    lang._(StringTable.RETRY),
+                    lang._(StringTable.SKIP),
+                };
+                _main.ui.dialog.ShowOptions(title, desc, options, async index =>
+                {
+                    if (index == 0)
+                        await acceptRating();
+                    else
+                    {
+                        var resultDialog = ui.GameResultDialog;
+                        resultDialog.setButtonGroupVisible(true);
+                        resultDialog.setRatingDialogVisible(false);
+                    }
+
+                });
+            }
+            finally
+            {
+                ui.WaitingBlocker.removeWaitingTask(WaitingTask.Battle);
+            }
+        }
         #endregion
 
+        [TranslateMsg]
+        public const string CARD_RATING_ERROR = "卡牌评分失败：{0}";
         public TableUI ui => _ui;
         public BattleTable table => _table;
         public CardEngine game { get; private set; }

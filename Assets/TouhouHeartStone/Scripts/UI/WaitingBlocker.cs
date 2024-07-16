@@ -46,6 +46,7 @@ namespace UI
         CardEditor,
         Build,
         Editor,
-        LoadWorkshop
+        LoadWorkshop,
+        Battle
     }
 }

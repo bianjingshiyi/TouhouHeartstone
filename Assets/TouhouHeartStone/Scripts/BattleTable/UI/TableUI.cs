@@ -47,6 +47,7 @@ namespace Game.BattleTable.UI
         public Text ErrorTipText => _errorText;
         public CardPopUpTable CardPopUp => _cardPopUp;
         public GameLogCtrl LogCtrl => _logCtrl;
+        public WaitingBlocker WaitingBlocker => _waitingBlocker;
         [SerializeField]
         private GameObject _cardDisplayerObj;
         [SerializeField]
@@ -73,6 +74,8 @@ namespace Game.BattleTable.UI
         private GameLogCtrl _logCtrl;
         [SerializeField]
         private CardPopUpTable _cardPopUp;
+        [SerializeField]
+        private WaitingBlocker _waitingBlocker;
         #endregion
     }
 }
