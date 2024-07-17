@@ -18,7 +18,9 @@ namespace Game.BattleTable
 
             var buffDefine = buff.define;
             var buffSkin = table.getBuffSkin(buffDefine);
-            DefineReference animRef = buffSkin?.persistentAnimRef;
+
+            var persAnimRef = buffSkin?.persistentAnimRef;
+            DefineReference animRef = persAnimRef?.animRef;
             if (animRef != null && !table.hasBuffEffect(card.id, animRef))
             {
                 var srcTransform = table.getCardTransform(card.id, true);
@@ -33,6 +35,8 @@ namespace Game.BattleTable
                     visible = false;
                 }
                 var effect = table.createEffect(animRef, info);
+                effect.modifyColors(persAnimRef.colorModifies);
+
                 effect.setVisible(visible);
                 table.addCardBuffEffect(card.id, buff.instanceID, effect);
             }

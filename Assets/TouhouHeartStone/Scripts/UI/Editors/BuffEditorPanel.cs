@@ -228,18 +228,13 @@ namespace UI
         #endregion
 
         #region 特效
-        public void initPersistentAnims(string[] animNames)
-        {
-            _persistentAnimDropdown.ClearOptions();
-            _persistentAnimDropdown.AddOptions(new List<string>(animNames));
-        }
         /// <summary>
         /// 设置当前语言索引
         /// </summary>
         /// <param name="index"></param>
-        public void setPersistentAnim(int index)
+        public void setPersistentAnim(string name)
         {
-            _persistentAnimDropdown.SetValueWithoutNotify(index);
+            _persistentAnimLabel.text = name;
         }
         #endregion
 
@@ -275,7 +270,6 @@ namespace UI
             resetInputFieldLanguages();
             _skinDropdown.Hide();
             _skinNameInputField.DeactivateInputField();
-            _persistentAnimDropdown.Hide();
             _nameInputField.inputField.DeactivateInputField();
             _descInputField.inputField.DeactivateInputField();
         }
@@ -304,7 +298,7 @@ namespace UI
             _deleteSkinButton.onClick.AddListener(onDeleteSkinButtonClicked);
             _skinNameInputField.gameObject.SetActive(false);
             _skinNameInputField.onEndEdit.AddListener(onSkinNameInputFieldEndEdit);
-            _persistentAnimDropdown.onValueChanged.AddListener(onPersistentAnimDropdownValueChanged);
+            _persistentAnimEditButton.onClick.AddListener(onPersistentAnimEditButtonCallback);
 
             _nameInputField.onEndEdit += onNameInputFieldEndEdit;
             _descInputField.onEndEdit += onDescInputFieldEndEdit;
@@ -389,9 +383,9 @@ namespace UI
         {
             onChangeDesc?.Invoke(text);
         }
-        private void onPersistentAnimDropdownValueChanged(int value)
+        private void onPersistentAnimEditButtonCallback()
         {
-            onChangePersistentAnim?.Invoke(value);
+            onEditPersistentAnimClick?.Invoke();
         }
         #endregion
         #region 修改器
@@ -539,7 +533,7 @@ namespace UI
         /// <summary>
         /// 当更换了持续特效，参数为更换的特效索引。
         /// </summary>
-        public event Action<int> onChangePersistentAnim;
+        public event Action onEditPersistentAnimClick;
         public event Action<int, BuffInputField> onInputFieldLanguageChanged;
         #endregion
 
@@ -646,7 +640,9 @@ namespace UI
         [SerializeField]
         LocalizedInputField _descInputField;
         [SerializeField]
-        Dropdown _persistentAnimDropdown;
+        Text _persistentAnimLabel;
+        [SerializeField]
+        Button _persistentAnimEditButton;
         [SerializeField]
         AnimationRefList _animationRefList;
 

@@ -231,12 +231,6 @@ namespace Controllers
 
             // 节点图。
             _graphEditor.onOpenNodeAnimationDialog += onOpenNodeAnimationDialogCallback;
-            _graphEditor.onAnimationPropChanged += onNodeAnimationPropChangedCallback;
-            _graphEditor.onAnimationResetColorClicked += onAnimationResetColorClickedCallback;
-            _graphEditor.onOpenNodeAnimationColorPicker += onOpenNodeAnimationColorPickerCallback;
-            _graphEditor.onColorPickerValueChanged += onColorPickerValueChangedCallback;
-
-            _graphEditor.onAnimationPreviewPlayButtonClicked += onAnimationPreviewPlayButtonClickedCallback;
         }
         #endregion
 
@@ -833,77 +827,11 @@ namespace Controllers
         {
             var eventNames = game.anims.getNodeVisualEffectEventEditorNames(node);
             var viewData = game.anims.getNodeAnimationViewData(node, _curCardSkin);
-            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curCardSkin);
+            var colorViewData = game.anims.getAnimationColorViewDataForNode(node, _curCardSkin);
             _graphEditor.initNodeAnimationDialogEvents(eventNames);
             _graphEditor.updateAnimationDialog(viewData);
             _graphEditor.updateAnimationDialogColors(colorViewData);
-            _graphEditor.displayNodeAnimationDialog(node);
-        }
-        private void onNodeAnimationPropChangedCallback(Node node, VisualEffectDialogInfo info)
-        {
-            game.anims.updateNodeAnimRef(node, _curCardSkin, info);
-            markUnsaved();
-            var eventViewData = game.anims.getNodeAnimationViewData(node, _curCardSkin);
-            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curCardSkin);
-            _graphEditor.updateAnimationDialog(eventViewData);
-            _graphEditor.updateAnimationDialogColors(colorViewData);
-        }
-        private void onAnimationResetColorClickedCallback(Node node)
-        {
-            game.anims.resetNodeAnimColor(node, _curCardSkin);
-            markUnsaved();
-            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curCardSkin);
-            _graphEditor.updateAnimationDialogColors(colorViewData);
-        }
-        private void onOpenNodeAnimationColorPickerCallback(Node node, int index)
-        {
-            var color = game.anims.getNodeAnimationColor(node, _curCardSkin, index);
-            _graphEditor.displayColorPicker(color);
-        }
-        private void onColorPickerValueChangedCallback(Node node, int colorIndex, Color color)
-        {
-            game.anims.setNodeAnimColor(node, _curCardSkin, colorIndex, color);
-            markUnsaved();
-            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curCardSkin);
-            _graphEditor.updateAnimationDialogColors(colorViewData);
-
-            if (_graphEditor.isPreviewPlaying())
-                _graphEditor.stopAnimationPreview();
-        }
-        private void onAnimationPreviewPlayButtonClickedCallback(Node node)
-        {
-            var animRef = node.getNodeAnimationRef(_curCardSkin);
-            if (animRef == null)
-                return;
-
-            var animDef = game.anims.findAnimationDefineForNode(animRef.animRef);
-            if (animDef == null)
-                return;
-
-            var srcTrans = _graphEditor.getPreviewTableTransform(animRef.sourcePosition);
-            var destTrans = _graphEditor.getPreviewTableTransform(animRef.targetPosition);
-            var info = new VisualEffectInfo()
-            {
-                srcTransform = srcTrans,
-                destTransform = destTrans,
-            };
-            _graphEditor.playAnimationPreview(animDef, info);
-
-            if (animRef.colorModifies == null)
-                return;
-            var targetGroups = animDef.getColorTargetGroups();
-            foreach (var modify in animRef.colorModifies)
-            {
-                if (modify.animationRef != animRef.animRef)
-                    continue;
-                if (modify.targetIndex < 0 || modify.targetIndex >= targetGroups.Length)
-                    continue;
-                var targetGroup = targetGroups[modify.targetIndex];
-                foreach (var target in targetGroup.targets)
-                {
-                    _graphEditor.modifyAnimationPreviewEffectColor(target, modify.getColor());
-                }
-            }
+            _graphEditor.displayAnimationDialog(new VFXSelectSourceNode(this, node));
         }
         #endregion
 
@@ -1544,6 +1472,62 @@ namespace Controllers
             /// </summary>
             public int[] propIndexes;
             private CardEditorCtrl _editor;
+        }
+        private class VFXSelectSourceNode : VFXSelectSource
+        {
+            public VFXSelectSourceNode(CardEditorCtrl editor, Node node)
+            {
+                editorCtrl = editor;
+                this.node = node;
+            }
+            public override void changeProp(VisualEffectDialogInfo info)
+            {
+                game.anims.updateNodeAnimRef(node, cardSkin, info);
+                editorCtrl.markUnsaved();
+            }
+            public override string[] getAnimationNames()
+            {
+                return game.anims.getAnimationEditorNamesForNode();
+            }
+            public override VisualEffectDialogViewData getAnimationViewData()
+            {
+                return game.anims.getNodeAnimationViewData(node, cardSkin);
+            }
+            public override ColorModifyViewData[] getColorViewDatas()
+            {
+                return game.anims.getAnimationColorViewDataForNode(node, cardSkin);
+            }
+            public override void resetColors()
+            {
+                game.anims.resetNodeAnimColor(node, cardSkin);
+                editorCtrl.markUnsaved();
+            }
+            public override Color getAnimationColor(int index)
+            {
+                return game.anims.getAnimationColorForNode(node, cardSkin, index);
+            }
+            public override void setAnimationColor(int index, Color color)
+            {
+                game.anims.setNodeAnimColor(node, cardSkin, index, color);
+                editorCtrl.markUnsaved();
+            }
+            public override VFXPreviewData getPreviewData()
+            {
+                var animRef = node.getNodeAnimationRef(cardSkin);
+                if (animRef == null)
+                    return default;
+                return new VFXPreviewData()
+                {
+                    animDefine = game.anims.findAnimationDefineForNode(animRef.animRef),
+                    colorModifies = animRef.getColorModifies(),
+                    sourcePosition = animRef.sourcePosition,
+                    targetPosition = animRef.targetPosition,
+                };
+            }
+            private MainManager game => editorCtrl.game;
+            private CardSkinData cardSkin => editorCtrl._curCardSkin;
+            private CardEditorCtrl editorCtrl;
+            private Node node;
         }
         #endregion
     }

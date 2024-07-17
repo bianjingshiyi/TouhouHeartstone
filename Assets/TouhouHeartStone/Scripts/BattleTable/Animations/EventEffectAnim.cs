@@ -6,7 +6,6 @@ using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using UI;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace Game.Animations
 {
@@ -35,21 +34,7 @@ namespace Game.Animations
         }
         protected override void onEffectCreated(TableEffect effect)
         {
-            if (animRef.colorModifies == null)
-                return;
-            var targetGroups = define.getColorTargetGroups();
-            foreach (var modify in animRef.colorModifies)
-            {
-                if (modify.animationRef != define.getDefineRef())
-                    continue;
-                if (modify.targetIndex < 0 || modify.targetIndex >= targetGroups.Length)
-                    continue;
-                var targetGroup = targetGroups[modify.targetIndex];
-                foreach (var target in targetGroup.targets)
-                {
-                    effect.modifyColorTarget(target, modify.getColor());
-                }
-            }
+            effect.modifyColors(animRef.colorModifies);
         }
         public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
         {

@@ -16,10 +16,6 @@ namespace UI
         }
         public void initEvents(string[] eventNames)
         {
-            foreach (var obj in _eventDropdownFieldObjects)
-            {
-                obj.SetActive(eventNames != null);
-            }
             _eventDropdown.ClearOptions();
             if (eventNames != null)
                 _eventDropdown.AddOptions(new List<string>(eventNames));
@@ -33,19 +29,32 @@ namespace UI
         }
         public void update(VisualEffectDialogViewData viewData)
         {
+            var flags = viewData.hideFlags;
             setEvent(viewData.eventIndex);
             setAnimation(viewData.animIndex);
             setSourcePosition(viewData.sourcePosition);
             setSourcePositionVarName(viewData.sourcePositionVarName);
-            foreach (var obj in _sourcePositionVarNameObjects)
-            {
-                obj.SetActive(viewData.sourcePositionVarNameVisible);
-            }
             setTargetPosition(viewData.targetPosition);
             setTargetPositionVarName(viewData.targetPositionVarName);
+            foreach (var obj in _eventDropdownFieldObjects)
+            {
+                obj.SetActive(!flags.HasFlag(VFXDialogHideFlags.Event));
+            }
+            foreach (var obj in _sourcePositionFieldObjects)
+            {
+                obj.SetActive(!flags.HasFlag(VFXDialogHideFlags.SourcePosition));
+            }
+            foreach (var obj in _targetPositionFieldObjects)
+            {
+                obj.SetActive(!flags.HasFlag(VFXDialogHideFlags.TargetPosition));
+            }
+            foreach (var obj in _sourcePositionVarNameObjects)
+            {
+                obj.SetActive(!flags.HasFlag(VFXDialogHideFlags.SourcePositionVarName));
+            }
             foreach (var obj in _targetPositionVarNameObjects)
             {
-                obj.SetActive(viewData.targetPositionVarNameVisible);
+                obj.SetActive(!flags.HasFlag(VFXDialogHideFlags.TargetPositionVarName));
             }
         }
         public void updateColors(ColorModifyViewData[] colors)
@@ -183,6 +192,10 @@ namespace UI
         [SerializeField]
         private GameObject[] _eventDropdownFieldObjects;
         [SerializeField]
+        private GameObject[] _sourcePositionFieldObjects;
+        [SerializeField]
+        private GameObject[] _targetPositionFieldObjects;
+        [SerializeField]
         private GameObject[] _sourcePositionVarNameObjects;
         [SerializeField]
         private GameObject[] _targetPositionVarNameObjects;
@@ -241,7 +254,17 @@ namespace UI
         public int targetPosition;
         public string sourcePositionVarName;
         public string targetPositionVarName;
-        public bool sourcePositionVarNameVisible;
-        public bool targetPositionVarNameVisible;
+        public VFXDialogHideFlags hideFlags;
+    }
+    [Flags]
+    public enum VFXDialogHideFlags
+    {
+        None = 0,
+        Event = 1,
+        Animation = 1 << 1,
+        SourcePosition = 1 << 2,
+        TargetPosition = 1 << 3,
+        SourcePositionVarName = 1 << 4,
+        TargetPositionVarName = 1 << 5,
     }
 }

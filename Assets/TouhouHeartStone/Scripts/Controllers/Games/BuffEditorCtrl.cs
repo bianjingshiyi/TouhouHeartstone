@@ -37,9 +37,6 @@ namespace Controllers
             // 初始化UI
             // 事件触发时机
             _ui.initEventTriggerTimeNames(eventTriggerTimeEditorNames);
-            // 持续特效
-            var persistentAnimNames = game.anims.getAnimationEditorNamesForBuff();
-            _ui.initPersistentAnims(persistentAnimNames);
             // 修改器属性类型
             _ui.initModifierPropertyTypes(getBuffDefinePropertyTypeNames());
             // 语言
@@ -146,7 +143,7 @@ namespace Controllers
             _ui.onInputFieldLanguageChanged += onInputFieldLangaugeChangedCallback;
 
 
-            _ui.onChangePersistentAnim += onChangePersistentAnimCallback;
+            _ui.onEditPersistentAnimClick += onPersistentAnimEditClickCallback;
 
 
             _ui.onClickEditEffectButton += onClickEditEffectButton;
@@ -179,12 +176,6 @@ namespace Controllers
             _effectEditorCtrl.OnGraphEdited += onGraphEdited;
 
             _graphEditor.onOpenNodeAnimationDialog += onOpenNodeAnimationDialogCallback;
-            _graphEditor.onAnimationPropChanged += onNodeAnimationPropChangedCallback;
-            _graphEditor.onAnimationResetColorClicked += onAnimationResetColorClickedCallback;
-            _graphEditor.onOpenNodeAnimationColorPicker += onOpenNodeAnimationColorPickerCallback;
-            _graphEditor.onColorPickerValueChanged += onColorPickerValueChangedCallback;
-
-            _graphEditor.onAnimationPreviewPlayButtonClicked += onAnimationPreviewPlayButtonClickedCallback;
         }
         #endregion
         #region 事件回调
@@ -269,12 +260,14 @@ namespace Controllers
             game.card.setBuffDesc(getCurrentCardPoolRef(), _curBuffSkin, _curBuffDescLang, desc);
             _ui.setDesc(desc);
         }
-        private void onChangePersistentAnimCallback(int index)
+        private void onPersistentAnimEditClickCallback()
         {
-            markUnsaved();
-            var animRef = index <= 0 ? null : _persistentAnimRefs[index - 1];
-            _curBuffSkin.persistentAnimRef = animRef;
-            _ui.setPersistentAnim(index);
+            var source = new VFXSelectSourcePersistent(this);
+            var eventViewData = source.getAnimationViewData();
+            var colorViewData = source.getColorViewDatas();
+            _graphEditor.updateAnimationDialog(eventViewData);
+            _graphEditor.updateAnimationDialogColors(colorViewData);
+            _graphEditor.displayAnimationDialog(source);
         }
         private async void onInputFieldLangaugeChangedCallback(int languageIndex, BuffEditorPanel.BuffInputField field)
         {
@@ -364,79 +357,14 @@ namespace Controllers
         #region 特效
         private void onOpenNodeAnimationDialogCallback(Node node)
         {
+            var source = new VFXSelectSourceNode(this, node);
             var eventNames = game.anims.getNodeVisualEffectEventEditorNames(node);
-            var eventViewData = game.anims.getNodeAnimationViewData(node, _curBuffSkin);
-            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curBuffSkin);
+            var eventViewData = source.getAnimationViewData();
+            var colorViewData = source.getColorViewDatas();
             _graphEditor.initNodeAnimationDialogEvents(eventNames);
             _graphEditor.updateAnimationDialog(eventViewData);
             _graphEditor.updateAnimationDialogColors(colorViewData);
-            _graphEditor.displayNodeAnimationDialog(node);
-        }
-        private void onNodeAnimationPropChangedCallback(Node node, VisualEffectDialogInfo info)
-        {
-            game.anims.updateNodeAnimRef(node, _curBuffSkin, info);
-            markUnsaved();
-            var eventViewData = game.anims.getNodeAnimationViewData(node, _curBuffSkin);
-            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curBuffSkin);
-            _graphEditor.updateAnimationDialog(eventViewData);
-            _graphEditor.updateAnimationDialogColors(colorViewData);
-        }
-        private void onAnimationResetColorClickedCallback(Node node)
-        {
-            game.anims.resetNodeAnimColor(node, _curBuffSkin);
-            markUnsaved();
-            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curBuffSkin);
-            _graphEditor.updateAnimationDialogColors(colorViewData);
-        }
-        private void onOpenNodeAnimationColorPickerCallback(Node node, int index)
-        {
-            var color = game.anims.getNodeAnimationColor(node, _curBuffSkin, index);
-            _graphEditor.displayColorPicker(color);
-        }
-        private void onColorPickerValueChangedCallback(Node node, int colorIndex, Color color)
-        {
-            game.anims.setNodeAnimColor(node, _curBuffSkin, colorIndex, color);
-            markUnsaved();
-            var colorViewData = game.anims.getNodeAnimationColorViewData(node, _curBuffSkin);
-            _graphEditor.updateAnimationDialogColors(colorViewData);
-
-            if (_graphEditor.isPreviewPlaying())
-                _graphEditor.stopAnimationPreview();
-        }
-        private void onAnimationPreviewPlayButtonClickedCallback(Node node)
-        {
-            var animRef = node.getNodeAnimationRef(_curBuffSkin);
-            if (animRef == null)
-                return;
-
-            var animDef = game.anims.findAnimationDefineForNode(animRef.animRef);
-            if (animDef == null)
-                return;
-
-            var srcTrans = _graphEditor.getPreviewTableTransform(animRef.sourcePosition);
-            var destTrans = _graphEditor.getPreviewTableTransform(animRef.targetPosition);
-            var info = new VisualEffectInfo()
-            {
-                srcTransform = srcTrans,
-                destTransform = destTrans,
-            };
-            _graphEditor.playAnimationPreview(animDef, info);
-
-            if (animRef.colorModifies == null)
-                return;
-            var targetGroups = animDef.getColorTargetGroups();
-            foreach (var modify in animRef.colorModifies)
-            {
-                if (modify.animationRef != animRef.animRef)
-                    continue;
-                if (modify.targetIndex < 0 || modify.targetIndex >= targetGroups.Length)
-                    continue;
-                var targetGroup = targetGroups[modify.targetIndex];
-                foreach (var target in targetGroup.targets)
-                {
-                    _graphEditor.modifyAnimationPreviewEffectColor(target, modify.getColor());
-                }
-            }
+            _graphEditor.displayAnimationDialog(source);
         }
         #endregion
 
@@ -777,8 +705,7 @@ namespace Controllers
             _ui.setSkin(skinIndex);
             Sprite image = await game.card.loadBuffImage(poolRef, skin);
             _ui.setImage(image);
-            var animRef = skin.persistentAnimRef;
-            _ui.setPersistentAnim(animRef != null ? Array.IndexOf(_persistentAnimRefs, animRef) + 1 : 0);
+            updatePersistentAnim();
 
         }
         private Task updateSkin()
@@ -806,8 +733,7 @@ namespace Controllers
             _ui.setSkin(skinIndex);
             Sprite image = await game.card.loadBuffImage(poolRef, skin);
             _ui.setImage(image);
-            var animRef = skin.persistentAnimRef;
-            _ui.setPersistentAnim(animRef != null ? Array.IndexOf(_persistentAnimRefs, animRef) + 1 : 0);
+            updatePersistentAnim();
         }
         private int getSkinCount()
         {
@@ -1230,6 +1156,28 @@ namespace Controllers
             scene.editor.markCardPoolUnsaved(curCardPoolId);
             clearUnsaved();
         }
+        private void setPersistentAnimIndex(int index)
+        {
+            var defines = game.anims.getAnimationDefinesForBuff();
+            var animRef = _curBuffSkin.persistentAnimRef;
+            if (index < 0)
+            {
+                animRef.animRef = new DefineReference(0, 0);
+            }
+            else
+            {
+                var define = defines[index];
+                animRef.animRef = new DefineReference(define.cardPoolId, define.id);
+            }
+            updatePersistentAnim();
+        }
+        private void updatePersistentAnim()
+        {
+            var animNames = game.anims.getAnimationEditorNamesForBuff();
+            var animRef = _curBuffSkin.persistentAnimRef?.animRef;
+            var animIndex = animRef != null ? Array.IndexOf(_persistentAnimRefs, animRef) + 1 : 0;
+            _ui.setPersistentAnim(animNames[animIndex]);
+        }
         #endregion
 
         #region 属性字段
@@ -1334,6 +1282,129 @@ namespace Controllers
             /// </summary>
             public int[] propIndexes;
             private BuffEditorCtrl _editor;
+        }
+        private class VFXSelectSourceNode : VFXSelectSource
+        {
+            public VFXSelectSourceNode(BuffEditorCtrl editor, Node node)
+            {
+                editorCtrl = editor;
+                this.node = node;
+            }
+            public override void changeProp(VisualEffectDialogInfo info)
+            {
+                game.anims.updateNodeAnimRef(node, cardSkin, info);
+                editorCtrl.markUnsaved();
+            }
+            public override VisualEffectDialogViewData getAnimationViewData()
+            {
+                return game.anims.getNodeAnimationViewData(node, cardSkin);
+            }
+            public override ColorModifyViewData[] getColorViewDatas()
+            {
+                return game.anims.getAnimationColorViewDataForNode(node, cardSkin);
+            }
+            public override void resetColors()
+            {
+                game.anims.resetNodeAnimColor(node, cardSkin);
+                editorCtrl.markUnsaved();
+            }
+            public override Color getAnimationColor(int index)
+            {
+                return game.anims.getAnimationColorForNode(node, cardSkin, index);
+            }
+            public override void setAnimationColor(int index, Color color)
+            {
+                game.anims.setNodeAnimColor(node, cardSkin, index, color);
+                editorCtrl.markUnsaved();
+            }
+            public override VFXPreviewData getPreviewData()
+            {
+                var animRef = node.getNodeAnimationRef(cardSkin);
+                if (animRef == null)
+                    return default;
+                return new VFXPreviewData()
+                {
+                    animDefine = game.anims.findAnimationDefineForNode(animRef.animRef),
+                    colorModifies = animRef.getColorModifies(),
+                    sourcePosition = animRef.sourcePosition,
+                    targetPosition = animRef.targetPosition,
+                };
+            }
+            public override string[] getAnimationNames()
+            {
+                return game.anims.getAnimationEditorNamesForNode();
+            }
+            private MainManager game => editorCtrl.game;
+            private BuffSkin cardSkin => editorCtrl._curBuffSkin;
+            private BuffEditorCtrl editorCtrl;
+            private Node node;
+        }
+        private class VFXSelectSourcePersistent : VFXSelectSource
+        {
+            public VFXSelectSourcePersistent(BuffEditorCtrl editor)
+            {
+                editorCtrl = editor;
+            }
+            public override void changeProp(VisualEffectDialogInfo info)
+            {
+                editorCtrl.setPersistentAnimIndex(info.animIndex);
+                editorCtrl.markUnsaved();
+            }
+            public override VisualEffectDialogViewData getAnimationViewData()
+            {
+                var defines = game.anims.getAnimationDefinesForBuff();
+                var animRef = buffSkin.persistentAnimRef;
+                var animIndex = Array.FindIndex(defines, def => def.getDefineRef() == animRef.animRef);
+                return new VisualEffectDialogViewData()
+                {
+                    animIndex = animIndex + 1,
+                    hideFlags = VFXDialogHideFlags.Event | VFXDialogHideFlags.SourcePosition | VFXDialogHideFlags.TargetPosition | VFXDialogHideFlags.SourcePositionVarName | VFXDialogHideFlags.TargetPositionVarName
+                };
+            }
+            public override ColorModifyViewData[] getColorViewDatas()
+            {
+                if (buffSkin?.persistentAnimRef?.animRef == null)
+                    return Array.Empty<ColorModifyViewData>();
+                var define = game.anims.findAnimationDefineForBuff(buffSkin.persistentAnimRef.animRef);
+                return game.anims.getAnimationColorViewData(define, buffSkin.persistentAnimRef.colorModifies);
+            }
+            public override void resetColors()
+            {
+                game.anims.resetAnimColor(buffSkin.persistentAnimRef);
+                editorCtrl.markUnsaved();
+            }
+            public override Color getAnimationColor(int index)
+            {
+                if (buffSkin?.persistentAnimRef?.animRef == null)
+                    return Color.red;
+                var define = game.anims.findAnimationDefineForBuff(buffSkin.persistentAnimRef.animRef);
+                return game.anims.getAnimationColor(define, buffSkin.persistentAnimRef.colorModifies, index);
+            }
+            public override void setAnimationColor(int index, Color color)
+            {
+                game.anims.setAnimationColor(buffSkin.persistentAnimRef, index, color);
+                editorCtrl.markUnsaved();
+            }
+            public override string[] getAnimationNames()
+            {
+                return game.anims.getAnimationEditorNamesForBuff();
+            }
+            public override VFXPreviewData getPreviewData()
+            {
+                var animRef = buffSkin.persistentAnimRef;
+                if (animRef == null)
+                    return default;
+                return new VFXPreviewData()
+                {
+                    animDefine = game.anims.findAnimationDefineForBuff(animRef.animRef),
+                    colorModifies = animRef.getColorModifies(),
+                    sourcePosition = VisualEffectPosition.THIS_CARD,
+                    targetPosition = VisualEffectPosition.THIS_CARD,
+                };
+            }
+            private MainManager game => editorCtrl.game;
+            private BuffSkin buffSkin => editorCtrl._curBuffSkin;
+            private BuffEditorCtrl editorCtrl;
         }
         #endregion
     }

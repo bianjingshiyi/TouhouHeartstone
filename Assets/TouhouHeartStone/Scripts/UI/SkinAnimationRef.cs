@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Game;
 using Game.Animations;
 using TouhouCardEngine;
 
 namespace UI
 {
-    public class SkinAnimationRef
+    public class SkinAnimationRef : IAnimationRef
     {
         /// <summary>
         /// 构造一个特效引用。
@@ -34,6 +35,25 @@ namespace UI
         {
             node.setProp(NODE_CONST_KEY, value);
         }
+
+        public ColorModifyData[] getColorModifies()
+        {
+            return colorModifies.ToArray();
+        }
+
+        public ColorModifyData getColorModify(int index)
+        {
+            return colorModifies[index];
+        }
+
+        public void clearColorModify(DefineReference animRef)
+        {
+            colorModifies.RemoveAll(m => m.animationRef == animRef);
+        }
+        public void addColorModify(ColorModifyData modify)
+        {
+            colorModifies.Add(modify);
+        }
         public string key;
         public int sourcePosition;
         public int targetPosition;
@@ -43,5 +63,6 @@ namespace UI
         public DefineReference animRef;
         public List<ColorModifyData> colorModifies = new List<ColorModifyData>();
         public const string NODE_CONST_KEY = "EDITOR_ANIMATION_REF";
+        DefineReference IAnimationRef.animRef { get => animRef; set => animRef = value; }
     }
 }

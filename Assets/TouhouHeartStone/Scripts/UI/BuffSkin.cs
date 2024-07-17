@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Game;
 using TouhouCardEngine;
@@ -12,7 +13,7 @@ namespace UI
         public string descKey;
         public string imagePathKey;
         List<SkinAnimationRef> _animationRefs = new List<SkinAnimationRef>();
-        public DefineReference persistentAnimRef;
+        public PersistentAnimationRef persistentAnimRef;
 
         public BuffSkin()
         {

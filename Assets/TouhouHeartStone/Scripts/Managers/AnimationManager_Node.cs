@@ -5,6 +5,7 @@ using Game.Animations;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
+using TouhouHeartstone;
 using UI;
 using UnityEngine;
 
@@ -26,6 +27,13 @@ namespace Game
             if (defRef == null)
                 return null;
             var defines = getAnimationDefinesForNode();
+            return defines.FirstOrDefault(d => d.cardPoolId == defRef.cardPoolId && d.id == defRef.defineId);
+        }
+        public AnimationDefine findAnimationDefineForBuff(DefineReference defRef)
+        {
+            if (defRef == null)
+                return null;
+            var defines = getAnimationDefinesForBuff();
             return defines.FirstOrDefault(d => d.cardPoolId == defRef.cardPoolId && d.id == defRef.defineId);
         }
         #endregion
@@ -69,6 +77,10 @@ namespace Game
                 targetPositionVarName = animRef.targetPositionVarName;
             }
 
+            VFXDialogHideFlags hideFlags = VFXDialogHideFlags.None;
+            hideFlags |= eventRefs != null ? 0 : VFXDialogHideFlags.Event;
+            hideFlags |= sourcePosition == VisualEffectPosition.TEMP_VAR ? 0 : VFXDialogHideFlags.SourcePositionVarName;
+            hideFlags |= targetPosition == VisualEffectPosition.TEMP_VAR ? 0 : VFXDialogHideFlags.TargetPositionVarName;
             var eventViewData = new VisualEffectDialogViewData()
             {
                 eventIndex = eventIndex,
@@ -77,8 +89,7 @@ namespace Game
                 targetPosition = targetPosition,
                 sourcePositionVarName = sourcePositionVarName,
                 targetPositionVarName = targetPositionVarName,
-                sourcePositionVarNameVisible = sourcePosition == VisualEffectPosition.TEMP_VAR,
-                targetPositionVarNameVisible = targetPosition == VisualEffectPosition.TEMP_VAR,
+                hideFlags = hideFlags
             };
             return eventViewData;
         }
@@ -134,46 +145,56 @@ namespace Game
 
 
         #region 调色
-        public ColorModifyViewData[] getNodeAnimationColorViewData(Node node, ISkin skin)
+        public ColorModifyViewData[] getAnimationColorViewData(AnimationDefine define, IEnumerable<ColorModifyData> colorModifies)
         {
-            var defines = getAnimationDefinesForNode();
-            SkinAnimationRef animRef = node.getOrInitNodeAnimationRef(skin);
-
-            if (animRef == null)
-                return Array.Empty<ColorModifyViewData>();
-
-            var animDefRef = animRef.animRef;
-            if (animDefRef == null)
-                return Array.Empty<ColorModifyViewData>();
-
-            var define = defines.FirstOrDefault(d => d.cardPoolId == animDefRef.cardPoolId && d.id == animDefRef.defineId);
             if (define == null)
                 return Array.Empty<ColorModifyViewData>();
+            var animDefRef = define.getDefineRef();
             var possibleTargets = define.getColorTargetGroups();
-            ColorModifyViewData[] colorModifies = new ColorModifyViewData[possibleTargets.Length];
-            for (int i = 0; i < colorModifies.Length; i++)
+            ColorModifyViewData[] viewData = new ColorModifyViewData[possibleTargets.Length];
+            for (int i = 0; i < viewData.Length; i++)
             {
                 var targetWithColor = possibleTargets[i];
                 var targets = targetWithColor.targets;
-                var modify = animRef.colorModifies?.FirstOrDefault(m => m.animationRef == animDefRef && m.targetIndex == i);
+                var modify = colorModifies?.FirstOrDefault(m => m.animationRef == animDefRef && m.targetIndex == i);
 
                 var modifiedColor = targetWithColor.color;
                 if (modify != null)
                 {
                     modifiedColor = modify.getColor();
                 }
-                colorModifies[i] = new ColorModifyViewData()
+                viewData[i] = new ColorModifyViewData()
                 {
                     color = modifiedColor
                 };
             }
-            return colorModifies;
+            return viewData;
         }
-        public Color getNodeAnimationColor(Node node, ISkin skin, int index)
+        public ColorModifyViewData[] getAnimationColorViewDataForNode(Node node, ISkin skin)
         {
-            var defines = getAnimationDefinesForNode();
             SkinAnimationRef animRef = node.getOrInitNodeAnimationRef(skin);
+            return getAnimationColorViewDataForNode(animRef);
+        }
+        public ColorModifyViewData[] getAnimationColorViewDataForNode(IAnimationRef animRef)
+        {
+            if (animRef == null)
+                return Array.Empty<ColorModifyViewData>();
 
+            var animDefRef = animRef.animRef;
+            if (animDefRef == null)
+                return Array.Empty<ColorModifyViewData>();
+
+            var defines = getAnimationDefinesForNode();
+            var define = defines.FirstOrDefault(d => d.cardPoolId == animDefRef.cardPoolId && d.id == animDefRef.defineId);
+            return getAnimationColorViewData(define, animRef.getColorModifies());
+        }
+        public Color getAnimationColorForNode(Node node, ISkin skin, int index)
+        {
+            SkinAnimationRef animRef = node.getOrInitNodeAnimationRef(skin);
+            return getAnimationColorForNode(animRef, index);
+        }
+        public Color getAnimationColorForNode(IAnimationRef animRef, int index)
+        {
             if (animRef == null)
                 return Color.red;
 
@@ -181,26 +202,42 @@ namespace Game
             if (animDefRef == null)
                 return Color.red;
 
+            var defines = getAnimationDefinesForNode();
             var define = defines.FirstOrDefault(d => d.cardPoolId == animDefRef.cardPoolId && d.id == animDefRef.defineId);
+            return getAnimationColor(define, animRef.getColorModifies(), index);
+        }
+        public Color getAnimationColor(AnimationDefine define, IEnumerable<ColorModifyData> modifies, int index)
+        {
             if (define == null)
                 return Color.red;
-
+            var animDefRef = define.getDefineRef();
             var possibleTargets = define.getColorTargetGroups();
             var targetWithColor = possibleTargets[index];
-            var modify = animRef.colorModifies?.FirstOrDefault(m => m.animationRef == animDefRef && m.targetIndex == index);
+            var modify = modifies?.FirstOrDefault(m => m.animationRef == animDefRef && m.targetIndex == index);
             return modify != null ? modify.getColor() : targetWithColor.color;
         }
         public void resetNodeAnimColor(Node node, ISkin skin)
         {
             var animRef = node.getOrInitNodeAnimationRef(skin);
+            resetAnimColor(animRef);
+        }
+        public void resetAnimColor(IAnimationRef animRef)
+        {
             if (animRef == null)
                 return;
-            animRef.colorModifies.RemoveAll(m => m.animationRef == animRef.animRef);
+            animRef.clearColorModify(animRef.animRef);
         }
         public void setNodeAnimColor(Node node, ISkin skin, int index, Color color)
         {
             var animRef = node.getOrInitNodeAnimationRef(skin);
-            var colorModify = animRef.colorModifies.Find(m => m.animationRef == animRef.animRef && m.targetIndex == index);
+            setAnimationColor(animRef, index, color);
+        }
+        public void setAnimationColor(IAnimationRef animRef, int index, Color color)
+        {
+            if (animRef == null)
+                return;
+            var colorModifies = animRef.getColorModifies();
+            var colorModify = Array.Find(colorModifies, m => m.animationRef == animRef.animRef && m.targetIndex == index);
             if (colorModify == null)
             {
                 colorModify = new ColorModifyData()
@@ -208,7 +245,7 @@ namespace Game
                     animationRef = animRef.animRef,
                     targetIndex = index
                 };
-                animRef.colorModifies.Add(colorModify);
+                animRef.addColorModify(colorModify);
             }
             colorModify.r = color.r;
             colorModify.g = color.g;

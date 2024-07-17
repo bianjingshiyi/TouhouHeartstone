@@ -22,7 +22,7 @@ namespace Game
             name = skin.nameKey;
             desc = skin.descKey;
             imagePath = skin.imagePathKey;
-            persistentAnimRef = skin.persistentAnimRef;
+            persAnimRef = new SerializablePersistentAnimationRef(skin.persistentAnimRef);
             foreach (var animRef in skin.getAllAnimRefs())
             {
                 _animationRefs.Add(new SerializableSkinAnimationRef(animRef));
@@ -36,7 +36,7 @@ namespace Game
                 nameKey = name,
                 descKey = desc,
                 imagePathKey = imagePath,
-                persistentAnimRef = persistentAnimRef
+                persistentAnimRef = persAnimRef == null ? new PersistentAnimationRef(persistentAnimRef) : persAnimRef.toRef()
             };
             if (_animationRefs != null)
             {
@@ -61,6 +61,9 @@ namespace Game
         [Key(5)]
         public List<SerializableSkinAnimationRef> _animationRefs = new List<SerializableSkinAnimationRef>();
         [Key(6)]
+        [Obsolete]
         public DefineReference persistentAnimRef;
+        [Key(7)]
+        public SerializablePersistentAnimationRef persAnimRef;
     }
 }

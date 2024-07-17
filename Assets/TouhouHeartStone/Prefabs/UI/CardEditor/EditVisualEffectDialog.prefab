@@ -1552,6 +1552,12 @@ MonoBehaviour:
   _eventDropdownFieldObjects:
   - {fileID: 1764736375019755685}
   - {fileID: 1683141554741533519}
+  _sourcePositionFieldObjects:
+  - {fileID: 7585749455217975493}
+  - {fileID: 6981495211786553550}
+  _targetPositionFieldObjects:
+  - {fileID: 3452257437601130479}
+  - {fileID: 2601342217487396545}
   _sourcePositionVarNameObjects:
   - {fileID: 2990786820202042941}
   - {fileID: 896364308035764145}

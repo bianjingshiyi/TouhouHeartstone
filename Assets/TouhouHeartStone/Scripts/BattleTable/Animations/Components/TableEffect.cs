@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Game.BattleTable;
@@ -120,6 +121,24 @@ namespace Game.Animations
 #if UNITY_EDITOR
             testMode = value;
 #endif
+        }
+        public void modifyColors(IEnumerable<ColorModifyData> modifies)
+        {
+            if (modifies == null)
+                return;
+            var targetGroups = define.getColorTargetGroups();
+            foreach (var modify in modifies)
+            {
+                if (modify.animationRef != define.getDefineRef())
+                    continue;
+                if (modify.targetIndex < 0 || modify.targetIndex >= targetGroups.Length)
+                    continue;
+                var targetGroup = targetGroups[modify.targetIndex];
+                foreach (var target in targetGroup.targets)
+                {
+                    modifyColorTarget(target, modify.getColor());
+                }
+            }
         }
         public void modifyColorTarget(ColorTarget target, Color color)
         {

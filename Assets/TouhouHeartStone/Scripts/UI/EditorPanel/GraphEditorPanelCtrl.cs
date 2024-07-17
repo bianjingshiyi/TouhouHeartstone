@@ -34,9 +34,8 @@ namespace UI
             updateNodeDefines();
             updateNodesList();
 
-            var animations = game.anims.getAnimationEditorNamesForNode();
             var positions = visualEffectPositionNames.Select(p => game.lang._p(CONTEXT_VISUAL_EFFECT, p)).ToArray();
-            initNodeAnimationDialog(animations, positions);
+            initNodeAnimationPositions(positions);
 
             hideErrorTip();
             hideCardSelectPanel();
@@ -91,9 +90,12 @@ namespace UI
         }
 
         #region 特效对话框
-        public void initNodeAnimationDialog(string[] animations, string[] positions)
+        public void initNodeAnimationDialog(string[] animations)
         {
             _editVisualEffectDialog.initEffects(animations);
+        }
+        public void initNodeAnimationPositions(string[] positions)
+        {
             _editVisualEffectDialog.initPositionOptions(positions);
         }
         public void initNodeAnimationDialogEvents(string[] eventNames)
@@ -108,11 +110,12 @@ namespace UI
         {
             _editVisualEffectDialog.updateColors(viewDatas);
         }
-        public void displayNodeAnimationDialog(Node node)
+        public void displayAnimationDialog(VFXSelectSource source)
         {
+            _curVFXSelectSource = source;
+            initNodeAnimationDialog(_curVFXSelectSource.getAnimationNames());
             _editVisualEffectDialogObj.SetActive(true);
             _editVisualEffectDialog.resetPreview();
-            _curEditingVisualEffectNode = node;
         }
         #endregion
 
@@ -220,8 +223,8 @@ namespace UI
             _editVisualEffectDialog.onPreviewPauseButtonClicked += onAnimationPreviewPauseButtonClickedCallback;
             _editVisualEffectDialog.onPreviewStopButtonClicked += onAnimationPreviewStopButtonClickedCallback;
 
-            _colorPicker.onValueChanged.AddListener((color) => onColorPickerValueChanged?.Invoke(_curEditingVisualEffectNode, _curEditingAnimationColorIndex, color));
-            _colorPicker.onHSVChanged.AddListener((h, s, v) => onColorPickerValueChanged?.Invoke(_curEditingVisualEffectNode, _curEditingAnimationColorIndex, Color.HSVToRGB(h,s,v)));
+            _colorPicker.onValueChanged.AddListener(onColorPickerValueChangedCallback);
+            _colorPicker.onHSVChanged.AddListener((h, s, v) => onColorPickerValueChangedCallback(Color.HSVToRGB(h,s,v)));
             _colorPickerConfirmButton.onClick.AddListener(onColorPickerConfirmButtonClickedCallback);
 
             _createEffectPropDialog.onConfirm += onConfirmCreateEffectPropertyCallback;
@@ -471,22 +474,38 @@ namespace UI
         #region 特效
         private void onAnimationPropChangedCallback(VisualEffectDialogInfo info)
         {
-            onAnimationPropChanged?.Invoke(_curEditingVisualEffectNode, info);
+            _curVFXSelectSource.changeProp(info);
+            var eventViewData = _curVFXSelectSource.getAnimationViewData();
+            updateAnimationDialog(eventViewData);
+            var colorViewData = _curVFXSelectSource.getColorViewDatas();
+            updateAnimationDialogColors(colorViewData);
         }
         private void onAnimationConfirmButtonClickedCallback()
         {
             _editVisualEffectDialogObj.SetActive(false);
-            _curEditingVisualEffectNode = null;
+            _curVFXSelectSource = null;
             _curEditingAnimationColorIndex = -1;
         }
         private void onAnimationColorModifyItemClickedCallback(int index)
         {
             _curEditingAnimationColorIndex = index;
-            onOpenNodeAnimationColorPicker?.Invoke(_curEditingVisualEffectNode, index);
+            var color = _curVFXSelectSource.getAnimationColor(index);
+            displayColorPicker(color);
         }
         private void onAnimationResetColorClickedCallback()
         {
-            onAnimationResetColorClicked?.Invoke(_curEditingVisualEffectNode);
+            _curVFXSelectSource.resetColors();
+            var colorViewData = _curVFXSelectSource.getColorViewDatas();
+            updateAnimationDialogColors(colorViewData);
+        }
+        private void onColorPickerValueChangedCallback(Color color)
+        {
+            _curVFXSelectSource.setAnimationColor(_curEditingAnimationColorIndex, color);
+            var colorViewData = _curVFXSelectSource.getColorViewDatas();
+            updateAnimationDialogColors(colorViewData);
+
+            if (isPreviewPlaying())
+                stopAnimationPreview();
         }
         private void onColorPickerConfirmButtonClickedCallback()
         {
@@ -502,7 +521,36 @@ namespace UI
         }
         private void onAnimationPreviewPlayButtonClickedCallback()
         {
-            onAnimationPreviewPlayButtonClicked?.Invoke(_curEditingVisualEffectNode);
+            var previewData = _curVFXSelectSource.getPreviewData();
+            var animDef = previewData.animDefine;
+            if (animDef == null)
+                return;
+
+            var animRef = animDef.getDefineRef();
+            var srcTrans = getPreviewTableTransform(previewData.sourcePosition);
+            var destTrans = getPreviewTableTransform(previewData.targetPosition);
+            var info = new VisualEffectInfo()
+            {
+                srcTransform = srcTrans,
+                destTransform = destTrans,
+            };
+            playAnimationPreview(animDef, info);
+
+            if (previewData.colorModifies == null)
+                return;
+            var targetGroups = animDef.getColorTargetGroups();
+            foreach (var modify in previewData.colorModifies)
+            {
+                if (modify.animationRef != animRef)
+                    continue;
+                if (modify.targetIndex < 0 || modify.targetIndex >= targetGroups.Length)
+                    continue;
+                var targetGroup = targetGroups[modify.targetIndex];
+                foreach (var target in targetGroup.targets)
+                {
+                    modifyAnimationPreviewEffectColor(target, modify.getColor());
+                }
+            }
         }
         private void onAnimationPreviewPauseButtonClickedCallback()
         {
@@ -850,16 +898,10 @@ namespace UI
         #endregion
         #region 事件
         public event Action<Node> onOpenNodeAnimationDialog;
-        public event Action<Node, VisualEffectDialogInfo> onAnimationPropChanged;
-        public event Action<Node> onAnimationResetColorClicked;
-        public event Action<Node, int> onOpenNodeAnimationColorPicker;
-        public event Action<Node, int, Color> onColorPickerValueChanged;
-
-        public event Action<Node> onAnimationPreviewPlayButtonClicked;
         #endregion
 
         private bool _deleteButtonDirty;
-        private Node _curEditingVisualEffectNode;
+        private VFXSelectSource _curVFXSelectSource;
         private int _curEditingAnimationColorIndex;
         [SerializeField]
         ActionNodeGraphCtrl _actionGraphCtrl;
@@ -1015,5 +1057,12 @@ namespace UI
         public const int THIS_CARD = 2;
         public const int TARGET_CARD = 3;
         public const int TEMP_VAR = 4;
+    }
+    public struct VFXPreviewData
+    {
+        public AnimationDefine animDefine;
+        public ColorModifyData[] colorModifies;
+        public int sourcePosition;
+        public int targetPosition;
     }
 }
