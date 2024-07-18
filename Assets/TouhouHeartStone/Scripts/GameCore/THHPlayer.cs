@@ -371,9 +371,14 @@ namespace TouhouHeartstone
         #endregion 信仰对决
 
         #region 法术伤害
-        public static int getSpellDamage(this Player player, CardEngine game, int baseDamage, Card spell)
+        public static int getSpellDamage(this Player player, CardEngine game, int baseDamage, Card source)
         {
-            return player.getSpellDamage(game, baseDamage) + (spell?.getSpellDamage(game) ?? 0);
+            var spellDamage = player.getSpellDamage(game, baseDamage);
+            if (source != null && source.isSpell())
+            {
+                spellDamage += source.getSpellDamage(game);
+            }
+            return spellDamage;
         }
         public static int getSpellDamage(this Player player, CardEngine game, int baseDamage)
         {
