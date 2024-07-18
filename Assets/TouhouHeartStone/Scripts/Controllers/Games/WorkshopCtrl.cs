@@ -817,6 +817,8 @@ namespace Controllers
             if (!game.card.tryParseCardPoolBytes(decompressed, out var poolInfo, out var cardPool))
                 throw new FormatException("下载的创意工坊卡池文件格式不正确");
 
+            await game.card.fixCardPool(poolInfo, cardPool);
+
             var path = game.card.allocCardPoolPathById(poolInfo);
             await game.card.saveCardPoolFileOnly(poolInfo, cardPool, path);
             await game.card.loadLocalCardPoolInfoAsync(path);
