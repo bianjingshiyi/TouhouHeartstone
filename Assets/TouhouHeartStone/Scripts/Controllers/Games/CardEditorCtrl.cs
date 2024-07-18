@@ -1214,7 +1214,7 @@ namespace Controllers
         private PropertyItemInfo[] GetCardDefineKeywordItems()
         {
             List<PropertyItemInfo> items = new List<PropertyItemInfo>();
-            var keywords = EditorManager.editorKeywords;
+            var keywords = EditorManager.editorKeywords.Union(cardDefineExtraKeywords);
             foreach (var pair in keywords)
             {
                 var item = GetCardDefineKeywordItem(pair);
@@ -1392,6 +1392,11 @@ namespace Controllers
 
         #region 属性字段
 
+        public static readonly List<string> cardDefineExtraKeywords = new List<string>
+        {
+            DEFINE.SPELL_DAMAGE,
+            DEFINE.DAMAGE_REDUCE,
+        };
         /// <summary>
         /// 正在编辑的卡牌定义。
         /// </summary>
