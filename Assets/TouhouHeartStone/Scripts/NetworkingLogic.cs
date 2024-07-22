@@ -398,6 +398,10 @@ namespace Game
         {
             return ServerClient.WorkshopGetCardPoolReviews(id, version);
         }
+        public Task<bool[]> areCardPoolsUploadedToWorkshop(params long[] cardPoolsId)
+        {
+            return ServerClient.AreCardPoolsUploadedToWorkshop(cardPoolsId);
+        }
         public Task<string> getWorkshopEULA()
         {
             return ServerClient.WorkshopGetEULA();

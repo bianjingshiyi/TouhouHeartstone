@@ -124,7 +124,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "<b>\u79C1\u917F\u6A21\u5F0F</b>\n\u79C1\u917F\u6A21\u5F0F\u4E2D\uFF0C\u6BCF\u4E2A\u73A9\u5BB6\u90FD\u53EF\u643A\u5E26\u6700\u591A5<b>\u79CD</b>\u81EA\u5B9A\u4E49\u5361\u724C\uFF0C\u5E76\u5728\u5BF9\u5C40\u5F00\u59CB\u65F6\u8FDB\u884C\u5C55\u793A\u3002\n\u6E38\u620F\u7ED3\u675F\u540E\uFF0C\u73A9\u5BB6\u53EF\u4EE5\u7ED9\u5BF9\u65B9\u7684\u81EA\u5B9A\u4E49\u5361\u724C\u8FDB\u884C\u8BC4\u4EF7\u3002"
+  m_text: "<b>\u79C1\u917F\u6A21\u5F0F</b>\n\u79C1\u917F\u6A21\u5F0F\u4E2D\uFF0C\u6BCF\u4E2A\u73A9\u5BB6\u90FD\u53EF\u643A\u5E26\u6700\u591A5\u79CD<b>\u4E0D\u540C\u7684</b>\uFF0C<b>\u5DF2\u88AB\u4E0A\u4F20\u81F3\u521B\u610F\u5DE5\u574A</b>\u7684\u81EA\u5B9A\u4E49\u5361\u724C\uFF0C\u5E76\u5728\u5BF9\u5C40\u5F00\u59CB\u65F6\u8FDB\u884C\u5C55\u793A\u3002\n\u6E38\u620F\u7ED3\u675F\u540E\uFF0C\u73A9\u5BB6\u53EF\u4EE5\u7ED9\u5BF9\u65B9\u7684\u81EA\u5B9A\u4E49\u5361\u724C\u8FDB\u884C\u8BC4\u4EF7\u3002"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 58c5552297fbadd43bdcd4fe57c3063b, type: 2}
   m_sharedMaterial: {fileID: 1519292458744236911, guid: 58c5552297fbadd43bdcd4fe57c3063b,
@@ -4310,7 +4310,7 @@ PrefabInstance:
     - target: {fileID: 385148179306283217, guid: a3339678335a4ab4d8f612fe4215fa97,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0000076293945
+      value: 0.0009918213
       objectReference: {fileID: 0}
     - target: {fileID: 1063575102795882497, guid: a3339678335a4ab4d8f612fe4215fa97,
         type: 3}
@@ -4345,7 +4345,7 @@ PrefabInstance:
     - target: {fileID: 3054591161961980618, guid: a3339678335a4ab4d8f612fe4215fa97,
         type: 3}
       propertyPath: m_Size
-      value: 0.99993676
+      value: 0.9999942
       objectReference: {fileID: 0}
     - target: {fileID: 3054591161961980618, guid: a3339678335a4ab4d8f612fe4215fa97,
         type: 3}

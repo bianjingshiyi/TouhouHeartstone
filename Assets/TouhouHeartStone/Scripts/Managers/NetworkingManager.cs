@@ -282,6 +282,10 @@ namespace Game
         {
             return logic.getWorkshopCardPoolReviews(id, version);
         }
+        public Task<bool[]> areCardPoolsUploadedToWorkshop(params long[] cardPoolsId)
+        {
+            return logic.areCardPoolsUploadedToWorkshop(cardPoolsId);
+        }
         public Task<string> getWorkshopEULA()
         {
             return logic.getWorkshopEULA();

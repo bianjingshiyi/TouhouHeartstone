@@ -1362,40 +1362,97 @@ namespace Controllers
             };
             _ui.updateRoomProps(viewData);
         }
-        private async Task displaySelectDeckPanel()
+        private async Task<DeckListItemViewData[]> loadSelectingDeckViewData()
         {
-            List<Deck> deckList = game.deck.getOrLoadDeckList();
-            DeckListItemViewData[] viewData = new DeckListItemViewData[deckList.Count];
-
-            for (int i = 0; i < viewData.Length; i++)
+            startWaiting();
+            try
             {
-                Deck deck = deckList[i];
-                CardPoolInfoPack[] cardPoolList = getDeckCardPools(deck, out _);
+                List<Deck> deckList = game.deck.getOrLoadDeckList();
+                var viewData = new DeckListItemViewData[deckList.Count];
 
-                var name = deck.name;
-
+                CardPoolInfoPack[] cardPoolList = deckList.SelectMany(d => getDeckCardPools(d, out _)).Distinct().ToArray();
                 // 如果卡组内有不存在的卡池，加载卡池。
                 foreach (CardPoolInfoPack cardPoolPack in cardPoolList)
                 {
                     var cardPoolRef = cardPoolPack.GetReference();
                     await game.card.getOrLoadCardPool(cardPoolRef, true);
                 }
-                var masterPoolRef = game.card.getLocalCardPoolReference(deck.masterCardRef.cardPoolId);
-                var image = await game.card.loadCardImage(masterPoolRef, deck.masterCardRef.defineId);
 
-                bool warning = !isValidDeck(deck);
-
-                viewData[i] = new DeckListItemViewData()
+                bool homebrew = _currentRoomData.getGameRuleMode() == GameRuleMode.HOMEBREW;
+                List<long> homebrewUploadedCardPools = new List<long>();
+                if (homebrew)
                 {
-                    name = name,
-                    image = image,
-                    isWarning = warning,
-                    hasPrivatePools = HasNotSharedPools(cardPoolList, out _),
-                    mode = DeckListItem.Mode.Default,
-                    banned = warning
-                };
+                    // 确保私酿模式中的卡组的卡池全部都已经上传到创意工坊。
+                    try
+                    {
+                        var cardPoolsId = cardPoolList.Select(p => p.cardPoolId).Where(p => !game.card.isInnateCardPool(p)).ToArray();
+                        if (cardPoolsId.Length > 0)
+                        {
+                            var workshopResults = await game.network.areCardPoolsUploadedToWorkshop(cardPoolsId);
+                            homebrewUploadedCardPools.AddRange(cardPoolsId.Where((id, index) => workshopResults[index]));
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError($"检验私酿模式卡组的卡池时出现异常：{e}");
+                        if (!checkUnauthorized(e))
+                        {
+                            var title = game.lang._(StringTable.ERROR);
+                            var desc = game.lang._(ROOM_ERROR_CHECKING_HOMEBREW_DECK, e.Message);
+                            game.ui.dialog.ShowConfirm(title, desc);
+                        }
+                        return null;
+                    }
+                }
+
+                for (int i = 0; i < viewData.Length; i++)
+                {
+                    Deck deck = deckList[i];
+
+                    var name = deck.name;
+                    var pools = getDeckCardPools(deck, out _);
+
+                    var masterPoolRef = game.card.getLocalCardPoolReference(deck.masterCardRef.cardPoolId);
+                    var image = await game.card.loadCardImage(masterPoolRef, deck.masterCardRef.defineId);
+
+                    bool warning = !isValidDeck(deck);
+                    if (homebrew && !warning)
+                    {
+                        // 私酿模式的卡组中的卡池必须全部被上传至创意工坊。
+                        if (pools.Any(p => !game.card.isInnateCardPool(p.cardPoolId) && !homebrewUploadedCardPools.Exists(id => p.cardPoolId == id)))
+                        {
+                            warning = true;
+                        }
+                    }
+
+                    viewData[i] = new DeckListItemViewData()
+                    {
+                        name = name,
+                        image = image,
+                        isWarning = warning,
+                        hasPrivatePools = HasNotSharedPools(pools, out _),
+                        mode = DeckListItem.Mode.Default,
+                        banned = warning
+                    };
+                }
+                return viewData;
             }
+            finally
+            {
+                endWaiting();
+            }
+        }    
+        private async Task displaySelectDeckPanel()
+        {
+            var viewData = _deckViewDataCache;
+            if (viewData == null)
+            {
+                viewData = await loadSelectingDeckViewData();
+            }
+            if (viewData == null)
+                return;
             _ui.displayDeckSelectPanel(viewData);
+            _deckViewDataCache = viewData;
         }
         #endregion
 
@@ -1460,6 +1517,7 @@ namespace Controllers
         private void quitRoomLogic()
         {
             _currentRoomData = null;
+            _deckViewDataCache = null;
             try
             {
                 game.network.logic.QuitRoom();
@@ -1474,7 +1532,7 @@ namespace Controllers
                 cardPoolManager.Cancel();
             }
         }
-        private void checkUnauthorized(Exception e)
+        private bool checkUnauthorized(Exception e)
         {
             if (game.network.checkExceptionUnauthorized(e))
             {
@@ -1483,7 +1541,9 @@ namespace Controllers
                 scene.menu.display();
                 scene.menu.clearUserInfo();
                 scene.menu.showUnauthorizedDialog();
+                return true;
             }
+            return false;
         }
 
         private bool isValidDeck(Deck deck)
@@ -1504,10 +1564,19 @@ namespace Controllers
             return true;
         }
 
+        private void startWaiting()
+        {
+            scene.waitingBlocker.addWaitingTask(WaitingTask.Room);
+        }
+        private void endWaiting()
+        {
+            scene.waitingBlocker.removeWaitingTask(WaitingTask.Room);
+        }
         #endregion
 
         #region 属性字段
         private DisplayInfo _displayInfo;
+        private DeckListItemViewData[] _deckViewDataCache;
         /// <summary>
         /// 是否为房主
         /// </summary>
@@ -1585,6 +1654,8 @@ namespace Controllers
         public const string ROOM_ERROR_MISSING_CARD_IMAGE = "卡图丢失：{0}";
         [TranslateMsg("房间-玩家-无法上传卡组的提示（{0}：增益皮肤名称列表）")]
         public const string ROOM_ERROR_MISSING_BUFF_IMAGE = "增益图片丢失：{0}";
+        [TranslateMsg("房间-玩家-检验私酿模式卡组的提示（{0}：错误信息）")]
+        public const string ROOM_ERROR_CHECKING_HOMEBREW_DECK = "检验私酿模式卡组时出现错误：{0}";
         [TranslateMsg("房间-移除卡池时的警告（{0}为卡池名）")]
         public const string ROOM_REMOVE_CARD_POOL_WARNING = "你确定要在本房间内移除卡池“{0}”吗？";
         [TranslateMsg("房间-移除卡池时的警告-需要连带移除其他卡池时的附加信息（{0}为卡池名列表）")]

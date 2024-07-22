@@ -47,6 +47,7 @@ namespace UI
         Build,
         Editor,
         LoadWorkshop,
-        Battle
+        Battle,
+        Room
     }
 }
