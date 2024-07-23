@@ -294,13 +294,25 @@ namespace Controllers
             else if (_selectedEditCardPools.Contains(pool))
             {
                 // 已选中，取消选择。
-                _selectedEditCardPools.Remove(pool);
-                // 取消选中一个卡池后，要把所有依赖它的卡池也取消选中。
-                foreach (var dep in pool.GetDependedCardPools(_editingCardPools))
+                bool canRemove = true;
+                if (_currentRoomData.getGameRuleMode() == GameRuleMode.HOMEBREW) 
                 {
-                    if (dep == null)
-                        continue;
-                    _selectedEditCardPools.Remove(dep);
+                    // 私酿模式不能移除经典卡池。
+                    if (CardManager.STANDARD_POOL_ID == pool.cardPoolId)
+                    {
+                        canRemove = false;
+                    }
+                }
+                if (canRemove)
+                {
+                    _selectedEditCardPools.Remove(pool);
+                    // 取消选中一个卡池后，要把所有依赖它的卡池也取消选中。
+                    foreach (var dep in pool.GetDependedCardPools(_editingCardPools))
+                    {
+                        if (dep == null)
+                            continue;
+                        _selectedEditCardPools.Remove(dep);
+                    }
                 }
             }
             await openEditCardPoolsPanel();
