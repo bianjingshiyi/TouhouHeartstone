@@ -7,6 +7,10 @@ namespace UI
     [RequireComponent(typeof(RectTransform))]
     public class DropdownListSizeController : MonoBehaviour, ILayoutSelfController
     {
+        public void setDirty()
+        {
+            _dirty = true;
+        }
         public void updateRectTransform()
         {
             m_Tracker.Clear();
@@ -38,20 +42,20 @@ namespace UI
         }
         private void OnRectTransformDimensionsChange()
         {
-            updateRectTransform();
+            setDirty();
         }
         private void OnTransformParentChanged()
         {
-            updateRectTransform();
+            setDirty();
         }
         private void OnEnable()
         {
-            updateRectTransform();
+            setDirty();
         }
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            updateRectTransform();
+            setDirty();
         }
 #endif
         private void OnDisable()
@@ -61,6 +65,11 @@ namespace UI
         }
         private void Update()
         {
+            if (_dirty)
+            {
+                _dirty = false;
+                updateRectTransform();
+            }
             if (_minObjElement)
             {
                 _minObjElement.transform.SetAsLastSibling();
@@ -154,5 +163,6 @@ namespace UI
         private LayoutElement _minObjElement;
         private DrivenRectTransformTracker m_Tracker;
         private RectTransform _rectTrans;
+        private bool _dirty;
     }
 }
