@@ -100,7 +100,7 @@ namespace Game.BattleTable
         }
         private bool shouldPauseAfterStart()
         {
-            // 事件在事件前被停住了；（泰坦，XX时触发。）
+            // 事件在事件前被停住了；（泰坦，XX时选牌。）
             // 或者存在事件前插入的动画；（陷阱）
             // 并且当没有事件变量发生改变时；（古明地恋多次修改目标）
             // 暂停该动画。
@@ -116,7 +116,7 @@ namespace Game.BattleTable
         }
         private bool isEventPausedAfterStart()
         {
-            return eventArg.state == EventState.Before;
+            return eventArg.state == EventState.Before || eventArg.state == EventState.Logic;
         }
         #endregion
 

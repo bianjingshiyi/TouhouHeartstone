@@ -641,29 +641,39 @@ namespace Game
                 return null;
             return game.askSelect(card.owner, defines, count);
         }
-        ///从一定数量卡牌中选一张（自定义规则过时）
+        ///从一定数量卡牌中选一张
         [THHActionMethod(BuiltinActionDefineID.SelectOneFromCards, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_CARDS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static Task<Card> selectOneFromManyCards(CardEngine game,
+        public static async Task<Card> selectOneFromManyCards(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count)
         {
             if (cards == null)
                 return null;
-            return game.askSelect(player, cards, count);
+            var eventArg = await SelectCardEventDefine.doEvent(game, player, cards, count);
+            if (eventArg == null)
+            {
+                return null;
+            }
+            return eventArg.getVar<Card>(SelectCardEventDefine.VAR_CHOSEN_CARD);
         }
         ///从一定数量卡牌定义中选一张
         [THHActionMethod(BuiltinActionDefineID.SelectOneFromCardDefines, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_DEFINES)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
-        public static Task<CardDefine> selectOneFromManyDefines(CardEngine game,
+        public static async Task<CardDefine> selectOneFromManyDefines(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine[] defines,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count)
         {
             if (defines == null)
                 return null;
-            return game.askSelect(player, defines, count);
+            var eventArg = await SelectCardDefineEventDefine.doEvent(game, player, defines, count);
+            if (eventArg == null)
+            {
+                return null;
+            }
+            return eventArg.getVar<CardDefine>(SelectCardDefineEventDefine.VAR_CHOSEN_CARD);
         }
         [ObsoletedKeyMethod(BuiltinActionDefineID.GetPlayerSpellDamage, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_SPELL_DAMAGE, "GetSpellDamage")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)]

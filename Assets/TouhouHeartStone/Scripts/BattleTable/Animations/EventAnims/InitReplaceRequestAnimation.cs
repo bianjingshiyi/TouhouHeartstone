@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using TouhouHeartstone;
 namespace Game.BattleTable
 {
@@ -6,8 +7,10 @@ namespace Game.BattleTable
     {
         public override IEnumerator display(BattleTableManager table, InitReplaceRequest request)
         {
+            if (!request.playersId.Contains(table.player.id))
+                yield break;
+
             table.showInitReplaceDialog(request);
-            yield break;
         }
     }
 }

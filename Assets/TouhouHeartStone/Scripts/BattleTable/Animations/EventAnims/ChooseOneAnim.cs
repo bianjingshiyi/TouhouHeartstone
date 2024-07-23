@@ -8,22 +8,14 @@ namespace Game.BattleTable
 
     public class ChooseOneAnim : EventAnimation<Arg>
     {
-        public override bool forceQueueAnimations => true;
-
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
             var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
             //自己打出的效果不展示
             if (player == table.player)
-            {
                 yield break;
-            }
-
-            table.setOpponentWaiting(true);
 
             yield return pauseWhileNotCompleted();
-
-            table.setOpponentWaiting(false);
 
             stopWhenCanceled(table);
 

@@ -8,7 +8,6 @@ namespace Game.BattleTable
     public class SearchAnim : EventAnimation<Arg>
     {
         TableAnimation _anim;
-        public override bool forceQueueAnimations => true;
         public override IEnumerator logicUpdate(BattleTableManager table)
         {
             var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
@@ -16,11 +15,7 @@ namespace Game.BattleTable
             if (player == table.player)
                 yield break;
 
-            table.setOpponentWaiting(true);
-
             yield return pauseWhileNotCompleted();
-
-            table.setOpponentWaiting(false);
 
             stopWhenCanceled(table);
 

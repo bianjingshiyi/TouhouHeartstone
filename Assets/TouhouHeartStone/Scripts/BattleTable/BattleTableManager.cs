@@ -693,8 +693,6 @@ namespace Game.BattleTable
         /// <param name="obj"></param>
         private void onRequest(IRequest obj)
         {
-            if (!obj.playersId.Contains(player.id))
-                return;
             TableAnimation anim;
             switch (obj)
             {
