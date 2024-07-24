@@ -26,9 +26,9 @@ namespace UI
         private void onValueChanged(string text)
         {
             text = text.Replace("\r", "").Replace("\t", "");
-            string trimedText = text.TrimEnd('\n');
-            // 如果以换行符结尾，并且除去换行符就是上一帧的文字，认定为按下回车键。
-            if (text.EndsWith("\n") && trimedText == _lastText)
+            string trimedText = text.Replace("\n", "");
+            // 如果包含换行符，并且除去换行符就是上一帧的文字，认定为按下回车键。
+            if (text.Contains("\n") && trimedText == _lastText)
             {
                 _inputField.SetTextWithoutNotify(trimedText);
                 SendSubmit(trimedText);
