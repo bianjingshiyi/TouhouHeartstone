@@ -27,10 +27,18 @@ namespace Game
                 //默认PC
                 clip = await selectExternalSoundForPC();
             }
-            if (clip != null && clip.length > _maxSoundDuration)
+            if (clip != null)
             {
-                var desc = game.lang._(SOUND_DURATION_OUT_OF_LIMIT, _maxSoundDuration, clip.length);
-                throw new FormatException(desc);
+                if (clip.length > _maxSoundDuration)
+                {
+                    var desc = game.lang._(SOUND_DURATION_OUT_OF_LIMIT, _maxSoundDuration, clip.length);
+                    throw new FormatException(desc);
+                }
+                else if (clip.samples == 0)
+                {
+                    var desc = game.lang._(SOUND_EMPTY);
+                    throw new FormatException(desc);
+                }
             }
             return clip;
         }
@@ -219,6 +227,8 @@ namespace Game
         public const string SOUND_COMPRESS_FAILED_FILE_NOT_FOUND = "压缩后的音频文件丢失。";
         [TranslateMsg("尝试选择时间过长的音频格式的错误描述，{0}为最大秒数，{1}为当前秒数")]
         public const string SOUND_DURATION_OUT_OF_LIMIT = "音频的长度不能超过{0:####.##}秒\n（选择的文件为{1:####.##}秒）。";
+        [TranslateMsg("读取的音频没有任何采样的错误描述")]
+        public const string SOUND_EMPTY = "音频读取失败，音频格式可能不正确。";
         [TranslateMsg("尝试选择压缩后大小过大的音频格式的错误描述，{0}为最大文件大小，{1}为选择的文件的大小")]
         public const string SOUND_COMPRESSED_SIZE_OUT_OF_LIMIT = "音频压缩后的大小长度不能超过{0}KB\n（当前文件为{1}KB）。";
         public string soundDirName => _soundDirName;
