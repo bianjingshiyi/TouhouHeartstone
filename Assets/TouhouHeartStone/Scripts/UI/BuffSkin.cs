@@ -13,7 +13,7 @@ namespace UI
         public string descKey;
         public string imagePathKey;
         List<SkinAnimationRef> _animationRefs = new List<SkinAnimationRef>();
-        public PersistentAnimationRef persistentAnimRef;
+        public PersistentAnimationRef persistentAnimRef = new PersistentAnimationRef();
 
         public BuffSkin()
         {

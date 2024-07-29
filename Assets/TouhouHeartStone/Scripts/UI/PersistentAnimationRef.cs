@@ -8,6 +8,9 @@ namespace UI
 {
     public class PersistentAnimationRef : IAnimationRef
     {
+        public PersistentAnimationRef() : this(new DefineReference(0, 0))
+        {
+        }
         /// <summary>
         /// 构造一个持续特效引用。
         /// </summary>

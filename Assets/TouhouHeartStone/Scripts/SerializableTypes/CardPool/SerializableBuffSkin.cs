@@ -22,7 +22,7 @@ namespace Game
             name = skin.nameKey;
             desc = skin.descKey;
             imagePath = skin.imagePathKey;
-            persAnimRef = new SerializablePersistentAnimationRef(skin.persistentAnimRef);
+            persAnimRef = skin.persistentAnimRef == null ? null : new SerializablePersistentAnimationRef(skin.persistentAnimRef);
             foreach (var animRef in skin.getAllAnimRefs())
             {
                 _animationRefs.Add(new SerializableSkinAnimationRef(animRef));

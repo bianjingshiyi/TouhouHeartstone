@@ -1354,7 +1354,7 @@ namespace Controllers
             {
                 var defines = game.anims.getAnimationDefinesForBuff();
                 var animRef = buffSkin.persistentAnimRef;
-                var animIndex = Array.FindIndex(defines, def => def.getDefineRef() == animRef.animRef);
+                var animIndex = Array.FindIndex(defines, def => def.getDefineRef() == animRef?.animRef);
                 return new VisualEffectDialogViewData()
                 {
                     animIndex = animIndex + 1,
