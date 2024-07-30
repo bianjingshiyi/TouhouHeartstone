@@ -35,10 +35,13 @@ namespace Game.BattleTable
                     visible = false;
                 }
                 var effect = table.createEffect(animRef, info);
-                effect.modifyColors(persAnimRef.colorModifies);
+                if (effect)
+                {
+                    effect.modifyColors(persAnimRef.colorModifies);
 
-                effect.setVisible(visible);
-                table.addCardBuffEffect(card.id, buff.instanceID, effect);
+                    effect.setVisible(visible);
+                    table.addCardBuffEffect(card.id, buff.instanceID, effect);
+                }
             }
 
             yield break;
