@@ -1738,6 +1738,9 @@ namespace TouhouHeartstone
             CARD.CURRENT_LIFE,
             CARD.ARMOR,
             CARD.SILENCE,
+            CARD.HAS_SHIELD,
+            CARD.HAS_STEALTH,
+            CARD.IS_FROZEN
         };
         public static string[] temporaryBattlefieldPropNames = new string[]
         {
