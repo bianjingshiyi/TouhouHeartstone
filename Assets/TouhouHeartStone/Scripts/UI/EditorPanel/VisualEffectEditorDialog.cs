@@ -30,12 +30,6 @@ namespace UI
         public void update(VisualEffectDialogViewData viewData)
         {
             var flags = viewData.hideFlags;
-            setEvent(viewData.eventIndex);
-            setAnimation(viewData.animIndex);
-            setSourcePosition(viewData.sourcePosition);
-            setSourcePositionVarName(viewData.sourcePositionVarName);
-            setTargetPosition(viewData.targetPosition);
-            setTargetPositionVarName(viewData.targetPositionVarName);
             foreach (var obj in _eventDropdownFieldObjects)
             {
                 obj.SetActive(!flags.HasFlag(VFXDialogHideFlags.Event));
@@ -56,6 +50,12 @@ namespace UI
             {
                 obj.SetActive(!flags.HasFlag(VFXDialogHideFlags.TargetPositionVarName));
             }
+            setEvent(viewData.eventIndex);
+            setAnimation(viewData.animIndex);
+            setSourcePosition(viewData.sourcePosition);
+            setSourcePositionVarName(viewData.sourcePositionVarName);
+            setTargetPosition(viewData.targetPosition);
+            setTargetPositionVarName(viewData.targetPositionVarName);
         }
         public void updateColors(ColorModifyViewData[] colors)
         {

@@ -828,10 +828,10 @@ namespace Controllers
             var eventNames = game.anims.getNodeVisualEffectEventEditorNames(node);
             var viewData = game.anims.getNodeAnimationViewData(node, _curCardSkin);
             var colorViewData = game.anims.getAnimationColorViewDataForNode(node, _curCardSkin);
+            _graphEditor.displayAnimationDialog(new VFXSelectSourceNode(this, node));
             _graphEditor.initNodeAnimationDialogEvents(eventNames);
             _graphEditor.updateAnimationDialog(viewData);
             _graphEditor.updateAnimationDialogColors(colorViewData);
-            _graphEditor.displayAnimationDialog(new VFXSelectSourceNode(this, node));
         }
         #endregion
 

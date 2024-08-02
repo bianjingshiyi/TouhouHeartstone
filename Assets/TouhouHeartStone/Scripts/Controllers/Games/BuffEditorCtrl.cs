@@ -265,9 +265,9 @@ namespace Controllers
             var source = new VFXSelectSourcePersistent(this);
             var eventViewData = source.getAnimationViewData();
             var colorViewData = source.getColorViewDatas();
+            _graphEditor.displayAnimationDialog(source);
             _graphEditor.updateAnimationDialog(eventViewData);
             _graphEditor.updateAnimationDialogColors(colorViewData);
-            _graphEditor.displayAnimationDialog(source);
         }
         private async void onInputFieldLangaugeChangedCallback(int languageIndex, BuffEditorPanel.BuffInputField field)
         {
@@ -361,10 +361,10 @@ namespace Controllers
             var eventNames = game.anims.getNodeVisualEffectEventEditorNames(node);
             var eventViewData = source.getAnimationViewData();
             var colorViewData = source.getColorViewDatas();
+            _graphEditor.displayAnimationDialog(source);
             _graphEditor.initNodeAnimationDialogEvents(eventNames);
             _graphEditor.updateAnimationDialog(eventViewData);
             _graphEditor.updateAnimationDialogColors(colorViewData);
-            _graphEditor.displayAnimationDialog(source);
         }
         #endregion
 
