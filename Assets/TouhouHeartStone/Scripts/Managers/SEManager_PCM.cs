@@ -96,7 +96,7 @@ namespace Game
                     int startY = y - lineWeight / 2;
                     int minY = Mathf.Clamp(Math.Min(lastY, startY), heightOffset, heightOffset + channelHeight - 1);
                     int maxY = Mathf.Clamp(Math.Max(lastY, startY) + lineWeight, heightOffset, heightOffset + channelHeight - 1);
-                    int lineHeight = maxY - minY;
+                    int lineHeight = Mathf.Max(1, maxY - minY);
                     var colors = new Color32[lineHeight];
                     Array.Fill(colors, new Color32(255, 255, 255, 255));
                     texture.SetPixels32(x, minY, 1, lineHeight, colors);
