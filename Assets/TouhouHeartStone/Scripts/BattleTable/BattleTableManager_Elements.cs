@@ -1159,13 +1159,14 @@ namespace Game.BattleTable
         {
             if (define == null)
                 return false;
-            var skin = getCardSkin(define);
+            var key = getCardSkinKey(define);
+            var skin = key.skin;
             if (skin == null)
                 return false;
             var soundRef = skin.getSoundRef(soundName);
             if (soundRef == null || string.IsNullOrEmpty(soundRef.path))
                 return false;
-            var audio = await loadSound(define.cardPoolId, soundRef.path);
+            var audio = await loadSound(key.poolRef.CardPoolID, soundRef.path);
             if (!audio)
                 return false;
             _main.seManager.playCustomSE(audio);
