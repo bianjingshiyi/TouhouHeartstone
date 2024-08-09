@@ -1049,7 +1049,7 @@ namespace UI
         [SerializeField]
         private string[] _eventVarNameNames;
         [SerializeField]
-        private string[] _eventVarNameValues;
+        private EventVarName[] _eventVarNameValues;
 
         [SerializeField]
         private CardPropertyNameItem[] _cardPropertyNameItems;
@@ -1265,7 +1265,7 @@ namespace UI
         public EventTriggerTime[] eventTriggerTimeValues;
 
         public string[] eventVarNameNames;
-        public string[] eventVarNameValues;
+        public EventVarName[] eventVarNameValues;
 
         public string[] effectTagNames;
         public string[] effectTagValues;
@@ -1289,7 +1289,7 @@ namespace UI
                 eventValues = eventValues
             };
         }
-        public static ValueInputFieldProperties eventVar(string[] eventVarNameNames, string[] eventVarNameValues)
+        public static ValueInputFieldProperties eventVar(string[] eventVarNameNames, EventVarName[] eventVarNameValues)
         {
             return new ValueInputFieldProperties()
             {
