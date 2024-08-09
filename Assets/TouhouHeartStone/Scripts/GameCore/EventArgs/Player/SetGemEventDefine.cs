@@ -12,13 +12,15 @@ namespace TouhouHeartstone
         {
             beforeVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() {name = VAR_PLAYER,type=typeof(Player)},
-                new EventVariableInfo() {name = VAR_VALUE,type=typeof(int)}
+                new EventVariableInfo() {name = VAR_PLAYER, type = typeof(Player)},
+                new EventVariableInfo() {name = VAR_BEFORE_VALUE, type = typeof(int)},
+                new EventVariableInfo() {name = VAR_VALUE, type = typeof(int)}
             };
             afterVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() {name = VAR_PLAYER,type=typeof(Player)},
-                new EventVariableInfo() {name = VAR_VALUE,type=typeof(int)}
+                new EventVariableInfo() {name = VAR_PLAYER, type = typeof(Player)},
+                new EventVariableInfo() {name = VAR_BEFORE_VALUE, type = typeof(int)},
+                new EventVariableInfo() {name = VAR_VALUE, type = typeof(int)}
             };
         }
         [Obsolete]
@@ -49,6 +51,7 @@ namespace TouhouHeartstone
             var define = game.getEventDefine<SetGemEventDefine>();
             var arg = new EventArg(game, define);
             arg.setVar(VAR_PLAYER, player);
+            arg.setVar(VAR_BEFORE_VALUE, player.getGem());
             arg.setVar(VAR_VALUE, value);
             return game.triggers.doEvent(arg);
         }
@@ -85,6 +88,7 @@ namespace TouhouHeartstone
         [TranslateMsg("{0}是玩家名称，{1}是灵力值")]
         const string TEMPLATE = "{0}的灵力值变为{1}";
         public const string VAR_PLAYER = EVENTVAR.PLAYER;
+        public const string VAR_BEFORE_VALUE = EVENTVAR.BEFORE_VALUE;
         public const string VAR_VALUE = EVENTVAR.VALUE;
     }
 }
