@@ -41,10 +41,10 @@ namespace Controllers
             _multiSelectCardPoolDialog.onClickItemButton += onClickMultiSelectCardPoolItemCallback;
             _multiSelectCardPoolDialog.onItemToggleValueChanged += (index, value) => onClickMultiSelectCardPoolItemCallback(index);
             _multiSelectCardPoolConfirmButton.onClick.AddListener(onClickMultiSelectCardPoolConfirmButtonCallback);
-            _multiSelectCardPoolCancelButton.onClick.AddListener(() => hideCardPoolSingleSelectPanel());
+            _multiSelectCardPoolCancelButton.onClick.AddListener(() => hideCardPoolMultiSelectPanel());
 
             _singleSelectCardPoolDialog.onClickItemButton += onClickSingleSelectCardPoolItemCallback;
-            _singleSelectCardPoolCancelButton.onClick.AddListener(() => hideCardPoolMultiSelectPanel());
+            _singleSelectCardPoolCancelButton.onClick.AddListener(() => hideCardPoolSingleSelectPanel());
         }
         protected override void Start()
         {
