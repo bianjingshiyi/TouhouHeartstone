@@ -2335,9 +2335,14 @@ namespace Game
         /// 使用本地化字符串+本地化资源地址表进行本地化
         /// </summary>
         private const int CARD_POOL_VERSION_4 = 4;
+        /// <summary>
+        /// 文件格式：'zp' + 文件头长度 + 文件头 + 文件内容
+        /// 修改增益特效的数据类型。
+        /// </summary>
+        private const int CARD_POOL_VERSION_5 = 5;
         public const byte CARD_POOL_VERSION_3_HEADER_BYTE_0 = (byte)'z';
         public const byte CARD_POOL_VERSION_3_HEADER_BYTE_1 = (byte)'p';
-        public const int CURRENT_CARD_POOL_VERSION = CARD_POOL_VERSION_4;
+        public const int CURRENT_CARD_POOL_VERSION = CARD_POOL_VERSION_5;
         #endregion
     }
 
