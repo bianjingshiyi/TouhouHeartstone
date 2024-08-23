@@ -106,8 +106,10 @@ namespace Game.BattleTable
             {
                 if (anim is MoveCardAnim move)
                 {
-                    if (groupedCards.Contains(move._movingCardId)) // 不能加速已经被包括入组的动画的移动。
+                    // 是移动卡牌动画
+                    if (groupedCards.Contains(move._movingCardId)) // 不能加速已经被包括入组的卡牌的移动。
                         return false;
+
                     // 父事件相同
                     IEventArg parent = move.eventArg;
                     while (parent != null)
@@ -145,9 +147,8 @@ namespace Game.BattleTable
         }
         public static bool cardIsMovedAfterStart(EventAnimation anim, int cardId)
         {
-            return anim.insertedAnims
-                .OfType<MoveCardAnim>()
-                .Any(a => !a.eventArg.isCanceled && a.eventArg.getVar<Card>(MoveCardEventDefine.VAR_CARD)?.id == cardId);
+            return anim.insertedAnims.Any(g => g.OfType<MoveCardAnim>()
+                .Any(a => !a.eventArg.isCanceled && a.eventArg.getVar<Card>(MoveCardEventDefine.VAR_CARD)?.id == cardId));
         }
         #endregion
 
@@ -183,7 +184,7 @@ namespace Game.BattleTable
                     anim = new MoveToHandAnim(card, startPos, from, to, data.position, startVisible);
                     break;
                 case PILE.FIELD: // 任意牌堆-->战场
-                    bool mute = table.getAnimGroupOfAnim(this).OfType<MoveCardAnim>().Any(a => a._enterFieldSoundPlayed);
+                    bool mute = group.OfType<MoveCardAnim>().Any(a => a._enterFieldSoundPlayed);
                     if (!mute && table.cardHasCustomSound(card.define, CardSkinData.SOUND_NAME_ON_ENTER))
                     {
                         _enterFieldSoundPlayed = true;
@@ -330,8 +331,7 @@ namespace Game.BattleTable
             if (_breakDuration <= _minBreakDuration || _breakDurationEvaluated)
                 return;
 
-            var groups = table.getAllAnimGroups();
-            var group = table.getAnimGroupOfAnim(this);
+            var groups = table.getAllPlayingAnimationGroups();
             var index = Array.IndexOf(groups, group);
             var moveAnims = groups.Where((g, i) => i >= index).SelectMany(g => g.OfType<MoveCardAnim>()).ToArray();
 

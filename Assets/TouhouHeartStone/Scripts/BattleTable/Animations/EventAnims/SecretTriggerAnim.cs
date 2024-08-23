@@ -11,6 +11,7 @@ namespace Game.BattleTable
             var card = table.getEventCardSnapshot(eventArg, EVENTVAR.CARD);
             if (table.tryGetSecret(card, out var secret))
             {
+                var position = secret.transform.position;
                 secret.dummyTarget.position = table.table.CenterDisplayTransform.position;
                 table.setCard(secret.card, card);
                 secret.card.setFaceup(true);
@@ -26,6 +27,7 @@ namespace Game.BattleTable
                 secret.onSecretTrigger.invokeAfterAnim();
                 secret.onSecretExit.invokeAfterAnim();
                 table.removeSecret(card.id);
+                table.createDeadCardAnchor(card.id, position);
             }
         }
     }

@@ -12,12 +12,9 @@ namespace Game.BattleTable
             {
                 TableAnimation anim = this[i];
                 bool isBlocked = false;
-                if (i == 0)
+                if (i != 0)
                 {
                     //第一个永远不被阻挡
-                }
-                else
-                {
                     for (int j = 0; j < i; j++)
                     {
                         TableAnimation prevAnim = this[j];
@@ -45,6 +42,11 @@ namespace Game.BattleTable
                     Debug.LogError($"动画{anim}播放异常被跳过：{e}");
                 }
             }
+        }
+        public void addToGroup(TableAnimation anim)
+        {
+            Add(anim);
+            anim.group = this;
         }
         public bool continueNextGroup(AnimationGroup nextGroup)
         {

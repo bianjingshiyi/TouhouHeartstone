@@ -720,8 +720,7 @@ namespace Game.BattleTable
             TableAnimation anim = createEventAnim(arg);
             if (anim != null)
             {
-                addAnim(anim);
-                addToInsertedAnimsOfParent(arg, anim);
+                addEventAnim(arg, anim);
             }
 
             _allControlDirty = true;
@@ -744,8 +743,7 @@ namespace Game.BattleTable
             {
                 // 死亡结算事件结束后，清理死亡仆从。
                 var anim = new ClearDeadAnchorAnimation();
-                addAnim(anim);
-                addToInsertedAnimsOfParent(arg, anim);
+                addEventAnim(arg, anim);
             }
         }
         #endregion

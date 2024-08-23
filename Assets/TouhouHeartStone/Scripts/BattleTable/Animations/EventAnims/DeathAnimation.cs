@@ -44,7 +44,7 @@ namespace Game.BattleTable
                 anim = new AnimAnim(item.animator, item.onDestroy.animName);
             }
 
-            bool mute = table.getAnimGroupOfAnim(this).OfType<DeathAnimation>().Any(a => _soundPlayed);
+            bool mute = group.OfType<DeathAnimation>().Any(a => _soundPlayed);
             var desc = table.updateCardDescriptor(cardSnapshot);
             if (!mute && desc != null && table.cardHasCustomSound(desc.define, CardSkinData.SOUND_NAME_ON_DEATH))
             {

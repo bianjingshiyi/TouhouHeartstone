@@ -19,7 +19,33 @@ namespace Game.BattleTable
                 animState = EventAnimState.StartFinished;
                 while (shouldPauseAfterStart())
                 {
+                    for (int i = 0; i < insertedAnims.Count; i++)
+                    {
+                        if (_varChanged)
+                            break;
+                        var childGroup = insertedAnims[i];
+                        bool blocked = false;
+                        for (int j = 0; j < i; j++)
+                        {
+                            var prevGroup = insertedAnims[j];
+                            if (!prevGroup.continueNextGroup(childGroup))
+                            {
+                                blocked = true;
+                                break;
+                            }
+                        }
+                        if (blocked)
+                            break;
+                        childGroup.update(table, _deltaTime);
+                        if (childGroup == null || childGroup.Count <= 0)
+                        {
+                            insertedAnims.RemoveAt(i);
+                            i--;
+                        }
+                    }
                     yield return null;
+                    if (_varChanged)
+                        break;
                 }
             }
             while (_varChanged);
@@ -59,10 +85,8 @@ namespace Game.BattleTable
         {
             if (animState == EventAnimState.StartFinished)
             {
-                // 事件没有完成，并且该动画不是通过请求动画强行播放的，则继续后续动画。
+                // 事件逻辑没有完成，继续后续动画
                 if (isEventPausedAfterStart())
-                    return true;
-                if (shouldPauseAfterStart() && isAnimGroupInsertedAnimOfThis(nextGroup))
                     return true;
             }
             return base.continueNextGroup(nextGroup);
@@ -101,18 +125,13 @@ namespace Game.BattleTable
         private bool shouldPauseAfterStart()
         {
             // 事件在事件前被停住了；（泰坦，XX时选牌。）
-            // 或者存在事件前插入的动画；（陷阱）
-            // 并且当没有事件变量发生改变时；（古明地恋多次修改目标）
-            // 暂停该动画。
             bool notCompleted = isEventPausedAfterStart();
-            bool hasInsertAnim = insertedAnims != null && insertedAnims.Count > 0 && insertedAnims.Any(a => !a.isFinished());
-            return (notCompleted || hasInsertAnim) && !_varChanged;
-        }
-        private bool isAnimGroupInsertedAnimOfThis(AnimationGroup nextGroup)
-        {
-            if (insertedAnims == null || insertedAnims.Count <= 0)
-                return false;
-            return nextGroup.Any(a => insertedAnims.Contains(a));
+            // 或者存在事件前插入的动画；（陷阱）
+            bool hasInsertAnim = insertedAnims != null && insertedAnims.Count > 0 && insertedAnims.Any(g => g.Count > 0);
+            // 并且当没有事件变量发生改变时；（古明地恋多次修改目标）
+            bool hasNotChangedVar = !_varChanged;
+            // 暂停该动画。
+            return (notCompleted || hasInsertAnim) && hasNotChangedVar;
         }
         private bool isEventPausedAfterStart()
         {
@@ -122,7 +141,6 @@ namespace Game.BattleTable
 
         #region 属性字段
         public IEventArg eventArg { get; set; }
-        public List<TableAnimation> insertedAnims { get; } = new List<TableAnimation>();
         public EventAnimStartData startData { get; set; }
         public EventAnimState animState;
         private bool _varChanged;

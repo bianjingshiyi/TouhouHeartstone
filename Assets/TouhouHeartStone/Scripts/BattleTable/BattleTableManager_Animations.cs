@@ -224,8 +224,7 @@ namespace Game.BattleTable
                     anim.targetTempVarCardId = card?.id ?? -1;
                 }
             }
-            addAnim(anim);
-            addToInsertedAnimsOfParent(arg, anim);
+            addEventAnim(arg, anim);
         }
         private void checkCardSkinEffectAnimations(Flow flow, EventArg arg)
         {
@@ -427,7 +426,7 @@ namespace Game.BattleTable
                 }
             }
         }
-        private void addToInsertedAnimsOfParent(IEventArg arg, TableAnimation anim)
+        private bool addInsertedAnimOfParent(IEventArg arg, TableAnimation anim)
         {
             var parent = arg.parent;
             while (parent != null)
@@ -435,13 +434,20 @@ namespace Game.BattleTable
                 if (parent.state == EventState.Before)
                 {
                     var anims = _animationCache.Concat(_animationQueue).OfType<EventAnimation>().Where(e => e.eventArg == parent);
-                    foreach (var a in anims)
+                    if (anims.Count() > 0)
                     {
-                        a.insertedAnims.Add(anim);
+                        foreach (var a in anims)
+                        {
+                            var childGroup = new AnimationGroup();
+                            childGroup.addToGroup(anim);
+                            a.insertedAnims.Add(childGroup);
+                        }
+                        return true;
                     }
                 }
                 parent = parent.parent;
             }
+            return false;
         }
 
         #endregion
@@ -464,6 +470,15 @@ namespace Game.BattleTable
         /// 正在被加入待播放队列中的动画列表。
         /// </summary>
         List<TableAnimation> insertingAnims = new List<TableAnimation>();
+        public void addEventAnim(IEventArg arg, TableAnimation anim)
+        {
+            bool addedAsChild = addInsertedAnimOfParent(arg, anim);
+            if (addedAsChild)
+            {
+                return;
+            }
+            addAnim(anim);
+        }
         public void addAnim(TableAnimation anim)
         {
             _animationCache.Add(anim);
@@ -502,27 +517,22 @@ namespace Game.BattleTable
             _animationQueue.AddRange(insertingAnims);
             insertingAnims.Clear();
         }
-        public bool isPlayingAnimation()
+        public AnimationGroup[] getAllPlayingAnimationGroups()
         {
-            return _animationGroups.Count + _animationQueue.Count > 0;
+            List<AnimationGroup> groups = new List<AnimationGroup>();
+            getAllPlayingAnimationGroupsNonAlloc(_animationGroups, groups);
+            return groups.ToArray();
         }
-        public AnimationGroup getAnimGroupOfAnim(TableAnimation anim)
+        private void getAllPlayingAnimationGroupsNonAlloc(List<AnimationGroup> source, List<AnimationGroup> results)
         {
-            return _animationGroups.FirstOrDefault(g => g.Contains(anim));
-        }
-        public AnimationGroup[] getAllAnimGroups()
-        {
-            return _animationGroups.ToArray();
-        }
-        public AnimationGroup getNextGroupOfAnimGroup(AnimationGroup anim)
-        {
-            var index = _animationGroups.IndexOf(anim);
-            if (index < 0) 
-                return null;
-            var nextIndex = index + 1;
-            if (nextIndex >= _animationGroups.Count)
-                return null;
-            return _animationGroups[nextIndex];
+            foreach (var group in source)
+            {
+                results.Add(group);
+                foreach (var anim in group)
+                {
+                    getAllPlayingAnimationGroupsNonAlloc(anim.insertedAnims, results);
+                }
+            }
         }
         public void updateAnim()
         {
@@ -534,11 +544,12 @@ namespace Game.BattleTable
                     _animationQueue.RemoveAt(0);
                     continue;
                 }
-                var group = new AnimationGroup
+                var group = new AnimationGroup();
+                group.addToGroup(first);
+                foreach (var groupedAnim in first.getGroupedAnimations(_animationQueue.Skip(1)).Where(a => a != null))
                 {
-                    first
-                };
-                group.AddRange(first.getGroupedAnimations(_animationQueue.Skip(1)).Where(a => a != null));
+                    group.addToGroup(groupedAnim);
+                }
                 _animationGroups.Add(group);
                 _animationQueue.RemoveAll(t => group.Contains(t));
             }

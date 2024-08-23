@@ -8,6 +8,8 @@ namespace Game.BattleTable
     [Serializable]
     public abstract class TableAnimation : UIAnimation
     {
+        public AnimationGroup group { get; set; }
+        public List<AnimationGroup> insertedAnims { get; } = new List<AnimationGroup>();
         protected float _deltaTime;
         protected float _duration;
         private bool _started = false;
