@@ -23,6 +23,7 @@ namespace Controllers
             _ui.setSelectUploadPoolPanelVisible(false);
             _ui.setUploadPoolPanelVisible(false);
             _ui.setDetailsStateVisible(false);
+            _ui.setDownloadProgressVisible(false);
             deselectCardPool();
             await viewUser(-1, true);
         }
@@ -43,31 +44,36 @@ namespace Controllers
             _ui.onSortChanged += onSortChangedCallback;
             _ui.onViewMineClicked += onViewMineClickedCallback;
             _ui.onHomeClicked += onHomeClickedCallback;
-            _ui.onCreatorFilterChanged += onCreatorFilterChangedCallback;
             _ui.onSearchFilterChanged += onSearchFilterChangedCallback;
             _ui.onRefreshClicked += onRefreshClickedCallback;
-
-            _ui.onCardPoolItemClick += onClickCardPoolItemCallback;
+            _ui.onBrowseCardPoolItemClick += onClickCardPoolItemCallback;
             _ui.onPageButtonClicked += onPageButtonClickCallback;
-
-            _ui.onDeleteCardPoolClicked += onDeleteCardPoolClickedCallback;
-            _ui.onCreatorClicked += onCreatorClickedCallback;
-
-            _ui.onDownloadClick += onDownloadClickCallback;
             _ui.onUploadClick += onUploadClickCallback;
 
-            _ui.onClickSelectUploadPoolCloseButton += onClickSelectUploadPoolCloseButtonCallback;
-            _ui.onClickSelectUploadPoolItem += onClickSelectUploadPoolItemCallback;
+            _ui.onCardPoolDetailsDeleteClicked += onDeleteCardPoolClickedCallback;
+            _ui.onCardPoolDetailsCreatorClicked += onCreatorClickedCallback;
+            _ui.onCardPoolDetailsDownloadClick += onDownloadClickCallback;
+            _ui.onCardPoolDetailsTabClick += onCardPoolDetailsTabClickCallback;
+
+            _ui.onUploadPanelSelectCardPoolCloseButtonClick += onClickSelectUploadPoolCloseButtonCallback;
+            _ui.onUploadPanelCardPoolItemClick += onClickSelectUploadPoolItemCallback;
 
             _ui.onClickWorkshopRuleViewButton += onClickWorkshopRuleViewButtonCallback;
-            _ui.onClickUploadConfirmButton += onClickUploadConfirmButtonCallback;
-            _ui.onClickUploadCloseButton += onClickUploadCloseButtonCallback;
+            _ui.onUploadPanelConfirmButtonClick += onClickUploadConfirmButtonCallback;
+            _ui.onUploadPanelCloseButtonClick += onClickUploadCloseButtonCallback;
         }
         #endregion
 
         #region 事件回调
         private async void onReturnClickCallback()
         {
+            if (_viewingCardPool != null)
+            {
+                // 正在查看卡池细节，返回主界面
+                deselectCardPool();
+                return;
+            }
+            // 主界面
             if (_downloadTask != null)
             {
                 var title = game.lang._(StringTable.WARNING);
@@ -98,12 +104,6 @@ namespace Controllers
             if (game.network.logic.UserInfo == null)
                 return;
             _ = viewUser(game.network.logic.UserInfo.UID);
-        }
-        private void onCreatorFilterChangedCallback(string filter)
-        {
-            _creatorFilter = filter;
-            _page = 0;
-            _ = updatePage();
         }
         private void onSearchFilterChangedCallback(string filter)
         {
@@ -170,6 +170,11 @@ namespace Controllers
             if (_viewingCardPool == null)
                 return;
             _ = viewUser((int)_viewingCardPool.Author);
+            deselectCardPool();
+        }
+        private void onCardPoolDetailsTabClickCallback(WorkshopPanel.CardPoolDetailPage page)
+        {
+            _ui.setCardPoolDetailsPage(page);
         }
         #endregion
 
@@ -578,12 +583,12 @@ namespace Controllers
         private void deselectCardPool()
         {
             _viewingCardPool = null;
-            _ui.setDetailsVisible(WorkshopPanel.DetailPage.Nothing);
+            _ui.setWorkshopPage(WorkshopPanel.WorkshopPage.Browse);
             updateDownloadButton();
         }
         private async Task updateCardPoolDetails(WorkshopCardPoolInfo workshopInfo)
         {
-            _ui.setDetailsVisible(WorkshopPanel.DetailPage.Loading);
+            _ui.setWorkshopPage(WorkshopPanel.WorkshopPage.Loading);
             var viewData = await getCardPoolHeaderViewData(workshopInfo);
 
             var creationTime = DateTime.UnixEpoch.AddSeconds(workshopInfo.CreatedAt);
@@ -623,7 +628,7 @@ namespace Controllers
                 }
             }
 
-            _ui.setDetailsVisible(WorkshopPanel.DetailPage.Preview);
+            _ui.setWorkshopPage(WorkshopPanel.WorkshopPage.CardPoolDetails);
         }
         private async Task<string> getWorkshopCardPoolDependenciesName(WorkshopCardPoolInfo workshopInfo)
         {
@@ -662,7 +667,10 @@ namespace Controllers
         }
         private void updateDownloadButton()
         {
-            _ui.setDownloadButtonInteractable((_viewingCardPool != null && _viewingCardPool.State != WorkshopCardPoolState.Deleted) || _downloadTask != null);
+            bool exists = _viewingCardPool != null && _viewingCardPool.State != WorkshopCardPoolState.Deleted;
+            bool canCancel = _downloadTask != null;
+            bool interactable = exists || canCancel;
+            _ui.setDownloadButtonInteractable(interactable);
         }
         #endregion
 
@@ -758,6 +766,7 @@ namespace Controllers
                 _downloadedCardPools.Clear();
                 _downloadedResources.Clear();
                 _ui.setDownloadButtonText(game.lang._(BUTTON_TEXT_DOWNLOAD));
+                _ui.setDownloadProgressVisible(false);
                 _ui.setDownloadProgress(0);
                 updateDownloadButton();
             }
@@ -811,6 +820,7 @@ namespace Controllers
         {
             var token = _downloadCts.Token;
             // 下载卡池本体文件
+            _ui.setDownloadProgressVisible(true);
             _ui.setDownloadProgress(0);
             var poolFile = await game.network.getWorkshopResource("cardpool", workshopInfo.ContentID);
             var decompressed = Compression.tryDecompress(poolFile);
@@ -981,8 +991,7 @@ namespace Controllers
         {
             _ui.setLoadingState(WorkshopPanel.LoadingState.Loading);
 
-            _ui.switchViewMineOrHome(_viewingUser < 0);
-            _ui.switchViewUserLabelOrSearch(_viewingUser >= 0);
+            _ui.setViewingUser(_viewingUser >= 0);
             if (_viewingUser >= 0)
             {
                 var label = game.lang._(VIEWING_USER_NAME_TEMPLATE, getUserName(_viewingUser));
@@ -992,10 +1001,10 @@ namespace Controllers
             {
                 _ui.setPageButtonInteractable(false, false);
                 _cardPoolCacheDict.Clear();
-                _ui.updateCardPools(Array.Empty<DeckListItemViewData>());
+                _ui.updateBrowseCardPools(Array.Empty<WorkshopCardPoolItemViewData>());
                 await loadPage(_page);
                 var pageViewDatas = await getCurrentPageViewData();
-                _ui.updateCardPools(pageViewDatas);
+                _ui.updateBrowseCardPools(pageViewDatas);
 
                 _ui.setPageText(game.lang._(StringTable.PAGE_NUMBER_TEMPLATE, _page + 1));
                 _ui.setPageButtonInteractable(_page > 0, _currentPageCardPools.Length >= _poolCountPerPage);
@@ -1032,28 +1041,32 @@ namespace Controllers
         {
             scene.waitingBlocker.removeWaitingTask(WaitingTask.LoadWorkshop);
         }
-        private async Task<DeckListItemViewData[]> getCurrentPageViewData()
+        private async Task<WorkshopCardPoolItemViewData[]> getCurrentPageViewData()
         {
             var count = _currentPageCardPools.Length;
-            var viewDatas = new DeckListItemViewData[count];
+            var viewDatas = new WorkshopCardPoolItemViewData[count];
             for (int i = 0; i < count; i++)
             {
                 viewDatas[i] = await getCardPoolItemViewData(_currentPageCardPools[i]);
             }
             return viewDatas;
         }
-        private async Task<DeckListItemViewData> getCardPoolItemViewData(WorkshopCardPoolInfo info)
+        private async Task<WorkshopCardPoolItemViewData> getCardPoolItemViewData(WorkshopCardPoolInfo info)
         {
             Sprite sprite = await loadCardPoolCoverImage(info.CoverImage);
-            return new DeckListItemViewData()
+            var author = game.network.getUserInfo((int)info.Author);
+            var authorName = author?.Name ?? game.lang._(StringTable.UNKNOWN_USER);
+            return new WorkshopCardPoolItemViewData()
             {
                 image = sprite,
-                mode = DeckListItem.Mode.Default,
                 name = info.Name,
                 hasPrivatePools = info.State == WorkshopCardPoolState.Pending,
                 isWarning = info.State == WorkshopCardPoolState.OldVer || info.State == WorkshopCardPoolState.NoPass || info.State == WorkshopCardPoolState.ReviewingOldVer,
                 isError = info.State == WorkshopCardPoolState.Deleted,
                 isWaiting = info.State == WorkshopCardPoolState.Reviewing || info.State == WorkshopCardPoolState.ReviewingOldVer,
+                author = authorName,
+                number = 0,
+                rating = 0,
             };
         }
         private async Task<DeckListItemViewData> getCardPoolHeaderViewData(WorkshopCardPoolInfo info)
@@ -1142,7 +1155,7 @@ namespace Controllers
         [TranslateMsg("创意工坊-上传进度-上传卡池资源")]
         private const string UPLOAD_PROGRESS_UPLOADING_RESOURCES = "上传卡池资源中……";
         [TranslateMsg("创意工坊-查看其他用户的卡池时的说明")]
-        private const string VIEWING_USER_NAME_TEMPLATE = "正在查看：\n{0}上传的卡池";
+        private const string VIEWING_USER_NAME_TEMPLATE = "正在查看：{0}上传的卡池";
         [TranslateMsg("创意工坊-下载按钮文本")]
         private const string BUTTON_TEXT_DOWNLOAD = "下载";
         [TranslateMsg("创意工坊-下载按钮文本")]
@@ -1214,7 +1227,6 @@ namespace Controllers
 
         private Sorting _sorting;
         private int _viewingUser = -1;
-        private string _creatorFilter;
         private string _searchFilter;
 
         private CardPoolInfo[] _selectingUploadPools;

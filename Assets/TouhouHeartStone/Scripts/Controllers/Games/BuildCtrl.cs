@@ -547,7 +547,7 @@ namespace Controllers
                 case BuildTutorialSteps.DragCard:
                     if (_deck != null)
                     {
-                        viewData.targetTransform = _cardPoolViewPanelCtrl.ui.cardListScrollRect.transform as RectTransform;
+                        viewData.targetTransform = _cardPoolViewPanelCtrl.list.cardListScrollRect.transform as RectTransform;
                         viewData.text = game.lang._(TUTORIAL_STEP_DRAG_CARD);
                         viewData.tipOnTop = true;
                         viewData.drag = true;

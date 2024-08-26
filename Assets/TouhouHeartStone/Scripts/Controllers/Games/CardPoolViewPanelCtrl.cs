@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BJSYGameCore.UI;
@@ -67,8 +66,6 @@ namespace Controllers
             // 排序
             sortCards(cardDefines);
 
-            _filteredCardDefineList = cardDefines;
-
             //更新UI
             updateCardPoolFilterNames();
             _ui.setCardPoolValues(_cardPoolFilterValue);
@@ -81,7 +78,7 @@ namespace Controllers
             _ui.setTypeFilters(getCardTypeNames());
             _ui.setTypeFilter(_typeFiltersValue);
             _ui.setSearchInputField(_searchFilterString);
-            _ui.updateCardListCount(_filteredCardDefineList.Count);
+            _list.updateCards(cardDefines);
             _ui.gameObject.SetActive(true);
         }
         public UIDisplayInfo getCurrentDisplayInfo()
@@ -93,21 +90,21 @@ namespace Controllers
             _ui.gameObject.SetActive(false);
             return Task.CompletedTask;
         }
-        public void enableCount(bool value)
-        {
-            _hideCount = !value;
-        }
         public void enableCardPoolFilter(bool value)
         {
             _ui.enableCardPoolFilter(value);
         }
         public CardDefine getCardDefineAt(int index)
         {
-            return _filteredCardDefineList[index];
+            return _list.getCardDefineAt(index);
+        }
+        public void enableCount(bool value)
+        {
+            _list.enableCount(value);
         }
         public int getCardListItemIndex(EditorCardListItem item)
         {
-            return _ui.getCardItemIndex(item.transform as RectTransform);
+            return _list.getCardListItemIndex(item);
         }
         public void updateCardPoolFilterNames()
         {
@@ -118,18 +115,22 @@ namespace Controllers
         #region 生命周期
         protected void Awake()
         {
-            _ui.onEnableCardListItem += onEnableCardListItemCallback;
-            _ui.onDisableCardListItem += onDisableCardListItemCallback;
-            _ui.onUpdateCardListItem += onUpdateCardListItemCallback;
-
-
-
             _ui.onCardPoolsValueChanged += onCardPoolValuesChanged;
             _ui.onSortTypeValueChanged += onSortTypeValueChanged;
             _ui.onCharacterFilterValueChanged += onCharacterFiltersValueChanged;
             _ui.onCostFilterValueChanged += onCostFiltersValueChanged;
             _ui.onTypeFilterValueChanged += onTypeFilterValueChanged;
             _ui.onSearchInputFieldValueChanged += onSearchFilterValueChanged;
+
+            _list.onCardHoverEnter += (item, define) => onCardHoverEnter?.Invoke(item, define);
+            _list.onCardHoverExit += (item, define) => onCardHoverExit?.Invoke(item, define);
+            _list.onClickCard += (define) => onClickCard?.Invoke(define);
+
+            _list.onUpdateCardListItem += (index, item) => onUpdateCardListItem?.Invoke(index, item);
+
+            _list.onStartDragCard += (define, eventData) => onStartDragCard?.Invoke(define, eventData);
+            _list.onDragCard += (define, eventData) => onDragCard?.Invoke(define, eventData);
+            _list.onEndDragCard += (define, eventData) => onEndDragCard?.Invoke(define, eventData);
         }
         #endregion
         #region 事件回调
@@ -162,106 +163,6 @@ namespace Controllers
         {
             _searchFilterString = value;
             updateContents();
-        }
-        private void onEnableCardListItemCallback(int index, RectTransform itemRect)
-        {
-            EditorCardListItem item = itemRect.GetComponent<EditorCardListItem>();
-            item.onClick += onClickCardListItem;
-            item.onHoverEnter += onCardListItemHoverEnterCallback;
-            item.onHoverExit += onCardListItemHoverExitCallback;
-            item.onBeginDrag += onStartDragCardListItemCallback;
-            item.onDrag += onDragCardListItemCallback;
-            item.onEndDrag += onEndDragCardListItemCallback;
-        }
-        private void onDisableCardListItemCallback(int index, RectTransform itemRect)
-        {
-            EditorCardListItem item = itemRect.GetComponent<EditorCardListItem>();
-            item.onClick -= onClickCardListItem;
-            item.onHoverEnter -= onCardListItemHoverEnterCallback;
-            item.onHoverExit -= onCardListItemHoverExitCallback;
-            item.onBeginDrag -= onStartDragCardListItemCallback;
-            item.onDrag -= onDragCardListItemCallback;
-            item.onEndDrag -= onEndDragCardListItemCallback;
-        }
-        private async void onUpdateCardListItemCallback(int index, RectTransform itemRect)
-        {
-            //防止索引超界
-            if (index < 0 || index >= _filteredCardDefineList.Count)
-                return;
-            EditorCardListItem item = itemRect.GetComponent<EditorCardListItem>();
-            if (_hideCount)
-            {
-                item.hideCount();
-            }
-            CardDefine card = _filteredCardDefineList[index];
-            await item.card.setCardDefine(card, game.card);
-            onUpdateCardListItem?.Invoke(index, item);
-        }
-        private void onClickCardListItem(EditorCardListItem item)
-        {
-            int index = _ui.getCardItemIndex(item.transform as RectTransform);
-            CardDefine card = _filteredCardDefineList[index];
-            onClickCard?.Invoke(card);
-        }
-        private void onCardListItemHoverEnterCallback(EditorCardListItem item)
-        {
-            int index = _ui.getCardItemIndex(item.transform as RectTransform);
-            CardDefine card = _filteredCardDefineList[index];
-            onCardHoverEnter?.Invoke(item, card);
-        }
-        private void onCardListItemHoverExitCallback(EditorCardListItem item)
-        {
-            int index = _ui.getCardItemIndex(item.transform as RectTransform);
-            CardDefine card = _filteredCardDefineList[index];
-            onCardHoverExit?.Invoke(item, card);
-        }
-        private async void onStartDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
-        {
-            int index = _ui.getCardItemIndex(item.transform as RectTransform);
-            if (index < 0)
-            {
-                //物体已经被销毁
-                _ui.cardListScrollRect.OnBeginDrag(eventData);
-                return;
-            }
-            CardDefine card = _filteredCardDefineList[index];
-            bool isEventUsed = onStartDragCard != null ? await onStartDragCard.Invoke(card, eventData) : false;
-            if (!isEventUsed)
-            {
-                _ui.cardListScrollRect.OnBeginDrag(eventData);
-            }
-        }
-        private async void onDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
-        {
-            int index = _ui.getCardItemIndex(item.transform as RectTransform);
-            if (index < 0)
-            {
-                //物体已经被销毁
-                _ui.cardListScrollRect.OnDrag(eventData);
-                return;
-            }
-            CardDefine card = _filteredCardDefineList[index];
-            bool isEventUsed = onDragCard != null ? await onDragCard.Invoke(card, eventData) : false;
-            if (!isEventUsed)
-            {
-                _ui.cardListScrollRect.OnDrag(eventData);
-            }
-        }
-        private async void onEndDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
-        {
-            int index = _ui.getCardItemIndex(item.transform as RectTransform);
-            if (index < 0)
-            {
-                //物体已经被销毁
-                _ui.cardListScrollRect.OnEndDrag(eventData);
-                return;
-            }
-            CardDefine card = _filteredCardDefineList[index];
-            bool isEventUsed = onEndDragCard != null ? await onEndDragCard.Invoke(card, eventData) : false;
-            if (!isEventUsed)
-            {
-                _ui.cardListScrollRect.OnEndDrag(eventData);
-            }
         }
         #endregion
         #region 初始化
@@ -339,7 +240,8 @@ namespace Controllers
             // 没有指定要选中的类型，保留之前选择的卡牌类型。
             if (values == null)
             {
-                values = _typeFilters.Where((c, i) => {
+                values = _typeFilters.Where((c, i) =>
+                {
                     if (_typeFiltersValue == null)
                         return false;
                     if (i < 0 || i >= _typeFiltersValue.Length)
@@ -374,7 +276,8 @@ namespace Controllers
             // 没有指定要选中的角色引用，保留之前选择的角色。
             if (values == null)
             {
-                values = _characterFilters.Where((c, i) => {
+                values = _characterFilters.Where((c, i) =>
+                {
                     if (_characterFiltersValue == null)
                         return false;
                     if (i < 0 || i >= _characterFiltersValue.Length)
@@ -672,7 +575,7 @@ namespace Controllers
         private string[] getSortTypeNames()
         {
             return _sortTypes.Select(t => game.lang._(t)).ToArray();
-        } 
+        }
         /// <summary>
         /// 获取所有人物的名称。
         /// </summary>
@@ -721,6 +624,7 @@ namespace Controllers
         #endregion
         #region 属性字段
         public CardPoolViewPanel ui => _ui;
+        public CardListPanelCtrl list => _list;
 
         [TranslateMsg("卡牌搜索栏所使用的关键词")]
         public const string SEARCH_KEYWORD_ATTACK = "攻击力";
@@ -734,15 +638,14 @@ namespace Controllers
         public const string greaterPattern = "([0-9]+)\\+";
 
         [SerializeField]
+        CardListPanelCtrl _list;
+        [SerializeField]
         CardPoolViewPanel _ui;
         List<CardDefine> _cardDefineList = new List<CardDefine>();
-        List<CardDefine> _filteredCardDefineList = new List<CardDefine>();
         [SerializeField]
         DisplayInfo _displayInfo;
         [SerializeField]
         long[] _cardPoolIdList;
-        [SerializeField]
-        bool _hideCount = false;
         [SerializeField]
         bool[] _cardPoolFilterValue;
         [SerializeField]

@@ -1,7 +1,7 @@
 ﻿using System;
-using UnityEngine;
 using System.Collections.Generic;
 using BJSYGameCore.UI;
+using UnityEngine;
 using UnityEngine.UI;
 namespace UI
 {
@@ -64,26 +64,6 @@ namespace UI
         {
             _searchInputField.SetTextWithoutNotify(value);
         }
-        /// <summary>
-        /// 显示左边的卡牌总览
-        /// </summary>
-        /// <param name="value"></param>
-        public void setCardListActive(bool value)
-        {
-            _cardList.SetActive(value);
-        }
-        /// <summary>
-        /// 设置卡牌列表数量（会引发卡牌列表刷新事件）
-        /// </summary>
-        /// <param name="count"></param>
-        public void updateCardListCount(int count)
-        {
-            _cardListLayoutGroup.setCount(count);
-        }
-        public int getCardItemIndex(RectTransform rect)
-        {
-            return _cardListLayoutGroup.getItemIndex(rect);
-        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -95,10 +75,6 @@ namespace UI
             _typeFilterDropdown.onValueChanged.AddListener(onTypeFilterValueChangedCallback);
             _sortDropdown.onValueChanged.AddListener(onSortTypeValueChangedCallback);
             _searchInputField.onEndEdit.AddListener(onSearchInputFieldEndEditCallback);
-            if (_cardListLayoutGroup.cellPrefab.transform.parent == _cardListLayoutGroup.transform)
-            {
-                _cardListLayoutGroup.cellPrefab.gameObject.SetActive(false);
-            }
         }
         #endregion
         #region 事件回调
@@ -138,27 +114,8 @@ namespace UI
         public event Action<bool[]> onCostFilterValueChanged;
         public event Action<bool[]> onTypeFilterValueChanged;
         public event Action<string> onSearchInputFieldValueChanged;
-        public event Action<int, RectTransform> onEnableCardListItem
-        {
-            add { _cardListLayoutGroup.onEnableItem += value; }
-            remove { _cardListLayoutGroup.onEnableItem -= value; }
-        }
-        public event Action<int, RectTransform> onDisableCardListItem
-        {
-            add { _cardListLayoutGroup.onDisableItem += value; }
-            remove { _cardListLayoutGroup.onDisableItem += value; }
-        }
-        /// <summary>
-        /// 当更新卡牌列表，参数为更新的列表项索引和UI物体
-        /// </summary>
-        public event Action<int, RectTransform> onUpdateCardListItem
-        {
-            add { _cardListLayoutGroup.onUpdateItem += value; }
-            remove { _cardListLayoutGroup.onUpdateItem -= value; }
-        }
         #endregion
         #region 属性字段
-        public ScrollRect cardListScrollRect => _cardListScrollRect;
         [SerializeField]
         MultiSelectDropdown _cardPoolDropdown;
         [SerializeField]
@@ -171,12 +128,6 @@ namespace UI
         MultiSelectDropdown _typeFilterDropdown;
         [SerializeField]
         InputField _searchInputField;
-        [SerializeField]
-        GameObject _cardList;
-        [SerializeField]
-        ScrollRect _cardListScrollRect;
-        [SerializeField]
-        VirtualListLayoutGroup _cardListLayoutGroup;
         #endregion
     }
 }
