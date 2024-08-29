@@ -667,9 +667,12 @@ namespace Controllers
         }
         private void updateDownloadButton()
         {
-            bool exists = _viewingCardPool != null && _viewingCardPool.State != WorkshopCardPoolState.Deleted;
-            bool canCancel = _downloadTask != null;
+            bool viewingCardPool = _viewingCardPool != null;
+            bool downloading = _downloadTask != null;
+            bool exists = viewingCardPool && _viewingCardPool.State != WorkshopCardPoolState.Deleted;
+            bool canCancel = downloading;
             bool interactable = exists || canCancel;
+            _ui.switchUploadOrDownloadButton(downloading || viewingCardPool);
             _ui.setDownloadButtonInteractable(interactable);
         }
         #endregion

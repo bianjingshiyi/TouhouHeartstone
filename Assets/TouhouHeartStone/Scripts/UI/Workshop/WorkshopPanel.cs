@@ -16,6 +16,11 @@ namespace UI
             _workshopCardDetailsPage.SetActive(page == WorkshopPage.CardDetails);
             _workshopLoadingPage.SetActive(page == WorkshopPage.Loading);
         }
+        public void switchUploadOrDownloadButton(bool download)
+        {
+            _uploadButton.gameObject.SetActive(!download);
+            _downloadButton.gameObject.SetActive(download);
+        }
 
         #endregion
 
