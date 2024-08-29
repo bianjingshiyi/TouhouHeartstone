@@ -23,27 +23,16 @@ namespace UI
         {
             base.CalculateLayoutInputHorizontal();
 
-            int minColumns = 0;
-            int preferredColumns = 0;
-            if (m_Constraint == Constraint.FixedColumnCount)
+            if (m_Constraint == Constraint.FixedRowCount)
             {
-                minColumns = preferredColumns = m_ConstraintCount;
-            }
-            else if (m_Constraint == Constraint.FixedRowCount)
-            {
-                minColumns = preferredColumns = Mathf.CeilToInt(rectChildren.Count / (float)m_ConstraintCount - 0.001f);
+                int minColumns = Mathf.CeilToInt(rectChildren.Count / (float)m_ConstraintCount - 0.001f);
+                float minSpace = padding.horizontal + (cellSizeValue + spacing.x) * minColumns - spacing.x;
+                SetLayoutInputForAxis(minSpace, minSpace, -1, 0);
             }
             else
             {
-                minColumns = 1;
-                preferredColumns = Mathf.CeilToInt(Mathf.Sqrt(rectChildren.Count));
+                SetLayoutInputForAxis(0, 0, -1, 0);
             }
-            var cellSize = getCellSize();
-
-            SetLayoutInputForAxis(
-                padding.horizontal + (cellSize.x + spacing.x) * minColumns - spacing.x,
-                padding.horizontal + (cellSize.x + spacing.x) * preferredColumns - spacing.x,
-                -1, 0);
         }
 
         /// <summary>
@@ -52,25 +41,17 @@ namespace UI
         /// </summary>
         public override void CalculateLayoutInputVertical()
         {
-            int minRows = 0;
-            var cellSize = getCellSize();
             if (m_Constraint == Constraint.FixedColumnCount)
             {
-                minRows = Mathf.CeilToInt(rectChildren.Count / (float)m_ConstraintCount - 0.001f);
-            }
-            else if (m_Constraint == Constraint.FixedRowCount)
-            {
-                minRows = m_ConstraintCount;
+                int minRows = Mathf.CeilToInt(rectChildren.Count / (float)m_ConstraintCount - 0.001f);
+                float minSpace = padding.vertical + (cellSizeValue + spacing.y) * minRows - spacing.y;
+                SetLayoutInputForAxis(minSpace, minSpace, -1, 1);
             }
             else
             {
-                float width = rectTransform.rect.width;
-                int cellCountX = Mathf.Max(1, Mathf.FloorToInt((width - padding.horizontal + spacing.x + 0.001f) / (cellSize.x + spacing.x)));
-                minRows = Mathf.CeilToInt(rectChildren.Count / (float)cellCountX);
+                SetLayoutInputForAxis(0, 0, -1, 1);
             }
 
-            float minSpace = padding.vertical + (cellSize.y + spacing.y) * minRows - spacing.y;
-            SetLayoutInputForAxis(minSpace, minSpace, -1, 1);
         }
 
         /// <summary>
