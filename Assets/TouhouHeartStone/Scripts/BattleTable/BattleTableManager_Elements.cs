@@ -101,7 +101,7 @@ namespace Game.BattleTable
         }
         public void completeMulligan()
         {
-            _mulliganed = true;
+            _mulliganFinished = true;
         }
         #region 英雄
         /// <summary>
@@ -2459,7 +2459,8 @@ namespace Game.BattleTable
         private bool _requesting;
         public float servantAttackThreshold => _servantAttackThreshold;
         public float masterAttackThreshold => _masterAttackThreshold;
-        private bool _mulliganed;
+        private bool _mulliganConfirmed;
+        private bool _mulliganFinished;
         private CardChooseMode _cardChooseMode;
         private int[] _choosingCards;
         private DefineReference[] _choosingCardDefineRefs;

@@ -50,7 +50,7 @@ namespace Game.BattleTable
         public void init()
         {
             table.MulliganLightFactor.targetIntensity = 0.1f;
-            _mulliganed = false;
+            _mulliganFinished = false;
             initMaster(table.SelfMaster);
             initMaster(table.EnemyMaster);
 
@@ -439,7 +439,7 @@ namespace Game.BattleTable
         {
             table.update(Time.deltaTime);
 
-            if (_mulliganed)
+            if (_mulliganFinished)
             {
                 table.MulliganLightFactor.targetIntensity = Mathf.Clamp01(table.MulliganLightFactor.targetIntensity + 1 * Time.deltaTime);
             }
@@ -589,7 +589,7 @@ namespace Game.BattleTable
         }
         private void onMulliganItemClickCallback(int index)
         {
-            if (!canControl)
+            if (!canControl || _mulliganConfirmed)
                 return;
             var initPile = player.getInit();
             var card = initPile[index];
@@ -604,11 +604,12 @@ namespace Game.BattleTable
             }
             ui.InitReplaceDialog.getItem(index).setMarkVisible(_mulliganedCards.Contains(card));
         }
-        private void onMulliganAcceptCallback()
+        private async void onMulliganAcceptCallback()
         {
             if (!canControl)
                 return;
-            player.cmdInitReplace(game, _mulliganedCards.ToArray());
+            await player.cmdInitReplace(game, _mulliganedCards.ToArray());
+            _mulliganConfirmed = true;
             ui.InitReplaceDialog.setWaiting(true);
         }
         #endregion
