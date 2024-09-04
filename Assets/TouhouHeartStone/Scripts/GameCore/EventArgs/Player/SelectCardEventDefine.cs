@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using MukioI18n;
 using TouhouCardEngine;
@@ -43,10 +44,17 @@ namespace TouhouHeartstone
             var count = arg.getVar<int>(VAR_COUNT);
             var title = arg.getVar<string>(VAR_TITLE);
 
-            var cards = options.randomTake(game, count);
-            game.logger.logTrace($"{player}从{string.Join("，", cards)}中选择一张");
-            var selected = await game.askSelect(player, cards, count, title);
-            arg.setVar(VAR_CHOSEN_CARD, selected);
+            var cards = options.Where(c => c != null);
+            if (cards.Count() > 0)
+            {
+                if (count > 0)
+                {
+                    cards = options.randomTake(game, count);
+                }
+                game.logger.logTrace($"{player}从{string.Join("，", cards)}中选择一张");
+                var selected = await game.askSelect(player, cards, count, title);
+                arg.setVar(VAR_CHOSEN_CARD, selected);
+            }
         }
         public override string toString(EventArg arg)
         {
