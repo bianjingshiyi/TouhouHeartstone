@@ -135,7 +135,7 @@ namespace Game.BattleTable
         }
         private bool isEventPausedAfterStart()
         {
-            return eventArg.state == EventState.Before || eventArg.state == EventState.Logic;
+            return eventArg.state == EventState.Before;
         }
         #endregion
 
