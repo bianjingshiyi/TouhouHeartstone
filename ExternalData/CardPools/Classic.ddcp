@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 4, "cardPoolId" : NumberLong(1), "editTime" : 624, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
+{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 5, "cardPoolId" : NumberLong(1), "editTime" : 625, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -54484,7 +54484,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaVGaWVsZA==")
                     }
                   }, {
@@ -55038,7 +55038,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaRIZWFk")
                     }
                   }, {
@@ -55334,7 +55334,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaRIZWFk")
                     }
                   }, {
@@ -55670,7 +55670,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaRIZWFk")
                     }
                   }, {
@@ -55914,20 +55914,6 @@
         }],
       "effectList" : []
     }, {
-      "_id" : 179,
-      "type" : "Servant",
-      "propDict" : {
-        "attack" : 1,
-        "life" : 1,
-        "tags" : {
-          "_t" : "ObjectProxy",
-          "Type" : "System.String[]",
-          "Content" : new BinData(0, "kaVCZWFzdA==")
-        }
-      },
-      "effects" : [],
-      "effectList" : []
-    }, {
       "_id" : 180,
       "type" : "Spell",
       "propDict" : {
@@ -55966,7 +55952,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaRIYW5k")
                     }
                   }, {
@@ -57081,7 +57067,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaRIYW5k")
                     }
                   }, {
@@ -57325,7 +57311,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaVGaWVsZA==")
                     }
                   }, {
@@ -57870,27 +57856,6 @@
         }],
       "effectList" : []
     }, {
-      "_id" : 186,
-      "type" : "Servant",
-      "propDict" : {
-        "cost" : 1,
-        "attack" : 2,
-        "life" : 1,
-        "characterId" : {
-          "_t" : "ObjectProxy",
-          "Type" : "TouhouCardEngine.DefineReference",
-          "Content" : new BinData(0, "kgHMqw==")
-        },
-        "isToken" : true,
-        "tags" : {
-          "_t" : "ObjectProxy",
-          "Type" : "System.String[]",
-          "Content" : new BinData(0, "kaVGYWlyeQ==")
-        }
-      },
-      "effects" : [],
-      "effectList" : []
-    }, {
       "_id" : 187,
       "type" : "Servant",
       "propDict" : {
@@ -57931,7 +57896,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaVGaWVsZA==")
                     }
                   }, {
@@ -58125,7 +58090,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaRJdGVt")
                     }
                   }, {
@@ -58433,11 +58398,6 @@
                 "destName" : "damageSource",
                 "destNodeId" : 2
               }, {
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "targets",
-                "destNodeId" : 2
-              }, {
                 "sourceName" : "玩家",
                 "sourceNodeId" : 1,
                 "destName" : "player",
@@ -58462,6 +58422,11 @@
                 "sourceNodeId" : 6,
                 "destName" : "cards",
                 "destNodeId" : 5
+              }, {
+                "sourceName" : "target0",
+                "sourceNodeId" : 1,
+                "destName" : "targets",
+                "destNodeId" : 2
               }]
           }
         }],
@@ -58511,7 +58476,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaVGaWVsZA==")
                     }
                   }, {
@@ -59221,11 +59186,6 @@
                 "destName" : "damageSource",
                 "destNodeId" : 2
               }, {
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "targets",
-                "destNodeId" : 2
-              }, {
                 "sourceName" : "玩家",
                 "sourceNodeId" : 1,
                 "destName" : "player",
@@ -59235,11 +59195,6 @@
                 "sourceNodeId" : 1,
                 "destName" : "value",
                 "destNodeId" : 7
-              }, {
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "value",
-                "destNodeId" : 8
               }, {
                 "sourceName" : "exit",
                 "sourceNodeId" : 2,
@@ -59279,6 +59234,16 @@
                 "sourceName" : "exit",
                 "sourceNodeId" : 7,
                 "destName" : "enter",
+                "destNodeId" : 8
+              }, {
+                "sourceName" : "target0",
+                "sourceNodeId" : 1,
+                "destName" : "targets",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "target0",
+                "sourceNodeId" : 1,
+                "destName" : "value",
                 "destNodeId" : 8
               }]
           }
@@ -59394,16 +59359,6 @@
                 "destName" : "enter",
                 "destNodeId" : 2
               }, {
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "cards",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "card",
-                "destNodeId" : 3
-              }, {
                 "sourceName" : "玩家",
                 "sourceNodeId" : 1,
                 "destName" : "B",
@@ -59419,6 +59374,16 @@
                 "destName" : "targetCondition",
                 "destParamIndex" : 1,
                 "destNodeId" : 1
+              }, {
+                "sourceName" : "target0",
+                "sourceNodeId" : 1,
+                "destName" : "cards",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "target0",
+                "sourceNodeId" : 1,
+                "destName" : "card",
+                "destNodeId" : 3
               }]
           }
         }],
@@ -60447,7 +60412,7 @@
                 "destName" : "damageSource",
                 "destNodeId" : 2
               }, {
-                "sourceName" : "目标卡牌",
+                "sourceName" : "target0",
                 "sourceNodeId" : 1,
                 "destName" : "targets",
                 "destNodeId" : 2
@@ -61152,7 +61117,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaRIZWFk")
                     }
                   }, {
@@ -61637,6 +61602,41 @@
               }]
           }
         }],
+      "effectList" : []
+    }, {
+      "_id" : 186,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 1,
+        "attack" : 2,
+        "life" : 1,
+        "characterId" : {
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
+        },
+        "isToken" : true,
+        "tags" : {
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kaVGYWlyeQ==")
+        }
+      },
+      "effects" : [],
+      "effectList" : []
+    }, {
+      "_id" : 179,
+      "type" : "Servant",
+      "propDict" : {
+        "attack" : 1,
+        "life" : 1,
+        "tags" : {
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kaVCZWFzdA==")
+        }
+      },
+      "effects" : [],
       "effectList" : []
     }],
   "cardSkinList" : [{
@@ -64622,14 +64622,14 @@
       "_id" : 171,
       "_skinId" : 2,
       "_name" : "十六夜咲夜",
-      "_imagePath" : "a2c76df73d3973072d204c831352d0ca05ae31a6ff2909768d05f9e42f8b10d7.jpg",
+      "_imagePath" : "108c0d964c5fea7bba86ce5b0aff5051c74d69705686a10d20fb50510802f80d.jpg",
       "_animationRefs" : [],
       "_soundRefs" : []
     }, {
       "_id" : 172,
       "_skinId" : 1,
       "_name" : "银色匕首",
-      "_imagePath" : "4f296c0083e39f09ab3e209849b397fc58d59a61038e02673196495b7d4343c4.jpg",
+      "_imagePath" : "0a0d9489a7421874160e7b6510ba211f02940fb1283e0c6dd0927171cc0f0a73.jpg",
       "_desc" : "装备一把1/2的<u>匕首</u>。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64637,14 +64637,14 @@
       "_id" : 173,
       "_skinId" : 1,
       "_name" : "银色匕首",
-      "_imagePath" : "4f296c0083e39f09ab3e209849b397fc58d59a61038e02673196495b7d4343c4.jpg",
+      "_imagePath" : "0a0d9489a7421874160e7b6510ba211f02940fb1283e0c6dd0927171cc0f0a73.jpg",
       "_animationRefs" : [],
       "_soundRefs" : []
     }, {
       "_id" : 174,
       "_skinId" : 1,
       "_name" : "时间线收敛",
-      "_imagePath" : "a95b2946c77592044f13d12a64126605c9a754c8ecb010f1bf373f4424adc672.jpg",
+      "_imagePath" : "a272095dff4e42dd0201a541b7fa3b0ed665e88e5a817736d7c0ae1494c3d92b.jpg",
       "_desc" : "<b>唯一</b>，抽一张牌并摧毁一张你牌库顶的牌，重复直到你的手牌数量达到上限。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64652,7 +64652,7 @@
       "_id" : 175,
       "_skinId" : 1,
       "_name" : "位面法师",
-      "_imagePath" : "bb13ab31f5c081b4ef9847ff271063d9f39be543d29028c88f0ed460b0f03946.jpg",
+      "_imagePath" : "8de0094aafa8456f910e5904557e5647bfe015b457d13f5f4b6f4ab29ceeb4c9.jpg",
       "_desc" : "<b>速攻</b>，你每在本回合中使用过四张卡牌，此牌便具有<b>法术伤害+1</b>",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64660,7 +64660,7 @@
       "_id" : 176,
       "_skinId" : 1,
       "_name" : "回到之前重来吧",
-      "_imagePath" : "0a91de848af9635ddf72544b0df19d70fab33e783daf18fe189c71e1739ac339.jpg",
+      "_imagePath" : "a7ec459847a4b8412dffd7c59a48b658b9c18a242b775b43a64174ed2a87cfb4.jpg",
       "_desc" : "<b>陷阱</b>：当一个敌方仆从攻击时，取消此攻击并将其移回拥有者的手牌。 ",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64668,7 +64668,7 @@
       "_id" : 177,
       "_skinId" : 1,
       "_name" : "完美女仆",
-      "_imagePath" : "8839a84bfecad703ecadee728d797c40e1ae29faa46eb5d8f2e321a0bb6804c8.jpg",
+      "_imagePath" : "f311c6c5c354cbfab498f3d54744d01f7caa8a6d8cff4eb2937304318d49f3f3.jpg",
       "_desc" : "<b>陷阱</b>：当一个敌方仆从攻击你的英雄时，对其造成4点伤害。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64676,22 +64676,15 @@
       "_id" : 178,
       "_skinId" : 1,
       "_name" : "兔子戏法",
-      "_imagePath" : "a4952ed8811380dc819fdd0a2cf3c4f44848eb528bf66f411759791c47e29b14.jpg",
+      "_imagePath" : "c49b6027bf8154985a8109f663d6f95cf23b16cac76983c11208cf3547eb6401.jpg",
       "_desc" : "<b>陷阱</b>：当对手抽取仆从牌时，阻止此抽牌并将一张1/1的<u>小白兔</u>置入对手的手牌。",
-      "_animationRefs" : [],
-      "_soundRefs" : []
-    }, {
-      "_id" : 179,
-      "_skinId" : 1,
-      "_skinName" : "新建皮肤",
-      "_name" : "小白兔",
       "_animationRefs" : [],
       "_soundRefs" : []
     }, {
       "_id" : 180,
       "_skinId" : 1,
       "_name" : "The World",
-      "_imagePath" : "aeb9940594a531b7edbd728a823035846e199179855320af6f63afa66ec46b11.jpg",
+      "_imagePath" : "65b6712ae75b2bc59a2cc7e1198eddd07e79cecb5a0dcd64fb91c31d60fccef0.jpg",
       "_desc" : "<b>唯一</b>，使<b>时间停止</b>到本回合结束时。本回合中你每使用过一张法术牌，此牌灵力值消耗便减少(1)点。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64699,7 +64692,7 @@
       "_id" : 181,
       "_skinId" : 1,
       "_name" : "悖论引擎",
-      "_imagePath" : "5dbb6b9d7002f8da2b78afb6d46131ba01108d0d1aca3e701c363a3fab309357.jpg",
+      "_imagePath" : "a44dcd494c29db390b79ddf708f48b9e0056d46d10406605527d6c1ed0655184.jpg",
       "_desc" : " <b>宣言</b>：在本回合中，你每使用过一张牌，便召唤一个该仆从的复制。 ",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64707,7 +64700,7 @@
       "_id" : 182,
       "_skinId" : 1,
       "_name" : "地精保镖",
-      "_imagePath" : "1d6e49d30c4a177e6d01aa4e4a3e50d9448ee53ce8aa9e984937d5c38b559aed.jpg",
+      "_imagePath" : "cf4e1d74c2f0b8e4122eb001ce52ef17dadf499ebeed0005626909563ea61ba5.jpg",
       "_desc" : "<b>守卫</b>，你每有一张其他手牌，此牌的灵力值消耗便增加(1)点。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64715,7 +64708,7 @@
       "_id" : 183,
       "_skinId" : 1,
       "_name" : "替身影武者",
-      "_imagePath" : "77a6a7bd099a33ef346e0ad887b58c048dbd1041a647b8c90d6082dfb3b6bb87.jpg",
+      "_imagePath" : "6310093082ae0ffb79317951c2a2acd6e47dbe4c8dafa328bcb3ba9877b732b4.jpg",
       "_desc" : "<b>速攻</b>，在本回合中你每抽一张牌，便具有+1攻击力。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64723,7 +64716,7 @@
       "_id" : 184,
       "_skinId" : 1,
       "_name" : "洗衣女仆",
-      "_imagePath" : "43ece0fcd17eb0d506aca04db9b8da3a261d486558e0f53e029a40b47463be00.jpg",
+      "_imagePath" : "506c1e6a671ea977ff1b540bd407bc921c90e7adfc8bd32cef378dc5b6ffe4af.jpg",
       "_desc" : "<b>宣言</b>：将三张<u>传唤女仆</u>洗入你的牌库，当你抽到时，召唤一个2/1的<u>女仆</u>。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64731,22 +64724,15 @@
       "_id" : 185,
       "_skinId" : 1,
       "_name" : "传唤女仆",
-      "_imagePath" : "dd5b018b6a965fde1c251e492d4efb29f53dbfe473927f9df54a0f80cfa0344d.jpg",
+      "_imagePath" : "0f6e63569a25e103a414ea1410c9c35df3b2b64665aa5ddf751f273617bb82e7.jpg",
       "_desc" : "<b>自动施放</b>\n召唤一个2/1的<u>女仆</u>.",
-      "_animationRefs" : [],
-      "_soundRefs" : []
-    }, {
-      "_id" : 186,
-      "_skinId" : 1,
-      "_name" : "女仆",
-      "_imagePath" : "dd5b018b6a965fde1c251e492d4efb29f53dbfe473927f9df54a0f80cfa0344d.jpg",
       "_animationRefs" : [],
       "_soundRefs" : []
     }, {
       "_id" : 187,
       "_skinId" : 1,
       "_name" : "女仆卫队长",
-      "_imagePath" : "ec0b9fefadaca2bf1e9f9842df9b532760749a80d4e70c4aa8978e40dc2e65b8.jpg",
+      "_imagePath" : "ecfbb1a90b45fb8fd09980ba61d6322039a64103023f8f5cf49e6146d27f63bd.jpg",
       "_desc" : "每当你的英雄攻击后，召唤一个2/1的<u>女仆</u>。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64754,7 +64740,7 @@
       "_id" : 188,
       "_skinId" : 1,
       "_name" : "时之刃",
-      "_imagePath" : "5b99e0b1ae6f3025b643d4c9778d31cb10a8eba44ca36436d3c54f01c6773c6e.jpg",
+      "_imagePath" : "e6131195a2393fb8003d2fa3a2c2db7fd8d622f5f728164ae65fb854f56612de.jpg",
       "_desc" : "每当你的英雄攻击后，抽一张牌。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64762,7 +64748,7 @@
       "_id" : 189,
       "_skinId" : 1,
       "_name" : "星光魔刃",
-      "_imagePath" : "b55c7ca401cd6b306a1376573034e910da59f9e789729bda2d795818b8ca83b5.jpg",
+      "_imagePath" : "615b7b7171bd3e45352ab39431c209b1c6939d9e3ea195c9e06fb36dd2be5523.jpg",
       "_desc" : "造成2点伤害，<b>连击</b>：在本回合中，你使用的下一张牌灵力值消耗减少(2)点。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64770,7 +64756,7 @@
       "_id" : 190,
       "_skinId" : 1,
       "_name" : "吸血鬼猎人",
-      "_imagePath" : "9041762670b227f9bf243da2c50feeeaeaea787b3ae5ad4b5eca2d16efa9a193.jpg",
+      "_imagePath" : "f9ea4bcab722b6fe9c61c4a6dc378e8ff4833d30d0263e762d435eb09d429740.jpg",
       "_desc" : "每当你的回合结束时，如果你在本回合中至少使用了两张牌，则抽一张牌。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64778,7 +64764,7 @@
       "_id" : 191,
       "_skinId" : 1,
       "_name" : "杀人玩偶",
-      "_imagePath" : "281a8d28b56aa3f654609b1b20c232d8dc753b9dbcee90807b2b5a04720cfcb1.jpg",
+      "_imagePath" : "b5c1647ace3e367bcac25a2b1faa990a13870cc6fc5f66908daa2e79b5c9380b.jpg",
       "_desc" : "对一个角色造成3点伤害，<b>连击</b>：在本回合结束时，再对其造成2点伤害。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64786,7 +64772,7 @@
       "_id" : 192,
       "_skinId" : 1,
       "_name" : "回到未来",
-      "_imagePath" : "7cb33c9647a097eb666cb470aac4381a69069f12fd17af2e396070db4765d137.jpg",
+      "_imagePath" : "228c19509806d15bd414036f6f93061f907d6035cf41c3c6c96811849f6c72a4.jpg",
       "_desc" : "选择一个友方仆从，在本回合结束时将其洗入你的牌库并使其灵力值消耗变为(0)点。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64794,7 +64780,7 @@
       "_id" : 193,
       "_skinId" : 1,
       "_name" : "光速跃迁",
-      "_imagePath" : "c609335c8abd1e937168233116f25d8ee7b24a60422c70f5be69606ab873b4e4.jpg",
+      "_imagePath" : "d03168f07e5d728ba6467815da2e1cee3bb616ec35abad7fecf133889bba6ae1.jpg",
       "_desc" : "在本回合结束时，抽两张牌。<b>连击</b>：改为立即抽两张牌。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64802,7 +64788,7 @@
       "_id" : 194,
       "_skinId" : 1,
       "_name" : "铭刻于红魂",
-      "_imagePath" : "91f44057a0b30c99d63b759d8eca0c5a444acb1dfd1ad8f5953212d4320d8497.jpg",
+      "_imagePath" : "3c600ecf85b885291a9da2e024d82fe4962a35e62aed5fa240ebe53900ac325c.jpg",
       "_desc" : "造成4点伤害并随机分配给所有仆从，你的道具每具有1点耐久度，伤害便提高2点。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64810,7 +64796,7 @@
       "_id" : 195,
       "_skinId" : 1,
       "_name" : "连环飞刀手",
-      "_imagePath" : "28813057f11c4649352f745caae1461e2a453a766c54df2de54d2f1e968a4b9d.jpg",
+      "_imagePath" : "29966dde607441ea483890609002c09878e1b11dbe002527c8f0aa380d605914.jpg",
       "_desc" : "<b>宣言</b>：在本回合内随机使你手牌中一张灵力值消耗＞(0)的卡牌灵力值消耗减少(1)点，且在其被使用后重复此效果。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64818,7 +64804,7 @@
       "_id" : 196,
       "_skinId" : 1,
       "_name" : "钟表魔术师",
-      "_imagePath" : "0496eee2c46f1aca306199786624047802299811c6671bad8042afa3580e1da6.jpg",
+      "_imagePath" : "8371c7e94dfee061653bc48cc1c118b43fb9f48ac50ebf81a891e66e8abd2df0.jpg",
       "_desc" : "<b>宣言</b>：随机使你手牌中一张灵力值消耗大于(0)的法术牌灵力值消耗减少(1)点。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64826,7 +64812,7 @@
       "_id" : 198,
       "_skinId" : 1,
       "_name" : "银刃杀手",
-      "_imagePath" : "7a654ca73659a14b92f3bf61e7d7b43186b7e9759994e03592ec2e226d1c9935.jpg",
+      "_imagePath" : "d5ff7480ccedb4d211e0bb0b963323f770d0fc359ea8adbe21c7189c58dc4973.jpg",
       "_desc" : "将一张能够造成1点伤害的<u>飞刀</u>置入你的手牌，重复等同于你的道具耐久度次数，然后摧毁你的道具。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64834,7 +64820,7 @@
       "_id" : 199,
       "_skinId" : 1,
       "_name" : "飞刀",
-      "_imagePath" : "001425b2e3da2999f2cf80296dc69257178632655d9688f9ffc01b0454026ebb.jpg",
+      "_imagePath" : "f535b772d4612372bec2a021f21360ae207c7f7977b8c70e0b203bd0c731feba.jpg",
       "_desc" : "造成1点伤害。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64842,7 +64828,7 @@
       "_id" : 200,
       "_skinId" : 1,
       "_name" : "静候时机",
-      "_imagePath" : "44b83817ee73f6af7c801c83de7cfd2c121681c9948e0cefc53091933ddcf421.jpg",
+      "_imagePath" : "1040769396d44881b1838ff184c267e2041a8e8d2963a0d057606b6ce4081f96.jpg",
       "_desc" : "在本回合中，你使用的下一张法术牌灵力值消耗减少(3)点。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64850,7 +64836,7 @@
       "_id" : 201,
       "_skinId" : 1,
       "_name" : "开膛手杰克",
-      "_imagePath" : "5b7fcb38654aecb34b67446745faefeab0af6e784350f2180ef8f1e0b277f815.jpg",
+      "_imagePath" : "1ccf597c0a8c9575206ea69eb52f34a3f899945f7f6ee13733ac8d56b1cc07ec.jpg",
       "_desc" : "<b>宣言</b>：随机对一个敌方仆从造成2点伤害，你每在本回合中使用过一张牌便重复一次。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64858,7 +64844,7 @@
       "_id" : 202,
       "_skinId" : 1,
       "_name" : "膨胀空间",
-      "_imagePath" : "1e01e2493f95612e60dbd101a78057959a5f3993432258dc5ec43f873969717c.jpg",
+      "_imagePath" : "76a443743187649644fb9dc96ff6b17f633a158c495cc2aeb89e59e0252152d1.jpg",
       "_desc" : "<b>陷阱</b>：在对手使用一张牌后，所有与其使用牌同类型的卡牌在本回合中灵力值消耗增加(5)点。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -64866,8 +64852,22 @@
       "_id" : 203,
       "_skinId" : 1,
       "_name" : "离剑之见",
-      "_imagePath" : "267ed1d11bd38fa478284a51141cd7e940cc11734431fbfa25cefc63f6d5ae63.jpg",
+      "_imagePath" : "825e3f5ece037f0980be77dc6460caff2854977c7e24389c3966860c87b067a6.jpg",
       "_desc" : "抽一张牌。在本回合结束时，对所有仆从造成1点伤害。",
+      "_animationRefs" : [],
+      "_soundRefs" : []
+    }, {
+      "_id" : 186,
+      "_skinId" : 1,
+      "_name" : "女仆",
+      "_imagePath" : "bea1d3c7f51fde2572b3b5c78458322aeeda008ea66484f5d789b7b1cf027c68.jpg",
+      "_animationRefs" : [],
+      "_soundRefs" : []
+    }, {
+      "_id" : 179,
+      "_skinId" : 1,
+      "_name" : "小白兔",
+      "_imagePath" : "25a87a7fb32176450cb96cce550ea2f970c3b8846d751a886d9fe31af5bc184b.jpg",
       "_animationRefs" : [],
       "_soundRefs" : []
     }],
@@ -74096,7 +74096,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -74645,7 +74645,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -74852,7 +74852,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -75455,7 +75455,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -75592,7 +75592,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -75705,7 +75705,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -75896,7 +75896,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -76127,7 +76127,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaVGaWVsZA==")
                     }
                   }, {
@@ -76273,7 +76273,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -76520,7 +76520,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -76844,7 +76844,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -76979,7 +76979,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaRIYW5k")
                     }
                   }, {
@@ -77098,7 +77098,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -77300,7 +77300,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -77413,7 +77413,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -77698,7 +77698,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -77984,7 +77984,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -78117,7 +78117,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaZNYXN0ZXI=")
                     }
                   }, {
@@ -78298,964 +78298,727 @@
       "name" : "秘藏魔法",
       "desc" : "在本回合中，使用的下一张法术牌灵力值消耗减少(5)点。",
       "imagePath" : "3979b40b2ad1c123f65d1a805ee335495ec820ec835b7429474e0dc4ae967cc4.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 1,
-      "language" : "ja",
-      "name" : "秘蔵の魔法",
-      "desc" : "在本回合中，使用的下一张法术牌灵力值消耗减少(5)点。",
-      "imagePath" : "3979b40b2ad1c123f65d1a805ee335495ec820ec835b7429474e0dc4ae967cc4.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 2,
       "name" : "秘藏魔法-效果",
       "desc" : "灵力值消耗减少(5)点。",
       "imagePath" : "3979b40b2ad1c123f65d1a805ee335495ec820ec835b7429474e0dc4ae967cc4.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 2,
-      "language" : "ja",
-      "name" : "秘蔵の魔法－効果",
-      "desc" : "灵力值消耗减少(5)点。",
-      "imagePath" : "3979b40b2ad1c123f65d1a805ee335495ec820ec835b7429474e0dc4ae967cc4.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 4,
       "name" : "风灵角笛",
       "desc" : "获得+3/+6。",
       "imagePath" : "03f9c2e9ce74a3cd7282787f4fd38a12309cb9a53f7f2e242e2fea8766dbf5a5.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 4,
-      "language" : "ja",
-      "name" : "シルフィホルン",
-      "desc" : "获得+3/+6。",
-      "imagePath" : "03f9c2e9ce74a3cd7282787f4fd38a12309cb9a53f7f2e242e2fea8766dbf5a5.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 5,
       "name" : "春之风",
       "desc" : "获得+2生命值。",
       "imagePath" : "088c0b68e709119b3d593113a63875eda2065b065849a8552a138da14dd05503.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 5,
-      "language" : "ja",
-      "name" : "スプリングウィンド",
-      "desc" : "获得+2生命值。",
-      "imagePath" : "088c0b68e709119b3d593113a63875eda2065b065849a8552a138da14dd05503.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 6,
       "name" : "多重施法",
       "desc" : "灵力值消耗减少(2)点。",
       "imagePath" : "5f455b1ab3fb45918667786ddb29a8691d358fdc53d605514c816b948e7389d2.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 6,
-      "language" : "ja",
-      "name" : "多重のキャスト\u30fc",
-      "desc" : "灵力值消耗减少(2)点。",
-      "imagePath" : "5f455b1ab3fb45918667786ddb29a8691d358fdc53d605514c816b948e7389d2.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 7,
       "name" : "夏之红",
       "desc" : "在本回合中，获得+2攻击力。",
       "imagePath" : "3a2ae2a0773073d9156caeba36e297d8e454e47fac4c6b1c90c0ae4e6fec31c2.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 7,
-      "language" : "ja",
-      "name" : "サマ\u30fcレッド",
-      "desc" : "在本回合中，获得+2攻击力。",
-      "imagePath" : "3a2ae2a0773073d9156caeba36e297d8e454e47fac4c6b1c90c0ae4e6fec31c2.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 8,
       "name" : "水精公主",
       "desc" : "本回合获得减伤(3)。",
       "imagePath" : "d56227aeaba39f9a42bc36ad95b18c6675e64693d51e14e2e3e740dd8bb83181.jpg",
       "_animationRefs" : [],
-      "persistentAnimRef" : {
-        "cardPoolId" : NumberLong(0),
-        "defineId" : 27
-      }
-    }, {
-      "buffId" : 8,
-      "language" : "ja",
-      "name" : "プリンセスウンディネ",
-      "desc" : "このタ\u30fcンに防護（３）を得る。",
-      "imagePath" : "d56227aeaba39f9a42bc36ad95b18c6675e64693d51e14e2e3e740dd8bb83181.jpg",
-      "_animationRefs" : [],
-      "persistentAnimRef" : {
-        "cardPoolId" : NumberLong(0),
-        "defineId" : 27
+      "persAnimRef" : {
+        "animRef" : {
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 27
+        },
+        "colorModifies" : []
       }
     }, {
       "buffId" : 9,
       "name" : "机械充能",
       "desc" : "灵力值消耗减少(2)点。",
       "imagePath" : "ae4c294a805f5af04f86cba0f1b6cab5d7ee3be1c538be6578fc28168a6d959d.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 9,
-      "language" : "ja",
-      "name" : "メカチャ\u30fcジ",
-      "desc" : "灵力值消耗减少(2)点。",
-      "imagePath" : "ae4c294a805f5af04f86cba0f1b6cab5d7ee3be1c538be6578fc28168a6d959d.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 10,
       "name" : "水银之毒",
       "desc" : "直到下个回合，获得-3攻击力。",
       "imagePath" : "727f6d57b29dd9ada5c3f2e2ae77b45bb9f7fafcd4c7240789dd10a77aac80bd.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 10,
-      "language" : "ja",
-      "name" : "マ\u30fcキュリポイズン",
-      "desc" : "直到下个回合，获得-3攻击力。",
-      "imagePath" : "727f6d57b29dd9ada5c3f2e2ae77b45bb9f7fafcd4c7240789dd10a77aac80bd.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 11,
       "name" : "保卫图书馆",
       "desc" : "生命值增加。",
       "imagePath" : "02400d836e81c70a22d22dadce042cd1d3568351e10a664b774557e9ecbbc5e7.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 11,
-      "language" : "ja",
-      "name" : "図書館を守る",
-      "desc" : "体力を得る。",
-      "imagePath" : "02400d836e81c70a22d22dadce042cd1d3568351e10a664b774557e9ecbbc5e7.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 12,
       "name" : "森林大火",
       "desc" : "获得+2/+2。",
       "imagePath" : "3e705905bc87073cdf74408fe0d49b66301bb566c19b388e2a25de833f1416a3.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 12,
-      "language" : "ja",
-      "name" : "フォレストブレイズ",
-      "desc" : "获得+2/+2。",
-      "imagePath" : "3e705905bc87073cdf74408fe0d49b66301bb566c19b388e2a25de833f1416a3.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 13,
       "name" : "元素收割",
       "desc" : "获得+1/+1。",
       "imagePath" : "bcbbaa3c93895d307056e586f0067e484e45efb5c195af0012466c9ef9cf15b0.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 13,
-      "language" : "ja",
-      "name" : "エレメントハ\u30fcベス",
-      "desc" : "获得+1/+1。",
-      "imagePath" : "bcbbaa3c93895d307056e586f0067e484e45efb5c195af0012466c9ef9cf15b0.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 14,
       "name" : "水精灵",
       "desc" : "获得+3/+6和<b>守卫</b>。",
       "imagePath" : "01428f9e046b3b6461c00fd52942169032b3d4751050ddb6a6f706afa3b8aa8c.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 14,
-      "language" : "ja",
-      "name" : "ウォ\u30fcタ\u30fcエルフ",
-      "desc" : "获得+3/+6和<b>守卫</b>。",
-      "imagePath" : "01428f9e046b3b6461c00fd52942169032b3d4751050ddb6a6f706afa3b8aa8c.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 19,
       "name" : "恶魔研习",
       "desc" : "灵力值消耗减少(3)点。",
       "imagePath" : "4703dce53acd24106757c1d4e3115deabc65dcc211249df4da9c6313f33cbfe3.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 19,
-      "language" : "ja",
-      "name" : "悪魔学習",
-      "desc" : "灵力值消耗减少(3)点。",
-      "imagePath" : "4703dce53acd24106757c1d4e3115deabc65dcc211249df4da9c6313f33cbfe3.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 20,
       "name" : "猫抓",
       "desc" : "获得+2攻击力和<b>速攻</b>。",
       "imagePath" : "226534736b6f1bdaa9bca1a06988a7330b89c371613815ba80ea671233b61590.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 20,
-      "language" : "ja",
-      "name" : "猫のつねり",
-      "desc" : "攻撃力＋２と<b>急襲</b>を得る。",
-      "imagePath" : "226534736b6f1bdaa9bca1a06988a7330b89c371613815ba80ea671233b61590.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 21,
       "name" : "报春",
       "desc" : "获得+1/+1。",
       "imagePath" : "7549b49bfd34d6d5878c4650087de885c97970b3a92b70023c2b06499f7d86c0.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 21,
-      "language" : "ja",
-      "name" : "春が来ます",
-      "desc" : "获得+1/+1。",
-      "imagePath" : "7549b49bfd34d6d5878c4650087de885c97970b3a92b70023c2b06499f7d86c0.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 22,
       "name" : "幻世",
       "desc" : "在本回合中，灵力值消耗为(0)点。",
       "imagePath" : "04150a40b399452dc2ff37bfe518afa904ac33f74cc837773d856b6de41d830a.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 23,
       "name" : "式",
       "desc" : "获得+3/+1和<b>速攻</b>。",
       "imagePath" : "b356127d3865b031548eea34e19ac85844165bc8890edd186b0017394f0aa19c.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 24,
       "name" : "嫉妒",
       "desc" : "获得+2攻击力。",
       "imagePath" : "8f61c1461f35f80f1bd44ddc9e2c6bf34ba92b5dd83b4b56407013c7c4a7b948.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 24,
-      "language" : "ja",
-      "name" : "嫉妬",
-      "desc" : "获得+2攻击力。",
-      "imagePath" : "8f61c1461f35f80f1bd44ddc9e2c6bf34ba92b5dd83b4b56407013c7c4a7b948.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 25,
       "name" : "兔子攻击",
       "desc" : "攻击力变为3。",
       "imagePath" : "faf51e8361197987cc1fa70ba3c89d957e240f1264aca42bbb88e7bc57143573.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 25,
-      "language" : "ja",
-      "name" : "ウサギの攻撃",
-      "desc" : "攻撃力に３が変わる。",
-      "imagePath" : "faf51e8361197987cc1fa70ba3c89d957e240f1264aca42bbb88e7bc57143573.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 26,
       "name" : "抽芽复行",
       "desc" : "<b>遗言</b>：召唤自身复制并获得+3/+3。",
       "imagePath" : "1cb59acc395a5f42fbcbb0730446dfeec0930399f1c5ebc1b9e137f27a2db3cd.jpg",
       "_animationRefs" : [],
-      "persistentAnimRef" : {
-        "cardPoolId" : NumberLong(0),
-        "defineId" : 29
-      }
-    }, {
-      "buffId" : 26,
-      "language" : "ja",
-      "name" : "バ\u30fcジニングライズ",
-      "desc" : "<b>遗言</b>：召唤自身复制并获得+3/+3。",
-      "imagePath" : "1cb59acc395a5f42fbcbb0730446dfeec0930399f1c5ebc1b9e137f27a2db3cd.jpg",
-      "_animationRefs" : [],
-      "persistentAnimRef" : {
-        "cardPoolId" : NumberLong(0),
-        "defineId" : 29
+      "persAnimRef" : {
+        "animRef" : {
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 29
+        },
+        "colorModifies" : []
       }
     }, {
       "buffId" : 27,
       "name" : "抽芽",
       "desc" : "获得+3/+3。",
       "imagePath" : "1cb59acc395a5f42fbcbb0730446dfeec0930399f1c5ebc1b9e137f27a2db3cd.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 27,
-      "language" : "ja",
-      "name" : "バ\u30fcジニン",
-      "desc" : "获得+3/+3。",
-      "imagePath" : "1cb59acc395a5f42fbcbb0730446dfeec0930399f1c5ebc1b9e137f27a2db3cd.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 28,
       "name" : "永恒",
       "desc" : "禁止抽牌两个回合。",
       "imagePath" : "6e181c613de71299a93d7830cc1d7001b198aaa7164c51157b1a3877d76be6d7.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 28,
-      "language" : "ja",
-      "name" : "永遠",
-      "desc" : "禁止抽牌两个回合。",
-      "imagePath" : "6e181c613de71299a93d7830cc1d7001b198aaa7164c51157b1a3877d76be6d7.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 29,
       "name" : "针山",
       "desc" : "<b>遗言</b>：对敌方英雄造成1点伤害。",
       "imagePath" : "62771449af63d37f957e8f599e2232ac225bd0dcfbb8e44d52651be1af386aa4.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 29,
-      "language" : "ja",
-      "name" : "針山",
-      "desc" : "<b>遺言</b>：敵のヒ\u30fcロ\u30fcに１ダメ\u30fcジを与える。",
-      "imagePath" : "62771449af63d37f957e8f599e2232ac225bd0dcfbb8e44d52651be1af386aa4.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 30,
       "name" : "乱步",
       "desc" : "在本回合中，获得+3攻击力。",
       "imagePath" : "ddf4acc759e770a01b2aa409286136d4919ae0849909f8aa1e4d29313c8ffedb.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 30,
-      "language" : "ja",
-      "name" : "乱舞",
-      "desc" : "在本回合中，获得+3攻击力。",
-      "imagePath" : "ddf4acc759e770a01b2aa409286136d4919ae0849909f8aa1e4d29313c8ffedb.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 31,
       "name" : "猫步",
       "desc" : "本回合中，下次攻击消灭敌人可再次攻击。",
       "imagePath" : "ca56fff6d1ffae4437d5310d178e41904ac34be1d9534e32b52bf4f9d22c53d9.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 31,
-      "language" : "ja",
-      "name" : "猫舞",
-      "desc" : "このタ\u30fcンに次の攻撃することは敵のキャラクタ\u30fcを破壊する場合、再度攻撃できる。",
-      "imagePath" : "ca56fff6d1ffae4437d5310d178e41904ac34be1d9534e32b52bf4f9d22c53d9.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 32,
       "name" : "繁华街道",
       "desc" : "回合开始后死亡。",
       "imagePath" : "1aae36ddcbb7c9df0da4a45cc735563476782f91be3547889de3a4aa5e8e2c88.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 32,
-      "language" : "ja",
-      "name" : "賑やかな町",
-      "desc" : "タ\u30fcン開始時死ぬ。",
-      "imagePath" : "1aae36ddcbb7c9df0da4a45cc735563476782f91be3547889de3a4aa5e8e2c88.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 33,
       "name" : "车轮",
       "desc" : "获得<b>先攻</b>。",
       "imagePath" : "18bab60a40a3b99163c4332873c0234a4bc6b6ff5f86cc42544592c6a605fd0d.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 33,
-      "language" : "ja",
-      "name" : "車輪",
-      "desc" : "获得<b>先攻</b>。",
-      "imagePath" : "18bab60a40a3b99163c4332873c0234a4bc6b6ff5f86cc42544592c6a605fd0d.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 34,
       "name" : "灵体强化",
       "desc" : "获得+1/+1。",
       "imagePath" : "08717fa5e43cf84cb24ff2be810fe021f70fb7b7327cdd63af86c32fe13f833b.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 34,
-      "language" : "ja",
-      "name" : "霊魂強化",
-      "desc" : "获得+1/+1。",
-      "imagePath" : "08717fa5e43cf84cb24ff2be810fe021f70fb7b7327cdd63af86c32fe13f833b.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 35,
       "name" : "磨砺",
       "desc" : "获得+1攻击力。",
       "imagePath" : "716ec2b783e8d39a1313c3e1dca68cb791af53b43e581a9c9746e8595e67e65e.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 35,
-      "language" : "ja",
-      "name" : "磨き",
-      "desc" : "获得+1攻击力。",
-      "imagePath" : "716ec2b783e8d39a1313c3e1dca68cb791af53b43e581a9c9746e8595e67e65e.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 36,
       "name" : "淬火",
       "desc" : "在本回合中，获得<b>无敌</b>。",
       "imagePath" : "37b8d171e74816f3b0c7afcece93cef4af19d31e8bc84971c29689798b9e2a67.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 36,
-      "language" : "ja",
-      "name" : "焼入れ",
-      "desc" : "在本回合中，获得<b>无敌</b>。",
-      "imagePath" : "37b8d171e74816f3b0c7afcece93cef4af19d31e8bc84971c29689798b9e2a67.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 37,
       "name" : "樱花闪闪",
       "desc" : "本回合+2攻击力。",
       "imagePath" : "955d9e121dbec7b0c534070a1d7bf73d1e7812ee087ea38e023a933c45155005.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 37,
-      "language" : "ja",
-      "name" : "桜花閃\u3005",
-      "desc" : "このタ\u30fcンに攻撃力＋２。",
-      "imagePath" : "955d9e121dbec7b0c534070a1d7bf73d1e7812ee087ea38e023a933c45155005.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 38,
       "name" : "苦轮",
       "desc" : "本回合攻击力增加。",
       "imagePath" : "b6743f90a1e7ffd5658c7593f5d3e3d3e7c9b369f45f0b453975884f14d6e3c2.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 38,
-      "language" : "ja",
-      "name" : "苦輪",
-      "desc" : "このタ\u30fcンに攻撃力を得る。",
-      "imagePath" : "b6743f90a1e7ffd5658c7593f5d3e3d3e7c9b369f45f0b453975884f14d6e3c2.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 39,
       "name" : "半灵强化",
       "desc" : "每有1点护甲便获得+1/+1。",
       "imagePath" : "7ea0691ef5147d727a8d80357d655f5a70855926c804a504a96d3c5e9b2d0326.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 39,
-      "language" : "ja",
-      "name" : "半霊強化",
-      "desc" : "ア\u30fcマ\u30fc１あるにつき＋１/＋１を得る。",
-      "imagePath" : "7ea0691ef5147d727a8d80357d655f5a70855926c804a504a96d3c5e9b2d0326.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 40,
       "name" : "天人亦五衰",
       "desc" : "在本回合中，获得+5攻击力。",
       "imagePath" : "1ad9195f2c32beb83ccda4adbf1684950fbfe8176c42d5cb106e00f085eedae1.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 40,
-      "language" : "ja",
-      "name" : "天人の五衰",
-      "desc" : "在本回合中，获得+5攻击力。",
-      "imagePath" : "1ad9195f2c32beb83ccda4adbf1684950fbfe8176c42d5cb106e00f085eedae1.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 41,
       "name" : "鬼之力",
       "desc" : "灵力值消耗减少。",
       "imagePath" : "af7332faa467e2a0720d668ee1b1224a7dc2e3870057b4d19e4886642e08470e.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 41,
-      "language" : "ja",
-      "name" : "鬼の力",
-      "desc" : "灵力值消耗减少。",
-      "imagePath" : "af7332faa467e2a0720d668ee1b1224a7dc2e3870057b4d19e4886642e08470e.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 42,
       "name" : "气功",
       "desc" : "获得+3攻击力。",
       "imagePath" : "aed4a83dca0775306a4038f3df18cd64c5161d1b475441c6b26729ba7e065118.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 42,
-      "language" : "ja",
-      "name" : "気功",
-      "desc" : "获得+3攻击力。",
-      "imagePath" : "aed4a83dca0775306a4038f3df18cd64c5161d1b475441c6b26729ba7e065118.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 43,
       "name" : "神明招来",
       "desc" : "回合结束时移回牌库。",
       "imagePath" : "c434a4156331f0fa97ca8a10aef8863a587fd0e2fd95efc5f2ee0fb19d508564.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 43,
-      "language" : "ja",
-      "name" : "神様招来",
-      "desc" : "回合结束时移回牌库。",
-      "imagePath" : "c434a4156331f0fa97ca8a10aef8863a587fd0e2fd95efc5f2ee0fb19d508564.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 44,
       "name" : "冥想",
       "desc" : "获得+1耐久度。",
       "imagePath" : "e4f923e54bb40d705d397fafc99f46b63c62f4a20848aa3cbf31967b85774be3.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 44,
-      "language" : "ja",
-      "name" : "瞑想",
-      "desc" : "获得+1耐久度。",
-      "imagePath" : "e4f923e54bb40d705d397fafc99f46b63c62f4a20848aa3cbf31967b85774be3.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 45,
       "name" : "心猿意马",
       "desc" : "在你的回合开始时，失去3点护甲值。",
       "imagePath" : "954746c29c02de29799b50dafd367641f5aeb8adf13bc07f125e88d2ef3475c0.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 46,
       "name" : "现世斩(已蓄力)",
       "desc" : "在本回合中，获得+3攻击力。",
       "imagePath" : "18cac12d11919b03894a992e05b2542ffe5f11b78a021cfb8c6e1adc6d0898b6.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 47,
       "name" : "现世斩",
       "desc" : "在本回合中，获得+2攻击力。",
       "imagePath" : "18cac12d11919b03894a992e05b2542ffe5f11b78a021cfb8c6e1adc6d0898b6.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 47,
-      "language" : "ja",
-      "name" : "現世斬",
-      "desc" : "在本回合中，获得+2攻击力。",
-      "imagePath" : "18cac12d11919b03894a992e05b2542ffe5f11b78a021cfb8c6e1adc6d0898b6.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 48,
       "name" : "奶酪",
       "desc" : "获得+1/+1。",
       "imagePath" : "1584a93c08fb3922c61864d81bb1d235ae5b5ed6aa29e3c2417fa2d5c73556a2.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 48,
-      "language" : "ja",
-      "name" : "チ\u30fcズ",
-      "desc" : "获得+1/+1。",
-      "imagePath" : "1584a93c08fb3922c61864d81bb1d235ae5b5ed6aa29e3c2417fa2d5c73556a2.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 49,
       "name" : "奶酪派对",
       "desc" : "获得+1/+1。",
       "imagePath" : "1a1beebb15a46b1ad338a01c16b7907d5ed5b7c3000668fced605070fd98f9b4.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 49,
-      "language" : "ja",
-      "name" : "チ\u30fcズパ\u30fcティ\u30fc",
-      "desc" : "获得+1/+1。",
-      "imagePath" : "1a1beebb15a46b1ad338a01c16b7907d5ed5b7c3000668fced605070fd98f9b4.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 50,
       "name" : "食物的诱惑",
       "desc" : "+2攻击力，<b>速攻</b>，“<b>遗言</b>：将一张<u>奶酪</u>置入你的手牌”。",
       "imagePath" : "4c5001d04c4e250bd0ba82825f67f36faaca8a3ce9ac4d0c1669633611b01693.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 50,
-      "language" : "ja",
-      "name" : "食べ物の誘惑",
-      "desc" : "攻撃力＋２、<b>急襲</b>、「<b>遺言</b>：<u>「チ\u30fcズ」</u>１枚に自分の手札を追加する」。",
-      "imagePath" : "4c5001d04c4e250bd0ba82825f67f36faaca8a3ce9ac4d0c1669633611b01693.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 51,
       "name" : "棒符【忙碌探知棒】",
       "desc" : "+2/+3，“<b>遗言</b>：召唤一只1/1的<u>老鼠</u>”。",
       "imagePath" : "02380eb48b431d3c8f8f4398f54efb2751fcb3704296e61027a5d07322103161.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 51,
-      "language" : "ja",
-      "name" : "棒符「ビジ\u30fcロッド」",
-      "desc" : "＋２/＋３と「<b>遺言</b>：１/１の<u>「鼠」</u>を１体召喚する」。",
-      "imagePath" : "02380eb48b431d3c8f8f4398f54efb2751fcb3704296e61027a5d07322103161.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 52,
       "name" : "贪食",
       "desc" : "获得+2/+1。",
       "imagePath" : "9dec3a47af2f71f4a4b7c149b28413d5c343caf60de8b05e0aea570142439172.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 52,
-      "language" : "ja",
-      "name" : "食意地",
-      "desc" : "获得+2/+1。",
-      "imagePath" : "9dec3a47af2f71f4a4b7c149b28413d5c343caf60de8b05e0aea570142439172.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 53,
       "name" : "灵摆防御",
       "desc" : "<b>护盾</b>，<b>守卫</b>。",
       "imagePath" : "1b31e115edda5b3c3c4a42f609f97053cf6517ecfdd046f458ddae6d8e0274d9.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 53,
-      "language" : "ja",
-      "name" : "振るう防御",
-      "desc" : "<b>シ\u30fcルド</b>、<b>守り</b>。",
-      "imagePath" : "1b31e115edda5b3c3c4a42f609f97053cf6517ecfdd046f458ddae6d8e0274d9.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 54,
       "name" : "宝塔",
       "desc" : "获得+3/+3。",
       "imagePath" : "1e8957491479dfbb114988f914628a5d6bd9bc77e55af8ae0a1700258d09b61d.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 55,
       "name" : "洞穴寻宝",
       "desc" : "属性值变为4/4，灵力值消耗变为(4)点。",
       "imagePath" : "66a510d6cfeb591238a22bca2e4ebceb109ddd4b2aba5c2d2c4a911b344d3cee.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 55,
-      "language" : "ja",
-      "name" : "洞穴宝探し",
-      "desc" : "属性值变为4/4，灵力值消耗变为(4)点。",
-      "imagePath" : "66a510d6cfeb591238a22bca2e4ebceb109ddd4b2aba5c2d2c4a911b344d3cee.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 56,
       "name" : "探测棒",
       "desc" : "获得+1攻击力。",
       "imagePath" : "a5dc78865b4972b554071ff92f0f7411b69efb9ddd9f2741301792f68506a3d1.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 56,
-      "language" : "ja",
-      "name" : "検出スティック",
-      "desc" : "获得+1攻击力。",
-      "imagePath" : "a5dc78865b4972b554071ff92f0f7411b69efb9ddd9f2741301792f68506a3d1.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 57,
       "name" : "白楼剑",
       "desc" : "耐久度增加。",
       "imagePath" : "3424280270903a44bc5d2ec0d6105ca371cfbc9b8fdafd63c3b0f44e5d00d6df.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 57,
-      "language" : "ja",
-      "name" : "白楼剣",
-      "desc" : "耐久度を得る。",
-      "imagePath" : "3424280270903a44bc5d2ec0d6105ca371cfbc9b8fdafd63c3b0f44e5d00d6df.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 58,
       "name" : "寒流",
       "desc" : "灵力值消耗增加(1)点。",
       "imagePath" : "ba1d411a2a6a08b723f4187f85ce7cad0adec87d8e135df320d6b0f6a55a13ac.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 59,
       "name" : "飞蛇",
       "desc" : "获得+1攻击力。",
       "imagePath" : "785b5cb7e9bb37d2d6d07962812aa461ef62f2abeb3eab130f37ce2ae2a47cde.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 59,
-      "language" : "ja",
-      "name" : "フライイン\u30fcスネ\u30fcク",
-      "desc" : "获得+1攻击力。",
-      "imagePath" : "785b5cb7e9bb37d2d6d07962812aa461ef62f2abeb3eab130f37ce2ae2a47cde.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 60,
       "name" : "狂月枪",
       "desc" : "获得+1耐久度。",
       "imagePath" : "7a38c13b59a42995f4a226cef62d6ed17d00059b3d0888e9fa38aa513677c6f9.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 60,
-      "language" : "ja",
-      "name" : "ルナティックガン",
-      "desc" : "获得+1耐久度。",
-      "imagePath" : "7a38c13b59a42995f4a226cef62d6ed17d00059b3d0888e9fa38aa513677c6f9.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 61,
       "name" : "精神投弹",
       "desc" : "能以仆从为目标，并对仆从额外造成1点伤害，持续两回合。",
       "imagePath" : "8373d30a19306c56a024092c2874034b2347ff3f96b138b9c54f62684d7ed941.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 61,
-      "language" : "ja",
-      "name" : "ダンガンロンリ",
-      "desc" : "能以仆从为目标，并对仆从额外造成1点伤害，持续两回合。",
-      "imagePath" : "8373d30a19306c56a024092c2874034b2347ff3f96b138b9c54f62684d7ed941.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 62,
       "name" : "紫外线场",
       "desc" : "下两次使用灵力值消耗减少(2)点。",
       "imagePath" : "e8bd150132b660dff30e8720d60bd215be972c4f7a523f732e1cfce7fe0f474c.jpg",
       "_animationRefs" : [],
-      "persistentAnimRef" : {
-        "cardPoolId" : NumberLong(0),
-        "defineId" : 40
-      }
-    }, {
-      "buffId" : 62,
-      "language" : "ja",
-      "name" : "紫外線場",
-      "desc" : "下两次使用灵力值消耗减少(2)点。",
-      "imagePath" : "e8bd150132b660dff30e8720d60bd215be972c4f7a523f732e1cfce7fe0f474c.jpg",
-      "_animationRefs" : [],
-      "persistentAnimRef" : {
-        "cardPoolId" : NumberLong(0),
-        "defineId" : 40
+      "persAnimRef" : {
+        "animRef" : {
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 40
+        },
+        "colorModifies" : []
       }
     }, {
       "buffId" : 63,
       "name" : "国士无双之药",
       "desc" : "获得+3/+3，<b>速攻</b>和“在你的回合开始时死亡”。（警告：过量服用会导致爆炸性后果！）",
       "imagePath" : "15f5fa1b050aebed78f976be487c1deb2aea5fd38e0872519b4534f21665302a.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 63,
-      "language" : "ja",
-      "name" : "国士無双の薬",
-      "desc" : "获得+3/+3，<b>速攻</b>和“在你的回合开始时死亡”。（警告：过量服用会导致爆炸性后果！）",
-      "imagePath" : "15f5fa1b050aebed78f976be487c1deb2aea5fd38e0872519b4534f21665302a.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 64,
       "name" : "红外线场",
       "desc" : "下两次使用额外造成2点伤害。",
       "imagePath" : "64c826dd7b0f492530c0f4f6808feffcefdf03816b7dac9b63f9fcf1ef021e2e.jpg",
       "_animationRefs" : [],
-      "persistentAnimRef" : {
-        "cardPoolId" : NumberLong(0),
-        "defineId" : 39
-      }
-    }, {
-      "buffId" : 64,
-      "language" : "ja",
-      "name" : "赤外線場",
-      "desc" : "下两次使用额外造成2点伤害。",
-      "imagePath" : "64c826dd7b0f492530c0f4f6808feffcefdf03816b7dac9b63f9fcf1ef021e2e.jpg",
-      "_animationRefs" : [],
-      "persistentAnimRef" : {
-        "cardPoolId" : NumberLong(0),
-        "defineId" : 39
+      "persAnimRef" : {
+        "animRef" : {
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 39
+        },
+        "colorModifies" : []
       }
     }, {
       "buffId" : 65,
       "name" : "信仰收集",
       "desc" : "信仰对决使得灵力值消耗减少。",
       "imagePath" : "2bece57dde6da202929b72f608ec04a4852b9020a9949780d13afa1d612b4bb5.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 66,
       "name" : "荒芜之灾祸",
       "desc" : "直到使用者的回合开始，灵力值消耗增加(5)点。",
       "imagePath" : "a03f17a4969cd6b455a620ff2f23924175c1ca2ab02dcf77d6b2e0ae6a692996.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 66,
-      "language" : "ja",
-      "name" : "荒蕪の災禍",
-      "desc" : "直到使用者的回合开始，灵力值消耗增加(5)点。",
-      "imagePath" : "a03f17a4969cd6b455a620ff2f23924175c1ca2ab02dcf77d6b2e0ae6a692996.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 67,
       "name" : "休眠之灾祸",
       "desc" : "获得+2/+2。",
       "imagePath" : "dbbd571e1a06e6335ffc744e15f1226254bb5568fd743b49bad8c2b484696c06.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 67,
-      "language" : "ja",
-      "name" : "休眠の災禍",
-      "desc" : "获得+2/+2。",
-      "imagePath" : "dbbd571e1a06e6335ffc744e15f1226254bb5568fd743b49bad8c2b484696c06.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 68,
       "name" : "灰色秘术",
       "desc" : "在本回合中进行信仰对决后还会再恢复4点生命值。",
       "imagePath" : "35f24c0753d4f31a06c86db92d0414eff0e8c998d8bf4ee4e528dc11d6b2b25d.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 68,
-      "language" : "ja",
-      "name" : "グレイソ\u30fcマタ\u30fcジ",
-      "desc" : "在本回合中进行信仰对决后还会再恢复4点生命值。",
-      "imagePath" : "35f24c0753d4f31a06c86db92d0414eff0e8c998d8bf4ee4e528dc11d6b2b25d.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 69,
       "name" : "神代大蛇",
       "desc" : "本回合可以正常攻击。",
       "imagePath" : "00be6f6e0891187e22ea4e6a6ce19f7ad66f56ff229d8c1682ed010b566d06a8.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 69,
-      "language" : "ja",
-      "name" : "神代大蛇",
-      "desc" : "このタ\u30fcン間攻撃できる。",
-      "imagePath" : "00be6f6e0891187e22ea4e6a6ce19f7ad66f56ff229d8c1682ed010b566d06a8.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 71,
       "name" : "致盲",
       "desc" : "直到小碎骨的使用者的回合开始后，攻击力变为1。",
       "imagePath" : "5c520c94d56828bc58fa27d545b22f5f2a8149cde975d3db0eac61495bd80398.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 71,
-      "language" : "ja",
-      "name" : "不可視",
-      "desc" : "このミニオンの使用者のタ\u30fcンまで、攻撃力に１を変える。",
-      "imagePath" : "5c520c94d56828bc58fa27d545b22f5f2a8149cde975d3db0eac61495bd80398.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 72,
       "name" : "车祸",
       "desc" : "攻击力增加。",
       "imagePath" : "fe57ee07b48b0690424bad3797d9b01a690f0612b71289312d4c5c7eae2a4e62.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 72,
-      "language" : "ja",
-      "name" : "交通事故",
-      "desc" : "攻撃力を得る。",
-      "imagePath" : "fe57ee07b48b0690424bad3797d9b01a690f0612b71289312d4c5c7eae2a4e62.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 73,
       "name" : "溺水",
       "desc" : "获得-2/-2.",
       "imagePath" : "678ff9de8276c5bf1a84ebc24a3fed46135bcc238dce33865df7672f74c305d6.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 73,
-      "language" : "ja",
-      "name" : "沈溺",
-      "desc" : "获得-2/-2.",
-      "imagePath" : "678ff9de8276c5bf1a84ebc24a3fed46135bcc238dce33865df7672f74c305d6.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 74,
       "name" : "猫又形态",
       "desc" : "在本回合中，获得+1攻击力。",
       "imagePath" : "da4b0e5c858b07caba80223c0467fd1cd0e1cf361679f45fd57984b5f0438884.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 74,
-      "language" : "ja",
-      "name" : "猫又形態",
-      "desc" : "在本回合中，获得+1攻击力。",
-      "imagePath" : "da4b0e5c858b07caba80223c0467fd1cd0e1cf361679f45fd57984b5f0438884.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 75,
       "name" : "未来永劫斩",
       "desc" : "消耗减少。",
       "imagePath" : "93523c9ca51acc3fc02bfafb4ddfc7db65b5e6fd41e1ac93e1cd565a49c6c0d3.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 75,
-      "language" : "ja",
-      "name" : "未来永劫斬",
-      "desc" : "霊力減る。",
-      "imagePath" : "93523c9ca51acc3fc02bfafb4ddfc7db65b5e6fd41e1ac93e1cd565a49c6c0d3.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 76,
       "name" : "被阎魔选召之人",
       "desc" : "此牌会在<u>阎魔之刃</u>被摧毁后回到拥有者的手牌中。",
       "imagePath" : "ae733e7df538c4dceb627cb6fb5f445ff1d97f61da210267f58177bb3296c383.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 76,
-      "language" : "ja",
-      "name" : "閻魔によって選ばれた人",
-      "desc" : "此牌会在<u>阎魔之刃</u>被摧毁后回到拥有者的手牌中。",
-      "imagePath" : "ae733e7df538c4dceb627cb6fb5f445ff1d97f61da210267f58177bb3296c383.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 78,
       "name" : "弦月",
       "desc" : "灵力值消耗变为(0)点。",
       "imagePath" : "f0be2c7e1cec91f23f2a3f9bd01130a2f570a19dc9300d289bbf3b4c87a40e53.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 79,
       "name" : "天文密葬",
       "desc" : "<b>吸血</b>。",
       "imagePath" : "8effdbbfc92f67e34d85ff772f3bc3f6c13d7ec0bbfeb69023ae2ebd800eec32.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 80,
       "name" : "贩药货郎",
       "desc" : "攻击力增加。",
       "imagePath" : "fae3700cc718c659b4a370152f2be3ad1715900e947173542981489a18309a3b.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 80,
-      "language" : "en-US",
-      "name" : "贩药货郎",
-      "desc" : "Attack increased.",
-      "imagePath" : "fae3700cc718c659b4a370152f2be3ad1715900e947173542981489a18309a3b.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 80,
-      "language" : "ja",
-      "name" : "贩药货郎",
-      "desc" : "攻撃力を得る。",
-      "imagePath" : "fae3700cc718c659b4a370152f2be3ad1715900e947173542981489a18309a3b.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 81,
       "name" : "消失",
       "desc" : "回合结束后，这张卡牌会消失。",
       "imagePath" : "1e13e72d5b5b373d25471a2e824d6cef12212ef835943bc324856190385c6e65.jpg",
       "_animationRefs" : [],
-      "persistentAnimRef" : {
-        "cardPoolId" : NumberLong(0),
-        "defineId" : 49
+      "persAnimRef" : {
+        "animRef" : {
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 49
+        },
+        "colorModifies" : []
       }
     }, {
       "buffId" : 82,
       "name" : "幻象震爆",
       "desc" : "灵力值消耗减少。",
       "imagePath" : "b8934c7606ec2446d2a7c5ff4c9ebfc04263f8e8e354bbbd05d18dc8bc1fc9e5.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 83,
       "name" : "伏击战术",
       "desc" : "灵力值消耗减少。",
       "imagePath" : "fdc2e4ce39dcbb7b882b4fba77e3064f4b875e85a8fa8918251120a7509a3850.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 84,
       "name" : "幻象",
       "desc" : "受到伤害后可能会被消灭。",
       "imagePath" : "36e1f0b08c37c57c6db086e4b9a8bdeb5123c8753db7f300e666314da0b9dcbf.jpg",
       "_animationRefs" : [],
-      "persistentAnimRef" : {
-        "cardPoolId" : NumberLong(0),
-        "defineId" : 31
+      "persAnimRef" : {
+        "animRef" : {
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 31
+        },
+        "colorModifies" : []
       }
     }, {
       "buffId" : 85,
       "name" : "丧心丧意",
       "desc" : "获得-2攻击力。",
       "imagePath" : "3ffe175e3f590ae5c5f3e8327881bd451c27dfb8b8cdf398e1c42cb7517ebedb.jpg",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 87,
       "name" : "真实之月",
@@ -79276,155 +79039,32 @@
             "eventName" : "MoveCardEvent"
           },
           "colorModifies" : []
-        }]
+        }],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }, {
       "buffId" : 88,
       "name" : "梦醒时分",
       "desc" : "回合结束后消失。",
       "imagePath" : "9db1399f0602c7b59ecd7dbde709923b1ad264a6341e2c02e0c8c989ce64a095.jpg",
       "_animationRefs" : [],
-      "persistentAnimRef" : {
-        "cardPoolId" : NumberLong(0),
-        "defineId" : 49
+      "persAnimRef" : {
+        "animRef" : {
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 49
+        },
+        "colorModifies" : []
       }
     }, {
       "buffId" : 89,
       "name" : "梦境降临",
       "desc" : "回合结束后移回手牌。",
       "imagePath" : "9db1399f0602c7b59ecd7dbde709923b1ad264a6341e2c02e0c8c989ce64a095.jpg",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 90,
-      "language" : "zh-Hans",
-      "name" : "位面",
-      "desc" : "本回合内法术伤害增加。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 91,
-      "language" : "zh-Hans",
-      "name" : "The World I",
-      "desc" : "灵力值消耗减少。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 92,
-      "language" : "zh-Hans",
-      "name" : "时间停止",
-      "desc" : "本回合内你的法术灵力值消耗变为(0)点，但效果会在回合结束时发动。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 93,
-      "language" : "zh-Hans",
-      "name" : "The World II",
-      "desc" : "灵力值消耗变为(0)点。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 94,
-      "language" : "zh-Hans",
-      "name" : "地精保镖",
-      "desc" : "灵力值消耗增加。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 95,
-      "language" : "zh-Hans",
-      "name" : "替身",
-      "desc" : "攻击力增加。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 95,
-      "language" : "en-US",
-      "name" : "替身",
-      "desc" : "Attack increased.",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 95,
-      "language" : "ja",
-      "name" : "替身",
-      "desc" : "攻撃力を得る。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 96,
-      "language" : "zh-Hans",
-      "name" : "星光魔刃（光环）",
-      "desc" : "你本回合使用的下一张卡牌的消耗减少(2)点。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 97,
-      "language" : "zh-Hans",
-      "name" : "星光魔刃（消耗）",
-      "desc" : "灵力值消耗减少(2)点。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 98,
-      "language" : "zh-Hans",
-      "name" : "杀人玩偶",
-      "desc" : "本回合结束时受到2点伤害。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 99,
-      "language" : "zh-Hans",
-      "name" : "回到未来",
-      "desc" : "回合结束时将被洗入你的牌库，且灵力值消耗变为(0)点。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 100,
-      "language" : "zh-Hans",
-      "name" : "回到未来（归零）",
-      "desc" : "灵力值消耗变为(0)点。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 101,
-      "language" : "zh-Hans",
-      "name" : "跃迁失败",
-      "desc" : "本回合结束时，抽两张牌。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 102,
-      "language" : "zh-Hans",
-      "name" : "连环飞刀手",
-      "desc" : "在本回合内，如果使用指定的牌，重复连环飞刀手的效果。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 103,
-      "language" : "zh-Hans",
-      "name" : "机械魔术师",
-      "desc" : "灵力值消耗减少(1)点。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 104,
-      "language" : "zh-Hans",
-      "name" : "连环飞刀",
-      "desc" : "本回合灵力值消耗减少(1)点.",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 105,
-      "language" : "zh-Hans",
-      "name" : "静候时机（光环）",
-      "desc" : "在本回合中，你使用的下一张法术牌灵力值消耗减少(3)点。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 106,
-      "language" : "zh-Hans",
-      "name" : "静候时机（效果）",
-      "desc" : "灵力值消耗减少(3)点。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 107,
-      "language" : "zh-Hans",
-      "name" : "膨胀空间（光环）",
-      "desc" : "所有与使用牌同类型的卡牌在本回合中灵力值消耗增加(5)点。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 108,
-      "language" : "zh-Hans",
-      "name" : "膨胀空间（效果）",
-      "desc" : "灵力值消耗增加(5)点。",
-      "_animationRefs" : []
-    }, {
-      "buffId" : 109,
-      "language" : "zh-Hans",
-      "name" : "离剑之见",
-      "desc" : "在本回合结束时，对所有仆从造成1点伤害。",
-      "_animationRefs" : []
+      "_animationRefs" : [],
+      "persAnimRef" : {
+        "colorModifies" : []
+      }
     }],
   "actionDefineList" : [{
       "_id" : 3,
@@ -83351,7 +82991,7 @@
       "value" : "<b>唯一</b>\r\n<b>宣言</b>：随机将你牌库中一张<b>陷阱</b>牌置入延迟区。每当你的回合结束时，触发此牌的<b>宣言</b>。",
       "dictionary" : {
         "en-US" : "<b>Unique</b>\n<b>Declare</b>: Put a random <b>Trap</b> in your deck into your Delay. At the end of your turn, trigger <b>Declare</b> of this.",
-        "ja" : "<b>唯一</b>\r\n<b>宣言</b>：随机将你牌库中一张<b>陷阱</b>牌置入延迟区。每当你的回合结束时，触发此牌的<b>宣言</b>。"
+        "ja" : "<b>唯一</b>\n<b>宣言</b>：デッキからランダムな<b>罠</b>カ\u30fcドにずれ込み区域を置く。自分のタ\u30fcン終了時、このカ\u30fcドの<b>宣言</b>を触発させる。"
       }
     }, {
       "value" : "<b>唯一</b>\r\n每当你的回合开始时，召唤一个1/1并具有<b>守卫</b>的<u>人偶</u>。",
@@ -83495,7 +83135,7 @@
       "value" : "<b>守卫</b>，每当你的回合结束时，如果此牌在你的战场或者墓地中，随机对一个敌方仆从造成2点伤害。",
       "dictionary" : {
         "en-US" : "<b>Guard</b>, At the end of your turn, if this is on your battlefield or graveyard, deal 2 damage to a random enemy servant.",
-        "ja" : "<b>守卫</b>，每当你的回合结束时，如果此牌在你的战场或者墓地中，随机对一个敌方仆从造成2点伤害。"
+        "ja" : "<b>守り</b>、自分のタ\u30fcン終了時、このカ\u30fcドが自分の陣地か墓地にいる場合、ランダムな敵のミニオンに２ダメ\u30fcジを与える。"
       }
     }, {
       "value" : "<b>宣言</b>：<b>封印</b>相邻的仆从。",
@@ -83561,7 +83201,7 @@
       "value" : "<b>宣言</b>：抽一张道具牌。如果你装备着道具，则将其替换为抽到的道具牌，并重置你英雄的攻击次数。",
       "dictionary" : {
         "en-US" : "<b>Declare</b>: Draw an item. If you have item, replace it with the drawn item, then reset your master's attacked times.",
-        "ja" : "<b>宣言</b>：抽一张道具牌。如果你装备着道具，则将其替换为抽到的道具牌，并重置你英雄的攻击次数。"
+        "ja" : "<b>宣言</b>：道具を１枚引く。道具を装備している場合、それに引いた道具を代える、自分のヒ\u30fcロ\u30fc再度攻撃可能にする。"
       }
     }, {
       "value" : "<b>宣言</b>：检视你牌库中的三张牌，选择一张置于你的牌库顶。",
@@ -83807,7 +83447,7 @@
       "value" : "<b>遗言</b>：召唤自身复制并获得+3/+3。",
       "dictionary" : {
         "en-US" : "<b>Lastword</b>: Summon a copy of this and gain +3/+3.",
-        "ja" : "<b>遗言</b>：召唤自身复制并获得+3/+3。"
+        "ja" : "<b>遺言</b>：自身の新しい複製品を召喚し、＋３/＋３を付与する。"
       }
     }, {
       "value" : "<b>遗言</b>：对敌方英雄造成1点伤害。",
@@ -83927,13 +83567,13 @@
       "value" : "下两次使用灵力值消耗减少(2)点。",
       "dictionary" : {
         "en-US" : "Costs (2) less next 2 uses.",
-        "ja" : "下两次使用灵力值消耗减少(2)点。"
+        "ja" : "次二回の使用することの霊力が（２）減る。"
       }
     }, {
       "value" : "下两次使用额外造成2点伤害。",
       "dictionary" : {
         "en-US" : "Deal 2 more damage next 2 uses.",
-        "ja" : "下两次使用额外造成2点伤害。"
+        "ja" : "次二回使用すること、エキストラ２ダメ\u30fcジを与える。"
       }
     }, {
       "value" : "不明光球",
@@ -83963,7 +83603,7 @@
       "value" : "丧心丧意",
       "dictionary" : {
         "en-US" : "Demotivation",
-        "ja" : "丧心丧意"
+        "ja" : "喪心喪意"
       }
     }, {
       "value" : "为一个仆从恢复2点生命值。",
@@ -84017,7 +83657,7 @@
       "value" : "伏击战术",
       "dictionary" : {
         "en-US" : "Ambush Tactics",
-        "ja" : "伏击战术"
+        "ja" : "待ち伏せ"
       }
     }, {
       "value" : "休眠之灾祸",
@@ -84042,12 +83682,6 @@
       "dictionary" : {
         "en-US" : "Summon a 2/2 <u>Frog</u> with <b>Guard</b> for each enemy servant.",
         "ja" : "敵のミニオン１体につき、<b>守り</b>を持つ ２/２の<u>「蛙」</u>を１体召喚する。"
-      }
-    }, {
-      "value" : "你的英雄技能具有吸血。",
-      "dictionary" : {
-        "en-US" : "Your skill has <b>Drain</b>.",
-        "ja" : "你的英雄技能具有吸血。"
       }
     }, {
       "value" : "使一个仆从获得+2/+3和“<b>遗言</b>：召唤一只1/1的<u>老鼠</u>”。",
@@ -84137,13 +83771,13 @@
       "value" : "信仰对决使得灵力值消耗减少。",
       "dictionary" : {
         "en-US" : "Faithduels make this costs less.",
-        "ja" : "信仰对决使得灵力值消耗减少。"
+        "ja" : "信仰対決は霊力を減らさせる。"
       }
     }, {
       "value" : "信仰收集",
       "dictionary" : {
         "en-US" : "Faith collection",
-        "ja" : "信仰收集"
+        "ja" : "信仰収集"
       }
     }, {
       "value" : "元素收割",
@@ -84198,12 +83832,6 @@
       "dictionary" : {
         "en-US" : "Eirin Yagokoro",
         "ja" : "八意永琳"
-      }
-    }, {
-      "value" : "具有幻象的仆从受到伤害后，会被消灭。",
-      "dictionary" : {
-        "en-US" : "<b>Phantom</b> servants will be destroyed after damaged.",
-        "ja" : "具有幻象的仆从受到伤害后，会被消灭。"
       }
     }, {
       "value" : "冥想",
@@ -84344,28 +83972,16 @@
         "ja" : "タ\u30fcン開始時死ぬ。"
       }
     }, {
-      "value" : "回合结束后，置换的卡牌会从手牌中消失。",
-      "dictionary" : {
-        "en-US" : "At the end of turn, replaced cards will <b>Disappear</b> from hand.",
-        "ja" : "回合结束后，置换的卡牌会从手牌中消失。"
-      }
-    }, {
       "value" : "回合结束后，这张卡牌会消失。",
       "dictionary" : {
         "en-US" : "<b>Disappears</b> at the end of turn.",
-        "ja" : "回合结束后，这张卡牌会消失。"
-      }
-    }, {
-      "value" : "回合结束后将卡牌换回原来的牌堆。",
-      "dictionary" : {
-        "en-US" : "After the end of turn, swap back the cards.",
-        "ja" : "回合结束后将卡牌换回原来的牌堆。"
+        "ja" : "このタ\u30fcン終了時、このカ\u30fcドが消失する。"
       }
     }, {
       "value" : "回合结束时移回牌库。",
       "dictionary" : {
         "en-US" : "Return to deck at the end of turn.",
-        "ja" : "回合结束时移回牌库。"
+        "ja" : "このタ\u30fcン終了時に自分のデッキに返す。"
       }
     }, {
       "value" : "因幡帝",
@@ -84437,13 +84053,7 @@
       "value" : "在你的回合开始时，失去3点护甲值。",
       "dictionary" : {
         "en-US" : "Lose 3 Armor at the start of turn.",
-        "ja" : "在你的回合开始时，失去3点护甲值。"
-      }
-    }, {
-      "value" : "在你的回合开始时，将此牌移回其拥有者的战场。",
-      "dictionary" : {
-        "en-US" : "At the start of your turn, return this to its owner's battlefield.",
-        "ja" : "在你的回合开始时，将此牌移回其拥有者的战场。"
+        "ja" : "自分のタ\u30fcン開始時、ア\u30fcマ\u30fcを３失う。"
       }
     }, {
       "value" : "在你的回合结束时，如果此牌在你的手牌中，变形为人类形态。\n<b>宣言</b>：随机将你牌库中三张灵力值消耗最低的牌洗入你的墓地。",
@@ -84464,52 +84074,46 @@
         "ja" : "このタ\u30fcン自分が次に使用するスペルカ\u30fcドの霊力が（５）減る。"
       }
     }, {
-      "value" : "在本回合中，你每使用过一次技能，灵力值消耗便减少(2)点。",
-      "dictionary" : {
-        "en-US" : "Costs (2) less for each skill you've used this turn.",
-        "ja" : "在本回合中，你每使用过一次技能，灵力值消耗便减少(2)点。"
-      }
-    }, {
       "value" : "在本回合中，使用的下一张法术牌灵力值消耗减少(5)点。",
       "dictionary" : {
         "en-US" : "Next spell this turn costs (5) less.",
-        "ja" : "在本回合中，使用的下一张法术牌灵力值消耗减少(5)点。"
+        "ja" : "このタ\u30fcンに、次に使用するスペルカ\u30fcドの霊力が（５）減る。"
       }
     }, {
       "value" : "在本回合中，灵力值消耗为(0)点。",
       "dictionary" : {
         "en-US" : "Costs (0) this turn.",
-        "ja" : "在本回合中，灵力值消耗为(0)点。"
+        "ja" : "このタ\u30fcンの間、霊力が（０）。"
       }
     }, {
       "value" : "在本回合中，获得+1攻击力。",
       "dictionary" : {
         "en-US" : "Gain +1 Attack this turn.",
-        "ja" : "在本回合中，获得+1攻击力。"
+        "ja" : "このタ\u30fcンの間、攻撃力＋１を得る。"
       }
     }, {
       "value" : "在本回合中，获得+2攻击力。",
       "dictionary" : {
         "en-US" : "Gain +3 Attack this turn.",
-        "ja" : "在本回合中，获得+2攻击力。"
+        "ja" : "このタ\u30fcンの間、＋２攻撃力を得る。"
       }
     }, {
       "value" : "在本回合中，获得+3攻击力。",
       "dictionary" : {
         "en-US" : "Gain +3 Attack this turn.",
-        "ja" : "在本回合中，获得+3攻击力。"
+        "ja" : "このタ\u30fcンの間、＋３攻撃力を得る。"
       }
     }, {
       "value" : "在本回合中，获得+5攻击力。",
       "dictionary" : {
         "en-US" : "Gain +5 Attack this turn.",
-        "ja" : "在本回合中，获得+5攻击力。"
+        "ja" : "このタ\u30fcンの間、攻撃力＋５を得る。"
       }
     }, {
       "value" : "在本回合中，获得<b>无敌</b>。",
       "dictionary" : {
         "en-US" : "Gain <b>Invulnerable</b> this turn.",
-        "ja" : "在本回合中，获得<b>无敌</b>。"
+        "ja" : "このタ\u30fcンに<b>無敵</b>を得る。"
       }
     }, {
       "value" : "在本回合中使你的英雄获得+2攻击力。\n<b>蓄力</b>：改为获得+3攻击力。",
@@ -84527,7 +84131,7 @@
       "value" : "在本回合中进行信仰对决后还会再恢复4点生命值。",
       "dictionary" : {
         "en-US" : "Next <b>Faithduel</b> this turn will also restore 4 Health to this.",
-        "ja" : "在本回合中进行信仰对决后还会再恢复4点生命值。"
+        "ja" : "このタ\u30fcンに次の信仰対決することはもう４回復する。"
       }
     }, {
       "value" : "地狱祸轮",
@@ -84893,7 +84497,7 @@
       "value" : "属性值变为4/4，灵力值消耗变为(4)点。",
       "dictionary" : {
         "en-US" : "Attack, Health and Cost set to 4.",
-        "ja" : "属性值变为4/4，灵力值消耗变为(4)点。"
+        "ja" : "４/４が変わる、霊力が（４）。"
       }
     }, {
       "value" : "山坂与湖水的化身",
@@ -84947,13 +84551,13 @@
       "value" : "幻象",
       "dictionary" : {
         "en-US" : "Phantom",
-        "ja" : "幻象"
+        "ja" : "幻像"
       }
     }, {
       "value" : "幻象震爆",
       "dictionary" : {
         "en-US" : "Illusionary Blast",
-        "ja" : "幻象震爆"
+        "ja" : "幻像爆発"
       }
     }, {
       "value" : "幽明的苦轮",
@@ -85013,7 +84617,7 @@
       "value" : "心猿意马",
       "dictionary" : {
         "en-US" : "Impetuous",
-        "ja" : "心猿意马"
+        "ja" : "心が乱れる"
       }
     }, {
       "value" : "忘却之祭仪",
@@ -85169,7 +84773,8 @@
       "value" : "攻击力增加。",
       "dictionary" : {
         "en-US" : "Attack increased.",
-        "ja" : "攻撃力を得る。"
+        "ja" : "攻撃力を得る。",
+        "zh-Hans" : "攻击力增加。"
       }
     }, {
       "value" : "攻击力最高的敌方仆从每有1点攻击力，此牌的灵力值消耗便减少(1)点。",
@@ -85313,13 +84918,13 @@
       "value" : "梦境降临",
       "dictionary" : {
         "en-US" : "Dream Descends",
-        "ja" : "梦境降临"
+        "ja" : "夢心地に入る"
       }
     }, {
       "value" : "梦醒时分",
       "dictionary" : {
         "en-US" : "Time to Awake",
-        "ja" : "梦醒时分"
+        "ja" : "夢のENDはいつも目覚まし！"
       }
     }, {
       "value" : "检视你墓地中的三张具有<b>遗言</b>的仆从牌，选择一张置入你的手牌并触发其<b>遗言</b>。",
@@ -85373,7 +84978,7 @@
       "value" : "此牌会在<u>阎魔之刃</u>被摧毁后回到拥有者的手牌中。",
       "dictionary" : {
         "en-US" : "Return to owner's hand after <u>Yama Blade</u> is destroyed.",
-        "ja" : "此牌会在<u>阎魔之刃</u>被摧毁后回到拥有者的手牌中。"
+        "ja" : "このカ\u30fcドは<u>閻魔の刃</u>が破壊した後所有者の手札に返す。"
       }
     }, {
       "value" : "死灰复燃",
@@ -85433,7 +85038,7 @@
       "value" : "每当你的回合开始后，如果此牌在墓地中，将一张1/1的<u>小幽灵</u>置入你的手牌。",
       "dictionary" : {
         "en-US" : "After the start of your turn, if this is in your grave, add a 1/1 <u>Lil Ghost</u> to your hand.",
-        "ja" : "每当你的回合开始后，如果此牌在墓地中，将一张1/1的<u>小幽灵</u>置入你的手牌。"
+        "ja" : "自分のタ\u30fcン開始後、このカ\u30fcドが自分の墓地にいる場合、１/１の<u>幽霊</u>を自分の手札に追加する。"
       }
     }, {
       "value" : "每当你的回合结束后，进行<b>信仰对决</b>。获胜时抽一张牌。",
@@ -85450,14 +85055,14 @@
     }, {
       "value" : "每当你的回合结束时，将一张<u>堆积的落叶</u>置入对手的手牌。",
       "dictionary" : {
-        "en-US" : "每当你的回合结束时，将一张<u>堆积的落叶</u>置入对手的手牌。",
-        "ja" : "每当你的回合结束时，将一张<u>堆积的落叶</u>置入对手的手牌。"
+        "en-US" : "At the end of your turn, add a <u>Fallen Leaf</u> to your opponent's hand.",
+        "ja" : "自分のタ\u30fcン終了時、<u>「堆積しの落葉」</u>１枚を相手の手札に追加する。"
       }
     }, {
       "value" : "每当你的回合结束时，将一张<u>红薯</u>置入你的手牌。",
       "dictionary" : {
-        "en-US" : "每当你的回合结束时，将一张<u>红薯</u>置入你的手牌。",
-        "ja" : "每当你的回合结束时，将一张<u>红薯</u>置入你的手牌。"
+        "en-US" : "At the end of your turn, add a <u>Sweet Potato</u> to your hand.",
+        "ja" : "自分のタ\u30fcン終了時、<u>「サツマイモ」</u>１枚を自分の手札に追加する。"
       }
     }, {
       "value" : "每当你的回合结束时，随机使一个敌方仆从获得-2/-2，如果其攻击力为0点，还会将其消灭。",
@@ -85488,12 +85093,6 @@
       "dictionary" : {
         "en-US" : "After this damaged a servant, if the servant is still alive, set its Health to 1.",
         "ja" : "これがミニオンにダメ\u30fcジを与えた後、そのミニオンが死ななかった場合、そのミニオンの体力を１に変える。"
-      }
-    }, {
-      "value" : "每控制一个陷阱，灵力值消耗便减少(1)点。",
-      "dictionary" : {
-        "en-US" : "Costs (1) less for each <b>Trap</b> you control.",
-        "ja" : "每控制一个陷阱，灵力值消耗便减少(1)点。"
       }
     }, {
       "value" : "每有1点护甲便获得+1/+1。",
@@ -85733,37 +85332,41 @@
       "value" : "灵力值消耗减少(2)点。",
       "dictionary" : {
         "en-US" : "Costs (2) less.",
-        "ja" : "灵力值消耗减少(2)点。"
+        "ja" : "霊力が（２）減る。",
+        "zh-Hans" : "灵力值消耗减少(2)点。"
       }
     }, {
       "value" : "灵力值消耗减少(3)点。",
       "dictionary" : {
         "en-US" : "Costs (3) less.",
-        "ja" : "灵力值消耗减少(3)点。"
+        "ja" : "霊力が（３）減る。",
+        "zh-Hans" : "灵力值消耗减少(3)点。"
       }
     }, {
       "value" : "灵力值消耗减少(5)点。",
       "dictionary" : {
         "en-US" : "Costs (5) less.",
-        "ja" : "灵力值消耗减少(5)点。"
+        "ja" : "霊力が（５）減る。"
       }
     }, {
       "value" : "灵力值消耗减少。",
       "dictionary" : {
         "en-US" : "Costs less.",
-        "ja" : "灵力值消耗减少。"
+        "ja" : "霊力減る。",
+        "zh-Hans" : "灵力值消耗减少。"
       }
     }, {
       "value" : "灵力值消耗变为(0)点。",
       "dictionary" : {
         "en-US" : "Costs (0).",
-        "ja" : "灵力值消耗变为(0)点。"
+        "ja" : "霊力が（０）。",
+        "zh-Hans" : "灵力值消耗变为(0)点。"
       }
     }, {
       "value" : "灵力值消耗增加(1)点。",
       "dictionary" : {
         "en-US" : "Costs (1) more.",
-        "ja" : "灵力值消耗增加(1)点。"
+        "ja" : "霊力が（１）増す。"
       }
     }, {
       "value" : "灵摆探测",
@@ -85853,7 +85456,7 @@
       "value" : "现世斩(已蓄力)",
       "dictionary" : {
         "en-US" : "Present Slash (Charged)",
-        "ja" : "现世斩(已蓄力)"
+        "ja" : "現世斬（チャ\u30fcジした）"
       }
     }, {
       "value" : "琪斯美",
@@ -85907,7 +85510,7 @@
       "value" : "直到下个回合，获得-3攻击力。",
       "dictionary" : {
         "en-US" : "Gain -3 Attack until next turn.",
-        "ja" : "直到下个回合，获得-3攻击力。"
+        "ja" : "次のタ\u30fcン開始まで、－３攻撃力を得る。"
       }
     }, {
       "value" : "直到你的回合开始时，使对手手牌中的仆从牌灵力值消耗增加(5)点。",
@@ -85919,7 +85522,7 @@
       "value" : "直到使用者的回合开始，灵力值消耗增加(5)点。",
       "dictionary" : {
         "en-US" : "Costs (5) more until the start of caster's turn.",
-        "ja" : "直到使用者的回合开始，灵力值消耗增加(5)点。"
+        "ja" : "使用者のタ\u30fcン開始まで、霊力が（５）増す。"
       }
     }, {
       "value" : "直到小碎骨的使用者的回合开始后，攻击力变为1。",
@@ -85931,7 +85534,7 @@
       "value" : "真实之月",
       "dictionary" : {
         "en-US" : "Moon of Truth",
-        "ja" : "真实之月"
+        "ja" : "真実の月"
       }
     }, {
       "value" : "磨砺",
@@ -85979,7 +85582,7 @@
       "value" : "禁止抽牌两个回合。",
       "dictionary" : {
         "en-US" : "Cannot draw for 2 turns.",
-        "ja" : "禁止抽牌两个回合。"
+        "ja" : "２タ\u30fcン間、カ\u30fcドを引けない。"
       }
     }, {
       "value" : "秋穰子",
@@ -86081,7 +85684,7 @@
       "value" : "能以仆从为目标，并对仆从额外造成1点伤害，持续两回合。",
       "dictionary" : {
         "en-US" : "Can target servants, and deal 1 more damage to servants. Lasts 2 turns.",
-        "ja" : "能以仆从为目标，并对仆从额外造成1点伤害，持续两回合。"
+        "ja" : "ミニオンを目標として取ることができる、ミニオンにエキストラ１ダメ\u30fcジを与える。２タ\u30fcン持続可。"
       }
     }, {
       "value" : "脾脏蛀食者",
@@ -86141,37 +85744,37 @@
       "value" : "获得+1/+1。",
       "dictionary" : {
         "en-US" : "Gain +1/+1.",
-        "ja" : "获得+1/+1。"
+        "ja" : "＋１/＋１を得る。"
       }
     }, {
       "value" : "获得+1攻击力。",
       "dictionary" : {
         "en-US" : "Gain +1 Attack.",
-        "ja" : "获得+1攻击力。"
+        "ja" : "攻撃力＋１を得る。"
       }
     }, {
       "value" : "获得+1耐久度。",
       "dictionary" : {
         "en-US" : "Gain +1 Durability.",
-        "ja" : "获得+1耐久度。"
+        "ja" : "耐久度＋１を得る。"
       }
     }, {
       "value" : "获得+2/+1。",
       "dictionary" : {
         "en-US" : "Gain +2/+1.",
-        "ja" : "获得+2/+1。"
+        "ja" : "＋２/＋１を得る。"
       }
     }, {
       "value" : "获得+2/+2。",
       "dictionary" : {
         "en-US" : "Gain +2/+2.",
-        "ja" : "获得+2/+2。"
+        "ja" : "＋２/＋２を得る。"
       }
     }, {
       "value" : "获得+2攻击力。",
       "dictionary" : {
         "en-US" : "Gain +2 Attack.",
-        "ja" : "获得+2攻击力。"
+        "ja" : "攻撃力＋２を得る。"
       }
     }, {
       "value" : "获得+2攻击力和<b>速攻</b>。",
@@ -86183,49 +85786,49 @@
       "value" : "获得+2生命值。",
       "dictionary" : {
         "en-US" : "Gain +2 Health.",
-        "ja" : "获得+2生命值。"
+        "ja" : "体力＋２を得る。"
       }
     }, {
       "value" : "获得+3/+1和<b>速攻</b>。",
       "dictionary" : {
         "en-US" : "Gain +3/+1 and <b>Rush</b>.",
-        "ja" : "获得+3/+1和<b>速攻</b>。"
+        "ja" : "＋３/＋１と<b>急襲</b>を得る。"
       }
     }, {
       "value" : "获得+3/+3，<b>速攻</b>和“在你的回合开始时死亡”。（警告：过量服用会导致爆炸性后果！）",
       "dictionary" : {
         "en-US" : "Gain +3/+3 and <b>Rush</b>. Dies at the start of your turn. (WARNING: Overdose can cause EXPLOSIVE consequences!)",
-        "ja" : "获得+3/+3，<b>速攻</b>和“在你的回合开始时死亡”。（警告：过量服用会导致爆炸性后果！）"
+        "ja" : "＋３/＋３、<b>急襲</b>と「自分のタ\u30fcン開始時死ぬ」を得る（警告：過度の使用は爆発的な結果につながります！）"
       }
     }, {
       "value" : "获得+3/+3。",
       "dictionary" : {
         "en-US" : "Gain +3/+3.",
-        "ja" : "获得+3/+3。"
+        "ja" : "＋３/＋３を得る。"
       }
     }, {
       "value" : "获得+3/+6。",
       "dictionary" : {
         "en-US" : "Gain +3/+6.",
-        "ja" : "获得+3/+6。"
+        "ja" : "＋３/＋６を得る。"
       }
     }, {
       "value" : "获得+3/+6和<b>守卫</b>。",
       "dictionary" : {
         "en-US" : "Gain +3/+6 and <b>Guard</b>.",
-        "ja" : "获得+3/+6和<b>守卫</b>。"
+        "ja" : "＋３/＋６と<b>守り</b>を得る。"
       }
     }, {
       "value" : "获得+3攻击力。",
       "dictionary" : {
         "en-US" : "Gain +3 Attack.",
-        "ja" : "获得+3攻击力。"
+        "ja" : "攻撃力＋３を得る。"
       }
     }, {
       "value" : "获得<b>先攻</b>。",
       "dictionary" : {
         "en-US" : "Gain <b>Swift</b>.",
-        "ja" : "获得<b>先攻</b>。"
+        "ja" : "<b>急行</b>を得る。"
       }
     }, {
       "value" : "获得1点护甲值，在本回合中使你的英雄获得+1攻击力。",
@@ -86237,13 +85840,13 @@
       "value" : "获得-2/-2.",
       "dictionary" : {
         "en-US" : "Gain -2/-2.",
-        "ja" : "获得-2/-2."
+        "ja" : "‐２/‐２を得る。"
       }
     }, {
       "value" : "获得-2攻击力。",
       "dictionary" : {
         "en-US" : "Gain -2 Attack.",
-        "ja" : "获得-2攻击力。"
+        "ja" : "攻撃力‐２を得る。"
       }
     }, {
       "value" : "获得2点护甲值，抽一张道具牌。<b>蓄力</b>：使抽到的道具牌获得+1耐久度。",
@@ -86351,7 +85954,7 @@
       "value" : "贩药货郎",
       "dictionary" : {
         "en-US" : "Medicine Seller",
-        "ja" : "贩药货郎"
+        "ja" : "薬売る野郎"
       }
     }, {
       "value" : "贪食",
@@ -86664,6 +86267,384 @@
       "dictionary" : {
         "en-US" : "Mouse Brothers",
         "ja" : "鼠兄弟"
+      }
+    }, {
+      "value" : "地精保镖",
+      "dictionary" : {
+        "zh-Hans" : "地精保镖",
+        "en-US" : "地精保镖",
+        "ja" : "地精保镖"
+      }
+    }, {
+      "value" : "杀人玩偶",
+      "dictionary" : {
+        "zh-Hans" : "杀人玩偶",
+        "en-US" : "杀人玩偶",
+        "ja" : "杀人玩偶"
+      }
+    }, {
+      "value" : "回到未来",
+      "dictionary" : {
+        "zh-Hans" : "回到未来",
+        "en-US" : "回到未来",
+        "ja" : "回到未来"
+      }
+    }, {
+      "value" : "连环飞刀手",
+      "dictionary" : {
+        "zh-Hans" : "连环飞刀手",
+        "en-US" : "连环飞刀手",
+        "ja" : "连环飞刀手"
+      }
+    }, {
+      "value" : "在本回合中，你使用的下一张法术牌灵力值消耗减少(3)点。",
+      "dictionary" : {
+        "zh-Hans" : "在本回合中，你使用的下一张法术牌灵力值消耗减少(3)点。",
+        "en-US" : "在本回合中，你使用的下一张法术牌灵力值消耗减少(3)点。",
+        "ja" : "在本回合中，你使用的下一张法术牌灵力值消耗减少(3)点。"
+      }
+    }, {
+      "value" : "离剑之见",
+      "dictionary" : {
+        "zh-Hans" : "离剑之见",
+        "en-US" : "离剑之见",
+        "ja" : "离剑之见"
+      }
+    }, {
+      "value" : "银色匕首",
+      "dictionary" : {
+        "en-US" : "银色匕首",
+        "ja" : "银色匕首"
+      }
+    }, {
+      "value" : "装备一把1/2的<u>匕首</u>。",
+      "dictionary" : {
+        "en-US" : "装备一把1/2的<u>匕首</u>。",
+        "ja" : "装备一把1/2的<u>匕首</u>。"
+      }
+    }, {
+      "value" : "时间线收敛",
+      "dictionary" : {
+        "en-US" : "时间线收敛",
+        "ja" : "时间线收敛"
+      }
+    }, {
+      "value" : "<b>唯一</b>，抽一张牌并摧毁一张你牌库顶的牌，重复直到你的手牌数量达到上限。",
+      "dictionary" : {
+        "en-US" : "<b>唯一</b>，抽一张牌并摧毁一张你牌库顶的牌，重复直到你的手牌数量达到上限。",
+        "ja" : "<b>唯一</b>，抽一张牌并摧毁一张你牌库顶的牌，重复直到你的手牌数量达到上限。"
+      }
+    }, {
+      "value" : "位面法师",
+      "dictionary" : {
+        "en-US" : "位面法师",
+        "ja" : "位面法师"
+      }
+    }, {
+      "value" : "<b>速攻</b>，你每在本回合中使用过四张卡牌，此牌便具有<b>法术伤害+1</b>",
+      "dictionary" : {
+        "en-US" : "<b>速攻</b>，你每在本回合中使用过四张卡牌，此牌便具有<b>法术伤害+1</b>",
+        "ja" : "<b>速攻</b>，你每在本回合中使用过四张卡牌，此牌便具有<b>法术伤害+1</b>"
+      }
+    }, {
+      "value" : "回到之前重来吧",
+      "dictionary" : {
+        "en-US" : "回到之前重来吧",
+        "ja" : "回到之前重来吧"
+      }
+    }, {
+      "value" : "<b>陷阱</b>：当一个敌方仆从攻击时，取消此攻击并将其移回拥有者的手牌。 ",
+      "dictionary" : {
+        "en-US" : "<b>陷阱</b>：当一个敌方仆从攻击时，取消此攻击并将其移回拥有者的手牌。 ",
+        "ja" : "<b>陷阱</b>：当一个敌方仆从攻击时，取消此攻击并将其移回拥有者的手牌。 "
+      }
+    }, {
+      "value" : "完美女仆",
+      "dictionary" : {
+        "en-US" : "完美女仆",
+        "ja" : "完美女仆"
+      }
+    }, {
+      "value" : "<b>陷阱</b>：当一个敌方仆从攻击你的英雄时，对其造成4点伤害。",
+      "dictionary" : {
+        "en-US" : "<b>陷阱</b>：当一个敌方仆从攻击你的英雄时，对其造成4点伤害。",
+        "ja" : "<b>陷阱</b>：当一个敌方仆从攻击你的英雄时，对其造成4点伤害。"
+      }
+    }, {
+      "value" : "兔子戏法",
+      "dictionary" : {
+        "en-US" : "兔子戏法",
+        "ja" : "兔子戏法"
+      }
+    }, {
+      "value" : "<b>陷阱</b>：当对手抽取仆从牌时，阻止此抽牌并将一张1/1的<u>小白兔</u>置入对手的手牌。",
+      "dictionary" : {
+        "en-US" : "<b>陷阱</b>：当对手抽取仆从牌时，阻止此抽牌并将一张1/1的<u>小白兔</u>置入对手的手牌。",
+        "ja" : "<b>陷阱</b>：当对手抽取仆从牌时，阻止此抽牌并将一张1/1的<u>小白兔</u>置入对手的手牌。"
+      }
+    }, {
+      "value" : "小白兔",
+      "dictionary" : {
+        "en-US" : "小白兔",
+        "ja" : "小白兔"
+      }
+    }, {
+      "value" : "The World",
+      "dictionary" : {
+        "en-US" : "The World",
+        "ja" : "The World"
+      }
+    }, {
+      "value" : "<b>唯一</b>，使<b>时间停止</b>到本回合结束时。本回合中你每使用过一张法术牌，此牌灵力值消耗便减少(1)点。",
+      "dictionary" : {
+        "en-US" : "<b>唯一</b>，使<b>时间停止</b>到本回合结束时。本回合中你每使用过一张法术牌，此牌灵力值消耗便减少(1)点。",
+        "ja" : "<b>唯一</b>，使<b>时间停止</b>到本回合结束时。本回合中你每使用过一张法术牌，此牌灵力值消耗便减少(1)点。"
+      }
+    }, {
+      "value" : "悖论引擎",
+      "dictionary" : {
+        "en-US" : "悖论引擎",
+        "ja" : "悖论引擎"
+      }
+    }, {
+      "value" : " <b>宣言</b>：在本回合中，你每使用过一张牌，便召唤一个该仆从的复制。 ",
+      "dictionary" : {
+        "en-US" : " <b>宣言</b>：在本回合中，你每使用过一张牌，便召唤一个该仆从的复制。 ",
+        "ja" : " <b>宣言</b>：在本回合中，你每使用过一张牌，便召唤一个该仆从的复制。 "
+      }
+    }, {
+      "value" : "<b>守卫</b>，你每有一张其他手牌，此牌的灵力值消耗便增加(1)点。",
+      "dictionary" : {
+        "en-US" : "<b>守卫</b>，你每有一张其他手牌，此牌的灵力值消耗便增加(1)点。",
+        "ja" : "<b>守卫</b>，你每有一张其他手牌，此牌的灵力值消耗便增加(1)点。"
+      }
+    }, {
+      "value" : "替身影武者",
+      "dictionary" : {
+        "en-US" : "替身影武者",
+        "ja" : "替身影武者"
+      }
+    }, {
+      "value" : "<b>速攻</b>，在本回合中你每抽一张牌，便具有+1攻击力。",
+      "dictionary" : {
+        "en-US" : "<b>速攻</b>，在本回合中你每抽一张牌，便具有+1攻击力。",
+        "ja" : "<b>速攻</b>，在本回合中你每抽一张牌，便具有+1攻击力。"
+      }
+    }, {
+      "value" : "洗衣女仆",
+      "dictionary" : {
+        "en-US" : "洗衣女仆",
+        "ja" : "洗衣女仆"
+      }
+    }, {
+      "value" : "<b>宣言</b>：将三张<u>传唤女仆</u>洗入你的牌库，当你抽到时，召唤一个2/1的<u>女仆</u>。",
+      "dictionary" : {
+        "en-US" : "<b>宣言</b>：将三张<u>传唤女仆</u>洗入你的牌库，当你抽到时，召唤一个2/1的<u>女仆</u>。",
+        "ja" : "<b>宣言</b>：将三张<u>传唤女仆</u>洗入你的牌库，当你抽到时，召唤一个2/1的<u>女仆</u>。"
+      }
+    }, {
+      "value" : "传唤女仆",
+      "dictionary" : {
+        "en-US" : "传唤女仆",
+        "ja" : "传唤女仆"
+      }
+    }, {
+      "value" : "<b>自动施放</b>\n召唤一个2/1的<u>女仆</u>.",
+      "dictionary" : {
+        "en-US" : "<b>自动施放</b>\n召唤一个2/1的<u>女仆</u>.",
+        "ja" : "<b>自动施放</b>\n召唤一个2/1的<u>女仆</u>."
+      }
+    }, {
+      "value" : "女仆",
+      "dictionary" : {
+        "en-US" : "女仆",
+        "ja" : "女仆"
+      }
+    }, {
+      "value" : "女仆卫队长",
+      "dictionary" : {
+        "en-US" : "女仆卫队长",
+        "ja" : "女仆卫队长"
+      }
+    }, {
+      "value" : "每当你的英雄攻击后，召唤一个2/1的<u>女仆</u>。",
+      "dictionary" : {
+        "en-US" : "每当你的英雄攻击后，召唤一个2/1的<u>女仆</u>。",
+        "ja" : "每当你的英雄攻击后，召唤一个2/1的<u>女仆</u>。"
+      }
+    }, {
+      "value" : "时之刃",
+      "dictionary" : {
+        "en-US" : "时之刃",
+        "ja" : "时之刃"
+      }
+    }, {
+      "value" : "每当你的英雄攻击后，抽一张牌。",
+      "dictionary" : {
+        "en-US" : "每当你的英雄攻击后，抽一张牌。",
+        "ja" : "每当你的英雄攻击后，抽一张牌。"
+      }
+    }, {
+      "value" : "星光魔刃",
+      "dictionary" : {
+        "en-US" : "星光魔刃",
+        "ja" : "星光魔刃"
+      }
+    }, {
+      "value" : "造成2点伤害，<b>连击</b>：在本回合中，你使用的下一张牌灵力值消耗减少(2)点。",
+      "dictionary" : {
+        "en-US" : "造成2点伤害，<b>连击</b>：在本回合中，你使用的下一张牌灵力值消耗减少(2)点。",
+        "ja" : "造成2点伤害，<b>连击</b>：在本回合中，你使用的下一张牌灵力值消耗减少(2)点。"
+      }
+    }, {
+      "value" : "吸血鬼猎人",
+      "dictionary" : {
+        "en-US" : "吸血鬼猎人",
+        "ja" : "吸血鬼猎人"
+      }
+    }, {
+      "value" : "每当你的回合结束时，如果你在本回合中至少使用了两张牌，则抽一张牌。",
+      "dictionary" : {
+        "en-US" : "每当你的回合结束时，如果你在本回合中至少使用了两张牌，则抽一张牌。",
+        "ja" : "每当你的回合结束时，如果你在本回合中至少使用了两张牌，则抽一张牌。"
+      }
+    }, {
+      "value" : "对一个角色造成3点伤害，<b>连击</b>：在本回合结束时，再对其造成2点伤害。",
+      "dictionary" : {
+        "en-US" : "对一个角色造成3点伤害，<b>连击</b>：在本回合结束时，再对其造成2点伤害。",
+        "ja" : "对一个角色造成3点伤害，<b>连击</b>：在本回合结束时，再对其造成2点伤害。"
+      }
+    }, {
+      "value" : "选择一个友方仆从，在本回合结束时将其洗入你的牌库并使其灵力值消耗变为(0)点。",
+      "dictionary" : {
+        "en-US" : "选择一个友方仆从，在本回合结束时将其洗入你的牌库并使其灵力值消耗变为(0)点。",
+        "ja" : "选择一个友方仆从，在本回合结束时将其洗入你的牌库并使其灵力值消耗变为(0)点。"
+      }
+    }, {
+      "value" : "光速跃迁",
+      "dictionary" : {
+        "en-US" : "光速跃迁",
+        "ja" : "光速跃迁"
+      }
+    }, {
+      "value" : "在本回合结束时，抽两张牌。<b>连击</b>：改为立即抽两张牌。",
+      "dictionary" : {
+        "en-US" : "在本回合结束时，抽两张牌。<b>连击</b>：改为立即抽两张牌。",
+        "ja" : "在本回合结束时，抽两张牌。<b>连击</b>：改为立即抽两张牌。"
+      }
+    }, {
+      "value" : "铭刻于红魂",
+      "dictionary" : {
+        "en-US" : "铭刻于红魂",
+        "ja" : "铭刻于红魂"
+      }
+    }, {
+      "value" : "造成4点伤害并随机分配给所有仆从，你的道具每具有1点耐久度，伤害便提高2点。",
+      "dictionary" : {
+        "en-US" : "造成4点伤害并随机分配给所有仆从，你的道具每具有1点耐久度，伤害便提高2点。",
+        "ja" : "造成4点伤害并随机分配给所有仆从，你的道具每具有1点耐久度，伤害便提高2点。"
+      }
+    }, {
+      "value" : "<b>宣言</b>：在本回合内随机使你手牌中一张灵力值消耗＞(0)的卡牌灵力值消耗减少(1)点，且在其被使用后重复此效果。",
+      "dictionary" : {
+        "en-US" : "<b>宣言</b>：在本回合内随机使你手牌中一张灵力值消耗＞(0)的卡牌灵力值消耗减少(1)点，且在其被使用后重复此效果。",
+        "ja" : "<b>宣言</b>：在本回合内随机使你手牌中一张灵力值消耗＞(0)的卡牌灵力值消耗减少(1)点，且在其被使用后重复此效果。"
+      }
+    }, {
+      "value" : "钟表魔术师",
+      "dictionary" : {
+        "en-US" : "钟表魔术师",
+        "ja" : "钟表魔术师"
+      }
+    }, {
+      "value" : "<b>宣言</b>：随机使你手牌中一张灵力值消耗大于(0)的法术牌灵力值消耗减少(1)点。",
+      "dictionary" : {
+        "en-US" : "<b>宣言</b>：随机使你手牌中一张灵力值消耗大于(0)的法术牌灵力值消耗减少(1)点。",
+        "ja" : "<b>宣言</b>：随机使你手牌中一张灵力值消耗大于(0)的法术牌灵力值消耗减少(1)点。"
+      }
+    }, {
+      "value" : "银刃杀手",
+      "dictionary" : {
+        "en-US" : "银刃杀手",
+        "ja" : "银刃杀手"
+      }
+    }, {
+      "value" : "将一张能够造成1点伤害的<u>飞刀</u>置入你的手牌，重复等同于你的道具耐久度次数，然后摧毁你的道具。",
+      "dictionary" : {
+        "en-US" : "将一张能够造成1点伤害的<u>飞刀</u>置入你的手牌，重复等同于你的道具耐久度次数，然后摧毁你的道具。",
+        "ja" : "将一张能够造成1点伤害的<u>飞刀</u>置入你的手牌，重复等同于你的道具耐久度次数，然后摧毁你的道具。"
+      }
+    }, {
+      "value" : "飞刀",
+      "dictionary" : {
+        "en-US" : "飞刀",
+        "ja" : "飞刀"
+      }
+    }, {
+      "value" : "静候时机",
+      "dictionary" : {
+        "en-US" : "静候时机",
+        "ja" : "静候时机"
+      }
+    }, {
+      "value" : "开膛手杰克",
+      "dictionary" : {
+        "en-US" : "开膛手杰克",
+        "ja" : "开膛手杰克"
+      }
+    }, {
+      "value" : "<b>宣言</b>：随机对一个敌方仆从造成2点伤害，你每在本回合中使用过一张牌便重复一次。",
+      "dictionary" : {
+        "en-US" : "<b>宣言</b>：随机对一个敌方仆从造成2点伤害，你每在本回合中使用过一张牌便重复一次。",
+        "ja" : "<b>宣言</b>：随机对一个敌方仆从造成2点伤害，你每在本回合中使用过一张牌便重复一次。"
+      }
+    }, {
+      "value" : "膨胀空间",
+      "dictionary" : {
+        "en-US" : "膨胀空间",
+        "ja" : "膨胀空间"
+      }
+    }, {
+      "value" : "<b>陷阱</b>：在对手使用一张牌后，所有与其使用牌同类型的卡牌在本回合中灵力值消耗增加(5)点。",
+      "dictionary" : {
+        "en-US" : "<b>陷阱</b>：在对手使用一张牌后，所有与其使用牌同类型的卡牌在本回合中灵力值消耗增加(5)点。",
+        "ja" : "<b>陷阱</b>：在对手使用一张牌后，所有与其使用牌同类型的卡牌在本回合中灵力值消耗增加(5)点。"
+      }
+    }, {
+      "value" : "抽一张牌。在本回合结束时，对所有仆从造成1点伤害。",
+      "dictionary" : {
+        "en-US" : "抽一张牌。在本回合结束时，对所有仆从造成1点伤害。",
+        "ja" : "抽一张牌。在本回合结束时，对所有仆从造成1点伤害。"
+      }
+    }, {
+      "value" : "<b>吸血</b>。",
+      "dictionary" : {
+        "en-US" : "<b>吸血</b>。",
+        "ja" : "<b>吸血</b>。"
+      }
+    }, {
+      "value" : "受到伤害后可能会被消灭。",
+      "dictionary" : {
+        "en-US" : "受到伤害后可能会被消灭。",
+        "ja" : "受到伤害后可能会被消灭。"
+      }
+    }, {
+      "value" : "在施放者的回合开始时，将此牌移回其拥有者的战场。",
+      "dictionary" : {
+        "en-US" : "在施放者的回合开始时，将此牌移回其拥有者的战场。",
+        "ja" : "在施放者的回合开始时，将此牌移回其拥有者的战场。"
+      }
+    }, {
+      "value" : "回合结束后消失。",
+      "dictionary" : {
+        "en-US" : "回合结束后消失。",
+        "ja" : "回合结束后消失。"
+      }
+    }, {
+      "value" : "回合结束后移回手牌。",
+      "dictionary" : {
+        "en-US" : "回合结束后移回手牌。",
+        "ja" : "回合结束后移回手牌。"
       }
     }],
   "localizedResourceList" : [{
@@ -88203,7 +88184,8 @@
     }, {
       "value" : "fae3700cc718c659b4a370152f2be3ad1715900e947173542981489a18309a3b.jpg",
       "dictionary" : {
-        "en-US" : "fae3700cc718c659b4a370152f2be3ad1715900e947173542981489a18309a3b.jpg"
+        "en-US" : "fae3700cc718c659b4a370152f2be3ad1715900e947173542981489a18309a3b.jpg",
+        "ja" : "fae3700cc718c659b4a370152f2be3ad1715900e947173542981489a18309a3b.jpg"
       }
     }, {
       "value" : "faf51e8361197987cc1fa70ba3c89d957e240f1264aca42bbb88e7bc57143573.jpg",
