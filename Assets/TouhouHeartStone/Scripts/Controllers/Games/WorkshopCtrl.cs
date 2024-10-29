@@ -21,6 +21,8 @@ namespace Controllers
         public async Task display()
         {
             gameObject.SetActive(true);
+
+            updateBrowseComponents();
             _ui.setSelectUploadPoolPanelVisible(false);
             _ui.setUploadPoolPanelVisible(false);
             _ui.setCardPoolDetailsStateVisible(false);
@@ -1289,7 +1291,9 @@ namespace Controllers
             }
             try
             {
-                _ui.setPageButtonInteractable(false, false);
+                _loadingPage = true;
+                updateBrowseComponents();
+
                 _cardPoolCacheDict.Clear();
                 _ui.updateBrowseCardPools(Array.Empty<WorkshopCardPoolItemViewData>());
                 await loadPage(_page);
@@ -1297,7 +1301,6 @@ namespace Controllers
                 _ui.updateBrowseCardPools(pageViewDatas);
 
                 _ui.setPageText(game.lang._(StringTable.PAGE_NUMBER_TEMPLATE, _page + 1));
-                _ui.setPageButtonInteractable(_page > 0, _currentPageCardPools.Length >= _poolCountPerPage);
 
                 _ui.setLoadingState(WorkshopPanel.LoadingState.Normal);
             }
@@ -1306,6 +1309,11 @@ namespace Controllers
                 Debug.LogError($"加载创意工坊页面{_page}失败：{e}");
                 _ui.setLoadingState(WorkshopPanel.LoadingState.Warning);
                 checkUnauthorized(e);
+            }
+            finally
+            {
+                _loadingPage = false;
+                updateBrowseComponents();
             }
         }
         private async Task loadPage(int page)
@@ -1384,6 +1392,20 @@ namespace Controllers
             {
                 Debug.LogWarning($"无法找到用户{author}：{e}");
                 return game.lang._(StringTable.UNKNOWN_USER);
+            }
+        }
+        private void updateBrowseComponents()
+        {
+            if (_loadingPage)
+            {
+                _ui.setBrowseComponentsInteractable(false);
+                _ui.setPageButtonInteractable(false, false);
+            }
+            else
+            {
+                _ui.setBrowseComponentsInteractable(true);
+                int currentPageCardPools = _currentPageCardPools?.Length ?? 0;
+                _ui.setPageButtonInteractable(_page > 0, currentPageCardPools >= _poolCountPerPage);
             }
         }
 
@@ -1509,6 +1531,7 @@ namespace Controllers
             { WorkshopCardPoolState.Deleted, STATE_DELETED },
         };
 
+        private bool _loadingPage;
         private WorkshopCardPoolInfo[] _currentPageCardPools;
         private WorkshopCardPoolInfo _viewingCardPool;
         private CardDetailsData _viewingCard;

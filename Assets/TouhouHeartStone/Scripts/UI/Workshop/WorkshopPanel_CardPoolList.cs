@@ -20,6 +20,12 @@ namespace UI
         {
             _viewingUserLabelText.text = label;
         }
+        public void setBrowseComponentsInteractable(bool interactable)
+        {
+            _viewMineButton.interactable = interactable;
+            _searchFilter.interactable = interactable;
+            _sortBy.interactable = interactable;
+        }
 
         #region ɸѡ
         public void setSortItems(string[] sortNames)
