@@ -15,7 +15,7 @@ namespace UI
             _cardPoolDetailsCommentsPage.SetActive(page == CardPoolDetailPage.Comments);
             _cardPoolDetailsCardsPage.SetActive(page == CardPoolDetailPage.Info);
         }
-        public void setDetails(DeckListItemViewData viewData, WorkshopCardPoolDetailsViewData details)
+        public void setCardPoolDetails(DeckListItemViewData viewData, WorkshopCardPoolDetailsViewData details)
         {
             _cardPoolDetailsHeader.updateView(viewData);
             _cardPoolDetailsCreatorText.text = details.creator;
@@ -25,12 +25,12 @@ namespace UI
             _cardPoolDetailsVersionText.text = details.version;
             _cardPoolDetailsDependenciesText.text = details.dependencies;
         }
-        public void setDetailsState(Color color, string state)
+        public void setCardPoolDetailsState(Color color, string state)
         {
             _cardPoolDetailsStateText.color = color;
             _cardPoolDetailsStateText.text = state;
         }
-        public void setDetailsStateVisible(bool visible)
+        public void setCardPoolDetailsStateVisible(bool visible)
         {
             _cardPoolDetailsStateObj.SetActive(visible);
         }

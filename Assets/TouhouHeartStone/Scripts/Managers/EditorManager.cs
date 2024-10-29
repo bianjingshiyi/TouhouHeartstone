@@ -132,6 +132,13 @@ namespace Game
         }
         #endregion
 
+        #region 卡牌音效
+        public string translateCardSoundName(string soundName)
+        {
+            return game.lang._(_soundNameDict.TryGetValue(soundName, out var name) ? name : SKIN_SOUND_NAME_UNKNOWN);
+        }
+        #endregion
+
         #endregion
         #region 私有方法
         private void Awake()
@@ -151,6 +158,21 @@ namespace Game
         public const string RULE_NAME_POST_GAME_END = "游戏结束后";
         [TranslateMsg("游戏规则逻辑类型")]
         public const string RULE_NAME_UNKNOWN = "未知规则";
+
+
+        [TranslateMsg("卡牌皮肤编辑器中卡牌的未知音效的名称")]
+        public const string SKIN_SOUND_NAME_UNKNOWN = "未知音效";
+        [TranslateMsg("卡牌皮肤编辑器中仆从牌的入场音效的名称")]
+        public const string SKIN_SOUND_NAME_ON_ENTER = "入场音效";
+        [TranslateMsg("卡牌皮肤编辑器中仆从牌的攻击音效的名称")]
+        public const string SKIN_SOUND_NAME_ON_ATTACK = "攻击音效";
+        [TranslateMsg("卡牌皮肤编辑器中仆从牌的死亡音效的名称")]
+        public const string SKIN_SOUND_NAME_ON_DEATH = "死亡音效";
+        [TranslateMsg("卡牌皮肤编辑器中卡牌的使用音效的名称")]
+        public const string SKIN_SOUND_NAME_ON_USE = "使用音效";
+        [TranslateMsg("卡牌皮肤编辑器中道具牌的装备音效的名称")]
+        public const string SKIN_SOUND_NAME_ON_EQUIP = "装备音效";
+
 
         [TranslateMsg("未知牌堆名称")]
         public const string EDITOR_PILE_NAME_UNKNOWN = "未知牌堆";
@@ -248,6 +270,14 @@ namespace Game
             new CardPropertyNameItem(DEFINE.SPELL_DAMAGE, StringTable.CARD_PROP_NAME_SPELL_DAMAGE),
         };
 
+        private static readonly Dictionary<string, string> _soundNameDict = new Dictionary<string, string>()
+        {
+            { CardSkinData.SOUND_NAME_ON_USE, SKIN_SOUND_NAME_ON_USE },
+            { CardSkinData.SOUND_NAME_ON_EQUIP, SKIN_SOUND_NAME_ON_EQUIP },
+            { CardSkinData.SOUND_NAME_ON_ENTER, SKIN_SOUND_NAME_ON_ENTER },
+            { CardSkinData.SOUND_NAME_ON_ATTACK, SKIN_SOUND_NAME_ON_ATTACK },
+            { CardSkinData.SOUND_NAME_ON_DEATH, SKIN_SOUND_NAME_ON_DEATH },
+        };
         private static readonly Dictionary<string, string> piles = new Dictionary<string, string>
         {
             { PILE.INIT, StringTable.PILE_NAME_INIT },

@@ -1062,7 +1062,7 @@ namespace Controllers
                 var skinSoundName = skinNames[i];
                 var uiName = uiNames[i];
                 var soundPath = _curCardSkin.getSoundRef(skinSoundName)?.path;
-                viewDatas[i] = (game.lang._(uiName), await game.card.getSoundWaveSprite(getCurrentCardPoolRef(), soundPath));
+                viewDatas[i] = (uiName, await game.card.getSoundWaveSprite(getCurrentCardPoolRef(), soundPath));
             }
             _ui.updateSoundItems(viewDatas);
         }
@@ -1256,7 +1256,7 @@ namespace Controllers
         }
         private string[] getCurrentSoundRefUINames()
         {
-            return getCurrentSoundRefNames().Select(n => _soundNameDict.TryGetValue(n, out var name) ? name : SKIN_SOUND_NAME_UNKNOWN).ToArray();
+            return getCurrentSoundRefNames().Select(n => game.editor.translateCardSoundName(n)).ToArray();
         }
         private async Task selectSound(int soundIndex)
         {
@@ -1355,19 +1355,6 @@ namespace Controllers
         public const string CARD_PICTURE_EXPORTED = "卡牌图片导出成功。";
         [TranslateMsg("卡牌图片导出失败")]
         public const string CARD_PICTURE_EXPORT_FAILED = "卡牌图片导出失败。";
-
-        [TranslateMsg("卡牌皮肤编辑器中卡牌的未知音效的名称")]
-        public const string SKIN_SOUND_NAME_UNKNOWN = "未知音效";
-        [TranslateMsg("卡牌皮肤编辑器中仆从牌的入场音效的名称")]
-        public const string SKIN_SOUND_NAME_ON_ENTER = "入场音效";
-        [TranslateMsg("卡牌皮肤编辑器中仆从牌的攻击音效的名称")]
-        public const string SKIN_SOUND_NAME_ON_ATTACK = "攻击音效";
-        [TranslateMsg("卡牌皮肤编辑器中仆从牌的死亡音效的名称")]
-        public const string SKIN_SOUND_NAME_ON_DEATH = "死亡音效";
-        [TranslateMsg("卡牌皮肤编辑器中卡牌的使用音效的名称")]
-        public const string SKIN_SOUND_NAME_ON_USE = "使用音效";
-        [TranslateMsg("卡牌皮肤编辑器中道具牌的装备音效的名称")]
-        public const string SKIN_SOUND_NAME_ON_EQUIP = "装备音效";
         #endregion
 
         #region 静态集合
@@ -1407,14 +1394,6 @@ namespace Controllers
             StringTable.CARD_TAG_GOD,
             StringTable.CARD_TAG_MECH,
             StringTable.CARD_TAG_GHOST
-        };
-        static readonly Dictionary<string, string> _soundNameDict = new Dictionary<string, string>()
-        {
-            { CardSkinData.SOUND_NAME_ON_USE, SKIN_SOUND_NAME_ON_USE },
-            { CardSkinData.SOUND_NAME_ON_EQUIP, SKIN_SOUND_NAME_ON_EQUIP },
-            { CardSkinData.SOUND_NAME_ON_ENTER, SKIN_SOUND_NAME_ON_ENTER },
-            { CardSkinData.SOUND_NAME_ON_ATTACK, SKIN_SOUND_NAME_ON_ATTACK },
-            { CardSkinData.SOUND_NAME_ON_DEATH, SKIN_SOUND_NAME_ON_DEATH },
         };
         #region 自定义属性
         public static readonly string[] takenPropNames = new string[]

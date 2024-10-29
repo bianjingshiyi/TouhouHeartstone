@@ -9,6 +9,7 @@ using MukioI18n;
 using NitoriNetwork.Common;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
+using TouhouHeartstone;
 using UI;
 using UnityEngine;
 
@@ -22,7 +23,7 @@ namespace Controllers
             gameObject.SetActive(true);
             _ui.setSelectUploadPoolPanelVisible(false);
             _ui.setUploadPoolPanelVisible(false);
-            _ui.setDetailsStateVisible(false);
+            _ui.setCardPoolDetailsStateVisible(false);
             _ui.setDownloadProgressVisible(false);
             _ui.hideHintMessage();
             quitFromCardPool();
@@ -62,12 +63,23 @@ namespace Controllers
             _ui.onClickWorkshopRuleViewButton += onClickWorkshopRuleViewButtonCallback;
             _ui.onUploadPanelConfirmButtonClick += onClickUploadConfirmButtonCallback;
             _ui.onUploadPanelCloseButtonClick += onClickUploadCloseButtonCallback;
+            _ui.onCardDetailsSoundPlayClicked += onCardDetailsSoundPlayClickedCallback;
+            _ui.onCardDetailsTabClick += onCardDetailsTabClickCallback;
+
+            _cardPreviewList.enableCount(false);
+            _cardPreviewList.onClickCard += onCardPreviewItemClickCallback;
         }
         #endregion
 
         #region 事件回调
         private async void onReturnClickCallback()
         {
+            if (_viewingCard != null)
+            {
+                // 正在查看卡牌细节，返回卡池界面
+                quitFromCardDetails();
+                return;
+            }
             if (_viewingCardPool != null)
             {
                 // 正在查看卡池细节，返回主界面
@@ -179,6 +191,35 @@ namespace Controllers
         private void onCardPoolDetailsTabClickCallback(WorkshopPanel.CardPoolDetailPage page)
         {
             _ui.setCardPoolDetailsPage(page);
+        }
+        #endregion
+
+        #region 卡牌详情
+        private async void onCardDetailsSoundPlayClickedCallback(int index)
+        {
+            var cardPool = _viewingCardPool;
+            if (cardPool == null)
+                return;
+            var cardDefine = _viewingCard?.cardDefine;
+            if (cardDefine == null)
+                return;
+            var cardManager = game.card;
+            var poolRef = new CardPoolReference(cardPool.ID, (int)cardPool.Version);
+            var skin = cardManager.getCardSkin(poolRef, cardDefine.id);
+            if (skin == null)
+                return;
+            var soundRefs = skin.getAllSoundRefs().Where(r => !string.IsNullOrEmpty(r.path)).ToArray();
+            if (index < 0 || index >= soundRefs.Length)
+                return;
+            var soundRef = soundRefs[index];
+            var sound = await cardManager.loadSound(poolRef, soundRef.path);
+            if (sound == null)
+                return;
+            game.seManager.playSE(sound);
+        }
+        private void onCardDetailsTabClickCallback(WorkshopPanel.CardDetailPage page)
+        {
+            _ui.setCardDetailsPage(page);
         }
         #endregion
 
@@ -378,6 +419,33 @@ namespace Controllers
                 stopWaiting();
             }
             await updatePage();
+        }
+        #endregion
+
+        #region 卡牌预览列表
+        private async void onCardPreviewItemClickCallback(CardDefine cardDefine)
+        {
+            try
+            {
+                _ui.setWorkshopPage(WorkshopPanel.WorkshopPage.Loading);
+
+                _viewingCard = new CardDetailsData(this, cardDefine);
+                var poolInfo = _viewingCardPool;
+                var authorName = getUserName((int)poolInfo.Author);
+                _ui.setCardDetails(await _viewingCard.getViewData(_viewingCardPool, authorName));
+                _ui.setWorkshopPage(WorkshopPanel.WorkshopPage.CardDetails);
+
+            }
+            catch (Exception e)
+            {
+                // 加载失败，弹出错误并退出预览
+                var title = game.lang._(StringTable.ERROR);
+                var quote = game.lang._(ERROR_PREVIEWING_CARD, e.Message);
+                Debug.LogError($"预览卡牌时出现错误：{e}");
+                onExceptionDialog(e, title, quote);
+
+                quitFromCardDetails();
+            }
         }
         #endregion
 
@@ -592,12 +660,24 @@ namespace Controllers
                     return;
                 }
 
+                // 检验卡池依赖能否被下载。
+                var allDeps = await getDownloadPoolAllDependencies(_viewingCardPool);
+                var downloadableDeps = allDeps.Where(d => d.State != WorkshopCardPoolState.Deleted);
+                errorMessage = validateCardPoolDependenciesDownload(_viewingCardPool, downloadableDeps);
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    var title = game.lang._(StringTable.ERROR);
+                    game.ui.dialog.ShowConfirm(title, errorMessage);
+                    return;
+                }
                 // 等待加载UI
                 _ui.setWorkshopPage(WorkshopPanel.WorkshopPage.Loading);
 
-                // 下载到缓存
+                // 将卡池以及依赖卡池下载到缓存
                 _previewCacheCts = new CancellationTokenSource();
-                _previewCacheTask = previewCacheCardPool(workshopInfo, _previewCacheCts.Token);
+
+                var group = downloadableDeps.Append(workshopInfo);
+                _previewCacheTask = previewCacheCardPoolGroup(group, _previewCacheCts.Token);
 
                 updateDownloadButton();
                 await _previewCacheTask;
@@ -650,7 +730,7 @@ namespace Controllers
                 version = workshopInfo.Version.ToString(),
                 dependencies = dependencies
             };
-            _ui.setDetails(viewData, details);
+            _ui.setCardPoolDetails(viewData, details);
 
             // 卡池状态。
             var selfUserInfo = game.network.logic.UserInfo;
@@ -658,13 +738,13 @@ namespace Controllers
             {
                 bool stateVisible = _viewingUser == selfUserInfo.UID;
                 bool reviewsVisible = stateVisible && workshopInfo.State == WorkshopCardPoolState.NoPass;
-                _ui.setDetailsStateVisible(stateVisible);
+                _ui.setCardPoolDetailsStateVisible(stateVisible);
                 _ui.setReviewsVisible(reviewsVisible);
                 if (stateVisible)
                 {
                     var stateColor = getStateColor(workshopInfo.State);
                     var stateText = getStateText(workshopInfo.State);
-                    _ui.setDetailsState(stateColor, stateText);
+                    _ui.setCardPoolDetailsState(stateColor, stateText);
                 }
                 if (reviewsVisible)
                 {
@@ -672,6 +752,14 @@ namespace Controllers
                     var reviewString = getReviewsText(reviews);
                     _ui.setReviewsText(reviewString);
                 }
+            }
+
+            // 卡牌列表。
+            var poolRef = new CardPoolReference(workshopInfo.ID, (int)workshopInfo.Version);
+            var (_, cardPool) = await game.card.getOrLoadCardPool(poolRef);
+            if (cardPool != null)
+            {
+                _cardPreviewList.updateCards(cardPool.cardDefineList.OrderBy(d => d.getCost()).ThenBy(d => d.id));
             }
         }
         private async Task<string> getWorkshopCardPoolDependenciesName(WorkshopCardPoolInfo workshopInfo)
@@ -721,6 +809,14 @@ namespace Controllers
         }
         #endregion
 
+        #region 卡牌详细信息
+        private void quitFromCardDetails()
+        {
+            _viewingCard = null;
+            _ui.setWorkshopPage(WorkshopPanel.WorkshopPage.CardPoolDetails);
+        }
+        #endregion
+
         #region 预览，缓存卡池
         private bool canOpenCardPoolPreview(WorkshopCardPoolInfo poolInfo, out string errorMessage)
         {
@@ -744,6 +840,14 @@ namespace Controllers
             {
                 _previewCacheCts.Cancel();
                 clearPreviewCaching();
+            }
+        }
+        private async Task previewCacheCardPoolGroup(IEnumerable<WorkshopCardPoolInfo> workshopInfos, CancellationToken token)
+        {
+            foreach (var info in workshopInfos)
+            {
+                await previewCacheCardPool(info, token);
+                token.ThrowIfCancellationRequested();
             }
         }
         private async Task previewCacheCardPool(WorkshopCardPoolInfo workshopInfo, CancellationToken token)
@@ -1240,8 +1344,7 @@ namespace Controllers
         private async Task<WorkshopCardPoolItemViewData> getCardPoolItemViewData(WorkshopCardPoolInfo info)
         {
             Sprite sprite = await loadCardPoolCoverImage(info.CoverImage);
-            var author = game.network.getUserInfo((int)info.Author);
-            var authorName = author?.Name ?? game.lang._(StringTable.UNKNOWN_USER);
+            var authorName = getUserName((int)info.Author);
             return new WorkshopCardPoolItemViewData()
             {
                 image = sprite,
@@ -1307,6 +1410,8 @@ namespace Controllers
         private const string ERROR_DOWNLOADING_CARDPOOL = "下载卡池时出现错误：{0}";
         [TranslateMsg("创意工坊-查看卡池时出现的错误描述，{0}为错误信息")]
         private const string ERROR_PREVIEWING_CARDPOOL = "查看卡池时出现错误：{0}";
+        [TranslateMsg("创意工坊-查看卡牌时出现的错误描述，{0}为错误信息")]
+        private const string ERROR_PREVIEWING_CARD = "查看卡牌时出现错误：{0}";
 
         [TranslateMsg("创意工坊-尝试下载已经存在的卡池时出现的错误描述")]
         private const string ERROR_DOWNLOAD_DELETED_CARDPOOL = "该卡池已被删除，无法下载。";
@@ -1406,6 +1511,7 @@ namespace Controllers
 
         private WorkshopCardPoolInfo[] _currentPageCardPools;
         private WorkshopCardPoolInfo _viewingCardPool;
+        private CardDetailsData _viewingCard;
         private Dictionary<string, WorkshopCardPoolInfo> _cardPoolCacheDict = new Dictionary<string, WorkshopCardPoolInfo>();
 
         private CancellationTokenSource _previewCacheCts;
@@ -1431,6 +1537,8 @@ namespace Controllers
         private int _poolCountPerPage = 16;
         [SerializeField]
         private WorkshopPanel _ui;
+        [SerializeField]
+        private CardListPanelCtrl _cardPreviewList;
         #endregion
 
         #region 内嵌类
@@ -1438,6 +1546,64 @@ namespace Controllers
         {
             MostRelevant,
             Newest,
+        }
+        private class CardDetailsData
+        {
+            public CardDetailsData(WorkshopCtrl controller, CardDefine define)
+            {
+                _controller = controller;
+                cardDefine = define;
+            }
+            public async Task<WorkshopCardDetailsViewData> getViewData(WorkshopCardPoolInfo workshopInfo, string creator)
+            {
+                var game = _controller.game;
+                var cardManager = game.card;
+                var poolRef = new CardPoolReference(workshopInfo.ID, (int)workshopInfo.Version);
+                var skin = cardManager.getCardSkin(poolRef, cardDefine.id);
+                var sounds = skin.getAllSoundRefs().Where(r => !string.IsNullOrEmpty(r.path)).Select(r => game.editor.translateCardSoundName(r.name)).ToArray();
+
+                var (characterIcon, characterName) = await getCharacterData(game, workshopInfo);
+
+                return new WorkshopCardDetailsViewData()
+                {
+                    card = UIHelper.getCardDefineViewData(cardDefine, skin, cardManager),
+                    cardImage = await cardManager.loadCardImage(poolRef, skin),
+                    cardPoolName = workshopInfo.Name,
+                    creator = creator,
+                    characterIcon = characterIcon,
+                    characterName = characterName,
+                    flavor = string.Empty,
+                    sounds = sounds
+                };
+            }
+            private async Task<(Sprite sprite, string name)> getCharacterData(MainManager game, WorkshopCardPoolInfo workshopInfo)
+            {
+                var cardManager = game.card;
+                var characterRef = cardDefine.getCharacterRef();
+                // 中立
+                if (characterRef == null || characterRef.cardPoolId == 0)
+                    return (null, game.lang._(StringTable.CARDVIEW_CHARACTER_NEUTRAL));
+
+                var env = workshopInfo.Dependencies.Select(d => new CardPoolReference(d.ID, (int)d.Version)).Prepend(new CardPoolReference(workshopInfo.ID, (int)workshopInfo.Version));
+                var characterPoolRef = cardManager.getCardPoolReferenceInEnv(characterRef.cardPoolId, env);
+                if (characterPoolRef != null)
+                {
+                    var (_, cardPool) = await cardManager.getOrLoadCardPool(characterPoolRef);
+                    if (cardPool != null)
+                    {
+                        var characterDefine = cardPool.cardDefineList.FirstOrDefault(d => d.id == characterRef.defineId);
+                        if (characterDefine != null)
+                        {
+                            var characterIcon = await cardManager.loadCardImage(characterDefine);
+                            var characterName = cardManager.getCardName(characterPoolRef, characterDefine.id);
+                            return (characterIcon, characterName);
+                        }
+                    }
+                }
+                return (null, game.lang._(StringTable.UNKNOWN_CHARACTER));
+            }
+            public CardDefine cardDefine;
+            private WorkshopCtrl _controller;
         }
         #endregion
     }

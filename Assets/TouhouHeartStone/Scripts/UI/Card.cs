@@ -1,6 +1,7 @@
 ﻿using System;
 using BJSYGameCore.UI;
 using Game;
+using Game.BattleTable;
 using TouhouHeartstone;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,24 +10,6 @@ namespace UI
 {
     public class Card : UIObject, IPointerEnterHandler, IPointerExitHandler
     {
-        public void setTypeByName(string typeName)
-        {
-            var type = UICardType.Servant;
-            switch (typeName)
-            {
-                case DEFINE.ITEM:
-                    type = UICardType.Item;
-                    break;
-                case DEFINE.SPELL:
-                case DEFINE.SKILL:
-                    type = UICardType.Spell;
-                    break;
-                default:
-                    type = UICardType.Servant;
-                    break;
-            }
-            setType(type);
-        }
         public void setType(UICardType type)
         {
             bool isItem = type == UICardType.Item;
@@ -116,5 +99,21 @@ namespace UI
         Servant,
         Spell,
         Item
+    }
+    public struct UICardViewData
+    {
+        public UICardType type;
+        public bool isFaceUp;
+        public bool costVisible;
+        public string cost;
+        public string attack;
+        public string life;
+        public PropertyNumberColor costColor;
+        public PropertyNumberColor attackColor;
+        public PropertyNumberColor lifeColor;
+        public string tag;
+        public string name;
+        public string subname;
+        public string desc;
     }
 }

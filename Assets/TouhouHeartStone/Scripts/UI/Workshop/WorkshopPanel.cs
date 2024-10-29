@@ -40,6 +40,7 @@ namespace UI
             Awake_CardPoolList();
             Awake_CardPoolDetails();
             Awake_UploadPanel();
+            Awake_CardDetails();
         }
         #endregion
 

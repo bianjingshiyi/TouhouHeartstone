@@ -1,53 +1,71 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Game.BattleTable;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
 using UnityEngine.UI;
-using Card = TouhouCardEngine.Card;
 using UICard = UI.Card;
 
 namespace Game
 {
     static class UIHelper
     {
+        public static UICardType parseUICardType(string type)
+        {
+            switch (type)
+            {
+                case DEFINE.ITEM:
+                    return UICardType.Item;
+                case DEFINE.SPELL:
+                case DEFINE.SKILL:
+                    return UICardType.Spell;
+                default:
+                    return UICardType.Servant;
+            }
+        }
+        public static void updateCard(this UICard ui, UICardViewData viewData)
+        {
+            ui.setType(viewData.type);
+            ui.setFaceup(viewData.isFaceUp);
+            ui.setCostVisible(viewData.costVisible);
+            ui.setCost(viewData.cost);
+            ui.setAttack(viewData.attack);
+            ui.setLife(viewData.life);
+            ui.setTag(viewData.tag);
+            ui.setName(viewData.name);
+            ui.setSubname(viewData.subname);
+            ui.setDesc(viewData.desc);
+        }
         public static void setUnknownCard(this UICard ui, bool isFaceUp = true)
         {
-            ui.setType(UICardType.Servant);
-            ui.setFaceup(isFaceUp);
-            ui.setImage(null);
-            ui.setName(StringTable.BUILD_UNKNOWN_CARD_NAME);
-            ui.setSubname(string.Empty);
-            ui.setDesc(string.Empty);
-            ui.setCostVisible(true);
-            ui.setCost("0");
-            ui.setAttack("0");
-            ui.setLife("0");
-            ui.setCostColor(PropertyNumberColor.White);
-            ui.setAttackColor(PropertyNumberColor.White);
-            ui.setLifeColor(PropertyNumberColor.White);
-            ui.setTag(string.Empty);
+            var viewData = new UICardViewData()
+            {
+                type = UICardType.Servant,
+                isFaceUp = isFaceUp,
+                costVisible = true,
+                cost = "0",
+                attack = "0",
+                life = "0",
+                costColor = PropertyNumberColor.White,
+                attackColor = PropertyNumberColor.White,
+                lifeColor = PropertyNumberColor.White,
+                tag = string.Empty,
+                name = StringTable.BUILD_UNKNOWN_CARD_NAME,
+                subname = string.Empty,
+                desc = string.Empty,
+            };
+            ui.updateCard(viewData);
         }
-        public static Task setCardDefine(this UICard ui, CardDefine card, CardManager cardManager, bool isFaceUp = true)
+        public static UICardViewData getCardDefineViewData(CardDefine card, CardManager cardManager)
         {
             var skin = cardManager.getCardSkin(card);
-            return ui.setCardDefine(card, skin, cardManager, isFaceUp);
+            return getCardDefineViewData(card, skin, cardManager);
         }
-        public static async Task setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, CardManager cardManager, bool isFaceUp = true)
+        public static UICardViewData getCardDefineViewData(CardDefine card, CardSkinData skin, CardManager cardManager)
         {
             var poolRef = cardManager.getCardPoolReferenceOfCard(card);
-            ui.setTypeByName(card.type);
-            ui.setFaceup(isFaceUp);
-            ui.setCostVisible(!card.hasKeyword(KEYWORD.UNPLAYABLE));
-            ui.setCost(card.getCost().ToString());
-            ui.setAttack(card.getAttack().ToString());
-            ui.setLife(card.getLife().ToString());
-            ui.setTag(card.getTags().FirstOrDefault());
-
             string name = StringTable.BUILD_UNKNOWN_CARD_NAME;
             string subName = string.Empty;
             string desc = string.Empty;
@@ -57,48 +75,66 @@ namespace Game
                 subName = cardManager.getCardSubname(poolRef, skin);
                 desc = cardManager.getCardDesc(poolRef, skin);
             }
-            ui.setName(name);
-            ui.setSubname(subName);
-            ui.setDesc(desc);
-
+            return new UICardViewData()
+            {
+                type = parseUICardType(card.type),
+                isFaceUp = true,
+                costVisible = !card.hasKeyword(KEYWORD.UNPLAYABLE),
+                cost = card.getCost().ToString(),
+                attack = card.getAttack().ToString(),
+                life = card.getLife().ToString(),
+                tag = card.getTags().FirstOrDefault(),
+                name = name,
+                subname = subName,
+                desc = desc,
+            };
+        }
+        public static Task setCardDefine(this UICard ui, CardDefine card, CardManager cardManager, bool isFaceUp = true)
+        {
+            var skin = cardManager.getCardSkin(card);
+            return ui.setCardDefine(card, skin, cardManager, isFaceUp);
+        }
+        public static async Task setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, CardManager cardManager, bool isFaceUp = true)
+        {
+            var poolRef = cardManager.getCardPoolReferenceOfCard(card);
+            var viewData = getCardDefineViewData(card, skin, cardManager);
+            viewData.isFaceUp = isFaceUp;
+            ui.updateCard(viewData);
             // 先设置卡牌定义再加载卡图，不然卡框会和卡图一起被突然改变，看起来会有些别扭
-            ui.setImage(null);
             ui.setImage(await cardManager.loadCardImage(poolRef, skin));
         }
         public static async Task setCardDefine(this UICard ui, CardDefine card, BattleTableManager table, bool isFaceUp = true)
         {
-            ui.setTypeByName(card.type);
-            ui.setFaceup(isFaceUp);
-            ui.setCostVisible(!card.hasKeyword(KEYWORD.UNPLAYABLE));
-            ui.setCost(card.getCost().ToString());
-            ui.setAttack(card.getAttack().ToString());
-            ui.setLife(card.getLife().ToString());
-            ui.setTag(card.getTags().FirstOrDefault());
-
-            var name = table.getCardName(card);
-            var subName = table.getCardSubname(card);
-            var desc = table.getCardDescription(card);
-            ui.setName(name);
-            ui.setSubname(subName);
-            ui.setDesc(desc);
+            var viewData = new UICardViewData()
+            {
+                type = parseUICardType(card.type),
+                isFaceUp = isFaceUp,
+                costVisible = !card.hasKeyword(KEYWORD.UNPLAYABLE),
+                cost = card.getCost().ToString(),
+                attack = card.getAttack().ToString(),
+                life = card.getLife().ToString(),
+                tag = card.getTags().FirstOrDefault(),
+                name = table.getCardName(card),
+                subname = table.getCardSubname(card),
+                desc = table.getCardDescription(card),
+            };
+            ui.updateCard(viewData);
 
             // 先设置卡牌定义再加载卡图，不然卡框会和卡图一起被突然改变，看起来会有些别扭
-            ui.setImage(null);
             ui.setImage(await table.loadCardImage(card));
+        }
+        public static void setTypeByName(this UICard ui, string typeName)
+        {
+            var type = parseUICardType(typeName);
+            ui.setType(type);
         }
         public static async Task setCard(this UICard ui, CardDescriptor desc, BattleTableManager table, bool isFaceUp = true)
         {
             var define = desc.define;
-            ui.setTypeByName(define.type);
-            ui.setFaceup(isFaceUp);
             var attack = desc.getAttack();
             var curLife = desc.getCurrentLife();
             var life = desc.getLife();
             var cost = desc.getCost();
-            ui.setCostVisible(!define.hasKeyword(KEYWORD.UNPLAYABLE));
-            ui.setCost(cost.ToString());
-            ui.setAttack(attack.ToString());
-            ui.setLife(curLife.ToString());
             var costColor =
                 cost > define.getCost() ? PropertyNumberColor.Red :
                 cost < define.getCost() ? PropertyNumberColor.Green :
@@ -110,20 +146,28 @@ namespace Game
                 curLife < life ? PropertyNumberColor.Red :
                 life > define.getLife() ? PropertyNumberColor.Green :
                 PropertyNumberColor.White;
-            ui.setCostColor(costColor);
-            ui.setAttackColor(attackColor);
-            ui.setLifeColor(lifeColor);
 
-            setTag(ui, desc.getTags().FirstOrDefault());
+            var viewData = new UICardViewData()
+            {
+                type = parseUICardType(define.type),
+                isFaceUp = isFaceUp,
+                costVisible = !define.hasKeyword(KEYWORD.UNPLAYABLE),
 
-            var name = table.getCardName(desc.define);
-            var subName = table.getCardSubname(desc.define);
-            var description = table.getCardDescription(desc.define);
-            ui.setName(name);
-            ui.setSubname(subName);
-            ui.setDesc(description);
+                cost = cost.ToString(),
+                attack = attack.ToString(),
+                life = curLife.ToString(),
 
-            ui.setImage(null);
+                costColor = costColor,
+                attackColor = attackColor,
+                lifeColor = lifeColor,
+
+                tag = desc.getTags().FirstOrDefault(),
+                name = table.getCardName(desc.define),
+                subname = table.getCardSubname(desc.define),
+                desc = table.getCardDescription(desc.define)
+            };
+            ui.updateCard(viewData);
+
             ui.setImage(await table.loadCardImage(define));
         }
         public static void setAttack(this UICard ui, string attack)
