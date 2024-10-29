@@ -1768,6 +1768,32 @@ namespace Game
             }
             #endregion
         }
+        public byte[] serializeCardPool(CardPoolInfo cardPoolInfo, CardPool cardPool)
+        {
+            var seriInfo = new SerializableCardPoolInfo(cardPoolInfo);
+            var seriPool = new SerializableCardPool(cardPool);
+            return serializeCardPool(seriInfo, seriPool);
+        }
+        public byte[] serializeCardPool(SerializableCardPoolInfo seriCardPoolInfo, SerializableCardPool seriCardPool)
+        {
+            byte[] header = seriCardPoolInfo.toBytes();
+            byte[] body = seriCardPool.toBytes();
+
+            byte[] bytes = new byte[5 + header.Length + body.Length];
+            // 标识符
+            bytes[0] = CARD_POOL_VERSION_3_HEADER_BYTE_0;
+            bytes[1] = CARD_POOL_VERSION_3_HEADER_BYTE_1;
+            // 头长度
+            BitConverter.GetBytes((short)header.Length).CopyTo(bytes, 2);
+            // 序列化头
+            bytes[4] = 0x92;
+            // 文件头
+            header.CopyTo(bytes, 5);
+            // 文件内容
+            body.CopyTo(bytes, 5 + header.Length);
+
+            return bytes;
+        }
         #endregion
 
         #region 私有方法
@@ -1816,22 +1842,7 @@ namespace Game
         }
         private Task saveSerializableCardPoolToBytes(string path, SerializableCardPoolInfo seriCardPoolInfo, SerializableCardPool seriCardPool)
         {
-            byte[] header = seriCardPoolInfo.toBytes();
-            byte[] body = seriCardPool.toBytes();
-
-            byte[] bytes = new byte[5 + header.Length + body.Length];
-            // 标识符
-            bytes[0] = CARD_POOL_VERSION_3_HEADER_BYTE_0;
-            bytes[1] = CARD_POOL_VERSION_3_HEADER_BYTE_1;
-            // 头长度
-            BitConverter.GetBytes((short)header.Length).CopyTo(bytes, 2);
-            // 序列化头
-            bytes[4] = 0x92;
-            // 文件头
-            header.CopyTo(bytes, 5);
-            // 文件内容
-            body.CopyTo(bytes, 5 + header.Length);
-
+            var bytes = serializeCardPool(seriCardPoolInfo, seriCardPool);
             return game.fileManager.saveFile(path, bytes);
         }
         #endregion
