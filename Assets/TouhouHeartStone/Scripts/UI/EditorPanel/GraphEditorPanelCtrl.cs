@@ -724,17 +724,11 @@ namespace UI
         #region 错误信息
         private void showErrorTip(string msg)
         {
-            _hintMessageText.text = msg;
-            _hintMessageText.gameObject.SetActive(false);
-            _hintMessageText.gameObject.SetActive(true);
-            var sePlayer = _hintMessageText.gameObject.GetComponent<SEPlayer>();
-            if (sePlayer)
-                sePlayer.Play();
+            _hintMessageText.show(msg);
         }
         private void hideErrorTip()
         {
-            _hintMessageText.text = string.Empty;
-            _hintMessageText.gameObject.SetActive(false);
+            _hintMessageText.hide();
         }
         #endregion
         private void hideCardSelectPanel()
@@ -960,7 +954,7 @@ namespace UI
         [SerializeField]
         private CardPoolViewPanelCtrl _cardSelectPanel;
         [SerializeField]
-        private Text _hintMessageText;
+        private HintMessage _hintMessageText;
         [SerializeField]
         private CreatePropertyItemDialog _createEffectPropDialog;
 

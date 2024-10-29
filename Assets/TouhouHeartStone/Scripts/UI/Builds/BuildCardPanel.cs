@@ -20,10 +20,7 @@ namespace UI
         }
         public void showErrorTip(string msg)
         {
-            _errorTipText.text = msg;
-            _errorTipText.gameObject.SetActive(false);
-            _errorTipText.gameObject.SetActive(true);
-            _errorTipText.gameObject.GetComponent<SEPlayer>()?.Play();
+            _errorTipText.show(msg);
         }
         public void showErrorTip(bool value)
         {
@@ -341,7 +338,7 @@ namespace UI
         [SerializeField]
         Button _returnButton;
         [SerializeField]
-        Text _errorTipText;
+        HintMessage _errorTipText;
         [SerializeField]
         GameObject _loadingImgObj;
 

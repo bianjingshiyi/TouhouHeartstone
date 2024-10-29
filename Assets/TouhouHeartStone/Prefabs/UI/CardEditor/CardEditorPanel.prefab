@@ -1673,7 +1673,7 @@ MonoBehaviour:
   _cancelSelectCardButton: {fileID: 218575620658938332}
   _cardSelectPanelObj: {fileID: 11768102114419643}
   _cardSelectPanel: {fileID: 5564887323529923047}
-  _hintMessageText: {fileID: 5235003410850773046}
+  _hintMessageText: {fileID: 3196644009590611712}
   _createEffectPropDialog: {fileID: 5859185564371503018}
 --- !u!114 &8859534576409953091
 MonoBehaviour:
@@ -6380,11 +6380,6 @@ PrefabInstance:
       propertyPath: _cardSelectPanel
       value: 
       objectReference: {fileID: 11768102114419643}
-    - target: {fileID: 4824956582225509413, guid: f0f75289f42c2634ea872f3f76135178,
-        type: 3}
-      propertyPath: _hintMessageText
-      value: 
-      objectReference: {fileID: 5235003410850773046}
     - target: {fileID: 4824956582225509413, guid: f0f75289f42c2634ea872f3f76135178,
         type: 3}
       propertyPath: _multiSelectImage
@@ -12593,6 +12588,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d674907331a68ee45b4b67c7c751f8ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3196644009590611712 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7314356177902649016, guid: 32da9ba0280e0044e9ac41066480cc99,
+    type: 3}
+  m_PrefabInstance: {fileID: 5322431202149622200}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ec3c64d9f6327e439f7d0dd16bc6874, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3884413585885771663 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8950103170470204983, guid: 32da9ba0280e0044e9ac41066480cc99,
@@ -12623,18 +12630,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 5322431202149622200}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5235003410850773046 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 106790235226151310, guid: 32da9ba0280e0044e9ac41066480cc99,
-    type: 3}
-  m_PrefabInstance: {fileID: 5322431202149622200}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &5564887323529923047 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 353358246607988831, guid: 32da9ba0280e0044e9ac41066480cc99,

@@ -24,6 +24,7 @@ namespace Controllers
             _ui.setUploadPoolPanelVisible(false);
             _ui.setDetailsStateVisible(false);
             _ui.setDownloadProgressVisible(false);
+            _ui.hideHintMessage();
             quitFromCardPool();
             await viewUser(-1, true);
         }
@@ -885,6 +886,8 @@ namespace Controllers
                 _ui.setDownloadButtonText(game.lang._(BUTTON_TEXT_CANCEL_DOWNLOADING));
                 updateDownloadButton();
                 await _downloadTask;
+
+                _ui.showHintMessage(game.lang._(CARD_POOL_DOWNLOADED));
             }
             catch (OperationCanceledException)
             {
@@ -1373,6 +1376,9 @@ namespace Controllers
         private const string STATE_REVIEWING_OLD_VERSION = "旧版本（审核中）";
         [TranslateMsg("创意工坊-卡池状态")]
         private const string STATE_DELETED = "已删除";
+
+        [TranslateMsg("创意工坊-卡池下载完毕提示文本")]
+        private const string CARD_POOL_DOWNLOADED = "卡池下载完毕";
 
         const float cardPoolFileProgress = 0.25f;
         const float cardPoolResourceProgress = 1 - cardPoolFileProgress;

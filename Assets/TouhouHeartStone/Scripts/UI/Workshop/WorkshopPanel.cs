@@ -21,6 +21,14 @@ namespace UI
             _uploadButton.gameObject.SetActive(!download);
             _downloadButton.gameObject.SetActive(download);
         }
+        public void showHintMessage(string text)
+        {
+            _hintMessage.show(text);
+        }
+        public void hideHintMessage()
+        {
+            _hintMessage.hide();
+        }
 
         #endregion
 
@@ -50,6 +58,8 @@ namespace UI
         private GameObject _workshopCardDetailsPage;
         [SerializeField]
         private GameObject _workshopLoadingPage;
+        [SerializeField]
+        private HintMessage _hintMessage;
 
         [Header("Rule Panel")]
         [SerializeField]
