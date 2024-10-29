@@ -3548,11 +3548,6 @@ PrefabInstance:
       propertyPath: m_Text
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7390891489477195139, guid: 93afde97871797d44bc54d9fa7652314,
-        type: 3}
-      propertyPath: m_CharacterLimit
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 9197361385265072665, guid: 93afde97871797d44bc54d9fa7652314,
         type: 3}
       propertyPath: m_Text
@@ -3691,11 +3686,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-    - target: {fileID: 6024634211927463091, guid: 3ce2269361f968d4085b76fd07ce0433,
-        type: 3}
-      propertyPath: m_MinWidth
-      value: -140
-      objectReference: {fileID: 0}
 --- !u!1001 &232849730966981770
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9864,11 +9854,6 @@ PrefabInstance:
       propertyPath: m_Text
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7390891489477195139, guid: 93afde97871797d44bc54d9fa7652314,
-        type: 3}
-      propertyPath: m_CharacterLimit
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 9197361385265072665, guid: 93afde97871797d44bc54d9fa7652314,
         type: 3}
       propertyPath: m_Text
@@ -15459,16 +15444,6 @@ PrefabInstance:
       propertyPath: m_MinWidth
       value: 263
       objectReference: {fileID: 0}
-    - target: {fileID: 4890140413971658082, guid: a1f31c197f573ca4d872feb93d3f6f06,
-        type: 3}
-      propertyPath: m_MinWidth
-      value: 263
-      objectReference: {fileID: 0}
-    - target: {fileID: 4989354552808167252, guid: a1f31c197f573ca4d872feb93d3f6f06,
-        type: 3}
-      propertyPath: m_MinWidth
-      value: 263
-      objectReference: {fileID: 0}
     - target: {fileID: 5112205344206297988, guid: a1f31c197f573ca4d872feb93d3f6f06,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -16481,11 +16456,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Text
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7390891489477195139, guid: 93afde97871797d44bc54d9fa7652314,
-        type: 3}
-      propertyPath: m_CharacterLimit
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9197361385265072665, guid: 93afde97871797d44bc54d9fa7652314,
         type: 3}
