@@ -58,6 +58,7 @@ namespace Controllers
             _ui.onCardPoolDetailsCreatorClicked += onCreatorClickedCallback;
             _ui.onCardPoolDetailsDownloadClick += onDownloadClickCallback;
             _ui.onCardPoolDetailsTabClick += onCardPoolDetailsTabClickCallback;
+            _ui.onCardPoolDetailsCommentButtonClick += onCardPoolDetailsCommentButtonClickCallback;
 
             _ui.onUploadPanelSelectCardPoolCloseButtonClick += onClickSelectUploadPoolCloseButtonCallback;
             _ui.onUploadPanelCardPoolItemClick += onClickSelectUploadPoolItemCallback;
@@ -67,6 +68,10 @@ namespace Controllers
             _ui.onUploadPanelCloseButtonClick += onClickUploadCloseButtonCallback;
             _ui.onCardDetailsSoundPlayClicked += onCardDetailsSoundPlayClickedCallback;
             _ui.onCardDetailsTabClick += onCardDetailsTabClickCallback;
+            _ui.onCardDetailsCommentButtonClick += onCardDetailsCommentButtonClickCallback;
+
+            _ui.onCommentDialogClose += onCommentDialogCloseCallback;
+            _ui.onSubmitComment += onSubmitCommentCallback;
 
             _cardPreviewList.enableCount(false);
             _cardPreviewList.onClickCard += onCardPreviewItemClickCallback;
@@ -194,6 +199,21 @@ namespace Controllers
         {
             _ui.setCardPoolDetailsPage(page);
         }
+        private void onCardPoolDetailsCommentButtonClickCallback()
+        {
+            if (game.network.logic.isGuest)
+            {
+                var title = game.lang._(StringTable.HINT_TITLE);
+                var desc = game.lang._(HINT_GUEST_NOT_VALID);
+                game.ui.dialog.ShowConfirm(title, desc);
+                return;
+            }
+            if (_viewingCardPool == null)
+                return;
+
+            _commentSource = new CommentSourceCardPool(this, _viewingCardPool);
+            _ui.showCommentDialog();
+        }
         #endregion
 
         #region 卡牌详情
@@ -223,6 +243,24 @@ namespace Controllers
         {
             _ui.setCardDetailsPage(page);
         }
+        private void onCardDetailsCommentButtonClickCallback()
+        {
+            if (game.network.logic.isGuest)
+            {
+                var title = game.lang._(StringTable.HINT_TITLE);
+                var desc = game.lang._(HINT_GUEST_NOT_VALID);
+                game.ui.dialog.ShowConfirm(title, desc);
+                return;
+            }
+            if (_viewingCardPool == null)
+                return;
+
+            if (_viewingCard?.cardDefine == null)
+                return;
+
+            _commentSource = new CommentSourceCard(this, _viewingCardPool, _viewingCard.cardDefine.id);
+            _ui.showCommentDialog();
+        }
         #endregion
 
         #region 任务栏
@@ -241,7 +279,7 @@ namespace Controllers
             if (game.network.logic.isGuest)
             {
                 var title = game.lang._(StringTable.HINT_TITLE);
-                var desc = game.lang._(HINT_GUEST_TRY_UPLOAD);
+                var desc = game.lang._(HINT_GUEST_NOT_VALID);
                 game.ui.dialog.ShowConfirm(title, desc);
                 return;
             }
@@ -436,7 +474,7 @@ namespace Controllers
                 var authorName = getUserName((int)poolInfo.Author);
                 _ui.setCardDetails(await _viewingCard.getViewData(_viewingCardPool, authorName));
                 _ui.setWorkshopPage(WorkshopPanel.WorkshopPage.CardDetails);
-
+                _ui.setCardDetailsPage(WorkshopPanel.CardDetailPage.Card);
             }
             catch (Exception e)
             {
@@ -447,6 +485,24 @@ namespace Controllers
                 onExceptionDialog(e, title, quote);
 
                 quitFromCardDetails();
+            }
+        }
+        #endregion
+
+        #region 评论对话框
+        private void onCommentDialogCloseCallback()
+        {
+            _commentSource = null;
+            _ui.hideCommentDialog();
+        }
+        private void onSubmitCommentCallback(string comment, bool positive)
+        {
+            if (_commentSource == null)
+                return;
+            if (_commentSource.Submit())
+            {
+                _commentSource = null;
+                _ui.hideCommentDialog();
             }
         }
         #endregion
@@ -1466,7 +1522,7 @@ namespace Controllers
         private const string HINT_CARD_POOL_ALREADY_UPLOADED = "该卡池的同一版本已被上传至创意工坊，无需再次上传。\n请考虑提升卡池版本再试。";
 
         [TranslateMsg]
-        private const string HINT_GUEST_TRY_UPLOAD = "游客不能上传卡池";
+        private const string HINT_GUEST_NOT_VALID = "游客不能使用此功能";
         [TranslateMsg("创意工坊-上传进度-上传卡池文件")]
         private const string UPLOAD_PROGRESS_UPLOADING_POOL_FILE = "上传卡池文件中……";
         [TranslateMsg("创意工坊-上传进度-上传卡池资源")]
@@ -1546,6 +1602,8 @@ namespace Controllers
         private List<long> _downloadingCardPools = new List<long>();
         private List<ICardPoolReference> _downloadedCardPools = new List<ICardPoolReference>();
         private List<string> _downloadedResources = new List<string>();
+
+        private CommentSource _commentSource;
 
         private int _page;
 
@@ -1628,6 +1686,44 @@ namespace Controllers
             }
             public CardDefine cardDefine;
             private WorkshopCtrl _controller;
+        }
+        private abstract class CommentSource
+        {
+            public CommentSource(WorkshopCtrl ctrl)
+            {
+                this.ctrl = ctrl;
+            }
+            public abstract bool Submit();
+            protected WorkshopCtrl ctrl;
+        }
+        private class CommentSourceCardPool : CommentSource
+        {
+            public CommentSourceCardPool(WorkshopCtrl ctrl, WorkshopCardPoolInfo info) : base(ctrl)
+            {
+                this.info = info;
+            }
+            public override bool Submit()
+            {
+                // TODO 实现
+                return true;
+            }
+            public WorkshopCardPoolInfo info;
+
+        }
+        private class CommentSourceCard : CommentSource
+        {
+            public CommentSourceCard(WorkshopCtrl ctrl, WorkshopCardPoolInfo info, int cardId) : base(ctrl)
+            {
+                this.info = info;
+                this.cardId = cardId;
+            }
+            public override bool Submit()
+            {
+                // TODO 实现
+                return true;
+            }
+            public WorkshopCardPoolInfo info;
+            public int cardId;
         }
         #endregion
     }

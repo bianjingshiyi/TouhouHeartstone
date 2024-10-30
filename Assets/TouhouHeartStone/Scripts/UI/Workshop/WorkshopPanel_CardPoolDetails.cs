@@ -69,6 +69,7 @@ namespace UI
             _cardPoolDetailsCreatorButton.onClick.AddListener(() => onCardPoolDetailsCreatorClicked?.Invoke());
             _cardPoolDetailsInfoTabButton.onClick.AddListener(() => onCardPoolDetailsTabClick?.Invoke(CardPoolDetailPage.Info));
             _cardPoolDetailsCommentsTabButton.onClick.AddListener(() => onCardPoolDetailsTabClick?.Invoke(CardPoolDetailPage.Comments));
+            _cardPoolDetailsCommentButton.onClick.AddListener(() => onCardPoolDetailsCommentButtonClick?.Invoke());
 
             _downloadButton.onClick.AddListener(() => onCardPoolDetailsDownloadClick?.Invoke());
         }
@@ -79,6 +80,7 @@ namespace UI
         public event Action onCardPoolDetailsCreatorClicked;
         public event Action onCardPoolDetailsDownloadClick;
         public event Action<CardPoolDetailPage> onCardPoolDetailsTabClick;
+        public event Action onCardPoolDetailsCommentButtonClick;
         #endregion
 
         #region ÊôÐÔ×Ö¶Î
@@ -116,6 +118,8 @@ namespace UI
         private Button _cardPoolDetailsInfoTabButton;
         [SerializeField]
         private Button _cardPoolDetailsCommentsTabButton;
+        [SerializeField]
+        private Button _cardPoolDetailsCommentButton;
 
         // µ×²¿Ò³Ãæ
         [SerializeField]

@@ -49,6 +49,7 @@ namespace UI
         {
             _cardDetailsCardTabButton.onClick.AddListener(() => onCardDetailsTabClick?.Invoke(CardDetailPage.Card));
             _cardDetailsCommentsTabButton.onClick.AddListener(() => onCardDetailsTabClick?.Invoke(CardDetailPage.Comments));
+            _cardDetailsCommentButton.onClick.AddListener(() => onCardDetailsCommentButtonClick?.Invoke());
         }
         private void onCardDetailsSoundPlayClickedCallback(WorkshopCardDetailsSoundItem item)
         {
@@ -60,6 +61,7 @@ namespace UI
         #region 事件
         public event Action<int> onCardDetailsSoundPlayClicked;
         public event Action<CardDetailPage> onCardDetailsTabClick;
+        public event Action onCardDetailsCommentButtonClick;
         #endregion
 
         #region 属性字段
@@ -85,6 +87,8 @@ namespace UI
         private Button _cardDetailsCardTabButton;
         [SerializeField]
         private Button _cardDetailsCommentsTabButton;
+        [SerializeField]
+        private Button _cardDetailsCommentButton;
 
         // 页面
         [SerializeField]
