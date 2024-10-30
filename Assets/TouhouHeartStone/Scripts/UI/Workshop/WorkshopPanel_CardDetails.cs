@@ -39,6 +39,11 @@ namespace UI
                 var comp = rect.GetComponent<WorkshopCardDetailsSoundItem>();
                 comp.onButtonClick -= onCardDetailsSoundPlayClickedCallback;
             });
+            _cardDetailsCommentList.updateList(details.comments.Length, (i, rect) =>
+            {
+                var comp = rect.GetComponent<WorkshopCommentItem>();
+                comp.updateComment(details.comments[i]);
+            });
         }
         #endregion
 
@@ -81,6 +86,8 @@ namespace UI
         private TextMeshProUGUI _cardDetailsFlavorText;
         [SerializeField]
         private ElementList _cardDetailsSoundList;
+        [SerializeField]
+        private ElementList _cardDetailsCommentList;
 
         // ѡ�
         [SerializeField]
@@ -116,5 +123,6 @@ namespace UI
         public Sprite characterIcon;
         public string flavor;
         public string[] sounds;
+        public WorkshopCommentViewData[] comments;
     }
 }

@@ -24,6 +24,11 @@ namespace UI
             _cardPoolDetailsDescriptionText.text = details.description;
             _cardPoolDetailsVersionText.text = details.version;
             _cardPoolDetailsDependenciesText.text = details.dependencies;
+            _cardPoolDetailsCommentList.updateList(details.comments.Length, (i, rect) =>
+            {
+                var comp = rect.GetComponent<WorkshopCommentItem>();
+                comp.updateComment(details.comments[i]);
+            });
         }
         public void setCardPoolDetailsState(Color color, string state)
         {
@@ -112,6 +117,8 @@ namespace UI
         private TextMeshProUGUI _cardPoolDetailsVersionText;
         [SerializeField]
         private TextMeshProUGUI _cardPoolDetailsDependenciesText;
+        [SerializeField]
+        private ElementList _cardPoolDetailsCommentList;
 
         // ѡ�
         [SerializeField]
@@ -158,5 +165,6 @@ namespace UI
         public string description;
         public string version;
         public string dependencies;
+        public WorkshopCommentViewData[] comments;
     }
 }

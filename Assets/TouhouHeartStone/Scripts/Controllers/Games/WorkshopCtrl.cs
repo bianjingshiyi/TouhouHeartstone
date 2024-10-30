@@ -787,7 +787,8 @@ namespace Controllers
                 cardCount = workshopInfo.CardCount.ToString(),
                 description = string.IsNullOrEmpty(workshopInfo.Description) ? game.lang._(NO_DESCRIPTION_PROVIDED) : workshopInfo.Description,
                 version = workshopInfo.Version.ToString(),
-                dependencies = dependencies
+                dependencies = dependencies,
+                comments = Array.Empty<WorkshopCommentViewData>() // TODO 实现加载评论。
             };
             _ui.setCardPoolDetails(viewData, details);
 
@@ -1655,7 +1656,8 @@ namespace Controllers
                     characterIcon = characterIcon,
                     characterName = characterName,
                     flavor = string.Empty,
-                    sounds = sounds
+                    sounds = sounds,
+                    comments = Array.Empty<WorkshopCommentViewData>() // TODO 实现加载评论。
                 };
             }
             private async Task<(Sprite sprite, string name)> getCharacterData(MainManager game, WorkshopCardPoolInfo workshopInfo)
