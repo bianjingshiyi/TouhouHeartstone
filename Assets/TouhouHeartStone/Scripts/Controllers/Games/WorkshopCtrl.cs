@@ -691,6 +691,7 @@ namespace Controllers
                 updateDownloadButton();
 
                 _ui.setWorkshopPage(WorkshopPanel.WorkshopPage.CardPoolDetails);
+                _ui.setCardPoolDetailsPage(WorkshopPanel.CardPoolDetailPage.Info);
             }
             catch (OperationCanceledException)
             {
