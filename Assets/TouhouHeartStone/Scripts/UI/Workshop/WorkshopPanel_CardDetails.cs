@@ -39,11 +39,18 @@ namespace UI
                 var comp = rect.GetComponent<WorkshopCardDetailsSoundItem>();
                 comp.onButtonClick -= onCardDetailsSoundPlayClickedCallback;
             });
-            _cardDetailsCommentList.updateList(details.comments.Length, (i, rect) =>
-            {
-                var comp = rect.GetComponent<WorkshopCommentItem>();
-                comp.updateComment(details.comments[i]);
-            });
+        }
+        public void setCardComments(WorkshopCommentViewData[] comments, bool error)
+        {
+            _cardDetailsCommentList.updateComments(comments, error);
+        }
+        public void setCardCommentPageText(string pageText)
+        {
+            _cardDetailsCommentList.setPageText(pageText);
+        }
+        public void setCardCommentPageButtonInteractable(bool prev, bool next)
+        {
+            _cardDetailsCommentList.setPageButtonInteractable(prev, next);
         }
         #endregion
 
@@ -55,6 +62,8 @@ namespace UI
             _cardDetailsCardTabButton.onClick.AddListener(() => onCardDetailsTabClick?.Invoke(CardDetailPage.Card));
             _cardDetailsCommentsTabButton.onClick.AddListener(() => onCardDetailsTabClick?.Invoke(CardDetailPage.Comments));
             _cardDetailsCommentButton.onClick.AddListener(() => onCardDetailsCommentButtonClick?.Invoke());
+
+            _cardDetailsCommentList.onPageButtonClick += (next) => onCardDetailsCommentPageButtonClick?.Invoke(next);
         }
         private void onCardDetailsSoundPlayClickedCallback(WorkshopCardDetailsSoundItem item)
         {
@@ -67,6 +76,7 @@ namespace UI
         public event Action<int> onCardDetailsSoundPlayClicked;
         public event Action<CardDetailPage> onCardDetailsTabClick;
         public event Action onCardDetailsCommentButtonClick;
+        public event Action<bool> onCardDetailsCommentPageButtonClick;
         #endregion
 
         #region ÊôÐÔ×Ö¶Î
@@ -87,7 +97,7 @@ namespace UI
         [SerializeField]
         private ElementList _cardDetailsSoundList;
         [SerializeField]
-        private ElementList _cardDetailsCommentList;
+        private WorkshopCommentList _cardDetailsCommentList;
 
         // Ñ¡Ïî¿¨
         [SerializeField]
@@ -123,6 +133,5 @@ namespace UI
         public Sprite characterIcon;
         public string flavor;
         public string[] sounds;
-        public WorkshopCommentViewData[] comments;
     }
 }

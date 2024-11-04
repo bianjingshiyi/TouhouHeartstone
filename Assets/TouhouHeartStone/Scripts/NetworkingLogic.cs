@@ -402,6 +402,41 @@ namespace Game
         {
             return ServerClient.WorkshopGetEULA();
         }
+        public Task<WorkshopCardPoolComment[]> getWorkshopCardPoolComments(long cardPoolId, int offset, int count)
+        {
+            return ServerClient.getWorkshopCardPoolComments(cardPoolId, offset, count);
+        }
+        public Task postWorkshopCardPoolComment(long cardPoolId, string comment)
+        {
+            return ServerClient.postWorkshopCardPoolComment(cardPoolId, comment);
+        }
+        public Task<WorkshopCardComment[]> getWorkshopCardComments(long cardPoolId, int cardId, int offset, int count)
+        {
+            return ServerClient.getWorkshopCardComments(cardPoolId, cardId, offset, count);
+        }
+        public Task postWorkshopCardComment(long cardPoolId, int cardId, string comment)
+        {
+            return ServerClient.postWorkshopCardComment(cardPoolId, cardId, comment);
+        }
+        #endregion
+
+        #region 卡牌评分
+        public Task<WorkshopCardPoolRating> getCardPoolRating(long id)
+        {
+            return ServerClient.GetCardPoolRating(id);
+        }
+        public Task rateCardPoolCards(long id, string parameters)
+        {
+            return ServerClient.RateCardPoolCards(id, parameters);
+        }
+        public Task<int> getCardRating(long poolId, int id)
+        {
+            return ServerClient.GetCardRating(poolId, id);
+        }
+        public Task setCardRating(long poolId, int id, bool value)
+        {
+            return ServerClient.SetCardRating(poolId, id, value);
+        }
         #endregion
 
         /// <summary>

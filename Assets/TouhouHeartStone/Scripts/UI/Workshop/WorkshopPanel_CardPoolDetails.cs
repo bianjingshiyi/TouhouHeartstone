@@ -24,11 +24,20 @@ namespace UI
             _cardPoolDetailsDescriptionText.text = details.description;
             _cardPoolDetailsVersionText.text = details.version;
             _cardPoolDetailsDependenciesText.text = details.dependencies;
-            _cardPoolDetailsCommentList.updateList(details.comments.Length, (i, rect) =>
-            {
-                var comp = rect.GetComponent<WorkshopCommentItem>();
-                comp.updateComment(details.comments[i]);
-            });
+            _cardPoolDetailsRatingTextPositive.text = details.positiveRating;
+            _cardPoolDetailsRatingTextNegative.text = details.negativeRating;
+        }
+        public void setCardPoolComments(WorkshopCommentViewData[] comments, bool error)
+        {
+            _cardPoolDetailsCommentList.updateComments(comments, error);
+        }
+        public void setCardPoolCommentPageText(string pageText)
+        {
+            _cardPoolDetailsCommentList.setPageText(pageText);
+        }
+        public void setCardPoolCommentPageButtonInteractable(bool prev, bool next)
+        {
+            _cardPoolDetailsCommentList.setPageButtonInteractable(prev, next);
         }
         public void setCardPoolDetailsState(Color color, string state)
         {
@@ -76,6 +85,8 @@ namespace UI
             _cardPoolDetailsCommentsTabButton.onClick.AddListener(() => onCardPoolDetailsTabClick?.Invoke(CardPoolDetailPage.Comments));
             _cardPoolDetailsCommentButton.onClick.AddListener(() => onCardPoolDetailsCommentButtonClick?.Invoke());
 
+            _cardPoolDetailsCommentList.onPageButtonClick += (next) => onCardPoolDetailsCommentPageButtonClick?.Invoke(next);
+
             _downloadButton.onClick.AddListener(() => onCardPoolDetailsDownloadClick?.Invoke());
         }
         #endregion
@@ -86,6 +97,7 @@ namespace UI
         public event Action onCardPoolDetailsDownloadClick;
         public event Action<CardPoolDetailPage> onCardPoolDetailsTabClick;
         public event Action onCardPoolDetailsCommentButtonClick;
+        public event Action<bool> onCardPoolDetailsCommentPageButtonClick;
         #endregion
 
         #region ÊôÐÔ×Ö¶Î
@@ -118,7 +130,11 @@ namespace UI
         [SerializeField]
         private TextMeshProUGUI _cardPoolDetailsDependenciesText;
         [SerializeField]
-        private ElementList _cardPoolDetailsCommentList;
+        private TextMeshProUGUI _cardPoolDetailsRatingTextPositive;
+        [SerializeField]
+        private TextMeshProUGUI _cardPoolDetailsRatingTextNegative;
+        [SerializeField]
+        private WorkshopCommentList _cardPoolDetailsCommentList;
 
         // Ñ¡Ïî¿¨
         [SerializeField]
@@ -165,6 +181,7 @@ namespace UI
         public string description;
         public string version;
         public string dependencies;
-        public WorkshopCommentViewData[] comments;
+        public string positiveRating;
+        public string negativeRating;
     }
 }

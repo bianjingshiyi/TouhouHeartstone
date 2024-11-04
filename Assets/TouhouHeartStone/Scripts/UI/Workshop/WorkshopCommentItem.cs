@@ -9,8 +9,8 @@ namespace UI
         {
             usernameText.text = viewData.userName;
             comment.text = viewData.comment;
-            positiveRating.SetActive(viewData.rating);
-            negativeRating.SetActive(!viewData.rating);
+            positiveRating.SetActive(viewData.rating == 1);
+            negativeRating.SetActive(viewData.rating == -1);
         }
         [SerializeField]
         private TextMeshProUGUI usernameText;
@@ -26,6 +26,7 @@ namespace UI
     {
         public string userName;
         public string comment;
-        public bool rating;
+        public string time;
+        public int rating;
     }
 }

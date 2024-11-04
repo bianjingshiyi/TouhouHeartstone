@@ -8,6 +8,7 @@ using Game;
 using MukioI18n;
 using NitoriNetwork.Common;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
@@ -59,6 +60,7 @@ namespace Controllers
             _ui.onCardPoolDetailsDownloadClick += onDownloadClickCallback;
             _ui.onCardPoolDetailsTabClick += onCardPoolDetailsTabClickCallback;
             _ui.onCardPoolDetailsCommentButtonClick += onCardPoolDetailsCommentButtonClickCallback;
+            _ui.onCardPoolDetailsCommentPageButtonClick += onCardPoolDetailsCommentPageButtonClickCallback;
 
             _ui.onUploadPanelSelectCardPoolCloseButtonClick += onClickSelectUploadPoolCloseButtonCallback;
             _ui.onUploadPanelCardPoolItemClick += onClickSelectUploadPoolItemCallback;
@@ -69,6 +71,7 @@ namespace Controllers
             _ui.onCardDetailsSoundPlayClicked += onCardDetailsSoundPlayClickedCallback;
             _ui.onCardDetailsTabClick += onCardDetailsTabClickCallback;
             _ui.onCardDetailsCommentButtonClick += onCardDetailsCommentButtonClickCallback;
+            _ui.onCardDetailsCommentPageButtonClick += onCardDetailsCommentPageButtonClickCallback;
 
             _ui.onCommentDialogClose += onCommentDialogCloseCallback;
             _ui.onSubmitComment += onSubmitCommentCallback;
@@ -214,6 +217,13 @@ namespace Controllers
             _commentSource = new CommentSourceCardPool(this, _viewingCardPool);
             _ui.showCommentDialog();
         }
+        private async void onCardPoolDetailsCommentPageButtonClickCallback(bool next)
+        {
+            if (_viewingCardPool == null)
+                return;
+            _cardPoolCommentPage += next ? 1 : -1;
+            await updateCardPoolComments(_viewingCardPool.ID);
+        }
         #endregion
 
         #region 卡牌详情
@@ -260,6 +270,13 @@ namespace Controllers
 
             _commentSource = new CommentSourceCard(this, _viewingCardPool, _viewingCard.cardDefine.id);
             _ui.showCommentDialog();
+        }
+        private async void onCardDetailsCommentPageButtonClickCallback(bool next)
+        {
+            if (_viewingCardPool == null || _viewingCard?.cardDefine == null)
+                return;
+            _cardCommentPage += next ? 1 : -1;
+            await updateCardComments(_viewingCardPool.ID, _viewingCard.cardDefine.id);
         }
         #endregion
 
@@ -470,9 +487,11 @@ namespace Controllers
                 _ui.setWorkshopPage(WorkshopPanel.WorkshopPage.Loading);
 
                 _viewingCard = new CardDetailsData(this, cardDefine);
-                var poolInfo = _viewingCardPool;
-                var authorName = getUserName((int)poolInfo.Author);
-                _ui.setCardDetails(await _viewingCard.getViewData(_viewingCardPool, authorName));
+                _cardCommentPage = 0;
+
+                await updateCardDetails(_viewingCardPool, _viewingCard);
+                await updateCardComments(_viewingCardPool.ID, cardDefine.id);
+
                 _ui.setWorkshopPage(WorkshopPanel.WorkshopPage.CardDetails);
                 _ui.setCardDetailsPage(WorkshopPanel.CardDetailPage.Card);
             }
@@ -495,12 +514,15 @@ namespace Controllers
             _commentSource = null;
             _ui.hideCommentDialog();
         }
-        private void onSubmitCommentCallback(string comment, bool positive)
+        private async void onSubmitCommentCallback(string comment, bool positive)
         {
             if (_commentSource == null)
                 return;
-            if (_commentSource.Submit())
+            if (await _commentSource.submit(comment))
             {
+                scene.waitingBlocker.addWaitingTask(WaitingTask.LoadWorkshop);
+                await _commentSource.updateComments();
+                scene.waitingBlocker.removeWaitingTask(WaitingTask.LoadWorkshop);
                 _commentSource = null;
                 _ui.hideCommentDialog();
             }
@@ -704,30 +726,31 @@ namespace Controllers
         #region 卡池详细信息
         private async Task viewCardPool(WorkshopCardPoolInfo coverInfo)
         {
-            var workshopInfo = await getWorkshopCardPoolFile(coverInfo.ID, (int)coverInfo.Version);
-            _viewingCardPool = workshopInfo;
-
             try
             {
+                var workshopInfo = await getWorkshopCardPoolFile(coverInfo.ID, (int)coverInfo.Version);
                 // 检验卡池能否被预览。
-                var canPreview = canOpenCardPoolPreview(_viewingCardPool, out var errorMessage);
+                var canPreview = canOpenCardPoolPreview(workshopInfo, out var errorMessage);
                 if (!canPreview)
                 {
                     var title = game.lang._(StringTable.ERROR);
                     game.ui.dialog.ShowConfirm(title, errorMessage);
                     return;
                 }
-
                 // 检验卡池依赖能否被下载。
-                var allDeps = await getDownloadPoolAllDependencies(_viewingCardPool);
+                var allDeps = await getDownloadPoolAllDependencies(workshopInfo);
                 var downloadableDeps = allDeps.Where(d => d.State != WorkshopCardPoolState.Deleted);
-                errorMessage = validateCardPoolDependenciesDownload(_viewingCardPool, downloadableDeps);
+                errorMessage = validateCardPoolDependenciesDownload(workshopInfo, downloadableDeps);
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
                     var title = game.lang._(StringTable.ERROR);
                     game.ui.dialog.ShowConfirm(title, errorMessage);
                     return;
                 }
+
+                _cardPoolCommentPage = 0;
+                _viewingCardPool = workshopInfo;
+
                 // 等待加载UI
                 _ui.setWorkshopPage(WorkshopPanel.WorkshopPage.Loading);
 
@@ -743,6 +766,8 @@ namespace Controllers
 
                 // 更新页面。
                 await updateCardPoolDetails(workshopInfo);
+                // 加载评论。
+                await updateCardPoolComments(workshopInfo.ID);
 
                 updateDownloadButton();
 
@@ -780,6 +805,7 @@ namespace Controllers
             creationTime += TimeZoneInfo.Local.GetUtcOffset(creationTime);
             var dateTime = game.lang._(TASK_DATETIME_TEMPLATE, creationTime.Year, creationTime.Month, creationTime.Day, creationTime.Hour, creationTime.Minute);
             string dependencies = await getWorkshopCardPoolDependenciesName(workshopInfo);
+            WorkshopCardPoolRating rating = await game.network.getCardPoolRating(workshopInfo.ID);
             var details = new WorkshopCardPoolDetailsViewData()
             {
                 creator = getUserName((int)workshopInfo.Author),
@@ -787,8 +813,9 @@ namespace Controllers
                 cardCount = workshopInfo.CardCount.ToString(),
                 description = string.IsNullOrEmpty(workshopInfo.Description) ? game.lang._(NO_DESCRIPTION_PROVIDED) : workshopInfo.Description,
                 version = workshopInfo.Version.ToString(),
+                positiveRating = rating.GoodCount.ToString(),
+                negativeRating = rating.BadCount.ToString(),
                 dependencies = dependencies,
-                comments = Array.Empty<WorkshopCommentViewData>() // TODO 实现加载评论。
             };
             _ui.setCardPoolDetails(viewData, details);
 
@@ -867,13 +894,68 @@ namespace Controllers
             _ui.switchUploadOrDownloadButton(downloading || viewingCardPool);
             _ui.setDownloadButtonInteractable(interactable);
         }
+        private async Task<WorkshopCommentViewData[]> getCardPoolCommentsViewData(long cardPoolId)
+        {
+            var comments = await game.network.getWorkshopCardPoolComments(cardPoolId, _cardPoolCommentPage * _cardPoolCommentPerPage, _cardPoolCommentPerPage);
+            return comments.Select(c => getCardPoolCommentViewData(c)).ToArray();
+        }
+        private async Task updateCardPoolComments(long cardPoolId)
+        {
+            WorkshopCommentViewData[] comments;
+            bool commentsError = false;
+            try
+            {
+                _ui.setCardPoolCommentPageText(game.lang._(StringTable.PAGE_NUMBER_TEMPLATE, _cardPoolCommentPage + 1));
+                _ui.setCardPoolCommentPageButtonInteractable(false, false);
+                comments = await getCardPoolCommentsViewData(cardPoolId);
+                _ui.setCardPoolCommentPageButtonInteractable(_cardPoolCommentPage > 0, comments.Length >= _cardPoolCommentPerPage);
+            }
+            catch (Exception ex)
+            {
+                comments = Array.Empty<WorkshopCommentViewData>();
+                commentsError = true;
+                _ui.setCardPoolCommentPageButtonInteractable(false, false);
+                Debug.LogErrorFormat("加载卡池评论时出现错误：{0}", ex);
+            }
+            _ui.setCardPoolComments(comments, commentsError);
+        }
         #endregion
 
         #region 卡牌详细信息
+        private async Task updateCardDetails(WorkshopCardPoolInfo poolInfo, CardDetailsData cardDetails)
+        {
+            var authorName = getUserName((int)poolInfo.Author);
+            _ui.setCardDetails(await cardDetails.getViewData(poolInfo, authorName));
+        }
         private void quitFromCardDetails()
         {
             _viewingCard = null;
             _ui.setWorkshopPage(WorkshopPanel.WorkshopPage.CardPoolDetails);
+        }
+        private async Task<WorkshopCommentViewData[]> getCardCommentsViewData(long cardPoolId, int cardId)
+        {
+            var comments = await game.network.getWorkshopCardComments(cardPoolId, cardId, _cardCommentPage * _cardCommentPerPage, _cardCommentPerPage);
+            return comments.Select(c => getCardCommentViewData(c)).ToArray();
+        }
+        private async Task updateCardComments(long cardPoolId, int cardId)
+        {
+            WorkshopCommentViewData[] comments;
+            bool commentsError = false;
+            try
+            {
+                _ui.setCardCommentPageText(game.lang._(StringTable.PAGE_NUMBER_TEMPLATE, _cardCommentPage + 1));
+                _ui.setCardCommentPageButtonInteractable(false, false);
+                comments = await getCardCommentsViewData(cardPoolId, cardId);
+                _ui.setCardCommentPageButtonInteractable(_cardCommentPage > 0, comments.Length >= _cardCommentPerPage);
+            }
+            catch (Exception ex)
+            {
+                comments = Array.Empty<WorkshopCommentViewData>();
+                commentsError = true;
+                _ui.setCardCommentPageButtonInteractable(false, false);
+                Debug.LogErrorFormat("加载卡牌评论时出现错误：{0}", ex);
+            }
+            _ui.setCardComments(comments, commentsError);
         }
         #endregion
 
@@ -1411,6 +1493,7 @@ namespace Controllers
         {
             Sprite sprite = await loadCardPoolCoverImage(info.CoverImage);
             var authorName = getUserName((int)info.Author);
+            var rating = await game.network.getCardPoolRating(info.ID);
             return new WorkshopCardPoolItemViewData()
             {
                 image = sprite,
@@ -1421,7 +1504,7 @@ namespace Controllers
                 isWaiting = info.State == WorkshopCardPoolState.Reviewing || info.State == WorkshopCardPoolState.ReviewingOldVer,
                 author = authorName,
                 number = 0,
-                rating = 0,
+                rating = (int)rating.GoodCount - (int)rating.BadCount,
             };
         }
         private async Task<DeckListItemViewData> getCardPoolHeaderViewData(WorkshopCardPoolInfo info)
@@ -1465,6 +1548,32 @@ namespace Controllers
                 int currentPageCardPools = _currentPageCardPools?.Length ?? 0;
                 _ui.setPageButtonInteractable(_page > 0, currentPageCardPools >= _poolCountPerPage);
             }
+        }
+        private WorkshopCommentViewData getCardPoolCommentViewData(WorkshopCardPoolComment comment)
+        {
+            var creationTime = DateTime.UnixEpoch.AddSeconds(comment.CreatedAt);
+            creationTime += TimeZoneInfo.Local.GetUtcOffset(creationTime);
+            var dateTime = game.lang._(TASK_DATETIME_TEMPLATE, creationTime.Year, creationTime.Month, creationTime.Day, creationTime.Hour, creationTime.Minute);
+            return new WorkshopCommentViewData()
+            {
+                comment = comment.Content,
+                time = dateTime,
+                rating = 0,
+                userName = getUserName((int)comment.UID)
+            };
+        }
+        private WorkshopCommentViewData getCardCommentViewData(WorkshopCardComment comment)
+        {
+            var creationTime = DateTime.UnixEpoch.AddSeconds(comment.CreatedAt);
+            creationTime += TimeZoneInfo.Local.GetUtcOffset(creationTime);
+            var dateTime = game.lang._(TASK_DATETIME_TEMPLATE, creationTime.Year, creationTime.Month, creationTime.Day, creationTime.Hour, creationTime.Minute);
+            return new WorkshopCommentViewData()
+            {
+                comment = comment.Content,
+                time = dateTime,
+                rating = comment.Rating,
+                userName = getUserName((int)comment.UID)
+            };
         }
 
         #endregion
@@ -1591,7 +1700,9 @@ namespace Controllers
 
         private bool _loadingPage;
         private WorkshopCardPoolInfo[] _currentPageCardPools;
+        private int _cardPoolCommentPage;
         private WorkshopCardPoolInfo _viewingCardPool;
+        private int _cardCommentPage;
         private CardDetailsData _viewingCard;
         private Dictionary<string, WorkshopCardPoolInfo> _cardPoolCacheDict = new Dictionary<string, WorkshopCardPoolInfo>();
 
@@ -1618,6 +1729,10 @@ namespace Controllers
 
         [SerializeField]
         private int _poolCountPerPage = 16;
+        [SerializeField]
+        private int _cardPoolCommentPerPage = 20;
+        [SerializeField]
+        private int _cardCommentPerPage = 20;
         [SerializeField]
         private WorkshopPanel _ui;
         [SerializeField]
@@ -1657,7 +1772,6 @@ namespace Controllers
                     characterName = characterName,
                     flavor = string.Empty,
                     sounds = sounds,
-                    comments = Array.Empty<WorkshopCommentViewData>() // TODO 实现加载评论。
                 };
             }
             private async Task<(Sprite sprite, string name)> getCharacterData(MainManager game, WorkshopCardPoolInfo workshopInfo)
@@ -1695,7 +1809,8 @@ namespace Controllers
             {
                 this.ctrl = ctrl;
             }
-            public abstract bool Submit();
+            public abstract Task<bool> submit(string comment);
+            public abstract Task updateComments();
             protected WorkshopCtrl ctrl;
         }
         private class CommentSourceCardPool : CommentSource
@@ -1704,10 +1819,31 @@ namespace Controllers
             {
                 this.info = info;
             }
-            public override bool Submit()
+            public override async Task<bool> submit(string comment)
             {
-                // TODO 实现
-                return true;
+                var game = ctrl.game;
+                var scene = ctrl.scene;
+                try
+                {
+                    scene.waitingBlocker.addWaitingTask(WaitingTask.LoadWorkshop);
+
+                    await game.network.postWorkshopCardPoolComment(info.ID, comment);
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    var title = game.lang._(StringTable.ERROR);
+                    ctrl.onExceptionDialog(e, title);
+                    return false;
+                }
+                finally
+                {
+                    scene.waitingBlocker.removeWaitingTask(WaitingTask.LoadWorkshop);
+                }
+            }
+            public override Task updateComments()
+            {
+                return ctrl.updateCardPoolComments(info.ID);
             }
             public WorkshopCardPoolInfo info;
 
@@ -1719,10 +1855,31 @@ namespace Controllers
                 this.info = info;
                 this.cardId = cardId;
             }
-            public override bool Submit()
+            public override async Task<bool> submit(string comment)
             {
-                // TODO 实现
-                return true;
+                var game = ctrl.game;
+                var scene = ctrl.scene;
+                try
+                {
+                    scene.waitingBlocker.addWaitingTask(WaitingTask.LoadWorkshop);
+
+                    await game.network.postWorkshopCardComment(info.ID, cardId, comment);
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    var title = game.lang._(StringTable.ERROR);
+                    ctrl.onExceptionDialog(e, title);
+                    return false;
+                }
+                finally
+                {
+                    scene.waitingBlocker.removeWaitingTask(WaitingTask.LoadWorkshop);
+                }
+            }
+            public override Task updateComments()
+            {
+                return ctrl.updateCardComments(info.ID, cardId);
             }
             public WorkshopCardPoolInfo info;
             public int cardId;
