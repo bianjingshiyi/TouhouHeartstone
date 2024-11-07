@@ -313,7 +313,7 @@ namespace Game
         {
             return logic.rateCardPoolCards(id, parameters);
         }
-        public Task<int> getCardRating(long poolId, int id)
+        public Task<WorkshopCardPoolRating> getCardRating(long poolId, int id)
         {
             return logic.getCardRating(poolId, id);
         }

@@ -24,6 +24,8 @@ namespace UI
             _cardDetailsCardPoolText.text = details.cardPoolName;
             _cardDetailsCharacterItem.updateView(details.characterName, details.characterIcon);
             _cardDetailsFlavorText.text = details.flavor;
+            _cardDetailsRatingTextPositive.text = details.positiveRating;
+            _cardDetailsRatingTextNegative.text = details.negativeRating;
             _cardDetailsSoundList.updateList(details.sounds.Length, (i, rect) =>
             {
                 var comp = rect.GetComponent<WorkshopCardDetailsSoundItem>();
@@ -95,6 +97,10 @@ namespace UI
         [SerializeField]
         private TextMeshProUGUI _cardDetailsFlavorText;
         [SerializeField]
+        private TextMeshProUGUI _cardDetailsRatingTextPositive;
+        [SerializeField]
+        private TextMeshProUGUI _cardDetailsRatingTextNegative;
+        [SerializeField]
         private ElementList _cardDetailsSoundList;
         [SerializeField]
         private WorkshopCommentList _cardDetailsCommentList;
@@ -132,6 +138,8 @@ namespace UI
         public string characterName;
         public Sprite characterIcon;
         public string flavor;
+        public string positiveRating;
+        public string negativeRating;
         public string[] sounds;
     }
 }

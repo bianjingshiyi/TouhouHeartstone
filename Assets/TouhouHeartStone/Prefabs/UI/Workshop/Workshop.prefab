@@ -6770,6 +6770,8 @@ MonoBehaviour:
   _cardDetailsCardPoolText: {fileID: 8272108428503716058}
   _cardDetailsCharacterItem: {fileID: 5746313749051140401}
   _cardDetailsFlavorText: {fileID: 2741441402271118901}
+  _cardDetailsRatingTextPositive: {fileID: 867053214122085957}
+  _cardDetailsRatingTextNegative: {fileID: 2040129710028534325}
   _cardDetailsSoundList: {fileID: 8803340465760883457}
   _cardDetailsCommentList: {fileID: 2628331344577823578}
   _cardDetailsCardTabButton: {fileID: 8145467757925734854}
@@ -6851,6 +6853,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scene: {fileID: 0}
   _poolCountPerPage: 20
+  _cardPoolCommentPerPage: 20
+  _cardCommentPerPage: 20
   _ui: {fileID: 8488475001858090596}
   _cardPreviewList: {fileID: 1276890627862520328}
 --- !u!114 &3731603425105721234
@@ -14682,6 +14686,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4c7614bda2c1c124fafd6cac5097eba8, type: 3}
+--- !u!114 &867053214122085957 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 680596394042162273, guid: 4c7614bda2c1c124fafd6cac5097eba8,
+    type: 3}
+  m_PrefabInstance: {fileID: 394507647850705444}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6165390626264397725 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5833934507716363705, guid: 4c7614bda2c1c124fafd6cac5097eba8,
@@ -16620,6 +16636,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4c7614bda2c1c124fafd6cac5097eba8, type: 3}
+--- !u!114 &2040129710028534325 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 680596394042162273, guid: 4c7614bda2c1c124fafd6cac5097eba8,
+    type: 3}
+  m_PrefabInstance: {fileID: 1530671892626918996}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &5028345398085815277 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5833934507716363705, guid: 4c7614bda2c1c124fafd6cac5097eba8,

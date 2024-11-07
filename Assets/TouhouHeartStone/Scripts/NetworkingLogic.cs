@@ -429,7 +429,7 @@ namespace Game
         {
             return ServerClient.RateCardPoolCards(id, parameters);
         }
-        public Task<int> getCardRating(long poolId, int id)
+        public Task<WorkshopCardPoolRating> getCardRating(long poolId, int id)
         {
             return ServerClient.GetCardRating(poolId, id);
         }

@@ -813,8 +813,8 @@ namespace Controllers
                 cardCount = workshopInfo.CardCount.ToString(),
                 description = string.IsNullOrEmpty(workshopInfo.Description) ? game.lang._(NO_DESCRIPTION_PROVIDED) : workshopInfo.Description,
                 version = workshopInfo.Version.ToString(),
-                positiveRating = rating.GoodCount.ToString(),
-                negativeRating = rating.BadCount.ToString(),
+                positiveRating = rating?.GoodCount.ToString(),
+                negativeRating = rating?.BadCount.ToString(),
                 dependencies = dependencies,
             };
             _ui.setCardPoolDetails(viewData, details);
@@ -1761,7 +1761,7 @@ namespace Controllers
                 var sounds = skin.getAllSoundRefs().Where(r => !string.IsNullOrEmpty(r.path)).Select(r => game.editor.translateCardSoundName(r.name)).ToArray();
 
                 var (characterIcon, characterName) = await getCharacterData(game, workshopInfo);
-
+                var rating = await game.network.getCardRating(workshopInfo.ID, cardDefine.id);
                 return new WorkshopCardDetailsViewData()
                 {
                     card = UIHelper.getCardDefineViewData(cardDefine, skin, cardManager),
@@ -1771,6 +1771,8 @@ namespace Controllers
                     characterIcon = characterIcon,
                     characterName = characterName,
                     flavor = string.Empty,
+                    positiveRating = rating?.GoodCount.ToString(),
+                    negativeRating = rating?.BadCount.ToString(),
                     sounds = sounds,
                 };
             }
