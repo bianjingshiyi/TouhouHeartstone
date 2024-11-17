@@ -124,29 +124,30 @@ namespace Game.BattleTable
         IEnumerator returnToHand(BattleTableManager table)
         {
             var handPosition = _card.position;
+            bool createHand = true;
+            // 防止卡牌进入错误的玩家手牌中，先更新卡牌描述器。
+            table.updateCardDescriptor(_card);
             if (_card.isServant())
             {
                 // 使用仆从牌被取消。
-                // 防止卡牌进入错误的玩家手牌中，先更新卡牌描述器。
-                table.updateCardDescriptor(_card);
                 // 如果有这个随从，播放回手动画。
                 if (table.tryGetServant(_card, out _))
                 {
+                    createHand = false;
                     var moveAnim = new FieldToHandAnim(_card.id, _card.owner.getField(), _card.owner.getHand(), handPosition);
                     while (!moveAnim.update(table, _deltaTime))
                         yield return null;
                 }
-                else
-                {
-                    // 直接创建手牌。
-                    table.createHand(table.getCardDescriptor(_card.id), handPosition);
-                }
             }
-            else if (_card.isSpell() || _card.isSpell())
+            if (createHand)
             {
-                // 使用法术牌/道具牌被取消。
                 // 直接创建手牌。
-                table.createHand(table.getCardDescriptor(_card.id), handPosition);
+                var descriptor = table.getCardDescriptor(_card.id);
+                // 卡牌不在手牌中则不创建手牌。
+                if (descriptor != null && descriptor.pile?.name == PILE.HAND)
+                {
+                    table.createHand(descriptor, handPosition);
+                }
             }
         }
         #endregion
