@@ -43,6 +43,7 @@ namespace Controllers
         #region 生命周期
         private void Awake()
         {
+            _sorting = _sortValues.FirstOrDefault();
             _ui.setSortItems(_sortNames.Select(n => game.lang._(n)).ToArray());
             _ui.onReturnClick += onReturnClickCallback;
 
@@ -1436,9 +1437,18 @@ namespace Controllers
 
                 _cardPoolCacheDict.Clear();
                 _ui.updateBrowseCardPools(Array.Empty<WorkshopCardPoolItemViewData>());
-                await loadPage(_page);
+
+                await loadPage(_page, _sorting);
                 var pageViewDatas = await getCurrentPageViewData();
-                _ui.updateBrowseCardPools(pageViewDatas);
+                bool hotPage = _sorting == Sorting.Hottest && _page == 0;
+                if (hotPage)
+                {
+                    _ui.updateHotCardPools(pageViewDatas);
+                }
+                else
+                {
+                    _ui.updateBrowseCardPools(pageViewDatas);
+                }
 
                 _ui.setPageText(game.lang._(StringTable.PAGE_NUMBER_TEMPLATE, _page + 1));
 
@@ -1456,12 +1466,17 @@ namespace Controllers
                 updateBrowseComponents();
             }
         }
-        private async Task loadPage(int page)
+        private async Task loadPage(int page, Sorting sorting)
         {
+            var sortingString = sortingStrings.TryGetValue(sorting, out var str) ? str : "new";
             if (_viewingUser >= 0)
-                _currentPageCardPools = await game.network.getWorkshopUserCardPools(_viewingUser, page, _poolCountPerPage);
+            {
+                _currentPageCardPools = await game.network.getWorkshopUserCardPools(_viewingUser, page, _poolCountPerPage, sortingString);
+            }
             else
-                _currentPageCardPools = await game.network.searchWorkshopPageCardPools(page, _poolCountPerPage, _searchFilter);
+            {
+                _currentPageCardPools = await game.network.searchWorkshopPageCardPools(page, _poolCountPerPage, _searchFilter, sortingString);
+            }
         }
         private void startWaiting(bool showProgress = false)
         {
@@ -1584,9 +1599,12 @@ namespace Controllers
         [TranslateMsg("创意工坊-描述文本模板，{0}为年，{1}为月，{2}为日，{3}为小时，{4}为分钟")]
         private const string TASK_DATETIME_TEMPLATE = "{0}年{1}月{2}日 {3}:{4}";
         [TranslateMsg("创意工坊-排序方法")]
-        private const string SORTING_MOST_RELEVANT = "最相关";
+        private const string SORTING_HOTTEST = "最热门";
         [TranslateMsg("创意工坊-排序方法")]
         private const string SORTING_NEWEST = "最新上传";
+        [TranslateMsg("创意工坊-排序方法")]
+        private const string SORTING_RATING = "最高评分"; 
+
         [TranslateMsg("创意工坊-尝试上传卡池时出现的错误描述，{0}为错误信息")]
         private const string ERROR_UPLOADING_CARDPOOL = "尝试上传卡池时出现错误：{0}";
         [TranslateMsg("创意工坊-尝试上传拥有丢失卡池依赖的卡池时出现的错误描述")]
@@ -1679,13 +1697,21 @@ namespace Controllers
 
         private static string[] _sortNames =
         {
-            SORTING_MOST_RELEVANT,
+            SORTING_HOTTEST,
             SORTING_NEWEST,
+            SORTING_RATING,
         };
         private static Sorting[] _sortValues =
         {
-            Sorting.MostRelevant,
+            Sorting.Hottest,
             Sorting.Newest,
+            Sorting.Rating,
+        };
+        private static Dictionary<Sorting, string> sortingStrings = new Dictionary<Sorting, string>()
+        {
+            { Sorting.Newest, "new"},
+            { Sorting.Hottest, "hot"},
+            { Sorting.Rating, "rate"},
         };
         private static Dictionary<WorkshopCardPoolState, string> _stateTexts = new Dictionary<WorkshopCardPoolState, string>()
         {
@@ -1742,8 +1768,9 @@ namespace Controllers
         #region 内嵌类
         private enum Sorting
         {
-            MostRelevant,
             Newest,
+            Hottest,
+            Rating,
         }
         private class CardDetailsData
         {

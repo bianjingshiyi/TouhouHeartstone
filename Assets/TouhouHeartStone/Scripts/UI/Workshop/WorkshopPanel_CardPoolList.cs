@@ -40,13 +40,23 @@ namespace UI
         {
             _browseCardPoolsPage.SetActive(false);
             _hotCardPoolsPage.SetActive(true);
-            //TODO ZMCS-2246
+            for (int i = 0; i < _hotWorkshopCardPoolItems.Length; i++)
+            {
+                var item = _hotWorkshopCardPoolItems[i];
+                if (i >= viewData.Length)
+                {
+                    item.gameObject.SetActive(false);
+                    continue;
+                }
+                item.gameObject.SetActive(true);
+                item.updateView(viewData[i]);
+            }
+            
         }
         public void updateBrowseCardPools(WorkshopCardPoolItemViewData[] viewData)
         {
             _browseCardPoolsPage.SetActive(true);
             _hotCardPoolsPage.SetActive(false);
-            //TODO ZMCS-2246
             _browseCardPoolItemList.updateList(viewData.Length, (index, rect) =>
             {
                 var deckListItem = rect.GetComponent<WorkshopCardPoolItem>();
