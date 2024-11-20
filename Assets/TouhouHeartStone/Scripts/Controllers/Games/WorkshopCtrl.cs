@@ -1697,13 +1697,11 @@ namespace Controllers
 
         private static string[] _sortNames =
         {
-            SORTING_HOTTEST,
             SORTING_NEWEST,
             SORTING_RATING,
         };
         private static Sorting[] _sortValues =
         {
-            Sorting.Hottest,
             Sorting.Newest,
             Sorting.Rating,
         };
