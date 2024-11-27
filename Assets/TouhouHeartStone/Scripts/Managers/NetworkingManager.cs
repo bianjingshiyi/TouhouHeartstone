@@ -250,13 +250,13 @@ namespace Game
         #endregion
 
         #region 创意工坊
-        public Task<WorkshopCardPoolInfo[]> getWorkshopUserCardPools(int uid, int page, int limit, string sorting)
+        public Task<WorkshopCardPoolInfo[]> getWorkshopUserCardPools(int uid, int offset, int limit, string sorting)
         {
-            return logic.getWorkshopUserCardPool(uid, page, limit, sorting);
+            return logic.getWorkshopUserCardPool(uid, offset, limit, sorting);
         }
-        public Task<WorkshopCardPoolInfo[]> searchWorkshopPageCardPools(int page, int limit, string keywords, string sorting)
+        public Task<WorkshopCardPoolInfo[]> searchWorkshopPageCardPools(int offset, int limit, string keywords, string sorting)
         {
-            return logic.getWorkshopPageCardPool(page, limit, keywords, sorting);
+            return logic.getWorkshopPageCardPool(offset, limit, keywords, sorting);
         }
         public Task<WorkshopCardPoolInfo> getWorkshopCardPool(long id, int version)
         {

@@ -366,13 +366,13 @@ namespace Game
         }
         
         #region 创意工坊
-        public Task<WorkshopCardPoolInfo[]> getWorkshopUserCardPool(int uid, int page, int limit, string sorting)
+        public Task<WorkshopCardPoolInfo[]> getWorkshopUserCardPool(int uid, int offset, int limit, string sorting)
         {
-            return ServerClient.WorkshopGetUserCardPools(uid, page, limit, sorting);
+            return ServerClient.WorkshopGetUserCardPools(uid, offset, limit, sorting);
         }
-        public Task<WorkshopCardPoolInfo[]> getWorkshopPageCardPool(int page, int limit, string keywords, string sorting)
+        public Task<WorkshopCardPoolInfo[]> getWorkshopPageCardPool(int offset, int limit, string keywords, string sorting)
         {
-            return ServerClient.WorkshopSearchCardPools(page, limit, keywords, sorting);
+            return ServerClient.WorkshopSearchCardPools(offset, limit, keywords, sorting);
         }
         public Task<WorkshopCardPoolInfo> getWorkshopCardPool(long id, int version)
         {

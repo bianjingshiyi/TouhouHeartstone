@@ -1440,7 +1440,7 @@ namespace Controllers
 
                 await loadPage(_page, _sorting);
                 var pageViewDatas = await getCurrentPageViewData();
-                bool hotPage = _sorting == Sorting.Hottest && _page == 0;
+                bool hotPage = isHotBrowse(_sorting) && _page == 0;
                 if (hotPage)
                 {
                     _ui.updateHotCardPools(pageViewDatas);
@@ -1471,11 +1471,16 @@ namespace Controllers
             var sortingString = sortingStrings.TryGetValue(sorting, out var str) ? str : "new";
             if (_viewingUser >= 0)
             {
-                _currentPageCardPools = await game.network.getWorkshopUserCardPools(_viewingUser, page, _poolCountPerPage, sortingString);
+                var limit = getMaxPoolCountOfPage(page, false);
+                var offset = getPoolPageOffset(page, false);
+                _currentPageCardPools = await game.network.getWorkshopUserCardPools(_viewingUser, offset, limit, sortingString);
             }
             else
             {
-                _currentPageCardPools = await game.network.searchWorkshopPageCardPools(page, _poolCountPerPage, _searchFilter, sortingString);
+                bool hot = isHotBrowse(sorting);
+                var limit = getMaxPoolCountOfPage(page, hot);
+                var offset = getPoolPageOffset(page, hot);
+                _currentPageCardPools = await game.network.searchWorkshopPageCardPools(offset, limit, _searchFilter, sortingString);
             }
         }
         private void startWaiting(bool showProgress = false)
@@ -1561,7 +1566,8 @@ namespace Controllers
             {
                 _ui.setBrowseComponentsInteractable(true);
                 int currentPageCardPools = _currentPageCardPools?.Length ?? 0;
-                _ui.setPageButtonInteractable(_page > 0, currentPageCardPools >= _poolCountPerPage);
+                int maxPoolCount = getMaxPoolCountOfPage(_page, isHotBrowse(_sorting));
+                _ui.setPageButtonInteractable(_page > 0, currentPageCardPools >= maxPoolCount);
             }
         }
         private WorkshopCommentViewData getCardPoolCommentViewData(WorkshopCardPoolComment comment)
@@ -1589,6 +1595,32 @@ namespace Controllers
                 rating = comment.Rating,
                 userName = getUserName((int)comment.UID)
             };
+        }
+        private int getMaxPoolCountOfPage(int page, bool hot)
+        {
+            if (hot && page == 0)
+            {
+                return _hotPoolCount;
+            }
+            return _poolCountPerPage;
+        }
+        private int getPoolPageOffset(int page, bool hot)
+        {
+            if (hot)
+            {
+                if (page == 0)
+                    return 0;
+                else
+                    return (page - 1) * getMaxPoolCountOfPage(page, hot) + _hotPoolCount;
+            }
+            else
+            {
+                return page * getMaxPoolCountOfPage(page, hot);
+            }
+        }
+        private bool isHotBrowse(Sorting sorting)
+        {
+            return sorting == Sorting.Rating;
         }
 
         #endregion
@@ -1753,6 +1785,8 @@ namespace Controllers
 
         [SerializeField]
         private int _poolCountPerPage = 16;
+        [SerializeField]
+        private int _hotPoolCount = 3;
         [SerializeField]
         private int _cardPoolCommentPerPage = 20;
         [SerializeField]
