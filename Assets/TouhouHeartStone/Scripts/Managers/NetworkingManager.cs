@@ -325,6 +325,10 @@ namespace Game
         {
             return logic.setCardRating(poolId, id, value);
         }
+        public Task<int> getMyCardRating(long poolId, int id)
+        {
+            return logic.getMyCardRating(poolId, id);
+        }
         #endregion
 
         #endregion 公有方法

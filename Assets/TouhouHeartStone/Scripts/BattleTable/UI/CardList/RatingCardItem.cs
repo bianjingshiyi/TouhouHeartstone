@@ -16,6 +16,11 @@ namespace Game.BattleTable
             _upvoteImage.color = _normalColor;
             _downvoteImage.color = _normalColor;
         }
+        public void setAlreadyRated(bool rated)
+        {
+            _alreadyRatedRoot.SetActive(rated);
+            _notRatedRoot.SetActive(!rated);
+        }
         protected override void Awake()
         {
             base.Awake();
@@ -24,6 +29,10 @@ namespace Game.BattleTable
         }
         
         public event Action<RatingCardItem, bool> onVoteClick;
+        [SerializeField]
+        private GameObject _alreadyRatedRoot;
+        [SerializeField]
+        private GameObject _notRatedRoot;
         [SerializeField]
         private Button _upvoteButton;
         [SerializeField]

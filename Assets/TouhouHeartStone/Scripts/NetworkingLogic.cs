@@ -441,6 +441,10 @@ namespace Game
         {
             return ServerClient.SetCardRating(poolId, id, value);
         }
+        public Task<int> getMyCardRating(long poolId, int id)
+        {
+            return ServerClient.GetMyCardRating(poolId, id);
+        }
         #endregion
 
         /// <summary>

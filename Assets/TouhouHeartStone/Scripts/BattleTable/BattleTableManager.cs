@@ -116,10 +116,21 @@ namespace Game.BattleTable
             dialog.setButtonGroupVisible(!homebrew);
             if (homebrew)
             {
+                // 如果获取已经评分的任务还在进行，则等待直到它完成。
+                if (getAlreadyRatedCardsTask != null)
+                {
+                    if (!getAlreadyRatedCardsTask.IsCompleted)
+                    {
+                        await getAlreadyRatedCardsTask;
+                    }
+                    getAlreadyRatedCardsTask = null;
+                }
+                // 设置评分卡牌列表。
                 foreach (var cardDefine in _opponentCustomCards)
                 {
                     var card = dialog.ratingDialog.addChoice();
                     await card.card.setCardDefine(cardDefine, this);
+                    card.setAlreadyRated(alreadyRatedCards.Contains(cardDefine));
                 }
             }
             dialog.ShowGameResult(result);
@@ -825,6 +836,14 @@ namespace Game.BattleTable
                 var anim = new ClearDeadAnchorAnimation();
                 addEventAnim(arg, anim);
             }
+            else if (arg.define is GameEndEventDefine)
+            {
+                // 游戏结束后，私酿模式会开始检测有哪些卡牌当前用户已经评分过。
+                if (isHomebrewMode() && getAlreadyRatedCardsTask == null)
+                {
+                    getAlreadyRatedCardsTask = getAlreadyRatedCardsAsync();
+                }
+            }
         }
         #endregion
         private void reset()
@@ -866,6 +885,9 @@ namespace Game.BattleTable
             ui.GameResultDialog.hide();
             ui.CardPopUp.initTable(this);
 
+            getAlreadyRatedCardsTask = null;
+            alreadyRatedCards.Clear();
+
             eventCache.clear();
             _mulliganedCards.Clear();
             _animationCache.Clear();
@@ -892,7 +914,7 @@ namespace Game.BattleTable
             try
             {
                 ui.WaitingBlocker.addWaitingTask(WaitingTask.Battle);
-                var groups = _customCardRating.GroupBy(c => c.Key.cardPoolId);
+                var groups = _customCardRating.Where(p => !alreadyRatedCards.Contains(p.Key)).GroupBy(c => c.Key.cardPoolId);
                 foreach (var group in groups)
                 {
                     var ratingParams = string.Join(",", group.Select(p => $"{p.Key.id}:{p.Value}"));
@@ -930,6 +952,16 @@ namespace Game.BattleTable
                 ui.WaitingBlocker.removeWaitingTask(WaitingTask.Battle);
             }
         }
+        private async Task getAlreadyRatedCardsAsync()
+        {
+            alreadyRatedCards.Clear();
+            foreach (var customCard in _opponentCustomCards)
+            {
+                var result = await _main.network.getMyCardRating(customCard.cardPoolId, customCard.id);
+                if (result != 0)
+                    alreadyRatedCards.Add(customCard);
+            }
+        }
         #endregion
 
         [TranslateMsg]
@@ -959,6 +991,11 @@ namespace Game.BattleTable
         /// 能否控制，用于回放或观战。
         /// </summary>
         private bool canControl = true;
+        /// <summary>
+        /// 私酿模式用于获取已经评分的卡牌的Task。
+        /// </summary>
+        private Task getAlreadyRatedCardsTask;
+        private List<CardDefine> alreadyRatedCards = new List<CardDefine>();
         [SerializeField]
         private TableUI _ui;
         [SerializeField]
