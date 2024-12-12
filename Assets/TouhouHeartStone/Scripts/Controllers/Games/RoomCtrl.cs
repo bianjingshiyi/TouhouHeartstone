@@ -563,7 +563,9 @@ namespace Controllers
             }
 
             _gameStarted = true;
+            _deckViewDataCache = null;
             updatePlayerReadyStates();
+
             if (_isLocalGame)
             {
                 await game.game.startLocalGame(_currentRoomData);
