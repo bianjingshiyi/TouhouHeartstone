@@ -1735,13 +1735,13 @@ namespace Controllers
 
         private static string[] _sortNames =
         {
-            SORTING_NEWEST,
             SORTING_RATING,
+            SORTING_NEWEST,
         };
         private static Sorting[] _sortValues =
         {
-            Sorting.Newest,
             Sorting.Rating,
+            Sorting.Newest,
         };
         private static Dictionary<Sorting, string> sortingStrings = new Dictionary<Sorting, string>()
         {
