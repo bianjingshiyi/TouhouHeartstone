@@ -52,6 +52,7 @@ namespace Controllers
             _ui.onHomeClicked += onHomeClickedCallback;
             _ui.onSearchFilterChanged += onSearchFilterChangedCallback;
             _ui.onRefreshClicked += onRefreshClickedCallback;
+            _ui.onHotCardPoolItemClick += onClickHotCardPoolItemCallback;
             _ui.onBrowseCardPoolItemClick += onClickCardPoolItemCallback;
             _ui.onPageButtonClicked += onPageButtonClickCallback;
             _ui.onUploadClick += onUploadClickCallback;
@@ -141,6 +142,11 @@ namespace Controllers
         #endregion
 
         #region 卡池列表
+        private async void onClickHotCardPoolItemCallback(int index)
+        {
+            var pool = _currentPageCardPools[index];
+            await viewCardPool(pool);
+        }
         private async void onClickCardPoolItemCallback(int index)
         {
             var pool = _currentPageCardPools[index];

@@ -107,6 +107,13 @@ namespace UI
             _viewMineButton.onClick.AddListener(() => onViewMineClicked?.Invoke());
             _homeButton.onClick.AddListener(() => onHomeClicked?.Invoke());
             _uploadButton.onClick.AddListener(() => onUploadClick?.Invoke());
+
+
+            for (int i = 0; i < _hotWorkshopCardPoolItems.Length; i++)
+            {
+                var item = _hotWorkshopCardPoolItems[i];
+                item.onClick += onHotCardPoolItemClickCallback;
+            }
         }
         private void onHotCardPoolItemClickCallback(WorkshopCardPoolItem item)
         {
