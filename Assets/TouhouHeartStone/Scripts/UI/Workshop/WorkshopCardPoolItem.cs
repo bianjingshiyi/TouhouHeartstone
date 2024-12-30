@@ -24,6 +24,7 @@ namespace UI
                 mode = DeckListItem.Mode.Default,
             };
             _deckListItem.updateView(itemViewData);
+            _numberTextObj.SetActive(viewData.numberVisible);
             _numberText.text = viewData.number.ToString();
             _ratingText.text = viewData.rating.ToString();
             _authorText.text = viewData.author;
@@ -47,6 +48,7 @@ namespace UI
 
         #region 属性字段
         public DeckListItem _deckListItem;
+        public GameObject _numberTextObj;
         public TextMeshProUGUI _numberText;
         public TextMeshProUGUI _ratingText;
         public TextMeshProUGUI _authorText;
@@ -60,6 +62,7 @@ namespace UI
         public bool isError;
         public bool hasPrivatePools;
         public bool isWaiting;
+        public bool numberVisible;
         public int number;
         public int rating;
         public string author;

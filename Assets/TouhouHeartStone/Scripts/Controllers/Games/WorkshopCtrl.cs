@@ -1511,7 +1511,13 @@ namespace Controllers
             var viewDatas = new WorkshopCardPoolItemViewData[count];
             for (int i = 0; i < count; i++)
             {
-                viewDatas[i] = await getCardPoolItemViewData(_currentPageCardPools[i]);
+                var viewData = await getCardPoolItemViewData(_currentPageCardPools[i]);
+                if (isHotBrowse(_sorting) && _page == 0)
+                {
+                    viewData.numberVisible = true;
+                    viewData.number = i + 1;
+                }
+                viewDatas[i] = viewData;
             }
             return viewDatas;
         }
@@ -1529,6 +1535,7 @@ namespace Controllers
                 isError = info.State == WorkshopCardPoolState.Deleted,
                 isWaiting = info.State == WorkshopCardPoolState.Reviewing || info.State == WorkshopCardPoolState.ReviewingOldVer,
                 author = authorName,
+                numberVisible = false,
                 number = 0,
                 rating = (int)rating.GoodCount - (int)rating.BadCount,
             };

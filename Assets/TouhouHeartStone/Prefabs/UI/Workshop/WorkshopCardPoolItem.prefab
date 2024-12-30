@@ -974,6 +974,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _deckListItem: {fileID: 7738369260183113909}
+  _numberTextObj: {fileID: 3604713820391767868}
   _numberText: {fileID: 990673572780543280}
   _ratingText: {fileID: 2571685925500165334}
   _authorText: {fileID: 1178332831073232715}
