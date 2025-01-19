@@ -6,5 +6,6 @@ namespace TouhouHeartstone
         public const string SORTEDPLAYER = "SortedPlayer";
         public const string TURNTIMER = "TurnTimer";
         public const string TURNCOUNT = "TurnCount";
+        public const string INSIDE_TURN = "InsideTurn";
     }
 }

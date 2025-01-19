@@ -174,6 +174,14 @@ namespace TouhouHeartstone
         {
             return game.getRule().gameEnd(game, winners);
         }
+        public static void setInsideTurn(this CardEngine game, bool value)
+        {
+            game.setProp(GAME.INSIDE_TURN, value);
+        }
+        public static bool isInsideTurn(this CardEngine game)
+        {
+            return game.getProp<bool>(GAME.INSIDE_TURN);
+        }
         #endregion
 
         #region 卡牌定义
@@ -246,7 +254,7 @@ namespace TouhouHeartstone
                 cards = cards.randomTake(game, count).ToArray();
             game.logger.logTrace($"{player}要从卡牌{string.Join("，", cards)}中选择一个");
             Card selectedCard;
-            if (game.getCurrentPlayer() == player)
+            if (game.getCurrentPlayer() == player && game.isInsideTurn())
             {
                 int[] cardIdArray = cards.Select(c => c.id).ToArray();
                 var res = await game.answers.ask(player.id, new DiscoverRequest(cardIdArray, title), float.MaxValue);
@@ -283,7 +291,7 @@ namespace TouhouHeartstone
                 cards = cards.randomTake(game, count).ToArray();
             game.logger.logTrace($"{player}要从卡牌{string.Join("，", cards)}中选择一个");
             CardDefine selectedCard;
-            if (game.getCurrentPlayer() == player)
+            if (game.getCurrentPlayer() == player && game.isInsideTurn())
             {
                 DefineReference[] cardArray = cards.Select(c => c.getDefineRef()).ToArray();
                 var res = await game.answers.ask(player.id, new DiscoverRequest(cardArray, title), float.MaxValue);
@@ -708,6 +716,11 @@ namespace TouhouHeartstone
         {
             if (!game.isRunning)
                 return;
+            //倒计时75秒
+            setTurnTimer(game, game.time.startTimer(getOption(game).timeoutForTurn));
+            getTurnTimer(game).onExpired += () => onTurnTimeout(game);
+            // 设置当前游戏正在某个玩家的回合期间。用于三选一判断。
+            game.setInsideTurn(true);
 
             // 更新攻击次数，放在回合开始事件前面，主要为了防止回合开始时召唤出来的仆从可以立即攻击。
             // 同时要更新所有角色的攻击次数，防止转移控制权的先攻仆从无法攻击。
@@ -726,9 +739,6 @@ namespace TouhouHeartstone
 
             await TurnStartEventDefine.doEvent(game, player);
             await game.updateGameState();
-            //倒计时75秒
-            setTurnTimer(game, game.time.startTimer(getOption(game).timeoutForTurn));
-            getTurnTimer(game).onExpired += () => onTurnTimeout(game);
         }
 
         private void onTurnTimeout(CardEngine game)
@@ -785,6 +795,8 @@ namespace TouhouHeartstone
         {
             if (!game.isRunning)
                 return;
+            // 设置当前游戏不在某个玩家的回合期间。选择卡牌会自动随机选择一项。
+            game.setInsideTurn(false);
             await TurnEndEventDefine.doEvent(game, player);
             await game.updateGameState();
             game.time.cancel(getTurnTimer(game));
