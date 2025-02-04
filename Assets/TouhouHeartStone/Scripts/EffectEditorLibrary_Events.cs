@@ -80,6 +80,23 @@ namespace Game
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_GET_TURN_OF_EVENT = "获取事件发生的回合";
 
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_PARENT_OF_EVENT = "获取事件的父事件";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_CHILDREN_OF_EVENT = "获取事件的子事件";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_CHAIN_OF_EVENT = "获取事件发生的事件链";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_CHILDREN_OF_EVENT_BEFORE = "获取事件发生时引发的事件";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_CHILDREN_OF_EVENT_AFTER = "获取事件发生后引发的事件";
+        [TranslateMsg("编辑器/参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_PARENT_EVENT = "父事件";
+        [TranslateMsg("编辑器/参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_CHILDREN_EVENTS = "子事件";
+        [TranslateMsg("编辑器/参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_EVENT_CHAIN = "事件链";
+
         #region 事件
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.ThisEvent, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_THIS_EVENT)]
@@ -319,6 +336,66 @@ namespace Game
                 return -1;
             var turnStarts = events.Take(eventIndex + 1).Where(e => e.define is TurnStartEventDefine).Count();
             return turnStarts;
+        }
+        #endregion
+
+        #region 事件链
+        [THHActionMethod(BuiltinActionDefineID.GetParentOfEvent, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_NAME_GET_PARENT_OF_EVENT)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_PARENT_EVENT)]
+        public static EventArg getParentOfEvent(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg)
+        {
+            if (eventArg == null)
+                return null;
+            if (eventArg.parent is not EventArg parent)
+                return null;
+            return parent;
+        }
+        [THHActionMethod(BuiltinActionDefineID.GetChildrenOfEvent, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_NAME_GET_CHILDREN_OF_EVENT)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_CHILDREN_EVENTS)]
+        public static EventArg[] getChildrenOfEvent(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg)
+        {
+            if (eventArg == null)
+                return Array.Empty<EventArg>();
+            return eventArg.getAllChildEvents().OfType<EventArg>().ToArray();
+        }
+        [THHActionMethod(BuiltinActionDefineID.GetChainOfEvent, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_NAME_GET_CHAIN_OF_EVENT)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT_CHAIN)]
+        public static EventArg[] getChainOfEvent(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg)
+        {
+            if (eventArg == null)
+                return Array.Empty<EventArg>();
+            var list = new List<EventArg>();
+            var parent = eventArg.parent;
+            while (parent != null)
+            {
+                if (parent is EventArg parentArg)
+                {
+                    list.Add(parentArg);
+                }
+                parent = parent.parent;
+            }
+            return list.ToArray();
+        }
+        [THHActionMethod(BuiltinActionDefineID.GetChildrenOfEventBefore, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_NAME_GET_CHILDREN_OF_EVENT_BEFORE)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_CHILDREN_EVENTS)]
+        public static EventArg[] getChildrenOfEventBefore(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg)
+        {
+            if (eventArg == null)
+                return Array.Empty<EventArg>();
+            return eventArg.beforeChildrenEvents.OfType<EventArg>().ToArray();
+        }
+        [THHActionMethod(BuiltinActionDefineID.GetChildrenOfEventAfter, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_NAME_GET_CHILDREN_OF_EVENT_AFTER)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_CHILDREN_EVENTS)]
+        public static EventArg[] getChildrenOfEventAfter(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EVENT)] EventArg eventArg)
+        {
+            if (eventArg == null)
+                return Array.Empty<EventArg>();
+            return eventArg.afterChildrenEvents.OfType<EventArg>().ToArray();
         }
         #endregion
 

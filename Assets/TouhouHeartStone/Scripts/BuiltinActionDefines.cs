@@ -189,6 +189,11 @@ namespace Game
         public const int GetCardSnapshotAfterEvent = Type_Function + Category_Event + 9;    // 获取卡牌在某事件后的快照
         public const int GetEventRepeatTimes = Type_Function + Category_Event + 10;    // 获取事件重复次数
         public const int GetTurnOfEvent = Type_Function + Category_Event + 11;    // 获取事件发生的回合数
+        public const int GetParentOfEvent = Type_Function + Category_Event + 12;    // 获取父事件
+        public const int GetChildrenOfEvent = Type_Function + Category_Event + 13;    // 获取子事件
+        public const int GetChainOfEvent = Type_Function + Category_Event + 14;    // 获取事件链
+        public const int GetChildrenOfEventBefore = Type_Function + Category_Event + 15;    // 获取执行前的子事件
+        public const int GetChildrenOfEventAfter = Type_Function + Category_Event + 16;    // 获取执行后的子事件
 
         // 事件记录
         public const int GetTurnCount_Obsolete = Type_Function + Category_EventRecord + 1;    // 获得当前回合数（过时）
