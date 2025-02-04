@@ -83,6 +83,8 @@ namespace Game
         [TranslateMsg("编辑器/节点分类", CONTEXT_NODE_CATEGORY)]
         public const string EDITOR_NODE_CATEGORY_COLLECTION_OPERATION = "集合运算";
         [TranslateMsg("编辑器/节点分类", CONTEXT_NODE_CATEGORY)]
+        public const string EDITOR_NODE_CATEGORY_MAP = "映射";
+        [TranslateMsg("编辑器/节点分类", CONTEXT_NODE_CATEGORY)]
         public const string EDITOR_NODE_CATEGORY_ACTION = "行动";
         [TranslateMsg("编辑器/节点分类", CONTEXT_NODE_CATEGORY)]
         public const string EDITOR_NODE_CATEGORY_EFFECT = "效果";
@@ -569,6 +571,8 @@ namespace Game
         public const string EDITOR_TYPE_NAME_STRING = "文本";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_ARRAY = "集合";
+        [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
+        public const string EDITOR_TYPE_NAME_MAP = "映射集合";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_RULE = "规则";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]

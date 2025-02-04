@@ -35,6 +35,7 @@ namespace Game
         public const int Category_Action = 10000;
         public const int Category_Collection = 11000;
         public const int Category_Other = 12000;
+        public const int Category_Map = 13000;
 
         #region 函数
         // 玩家
@@ -244,6 +245,11 @@ namespace Game
         public const int Merge = Type_Function + Category_Collection + 35; // 合并多个集合
         public const int CastCollectionType = Type_Function + Category_Collection + 36; // 转换集合类型
 
+        // 映射
+        public const int CreateMapCollection = Type_Function + Category_Map + 1;    // 创建映射集合
+        public const int HasMap = Type_Function + Category_Map + 2;    // 是否存在映射
+        public const int GetMapValue = Type_Function + Category_Map + 3;    // 获取映射值
+
         // 其他
         public const int BooleanConst = Type_Function + Category_Other + 1;       // 固定真值
         public const int Compare = Type_Function + Category_Other + 2;            // 比较
@@ -375,6 +381,10 @@ namespace Game
 
         // 集合运算
         public const int ForeachAction = Type_Action + Category_Collection + 1;    // 遍历
+
+        // 映射
+        public const int SetMap = Type_Action + Category_Map + 1;    // 添加映射
+        public const int RemoveMap = Type_Action + Category_Map + 2;    // 移除映射
 
         // 其他
         public const int BranchAction = Type_Action + Category_Other + 1;    // 分支动作

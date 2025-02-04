@@ -1018,6 +1018,7 @@ namespace UI
             StringTable.EDITOR_NODE_CATEGORY_EVENT_ENTRY_NODE, // 事件入口
             StringTable.EDITOR_NODE_CATEGORY_ACTION, // 行动
             StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, // 集合运算
+            StringTable.EDITOR_NODE_CATEGORY_MAP, // 映射
             StringTable.EDITOR_NODE_CATEGORY_OTHER, // 其他
         };
         public static readonly NodeDefineType[] defineTypes = new NodeDefineType[]

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using MukioI18n;
 using TouhouCardEngine;
@@ -108,6 +109,7 @@ namespace Game
             new GraphTypeInfo() { type = typeof(bool), typeName = StringTable.EDITOR_TYPE_NAME_BOOL, portType = true, color = new Color(.6f, 1, .8f, 1) },
             new GraphTypeInfo() { type = typeof(string), typeName = StringTable.EDITOR_TYPE_NAME_STRING, portType = true, color = new Color(.7f, .8f, .2f, 1) },
             new GraphTypeInfo() { type = typeof(Array), typeName = StringTable.EDITOR_TYPE_NAME_ARRAY, portType = true, color = new Color(.8f, .8f, .8f, 1) },
+            new GraphTypeInfo() { type = typeof(GraphMap), typeName = StringTable.EDITOR_TYPE_NAME_MAP, portType = true, color = new Color(.5f, .5f, .5f, 1) },
             // 特殊的类型，暂时不能作为端口变量使用
             new GraphTypeInfo() { type = typeof(float), typeName = StringTable.EDITOR_TYPE_NAME_FLOAT, color = new Color(.4f, 1, .6f, 1) },
             new GraphTypeInfo() { type = typeof(char), typeName = StringTable.EDITOR_TYPE_NAME_CHAR, color = new Color(.5f, .8f, .2f, 1) },
