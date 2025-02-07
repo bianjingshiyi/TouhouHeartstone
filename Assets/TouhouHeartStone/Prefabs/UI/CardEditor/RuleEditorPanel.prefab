@@ -902,6 +902,12 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2784603395116646717, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
+        type: 3}
+      propertyPath: m_EffectMaterial
+      value: 
+      objectReference: {fileID: 6875984031751586330, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 2790322632171623035, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer
@@ -1102,6 +1108,12 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3319283801842821334, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
+        type: 3}
+      propertyPath: m_EffectMaterial
+      value: 
+      objectReference: {fileID: 6875984031751586330, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 3414108353820037993, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -1497,6 +1509,12 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3915397666172135994, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
+        type: 3}
+      propertyPath: m_EffectMaterial
+      value: 
+      objectReference: {fileID: 6875984031751586330, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 3921742788012308402, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer
@@ -1642,6 +1660,12 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4531422142136288209, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
+        type: 3}
+      propertyPath: m_EffectMaterial
+      value: 
+      objectReference: {fileID: 6875984031751586330, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 4535721028916268130, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -1802,6 +1826,12 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4887196208646955616, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
+        type: 3}
+      propertyPath: m_EffectMaterial
+      value: 
+      objectReference: {fileID: 6875984031751586330, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 4908813122006242271, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer
@@ -2052,6 +2082,12 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5433133415492963211, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
+        type: 3}
+      propertyPath: m_EffectMaterial
+      value: 
+      objectReference: {fileID: 6875984031751586330, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 5476799664656311075, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer
@@ -2457,6 +2493,12 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5989893508035152231, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
+        type: 3}
+      propertyPath: m_EffectMaterial
+      value: 
+      objectReference: {fileID: 6875984031751586330, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 6046308458305353520, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer
@@ -2512,6 +2554,12 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6599164783638896780, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
+        type: 3}
+      propertyPath: m_EffectMaterial
+      value: 
+      objectReference: {fileID: 6875984031751586330, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 6605193936364419310, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2637,6 +2685,12 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6704630542551849989, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
+        type: 3}
+      propertyPath: m_EffectMaterial
+      value: 
+      objectReference: {fileID: 6875984031751586330, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 6848023988244069076, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer

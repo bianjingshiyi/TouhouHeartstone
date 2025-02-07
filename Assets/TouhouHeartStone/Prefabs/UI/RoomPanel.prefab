@@ -6647,6 +6647,12 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 30
       objectReference: {fileID: 0}
+    - target: {fileID: 1788644548791049634, guid: 55b714b65f0b90142af80804c7252981,
+        type: 3}
+      propertyPath: m_EffectMaterial
+      value: 
+      objectReference: {fileID: 6875984031751586330, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 3458194083638132897, guid: 55b714b65f0b90142af80804c7252981,
         type: 3}
       propertyPath: m_AnchorMax.x
