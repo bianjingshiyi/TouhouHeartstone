@@ -1633,7 +1633,7 @@ namespace Controllers
         }
         private bool isHotBrowse(Sorting sorting)
         {
-            return sorting == Sorting.Rating;
+            return sorting == Sorting.Rating || sorting == Sorting.Hottest;
         }
 
         #endregion
@@ -1648,7 +1648,7 @@ namespace Controllers
         [TranslateMsg("创意工坊-排序方法")]
         private const string SORTING_NEWEST = "最新上传";
         [TranslateMsg("创意工坊-排序方法")]
-        private const string SORTING_RATING = "最高评分"; 
+        private const string SORTING_RATING = "最高评分";
 
         [TranslateMsg("创意工坊-尝试上传卡池时出现的错误描述，{0}为错误信息")]
         private const string ERROR_UPLOADING_CARDPOOL = "尝试上传卡池时出现错误：{0}";
@@ -1742,18 +1742,20 @@ namespace Controllers
 
         private static string[] _sortNames =
         {
-            SORTING_RATING,
+            SORTING_HOTTEST,
             SORTING_NEWEST,
+            SORTING_RATING,
         };
         private static Sorting[] _sortValues =
         {
-            Sorting.Rating,
+            Sorting.Hottest,
             Sorting.Newest,
+            Sorting.Rating,
         };
         private static Dictionary<Sorting, string> sortingStrings = new Dictionary<Sorting, string>()
         {
-            { Sorting.Newest, "new"},
             { Sorting.Hottest, "hot"},
+            { Sorting.Newest, "new"},
             { Sorting.Rating, "rate"},
         };
         private static Dictionary<WorkshopCardPoolState, string> _stateTexts = new Dictionary<WorkshopCardPoolState, string>()
@@ -1813,8 +1815,8 @@ namespace Controllers
         #region 内嵌类
         private enum Sorting
         {
-            Newest,
             Hottest,
+            Newest,
             Rating,
         }
         private class CardDetailsData
