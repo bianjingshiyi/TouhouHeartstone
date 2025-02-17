@@ -10805,7 +10805,16 @@
     <obsoleteNames />
     <editorName>创建映射集合</editorName>
     <category>映射</category>
-    <inputs />
+    <inputs>
+      <ActionParameterComment>
+        <type>Pair</type>
+        <name>elements</name>
+        <displayName>元素</displayName>
+        <isParams>true</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </inputs>
     <outputs>
       <ActionParameterComment>
         <type>GraphMap</type>
@@ -10850,7 +10859,16 @@
         <summary><![CDATA[键所对应的值。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>GraphMap</type>
+        <name>return</name>
+        <displayName>映射集合</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <summary><![CDATA[为一个映射集合添加一个键与值的映射。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -10877,7 +10895,16 @@
         <summary><![CDATA[映射的键。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>GraphMap</type>
+        <name>return</name>
+        <displayName>映射集合</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <summary><![CDATA[从一个映射集合中移除一个映射。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -10951,6 +10978,62 @@
       </ActionParameterComment>
     </outputs>
     <summary><![CDATA[从一个映射集合中获取一个映射的值。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>113004</defineId>
+    <obsoleteNames />
+    <editorName>获取映射的所有键</editorName>
+    <category>映射</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>GraphMap</type>
+        <name>map</name>
+        <displayName>映射集合</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>键</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[获取一个映射集合中存在的所有键]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>113005</defineId>
+    <obsoleteNames />
+    <editorName>获取映射的所有值</editorName>
+    <category>映射</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>GraphMap</type>
+        <name>map</name>
+        <displayName>映射集合</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>值</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <summary><![CDATA[获取一个映射集合中所有键对应的值]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
 </ArrayOfActionComment>
