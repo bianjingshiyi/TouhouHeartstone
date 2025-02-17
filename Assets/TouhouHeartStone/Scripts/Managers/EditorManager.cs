@@ -190,6 +190,7 @@ namespace Game
         static readonly Dictionary<ActionNodeValueType, string> valueTypeNames = new Dictionary<ActionNodeValueType, string>()
         {
             { ActionNodeValueType.any, StringTable.EDITOR_TYPE_NAME_OBJECT },
+            { ActionNodeValueType.pair, StringTable.EDITOR_TYPE_NAME_PAIR },
             { ActionNodeValueType.boolean, StringTable.EDITOR_TYPE_NAME_BOOL },
             { ActionNodeValueType.integer, StringTable.EDITOR_TYPE_NAME_INT },
             { ActionNodeValueType.text, StringTable.EDITOR_TYPE_NAME_STRING },

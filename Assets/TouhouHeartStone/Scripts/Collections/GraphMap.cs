@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Game
 {
@@ -25,6 +23,14 @@ namespace Game
             if (dictionary.TryGetValue(key, out var value))
                 return value;
             return null;
+        }
+        public object[] GetMapKeys()
+        {
+            return dictionary.Keys.ToArray();
+        }
+        public object[] GetMapValues()
+        {
+            return dictionary.Values.ToArray();
         }
         private Dictionary<object, object> dictionary = new Dictionary<object, object>();
     }

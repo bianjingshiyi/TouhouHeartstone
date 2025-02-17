@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
+using TouhouCardEngine;
 
 namespace Game
 {
@@ -13,7 +15,16 @@ namespace Game
                 var result = value;
                 foreach (var itemIndex in itemIndexes)
                 {
-                    if (result is IList list && itemIndex >= 0 && itemIndex < list.Count)
+                    if (result is Pair pair)
+                    {
+                        if (itemIndex == 0)
+                            return pair.key;
+                        else if (itemIndex == 1)
+                            return pair.value;
+                        else
+                            return null;
+                    }
+                    else if (result is IList list && itemIndex >= 0 && itemIndex < list.Count)
                         result = list[itemIndex];
                     else
                         return null;
@@ -45,23 +56,77 @@ namespace Game
         {
             if (itemIndexes != null && itemIndexes.Length > 0)
             {
-                var listObj = listValue;
-                var count = itemIndexes.Length;
-                for (int i = 0; i < count; i++)
+                int itemIndex = itemIndexes[0];
+                if (listValue is IList list)
                 {
-                    var itemIndex = itemIndexes[i];
-                    if (listObj is not IList list || itemIndex < 0 || itemIndex >= list.Count) // 不存在该列表，或者索引无效
+                    if (itemIndexes.Length > 1)
                     {
-                        newValue = listValue;
-                        return false;
+                        if (0 <= itemIndex && itemIndex < list.Count)
+                        {
+                            bool result = list[itemIndex].replaceListElementByIndexes(itemIndexes.Skip(1).ToArray(), value, out object childValue);
+                            list[itemIndex] = childValue;
+                            newValue = list;
+                            return result;
+                        }
+                        else
+                        {
+                            // 索引无效
+                            newValue = listValue;
+                            return false;
+                        }
                     }
-                    if (i < count - 1) // 非最后一项，获取子列表。
-                        listObj = list[itemIndex];
-                    else // 最后一项，直接设置值。
+                    else
+                    {
                         list[itemIndex] = value;
+                        newValue = list;
+                        return true;
+                    }
                 }
-                newValue = listValue;
-                return true;
+                else if (listValue is Pair pair)
+                {
+                    if (itemIndexes.Length > 1)
+                    {
+                        bool result;
+                        if (itemIndex == 0)
+                        {
+                            result = pair.key.replaceListElementByIndexes(itemIndexes.Skip(1).ToArray(), value, out object childValue);
+                            pair.key = childValue;
+                        }
+                        else if (itemIndex == 1)
+                        {
+                            result = pair.value.replaceListElementByIndexes(itemIndexes.Skip(1).ToArray(), value, out object childValue);
+                            pair.value = childValue;
+                        }
+                        else
+                        {
+                            // 索引无效
+                            result = false;
+                        }
+                        newValue = pair;
+                        return result;
+                    }
+                    else
+                    {
+                        if (itemIndex == 0)
+                            pair.key = value;
+                        else if (itemIndex == 1)
+                            pair.value = value;
+                        else
+                        {
+                            // 索引无效
+                            newValue = pair;
+                            return false;
+                        }
+                        newValue = pair;
+                        return true;
+                    }
+                }
+                else
+                {
+                    // 不存在子结构
+                    newValue = listValue;
+                    return false;
+                }
             }
             else
             {

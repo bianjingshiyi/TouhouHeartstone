@@ -249,6 +249,8 @@ namespace Game
         public const int CreateMapCollection = Type_Function + Category_Map + 1;    // 创建映射集合
         public const int HasMap = Type_Function + Category_Map + 2;    // 是否存在映射
         public const int GetMapValue = Type_Function + Category_Map + 3;    // 获取映射值
+        public const int GetMapKeys = Type_Function + Category_Map + 4; // 获取映射的所有键
+        public const int GetMapValues = Type_Function + Category_Map + 5; // 获取映射的所有值
 
         // 其他
         public const int BooleanConst = Type_Function + Category_Other + 1;       // 固定真值

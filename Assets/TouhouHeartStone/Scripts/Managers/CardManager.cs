@@ -235,6 +235,11 @@ namespace Game
                         addDefRefByObject(item);
                     }
                 }
+                else if(obj is Pair pair)
+                {
+                    addDefRefByObject(pair.key);
+                    addDefRefByObject(pair.value);
+                }
             }
             void addDefRef(DefineReference defRef)
             {
@@ -295,10 +300,15 @@ namespace Game
                 }
                 else if (obj is IList list)
                 {
-                    foreach (var item in list)
+                    foreach (object item in list)
                     {
                         addBuffDefRefByObject(item);
                     }
+                }
+                else if (obj is Pair pair)
+                {
+                    addBuffDefRefByObject(pair.key);
+                    addBuffDefRefByObject(pair.value);
                 }
             }
             void addBuffDefRef(DefineReference buffRef)

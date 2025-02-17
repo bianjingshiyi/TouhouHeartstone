@@ -248,7 +248,7 @@ namespace Controllers
             graph.AddConnections(clipGraph.connections);
             return clipGraph;
         }
-        
+
         #region 节点选择
         public string copySelection()
         {
@@ -888,28 +888,28 @@ namespace Controllers
             var doc = game.editor.getNodeComment(id);
             if (doc == null)
                 return;
-                
+
             var lang = game.lang;
             var editor = game.editor;
             string str = "";
             // 标题
             var editorNameStr = lang._(doc.editorName);
-            str += lang._(EDITOR_NODE_DOC_TITLE_TEMPLATE, editorNameStr); 
+            str += lang._(EDITOR_NODE_DOC_TITLE_TEMPLATE, editorNameStr);
             // 分类
             if (!string.IsNullOrEmpty(doc.category))
             {
                 var categoryStr = lang._p(StringTable.CONTEXT_NODE_CATEGORY, doc.category);
-                str += lang._(EDITOR_NODE_DOC_CATEGORY_TEMPLATE, categoryStr); 
+                str += lang._(EDITOR_NODE_DOC_CATEGORY_TEMPLATE, categoryStr);
             }
             // 过期节点
             if (doc.obsoleteMsg != null)
             {
                 var obsoleteMsgStr = lang._(doc.obsoleteMsg);
-                str += lang._(EDITOR_NODE_DOC_OBSOLETE_TEMPLATE, obsoleteMsgStr); 
+                str += lang._(EDITOR_NODE_DOC_OBSOLETE_TEMPLATE, obsoleteMsgStr);
             }
             // 说明
             var summaryStr = editor.getNodeDocParticularString(StringTable.CONTEXT_NODE_DOC_SUMMARY, doc.summaryString);
-            str += lang._p(StringTable.CONTEXT_NODE_DOC_SUMMARY, EDITOR_NODE_DOC_SUMMARY_TEMPLATE, summaryStr); 
+            str += lang._p(StringTable.CONTEXT_NODE_DOC_SUMMARY, EDITOR_NODE_DOC_SUMMARY_TEMPLATE, summaryStr);
 
             // 参数文档
             str += lang._(EDITOR_NODE_DOC_PARAMETER_TITLE);
@@ -933,7 +933,7 @@ namespace Controllers
             }
             _ui.showNodeDocument(str);
 
-            
+
 
             string GetParameterStr(ActionParameterComment item)
             {
@@ -1196,7 +1196,7 @@ namespace Controllers
             var actionNodeItem = _ui.createActionNode(auraEntry.posX, auraEntry.posY,
                 nodeName,
                 inputViewData,
-                outputViewData, 
+                outputViewData,
                 visualEffect: false);
             actionNodeItem.switchToEventEntryNode();
 
@@ -2079,7 +2079,33 @@ namespace Controllers
         }
         private object validateInputFieldValue(NodeValueType targetValueType, object value, bool forceHasValue)
         {
-            if (!targetValueType.isArray())
+            if (value is IList list)
+            {
+                // 数组。
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var listElement = list[i];
+                    if (listElement == null)
+                        continue;
+                    // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
+                    var elementTargetType = listElement.GetType().getNodeValueType();
+                    list[i] = validateInputFieldValue(elementTargetType, listElement, false);
+                }
+                value = list;
+            }
+            else if (value is Pair pair)
+            {
+                if (pair.key != null)
+                {
+                    pair.key = validateInputFieldValue(pair.key.GetType().getNodeValueType(), pair.key, false);
+                }
+                if (pair.value != null)
+                {
+                    pair.value = validateInputFieldValue(pair.value.GetType().getNodeValueType(), pair.value, false);
+                }
+                value = pair;
+            }
+            else
             {
                 // 单个值。
                 var actualValueType = ActionNodeValueType.none;
@@ -2108,20 +2134,6 @@ namespace Controllers
                         updateEditorBuffs();
                     }
                 }
-            }
-            else if (value is IList list)
-            {
-                // 数组。
-                for (int i = 0; i < list.Count; i++)
-                {
-                    var listElement = list[i];
-                    if (listElement == null)
-                        continue;
-                    // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
-                    var elementTargetType = listElement.GetType().getNodeValueType();
-                    list[i] = validateInputFieldValue(elementTargetType, listElement, false);
-                }
-                value = list;
             }
             return value;
         }
@@ -2293,7 +2305,7 @@ namespace Controllers
         public event Action<Node, string, int, int[]> onOpenNodeInputDefaultValueCardDefine;
         #endregion
         #region 属性字段
-        
+
         #region 节点文档
         [TranslateMsg("节点帮助的标题，{0}是节点名称")]
         const string EDITOR_NODE_DOC_TITLE_TEMPLATE = "<h2>{0}</h2>";
@@ -2347,7 +2359,7 @@ namespace Controllers
         bool _isReadonly;
 
         ConfigManager _config;
-        ConfigManager config 
+        ConfigManager config
         {
             get
             {

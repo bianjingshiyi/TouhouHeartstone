@@ -102,7 +102,12 @@ namespace UI
         {
             if (type.isArray())
                 return null;
-            switch (type.type)
+            return getAssignableValueTypes(type.type);
+        }
+
+        public static NodeValueType[] getAssignableValueTypes(ActionNodeValueType valueType)
+        {
+            switch (valueType)
             {
                 case ActionNodeValueType.any:
                     return new NodeValueType[]
@@ -122,14 +127,9 @@ namespace UI
 
         public static object getDefaultValue(this NodeValueType valueType)
         {
-            if (!defaultValues.TryGetValue(valueType.type, out var func))
+            if (!defaultValues.TryGetValue(valueType.type, out var constructor))
                 return null;
-            if (!valueType.isArray())
-            {
-                // 不是数组
-                return func();
-            }
-            else
+            if (valueType.isArray())
             {
                 // 数组
                 Type type = null;
@@ -145,6 +145,10 @@ namespace UI
                     return null;
                 var array = Array.CreateInstance(type, 0);
                 return array;
+            }
+            else
+            {
+                return constructor();
             }
 
         }
@@ -192,9 +196,9 @@ namespace UI
             { typeof(EventVarName), ActionNodeValueType.eventVarName },
             { typeof(TypeName), ActionNodeValueType.type },
             { typeof(CardType), ActionNodeValueType.cardType },
-
             { typeof(CardDefine), ActionNodeValueType.cardReference },
             { typeof(BuffDefine), ActionNodeValueType.buffReference },
+            { typeof(Pair), ActionNodeValueType.pair }
         };
         private static readonly Dictionary<ActionNodeValueType, Func<object>> defaultValues = new Dictionary<ActionNodeValueType, Func<object>>()
         {
@@ -223,6 +227,7 @@ namespace UI
             { ActionNodeValueType.eventVarName, () => new EventVarName(string.Empty) },
             { ActionNodeValueType.type, () => new TypeName(typeof(object).Name) },
             { ActionNodeValueType.cardType, () => new CardType(string.Empty) },
+            { ActionNodeValueType.pair, () => new Pair() }
         };
 
     }
@@ -344,5 +349,9 @@ namespace UI
         /// 卡牌类型
         /// </summary>
         cardType,
+        /// <summary>
+        /// 映射
+        /// </summary>
+        pair,
     }
 }

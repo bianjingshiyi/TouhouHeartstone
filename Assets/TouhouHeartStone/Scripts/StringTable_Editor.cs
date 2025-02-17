@@ -165,6 +165,8 @@ namespace Game
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_PROPERTY_NAME = "属性名称";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
+        public const string EDITOR_PARAM_NAME_KEY = "键";
+        [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_VALUE = "值";
         [TranslateMsg("编辑器/参数名称", CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_OPERATOR = "运算符";
@@ -559,6 +561,8 @@ namespace Game
         public const string EDITOR_TYPE_NAME_UNKNOWN = "未知类型";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_OBJECT = "任意类型";
+        [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
+        public const string EDITOR_TYPE_NAME_PAIR = "映射";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_INT = "整数";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]

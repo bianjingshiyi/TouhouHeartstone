@@ -179,7 +179,34 @@ namespace Game
         }
         public object validatePropertyValue(NodeValueType targetValueType, object value, Action updateBuffDefineAction)
         {
-            if (!targetValueType.isArray())
+            if (value is IList list)
+            {
+                // 数组。
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var listElement = list[i];
+                    if (listElement == null)
+                        continue;
+                    // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
+                    var elementTargetType = listElement.GetType().getNodeValueType();
+                    list[i] = validatePropertyValue(elementTargetType, listElement, updateBuffDefineAction);
+                }
+                value = list;
+            }
+            else if (value is Pair pair)
+            {
+                // 映射
+                if (pair.key != null)
+                {
+                    pair.key = validatePropertyValue(pair.key, updateBuffDefineAction);
+                }
+                if (pair.value != null)
+                {
+                    pair.value = validatePropertyValue(pair.value, updateBuffDefineAction);
+                }
+                value = pair;
+            }
+            else
             {
                 // 单个值。
                 var actualValueType = ActionNodeValueType.none;
@@ -199,20 +226,6 @@ namespace Game
                             updateBuffDefines();
                     }
                 }
-            }
-            else if (value is IList list)
-            {
-                // 数组。
-                for (int i = 0; i < list.Count; i++)
-                {
-                    var listElement = list[i];
-                    if (listElement == null)
-                        continue;
-                    // 这里的数组可能是object[]，也有可能是单一类型的数组，因此改为获取列表元素的类型。
-                    var elementTargetType = listElement.GetType().getNodeValueType();
-                    list[i] = validatePropertyValue(elementTargetType, listElement, updateBuffDefineAction);
-                }
-                value = list;
             }
             return value;
         }

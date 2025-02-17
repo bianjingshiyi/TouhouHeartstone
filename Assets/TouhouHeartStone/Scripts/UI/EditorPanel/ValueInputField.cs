@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore.UI;
@@ -8,6 +9,7 @@ using Game;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using TouhouHeartstone;
+using UnityEditorInternal.VersionControl;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements.Experimental;
@@ -36,7 +38,7 @@ namespace UI
             _valueInfo = info;
             _valueTypeValues = info.assignType.getAssignableValueTypes();
             _isListItem = isListItem;
-            update();
+            updateUI();
         }
         public void setButtonText(string text)
         {
@@ -105,7 +107,7 @@ namespace UI
             {
                 child.valueField.initProperties(props);
             }
-            update();
+            updateUI();
 
             void setProp<T>(ref T variable, T value)
             {
@@ -200,10 +202,9 @@ namespace UI
         #region 事件回调
         private void onTypeDropdownValueChangedCallback(int index)
         {
-            var typeValues = _valueTypeValues;
-            if (typeValues != null)
+            if (_valueTypeValues != null)
             {
-                var type = typeValues[index];
+                var type = _valueTypeValues[index];
                 var value = _valueInfo.value;
                 bool notSameType = false;
                 if (value == null)
@@ -243,7 +244,7 @@ namespace UI
                 list.Add(defaultValue);
             }
             callValueChangedCallback(_valueInfo.value);
-            update();
+            updateUI();
         }
         private void onClickItemRemoveButtonCallback(ValueInputFieldListItem item)
         {
@@ -272,7 +273,7 @@ namespace UI
                 list.RemoveAt(index);
             }
             callValueChangedCallback(_valueInfo.value);
-            update();
+            updateUI();
         }
         private void onItemValueChangedCallback(ValueInputFieldListItem listItem, object value)
         {
@@ -289,7 +290,7 @@ namespace UI
                 list[index] = value;
             }
             callValueChangedCallback(_valueInfo.value);
-            update();
+            updateUI();
         }
         #endregion
 
@@ -470,13 +471,17 @@ namespace UI
         }
         #endregion
         #endregion
-        private void update()
+        private void updateUI()
         {
             updateTypeDropdown();
 
             if (_valueInfo.type.isArray())
             {
                 updateArray();
+            }
+            else if (_valueInfo.type.type == ActionNodeValueType.pair)
+            {
+                updatePair();
             }
             else
             {
@@ -494,15 +499,14 @@ namespace UI
         }
         private void updateTypeDropdown()
         {
-            var typeValues = _valueTypeValues;
-            var valueTypeCount = typeValues?.Length ?? 0;
+            var valueTypeCount = _valueTypeValues?.Length ?? 0;
             _typeDropdown.gameObject.SetActive(valueTypeCount > 0);
             _typeDropdown.ClearOptions();
-            if (typeValues != null && _valueTypeNames != null)
+            if (_valueTypeValues != null && _valueTypeNames != null)
             {
-                var typeNames = typeValues.Select(t => _valueTypeNames.FirstOrDefault(m => m.type == t.type).name ?? _defaultValueTypeName);
+                var typeNames = _valueTypeValues.Select(t => _valueTypeNames.FirstOrDefault(m => m.type == t.type).name ?? _defaultValueTypeName);
                 _typeDropdown.AddOptions(typeNames.ToList());
-                _typeDropdown.value = Array.IndexOf(typeValues, _valueInfo.type);
+                _typeDropdown.value = Array.IndexOf(_valueTypeValues, _valueInfo.type);
             }
         }
         private void updateArray()
@@ -514,19 +518,10 @@ namespace UI
             }
             if (_valueInfo.value is IList list)
             {
-                _inputField.gameObject.SetActive(false);
-                _toggleField.SetActive(false);
-                _dropdown.gameObject.SetActive(false);
-                _buffItemObj.gameObject.SetActive(false);
-                _inputDropdown.gameObject.SetActive(false);
-                _multiInputDropdown.gameObject.SetActive(false);
-                _button.gameObject.SetActive(false);
-                _buildItem.gameObject.SetActive(false);
-                _cardPoolItem.gameObject.SetActive(false);
-                _multiInputDropdown.gameObject.SetActive(false);
+                disableNonListFields();
 
                 _listRoot.gameObject.SetActive(true);
-                var childValueType = _valueInfo.type.getElementType();
+                NodeValueType childValueType = _valueInfo.type.getElementType();
                 _childrenElementList.updateList(list.Count, (i, itemRect) =>
                 {
                     ValueInputFieldListItem listItem = itemRect.GetComponent<ValueInputFieldListItem>();
@@ -535,7 +530,6 @@ namespace UI
                     var value = list[i];
                     var assignType = childValueType;
                     var valueType = assignType.getAssignableValueTypeByValue(value);
-                    var childTypes = assignType.getAssignableValueTypes();
                     var valueInfo = new ActionNodeValueInfo(null, valueType, value, assignType);
 
                     var fieldProps = getFieldProperties();
@@ -556,6 +550,81 @@ namespace UI
             {
                 _listRoot.gameObject.SetActive(false);
             }
+        }
+        private void updatePair()
+        {
+            // 映射
+            if (_valueInfo.value is not Pair pair)
+            {
+                pair = new Pair();
+                _valueInfo.value = pair;
+            }
+            disableNonListFields();
+            _listRoot.gameObject.SetActive(false);
+            _pairRoot.gameObject.SetActive(true);
+            ValueInputField template = _listRoot.GetComponent<ElementList>().getTemplate<ValueInputFieldListItem>().valueField;
+            if (keyField == null)
+            {
+                keyField = Instantiate(template, _pairRoot.transform);
+                keyField.initProperties(getFieldProperties());
+                keyField.onValueChanged += onFieldValueChanged;
+                keyField.onClickButton += onFieldClickButton;
+            }
+            if (valueField == null)
+            {
+                valueField = Instantiate(template, _pairRoot.transform);
+                valueField.initProperties(getFieldProperties());
+                valueField.onValueChanged += onFieldValueChanged;
+                valueField.onClickButton += onFieldClickButton;
+            }
+            NodeValueType anyType = new NodeValueType(ActionNodeValueType.any);
+            keyField.setValueInfo(null, new ActionNodeValueInfo(null, anyType.getAssignableValueTypeByValue(pair.key), pair.key, anyType));
+            valueField.setValueInfo(null, new ActionNodeValueInfo(null, anyType.getAssignableValueTypeByValue(pair.value), pair.value, anyType));
+            keyField.setReadonly(_isReadonly);
+            valueField.setReadonly(_isReadonly);
+
+            void onFieldValueChanged(ValueInputField field, object value)
+            {
+                if (_isReadonly)
+                    return;
+                if (_valueInfo.value is not Pair pair)
+                {
+                    pair = new Pair();
+                }
+                if (field == keyField)
+                    pair.key = value;
+                else if (field == valueField)
+                    pair.value = value;
+                else
+                    throw new IndexOutOfRangeException();
+                _valueInfo.value = pair;
+                callValueChangedCallback(_valueInfo.value);
+                updateUI();
+            }
+            void onFieldClickButton(ValueInputField field, int[] itemsIndex, ValueInputFieldButton buttonType)
+            {
+                int[] index;
+                if (field == keyField)
+                    index = new[] { 0 };
+                else if (field == valueField)
+                    index = new[] { 1 };
+                else
+                    throw new IndexOutOfRangeException();
+                onClickButton?.Invoke(this, index, buttonType);
+            }
+        }
+        private void disableNonListFields()
+        {
+            _inputField.gameObject.SetActive(false);
+            _toggleField.SetActive(false);
+            _dropdown.gameObject.SetActive(false);
+            _buffItemObj.gameObject.SetActive(false);
+            _inputDropdown.gameObject.SetActive(false);
+            _multiInputDropdown.gameObject.SetActive(false);
+            _button.gameObject.SetActive(false);
+            _buildItem.gameObject.SetActive(false);
+            _cardPoolItem.gameObject.SetActive(false);
+            _multiInputDropdown.gameObject.SetActive(false);
         }
         private void updateInputField()
         {
@@ -595,8 +664,8 @@ namespace UI
             if (valueType == ActionNodeValueType.boolean)
             {
                 _toggleField.SetActive(true);
-                if (_valueInfo.value != null)
-                    _toggle.SetIsOnWithoutNotify((bool)_valueInfo.value);
+                if (_valueInfo.value is bool b)
+                    _toggle.SetIsOnWithoutNotify(b);
                 else
                     _toggle.SetIsOnWithoutNotify(false);
             }
@@ -908,7 +977,7 @@ namespace UI
             {
                 _multiInputDropdown.setValuesWithoutNotify(stringList.ToArray());
             }
-            else if(_valueInfo.value is IList<T> value)
+            else if (_valueInfo.value is IList<T> value)
             {
                 _multiInputDropdown.setValuesWithoutNotify(value.Select(v => v.value).ToArray());
             }
@@ -1010,6 +1079,12 @@ namespace UI
         ElementList _childrenElementList;
         [SerializeField]
         Button _addItemButton;
+
+        [Header("映射")]
+        [SerializeField]
+        RectTransform _pairRoot;
+        public ValueInputField keyField;
+        public ValueInputField valueField;
 
         [Header("下拉列表值")]
         [SerializeField]
@@ -1163,6 +1238,11 @@ namespace UI
                     await childInputField.setInputFieldByValue(element, env, game);
                 }
             }
+            else if (value is Pair pair)
+            {
+                await inputField.keyField.setInputFieldByValue(pair.key, env, game);
+                await inputField.valueField.setInputFieldByValue(pair.value, env, game);
+            }
         }
         public static async Task setInputFieldCard(this ValueInputField inputField, DefineReference cardReference, IEnumerable<ICardPoolReference> env, MainManager game)
         {
@@ -1206,6 +1286,11 @@ namespace UI
                         continue;
                     await childInputField.setInputFieldCardPoolByValue(element, env, game);
                 }
+            }
+            else if (value is Pair pair)
+            {
+                await inputField.keyField.setInputFieldCardPoolByValue(pair.key, env, game);
+                await inputField.valueField.setInputFieldCardPoolByValue(pair.value, env, game);
             }
         }
         public static async Task setInputFieldCardPool(this ValueInputField inputField, CardPoolIDProxy cardPoolID, IEnumerable<ICardPoolReference> env, MainManager game)

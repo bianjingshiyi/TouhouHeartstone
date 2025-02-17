@@ -63,6 +63,7 @@ namespace Controllers
             registerClass<CompareOperator>();
             registerClass<IntegerOperator>();
             registerClass<LogicOperator>();
+            registerClass<Pair>();
 
             // Obsolete.
             registerClass<ActionValueRef>();
