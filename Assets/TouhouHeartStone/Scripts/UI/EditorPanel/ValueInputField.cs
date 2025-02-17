@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore.UI;
@@ -9,10 +8,8 @@ using Game;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using TouhouHeartstone;
-using UnityEditorInternal.VersionControl;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements.Experimental;
 using EventArgReference = Game.EventArgReference;
 
 namespace UI

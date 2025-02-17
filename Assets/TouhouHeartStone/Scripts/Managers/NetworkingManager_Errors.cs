@@ -1,17 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using BJSYGameCore;
 using MukioI18n;
-using NitoriNetwork.Common;
-using TouhouCardEngine;
-using UI;
-using UnityEngine;
 using NitoriNetwork.Common;
 
 namespace Game
