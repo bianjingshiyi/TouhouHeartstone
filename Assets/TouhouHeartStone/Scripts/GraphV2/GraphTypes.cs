@@ -109,7 +109,8 @@ namespace Game
             new GraphTypeInfo() { type = typeof(bool), typeName = StringTable.EDITOR_TYPE_NAME_BOOL, portType = true, color = new Color(.6f, 1, .8f, 1) },
             new GraphTypeInfo() { type = typeof(string), typeName = StringTable.EDITOR_TYPE_NAME_STRING, portType = true, color = new Color(.7f, .8f, .2f, 1) },
             new GraphTypeInfo() { type = typeof(Array), typeName = StringTable.EDITOR_TYPE_NAME_ARRAY, portType = true, color = new Color(.8f, .8f, .8f, 1) },
-            new GraphTypeInfo() { type = typeof(GraphMap), typeName = StringTable.EDITOR_TYPE_NAME_MAP, portType = true, color = new Color(.5f, .5f, .5f, 1) },
+            new GraphTypeInfo() { type = typeof(GraphMap), typeName = StringTable.EDITOR_TYPE_NAME_MAP, portType = true, color = new Color(.8f, .6f, .5f, 1) },
+            new GraphTypeInfo() { type = typeof(Pair), typeName = StringTable.EDITOR_TYPE_NAME_PAIR, portType = true, color = new Color(.8f, .6f, .6f, 1) },
             // 特殊的类型，暂时不能作为端口变量使用
             new GraphTypeInfo() { type = typeof(float), typeName = StringTable.EDITOR_TYPE_NAME_FLOAT, color = new Color(.4f, 1, .6f, 1) },
             new GraphTypeInfo() { type = typeof(char), typeName = StringTable.EDITOR_TYPE_NAME_CHAR, color = new Color(.5f, .8f, .2f, 1) },
@@ -123,7 +124,7 @@ namespace Game
             new GraphTypeInfo() { type = typeof(BuffDefine), typeName = StringTable.EDITOR_TYPE_NAME_BUFF_DEFINE, portType = true, color = new Color(.1f, .5f, .6f, 1) },
             new GraphTypeInfo() { type = typeof(Buff), typeName = StringTable.EDITOR_TYPE_NAME_BUFF, portType = true, color = new Color(.2f, .8f, 1, 1) },
             new GraphTypeInfo() { type = typeof(Effect), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT, portType = true, color = new Color(.2f, 1, 1, 1) },
-            
+
             // 事件
             new GraphTypeInfo() { type = typeof(EventArg), typeName = StringTable.EDITOR_TYPE_NAME_EVENT_ARG, portType = true, color = new Color(1, 1, .2f, 1) },
             new GraphTypeInfo() { type = typeof(EventRecord), typeName = StringTable.EDITOR_TYPE_NAME_EVENT_RECORD, color = new Color(.9f, .9f, .4f, 1) },
