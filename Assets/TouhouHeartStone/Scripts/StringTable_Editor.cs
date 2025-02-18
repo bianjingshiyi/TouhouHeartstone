@@ -505,6 +505,8 @@ namespace Game
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_CARD_PROP_CHANGE = "卡牌属性变动";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
+        public const string EDITOR_EVENT_NAME_BUFF_PROP_CHANGE = "增益属性变动";
+        [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_CHANGE_CARD_VISIBILITY = "卡牌可见性变动";
         [TranslateMsg("事件名称", CONTEXT_EVENT_NAME)]
         public const string EDITOR_EVENT_NAME_CHANGE_CARD_PROP_VISIBILITY = "卡牌属性可见性变动";
