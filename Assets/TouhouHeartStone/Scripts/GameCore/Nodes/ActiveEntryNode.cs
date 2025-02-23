@@ -112,11 +112,33 @@ namespace TouhouHeartstone
             return getInputDefaultValue<int>(priorityPortName);
         }
         #endregion
-
+        public override Node Clone()
+        {
+            ActiveEntryNode newNode = new ActiveEntryNode(id);
+            newNode.posX = posX;
+            newNode.posY = posY;
+            newNode.propDict = propDict.Clone();
+            newNode.graph = graph.Clone();
+            if (inputDefaultValueList != null && inputDefaultValueList.Count > 0)
+            {
+                foreach (var defaultValue in inputDefaultValueList)
+                {
+                    newNode.inputDefaultValueList.Add(defaultValue.Clone());
+                }
+            }
+            if (targetCheckerList != null && targetCheckerList.Count > 0)
+            {
+                foreach(TargetChecker targetChecker in targetCheckerList)
+                {
+                    newNode.targetCheckerList.Add(targetChecker.Clone());
+                }
+            }
+            return newNode;
+        }
         private void DefinitionConditions()
         {
-            var inputs = new List<IPort> 
-            { 
+            var inputs = new List<IPort>
+            {
                 getOrCreateInputPort(conditionPortDefine),
             };
             for (int i = 0; i < targetCheckerList.Count; i++)
@@ -144,7 +166,7 @@ namespace TouhouHeartstone
 
             for (int i = 0; i < targetCheckerList.Count; i++)
             {
-                var portDefine =  PortDefine.Value(typeof(Card), getTargetPortName(i), Translations.EDITOR_PARAM_NAME_TARGET_CARD_NUMBER);
+                var portDefine = PortDefine.Value(typeof(Card), getTargetPortName(i), Translations.EDITOR_PARAM_NAME_TARGET_CARD_NUMBER);
                 portDefine.displayNameArgs = new string[1] { (i + 1).ToString() };
                 outputs.Add(getOrCreateOutputPort(portDefine));
             }

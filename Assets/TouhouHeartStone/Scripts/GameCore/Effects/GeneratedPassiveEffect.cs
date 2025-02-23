@@ -76,6 +76,14 @@ namespace TouhouHeartstone
             }
             return Task.CompletedTask;
         }
+        public override Effect Clone()
+        {
+            ActionGraph newGraph = graph.Clone();
+            GeneratedPassiveEffect newEffect = new GeneratedPassiveEffect(newGraph);
+            newEffect.name = name;
+            newEffect.propDict = propDict.Clone();
+            return newEffect;
+        }
         #endregion
         #region 私有方法
         protected override IEnumerable<ITraversable> getTraversableProps()

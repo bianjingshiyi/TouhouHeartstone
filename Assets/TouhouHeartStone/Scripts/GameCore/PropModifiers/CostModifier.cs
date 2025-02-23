@@ -11,5 +11,9 @@ namespace TouhouHeartstone
         public CostModifier(int value, bool isSet) : base(DEFINE.COST, value, isSet)
         {
         }
+        public override PropModifier Clone()
+        {
+            return new CostModifier(defaultValue, isSet);
+        }
     }
 }

@@ -1,15 +1,9 @@
 ﻿using NUnit.Framework;
-using TouhouHeartstone;
-using TouhouCardEngine;
-using Controllers;
-using System.Collections.Generic;
-using MongoDB.Bson.Serialization;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using BJSYGameCore;
 using System;
 using System.Security.Cryptography;
-using System.IO;
 
 namespace Tests
 {

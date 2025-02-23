@@ -11,5 +11,9 @@ namespace TouhouHeartstone
         public AttackModifier(int value, bool isSet) : base(DEFINE.ATTACK, value, isSet)
         {
         }
+        public override PropModifier Clone()
+        {
+            return new AttackModifier(defaultValue, isSet);
+        }
     }
 }

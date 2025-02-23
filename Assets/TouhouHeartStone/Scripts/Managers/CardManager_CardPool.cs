@@ -1208,6 +1208,7 @@ namespace Game
 
 
             #region 内嵌方法
+#pragma warning disable CS0618 // 类型或成员已过时
             void fixSkins()
             {
             }
@@ -1766,6 +1767,7 @@ namespace Game
                 }
                 return null;
             }
+#pragma warning restore CS0618 // 类型或成员已过时
             #endregion
         }
         public byte[] serializeCardPool(CardPoolInfo cardPoolInfo, CardPool cardPool)

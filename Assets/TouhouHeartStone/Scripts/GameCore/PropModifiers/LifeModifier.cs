@@ -74,6 +74,10 @@ namespace TouhouHeartstone
             }
             return Task.CompletedTask;
         }
+        public override PropModifier Clone()
+        {
+            return new LifeModifier(defaultValue, isSet);
+        }
         #endregion
     }
 }

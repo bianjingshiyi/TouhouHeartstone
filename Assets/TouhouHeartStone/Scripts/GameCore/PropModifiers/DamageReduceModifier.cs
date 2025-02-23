@@ -11,5 +11,9 @@ namespace TouhouHeartstone
         public DamageReduceModifier(int value, bool isSet) : base(DEFINE.DAMAGE_REDUCE, value, isSet)
         {
         }
+        public override PropModifier Clone()
+        {
+            return new DamageReduceModifier(defaultValue, isSet);
+        }
     }
 }

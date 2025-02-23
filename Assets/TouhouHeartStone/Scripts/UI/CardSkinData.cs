@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace UI
 {
-    public class CardSkinData : ISkin
+    public class CardSkinData : ISkin, ICloneable
     {
         /// <summary>
         /// 构造一个空的卡牌皮肤
@@ -68,6 +68,39 @@ namespace UI
         public int removeSoundRef(string name)
         {
             return _soundRefs.RemoveAll(r => r.name == name);
+        }
+        public CardSkinData Clone()
+        {
+            CardSkinData newSkin = new CardSkinData()
+            {
+                _id = _id,
+                _skinId = _skinId,
+                _illustrator = _illustrator,
+                _skinName = _skinName,
+                _name = _name,
+                _subname = _subname,
+                _imagePath = _imagePath,
+                _desc = _desc,
+            };
+            if (_animationRefs != null && _animationRefs.Count > 0)
+            {
+                foreach (SkinAnimationRef animRef in _animationRefs)
+                {
+                    newSkin._animationRefs.Add(animRef.Clone());
+                }
+            }
+            if (_soundRefs != null && _soundRefs.Count > 0)
+            {
+                foreach (SkinSoundRef soundRef in _soundRefs)
+                {
+                    newSkin._soundRefs.Add(soundRef.Clone());
+                }
+            }
+            return newSkin;
+        }
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
         public static string[] getSoundNamesByType(string cardType)
         {

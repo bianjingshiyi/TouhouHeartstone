@@ -19,18 +19,12 @@ namespace Game
         #region 创建
         public GeneratedBuffDefine createBuffDefine(long cardPoolId)
         {
-            var cardPool = getLocalCardPool(cardPoolId);
+            CardPool cardPool = getLocalCardPool(cardPoolId);
             if (cardPool == null)
             {
                 throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
             }
-            int newBuffDefineId = 0;
-            for (int i = 0; i < cardPool.buffDefineList.Count; i++)
-            {
-                if (cardPool.buffDefineList[i].id > newBuffDefineId)
-                    newBuffDefineId = cardPool.buffDefineList[i].id;
-            }
-            newBuffDefineId++;
+            int newBuffDefineId = cardPool.buffDefineList.Count > 0 ? cardPool.buffDefineList.Max(b => b.id) + 1 : 1;
             GeneratedBuffDefine buffDefine = new GeneratedBuffDefine(cardPoolId, newBuffDefineId);
             return buffDefine;
         }
@@ -47,6 +41,31 @@ namespace Game
                 effect.cardDefineRef = null;
             }
             return clone;
+        }
+        public BuffDefine pasteBuffDefine(BuffDefine buffDefine)
+        {
+            // 构造新的增益定义
+            BuffDefine newBuffDefine = buffDefine.Clone();
+            // 分配新的id
+            CardPool cardPool = getLocalCardPool(buffDefine.cardPoolId);
+            int newBuffDefineId = cardPool.buffDefineList.Count > 0 ? cardPool.buffDefineList.Max(b => b.id) + 1 : 1;
+            newBuffDefine.id = newBuffDefineId;
+            addBuffDefine(newBuffDefine.cardPoolId, newBuffDefine as GeneratedBuffDefine);
+            // 复制增益定义的皮肤
+            BuffSkin[] skins = getBuffSkins(buffDefine);
+            foreach (BuffSkin skin in skins)
+            {
+                BuffSkin newSkin = skin.Clone();
+                newSkin.buffId = newBuffDefineId;
+                // 重命名皮肤
+                newSkin.nameKey = string.Format(game.lang._(StringTable.EDITOR_COPY_SUFFIX), newSkin.nameKey);
+                if (!cardPool.localizedStringList.Exists(s => s.value == newSkin.nameKey))
+                {
+                    cardPool.localizedStringList.Add(new LocalizedString(newSkin.nameKey));
+                }
+                addBuffSkin(newBuffDefine.cardPoolId, newSkin);
+            }
+            return newBuffDefine;
         }
         #endregion
 

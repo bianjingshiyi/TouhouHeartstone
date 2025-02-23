@@ -103,8 +103,10 @@ namespace TouhouCardEngine
             return getInputDefaultValue<int>(priorityPortName);
         }
         #endregion
-
-
+        public override Node Clone()
+        {
+            throw new NotImplementedException();
+        }
         private void DefinitionConditions()
         {
             var inputs = new List<IPort> 

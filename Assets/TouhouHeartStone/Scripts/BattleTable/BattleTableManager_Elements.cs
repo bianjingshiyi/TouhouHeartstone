@@ -2194,7 +2194,7 @@ namespace Game.BattleTable
             DefineReference curBuffRef = null;
             foreach (var buff in buffs)
             {
-                var defineRef = buff.define.getDefineRef();
+                BuffReference defineRef = buff.define.getDefineRef();
                 if (curBuffRef == defineRef && buffCountList.Count > 0)
                 {
                     var lastTuple = buffCountList[buffCountList.Count - 1];

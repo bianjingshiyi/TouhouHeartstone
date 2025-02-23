@@ -56,7 +56,14 @@ namespace TouhouHeartstone
         {
             return EffectTriggerEventDefine.doEvent(env);
         }
-
+        public override BuffReference[] collectBuffReferences()
+        {
+            return Array.Empty<BuffReference>();
+        }
+        public override void ReplaceBuffReference(BuffReference oldRef, BuffReference newRef)
+        {
+            // Nothing to do.
+        }
         #region 属性字段
         protected abstract Type eventType { get; }
         protected abstract EventTriggerTimeType triggerType { get; }
@@ -79,7 +86,10 @@ namespace TouhouHeartstone
             var propName = eventArg.getVar<string>(CardPropChangeEventDefine.VAR_PROP_NAME);
             return argCard == card.getOwner().getItem() && propName == DEFINE.ATTACK;
         }
-
+        public override Effect Clone()
+        {
+            return new MasterItemAttackEffectPropChanged(buffDefineRef.Clone());
+        }
         protected override Type eventType => typeof(CardPropChangeEventDefine);
         protected override EventTriggerTimeType triggerType => EventTriggerTimeType.After;
     }
@@ -97,6 +107,10 @@ namespace TouhouHeartstone
             var card = env.card;
             var argCard = eventArg.getVar<Card>(SetCardDefineEventDefine.VAR_CARD);
             return argCard == card.getOwner().getItem();
+        }
+        public override Effect Clone()
+        {
+            return new MasterItemAttackEffectSetDefine(buffDefineRef.Clone());
         }
         protected override Type eventType => typeof(SetCardDefineEventDefine);
         protected override EventTriggerTimeType triggerType => EventTriggerTimeType.After;
@@ -116,6 +130,10 @@ namespace TouhouHeartstone
             var argFrom = eventArg.getVar<Pile>(EVENTVAR.FROM_PILE);
             var argTo = eventArg.getVar<Pile>(MoveCardEventDefine.VAR_TO_PILE);
             return argFrom == player.getPile(PILE.ITEM) || argTo == player.getPile(PILE.ITEM);
+        }
+        public override Effect Clone()
+        {
+            return new MasterItemAttackEffectMoveCard(buffDefineRef.Clone());
         }
         protected override Type eventType => typeof(MoveCardEventDefine);
         protected override EventTriggerTimeType triggerType => EventTriggerTimeType.After;

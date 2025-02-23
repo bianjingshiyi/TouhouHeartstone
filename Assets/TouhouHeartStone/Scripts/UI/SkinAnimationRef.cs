@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Game;
 using Game.Animations;
@@ -6,7 +7,7 @@ using TouhouCardEngine;
 
 namespace UI
 {
-    public class SkinAnimationRef : IAnimationRef
+    public class SkinAnimationRef : IAnimationRef, ICloneable
     {
         /// <summary>
         /// 构造一个特效引用。
@@ -53,6 +54,29 @@ namespace UI
         public void addColorModify(ColorModifyData modify)
         {
             colorModifies.Add(modify);
+        }
+        public SkinAnimationRef Clone()
+        {
+            SkinAnimationRef newRef = new SkinAnimationRef(key, animRef.Clone())
+            {
+                sourcePosition = sourcePosition,
+                targetPosition = targetPosition,
+                sourcePositionVarName = sourcePositionVarName,
+                targetPositionVarName = targetPositionVarName,
+                eventReference = eventReference.Clone()
+            };
+            if (colorModifies != null && colorModifies.Count > 0)
+            {
+                foreach (ColorModifyData modify in colorModifies)
+                {
+                    newRef.colorModifies.Add(modify.Clone());
+                }
+            }
+            return newRef;
+        }
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
         public string key;
         public int sourcePosition;

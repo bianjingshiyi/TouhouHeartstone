@@ -18,6 +18,10 @@ namespace TouhouHeartstone
         {
             return _effects.ToArray();
         }
+        public override BuffDefine Clone()
+        {
+            return new MasterItemAttackBuffDefine();
+        }
         public List<Effect> _effects = new List<Effect>();
         public const string buffPropName = "itemAttack";
         public static readonly DefineReference buffDefineRef = new DefineReference(0, 1);

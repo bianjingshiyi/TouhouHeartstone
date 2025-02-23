@@ -122,6 +122,11 @@ namespace TouhouHeartstone
             }
             return Task.CompletedTask;
         }
+        public override Effect Clone()
+        {
+            GeneratedActiveEffect effect = new GeneratedActiveEffect(graph);
+            return effect;
+        }
         #endregion
         #region 私有方法
         protected override IEnumerable<ITraversable> getTraversableProps()

@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using BJSYGameCore;
 using Controllers;
 using MukioI18n;
+using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using UI;
 using UnityEngine;
@@ -31,6 +32,24 @@ namespace Game
         public string getBuffName(ICardPoolReference poolRef, BuffSkin skin)
         {
             return getLocalizedBuffName(poolRef, skin, game.lang.getLanguage());
+        }
+        /// <summary>
+        /// 获取增益名称，如果没有指定语言，则使用当前语言。
+        /// </summary>
+        /// <param name="buff"></param>
+        /// <param name="language"></param>
+        /// <returns></returns>
+        public string getBuffName(BuffDefine buff, string language = null)
+        {
+            if (tryGetLocalCardPool(buff.cardPoolId, out CardPool cardPool))
+            {
+                BuffSkin buffSkin = cardPool.buffSkinList.FirstOrDefault(s => s.buffId == buff.id);
+                if (buffSkin != null)
+                {
+                    return cardPool.localizedStringList.localize(buffSkin.nameKey, language ?? game.lang.getLanguage());
+                }
+            }
+            return game.lang._(StringTable.BUFF_NAME_UNKNOWN);
         }
         public string getLocalizedBuffName(ICardPoolReference poolRef, BuffSkin skin, string language)
         {
@@ -114,6 +133,18 @@ namespace Game
             if (!tryGetCardPool(poolRef, out CardPool cardPool))
                 return game.lang._(StringTable.BUILD_UNKNOWN_CARD_NAME);
             return cardPool.localizedStringList.localize(skin.nameKey, language);
+        }
+        public string getCardName(CardDefine card, string language = null)
+        {
+            if (tryGetLocalCardPool(card.cardPoolId, out CardPool cardPool))
+            {
+                CardSkinData skin = cardPool.cardSkinList.FirstOrDefault(s => s.id == card.id);
+                if (skin != null)
+                {
+                    return cardPool.localizedStringList.localize(skin.nameKey, language ?? game.lang.getLanguage());
+                }
+            }
+            return game.lang._(StringTable.BUILD_UNKNOWN_CARD_NAME);
         }
         #endregion
 

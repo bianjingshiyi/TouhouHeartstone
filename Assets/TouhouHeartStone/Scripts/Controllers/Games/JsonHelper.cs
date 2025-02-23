@@ -2,6 +2,7 @@
 using Game.PVE;
 using Game.Replays;
 using MessagePack;
+using MessagePack.Formatters;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
@@ -9,6 +10,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Conventions;
 using NitoriNetwork.Common;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TouhouCardEngine;
@@ -182,4 +184,34 @@ namespace Controllers
             }
         }
     }
+    public class CustomFormatterResolver : IFormatterResolver
+    {
+        public CustomFormatterResolver(Dictionary<Type, IMessagePackFormatter> typeFormatterDict)
+        {
+            _typeFormatterDict = new Dictionary<Type, IMessagePackFormatter>(typeFormatterDict);
+        }
+        public IMessagePackFormatter<T> GetFormatter<T>()
+        {
+            foreach (var pair in _typeFormatterDict)
+            {
+                if (typeof(T) == pair.Key && pair.Value is IMessagePackFormatter<T> formatter)
+                    return formatter;
+            }
+            return null;
+        }
+        private Dictionary<Type, IMessagePackFormatter> _typeFormatterDict;
+    }
+    //public class BuffReferenceFormatter : IMessagePackFormatter<BuffReference>
+    //{
+    //    public BuffReference Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+
+    //    public void Serialize(ref MessagePackWriter writer, BuffReference value, MessagePackSerializerOptions options)
+    //    {
+    //        writer.Write(value.)
+    //        throw new NotImplementedException();
+    //    }
+    //}
 }

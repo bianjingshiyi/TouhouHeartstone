@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -382,33 +383,81 @@ namespace Controllers
         /// <summary>
         /// 当点击粘贴卡牌按钮
         /// </summary>
-        private async void onClickPasteCardButton()
+        private void onClickPasteCardButton()
         {
             if (_copyingCard == null)
                 return;
 
-            var sourcePoolRef = getLocalCardPoolRef(_copyingCard.cardPoolId);
-            var sourceCardDefine = game.card.getCardDefine(sourcePoolRef, _copyingCard.defineId);
+            ICardPoolReference sourcePoolRef = getLocalCardPoolRef(_copyingCard.cardPoolId);
+            CardDefine sourceCardDefine = game.card.getCardDefine(sourcePoolRef, _copyingCard.defineId);
             if (sourceCardDefine == null) return;
 
-            var sourcePoolInfo = game.card.getCardPoolInfo(sourcePoolRef);
-
-            var curCardPoolId = this.curCardPoolId;
+            StartCoroutine(pasteCardCoroutine(sourceCardDefine));
+        }
+        IEnumerator pasteCardCoroutine(CardDefine originCardDefine)
+        {
             markCardPoolUnsaved(curCardPoolId);
-            var newCardDefine = game.card.cloneCardDefine(sourceCardDefine);
-            var newCardSkins = game.card.cloneCardSkins(sourcePoolInfo, sourceCardDefine.id);
-
-            var curCardPoolRef = getCurrentCardPoolRef();
-            var (_, cardPool) = await game.card.getOrLoadCardPool(curCardPoolRef);
-
-            newCardDefine.cardPoolId = curCardPoolId;
-            newCardDefine.id = game.card.allocCardDefineID(cardPool);
-            game.card.addCard(curCardPoolId, newCardDefine);
-            foreach (var skin in newCardSkins)
+            // 复制卡牌定义
+            CardDefine newCardDefine = game.card.pasteCardDefine(originCardDefine);
+            // 检查是否引用了增益定义
+            List<BuffReference> buffRefs = new List<BuffReference>(originCardDefine.collectBuffReferences());
+            if (buffRefs.Count > 0)
             {
-                skin.id = newCardDefine.id;
-                game.card.addCardSkin(curCardPoolId, skin);
+                List<BuffDefine> buffs = new List<BuffDefine>();
+                for (int i = 0; i < buffRefs.Count; i++)
+                {
+                    BuffReference buffRef = buffRefs[i];
+                    if (game.card.tryGetBuffDefine(game.card.getLocalCardPoolReference(buffRef.cardPoolId), buffRef.defineId, out GeneratedBuffDefine buffDefine))
+                    {
+                        buffs.Add(buffDefine);
+                        // 收集增益定义引用的增益定义
+                        foreach (BuffReference newBuffRef in buffDefine.collectBuffReferences())
+                        {
+                            if (!buffRefs.Contains(newBuffRef))
+                            {
+                                buffRefs.Add(newBuffRef);
+                            }
+                        }
+                    }
+                }
+                // 询问是否复制增益定义
+                List<BuffDefine> newBuffDefines = new();
+                Dictionary<BuffReference, BuffReference> replacedBuffRefDict = new Dictionary<BuffReference, BuffReference>();
+                if (buffs.Count > 0)
+                {
+                    foreach (BuffDefine buff in buffs)
+                    {
+                        bool? isNewBuff = null;
+                        game.ui.dialog.ShowQuestion(string.Empty, string.Format(game.i18n._(StringTable.EDITOR_DIALOG_CONFIRM_COPY_BUFF),
+                            game.card.getCardName(originCardDefine),
+                            game.card.getBuffName(buff)) , () =>
+                        {
+                            isNewBuff = true;
+                        }, () =>
+                        {
+                            isNewBuff = false;
+                        });
+                        yield return new WaitUntil(() => isNewBuff != null);
+                        if (isNewBuff.Value)
+                        {
+                            // 复制增益定义
+                            BuffDefine newBuffDefine = game.card.pasteBuffDefine(buff);
+                            newBuffDefines.Add(newBuffDefine);
+                            replacedBuffRefDict[buff.getDefineRef()] = newBuffDefine.getDefineRef();
+                        }
+                    }
+                }
+                // 替换卡牌定义与增益定义中的引用
+                foreach (var pair in replacedBuffRefDict)
+                {
+                    newCardDefine.ReplaceBuffReference(pair.Key, pair.Value);
+                    foreach (BuffDefine newBuffDefine in newBuffDefines)
+                    {
+                        newBuffDefine.ReplaceBuffReference(pair.Key, pair.Value);
+                    }
+                }
             }
+
             display(false, -1, true);
         }
         /// <summary>

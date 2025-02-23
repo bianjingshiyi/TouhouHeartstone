@@ -24,6 +24,10 @@ namespace TouhouHeartstone
                     return prop != null ? prop.Union(value).ToArray() : value;
             }
         }
+        public override PropModifier Clone()
+        {
+            return new StringArrayModifier(propertyName, modifyType, defaultValue);
+        }
         public ModifyType modifyType;
         public enum ModifyType
         {

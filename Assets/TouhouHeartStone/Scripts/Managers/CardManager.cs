@@ -58,6 +58,31 @@ namespace Game
             }
             return clone;
         }
+        public CardDefine pasteCardDefine(CardDefine define)
+        {
+            // 构造新的卡牌定义
+            CardDefine newCardDefine = define.Clone();
+            // 分配新的id
+            CardPool cardPool = getLocalCardPool(define.cardPoolId);
+            int newCardDefineId = allocCardDefineID(cardPool);
+            newCardDefine.id = newCardDefineId;
+            addCard(newCardDefine.cardPoolId, newCardDefine);
+            // 复制增益定义的皮肤
+            CardSkinData[] skins = getAllCardSkins(getLocalCardPoolReference(define.cardPoolId), define.id);
+            foreach (CardSkinData skin in skins)
+            {
+                CardSkinData newSkin = skin.Clone();
+                newSkin.id = newCardDefineId;
+                // 重命名皮肤
+                newSkin.nameKey = string.Format(game.lang._(StringTable.EDITOR_COPY_SUFFIX), newSkin.nameKey);
+                if (!cardPool.localizedStringList.Exists(s => s.value == newSkin.nameKey))
+                {
+                    cardPool.localizedStringList.Add(new LocalizedString(newSkin.nameKey));
+                }
+                addCardSkin(newCardDefine.cardPoolId, newSkin);
+            }
+            return newCardDefine;
+        }
         #endregion
 
         #region 添加卡牌定义
@@ -235,7 +260,7 @@ namespace Game
                         addDefRefByObject(item);
                     }
                 }
-                else if(obj is Pair pair)
+                else if (obj is Pair pair)
                 {
                     addDefRefByObject(pair.key);
                     addDefRefByObject(pair.value);
@@ -288,7 +313,7 @@ namespace Game
                         else if (inputValueType.type == ActionNodeValueType.cardReference)
                         {
                             addDefRefByObject(inputDefaultValue);
-                        } 
+                        }
                     }
                 }
             }

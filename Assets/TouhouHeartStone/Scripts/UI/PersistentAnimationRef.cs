@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Game;
 using Game.Animations;
@@ -6,7 +7,7 @@ using TouhouCardEngine;
 
 namespace UI
 {
-    public class PersistentAnimationRef : IAnimationRef
+    public class PersistentAnimationRef : IAnimationRef, ICloneable
     {
         public PersistentAnimationRef() : this(new DefineReference(0, 0))
         {
@@ -40,6 +41,23 @@ namespace UI
         public void addColorModify(ColorModifyData modify)
         {
             colorModifies.Add(modify);
+        }
+        public PersistentAnimationRef Clone()
+        {
+            PersistentAnimationRef newRef = new PersistentAnimationRef();
+            newRef.animRef = animRef.Clone();
+            if (colorModifies != null && colorModifies.Count > 0)
+            {
+                foreach (var modify in colorModifies)
+                {
+                    newRef.colorModifies.Add(modify.Clone());
+                }
+            }
+            return newRef;
+        }
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
         public DefineReference animRef;
         public List<ColorModifyData> colorModifies = new List<ColorModifyData>();

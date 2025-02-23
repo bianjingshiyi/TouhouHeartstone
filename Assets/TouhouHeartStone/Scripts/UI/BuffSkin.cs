@@ -6,7 +6,7 @@ using TouhouCardEngine;
 
 namespace UI
 {
-    public class BuffSkin : ISkin
+    public class BuffSkin : ISkin, ICloneable
     {
         public int buffId;
         public string nameKey;
@@ -51,6 +51,27 @@ namespace UI
         public int removeAnimRef(string key)
         {
             return _animationRefs.RemoveAll(r => r.key == key);
+        }
+        public BuffSkin Clone()
+        {
+            BuffSkin newSkin = new BuffSkin();
+            newSkin.buffId = buffId;
+            newSkin.nameKey = nameKey;
+            newSkin.descKey = descKey;
+            newSkin.imagePathKey = imagePathKey;
+            newSkin.persistentAnimRef = persistentAnimRef.Clone();
+            if(_animationRefs != null && _animationRefs.Count > 0)
+            {
+                foreach(SkinAnimationRef animRef in _animationRefs)
+                {
+                    newSkin._animationRefs.Add(animRef.Clone());
+                }
+            }
+            return newSkin;
+        }
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
     }
 }

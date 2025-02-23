@@ -44,6 +44,22 @@ namespace TouhouHeartstone
         {
             return outputList?.FirstOrDefault() as ControlOutput;
         }
+        public override Node Clone()
+        {
+            GameRuleEntryNode newNode = new GameRuleEntryNode(id, logicType);
+            newNode.posX = posX;
+            newNode.posY = posY;
+            newNode.propDict = propDict.Clone();
+            newNode.graph = graph.Clone();
+            if (inputDefaultValueList != null && inputDefaultValueList.Count > 0)
+            {
+                foreach (var defaultValue in inputDefaultValueList)
+                {
+                    newNode.inputDefaultValueList.Add(defaultValue.Clone());
+                }
+            }
+            return newNode;
+        }
         #endregion
 
         #region 私有方法

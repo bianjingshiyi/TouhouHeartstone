@@ -41,6 +41,10 @@ namespace TouhouHeartstone
             }
             return prop;
         }
+        public override PropModifier Clone()
+        {
+            return new CustomPropertyModifier(propertyName, defaultValue, isSet);
+        }
         public override string ToString()
         {
             if (!string.IsNullOrEmpty(relatedPropName))

@@ -18,6 +18,8 @@ namespace Game
         public const string EDITOR_CARDPOOL_NAME_VERSION_TEMPLATE_DOT = "·{0}（版本{1}）";
         [TranslateMsg("丢失的卡池名称")]
         public const string EDITOR_UNKNOWN_CARD_POOL = "未知卡池";
+        [TranslateMsg("复制的卡牌与增益名称的后缀")]
+        public const string EDITOR_COPY_SUFFIX = "{0}（复制）";
         #endregion
 
         #region 对话框
@@ -35,6 +37,8 @@ namespace Game
         public const string EDITOR_DIALOG_CANNOT_DELETE_STANDARD_CARDPOOL = "你不能删除标准卡池";
         [TranslateMsg("编辑器中提示玩家不能修改官方标准卡池")]
         public const string EDITOR_DIALOG_CANNOT_MODIFY_STANDARD_CARDPOOL = "你不能修改标准卡池";
+        [TranslateMsg("编辑器中询问玩家是否要在复制卡牌的时候复制引用的增益")]
+        public const string EDITOR_DIALOG_CONFIRM_COPY_BUFF = "你复制的卡牌“{0}”中包含了增益“{1}”，是否也复制该增益？否则将保留对原增益的引用。";
         #endregion
 
         #region 错误提示
@@ -624,7 +628,7 @@ namespace Game
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_EVENT_ARG = "事件";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
-        public const string EDITOR_TYPE_NAME_EVENT_RECORD = "事件记录"; 
+        public const string EDITOR_TYPE_NAME_EVENT_RECORD = "事件记录";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_PROP_MODIFIER = "属性修改器";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
@@ -650,7 +654,7 @@ namespace Game
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
         public const string EDITOR_TYPE_NAME_PILE_NAME = "牌堆名";
         [TranslateMsg("编辑器/数据类型名", CONTEXT_EDITOR_TYPE)]
-        public const string EDITOR_TYPE_NAME_EVENT_TYPE = "事件类型"; 
+        public const string EDITOR_TYPE_NAME_EVENT_TYPE = "事件类型";
         #endregion
     }
 }

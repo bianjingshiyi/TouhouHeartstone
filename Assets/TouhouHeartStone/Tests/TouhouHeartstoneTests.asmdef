@@ -1,5 +1,6 @@
 {
     "name": "TouhouHeartstoneTests",
+    "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
@@ -12,7 +13,8 @@
         "BJSYGameCore.Editor",
         "TouhouCardEngine.Library",
         "TouhouCardEngine.Shared",
-        "Editor"
+        "Editor",
+        "MessagePack"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -20,10 +22,8 @@
     "overrideReferences": true,
     "precompiledReferences": [
         "nunit.framework.dll",
-        "LiteNetLib.dll",
         "ExcelLibrary.dll",
-        "Mono.Data.Sqlite.dll",
-        "Newtonsoft.Json.dll"
+        "Mono.Data.Sqlite.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

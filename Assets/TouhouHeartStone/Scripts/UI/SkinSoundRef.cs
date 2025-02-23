@@ -4,7 +4,7 @@ using TouhouCardEngine;
 
 namespace UI
 {
-    public class SkinSoundRef
+    public class SkinSoundRef : ICloneable
     {
         /// <summary>
         /// 构造一个特效引用。
@@ -18,6 +18,14 @@ namespace UI
         {
             name = other.name;
             path = other.path;
+        }
+        public SkinSoundRef Clone()
+        {
+            return new SkinSoundRef(this);
+        }
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
         public string name;
         public string path;

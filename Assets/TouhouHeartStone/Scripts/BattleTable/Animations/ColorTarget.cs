@@ -84,7 +84,7 @@ namespace Game.Animations
             this.color = color;
         }
     }
-    public class ColorModifyData
+    public class ColorModifyData : ICloneable
     {
         public DefineReference animationRef;
         public int targetIndex;
@@ -94,6 +94,21 @@ namespace Game.Animations
         public Color getColor()
         {
             return new Color(r, g, b, 1);
+        }
+        public ColorModifyData Clone()
+        {
+            return new ColorModifyData()
+            {
+                animationRef = animationRef.Clone(),
+                targetIndex = targetIndex,
+                r = r,
+                g = g,
+                b = b
+            };
+        }
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
     }
     public enum ColorTargetType

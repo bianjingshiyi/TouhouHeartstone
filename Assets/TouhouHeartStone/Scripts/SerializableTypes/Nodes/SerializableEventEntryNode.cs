@@ -45,7 +45,7 @@ namespace Game
             if (!entry.hasInputDefaultValue(PassiveEntryNode.conditionPortName))
                 entry.setInputDefaultValue(PassiveEntryNode.conditionPortName, true);
             // 将PileNameCollection更新为PileNameRange
-            var pileNameCollection = entry.getPiles();
+            PileNameRange pileNameCollection = entry.getPiles();
             if (pileNameCollection != null && pileNameCollection is not PileNameRange)
             {
                 entry.setPiles(pileNameCollection.ToArray());
