@@ -57,13 +57,13 @@ namespace UI
         }
         public SkinAnimationRef Clone()
         {
-            SkinAnimationRef newRef = new SkinAnimationRef(key, animRef.Clone())
+            SkinAnimationRef newRef = new SkinAnimationRef(key, animRef?.Clone())
             {
                 sourcePosition = sourcePosition,
                 targetPosition = targetPosition,
                 sourcePositionVarName = sourcePositionVarName,
                 targetPositionVarName = targetPositionVarName,
-                eventReference = eventReference.Clone()
+                eventReference = eventReference?.Clone()
             };
             if (colorModifies != null && colorModifies.Count > 0)
             {

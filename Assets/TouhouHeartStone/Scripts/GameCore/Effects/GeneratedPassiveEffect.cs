@@ -78,10 +78,13 @@ namespace TouhouHeartstone
         }
         public override Effect Clone()
         {
-            ActionGraph newGraph = graph.Clone();
+            ActionGraph newGraph = graph?.Clone();
             GeneratedPassiveEffect newEffect = new GeneratedPassiveEffect(newGraph);
             newEffect.name = name;
-            newEffect.propDict = propDict.Clone();
+            if (propDict != null && propDict.Count > 0)
+            {
+                newEffect.propDict = propDict.Clone();
+            }
             return newEffect;
         }
         #endregion

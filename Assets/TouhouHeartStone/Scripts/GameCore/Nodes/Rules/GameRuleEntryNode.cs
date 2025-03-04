@@ -49,8 +49,11 @@ namespace TouhouHeartstone
             GameRuleEntryNode newNode = new GameRuleEntryNode(id, logicType);
             newNode.posX = posX;
             newNode.posY = posY;
-            newNode.propDict = propDict.Clone();
-            newNode.graph = graph.Clone();
+            if (propDict != null && propDict.Count > 0)
+            {
+                newNode.propDict = propDict.Clone();
+            }
+            newNode.graph = graph?.Clone();
             if (inputDefaultValueList != null && inputDefaultValueList.Count > 0)
             {
                 foreach (var defaultValue in inputDefaultValueList)

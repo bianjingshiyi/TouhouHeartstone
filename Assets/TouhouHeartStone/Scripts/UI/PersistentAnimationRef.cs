@@ -45,7 +45,7 @@ namespace UI
         public PersistentAnimationRef Clone()
         {
             PersistentAnimationRef newRef = new PersistentAnimationRef();
-            newRef.animRef = animRef.Clone();
+            newRef.animRef = animRef?.Clone();
             if (colorModifies != null && colorModifies.Count > 0)
             {
                 foreach (var modify in colorModifies)

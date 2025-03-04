@@ -59,7 +59,7 @@ namespace UI
             newSkin.nameKey = nameKey;
             newSkin.descKey = descKey;
             newSkin.imagePathKey = imagePathKey;
-            newSkin.persistentAnimRef = persistentAnimRef.Clone();
+            newSkin.persistentAnimRef = persistentAnimRef?.Clone();
             if(_animationRefs != null && _animationRefs.Count > 0)
             {
                 foreach(SkinAnimationRef animRef in _animationRefs)

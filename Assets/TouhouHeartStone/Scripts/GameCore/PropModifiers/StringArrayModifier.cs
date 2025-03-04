@@ -26,7 +26,7 @@ namespace TouhouHeartstone
         }
         public override PropModifier Clone()
         {
-            return new StringArrayModifier(propertyName, modifyType, defaultValue);
+            return new StringArrayModifier(propertyName, modifyType, CollectionHelper.Clone(defaultValue));
         }
         public ModifyType modifyType;
         public enum ModifyType

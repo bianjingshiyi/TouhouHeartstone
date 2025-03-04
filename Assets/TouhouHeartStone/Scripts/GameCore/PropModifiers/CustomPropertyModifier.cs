@@ -43,7 +43,7 @@ namespace TouhouHeartstone
         }
         public override PropModifier Clone()
         {
-            return new CustomPropertyModifier(propertyName, defaultValue, isSet);
+            return new CustomPropertyModifier(propertyName, defaultValue is ICloneable cloneable ? cloneable.Clone() : defaultValue, isSet);
         }
         public override string ToString()
         {

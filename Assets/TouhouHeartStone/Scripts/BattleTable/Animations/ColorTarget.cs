@@ -99,7 +99,7 @@ namespace Game.Animations
         {
             return new ColorModifyData()
             {
-                animationRef = animationRef.Clone(),
+                animationRef = animationRef?.Clone(),
                 targetIndex = targetIndex,
                 r = r,
                 g = g,

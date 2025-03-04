@@ -105,7 +105,23 @@ namespace TouhouCardEngine
         #endregion
         public override Node Clone()
         {
-            throw new NotImplementedException();
+            PassiveEntryNode newNode = new PassiveEntryNode();
+            newNode.id = id;
+            newNode.posX = posX;
+            newNode.posY = posY;
+            if (propDict != null && propDict.Count > 0)
+            {
+                newNode.propDict = propDict.Clone();
+            }
+            newNode.graph = graph?.Clone();
+            if (inputDefaultValueList != null && inputDefaultValueList.Count > 0)
+            {
+                foreach (var defaultValue in inputDefaultValueList)
+                {
+                    newNode.inputDefaultValueList.Add(defaultValue.Clone());
+                }
+            }
+            return newNode;
         }
         private void DefinitionConditions()
         {

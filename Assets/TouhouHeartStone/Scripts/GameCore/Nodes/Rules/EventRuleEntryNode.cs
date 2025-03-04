@@ -46,11 +46,14 @@ namespace TouhouHeartstone
 
         public override Node Clone()
         {
-            EventRuleEntryNode newNode = new EventRuleEntryNode(triggerTime.Clone());            
+            EventRuleEntryNode newNode = new EventRuleEntryNode(triggerTime?.Clone());
             newNode.posX = posX;
             newNode.posY = posY;
-            newNode.propDict = propDict.Clone();
-            newNode.graph = graph.Clone();
+            if (propDict != null && propDict.Count > 0)
+            {
+                newNode.propDict = propDict.Clone();
+            }
+            newNode.graph = graph?.Clone();
             if (inputDefaultValueList != null && inputDefaultValueList.Count > 0)
             {
                 foreach (var defaultValue in inputDefaultValueList)
@@ -67,7 +70,7 @@ namespace TouhouHeartstone
         private void DefinitionConditions()
         {
             var inputs = new List<IPort>()
-            { 
+            {
                 getOrCreateInputPort(conditionPortDefine)
             };
 
