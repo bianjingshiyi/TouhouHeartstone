@@ -398,7 +398,7 @@ namespace Controllers
         {
             markCardPoolUnsaved(curCardPoolId);
             // 复制卡牌定义
-            CardDefine newCardDefine = game.card.pasteCardDefine(originCardDefine);
+            CardDefine newCardDefine = game.card.pasteCardDefine(curCardPoolId, originCardDefine);
             // 检查是否引用了增益定义
             List<BuffReference> buffRefs = new List<BuffReference>(originCardDefine.collectBuffReferences());
             if (buffRefs.Count > 0)
@@ -430,7 +430,7 @@ namespace Controllers
                         bool? isNewBuff = null;
                         game.ui.dialog.ShowQuestion(string.Empty, string.Format(game.i18n._(StringTable.EDITOR_DIALOG_CONFIRM_COPY_BUFF),
                             game.card.getCardName(originCardDefine),
-                            game.card.getBuffName(buff)) , () =>
+                            game.card.getBuffName(buff)), () =>
                         {
                             isNewBuff = true;
                         }, () =>
@@ -441,7 +441,7 @@ namespace Controllers
                         if (isNewBuff.Value)
                         {
                             // 复制增益定义
-                            BuffDefine newBuffDefine = game.card.pasteBuffDefine(buff);
+                            BuffDefine newBuffDefine = game.card.pasteBuffDefine(curCardPoolId, buff);
                             newBuffDefines.Add(newBuffDefine);
                             replacedBuffRefDict[buff.getDefineRef()] = newBuffDefine.getDefineRef();
                         }

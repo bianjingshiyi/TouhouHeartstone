@@ -58,15 +58,17 @@ namespace Game
             }
             return clone;
         }
-        public CardDefine pasteCardDefine(CardDefine define)
+        public CardDefine pasteCardDefine(long cardPoolId, CardDefine define)
         {
             // 构造新的卡牌定义
             CardDefine newCardDefine = define.Clone();
             // 分配新的id
-            CardPool cardPool = getLocalCardPool(define.cardPoolId);
+            CardPool originCardPool = getLocalCardPool(define.cardPoolId);
+            CardPool cardPool = getLocalCardPool(cardPoolId);
             int newCardDefineId = allocCardDefineID(cardPool);
+            newCardDefine.cardPoolId = cardPoolId;
             newCardDefine.id = newCardDefineId;
-            addCard(newCardDefine.cardPoolId, newCardDefine);
+            addCard(cardPoolId, newCardDefine);
             // 复制增益定义的皮肤
             CardSkinData[] skins = getAllCardSkins(getLocalCardPoolReference(define.cardPoolId), define.id);
             foreach (CardSkinData skin in skins)
@@ -79,7 +81,26 @@ namespace Game
                 {
                     cardPool.localizedStringList.Add(new LocalizedString(newSkin.nameKey));
                 }
-                addCardSkin(newCardDefine.cardPoolId, newSkin);
+                // 复制本地化信息
+                if (!string.IsNullOrEmpty(newSkin.descKey) && !cardPool.localizedStringList.Exists(s => s.value == newSkin.descKey))
+                {
+                    LocalizedString localizedString = originCardPool.localizedStringList.getLocalizedObject(skin.descKey);
+                    if (localizedString != null)
+                        cardPool.localizedStringList.Add(localizedString.Clone());
+                }
+                if (!string.IsNullOrEmpty(newSkin.subnameKey) && !cardPool.localizedStringList.Exists(s => s.value == newSkin.subnameKey))
+                {
+                    LocalizedString localizedString = originCardPool.localizedStringList.getLocalizedObject(skin.subnameKey);
+                    if (localizedString != null)
+                        cardPool.localizedStringList.Add(localizedString.Clone());
+                }
+                if (!string.IsNullOrEmpty(newSkin.imagePathKey) && !cardPool.localizedStringList.Exists(s => s.value == newSkin.imagePathKey))
+                {
+                    LocalizedString localizedString = originCardPool.localizedStringList.getLocalizedObject(skin.imagePathKey);
+                    if (localizedString != null)
+                        cardPool.localizedStringList.Add(localizedString.Clone());
+                }
+                addCardSkin(cardPoolId, newSkin);
             }
             return newCardDefine;
         }

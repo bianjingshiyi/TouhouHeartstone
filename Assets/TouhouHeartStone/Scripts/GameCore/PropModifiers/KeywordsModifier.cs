@@ -18,6 +18,10 @@ namespace TouhouHeartstone
                 await card.InitConsumableKeywords(value, game);
             }
         }
+        public override PropModifier Clone()
+        {
+            return new KeywordsModifier(modifyType, CollectionHelper.Clone(defaultValue));
+        }
         public override string ToString()
         {
             var value = defaultValue;

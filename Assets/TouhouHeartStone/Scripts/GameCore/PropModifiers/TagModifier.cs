@@ -22,5 +22,9 @@ namespace TouhouHeartstone
                     return $"tags + {(value.Length > 0 ? string.Join(",", value) : "empty")}";
             }
         }
+        public override PropModifier Clone()
+        {
+            return new TagModifier(modifyType, CollectionHelper.Clone(defaultValue));
+        }
     }
 }

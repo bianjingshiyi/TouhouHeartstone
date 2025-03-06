@@ -42,15 +42,17 @@ namespace Game
             }
             return clone;
         }
-        public BuffDefine pasteBuffDefine(BuffDefine buffDefine)
+        public BuffDefine pasteBuffDefine(long cardPoolId, BuffDefine buffDefine)
         {
             // 构造新的增益定义
             BuffDefine newBuffDefine = buffDefine.Clone();
             // 分配新的id
-            CardPool cardPool = getLocalCardPool(buffDefine.cardPoolId);
+            CardPool originCardPool = getLocalCardPool(buffDefine.cardPoolId);
+            CardPool cardPool = getLocalCardPool(cardPoolId);
             int newBuffDefineId = cardPool.buffDefineList.Count > 0 ? cardPool.buffDefineList.Max(b => b.id) + 1 : 1;
+            newBuffDefine.cardPoolId = cardPoolId;
             newBuffDefine.id = newBuffDefineId;
-            addBuffDefine(newBuffDefine.cardPoolId, newBuffDefine as GeneratedBuffDefine);
+            addBuffDefine(cardPoolId, newBuffDefine as GeneratedBuffDefine);
             // 复制增益定义的皮肤
             BuffSkin[] skins = getBuffSkins(buffDefine);
             foreach (BuffSkin skin in skins)
@@ -63,7 +65,20 @@ namespace Game
                 {
                     cardPool.localizedStringList.Add(new LocalizedString(newSkin.nameKey));
                 }
-                addBuffSkin(newBuffDefine.cardPoolId, newSkin);
+                // 复制本地化资源
+                if (!string.IsNullOrEmpty(skin.descKey) && !cardPool.localizedStringList.Exists(s => s.value == skin.descKey))
+                {
+                    LocalizedString localizedString = originCardPool.localizedStringList.Find(s => s.value == skin.descKey);
+                    if (localizedString != null)
+                        cardPool.localizedStringList.Add(localizedString.Clone());
+                }
+                if (!string.IsNullOrEmpty(skin.imagePathKey) && !cardPool.localizedStringList.Exists(s => s.value == skin.imagePathKey))
+                {
+                    LocalizedString localizedString = originCardPool.localizedStringList.Find(s => s.value == skin.imagePathKey);
+                    if (localizedString != null)
+                        cardPool.localizedStringList.Add(localizedString.Clone());
+                }
+                addBuffSkin(cardPoolId, newSkin);
             }
             return newBuffDefine;
         }
