@@ -72,6 +72,17 @@ namespace TouhouHeartstone
         {
             return updateAura(env.game, env.card, env.buff, env.eventArg);
         }
+        public override Effect Clone()
+        {
+            ActionGraph newGraph = graph?.Clone();
+            GeneratedAura newEffect = new GeneratedAura(newGraph);
+            newEffect.name = name;
+            if (propDict != null && propDict.Count > 0)
+            {
+                newEffect.propDict = propDict.Clone();
+            }
+            return newEffect;
+        }
         #endregion
         #region 私有方法
         protected override async Task onEnable(EffectEnv env)

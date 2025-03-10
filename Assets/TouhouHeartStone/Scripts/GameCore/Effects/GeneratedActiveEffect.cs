@@ -124,8 +124,14 @@ namespace TouhouHeartstone
         }
         public override Effect Clone()
         {
-            GeneratedActiveEffect effect = new GeneratedActiveEffect(graph);
-            return effect;
+            ActionGraph newGraph = graph?.Clone();
+            GeneratedActiveEffect newEffect = new GeneratedActiveEffect(newGraph);
+            newEffect.name = name;
+            if (propDict != null && propDict.Count > 0)
+            {
+                newEffect.propDict = propDict.Clone();
+            }
+            return newEffect;
         }
         #endregion
         #region 私有方法

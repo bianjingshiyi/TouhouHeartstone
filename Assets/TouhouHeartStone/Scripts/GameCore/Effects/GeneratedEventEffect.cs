@@ -19,6 +19,17 @@ namespace TouhouHeartstone
             eventEntry?.setPiles(tags);
         }
         public override string[] getPiles() => eventEntry?.getPiles()?.ToArray() ?? Array.Empty<string>();
+        public override Effect Clone()
+        {
+            ActionGraph newGraph = graph?.Clone();
+            GeneratedEventEffect newEffect = new GeneratedEventEffect(newGraph);
+            newEffect.name = name;
+            if (propDict != null && propDict.Count > 0)
+            {
+                newEffect.propDict = propDict.Clone();
+            }
+            return newEffect;
+        }
         #endregion
         #region 私有方法
         Task IEventEffect.onTrigger(EffectEnv env)

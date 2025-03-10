@@ -397,6 +397,7 @@ namespace Controllers
         IEnumerator pasteCardCoroutine(CardDefine originCardDefine)
         {
             markCardPoolUnsaved(curCardPoolId);
+            ActionGraph.defaultNodeDefiner = game.card.getLocalNodeDefiner();
             // 复制卡牌定义
             CardDefine newCardDefine = game.card.pasteCardDefine(curCardPoolId, originCardDefine);
             // 检查是否引用了增益定义

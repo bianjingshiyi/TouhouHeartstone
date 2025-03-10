@@ -121,7 +121,6 @@ namespace TouhouHeartstone
             {
                 newNode.propDict = propDict.Clone();
             }
-            newNode.graph = graph?.Clone();
             if (inputDefaultValueList != null && inputDefaultValueList.Count > 0)
             {
                 foreach (var defaultValue in inputDefaultValueList)
@@ -136,6 +135,7 @@ namespace TouhouHeartstone
                     newNode.targetCheckerList.Add(targetChecker.Clone());
                 }
             }
+            newNode.Define();
             return newNode;
         }
         private void DefinitionConditions()
