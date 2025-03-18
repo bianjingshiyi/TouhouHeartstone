@@ -45,6 +45,26 @@ namespace TouhouHeartstone
             yield return actionPortDefine;
             yield break;
         }
+        public override Node Clone()
+        {
+            EventEntryNode newNode = new EventEntryNode(triggerTime);
+            newNode.setEventDefine(define, type);
+            newNode.id = id;
+            newNode.posX = posX;
+            newNode.posY = posY;
+            if (propDict != null && propDict.Count > 0)
+            {
+                newNode.propDict = propDict.Clone();
+            }
+            if (inputDefaultValueList != null && inputDefaultValueList.Count > 0)
+            {
+                foreach (var defaultValue in inputDefaultValueList)
+                {
+                    newNode.inputDefaultValueList.Add(defaultValue.Clone());
+                }
+            }
+            return newNode;
+        }
 
         #endregion
         public EventDefine define { get; private set; }
