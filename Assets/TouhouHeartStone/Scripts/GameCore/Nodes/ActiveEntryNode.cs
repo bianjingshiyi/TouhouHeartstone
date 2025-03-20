@@ -132,7 +132,9 @@ namespace TouhouHeartstone
             {
                 foreach (TargetChecker targetChecker in targetCheckerList)
                 {
-                    newNode.targetCheckerList.Add(targetChecker.Clone());
+                    TargetChecker newTargetChecker = targetChecker.Clone();
+                    newTargetChecker.node = newNode;
+                    newNode.targetCheckerList.Add(newTargetChecker);
                 }
             }
             newNode.Define();
