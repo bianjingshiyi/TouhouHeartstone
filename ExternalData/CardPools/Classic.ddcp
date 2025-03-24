@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 5, "cardPoolId" : NumberLong(1), "editTime" : 651, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
+{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 5, "cardPoolId" : NumberLong(1), "editTime" : 650, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -139,7 +139,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "ksCkRmlyZQ==")
         }
       },
@@ -440,7 +440,7 @@
         "cost" : 5,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "ksCkV29vZA==")
         }
       },
@@ -589,7 +589,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "ksClTWV0YWw=")
         }
       },
@@ -721,7 +721,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "ksClV2F0ZXI=")
         }
       },
@@ -848,7 +848,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "ksClRWFydGg=")
         }
       },
@@ -962,7 +962,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kcA=")
         }
       },
@@ -1022,8 +1022,8 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "System.Object[]",
-                      "Content" : new BinData(0, "lZLZIFRvdWhvdUNhcmRFbmdpbmUuRGVmaW5lUmVmZXJlbmNlxAeSAdKAAQAJktkgVG91aG91Q2FyZEVuZ2luZS5EZWZpbmVSZWZlcmVuY2XEB5IB0oABAAqS2SBUb3Vob3VDYXJkRW5naW5lLkRlZmluZVJlZmVyZW5jZcQHkgHSgAEADZLZIFRvdWhvdUNhcmRFbmdpbmUuRGVmaW5lUmVmZXJlbmNlxAeSAdKAAQAMktkgVG91aG91Q2FyZEVuZ2luZS5EZWZpbmVSZWZlcmVuY2XEB5IB0oABAA4=")
+                      "Type" : "TouhouCardEngine.DefineReference[]",
+                      "Content" : new BinData(0, "lZIB0oABAAmSAdKAAQAKkgHSgAEADZIB0oABAAySAdKAAQAO")
                     }
                   }],
                 "propDict" : { },
@@ -1092,7 +1092,7 @@
         "cost" : 0,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "ksClTWV0YWw=")
         }
       },
@@ -1228,7 +1228,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "ksCkV29vZA==")
         },
         "cost" : 0
@@ -1854,7 +1854,7 @@
         "isToken" : true,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "ksCkRmlyZQ==")
         },
         "characterId" : {
@@ -2004,7 +2004,7 @@
         "isToken" : true,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "ksClV2F0ZXI=")
         },
         "characterId" : {
@@ -2145,7 +2145,7 @@
         "isToken" : true,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "ksClRWFydGg=")
         },
         "characterId" : {
@@ -2258,7 +2258,7 @@
         "isToken" : true,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadFbGVtZW50")
         },
         "characterId" : {
@@ -2283,7 +2283,7 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
@@ -2366,8 +2366,8 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "System.Object[]",
-                      "Content" : new BinData(0, "lZLZIFRvdWhvdUNhcmRFbmdpbmUuRGVmaW5lUmVmZXJlbmNlxAeSAdKAAQAFktkgVG91aG91Q2FyZEVuZ2luZS5EZWZpbmVSZWZlcmVuY2XEB5IB0oABAASS2SBUb3Vob3VDYXJkRW5naW5lLkRlZmluZVJlZmVyZW5jZcQHkgHSgAEABpLZIFRvdWhvdUNhcmRFbmdpbmUuRGVmaW5lUmVmZXJlbmNlxAeSAdKAAQACktkgVG91aG91Q2FyZEVuZ2luZS5EZWZpbmVSZWZlcmVuY2XEB5IB0oABAAc=")
+                      "Type" : "TouhouCardEngine.DefineReference[]",
+                      "Content" : new BinData(0, "lZIB0oABAAWSAdKAAQAEkgHSgAEABpIB0oABAAKSAdKAAQAH")
                     }
                   }],
                 "propDict" : { },
@@ -2608,7 +2608,7 @@
         "isToken" : true,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqV0YXVudKpjYW50YXR0YWNr")
         },
         "characterId" : {
@@ -2618,7 +2618,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadFbGVtZW50")
         }
       },
@@ -2638,12 +2638,12 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVEZW1vbg==")
         }
       },
@@ -2909,7 +2909,7 @@
         "attack" : 12,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         },
         "characterId" : {
@@ -2919,7 +2919,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaNTdW4=")
         }
       },
@@ -3048,7 +3048,7 @@
         "life" : 0,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         },
         "characterId" : {
@@ -3058,7 +3058,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaRNb29u")
         }
       },
@@ -3179,7 +3179,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadNYWNoaW5l")
         }
       },
@@ -3698,7 +3698,7 @@
         "life" : 1,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaV0YXVudA==")
         },
         "characterId" : {
@@ -3912,7 +3912,7 @@
         "cost" : 4,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "k8ClTWV0YWykRmlyZQ==")
         },
         "characterId" : {
@@ -4158,7 +4158,7 @@
       "propDict" : {
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "k8ClV2F0ZXKkRmlyZQ==")
         },
         "characterId" : {
@@ -4301,7 +4301,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "k8ClV2F0ZXKlRWFydGg=")
         },
         "isToken" : true
@@ -4460,12 +4460,12 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaV0YXVudA==")
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadFbGVtZW50")
         },
         "isToken" : true
@@ -4479,7 +4479,7 @@
         "cost" : 4,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "k8ClTWV0YWykV29vZA==")
         },
         "characterId" : {
@@ -4811,7 +4811,7 @@
         "cost" : 4,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqRXb29kpUVhcnRo")
         },
         "characterId" : {
@@ -4966,7 +4966,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "k8CkV29vZKRGaXJl")
         },
         "isToken" : true
@@ -5305,7 +5305,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqVNZXRhbKVXYXRlcg==")
         },
         "isToken" : true
@@ -5767,7 +5767,7 @@
         "isToken" : true,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "k8ClTWV0YWylRWFydGg=")
         },
         "characterId" : {
@@ -5946,7 +5946,7 @@
         "isToken" : true,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaRydXNo")
         },
         "characterId" : {
@@ -5956,7 +5956,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadFbGVtZW50")
         }
       },
@@ -5969,7 +5969,7 @@
         "cost" : 6,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "k8CkV29vZKVXYXRlcg==")
         },
         "characterId" : {
@@ -6197,7 +6197,7 @@
         "life" : 4,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kcA=")
         },
         "characterId" : {
@@ -6207,7 +6207,7 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaRydXNo")
         }
       },
@@ -6464,7 +6464,7 @@
         "cost" : 6,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "k8CkRmlyZaVFYXJ0aA==")
         },
         "characterId" : {
@@ -6603,13 +6603,13 @@
         "life" : 2,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadFbGVtZW50")
         },
         "isToken" : true,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaV0YXVudA==")
         },
         "characterId" : {
@@ -6895,12 +6895,12 @@
         "life" : 8,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -7011,7 +7011,7 @@
         "life" : 1,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVGYWlyeQ==")
         }
       },
@@ -7145,14 +7145,14 @@
         "life" : 1,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqVCZWFzdKNCdWc=")
         },
         "characterId" : 0,
         "isToken" : true,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaV0YXVudA==")
         }
       },
@@ -7172,12 +7172,12 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqRydXNopWRyYWlu")
         }
       },
@@ -7433,7 +7433,7 @@
         "life" : 2,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         }
       },
@@ -7511,12 +7511,12 @@
         "life" : 3,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVEZW1vbg==")
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kA==")
         }
       },
@@ -7691,7 +7691,7 @@
         "life" : 4,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
@@ -7865,7 +7865,7 @@
         "isToken" : true,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaV0YXVudA==")
         }
       },
@@ -7880,7 +7880,7 @@
         "life" : 3,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVGYWlyeQ==")
         }
       },
@@ -8143,7 +8143,7 @@
         "life" : 4,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqRydXNoqHdpbmRmdXJ5")
         }
       },
@@ -8158,7 +8158,7 @@
         "life" : 4,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         }
       },
@@ -8312,14 +8312,14 @@
         "life" : 1,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaRydXNo")
         },
         "isToken" : true,
         "cost" : 1,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqVCZWFzdKNCdWc=")
         }
       },
@@ -8333,13 +8333,13 @@
         "life" : 5,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "cost" : 7,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaRydXNo")
         }
       },
@@ -8451,13 +8451,13 @@
         "life" : 6,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqVkcmFpbqZ1bmlxdWU=")
         },
         "cost" : 6,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVEZW1vbg==")
         }
       },
@@ -8649,13 +8649,13 @@
         "life" : 4,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqVkcmFpbqZ1bmlxdWU=")
         },
         "cost" : 6,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVEZW1vbg==")
         }
       },
@@ -8835,12 +8835,12 @@
         "life" : 1,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kalwb2lzb25vdXM=")
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqVCZWFzdKNCdWc=")
         },
         "isToken" : true
@@ -8855,7 +8855,7 @@
         "life" : 3,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaNHb2Q=")
         },
         "cost" : 2
@@ -9158,7 +9158,7 @@
         "life" : 3,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqZjaGFyZ2WmdW5pcXVl")
         }
       },
@@ -9286,7 +9286,7 @@
         "life" : 5,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaV0YXVudA==")
         },
         "cost" : 4
@@ -9459,7 +9459,7 @@
         "cost" : 4,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqZzaGllbGSnc3RlYWx0aA==")
         }
       },
@@ -9745,12 +9745,12 @@
         "life" : 6,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqVCZWFzdKNHb2Q=")
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kapjYW50YXR0YWNr")
         }
       },
@@ -10012,7 +10012,7 @@
         "life" : 1,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVGYWlyeQ==")
         }
       },
@@ -10827,8 +10827,8 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "System.Object[]",
-                      "Content" : new BinData(0, "lJLZIFRvdWhvdUNhcmRFbmdpbmUuRGVmaW5lUmVmZXJlbmNlxAeSAdKAAQBAktkgVG91aG91Q2FyZEVuZ2luZS5EZWZpbmVSZWZlcmVuY2XEB5IB0oABAEGS2SBUb3Vob3VDYXJkRW5naW5lLkRlZmluZVJlZmVyZW5jZcQHkgHSgAEAQpLZIFRvdWhvdUNhcmRFbmdpbmUuRGVmaW5lUmVmZXJlbmNlxAeSAdKAAQBD")
+                      "Type" : "TouhouCardEngine.DefineReference[]",
+                      "Content" : new BinData(0, "lJIB0oABAECSAdKAAQBBkgHSgAEAQpIB0oABAEM=")
                     }
                   }],
                 "propDict" : { },
@@ -10898,7 +10898,7 @@
         "life" : 3,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         }
       },
@@ -11241,7 +11241,7 @@
         "life" : 3,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "cost" : 1,
@@ -11498,7 +11498,7 @@
         "life" : 2,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaV0YXVudA==")
         },
         "isToken" : true,
@@ -11519,7 +11519,7 @@
         "life" : 4,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaV0YXVudA==")
         },
         "isToken" : true,
@@ -11539,7 +11539,7 @@
         "life" : 8,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         },
         "cost" : 10
@@ -11745,12 +11745,12 @@
         "life" : 2,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kA==")
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVGYWlyeQ==")
         }
       },
@@ -11914,7 +11914,7 @@
         "life" : 4,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaNHb2Q=")
         }
       },
@@ -12120,7 +12120,7 @@
         "life" : 1,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaRydXNo")
         }
       },
@@ -12229,7 +12229,7 @@
         "life" : 3,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaNHb2Q=")
         }
       },
@@ -12321,7 +12321,7 @@
         "life" : 1,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -12408,7 +12408,7 @@
         "isToken" : true,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -12423,7 +12423,7 @@
         "life" : 2,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         }
       },
@@ -12504,8 +12504,8 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "System.Object[]",
-                      "Content" : new BinData(0, "k5LZIFRvdWhvdUNhcmRFbmdpbmUuRGVmaW5lUmVmZXJlbmNlxAeSAdKAAQAoktkgVG91aG91Q2FyZEVuZ2luZS5EZWZpbmVSZWZlcmVuY2XEB5IB0oABADKS2SBUb3Vob3VDYXJkRW5naW5lLkRlZmluZVJlZmVyZW5jZcQHkgHSgAEANg==")
+                      "Type" : "TouhouCardEngine.DefineReference[]",
+                      "Content" : new BinData(0, "k5IB0oABACiSAdKAAQAykgHSgAEANg==")
                     }
                   }],
                 "propDict" : { },
@@ -12901,7 +12901,7 @@
         "life" : 4,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "isToken" : true
@@ -13274,7 +13274,7 @@
       "propDict" : {
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "cost" : 3,
@@ -13457,7 +13457,7 @@
         "life" : 8,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
@@ -13545,8 +13545,8 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "System.Object[]",
-                      "Content" : new BinData(0, "kpLZIFRvdWhvdUNhcmRFbmdpbmUuRGVmaW5lUmVmZXJlbmNlxAOSAQiS2SBUb3Vob3VDYXJkRW5naW5lLkRlZmluZVJlZmVyZW5jZcQDkgEJ")
+                      "Type" : "TouhouCardEngine.DefineReference[]",
+                      "Content" : new BinData(0, "kpIBCJIBCQ==")
                     }
                   }],
                 "propDict" : { },
@@ -14102,7 +14102,7 @@
         "life" : 10,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
@@ -14163,8 +14163,8 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "System.Object[]",
-                      "Content" : new BinData(0, "kpLZIFRvdWhvdUNhcmRFbmdpbmUuRGVmaW5lUmVmZXJlbmNlxAOSAQuS2SBUb3Vob3VDYXJkRW5naW5lLkRlZmluZVJlZmVyZW5jZcQDkgEM")
+                      "Type" : "TouhouCardEngine.DefineReference[]",
+                      "Content" : new BinData(0, "kpIBC5IBDA==")
                     }
                   }],
                 "propDict" : { },
@@ -14696,7 +14696,7 @@
         "life" : 3,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqRydXNopnVuaXF1ZQ==")
         }
       },
@@ -14835,12 +14835,12 @@
         "life" : 8,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaNHb2Q=")
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
@@ -15105,12 +15105,12 @@
         "life" : 4,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaNHb2Q=")
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqRydXNopnVuaXF1ZQ==")
         }
       },
@@ -15268,12 +15268,12 @@
         "life" : 2,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaRydXNo")
         },
         "isToken" : true
@@ -15289,7 +15289,7 @@
         "life" : 2,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaV0YXVudA==")
         }
       },
@@ -15629,7 +15629,7 @@
         "life" : 1,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVGYWlyeQ==")
         }
       },
@@ -15721,7 +15721,7 @@
         "isToken" : true,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -15741,7 +15741,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqdFbGVtZW50pUdob3N0")
         }
       },
@@ -16265,7 +16265,7 @@
         "life" : 2,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -16561,7 +16561,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadNYWNoaW5l")
         }
       },
@@ -16845,7 +16845,7 @@
         "life" : 3,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "characterId" : {
@@ -18087,12 +18087,12 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaRydXNo")
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -18856,12 +18856,12 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kA==")
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadNYWNoaW5l")
         }
       },
@@ -19270,7 +19270,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -19405,7 +19405,7 @@
         "isToken" : true,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -19936,7 +19936,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -20217,7 +20217,7 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
@@ -20555,7 +20555,7 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
@@ -20804,7 +20804,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -21468,7 +21468,7 @@
         "life" : 4,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         }
       },
@@ -21740,12 +21740,12 @@
         "life" : 1,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVGYWlyeQ==")
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaRydXNo")
         }
       },
@@ -21760,7 +21760,7 @@
         "life" : 7,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaV0YXVudA==")
         }
       },
@@ -21909,12 +21909,12 @@
         "life" : 6,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaNHb2Q=")
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
@@ -24515,7 +24515,7 @@
         "life" : 2,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadzdGVhbHRo")
         }
       },
@@ -24909,7 +24909,7 @@
         "life" : 4,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaA=")
         }
       },
@@ -25456,7 +25456,7 @@
         "attack" : 0,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadwcmVoZWF0")
         },
         "characterId" : {
@@ -25771,7 +25771,7 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadwcmVoZWF0")
         }
       },
@@ -25975,7 +25975,7 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadwcmVoZWF0")
         }
       },
@@ -26187,7 +26187,7 @@
         "life" : 2,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadwcmVoZWF0")
         }
       },
@@ -26582,7 +26582,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "isToken" : true
@@ -26598,7 +26598,7 @@
         "life" : 1,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "skillRef" : {
@@ -26688,12 +26688,12 @@
         "life" : 3,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaRydXNo")
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "characterId" : {
@@ -26818,12 +26818,12 @@
         "cost" : 1,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kapjYW50YXR0YWNr")
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadNYWNoaW5l")
         },
         "attack" : 1,
@@ -27772,7 +27772,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadNYWNoaW5l")
         }
       },
@@ -28911,7 +28911,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         }
       },
@@ -29875,7 +29875,7 @@
         "life" : 5,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "characterId" : {
@@ -29885,7 +29885,7 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
@@ -29969,7 +29969,7 @@
         "life" : 2,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         },
         "isToken" : true,
@@ -30229,7 +30229,7 @@
         "cost" : 1,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaA=")
         }
       },
@@ -30617,7 +30617,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaA=")
         },
         "寻觅" : true
@@ -30980,7 +30980,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaA=")
         },
         "skillRef" : {
@@ -31457,7 +31457,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         }
       },
@@ -31717,7 +31717,7 @@
         "life" : 3,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaA=")
         },
         "characterId" : {
@@ -32099,7 +32099,7 @@
         "life" : 3,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kcA=")
         }
       },
@@ -33245,12 +33245,12 @@
         "life" : 4,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kapjYW50YXR0YWNr")
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "characterId" : {
@@ -33635,7 +33635,7 @@
         "life" : 3,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "characterId" : {
@@ -33754,7 +33754,7 @@
         "life" : 8,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         },
         "characterId" : {
@@ -34360,7 +34360,7 @@
       "propDict" : {
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         },
         "cost" : 6,
@@ -34368,7 +34368,7 @@
         "life" : 4,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "characterId" : {
@@ -35121,7 +35121,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaA=")
         },
         "cost" : 1
@@ -36796,7 +36796,7 @@
         "cost" : 2,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kA==")
         }
       },
@@ -37068,7 +37068,7 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kA==")
         }
       },
@@ -37433,7 +37433,7 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kA==")
         }
       },
@@ -38166,7 +38166,7 @@
         "cost" : 2,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kA==")
         }
       },
@@ -38526,7 +38526,7 @@
         "cost" : 2,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kA==")
         }
       },
@@ -39675,7 +39675,7 @@
         "life" : 4,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaNHb2Q=")
         },
         "characterId" : {
@@ -39685,7 +39685,7 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kqZ1bmlxdWWkcnVzaA==")
         }
       },
@@ -40461,12 +40461,12 @@
         "isToken" : true,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaV0YXVudA==")
         }
       },
@@ -40899,12 +40899,12 @@
         "life" : 8,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaNHb2Q=")
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         },
         "characterId" : {
@@ -41978,12 +41978,12 @@
         "life" : 7,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kapjYW50YXR0YWNr")
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "characterId" : {
@@ -42256,7 +42256,7 @@
         "life" : 2,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -42328,12 +42328,12 @@
         "life" : 2,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaV0YXVudA==")
         }
       },
@@ -42405,12 +42405,12 @@
         "life" : 1,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZzaGllbGQ=")
         }
       },
@@ -42482,7 +42482,7 @@
         "life" : 2,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         }
       },
@@ -43005,7 +43005,7 @@
         "life" : 4,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "krBwZXJtYW5lbnRTdGVhbHRopnVuaXF1ZQ==")
         }
       },
@@ -44340,7 +44340,7 @@
         "life" : 2,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         }
       },
@@ -44855,7 +44855,7 @@
         "isToken" : true,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kahhdXRvY2FzdA==")
         }
       },
@@ -45236,7 +45236,7 @@
         "life" : 5,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -45553,7 +45553,7 @@
         "life" : 5,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         }
       },
@@ -46025,7 +46025,7 @@
         "cost" : 10,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
@@ -46229,7 +46229,7 @@
         "life" : 3,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
@@ -47446,7 +47446,7 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kahhdXRvY2FzdA==")
         }
       },
@@ -47577,7 +47577,7 @@
         "life" : 2,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaV0YXVudA==")
         }
       },
@@ -47595,7 +47595,7 @@
         "cost" : 8,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
@@ -48501,12 +48501,12 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaV0YXVudA==")
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -49224,7 +49224,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -49768,7 +49768,7 @@
         "life" : 6,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadwcmVoZWF0")
         },
         "characterId" : {
@@ -49778,7 +49778,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -50129,7 +50129,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVHaG9zdA==")
         }
       },
@@ -50307,7 +50307,7 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kadwcmVoZWF0")
         }
       },
@@ -51384,7 +51384,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         }
       },
@@ -51559,7 +51559,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         }
       },
@@ -51745,7 +51745,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         }
       },
@@ -52063,7 +52063,7 @@
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         }
       },
@@ -53247,7 +53247,7 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
@@ -53466,7 +53466,7 @@
         "cost" : 3,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
@@ -54715,7 +54715,7 @@
         "cost" : 9,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaZ1bmlxdWU=")
         }
       },
@@ -55286,12 +55286,12 @@
         "life" : 3,
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaV0YXVudA==")
         },
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVCZWFzdA==")
         },
         "characterId" : {
@@ -55645,7 +55645,7 @@
         "life" : 1,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVGYWlyeQ==")
         },
         "isToken" : true,
@@ -55656,7 +55656,7 @@
         },
         "keywords" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kahhdXRvY2FzdA==")
         }
       },
@@ -55739,7 +55739,7 @@
         "life" : 3,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
+          "Type" : "System.String[]",
           "Content" : new BinData(0, "kaVGYWlyeQ==")
         },
         "characterId" : {
@@ -56702,8 +56702,8 @@
         "isToken" : true,
         "tags" : {
           "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
-          "Content" : new BinData(0, "kaVGYWlyeQ==")
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kA==")
         }
       },
       "effects" : [],
@@ -61175,451 +61175,6 @@
         }],
       "effectList" : []
     }, {
-      "_id" : 181,
-      "type" : "Servant",
-      "propDict" : {
-        "cost" : 5,
-        "attack" : 6,
-        "life" : 5,
-        "characterId" : {
-          "_t" : "ObjectProxy",
-          "Type" : "TouhouCardEngine.DefineReference",
-          "Content" : new BinData(0, "kgHMqw==")
-        }
-      },
-      "effects" : [{
-          "_t" : "SerializableActiveEffect",
-          "name" : "主动效果1",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableActiveEntryNode",
-                "_id" : 1,
-                "posX" : -1496.72900390625,
-                "posY" : -425.98934936523438,
-                "inputDefaultValues" : [{
-                    "name" : "condition",
-                    "paramIndex" : -1,
-                    "value" : true
-                  }, {
-                    "name" : "tags",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.EffectTagCollection",
-                      "Content" : new BinData(0, "kaZwbGF5ZWQ=")
-                    }
-                  }, {
-                    "name" : "priority",
-                    "paramIndex" : -1,
-                    "value" : 0
-                  }],
-                "propDict" : { },
-                "tags" : null,
-                "consts" : null,
-                "targetCheckerList" : []
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "posX" : -671.72900390625,
-                "posY" : -425.9893798828125,
-                "inputDefaultValues" : [{
-                    "name" : "cardDefine",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.DefineReference",
-                      "Content" : new BinData(0, "kgHMzA==")
-                    }
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 202004
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "玩家",
-                "sourceNodeId" : 1,
-                "destName" : "player",
-                "destNodeId" : 2
-              }]
-          }
-        }],
-      "effectList" : []
-    }, {
-      "_id" : 183,
-      "type" : "Servant",
-      "propDict" : {
-        "cost" : 21,
-        "attack" : 7,
-        "life" : 4,
-        "keywords" : {
-          "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
-          "Content" : new BinData(0, "kaRydXNo")
-        },
-        "characterId" : {
-          "_t" : "ObjectProxy",
-          "Type" : "TouhouCardEngine.DefineReference",
-          "Content" : new BinData(0, "kgHMqw==")
-        }
-      },
-      "effects" : [{
-          "_t" : "SerializableAuraEffect",
-          "name" : "光环效果1",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableAuraEntryNode",
-                "_id" : 1,
-                "posX" : -53.117763519287109,
-                "posY" : -606.74658203125,
-                "inputDefaultValues" : [{
-                    "name" : "buffDefine",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.BuffReference",
-                      "Content" : new BinData(0, "kgF1")
-                    }
-                  }, {
-                    "name" : "pileList",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameRange",
-                      "Content" : new BinData(0, "kaRIYW5k")
-                    }
-                  }, {
-                    "name" : "rangeList",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameRange",
-                      "Content" : new BinData(0, "kaRIYW5k")
-                    }
-                  }],
-                "propDict" : { },
-                "consts" : null,
-                "piles" : null,
-                "ranges" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "posX" : -256.84054565429688,
-                "posY" : 191.44540405273438,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 111012
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "posX" : 272.50323486328125,
-                "posY" : 134.79275512695313,
-                "inputDefaultValues" : [{
-                    "name" : "eventReference",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.EventReference",
-                      "Content" : new BinData(0, "kgCpRHJhd0V2ZW50")
-                    }
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 108003
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "posX" : 802.8433837890625,
-                "posY" : 148.06124877929688,
-                "inputDefaultValues" : [{
-                    "name" : "varName",
-                    "paramIndex" : -1,
-                    "value" : "玩家"
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 108002
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "posX" : 1326.62158203125,
-                "posY" : -16.919147491455078,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112002
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 6,
-                "posX" : 57.121246337890625,
-                "posY" : -217.38177490234375,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102001
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 7,
-                "posX" : 392.02496337890625,
-                "posY" : -217.38177490234375,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102010
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 8,
-                "posX" : -296.418212890625,
-                "posY" : -176.06787109375,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 111004
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 9,
-                "posX" : 1522.6070556640625,
-                "posY" : -604.29986572265625,
-                "inputDefaultValues" : [{
-                    "name" : "propName",
-                    "paramIndex" : -1,
-                    "value" : "值"
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 206003
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 10,
-                "posX" : -826.548583984375,
-                "posY" : -491.53607177734375,
-                "inputDefaultValues" : [],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112002
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 11,
-                "posX" : 872.34619140625,
-                "posY" : -893.4892578125,
-                "inputDefaultValues" : [{
-                    "name" : "operator",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.IntegerOperator",
-                      "Content" : new BinData(0, "0gAAAAI=")
-                    }
-                  }, {
-                    "name" : "arg",
-                    "paramIndex" : 1,
-                    "value" : -1
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112004
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 12,
-                "posX" : -889.2742919921875,
-                "posY" : 170.37338256835938,
-                "inputDefaultValues" : [{
-                    "name" : "eventRef",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.EventReference",
-                      "Content" : new BinData(0, "kgCpRHJhd0V2ZW50")
-                    }
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 108005
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "return",
-                "sourceNodeId" : 12,
-                "destName" : "array",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 5,
-                "destName" : "condition",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "element",
-                "sourceNodeId" : 2,
-                "destName" : "eventArg",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 2,
-                "destName" : "collection",
-                "destNodeId" : 8
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "eventArg",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 4,
-                "destName" : "A",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 7,
-                "destName" : "B",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 6,
-                "destName" : "card",
-                "destNodeId" : 7
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 6,
-                "destName" : "A",
-                "destNodeId" : 10
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 8,
-                "destName" : "arg",
-                "destParamIndex" : 1,
-                "destNodeId" : 11
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 11,
-                "destName" : "value",
-                "destNodeId" : 9
-              }, {
-                "sourceName" : "targetCard",
-                "sourceNodeId" : 1,
-                "destName" : "B",
-                "destNodeId" : 10
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 10,
-                "destName" : "condition",
-                "destNodeId" : 1
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 9
-              }, {
-                "sourceName" : "targetBuff",
-                "sourceNodeId" : 1,
-                "destName" : "buffs",
-                "destNodeId" : 9
-              }]
-          }
-        }],
-      "effectList" : []
-    }, {
       "_id" : 204,
       "type" : "Spell",
       "propDict" : {
@@ -62114,6 +61669,451 @@
                 "sourceNodeId" : 1,
                 "destName" : "card",
                 "destNodeId" : 16
+              }]
+          }
+        }],
+      "effectList" : []
+    }, {
+      "_id" : 181,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 5,
+        "attack" : 6,
+        "life" : 5,
+        "characterId" : {
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
+        }
+      },
+      "effects" : [{
+          "_t" : "SerializableActiveEffect",
+          "name" : "主动效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableActiveEntryNode",
+                "_id" : 1,
+                "posX" : -1496.72900390625,
+                "posY" : -425.98934936523438,
+                "inputDefaultValues" : [{
+                    "name" : "condition",
+                    "paramIndex" : -1,
+                    "value" : true
+                  }, {
+                    "name" : "tags",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EffectTagCollection",
+                      "Content" : new BinData(0, "kaZwbGF5ZWQ=")
+                    }
+                  }, {
+                    "name" : "priority",
+                    "paramIndex" : -1,
+                    "value" : 0
+                  }],
+                "propDict" : { },
+                "tags" : null,
+                "consts" : null,
+                "targetCheckerList" : []
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "posX" : -671.72900390625,
+                "posY" : -425.9893798828125,
+                "inputDefaultValues" : [{
+                    "name" : "cardDefine",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.DefineReference",
+                      "Content" : new BinData(0, "kgHMzA==")
+                    }
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 202004
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "player",
+                "destNodeId" : 2
+              }]
+          }
+        }],
+      "effectList" : []
+    }, {
+      "_id" : 183,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 21,
+        "attack" : 7,
+        "life" : 4,
+        "keywords" : {
+          "_t" : "ObjectProxy",
+          "Type" : "System.Object[]",
+          "Content" : new BinData(0, "kaRydXNo")
+        },
+        "characterId" : {
+          "_t" : "ObjectProxy",
+          "Type" : "TouhouCardEngine.DefineReference",
+          "Content" : new BinData(0, "kgHMqw==")
+        }
+      },
+      "effects" : [{
+          "_t" : "SerializableAuraEffect",
+          "name" : "光环效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableAuraEntryNode",
+                "_id" : 1,
+                "posX" : -53.117763519287109,
+                "posY" : -606.74658203125,
+                "inputDefaultValues" : [{
+                    "name" : "buffDefine",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.BuffReference",
+                      "Content" : new BinData(0, "kgF1")
+                    }
+                  }, {
+                    "name" : "pileList",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameRange",
+                      "Content" : new BinData(0, "kaRIYW5k")
+                    }
+                  }, {
+                    "name" : "rangeList",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.PileNameRange",
+                      "Content" : new BinData(0, "kaRIYW5k")
+                    }
+                  }],
+                "propDict" : { },
+                "consts" : null,
+                "piles" : null,
+                "ranges" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "posX" : -256.84054565429688,
+                "posY" : 191.44540405273438,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 111012
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "posX" : 272.50323486328125,
+                "posY" : 134.79275512695313,
+                "inputDefaultValues" : [{
+                    "name" : "eventReference",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCpRHJhd0V2ZW50")
+                    }
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 108003
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "posX" : 802.8433837890625,
+                "posY" : 148.06124877929688,
+                "inputDefaultValues" : [{
+                    "name" : "varName",
+                    "paramIndex" : -1,
+                    "value" : "玩家"
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 108002
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "posX" : 1326.62158203125,
+                "posY" : -16.919147491455078,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112002
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "posX" : 57.121246337890625,
+                "posY" : -217.38177490234375,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102001
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 7,
+                "posX" : 392.02496337890625,
+                "posY" : -217.38177490234375,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102010
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 8,
+                "posX" : -296.418212890625,
+                "posY" : -176.06787109375,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 111004
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 9,
+                "posX" : 1522.6070556640625,
+                "posY" : -604.29986572265625,
+                "inputDefaultValues" : [{
+                    "name" : "propName",
+                    "paramIndex" : -1,
+                    "value" : "值"
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 206003
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 10,
+                "posX" : -826.548583984375,
+                "posY" : -491.53607177734375,
+                "inputDefaultValues" : [],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112002
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 11,
+                "posX" : 872.34619140625,
+                "posY" : -893.4892578125,
+                "inputDefaultValues" : [{
+                    "name" : "operator",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.IntegerOperator",
+                      "Content" : new BinData(0, "0gAAAAI=")
+                    }
+                  }, {
+                    "name" : "arg",
+                    "paramIndex" : 1,
+                    "value" : -1
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112004
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 12,
+                "posX" : -889.2742919921875,
+                "posY" : 170.37338256835938,
+                "inputDefaultValues" : [{
+                    "name" : "eventRef",
+                    "paramIndex" : -1,
+                    "value" : {
+                      "_t" : "ObjectProxy",
+                      "Type" : "TouhouCardEngine.EventReference",
+                      "Content" : new BinData(0, "kgCpRHJhd0V2ZW50")
+                    }
+                  }],
+                "propDict" : { },
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 108005
+                },
+                "constDict" : null,
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "return",
+                "sourceNodeId" : 12,
+                "destName" : "array",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 5,
+                "destName" : "condition",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "element",
+                "sourceNodeId" : 2,
+                "destName" : "eventArg",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 2,
+                "destName" : "collection",
+                "destNodeId" : 8
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 3,
+                "destName" : "eventArg",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 4,
+                "destName" : "A",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 7,
+                "destName" : "B",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 6,
+                "destName" : "card",
+                "destNodeId" : 7
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 6,
+                "destName" : "A",
+                "destNodeId" : 10
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 8,
+                "destName" : "arg",
+                "destParamIndex" : 1,
+                "destNodeId" : 11
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 11,
+                "destName" : "value",
+                "destNodeId" : 9
+              }, {
+                "sourceName" : "targetCard",
+                "sourceNodeId" : 1,
+                "destName" : "B",
+                "destNodeId" : 10
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 10,
+                "destName" : "condition",
+                "destNodeId" : 1
+              }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 9
+              }, {
+                "sourceName" : "targetBuff",
+                "sourceNodeId" : 1,
+                "destName" : "buffs",
+                "destNodeId" : 9
               }]
           }
         }],
@@ -65335,22 +65335,6 @@
       "_animationRefs" : [],
       "_soundRefs" : []
     }, {
-      "_id" : 181,
-      "_skinId" : 1,
-      "_name" : "悖论引擎",
-      "_imagePath" : "a44dcd494c29db390b79ddf708f48b9e0056d46d10406605527d6c1ed0655184.jpg",
-      "_desc" : " <b>宣言</b>：将一张<u>平行时空传送</u>置入你的手牌",
-      "_animationRefs" : [],
-      "_soundRefs" : []
-    }, {
-      "_id" : 183,
-      "_skinId" : 1,
-      "_name" : "替身影武者",
-      "_imagePath" : "6310093082ae0ffb79317951c2a2acd6e47dbe4c8dafa328bcb3ba9877b732b4.jpg",
-      "_desc" : "<b>速攻</b>，本场游戏你每抽过一张牌，该仆从的灵力值消耗便减(1)",
-      "_animationRefs" : [],
-      "_soundRefs" : []
-    }, {
       "_id" : 204,
       "_skinId" : 1,
       "_name" : "平行时空传送",
@@ -65371,6 +65355,22 @@
         }, {
           "name" : "OnDeath"
         }]
+    }, {
+      "_id" : 181,
+      "_skinId" : 1,
+      "_name" : "悖论引擎",
+      "_imagePath" : "a44dcd494c29db390b79ddf708f48b9e0056d46d10406605527d6c1ed0655184.jpg",
+      "_desc" : " <b>宣言</b>：将一张<u>平行时空传送</u>置入你的手牌",
+      "_animationRefs" : [],
+      "_soundRefs" : []
+    }, {
+      "_id" : 183,
+      "_skinId" : 1,
+      "_name" : "替身影武者",
+      "_imagePath" : "6310093082ae0ffb79317951c2a2acd6e47dbe4c8dafa328bcb3ba9877b732b4.jpg",
+      "_desc" : "<b>速攻</b>，本场游戏你每抽过一张牌，该仆从的灵力值消耗便减(1)",
+      "_animationRefs" : [],
+      "_soundRefs" : []
     }],
   "buffDefineList" : [{
       "_id" : 1,
@@ -88736,30 +88736,6 @@
       "dictionary" : {
         "en-US" : "法术伤害-3",
         "ja" : "法术伤害-3"
-      }
-    }, {
-      "value" : "平行时空传送",
-      "dictionary" : {
-        "en-US" : "平行时空传送",
-        "ja" : "平行时空传送"
-      }
-    }, {
-      "value" : "召唤两个目标友方仆从的复制，本回合内你每使用过一张法术便多召唤一个",
-      "dictionary" : {
-        "en-US" : "召唤两个目标友方仆从的复制，本回合内你每使用过一张法术便多召唤一个",
-        "ja" : "召唤两个目标友方仆从的复制，本回合内你每使用过一张法术便多召唤一个"
-      }
-    }, {
-      "value" : "<b>速攻</b>，本场游戏你每抽过一张牌，该仆从的灵力值消耗便减(1)",
-      "dictionary" : {
-        "en-US" : "<b>速攻</b>，本场游戏你每抽过一张牌，该仆从的灵力值消耗便减(1)",
-        "ja" : "<b>速攻</b>，本场游戏你每抽过一张牌，该仆从的灵力值消耗便减(1)"
-      }
-    }, {
-      "value" : "灵力消耗值减少。",
-      "dictionary" : {
-        "en-US" : "灵力消耗值减少。",
-        "ja" : "灵力消耗值减少。"
       }
     }],
   "localizedResourceList" : [{
