@@ -65330,7 +65330,7 @@
       "_id" : 174,
       "_skinId" : 1,
       "_name" : "时间线收敛",
-      "_imagePath" : "94dd6df64a9b7ac9cfb865e7a84ceef0234f58931fd9abc16cd6cb518c3653c5.jpg",
+      "_imagePath" : "a272095dff4e42dd0201a541b7fa3b0ed665e88e5a817736d7c0ae1494c3d92b.jpg",
       "_desc" : "<b>唯一</b>，将你的牌库替换为手牌的复制，并使其中的每一张牌灵力消耗值减少(2)。",
       "_animationRefs" : [],
       "_soundRefs" : []
@@ -80936,7 +80936,7 @@
       "buffId" : 116,
       "name" : "时间线收敛",
       "desc" : "灵力消耗值减少(2)。",
-      "imagePath" : "94dd6df64a9b7ac9cfb865e7a84ceef0234f58931fd9abc16cd6cb518c3653c5.jpg",
+      "imagePath" : "a272095dff4e42dd0201a541b7fa3b0ed665e88e5a817736d7c0ae1494c3d92b.jpg",
       "_animationRefs" : [],
       "persAnimRef" : {
         "animRef" : {
