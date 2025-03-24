@@ -137,7 +137,6 @@ namespace TouhouHeartstone
                     newNode.targetCheckerList.Add(newTargetChecker);
                 }
             }
-            newNode.Define();
             return newNode;
         }
         private void DefinitionConditions()
