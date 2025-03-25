@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 5, "cardPoolId" : NumberLong(1), "editTime" : 653, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
+{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 5, "cardPoolId" : NumberLong(1), "editTime" : 654, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -56440,20 +56440,6 @@
         }],
       "effectList" : []
     }, {
-      "_id" : 179,
-      "type" : "Servant",
-      "propDict" : {
-        "attack" : 1,
-        "life" : 1,
-        "tags" : {
-          "_t" : "ObjectProxy",
-          "Type" : "System.Object[]",
-          "Content" : new BinData(0, "kaVCZWFzdA==")
-        }
-      },
-      "effects" : [],
-      "effectList" : []
-    }, {
       "_id" : 199,
       "type" : "Spell",
       "propDict" : {
@@ -62141,6 +62127,20 @@
           }
         }],
       "effectList" : []
+    }, {
+      "_id" : 179,
+      "type" : "Servant",
+      "propDict" : {
+        "attack" : 1,
+        "life" : 1,
+        "tags" : {
+          "_t" : "ObjectProxy",
+          "Type" : "System.String[]",
+          "Content" : new BinData(0, "kaVCZWFzdA==")
+        }
+      },
+      "effects" : [],
+      "effectList" : []
     }],
   "cardSkinList" : [{
       "_id" : -2147418111,
@@ -65224,13 +65224,6 @@
       "_animationRefs" : [],
       "_soundRefs" : []
     }, {
-      "_id" : 179,
-      "_skinId" : 1,
-      "_name" : "小白兔",
-      "_imagePath" : "25a87a7fb32176450cb96cce550ea2f970c3b8846d751a886d9fe31af5bc184b.jpg",
-      "_animationRefs" : [],
-      "_soundRefs" : []
-    }, {
       "_id" : 199,
       "_skinId" : 1,
       "_name" : "飞刀",
@@ -65392,6 +65385,13 @@
       "_name" : "位面法师",
       "_imagePath" : "8de0094aafa8456f910e5904557e5647bfe015b457d13f5f4b6f4ab29ceeb4c9.jpg",
       "_desc" : "法术伤害+3，直到你使用下一张法术后变为0，每当回合开始时恢复。",
+      "_animationRefs" : [],
+      "_soundRefs" : []
+    }, {
+      "_id" : 179,
+      "_skinId" : 1,
+      "_name" : "小白兔",
+      "_imagePath" : "25a87a7fb32176450cb96cce550ea2f970c3b8846d751a886d9fe31af5bc184b.jpg",
       "_animationRefs" : [],
       "_soundRefs" : []
     }],
