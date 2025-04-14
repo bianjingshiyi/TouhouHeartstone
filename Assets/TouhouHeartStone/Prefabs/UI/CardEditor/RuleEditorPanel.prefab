@@ -337,11 +337,6 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 417370560070327257, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
-        type: 3}
-      propertyPath: m_EffectMaterial
-      value: 
-      objectReference: {fileID: 2100000, guid: aee96bc531e6eba468ec405e536f515f, type: 2}
     - target: {fileID: 444958822097035364, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer
@@ -487,11 +482,6 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 972317171620803122, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
-        type: 3}
-      propertyPath: m_EffectMaterial
-      value: 
-      objectReference: {fileID: 2100000, guid: aee96bc531e6eba468ec405e536f515f, type: 2}
     - target: {fileID: 987540179225889795, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer
@@ -612,11 +602,6 @@ PrefabInstance:
       propertyPath: m_Text
       value: "\xB7\u89C4\u5219\u7F16\u8F91\u5668 \xB7"
       objectReference: {fileID: 0}
-    - target: {fileID: 1529081157816266974, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
-        type: 3}
-      propertyPath: m_EffectMaterial
-      value: 
-      objectReference: {fileID: 2100000, guid: aee96bc531e6eba468ec405e536f515f, type: 2}
     - target: {fileID: 1644402428374869963, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -742,11 +727,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2129343041602541877, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
-        type: 3}
-      propertyPath: m_EffectMaterial
-      value: 
-      objectReference: {fileID: 2100000, guid: aee96bc531e6eba468ec405e536f515f, type: 2}
     - target: {fileID: 2273700969564582078, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer
@@ -926,7 +906,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_EffectMaterial
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: -1024942254656783247, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 2790322632171623035, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer
@@ -1131,7 +1112,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_EffectMaterial
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: -1024942254656783247, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 3414108353820037993, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -1531,7 +1513,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_EffectMaterial
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: -1024942254656783247, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 3921742788012308402, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer
@@ -1681,7 +1664,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_EffectMaterial
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: -1024942254656783247, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 4535721028916268130, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -1846,7 +1830,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_EffectMaterial
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: -1024942254656783247, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 4908813122006242271, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer
@@ -2101,7 +2086,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_EffectMaterial
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: -1024942254656783247, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 5476799664656311075, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer
@@ -2511,7 +2497,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_EffectMaterial
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: -1024942254656783247, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 6046308458305353520, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer
@@ -2571,7 +2558,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_EffectMaterial
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: -1024942254656783247, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 6605193936364419310, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2701,7 +2689,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_EffectMaterial
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: -1024942254656783247, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 6848023988244069076, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer
@@ -2742,11 +2731,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6970698480909908100, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
-        type: 3}
-      propertyPath: m_EffectMaterial
-      value: 
-      objectReference: {fileID: 2100000, guid: aee96bc531e6eba468ec405e536f515f, type: 2}
     - target: {fileID: 6993120267569873098, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_IsActive
@@ -2852,11 +2836,6 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7496369495782953327, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
-        type: 3}
-      propertyPath: m_EffectMaterial
-      value: 
-      objectReference: {fileID: 2100000, guid: aee96bc531e6eba468ec405e536f515f, type: 2}
     - target: {fileID: 7608700711588843074, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2972,11 +2951,6 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8092487150688162691, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
-        type: 3}
-      propertyPath: m_EffectMaterial
-      value: 
-      objectReference: {fileID: 2100000, guid: aee96bc531e6eba468ec405e536f515f, type: 2}
     - target: {fileID: 8115260402936902980, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_SortingLayer
@@ -3152,11 +3126,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8717521031388248680, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
-        type: 3}
-      propertyPath: m_EffectMaterial
-      value: 
-      objectReference: {fileID: 2100000, guid: aee96bc531e6eba468ec405e536f515f, type: 2}
     - target: {fileID: 8748294843796014088, guid: 08f57c7f1f2fcd24b8c2fa7f67336641,
         type: 3}
       propertyPath: m_AnchorMax.y

@@ -8464,7 +8464,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Version: 300
-  m_EffectMaterial: {fileID: 0}
+  m_EffectMaterial: {fileID: -1024942254656783247, guid: aee96bc531e6eba468ec405e536f515f,
+    type: 2}
   m_EffectFactor: 1
   m_ColorFactor: 1
   m_BlurFactor: 0
@@ -15249,7 +15250,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_EffectMaterial
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: -1024942254656783247, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

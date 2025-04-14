@@ -1,4 +1,4 @@
-﻿using BJSYGameCore;
+using BJSYGameCore;
 using Game.PostProcess;
 using RestSharp;
 using System;

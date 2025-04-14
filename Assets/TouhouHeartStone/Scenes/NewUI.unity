@@ -3210,6 +3210,7 @@ MonoBehaviour:
   - {fileID: 9056566794823193211, guid: 432483c6b4b30c443b40d1cb2d2ac79c, type: 3}
   - {fileID: 453800936675978161, guid: 3be0208d3b1ae584da220d2275b7d7cf, type: 3}
   - {fileID: 278634158168787110, guid: 29ce75d242744504da8a77b2fbe2aad6, type: 3}
+  - {fileID: 7585138458393047659, guid: 7a695b785f430b143840f79da8ff72b4, type: 3}
 --- !u!114 &123776328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20321,7 +20322,7 @@ PrefabInstance:
     - target: {fileID: 218766240834303192, guid: dfd017d4e4484df40ae97e3101b4a5e6,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -679.99994
+      value: -680
       objectReference: {fileID: 0}
     - target: {fileID: 1085466668570176274, guid: dfd017d4e4484df40ae97e3101b4a5e6,
         type: 3}
@@ -21589,7 +21590,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_EffectMaterial
       value: 
-      objectReference: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
+      objectReference: {fileID: 6013873453661653855, guid: aee96bc531e6eba468ec405e536f515f,
         type: 2}
     - target: {fileID: 6616506794799022529, guid: 3274ef919aad371409aa5b1167dc71b9,
         type: 3}
