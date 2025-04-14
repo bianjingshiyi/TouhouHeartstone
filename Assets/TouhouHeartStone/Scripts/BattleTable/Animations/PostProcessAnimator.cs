@@ -17,43 +17,54 @@ namespace Game.BattleTable
         protected void OnEnable()
         {
             _volume = this.findInstance<PostProcessVolume>();
-        }
-        protected void Update()
-        {
+            if (_volume == null || _volume.profile == null)
+                return;
+
+            _settings = null;
             foreach (PostProcessEffectSettings setting in _volume.profile.settings)
             {
                 if (setting.GetType().Name.StartsWith(effectName) && setting is THHPostProcessEffectSettings thhSettings)
                 {
-                    setting.active = true;
-                    if (type == PostProcessParameterType.Float)
-                        thhSettings.SetParameter(paramName, floatValue);
-                    else if (type == PostProcessParameterType.Vector2)
-                        thhSettings.SetParameter(paramName, vector2Value);
-                    else if (type == PostProcessParameterType.Vector3)
-                        thhSettings.SetParameter(paramName, vector3Value);
-                    else if (type == PostProcessParameterType.Vector4)
-                        thhSettings.SetParameter(paramName, vector4Value);
-                    else if (type == PostProcessParameterType.Color)
-                        thhSettings.SetParameter(paramName, colorValue);
+                    _settings = thhSettings;
+                    _isEffectActiveBeforeSetting = setting.active;
                     break;
                 }
             }
+        }
+        protected void Update()
+        {
+            if (_settings == null)
+                return;
+
+            _settings.active = active;
+            if (type == PostProcessParameterType.Float)
+                _settings.SetParameter(paramName, floatValue);
+            else if (type == PostProcessParameterType.Vector2)
+                _settings.SetParameter(paramName, vector2Value);
+            else if (type == PostProcessParameterType.Vector3)
+                _settings.SetParameter(paramName, vector3Value);
+            else if (type == PostProcessParameterType.Vector4)
+                _settings.SetParameter(paramName, vector4Value);
+            else if (type == PostProcessParameterType.Color)
+                _settings.SetParameter(paramName, colorValue);
         }
         protected void OnDisable()
         {
             if (!resetOnDisable)
                 return;
-            foreach (PostProcessEffectSettings setting in _volume.profile.settings)
-            {
-                if (setting.GetType().Name.StartsWith(effectName) && setting is THHPostProcessEffectSettings thhSettings)
-                {
-                    thhSettings.ResetParameter(paramName);
-                    break;
-                }
-            }
+            if (_settings == null)
+                return;
+
+            if (_isParamActiveBeforeSetting)
+                _settings.SetParameter(paramName, _paramValueBeforeSetting);
+            else
+                _settings.SetParameter(paramName, null);
+            if (!_isEffectActiveBeforeSetting)
+                _settings.active = false;
         }
         public string effectName;
         public string paramName;
+        public bool active;
         public PostProcessParameterType type;
         public float floatValue;
         public Vector2 vector2Value;
@@ -62,6 +73,10 @@ namespace Game.BattleTable
         public Color colorValue;
         public bool resetOnDisable = true;
         private PostProcessVolume _volume;
+        private THHPostProcessEffectSettings _settings;
+        private bool _isEffectActiveBeforeSetting;
+        private bool _isParamActiveBeforeSetting;
+        private object _paramValueBeforeSetting;
     }
     public enum PostProcessParameterType
     {

@@ -4,8 +4,9 @@ Shader "THH/PostProcess/TimeStop"
     // StdLib.hlsl holds pre-configured vertex shaders (VertDefault), varying structs (VaryingsDefault), and most of the data you need to write common effects.
     #include "Packages/com.unity.postprocessing/PostProcessing/Shaders/StdLib.hlsl"
     TEXTURE2D_SAMPLER2D(_MainTex, sampler_MainTex);
-    float2 _Center; // Ê±¼äÍ£Ö¹ÖÐÐÄ
-    float  _Radius; // Ê±¼äÍ£Ö¹°ë¾¶
+    float2 _Center; // Ê±ï¿½ï¿½Í£Ö¹ï¿½ï¿½ï¿½ï¿½
+    float  _Radius; // Ê±ï¿½ï¿½Í£Ö¹ï¿½ë¾¶
+    float  _Ratio; // ï¿½ï¿½ï¿½ï¿½
     float4 Frag(VaryingsDefault i) : SV_Target
     {
         float4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.texcoord);
@@ -13,14 +14,14 @@ Shader "THH/PostProcess/TimeStop"
 
         if (dist > _Radius)
         {
-            // ·¶Î§Íâ·´É«
-            color.rgb = 1 - color.rgb;
+            // ï¿½ï¿½Î§ï¿½â·´É«
+            color.rgb = lerp(color.rgb, 1 - color.rgb, _Ratio);
         }
         else
         {
-            // ·¶Î§ÄÚºÚ°×
+            // ï¿½ï¿½Î§ï¿½ÚºÚ°ï¿½
             float grayscale = dot(color.rgb, float3(0.299, 0.587, 0.114));
-            color.rgb = grayscale.xxx;
+            color.rgb = lerp(color.rgb, grayscale.xxx, _Ratio);
         }
 
         return color;

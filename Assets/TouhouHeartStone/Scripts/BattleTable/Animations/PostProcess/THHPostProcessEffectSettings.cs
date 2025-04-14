@@ -9,7 +9,7 @@ namespace Game.PostProcess
         {
             throw new NotImplementedException();
         }
-        public virtual void ResetParameter(string name)
+        public virtual object GetParameter(string name)
         {
             throw new NotImplementedException();
         }
