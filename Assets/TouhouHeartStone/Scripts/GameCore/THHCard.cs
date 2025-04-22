@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -707,6 +707,7 @@ namespace TouhouHeartstone
         }
         public static Task<EventArg> damageByRandomCount(this IEnumerable<Card> cards, CardEngine game, Card source, int value, int count)
         {
+            cards = cards.Where(c => !c.isDead(game));
             if (cards.Count() > count)
                 cards = cards.randomTake(game, count);
             return cards.damage(game, source, value);
