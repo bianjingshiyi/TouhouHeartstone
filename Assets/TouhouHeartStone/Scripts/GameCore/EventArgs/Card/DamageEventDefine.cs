@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using MukioI18n;
 using TouhouCardEngine;
@@ -42,6 +42,11 @@ namespace TouhouHeartstone
             if (dmgValue < 1)
             {
                 arg.isCanceled = true;
+            }
+            else if (target.pile.name != PILE.FIELD)
+            {
+                arg.isCanceled = true;
+                game.logger.logTrace($"{target}不在战场，不受伤害");
             }
             else if (target.isImmunity(game))
             {
