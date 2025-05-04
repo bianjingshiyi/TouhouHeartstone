@@ -43,7 +43,7 @@ namespace TouhouHeartstone
             {
                 arg.isCanceled = true;
             }
-            else if (target.pile.name != PILE.FIELD)
+            else if (target.pile.name != PILE.FIELD && target.pile.name != PILE.MASTER)
             {
                 arg.isCanceled = true;
                 game.logger.logTrace($"{target}不在战场，不受伤害");
