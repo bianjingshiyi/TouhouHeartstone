@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+using Psd2UnityPro;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace TouhouHeartstone
 {
@@ -198,6 +200,38 @@ namespace TouhouHeartstone
         public const int Asthma = 149; // 哮喘*
         public const int AfterImage = 150; // 残像*
 
+        public const int IzayoiSakuya = 171; // 十六夜咲夜
+        public const int EquipSliverKnife = 172; // 装备银色匕首
+        public const int SliverKnife = 173; // 银色匕首
+        public const int TimeLineConvergence = 174; // 时间线收敛
+        public const int PlanesMage = 175; // 位面法师
+        public const int ComeBackAndRetry = 176; // 回到之前重来吧
+        public const int PerfectMaid = 177; // 完美女仆
+        public const int RabbitTrick = 178; // 兔子戏法
+        public const int TheWorld = 180; // The World
+        public const int ParadoxEngine = 181; // 悖论引擎
+        public const int ParaUniverseTeleport = 204; // 平行时空传送
+        public const int GoblinGuardian = 182; // 地精保镖
+        public const int StandKagemusha = 183; // 替身影武者
+        public const int LaundryMaid = 184; // 洗衣女仆
+        public const int CallingMaid = 185; // 传唤女仆
+        public const int FairyMaid = 186; // 妖精女仆
+        public const int MaidGuardCaptain = 187; // 女仆卫队长
+        public const int TheDaggerOfTime = 188; // 时之刃
+        public const int MagicStarsSword = 189; // 星光魔刃
+        public const int VampireHunter = 190; // 吸血鬼猎人
+        public const int KillingDoll = 191; // 杀人玩偶
+        public const int BackToFuture = 192; // 回到未来
+        public const int FTLJumping = 193; // 光速跃迁
+        public const int InscribeRedSoul = 194; // 铭刻于红魂
+        public const int SerialKnifeThrower = 195; // 连环飞刀手
+        public const int ClockMagician = 196; // 钟表魔术师
+        public const int SliverBladeRunner = 198; // 银刃杀手
+        public const int Knife = 199; // 飞刀
+        public const int Ambuscade = 200; // 静候时机
+        public const int JackTheRipper = 201; // 开膛手杰克
+        public const int InflationSquare = 202; // 膨胀空间
+        public const int SightOfDistantBlade = 203; // 离剑之见
 
         public static bool tryGetClassicAlternateOfBuiltin(int builtinId, out int classicId)
         {

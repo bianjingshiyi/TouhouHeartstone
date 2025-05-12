@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 
 namespace Game
@@ -253,7 +254,7 @@ namespace Game
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENTS)]
         public static EventArg[] getEventsThisTurn(CardEngine game)
         {
-            return getEventsInTurnsBefore(game, 0, 0);
+            return game.triggers.getEventsThisTurn();
         }
 
 
@@ -263,24 +264,7 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT_START_BEFORE)] int farther,
             [ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT_END_BEFORE)] int nearer)
         {
-            var events = game.triggers.getRecordedEvents();
-            var results = new List<EventArg>();
-            int turnBeforeCount = 0;
-            for (int i = events.Length - 1; i >= 0; i--)
-            {
-                var arg = events[i];
-                if (arg is not EventArg eventArg)
-                    continue;
-                if (turnBeforeCount >= nearer)
-                    results.Insert(0, eventArg);
-                if (turnBeforeCount > farther)
-                    break;
-                if (eventArg.define is TurnStartEventDefine)
-                {
-                    turnBeforeCount++;
-                }
-            }
-            return results.ToArray();
+            return game.triggers.getEventsInTurnsBefore(farther, nearer);
         }
 
         [THHActionMethod(BuiltinActionDefineID.GetCardSnapshotBeforeEvent, StringTable.EDITOR_NODE_CATEGORY_EVENT, EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_BEFORE_EVENT)]
@@ -416,6 +400,34 @@ namespace Game
         }
 
         #endregion
+    }
+    public static class TriggerManagerHelper
+    {
+        public static EventArg[] getEventsThisTurn(this ITriggerManager triggers)
+        {
+            return triggers.getEventsInTurnsBefore(0, 0);
+        }
+        public static EventArg[] getEventsInTurnsBefore(this ITriggerManager triggers, int farther, int nearer)
+        {
+            var events = triggers.getRecordedEvents();
+            var results = new List<EventArg>();
+            int turnBeforeCount = 0;
+            for (int i = events.Length - 1; i >= 0; i--)
+            {
+                var arg = events[i];
+                if (arg is not EventArg eventArg)
+                    continue;
+                if (turnBeforeCount >= nearer)
+                    results.Insert(0, eventArg);
+                if (turnBeforeCount > farther)
+                    break;
+                if (eventArg.define is TurnStartEventDefine)
+                {
+                    turnBeforeCount++;
+                }
+            }
+            return results.ToArray();
+        }
     }
     public class EventRecordNodeConversion
     {

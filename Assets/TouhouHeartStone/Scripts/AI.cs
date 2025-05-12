@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -199,6 +199,8 @@ namespace Game
                     if (calcReisenValue(game, player, card, opponent, target, out value))
                         return value;
                     if (calcSanaeValue(game, player, card, opponent, target, out value))
+                        return value;
+                    if (calcSakuyaValue(game, player, card, opponent, target, out value))
                         return value;
                     if (calcBattlecryValue(game, player, card, opponent, target, out value))
                         return value;
@@ -503,6 +505,65 @@ namespace Game
                     return true;
                 case ClassicCardID.PlagueOfCrops:
                     value = 1;
+                    return true;
+                default:
+                    value = 0;
+                    return false;
+            }
+        }
+
+        bool calcSakuyaValue(CardEngine game, Player player, Card card, Player opponent, Card target,
+            out float value)
+        {
+            switch (card.define.id)
+            {
+                case ClassicCardID.TimeLineConvergence:
+                    value = player.getHand().count - player.getDeck().count;
+                    return true;
+                case ClassicCardID.TheWorld:
+                    value = player.getHand().Where(c1 => c1 != card && c1.isSpell()).Sum(c2 => c2.getCost(game));
+                    return true;
+                case ClassicCardID.ParaUniverseTeleport:
+                    value = calcServantValue(target.getAttack(game), target.getLife(game)) * 2;
+                    return true;
+                case ClassicCardID.MagicStarsSword:
+                    value = calcDamageValue(game, player, opponent, target, 2) + (player.getHand().Any(c => c != card && c.isSpell()) ? 2 : 0);
+                    return true;
+                case ClassicCardID.KillingDoll:
+                    value = calcDamageValue(game, player, opponent, target,
+                        game.triggers.getEventsThisTurn().Where(e => e.define is UseEventDefine).Count() > 0 ? 5 : 3);
+                    return true;
+                case ClassicCardID.BackToFuture:
+                    var servants = player.getHand().Where(c => c.isServant() && c.getCost(game) <= player.getGem());
+                    if (servants.Count() > 0)
+                    {
+                        value = servants.Max(c => calcServantValue(c.getAttack(game), c.getLife(game))) + 1;
+                        return true;
+                    }
+                    value = 0;
+                    return true;
+                case ClassicCardID.FTLJumping:
+                    value = game.triggers.getEventsThisTurn().Where(e => e.define is UseEventDefine).Count() > 0 ? 6 : 3;
+                    return true;
+                case ClassicCardID.InscribeRedSoul:
+                    int damage = 4;
+                    if (player.getItem() != null)
+                    {
+                        damage += player.getItem().getLife(game) * 2;
+                    }
+                    value = calcRandomDamageValue(game, player, opponent, opponent.getField(), damage);
+                    return true;
+                case ClassicCardID.Ambuscade:
+                    var spells = player.getHand().Where(c => c != card && c.isSpell() && c.getCost(game) - 3 <= player.getGem());
+                    if (spells.Count() > 0)
+                    {
+                        value = Math.Min(spells.Max(c => c.getCost(game)), 3);
+                        return true;
+                    }
+                    value = 0;
+                    return true;
+                case ClassicCardID.SightOfDistantBlade:
+                    value = calcAOEDamageValue(game, player, opponent, opponent.getField(), 1) + 2;
                     return true;
                 default:
                     value = 0;
