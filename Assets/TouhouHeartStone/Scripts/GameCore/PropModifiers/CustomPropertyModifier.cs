@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MongoDB.Bson.Serialization.Attributes;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
@@ -43,7 +43,10 @@ namespace TouhouHeartstone
         }
         public override PropModifier Clone()
         {
-            return new CustomPropertyModifier(propertyName, defaultValue is ICloneable cloneable ? cloneable.Clone() : defaultValue, isSet);
+            return new CustomPropertyModifier(propertyName, defaultValue is ICloneable cloneable ? cloneable.Clone() : defaultValue, isSet)
+            {
+                relatedPropName = relatedPropName
+            };
         }
         public override string ToString()
         {

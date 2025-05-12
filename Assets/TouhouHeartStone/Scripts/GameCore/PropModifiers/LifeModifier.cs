@@ -1,4 +1,4 @@
-﻿using TouhouCardEngine;
+using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using System.Threading.Tasks;
 using MongoDB.Bson.Serialization.Attributes;
@@ -76,7 +76,10 @@ namespace TouhouHeartstone
         }
         public override PropModifier Clone()
         {
-            return new LifeModifier(defaultValue, isSet);
+            return new LifeModifier(defaultValue, isSet)
+            {
+                relatedPropName = relatedPropName,
+            };
         }
         #endregion
     }

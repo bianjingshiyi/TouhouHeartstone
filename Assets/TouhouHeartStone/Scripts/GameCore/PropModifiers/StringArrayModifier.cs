@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 
@@ -26,7 +26,10 @@ namespace TouhouHeartstone
         }
         public override PropModifier Clone()
         {
-            return new StringArrayModifier(propertyName, modifyType, CollectionHelper.Clone(defaultValue));
+            return new StringArrayModifier(propertyName, modifyType, CollectionHelper.Clone(defaultValue))
+            {
+                relatedPropName = relatedPropName
+            };
         }
         public ModifyType modifyType;
         public enum ModifyType

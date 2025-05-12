@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MongoDB.Bson.Serialization.Attributes;
 using TouhouCardEngine;
 namespace TouhouHeartstone
@@ -13,7 +13,10 @@ namespace TouhouHeartstone
         }
         public override PropModifier Clone()
         {
-            return new AttackModifier(defaultValue, isSet);
+            return new AttackModifier(defaultValue, isSet)
+            {
+                relatedPropName = relatedPropName
+            };
         }
     }
 }
