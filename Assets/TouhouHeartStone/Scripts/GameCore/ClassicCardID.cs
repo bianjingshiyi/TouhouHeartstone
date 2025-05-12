@@ -1,6 +1,4 @@
-using Psd2UnityPro;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace TouhouHeartstone
 {
