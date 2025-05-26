@@ -1,4 +1,4 @@
-﻿using MukioI18n;
+using MukioI18n;
 
 namespace Game
 {
@@ -173,6 +173,10 @@ namespace Game
         public const string KEYWORD_NAME_UNKNOWN = "未知关键词";
         [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
         public const string KEYWORD_NAME_CHARGED = "蓄力";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_COMBO = "连击";
+        [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
+        public const string KEYWORD_NAME_TIMESTOP = "时间停止";
         [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]
         public const string KEYWORD_NAME_SHACKLE = "禁锢";
         [TranslateMsg("关键词名称", CONTEXT_KEYWORD_NAME)]

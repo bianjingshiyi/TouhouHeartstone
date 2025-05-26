@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace TouhouHeartstone
 {
@@ -111,6 +111,14 @@ namespace TouhouHeartstone
         /// 蓄力
         /// </summary>
         public const string CHARGED = "charged";
+        /// <summary>
+        /// 连击
+        /// </summary>
+        public const string COMBO = "combo";
+        /// <summary>
+        /// 时间停止
+        /// </summary>
+        public const string TIMESTOP = "timestop";
         #endregion
 
         #region 动作关键词

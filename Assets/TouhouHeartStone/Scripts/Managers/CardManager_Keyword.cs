@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using MukioI18n;
@@ -130,6 +130,8 @@ namespace Game
             addKeywordInfo(KEYWORD.DEATHRATTLE, StringTable.KEYWORD_NAME_DEATHRATTLE, KEYWORD_DESC_DEATHRATTLE);
             addKeywordInfo(KEYWORD.TRAP, StringTable.KEYWORD_NAME_SECRET, KEYWORD_DESC_TRAP);
             addKeywordInfo(KEYWORD.CHARGED, StringTable.KEYWORD_NAME_CHARGED, KEYWORD_DESC_CAN_BE_CHARGED);
+            addKeywordInfo(KEYWORD.COMBO, StringTable.KEYWORD_NAME_COMBO, KEYWORD_DESC_COMBO);
+            addKeywordInfo(KEYWORD.TIMESTOP, StringTable.KEYWORD_NAME_TIMESTOP, KEYWORD_DESC_TIMESTOP);
 
             // 动作关键词
             addKeywordInfo(KEYWORD.SHACKLE, StringTable.KEYWORD_NAME_SHACKLE, KEYWORD_DESC_FROZEN);
@@ -199,6 +201,10 @@ namespace Game
         public const string KEYWORD_DESC_UNPLAYABLE = "无法从手牌中被主动使用。";
         [TranslateMsg("关键词描述-蓄力", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_CAN_BE_CHARGED = "你的回合结束后，为手牌中所有灵力值消耗小于或等于你灵力珠数量的<b>蓄力</b>牌进行蓄力。";
+        [TranslateMsg("关键词描述-连击", CONTEXT_KEYWORD_DESCRIPTION)]
+        public const string KEYWORD_DESC_COMBO = "如果你本回合已经使用过卡牌，则会触发<b>连击</b>的额外效果。";
+        [TranslateMsg("关键词描述-时间停止", CONTEXT_KEYWORD_DESCRIPTION)]
+        public const string KEYWORD_DESC_TIMESTOP = "处于<b>时间停止</b>状态时，你手牌中的所有法术的法力值消耗均为(0)，但是被打出后要等到<b>时间停止</b>结束后才会生效。";
         [TranslateMsg("关键词描述-法术伤害", CONTEXT_KEYWORD_DESCRIPTION)]
         public const string KEYWORD_DESC_SPELL_DAMAGE = "你的法术额外造成伤害。";
         [TranslateMsg("关键词描述-减伤", CONTEXT_KEYWORD_DESCRIPTION)]
