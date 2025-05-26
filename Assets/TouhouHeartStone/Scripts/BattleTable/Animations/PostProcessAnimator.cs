@@ -10,7 +10,6 @@ namespace Game.BattleTable
     /// <summary>
     /// 使用动画曲线来控制后处理效果
     /// </summary>
-    [RequireComponent(typeof(Animator))]
     [ExecuteInEditMode]
     public class PostProcessAnimator : MonoBehaviour
     {
@@ -30,6 +29,8 @@ namespace Game.BattleTable
                     break;
                 }
             }
+
+            Debug.Log($"后处理动画 {gameObject.name} 生效");
         }
         protected void Update()
         {
@@ -38,21 +39,39 @@ namespace Game.BattleTable
 
             _settings.active = active;
             if (type == PostProcessParameterType.Float)
+            {
                 _settings.SetParameter(paramName, floatValue);
+                Debug.Log($"后处理动画 {gameObject.name} 设置属性 {paramName} = {floatValue}");
+            }
             else if (type == PostProcessParameterType.Vector2)
+            {
                 _settings.SetParameter(paramName, vector2Value);
+                Debug.Log($"后处理动画 {gameObject.name} 设置属性 {paramName} = {vector2Value}");
+            }
             else if (type == PostProcessParameterType.Vector3)
+            {
                 _settings.SetParameter(paramName, vector3Value);
+                Debug.Log($"后处理动画 {gameObject.name} 设置属性 {paramName} = {vector3Value}");
+            }
             else if (type == PostProcessParameterType.Vector4)
+            {
                 _settings.SetParameter(paramName, vector4Value);
+                Debug.Log($"后处理动画 {gameObject.name} 设置属性 {paramName} = {vector4Value}");
+            }
             else if (type == PostProcessParameterType.Color)
+            {
                 _settings.SetParameter(paramName, colorValue);
+                Debug.Log($"后处理动画 {gameObject.name} 设置属性 {paramName} = {colorValue}");
+            }
         }
         protected void OnDisable()
         {
-            if (!resetOnDisable)
-                return;
             if (_settings == null)
+                return;
+
+            Debug.Log($"后处理动画 {gameObject.name} 失效");
+
+            if (!resetOnDisable)
                 return;
 
             if (_isParamActiveBeforeSetting)
