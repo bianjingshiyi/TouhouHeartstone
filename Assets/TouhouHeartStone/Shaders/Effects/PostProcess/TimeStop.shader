@@ -15,7 +15,7 @@ Shader "THH/PostProcess/TimeStop"
 
         float3 inverted = 1 - color.rgb; // 反色
         float grayscale = dot(color.rgb, float3(0.299, 0.587, 0.114)); // 灰度
-        float fade = clamp((dist - _Radius + _Fade) / _Fade, 0, 1);
+        float fade = clamp((dist - _Radius + _Fade) / _Fade, 0, 1); // 渐变范围内反色，范围中混合，范围外灰度
         color.rgb = lerp(color.rgb, lerp(inverted.rgb, grayscale.xxx, fade), _Ratio);
 
         return color;
