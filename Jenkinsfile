@@ -4,9 +4,9 @@
 import org.lotlab.pipeline.Wecom
 import org.lotlab.pipeline.Webhook
 import org.lotlab.pipeline.Docker
-import org.lotlab.pipeline.UnityBuilder
+import org.lotlab.pipeline.Unity
 import org.lotlab.pipeline.TencentCOS
-import org.lotlab.pipeline.BackblazeB2
+import org.lotlab.pipeline.Minio
 import org.lotlab.pipeline.Mail
 
 import org.jenkinsci.plugins.workflow.steps.TimeoutStepExecution;
@@ -14,7 +14,7 @@ import org.jenkinsci.plugins.workflow.support.steps.input.Rejection;
 
 pipeline {
     agent {
-        node { label 'unity' }
+        node { label 'unity-2022.3-android' }
     }
     options {
         timeout(time: 2, unit: 'HOURS')
@@ -134,18 +134,26 @@ pipeline {
 		}
         stage('Build Windows') {
             steps {
-                script {
-					env.ADDITIONAL_BUILD_FLAGS = env.GLOBAL_BUILD_FLAGS + ';STEAM_BUILD'
-                    UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.buildPlatform('2022.3.11f1-windows-mono-3', env.WINDOWS_PACKAGES)
+				container('unity') {
+					script {
+						env.ADDITIONAL_BUILD_FLAGS = env.GLOBAL_BUILD_FLAGS + ';STEAM_BUILD'
+						def b = new Unity();
+						b.setLicense('unity_license');
+						b.startPlatform(env.WINDOWS_PACKAGES);
+					}
                 }
             }
         }
         stage('Build Android') {
             steps {
-                script {
-                    UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER, 'zmcs_android')
-                    unitybuilder.buildPlatform('2022.3.11f1-android-3', env.ANDROID_PACKAGES)
+				container('unity-android') {
+					script {
+						def b = new Unity();
+						b.setLicense('unity_license');
+						b.withAndroidKey('zmcs_android') {
+							b.startPlatform(env.ANDROID_PACKAGES);
+						}
+					}
                 }
             }
         }
@@ -154,60 +162,70 @@ pipeline {
                 environment name: 'BUILD_LINUX', value: 'true'
             }
             steps {
-                script {
-					env.ADDITIONAL_BUILD_FLAGS = env.GLOBAL_BUILD_FLAGS + ';STEAM_BUILD'
-                    UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.buildPlatform('2022.3.11f1-android-3', env.LINUX_PACKAGES)
-                }
+				container('unity-android') {
+					script {
+						env.ADDITIONAL_BUILD_FLAGS = env.GLOBAL_BUILD_FLAGS + ';STEAM_BUILD'
+						def b = new Unity();
+						b.setLicense('unity_license');
+						b.startPlatform(env.LINUX_PACKAGES);
+					}
+				}
             }
         }
         stage('Compress') {
             steps {
-                sh label: 'Compress package', script: '''#!/bin/bash
-                    RELEASE_FOLDER=_artifact
-                    PREFIX="醉梦传说_${BRANCH_NAME}_Rev_${BUILD_NUMBER}_"
+				container('mc') {
+					sh label: 'Compress package', script: '''#!/bin/sh
+						RELEASE_FOLDER=_artifact
+						PREFIX="醉梦传说_${BRANCH_NAME}_Rev_${BUILD_NUMBER}_"
 
-                    cd Build
-                    if [ -d $RELEASE_FOLDER ]; then
-                        rm -r $RELEASE_FOLDER/*
-                    else
-                        mkdir -p $RELEASE_FOLDER
-                    fi
+						cd Build
+						if [ -d $RELEASE_FOLDER ]; then
+							rm -r $RELEASE_FOLDER/*
+						else
+							mkdir -p $RELEASE_FOLDER
+						fi
 
-                    for i in *
-                    do
-                    if [[ -d "$i" &&  $i != _* ]]; then
-                        if [[ $i != *android* ]]; then
-                            pushd .
-                            cd $i
-                            if [[ ${i,,} = *debug* ]]; then
-								echo "2825850" >> steam_appid.txt
+						BUILD_DIR=$(pwd)
+						
+						for i in *
+						do
+						if [[ -d "$i" &&  $i != _* ]]; then
+							if [[ $i != *android* ]]; then
+								cd $BUILD_DIR/$i
+								case $i in
+									*debug* )
+										echo "2825850" >> steam_appid.txt
+										 ;;
+								esac 
+								zip -r ../$RELEASE_FOLDER/$PREFIX$i.zip *
+							else
+								cp $i/*.apk $RELEASE_FOLDER/$PREFIX$i.apk
 							fi
-                            zip -r ../$RELEASE_FOLDER/$PREFIX$i.zip *
-                            popd
-                        else
-                            cp $i/*.apk $RELEASE_FOLDER/$PREFIX$i.apk
-                        fi
-                    fi
-                    done'''
-                    // archiveArtifacts artifacts: 'Build/_artifact/*', followSymlinks: false
+						fi
+						done'''
+						// archiveArtifacts artifacts: 'Build/_artifact/*', followSymlinks: false
+                }
             }
         }
         stage('Upload') {
             steps {
-                script {
-                    BackblazeB2 b2 = new BackblazeB2(this, 'sample', 'backblaze-b2')
-
-                    def files = findFiles excludes: '', glob: 'Build/_artifact/**'
-                    env.DOWNLOAD_LINK = ''
-                    for (int i = 0; i < files.size(); i++) {
-                        def filename = files[i].name
-                        b2.upload("${env.WORKSPACE}/Build/_artifact", filename, 'igsk-ci', "${env.UPLOAD_FOLDER}/${filename}")
-                        def url = "https://cdn.igsk.fun/#/${env.UPLOAD_FOLDER}/${URLEncoder.encode(filename)}"
-                        env.DOWNLOAD_LINK += "${filename}: ${url} \n" 
-                    }
-                    echo "${env.DOWNLOAD_LINK}"
-                }
+				container('mc') {
+					script {
+						Minio mc = new Minio(this, 'sample', 'b2', 'https://s3.us-west-002.backblazeb2.com', 'backblaze-b2')
+						mc.login()
+						
+						def files = findFiles excludes: '', glob: 'Build/_artifact/**'
+						env.DOWNLOAD_LINK = ''
+						for (int i = 0; i < files.size(); i++) {
+							def filename = files[i].name
+							mc.cp("${env.WORKSPACE}/Build/_artifact/${filename}", "igsk-ci/${env.UPLOAD_FOLDER}/${filename}")
+							def url = "https://cdn.igsk.fun/#/${env.UPLOAD_FOLDER}/${URLEncoder.encode(filename)}"
+							env.DOWNLOAD_LINK += "${filename}: ${url} \n" 
+						}
+						echo "${env.DOWNLOAD_LINK}"
+					}
+				}
             }
         }
     }
