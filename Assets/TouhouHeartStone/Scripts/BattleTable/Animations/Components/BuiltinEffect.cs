@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using BJSYGameCore;
 using Game.BattleTable;
@@ -35,32 +35,38 @@ namespace Game.Animations
                 case ProjectileEffect:
                     anim.type = AnimationType.Projectile;
                     break;
+                case LaserEffect:
+                    anim.type = AnimationType.Laser;
+                    break;
             }
             return anim;
         }
         public ColorTargetGroup[] getPossibleColorTargets(float aberration = 0)
         {
-            var meshes = GetComponentsInChildren<MeshRenderer>(true);
+            Renderer[] meshes = GetComponentsInChildren<Renderer>(true);
             var lights = GetComponentsInChildren<Light>(true);
             var particles = GetComponentsInChildren<ParticleSystem>(true);
 
             List<TargetColorPair> targets = new List<TargetColorPair>();
-            foreach (var mesh in meshes)
+            foreach (Renderer renderer in meshes)
             {
-                var meshColorController = mesh.GetComponent<MeshRendererController>();
-                var animator = meshColorController.GetComponent<MeshRendererAnimator>();
+                RendererController colorCtrl = renderer.GetComponent<RendererController>();
+                RendererAnimator animator = renderer.GetComponent<RendererAnimator>();
                 if (animator)
                 {
                     for (int i = 0; i < animator.gradient.colorKeys.Length; i++)
                     {
                         var colorKey = animator.gradient.colorKeys[i];
-                        targets.Add(new TargetColorPair(ColorTarget.FromMeshAnimator(transform.getChildPath(mesh.transform), i), colorKey.color));
+                        targets.Add(new TargetColorPair(ColorTarget.FromMeshAnimator(transform.getChildPath(renderer.transform), i), colorKey.color));
                     }
                 }
-                else
+                else if (colorCtrl != null)
                 {
-                    Color meshColor = meshColorController ? meshColorController.color : Color.white;
-                    targets.Add(new TargetColorPair(ColorTarget.FromMesh(transform.getChildPath(mesh.transform)), meshColor));
+                    targets.Add(new TargetColorPair(ColorTarget.FromMesh(transform.getChildPath(renderer.transform)), colorCtrl.color));
+                }
+                else if (renderer is MeshRenderer)
+                {
+                    targets.Add(new TargetColorPair(ColorTarget.FromMesh(transform.getChildPath(renderer.transform)), Color.white));
                 }
             }
             foreach (var light in lights)

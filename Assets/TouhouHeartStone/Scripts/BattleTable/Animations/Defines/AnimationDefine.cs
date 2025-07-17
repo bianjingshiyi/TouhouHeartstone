@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Game.BattleTable;
 using TouhouCardEngine;
@@ -106,6 +106,7 @@ namespace Game.Animations
         Area,
         Card,
         Vector,
-        Projectile
+        Projectile,
+        Laser
     }
 }

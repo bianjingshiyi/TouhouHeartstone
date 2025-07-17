@@ -1,4 +1,4 @@
-﻿using TMPro;
+using TMPro;
 using UnityEngine;
 
 namespace Game.BattleTable
@@ -40,7 +40,7 @@ namespace Game.BattleTable
         [SerializeField]
         private TextMeshPro _text;
         [SerializeField]
-        private MeshRendererController _meshRendererController;
+        private RendererController _meshRendererController;
         [SerializeField]
         private Color _whiteColor = Color.white;
         [SerializeField]

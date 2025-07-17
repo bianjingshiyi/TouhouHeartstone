@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TouhouCardEngine;
 using UnityEngine;
 
@@ -42,7 +42,7 @@ namespace Game.Animations
             return new ColorTarget()
             {
                 path = path,
-                type = ColorTargetType.MeshRenderer
+                type = ColorTargetType.Renderer
             };
         }
         public static ColorTarget FromMeshAnimator(string path, int index)
@@ -113,7 +113,7 @@ namespace Game.Animations
     }
     public enum ColorTargetType
     {
-        MeshRenderer,
+        Renderer,
         MeshAnimator,
         Light,
         ParticleSystem

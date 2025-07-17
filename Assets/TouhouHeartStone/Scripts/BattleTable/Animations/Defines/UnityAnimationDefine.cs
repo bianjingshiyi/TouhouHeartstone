@@ -1,4 +1,4 @@
-﻿using Game.BattleTable;
+using Game.BattleTable;
 using UnityEngine;
 
 namespace Game.Animations
@@ -20,7 +20,14 @@ namespace Game.Animations
         {
             if (!prefab)
                 return null;
-            return Object.Instantiate(prefab, parent, false);
+            Vector3 position = prefab.transform.position + Vector3.up * prefab.heightOffset;
+            if (parent != null)
+                position = parent.InverseTransformPoint(position);
+            Quaternion rotation = prefab.transform.rotation;
+            if (parent != null)
+                rotation = parent.rotation * rotation;
+            TableEffect effect = Object.Instantiate(prefab, position, rotation, parent);
+            return effect;
         }
         public override ColorTargetGroup[] getColorTargetGroups()
         {

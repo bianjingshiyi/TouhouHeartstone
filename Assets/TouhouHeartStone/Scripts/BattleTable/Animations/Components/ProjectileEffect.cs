@@ -1,16 +1,30 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Game.Animations
 {
     public class ProjectileEffect : TableEffect
     {
+        public override void init(IVFXTable table, AnimationDefine define, VisualEffectInfo info)
+        {
+            base.init(table, define, info);
+
+            _randomValue = Random.Range(0, 1f);
+            if (_randomParticles != null && _randomParticles.Length > 0)
+            {
+                int index = Random.Range(0, _randomParticles.Length);
+                for (int i = 0; i < _randomParticles.Length; i++)
+                {
+                    _randomParticles[i].SetActive(i == index);
+                }
+            }
+        }
         protected override void updateAnim(float deltaTime)
         {
-            var sourcePos = sourceTransform ? sourceTransform.position : Vector3.zero;
-            var targetPos = destTransform ? destTransform.position : sourcePos;
-            var distance = targetPos - sourcePos;
-            var axis = distance.normalized;
-            var offsetAxis = axis;
+            Vector3 sourcePos = (sourceTransform ? sourceTransform.position : Vector3.zero) + Vector3.up * heightOffset;
+            Vector3 targetPos = (destTransform ? destTransform.position : sourcePos) + Vector3.up * heightOffset;
+            Vector3 distance = targetPos - sourcePos;
+            Vector3 axis = distance.normalized;
+            Vector3 offsetAxis = axis;
             if (isTestMode())
             {
                 offsetAxis = Quaternion.Euler(0, 90, 0) * offsetAxis;
@@ -22,12 +36,23 @@ namespace Game.Animations
                 offsetAxis = table.TableToWorldPosition(offsetAxis);
             }
 
-            var t = time;
-            var distanceLength = (distance.magnitude - _flyStartDistance - _flyEndDistance);
-            var fly = _flyCurve.Evaluate(t) * distanceLength + _flyStartDistance;
-            var offset = _offsetCurve.Evaluate(t) * distanceLength + _flyStartDistance;
+            float t = time;
+            float distanceLength = (distance.magnitude - _flyStartDistance - _flyEndDistance);
+            float fly = _flyCurve.Evaluate(t) * distanceLength + _flyStartDistance;
+            float offset = _offsetCurve.Evaluate(t, _randomValue) * distanceLength + _flyStartDistance;
 
-            var targetWorldPos = sourcePos + axis * fly + offsetAxis * offset;
+            Vector3 targetWorldPos = sourcePos + axis * fly + offsetAxis * offset;
+            if (_onLaunchRoot != null)
+            {
+                _onLaunchRoot.position = sourcePos;
+                if (t == 0)
+                {
+                    Vector3 nextPos = sourcePos +
+                        axis * (_flyCurve.Evaluate(deltaTime) * distanceLength + _flyStartDistance) +
+                        offsetAxis * (_offsetCurve.Evaluate(deltaTime, _randomValue) * distanceLength + _flyStartDistance);
+                    _onLaunchRoot.transform.forward = (nextPos - sourcePos).normalized;
+                }
+            }
             if (_positionRoot)
             {
                 _positionRoot.localPosition = _positionRoot.parent.InverseTransformPoint(targetWorldPos) + rootObj.transform.localPosition;
@@ -36,7 +61,7 @@ namespace Game.Animations
             {
                 transform.position = targetWorldPos;
             }
-            if (_onHitRoot)
+            if (_onHitRoot != null)
             {
                 _onHitRoot.position = targetPos;
             }
@@ -58,18 +83,24 @@ namespace Game.Animations
         [SerializeField]
         private AnimationCurve _flyCurve = AnimationCurve.Linear(0, 0, 1, 1);
         [SerializeField]
-        private AnimationCurve _offsetCurve = AnimationCurve.Constant(0, 1, 0);
+        private ParticleSystem.MinMaxCurve _offsetCurve = new ParticleSystem.MinMaxCurve(1, AnimationCurve.Constant(0, 1, 0));
         [SerializeField]
         private float _flyStartDistance = 0;
         [SerializeField]
         private float _flyEndDistance = 0;
         [SerializeField]
+        private GameObject[] _randomParticles;
+        [SerializeField]
         private Transform _positionRoot;
         [SerializeField]
         private Transform _rotationRoot;
         [SerializeField]
+        private Transform _onLaunchRoot;
+        [SerializeField]
         private Transform _onHitRoot;
         [SerializeField]
         private bool _faceToTarget = true;
+
+        private float _randomValue;
     }
 }

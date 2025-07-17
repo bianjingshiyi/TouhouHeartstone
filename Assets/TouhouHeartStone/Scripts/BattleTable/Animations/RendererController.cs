@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 namespace Game.BattleTable
 {
     [ExecuteInEditMode]
-    [RequireComponent(typeof(MeshRenderer))]
-    public class MeshRendererController : MonoBehaviour
+    public class RendererController : MonoBehaviour
     {
         private void Awake()
         {
@@ -25,9 +24,9 @@ namespace Game.BattleTable
             }
             else
             {
-                meshRenderer.GetPropertyBlock(propertyBlock);
-                propertyBlock.SetColor("_Color", col);
-                meshRenderer.SetPropertyBlock(propertyBlock);
+                renderer.GetPropertyBlock(propertyBlock);
+                propertyBlock.SetColor(_colorName, col);
+                renderer.SetPropertyBlock(propertyBlock);
             }
         }
         private void OnTransformParentChanged()
@@ -62,15 +61,15 @@ namespace Game.BattleTable
                 return _tmp;
             }
         }
-        public MeshRenderer meshRenderer
+        public new Renderer renderer
         {
             get
             {
-                if (!_meshRenderer)
+                if (!_renderer)
                 {
-                    _meshRenderer = GetComponent<MeshRenderer>();
+                    _renderer = GetComponent<Renderer>();
                 }
-                return _meshRenderer;
+                return _renderer;
             }
         }
         public MaterialPropertyBlock propertyBlock
@@ -84,9 +83,12 @@ namespace Game.BattleTable
                 return _propertyBlock;
             }
         }
+        [SerializeField]
+        private string _colorName = "_Color";
         private TextMeshPro _tmp;
-        private MeshRenderer _meshRenderer;
+        [SerializeField]
+        private Renderer _renderer;
         private MaterialPropertyBlock _propertyBlock;
-        private List<MeshRendererGroup> _parentGroups = new List<MeshRendererGroup>();
+        private List<RendererGroup> _parentGroups = new List<RendererGroup>();
     }
 }

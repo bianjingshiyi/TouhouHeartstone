@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -14,6 +14,9 @@ namespace Game.Animations
         #region 公有方法
         public virtual void init(IVFXTable table, AnimationDefine define, VisualEffectInfo info)
         {
+            if (isTestMode())
+                return;
+
             _table = table;
             _srcTransform = info.srcTransform;
             if (_srcTransform)
@@ -145,22 +148,20 @@ namespace Game.Animations
             var child = transform.Find(target.path);
             switch (target.type)
             {
-                case ColorTargetType.MeshRenderer:
-                    var mesh = child.GetComponent<MeshRendererController>();
-                    if (!mesh)
+                case ColorTargetType.Renderer:
+                    if (!child.TryGetComponent(out RendererController ctrl))
                     {
-                        mesh = child.gameObject.AddComponent<MeshRendererController>();
+                        ctrl = child.gameObject.AddComponent<RendererController>();
                     }
-                    color.a = mesh.color.a;
-                    mesh.color = color;
+                    color.a = ctrl.color.a;
+                    ctrl.color = color;
                     break;
                 case ColorTargetType.MeshAnimator:
-                    var meshAnimator = child.GetComponent<MeshRendererAnimator>();
-                    if (!meshAnimator)
+                    if (!child.TryGetComponent(out RendererAnimator anim))
                     {
-                        mesh = child.gameObject.AddComponent<MeshRendererController>();
+                        anim = child.gameObject.AddComponent<RendererAnimator>();
                     }
-                    meshAnimator.gradient = modifyGradient(meshAnimator.gradient, target.index, color);
+                    anim.gradient = modifyGradient(anim.gradient, target.index, color);
                     break;
                 case ColorTargetType.Light:
                     var light = child.GetComponent<Light>();
@@ -431,6 +432,7 @@ namespace Game.Animations
         public float time => _time;
         public float duration => _duration;
         public float blockTime => _blockTime;
+        public float heightOffset => _heightOffset;
         public EffectState state => _state;
         public AnimationDefine define => _define;
         public event Action<TableEffect> onFinished;
@@ -440,6 +442,8 @@ namespace Game.Animations
         private Transform _srcTransform;
         [SerializeField]
         private Transform _destTransform;
+        [SerializeField]
+        private float _heightOffset = 0;
         [SerializeField]
         private bool _playSoundOnStart;
 #if UNITY_EDITOR

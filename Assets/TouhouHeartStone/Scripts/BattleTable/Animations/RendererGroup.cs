@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Game.BattleTable
 {
-    public class MeshRendererGroup : MonoBehaviour
+    public class RendererGroup : MonoBehaviour
     {
         [SerializeField]
         Color _color = Color.white;

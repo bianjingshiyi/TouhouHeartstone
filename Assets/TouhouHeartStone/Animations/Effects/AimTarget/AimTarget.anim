@@ -45,7 +45,7 @@ AnimationClip:
     attribute: _time
     path: Root/Mark
     classID: 114
-    script: {fileID: 11500000, guid: 16171c6f268325541a8773cdd274d228, type: 3}
+    script: {fileID: 11500000, guid: f902a1bc0c562fc4dbb1fc55dc62db94, type: 3}
     flags: 0
   m_PPtrCurves: []
   m_SampleRate: 60
@@ -58,7 +58,7 @@ AnimationClip:
     - serializedVersion: 2
       path: 4206396948
       attribute: 850520158
-      script: {fileID: 11500000, guid: 16171c6f268325541a8773cdd274d228, type: 3}
+      script: {fileID: 11500000, guid: f902a1bc0c562fc4dbb1fc55dc62db94, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
@@ -114,7 +114,7 @@ AnimationClip:
     attribute: _time
     path: Root/Mark
     classID: 114
-    script: {fileID: 11500000, guid: 16171c6f268325541a8773cdd274d228, type: 3}
+    script: {fileID: 11500000, guid: f902a1bc0c562fc4dbb1fc55dc62db94, type: 3}
     flags: 0
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0

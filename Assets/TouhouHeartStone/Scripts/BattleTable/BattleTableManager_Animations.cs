@@ -538,15 +538,15 @@ namespace Game.BattleTable
         {
             while (_animationQueue.Count > 0)
             {
-                var first = _animationQueue.FirstOrDefault();
+                TableAnimation first = _animationQueue.FirstOrDefault();
                 if (first == null)
                 {
                     _animationQueue.RemoveAt(0);
                     continue;
                 }
-                var group = new AnimationGroup();
+                AnimationGroup group = new AnimationGroup();
                 group.addToGroup(first);
-                foreach (var groupedAnim in first.getGroupedAnimations(_animationQueue.Skip(1)).Where(a => a != null))
+                foreach (TableAnimation groupedAnim in first.getGroupedAnimations(_animationQueue.Skip(1)).Where(a => a != null))
                 {
                     group.addToGroup(groupedAnim);
                 }

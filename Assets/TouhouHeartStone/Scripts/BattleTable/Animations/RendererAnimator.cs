@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.BattleTable
 {
     [ExecuteAlways]
-    [RequireComponent(typeof(MeshRendererController))]
-    public class MeshRendererAnimator : MonoBehaviour
+    [RequireComponent(typeof(RendererController))]
+    public class RendererAnimator : MonoBehaviour
     {
         private void Update()
         {
@@ -22,17 +22,17 @@ namespace Game.BattleTable
         [SerializeField]
         [Range(0, 1)]
         float _time;
-        public MeshRendererController controller
+        public RendererController controller
         {
             get
             {
                 if (!_controller)
                 {
-                    _controller = GetComponent<MeshRendererController>();
+                    _controller = GetComponent<RendererController>();
                 }
                 return _controller;
             }
         }
-        private MeshRendererController _controller;
+        private RendererController _controller;
     }
 }
