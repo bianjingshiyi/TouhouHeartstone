@@ -29528,7 +29528,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _offsetCurve:
-    m_Mode: 1
+    m_Mode: 0
     m_CurveMultiplier: 1
     m_CurveMin:
       serializedVersion: 2
@@ -29564,8 +29564,10 @@ MonoBehaviour:
     m_ConstantMax: 0
   _flyStartDistance: 0
   _flyEndDistance: 0
+  _randomParticles: []
   _positionRoot: {fileID: 0}
   _rotationRoot: {fileID: 0}
+  _onLaunchRoot: {fileID: 0}
   _onHitRoot: {fileID: 0}
   _faceToTarget: 1
 --- !u!114 &5768425862695132109
@@ -45226,6 +45228,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _color: {r: 1, g: 1, b: 1, a: 1}
   _colorName: _Color
+  _renderer: {fileID: 0}
 --- !u!4 &1334438123119528532 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 136d38a11899c7f4d96a879caddbe3f6,

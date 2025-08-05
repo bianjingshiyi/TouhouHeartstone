@@ -160,25 +160,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _newOffsetCurve:
-    m_Mode: 0
-    m_CurveMultiplier: 0
-    m_CurveMin:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_CurveMax:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_ConstantMin: 0
-    m_ConstantMax: 0
   _offsetCurve:
-    m_Mode: 1
+    m_Mode: 0
     m_CurveMultiplier: 1
     m_CurveMin:
       serializedVersion: 2
@@ -188,7 +171,25 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_CurveMax:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -196,8 +197,10 @@ MonoBehaviour:
     m_ConstantMax: 0
   _flyStartDistance: 0
   _flyEndDistance: 0
+  _randomParticles: []
   _positionRoot: {fileID: 0}
   _rotationRoot: {fileID: 0}
+  _onLaunchRoot: {fileID: 0}
   _onHitRoot: {fileID: 0}
   _faceToTarget: 0
 --- !u!114 &1760127432046502163
@@ -494,6 +497,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _color: {r: 0, g: 0, b: 0, a: 1}
   _colorName: _Color
+  _renderer: {fileID: 0}
 --- !u!1001 &792204196541328925
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -595,6 +599,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _color: {r: 1, g: 0, b: 0, a: 1}
   _colorName: _Color
+  _renderer: {fileID: 0}
 --- !u!4 &792204196541461661 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 06c4131835f65024586454416f6b1f66,

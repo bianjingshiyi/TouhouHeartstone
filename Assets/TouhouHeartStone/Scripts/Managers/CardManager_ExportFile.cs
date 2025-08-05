@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Controllers;
 using MessagePack;
 using MukioI18n;
-using SFB;
 using TouhouCardEngine.Shared;
 using UnityEngine;
 
@@ -52,7 +51,7 @@ namespace Game
             var defaultFileName = $"{cardPoolName}.{CardPoolPackExt}";
 
 #if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX 
-            var exportPath = StandaloneFileBrowser.SaveFilePanel("", "", defaultFileName, CardPoolPackExt);
+            var exportPath = SFB.StandaloneFileBrowser.SaveFilePanel("", "", defaultFileName, CardPoolPackExt);
             if (string.IsNullOrEmpty(exportPath))
                 return null;
             await exportCardPool(cardPoolInfo, cardPoolDefineFile, cardPool, exportPath);
@@ -78,7 +77,7 @@ namespace Game
         public async Task<string> exportAnyFile(byte[] bytes, string defaultFileName, string extension)
         {
 #if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX 
-            var exportPath = StandaloneFileBrowser.SaveFilePanel("", "", defaultFileName, extension);
+            var exportPath = SFB.StandaloneFileBrowser.SaveFilePanel("", "", defaultFileName, extension);
             if (string.IsNullOrEmpty(exportPath))
                 return null;
             await File.WriteAllBytesAsync(exportPath, bytes);
@@ -104,7 +103,7 @@ namespace Game
         public async Task<bool> importCardPool()
         {
 #if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX || UNITY_EDITOR
-            var selectedPathes = StandaloneFileBrowser.OpenFilePanel("", "", CardPoolPackExt, false);
+            var selectedPathes = SFB.StandaloneFileBrowser.OpenFilePanel("", "", CardPoolPackExt, false);
             if (selectedPathes.Length == 0)
                 return false;
             var importPath = selectedPathes[0];

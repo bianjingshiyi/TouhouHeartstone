@@ -79,25 +79,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _newOffsetCurve:
-    m_Mode: 0
-    m_CurveMultiplier: 0
-    m_CurveMin:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_CurveMax:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    m_ConstantMin: 0
-    m_ConstantMax: 0
   _offsetCurve:
-    m_Mode: 1
+    m_Mode: 0
     m_CurveMultiplier: 1
     m_CurveMin:
       serializedVersion: 2
@@ -107,7 +90,25 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_CurveMax:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -115,8 +116,10 @@ MonoBehaviour:
     m_ConstantMax: 0
   _flyStartDistance: 0
   _flyEndDistance: -10
+  _randomParticles: []
   _positionRoot: {fileID: 2459766927709634364}
   _rotationRoot: {fileID: 0}
+  _onLaunchRoot: {fileID: 0}
   _onHitRoot: {fileID: 0}
   _faceToTarget: 1
 --- !u!114 &278634158168787110

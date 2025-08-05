@@ -78541,7 +78541,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _offsetCurve:
-    m_Mode: 1
+    m_Mode: 0
     m_CurveMultiplier: 1
     m_CurveMin:
       serializedVersion: 2
@@ -78577,8 +78577,10 @@ MonoBehaviour:
     m_ConstantMax: 0
   _flyStartDistance: 0
   _flyEndDistance: 0
+  _randomParticles: []
   _positionRoot: {fileID: 0}
   _rotationRoot: {fileID: 0}
+  _onLaunchRoot: {fileID: 0}
   _onHitRoot: {fileID: 0}
   _faceToTarget: 1
 --- !u!114 &3842044945674065406

@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using MukioI18n;
-using SFB;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using UnityEngine;
@@ -17,16 +16,11 @@ namespace Game
         public async Task<AudioClip> selectExternalSound()
         {
             AudioClip clip = null;
-            if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
-            {
-                //手机端
-                clip = await selectExternalSoundForMobile();
-            }
-            else
-            {
-                //默认PC
-                clip = await selectExternalSoundForPC();
-            }
+#if !UNITY_EDITOR && UNITY_ANDROID
+            clip = await selectExternalSoundForMobile();
+#else
+            clip = await selectExternalSoundForPC();
+#endif
             if (clip != null)
             {
                 if (clip.length > _maxSoundDuration)
@@ -94,6 +88,7 @@ namespace Game
         #region 私有方法
 
         #region 选择音效路径
+#if !UNITY_EDITOR && UNITY_ANDROID
         private Task<AudioClip> selectExternalSoundForMobile()
         {
             TaskCompletionSource<AudioClip> t = new TaskCompletionSource<AudioClip>();
@@ -130,12 +125,13 @@ namespace Game
             }
             return t.Task;
         }
+#else
         private async Task<AudioClip> selectExternalSoundForPC()
         {
             TaskCompletionSource<AudioClip> tcs = new TaskCompletionSource<AudioClip>();
 
-            var extFilters = new ExtensionFilter[] { new ExtensionFilter("Sound Files", "wav", "mp3", "ogg") };
-            string[] paths = StandaloneFileBrowser.OpenFilePanel("", "", extFilters, false);
+            var extFilters = new SFB.ExtensionFilter[] { new SFB.ExtensionFilter("Sound Files", "wav", "mp3", "ogg") };
+            string[] paths = SFB.StandaloneFileBrowser.OpenFilePanel("", "", extFilters, false);
             if (paths == null || paths.Length < 1)
             {
                 Debug.Log($"没有选择文件");
@@ -167,6 +163,7 @@ namespace Game
             //更改贴图路径为外部文件路径
             return audioClip;
         }
+#endif
         #endregion
 
         #region 加载音效
@@ -218,7 +215,7 @@ namespace Game
         }
         #endregion
 
-        #endregion
+#endregion
 
         #region 属性字段
         [TranslateMsg("尝试选择不支持的音频格式的错误描述，{0}为文件扩展名")]

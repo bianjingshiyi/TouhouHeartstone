@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,7 +6,6 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using BJSYGameCore;
 using Controllers;
-using SFB;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using UI;
@@ -23,16 +22,11 @@ namespace Game
         /// </summary>
         public Task<Sprite> selectExternalImage(int width = 512, int height = 512)
         {
-            if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
-            {
-                //手机端
-                return selectExternalImageForMobile(width, height);
-            }
-            else
-            {
-                //默认PC
-                return selectExternalImageForPC(width, height);
-            }
+#if !UNITY_EDITOR && UNITY_ANDROID
+            return selectExternalImageForMobile(width, height);
+#else
+            return selectExternalImageForPC(width, height);
+#endif
         }
         /// <summary>
         /// 保存时修正路径不正确的图片
@@ -442,7 +436,7 @@ namespace Game
             var resized = ResizeImage(image, maxWidth, maxHeight);
             return CropImage(resized, (resized.width - maxWidth) / 2, (resized.height - maxHeight) / 2, maxWidth, maxHeight);
         }
-        #endregion
+#endregion
 
         #region 私有方法
         private async void onAwake_Sprite()
@@ -453,7 +447,7 @@ namespace Game
                 _defaultImage = Sprite.Create(texture, new Rect(0, 0, 512, 512), new Vector2(.5f, .5f), 100);
             }
         }
-
+#if !UNITY_EDITOR && UNITY_ANDROID
         private Task<Sprite> selectExternalImageForMobile(int width, int height)
         {
             TaskCompletionSource<Sprite> tcs = new TaskCompletionSource<Sprite>();
@@ -488,12 +482,13 @@ namespace Game
                 tcs.SetResult(sprite);
             }
         }
+#else
         private Task<Sprite> selectExternalImageForPC(int width, int height)
         {
             TaskCompletionSource<Sprite> tcs = new TaskCompletionSource<Sprite>();
 
-            var extFilters = new ExtensionFilter[] { new ExtensionFilter("Image Files", "png", "jpg") };
-            string[] paths = StandaloneFileBrowser.OpenFilePanel("", "", extFilters, false);
+            var extFilters = new SFB.ExtensionFilter[] { new SFB.ExtensionFilter("Image Files", "png", "jpg") };
+            string[] paths = SFB.StandaloneFileBrowser.OpenFilePanel("", "", extFilters, false);
             if (paths == null || paths.Length < 1)
             {
                 Debug.Log($"没有选择文件");
@@ -534,6 +529,7 @@ namespace Game
             tcs.SetResult(sprite);
             return tcs.Task;
         }
+#endif
         private Sprite createSprite(byte[] bytes)
         {
             // 如果是空数组，返回默认Sprite.
@@ -550,7 +546,7 @@ namespace Game
                 return null;
             return Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
         }
-        #endregion
+#endregion
 
         #region 属性字段
         public string textureDirName => _textureDirName;
