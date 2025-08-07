@@ -261,7 +261,7 @@ namespace Game.BattleTable
                 }
             }
             // 动态文本
-            if (!ignoreFormat)
+            if (!ignoreFormat && !string.IsNullOrEmpty(desc))
             {
                 desc = Regex.Replace(desc, @"{(?<target>\w+):(?<prop>\w+)}", match =>
                 {
@@ -285,29 +285,32 @@ namespace Game.BattleTable
             // 获取定义描述
             string desc = getCardDesc(card.define, true);
             // 动态文本
-            desc = Regex.Replace(desc, @"{(?<target>\w+):(?<prop>\w+)}", match =>
+            if (!string.IsNullOrEmpty(desc))
             {
-                string targetName = match.Groups["target"].Value;
-                string propName = match.Groups["prop"].Value;
-                switch (targetName.ToLower())
+                desc = Regex.Replace(desc, @"{(?<target>\w+):(?<prop>\w+)}", match =>
                 {
-                    case "card":
-                        object propValue = card.getProp<object>(game, propName);
-                        if (propValue != null)
-                            return propValue.ToString();
-                        break;
-                    case "player":
-                        Player player = card.owner;
-                        if (player != null && player.getProp(propName) is object playerPropValue && playerPropValue != null)
-                            return playerPropValue.ToString();
-                        break;
-                    case "game":
-                        if (game != null && game.getProp(propName) is object gamePropValue && gamePropValue != null)
-                            return gamePropValue.ToString();
-                        break;
-                }
-                return "?";
-            });
+                    string targetName = match.Groups["target"].Value;
+                    string propName = match.Groups["prop"].Value;
+                    switch (targetName.ToLower())
+                    {
+                        case "card":
+                            object propValue = card.getProp<object>(game, propName);
+                            if (propValue != null)
+                                return propValue.ToString();
+                            break;
+                        case "player":
+                            Player player = card.owner;
+                            if (player != null && player.getProp(propName) is object playerPropValue && playerPropValue != null)
+                                return playerPropValue.ToString();
+                            break;
+                        case "game":
+                            if (game != null && game.getProp(propName) is object gamePropValue && gamePropValue != null)
+                                return gamePropValue.ToString();
+                            break;
+                    }
+                    return "?";
+                });
+            }
             return desc;
         }
         public string getCardImagePath(CardDefine define)
