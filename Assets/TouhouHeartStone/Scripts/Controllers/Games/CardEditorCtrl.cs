@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -936,7 +936,7 @@ namespace Controllers
             _ui.setSkin(index);
             _ui.setName(game.card.getLocalizedCardName(poolRef, skin, _curCardNameLang));
             _ui.setSubName(game.card.getLocalizedCardSubname(poolRef, skin, _curCardSubnameLang));
-            _ui.setDesc(game.card.getLocalizedCardDesc(poolRef, skin, _curCardDescLang));
+            _ui.setDesc(game.card.getLocalizedString(poolRef, skin.descKey, _curCardDescLang));
             Sprite image = await game.card.loadCardImage(poolRef, skin);
             _ui.setImage(image);
         }

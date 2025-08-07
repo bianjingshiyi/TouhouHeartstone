@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -398,11 +398,12 @@ namespace Controllers
         {
             var upperStr = str.ToUpper();
             // 名称
-            var cardName = game.card.getCardName(game.card.getLocalCardPoolReference(define.cardPoolId), define.id)?.ToUpper();
+            ICardPoolReference poolRef = game.card.getLocalCardPoolReference(define.cardPoolId);
+            var cardName = game.card.getLocalizedString(poolRef, skin.nameKey)?.ToUpper();
             if (!string.IsNullOrEmpty(cardName) && cardName.Contains(upperStr))
                 return true;
             // 描述
-            var cardDesc = game.card.getCardDesc(game.card.getLocalCardPoolReference(define.cardPoolId), define.id)?.ToUpper();
+            var cardDesc = game.card.getLocalizedString(poolRef, skin.descKey)?.ToUpper();
             if (!string.IsNullOrEmpty(cardDesc) && cardDesc.Contains(upperStr))
                 return true;
 

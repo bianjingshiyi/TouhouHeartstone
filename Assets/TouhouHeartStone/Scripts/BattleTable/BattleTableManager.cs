@@ -203,14 +203,22 @@ namespace Game.BattleTable
         }
 
         #region 皮肤
-        public CardSkinData getCardSkin(CardDefine define)
+        public (ICardPoolReference, CardSkinData) getCardSkin(CardDefine define)
         {
             if (define == null)
-                return null;
-            var key = getCardSkinKey(define);
-            var skin = key.skin;
+                return (null, null);
+            ICardPoolReference cardPoolRef;
+            CardSkinData skin;
+            if (define.getCloneSource() is DefineReference source)
+            {
+                cardPoolRef = getCardPoolReference(source.cardPoolId);
+                skin = cardManager.getCardSkin(cardPoolRef, source.defineId);
+                return (cardPoolRef, skin);
+            }
+            cardPoolRef = getCardPoolReference(define.cardPoolId);
+            skin = cardManager.getCardSkin(cardPoolRef, define.id);
             if (skin != null)
-                return skin;
+                return (cardPoolRef, skin);
 
             game.logger.logError($"没有找到{define}对应的皮肤");
             skin = new CardSkinData()
@@ -224,36 +232,36 @@ namespace Game.BattleTable
             {
                 skin.addSoundRef(new SkinSoundRef(soundName, null));
             }
-            return skin;
+            return (null, skin);
         }
         public string getCardName(CardDefine define)
         {
             if (define == null)
                 return define.ToString();
-            var key = getCardSkinKey(define);
-            return cardManager.getCardName(key.poolRef, key.skin);
+            (ICardPoolReference poolRef, CardSkinData skin) = getCardSkin(define);
+            return cardManager.getLocalizedString(poolRef, skin.nameKey);
         }
         public string getCardSubname(CardDefine define)
         {
             if (define == null)
                 return string.Empty;
-            var key = getCardSkinKey(define);
-            return cardManager.getCardSubname(key.poolRef, key.skin);
+            (ICardPoolReference poolRef, CardSkinData skin) = getCardSkin(define);
+            return cardManager.getLocalizedString(poolRef, skin.subnameKey);
         }
         public string getCardDesc(CardDefine define, bool ignoreFormat = false)
         {
             if (define == null)
                 return string.Empty;
-            var key = getCardSkinKey(define);
-            var desc = cardManager.getCardDesc(key.poolRef, key.skin);
+            (ICardPoolReference poolRef, CardSkinData skin) = getCardSkin(define);
+            string desc = cardManager.getLocalizedString(poolRef, skin.descKey);
             // 拼接卡牌描述
-            var conjoinedCards = define.getConjoinedCards();
+            DefineReference[] conjoinedCards = define.getConjoinedCards();
             if (conjoinedCards != null && conjoinedCards.Length > 0)
             {
-                foreach (var conjoined in conjoinedCards)
+                foreach (DefineReference conjoined in conjoinedCards)
                 {
-                    var conjoinedDef = getCardDefine(conjoined);
-                    var conjoinedDesc = getCardDesc(conjoinedDef);
+                    CardDefine conjoinedDef = getCardDefine(conjoined);
+                    string conjoinedDesc = getCardDesc(conjoinedDef);
                     if (!string.IsNullOrEmpty(conjoinedDesc))
                     {
                         desc += conjoinedDesc;
@@ -271,7 +279,7 @@ namespace Game.BattleTable
                     {
                         object propValue = define.getProp<object>(propName);
                         if (propValue != null)
-                            return propValue.ToString();
+                            return getPropStringForFormat(propValue);
                     }
                     return "?";
                 });
@@ -296,16 +304,16 @@ namespace Game.BattleTable
                         case "card":
                             object propValue = card.getProp<object>(game, propName);
                             if (propValue != null)
-                                return propValue.ToString();
+                                return getPropStringForFormat(propValue);
                             break;
                         case "player":
                             Player player = card.owner;
                             if (player != null && player.getProp(propName) is object playerPropValue && playerPropValue != null)
-                                return playerPropValue.ToString();
+                                return getPropStringForFormat(playerPropValue);
                             break;
                         case "game":
                             if (game != null && game.getProp(propName) is object gamePropValue && gamePropValue != null)
-                                return gamePropValue.ToString();
+                                return getPropStringForFormat(gamePropValue);
                             break;
                     }
                     return "?";
@@ -381,7 +389,7 @@ namespace Game.BattleTable
         }
         public PoolCardSkinKey getCardSkinKey(CardDefine define)
         {
-            var skinSource = define.getCloneSource();
+            DefineReference skinSource = define.getCloneSource();
             ICardPoolReference poolRef;
             CardSkinData skin;
             if (skinSource != null)
@@ -829,7 +837,6 @@ namespace Game.BattleTable
             onEventAfter(arg);
         }
         #endregion
-
         #region 事件处理
 
         /// <summary>
@@ -1014,6 +1021,18 @@ namespace Game.BattleTable
                 if (result != 0)
                     alreadyRatedCards.Add(customCard);
             }
+        }
+        private string getPropStringForFormat(object value)
+        {
+            if (value is CardDefine cardDefine)
+            {
+                return $"<u>{getCardName(cardDefine)}</u>";
+            }
+            else if (value is Card card)
+            {
+                return getPropStringForFormat(card.define);
+            }
+            return value.ToString();
         }
         #endregion
 

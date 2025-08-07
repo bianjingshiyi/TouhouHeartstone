@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
 using UICard = Game.BattleTable.TableCard;
@@ -30,10 +31,10 @@ namespace Game.BattleTable
         }
         public static async Task setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, CardManager cardManager)
         {
-            var poolRef = cardManager.getCardPoolReferenceOfCard(card);
-            var name = cardManager.getCardName(poolRef, skin);
-            var subName = cardManager.getCardSubname(poolRef, skin);
-            var desc = cardManager.getCardDesc(poolRef, skin);
+            ICardPoolReference poolRef = cardManager.getCardPoolReferenceOfCard(card);
+            string name = cardManager.getLocalizedString(poolRef, skin.nameKey);
+            string subName = cardManager.getLocalizedString(poolRef, skin.subnameKey);
+            string desc = cardManager.getLocalizedString(poolRef, skin.descKey);
             ui.setName(name);
             ui.setSubname(subName);
             ui.setDesc(desc);

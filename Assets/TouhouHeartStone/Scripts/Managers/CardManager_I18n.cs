@@ -188,32 +188,31 @@ namespace Game
         /// <returns></returns>
         public string getCardDesc(ICardPoolReference poolRef, int id)
         {
-            return getCardDesc(poolRef, getCardSkin(poolRef, id));
+            CardSkinData skin = getCardSkin(poolRef, id);
+            return getLocalizedString(poolRef, skin.descKey);
         }
         /// <summary>
-        /// 获取指定卡牌皮肤的描述，语言为当前语言。
+        /// 获取指定描述的当前语言字符串
         /// </summary>
         /// <param name="poolRef"></param>
         /// <param name="skin"></param>
         /// <returns></returns>
-        public string getCardDesc(ICardPoolReference poolRef, CardSkinData skin)
+        public string getLocalizedString(ICardPoolReference poolRef, string descKey)
         {
-            return getLocalizedCardDesc(poolRef, skin, game.lang.getLanguage());
+            return getLocalizedString(poolRef, descKey, game.lang.getLanguage());
         }
         /// <summary>
-        /// 获取指定卡牌皮肤的指定语言的描述。
+        /// 获取指定描述的对应语言字符串
         /// </summary>
         /// <param name="poolRef"></param>
-        /// <param name="skin"></param>
+        /// <param name="strKey"></param>
         /// <param name="language"></param>
         /// <returns></returns>
-        public string getLocalizedCardDesc(ICardPoolReference poolRef, CardSkinData skin, string language)
+        public string getLocalizedString(ICardPoolReference poolRef, string strKey, string language)
         {
-            if (skin == null)
-                return string.Empty;
             if (!tryGetCardPool(poolRef, out CardPool cardPool))
-                return string.Empty;
-            return cardPool.localizedStringList.localize(skin.descKey, language);
+                return strKey;
+            return cardPool.localizedStringList.localize(strKey, language);
         }
         #endregion
 

@@ -1166,7 +1166,7 @@ namespace Game.BattleTable
         {
             if (define == null)
                 return false;
-            var skin = getCardSkin(define);
+            (_, CardSkinData skin) = getCardSkin(define);
             if (skin == null)
                 return false;
             var soundRef = skin.getSoundRef(soundName);
@@ -2054,7 +2054,7 @@ namespace Game.BattleTable
         private async void showCardPopUp(Vector3 targetPosition, CardDefine tokenDefine, string[] keywords)
         {
             var worldPosition = TableToWorldPosition(targetPosition);
-            var skin = getCardSkin(tokenDefine);
+            (_, CardSkinData skin) = getCardSkin(tokenDefine);
             await ui.CardPopUp.show(worldPosition, tokenDefine, skin, cardManager, table.Camera, keywords);
         }
         private void hideCardPopUp()

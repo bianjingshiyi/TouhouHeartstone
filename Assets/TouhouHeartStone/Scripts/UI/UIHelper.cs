@@ -73,7 +73,7 @@ namespace Game
             {
                 name = cardManager.getCardName(poolRef, skin);
                 subName = cardManager.getCardSubname(poolRef, skin);
-                desc = cardManager.getCardDesc(poolRef, skin);
+                desc = cardManager.getLocalizedString(poolRef, skin.descKey);
             }
             return new UICardViewData()
             {

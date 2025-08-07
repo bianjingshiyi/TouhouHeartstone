@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using TouhouCardEngine;
@@ -291,7 +291,7 @@ namespace Game.BattleTable
             else if (cardDefineRef != null)
             {
                 var cardDefine = game.getDefine(cardDefineRef);
-                var skin = getCardSkin(cardDefine);
+                (_, CardSkinData skin) = getCardSkin(cardDefine);
                 if (effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
                 if (skin == null) return null; // 没有皮肤
 
@@ -315,7 +315,7 @@ namespace Game.BattleTable
             else if (cardDefineRef != null)
             {
                 var cardDefine = game.getDefine(cardDefineRef);
-                skin = getCardSkin(cardDefine);
+                (_, skin) = getCardSkin(cardDefine);
             }
             if (effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
             if (skin == null) return null; // 没有皮肤

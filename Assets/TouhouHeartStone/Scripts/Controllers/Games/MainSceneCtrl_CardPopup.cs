@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
@@ -77,15 +77,16 @@ namespace Controllers
             if (isShowingCardPopup)
                 return;
             isShowingCardPopup = true;
-            var mainCardRef = game.card.getCardPoolReferenceInEnv(card.cardPoolId, env);
-            var cardDesc = game.card.getCardDesc(mainCardRef, card.id);
-            var keywords = game.card.getKeywordsInDescription(cardDesc);
+            ICardPoolReference mainPoolRef = game.card.getCardPoolReferenceInEnv(card.cardPoolId, env);
+            CardSkinData skin = game.card.getCardSkin(mainPoolRef, card.id);
+            string cardDesc = game.card.getLocalizedString(mainPoolRef, skin.descKey);
+            string[] keywords = game.card.getKeywordsInDescription(cardDesc);
 
             CardSkinData tokenSkin = null;
             if (token != null)
             {
-                var tokenCardRef = game.card.getCardPoolReferenceInEnv(token.cardPoolId, env);
-                tokenSkin = game.card.getCardSkin(tokenCardRef, token.id);
+                ICardPoolReference tokenPoolRef = game.card.getCardPoolReferenceInEnv(token.cardPoolId, env);
+                tokenSkin = game.card.getCardSkin(tokenPoolRef, token.id);
             }
             await _cardPopup.show(position, token, tokenSkin, game.card, game.camera, keywords);
         }
