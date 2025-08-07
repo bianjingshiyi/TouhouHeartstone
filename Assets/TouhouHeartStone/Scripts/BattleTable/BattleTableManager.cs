@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BJSYGameCore;
 using Game.Animations;
@@ -239,25 +240,74 @@ namespace Game.BattleTable
             var key = getCardSkinKey(define);
             return cardManager.getCardSubname(key.poolRef, key.skin);
         }
-        public string getCardDescription(CardDefine define)
+        public string getCardDesc(CardDefine define, bool ignoreFormat = false)
         {
             if (define == null)
                 return string.Empty;
             var key = getCardSkinKey(define);
             var desc = cardManager.getCardDesc(key.poolRef, key.skin);
+            // 拼接卡牌描述
             var conjoinedCards = define.getConjoinedCards();
             if (conjoinedCards != null && conjoinedCards.Length > 0)
             {
                 foreach (var conjoined in conjoinedCards)
                 {
                     var conjoinedDef = getCardDefine(conjoined);
-                    var conjoinedDesc = getCardDescription(conjoinedDef);
+                    var conjoinedDesc = getCardDesc(conjoinedDef);
                     if (!string.IsNullOrEmpty(conjoinedDesc))
                     {
                         desc += conjoinedDesc;
                     }
                 }
             }
+            // 动态文本
+            if (!ignoreFormat)
+            {
+                desc = Regex.Replace(desc, @"{(?<target>\w+):(?<prop>\w+)}", match =>
+                {
+                    string targetName = match.Groups["target"].Value;
+                    string propName = match.Groups["prop"].Value;
+                    if (targetName.ToLower() == "card")
+                    {
+                        object propValue = define.getProp<object>(propName);
+                        if (propValue != null)
+                            return propValue.ToString();
+                    }
+                    return "?";
+                });
+            }
+            return desc;
+        }
+        public string getCardDesc(CardEngine game, ICardData card)
+        {
+            if (card == null || card.define == null)
+                return string.Empty;
+            // 获取定义描述
+            string desc = getCardDesc(card.define, true);
+            // 动态文本
+            desc = Regex.Replace(desc, @"{(?<target>\w+):(?<prop>\w+)}", match =>
+            {
+                string targetName = match.Groups["target"].Value;
+                string propName = match.Groups["prop"].Value;
+                switch (targetName.ToLower())
+                {
+                    case "card":
+                        object propValue = card.getProp<object>(game, propName);
+                        if (propValue != null)
+                            return propValue.ToString();
+                        break;
+                    case "player":
+                        Player player = card.owner;
+                        if (player != null && player.getProp(propName) is object playerPropValue && playerPropValue != null)
+                            return playerPropValue.ToString();
+                        break;
+                    case "game":
+                        if (game != null && game.getProp(propName) is object gamePropValue && gamePropValue != null)
+                            return gamePropValue.ToString();
+                        break;
+                }
+                return "?";
+            });
             return desc;
         }
         public string getCardImagePath(CardDefine define)
@@ -363,7 +413,7 @@ namespace Game.BattleTable
             if (_cardKeywordsDict.TryGetValue(card, out var keywords))
                 return keywords;
 
-            var desc = getCardDescription(card);
+            var desc = getCardDesc(card);
             keywords = cardManager.getKeywordsInDescription(desc);
             _cardKeywordsDict.Add(card, keywords);
             return keywords;

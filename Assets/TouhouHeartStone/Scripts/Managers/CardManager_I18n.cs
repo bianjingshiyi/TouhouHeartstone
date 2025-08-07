@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -180,14 +180,33 @@ namespace Game
                 return;
             skin.descKey = setCardPoolLocalizedString(poolRef, skin.descKey, language, translation);
         }
+        /// <summary>
+        /// 获取指定id卡牌的描述，语言为当前语言。
+        /// </summary>
+        /// <param name="poolRef"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public string getCardDesc(ICardPoolReference poolRef, int id)
         {
             return getCardDesc(poolRef, getCardSkin(poolRef, id));
         }
+        /// <summary>
+        /// 获取指定卡牌皮肤的描述，语言为当前语言。
+        /// </summary>
+        /// <param name="poolRef"></param>
+        /// <param name="skin"></param>
+        /// <returns></returns>
         public string getCardDesc(ICardPoolReference poolRef, CardSkinData skin)
         {
             return getLocalizedCardDesc(poolRef, skin, game.lang.getLanguage());
         }
+        /// <summary>
+        /// 获取指定卡牌皮肤的指定语言的描述。
+        /// </summary>
+        /// <param name="poolRef"></param>
+        /// <param name="skin"></param>
+        /// <param name="language"></param>
+        /// <returns></returns>
         public string getLocalizedCardDesc(ICardPoolReference poolRef, CardSkinData skin, string language)
         {
             if (skin == null)

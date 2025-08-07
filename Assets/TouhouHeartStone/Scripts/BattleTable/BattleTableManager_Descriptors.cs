@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TouhouCardEngine;
 using TouhouCardEngine.Histories;
 using TouhouCardEngine.Interfaces;
@@ -42,17 +42,6 @@ namespace Game.BattleTable
                 return desc;
             }
             return null;
-        }
-        public void setCardDescriptor(CardDescriptor desc)
-        {
-            if (_descriptors.ContainsKey(desc.id))
-            {
-                _descriptors[desc.id] = desc;
-            }
-            else
-            {
-                _descriptors.Add(desc.id, desc);
-            }
         }
         public CardDescriptor updateCardDescriptor(ICardData cardData)
         {

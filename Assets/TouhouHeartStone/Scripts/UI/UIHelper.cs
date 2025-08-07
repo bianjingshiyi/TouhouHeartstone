@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using Game.BattleTable;
 using TouhouCardEngine;
@@ -116,7 +116,7 @@ namespace Game
                 tag = card.getTags().FirstOrDefault(),
                 name = table.getCardName(card),
                 subname = table.getCardSubname(card),
-                desc = table.getCardDescription(card),
+                desc = table.getCardDesc(card),
             };
             ui.updateCard(viewData);
 
@@ -164,7 +164,7 @@ namespace Game
                 tag = desc.getTags().FirstOrDefault(),
                 name = table.getCardName(desc.define),
                 subname = table.getCardSubname(desc.define),
-                desc = table.getCardDescription(desc.define)
+                desc = table.getCardDesc(desc.define)
             };
             ui.updateCard(viewData);
 

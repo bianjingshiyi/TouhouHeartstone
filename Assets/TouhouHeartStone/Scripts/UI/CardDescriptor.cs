@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
@@ -12,6 +12,7 @@ namespace Game
     public class CardDescriptor
     {
         public int id { get; private set; }
+        public ICardData card { get; private set; }
         public CardDefine define { get; private set; }
         public Pile pile { get; private set; }
         private Player owner;
@@ -44,6 +45,7 @@ namespace Game
         {
             id = card.id;
             owner = card.owner;
+            this.card = card;
             define = card.define;
             cost = card.getCost(game);
             attack = card.getAttack(game);

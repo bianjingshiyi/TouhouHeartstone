@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
@@ -55,7 +55,7 @@ namespace Game.BattleTable
         {
             var name = table.getCardName(card);
             var subName = table.getCardSubname(card);
-            var desc = table.getCardDescription(card);
+            var desc = table.getCardDesc(card);
             ui.setName(name);
             ui.setSubname(subName);
             ui.setDesc(desc);
@@ -74,11 +74,11 @@ namespace Game.BattleTable
             ui.setImageSprite(await table.loadCardImage(card));
         }
         public static async Task setCard(this UICard ui, CardDescriptor desc, BattleTableManager table)
-        {;
+        {
             var define = desc.define;
             var name = table.getCardName(define);
             var subName = table.getCardSubname(define);
-            var description = table.getCardDescription(define);
+            var description = table.getCardDesc(table.game, desc.card);
             ui.setName(name);
             ui.setSubname(subName);
             ui.setDesc(description);

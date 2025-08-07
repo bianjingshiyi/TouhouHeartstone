@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore;
@@ -1288,7 +1288,7 @@ namespace Game.BattleTable
         public async void setCardDesc(UICard card, CardDescriptor desc)
         {
             await card.setCard(desc, this);
-            setCardDescriptor(desc);
+            _descriptors[desc.id] = desc;
         }
         public async void setCardDefine(UICard card, CardDefine define)
         {
@@ -1732,8 +1732,8 @@ namespace Game.BattleTable
 
         private void onSkillPointerEnterCallback(Skill skill, PointerEventData pointer)
         {
-            var cardDesc = getCardDescriptor(skill == table.SelfSkill ? player.getSkill() : game.getOpponent(player).getSkill());
-            var description = getCardDescription(cardDesc?.define);
+            Card card = skill == table.SelfSkill ? player.getSkill() : game.getOpponent(player).getSkill();
+            var description = getCardDesc(game, card);
             showTipBox(description, skill.gameObject);
             var tablePos = ScreenToTablePosition(pointer.position);
             tablePos.y = 0;
@@ -2084,7 +2084,7 @@ namespace Game.BattleTable
             else if (_hoveredOpponentCustomCardsItem != null)
                 transform = _hoveredOpponentCustomCardsItem.transform;
             else if (_hoveredRatingCardItem != null)
-                transform = _hoveredRatingCardItem.transform; 
+                transform = _hoveredRatingCardItem.transform;
 
             if (transform && transform.gameObject.activeInHierarchy)
             {
