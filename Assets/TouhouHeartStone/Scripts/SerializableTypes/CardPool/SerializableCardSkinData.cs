@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 using UI;
@@ -27,10 +27,12 @@ namespace Game
             {
                 _animationRefs.Add(new SerializableSkinAnimationRef(animRef));
             }
+            _animationRefs.Sort((a, b) => a.CompareTo(b, GBStringComparer.Default));
             foreach (var soundRef in skin.getAllSoundRefs())
             {
                 _soundRefs.Add(new SerializableSkinSoundRef(soundRef));
             }
+            _soundRefs.Sort((a, b) => GBStringComparer.Default.Compare(a.name, b.name));
         }
         public CardSkinData toSkin()
         {

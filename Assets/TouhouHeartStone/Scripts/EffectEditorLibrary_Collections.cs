@@ -1,7 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using ExcelLibrary.BinaryFileFormat;
 using MukioI18n;
 using TouhouCardEngine;
 
@@ -296,13 +298,28 @@ namespace Game
         /// </summary>
         [ObsoletedKeyMethod(BuiltinActionDefineID.Distinct, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_DISTINCT_COLLECTION)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
-        public static Array distinct(
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array)
+        public static Array distinct(Flow flow, ActionNode node,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array,
+            [ActionNodeParam(EDITOR_PARAM_NAME_SELECTOR)] NodeValueRef<object> selector,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
             if (array == null)
                 return null;
+            if (selector == null || selector.outputPort == null)
+                return array.Distinct(GraphTypeHelper.graphEqualityComparer).ToArray();
 
-            return array.Distinct(GraphTypeHelper.graphEqualityComparer).ToArray();
+            ValueOutput elementPort = node.getOutputPort<ValueOutput>(nameof(element));
+
+            array = array.Distinct(new GraphEqualityComparer(e =>
+            {
+                flow.EnterScope();
+                flow.setValue(elementPort, e);
+                object value = selector.getValue(flow).Result;
+                flow.ExitScope();
+                return value;
+            })).ToArray();
+
+            return array;
         }
         /// <summary>
         /// 集合相减
@@ -729,7 +746,7 @@ namespace Game
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_NAME_MERGE = "合并多个集合";
         [TranslateMsg("编辑器-节点名称")]
-        public const string EDITOR_NODE_NAME_CAST_COLLECTION_TYPE = "转换集合类型"; 
+        public const string EDITOR_NODE_NAME_CAST_COLLECTION_TYPE = "转换集合类型";
 
         [TranslateMsg("编辑器-参数名称", StringTable.CONTEXT_NODE_PARAM_NAME)]
         public const string EDITOR_PARAM_NAME_SELECTOR = "选择的属性";

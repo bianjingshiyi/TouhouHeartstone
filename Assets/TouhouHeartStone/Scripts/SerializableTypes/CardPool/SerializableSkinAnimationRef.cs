@@ -1,4 +1,4 @@
-﻿using Game.Animations;
+using Game.Animations;
 using MessagePack;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace Game
 {
     [MessagePackObject]
     [Serializable]
-    public class SerializableSkinAnimationRef
+    public class SerializableSkinAnimationRef : IComparable<SerializableSkinAnimationRef>
     {
         /// <summary>
         /// 给序列化用的默认构造器
@@ -42,6 +42,31 @@ namespace Game
                 colorModifies = colorModifies?.Select(d => d.deserialize())?.ToList() ?? new List<ColorModifyData>(),
             };
         }
+
+        public int CompareTo(SerializableSkinAnimationRef other)
+        {
+            if (other == null)
+                return -1; // 任何对象都排在null前面
+
+            int result = key.CompareTo(other.key);
+            if (result != 0)
+                return result;
+
+            return eventReference.CompareTo(other.eventReference);
+        }
+
+        public int CompareTo(SerializableSkinAnimationRef other, StringComparer comparer)
+        {
+            if (other == null)
+                return -1; // 任何对象都排在null前面
+
+            int result = key.CompareTo(other.key);
+            if (result != 0)
+                return result;
+
+            return eventReference.CompareTo(other.eventReference, comparer);
+        }
+
         [Key(0)]
         public int sourcePosition;
         [Key(1)]

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Animations;
@@ -27,21 +27,36 @@ namespace Game
                 throw new ArgumentNullException(nameof(cardPool));
             originLanguage = cardPool.originLanguage;
             cardDefineList = cardPool.cardDefineList.ConvertAll(c => new SerializableCardDefine(c));
+            cardDefineList.Sort((a, b) => a.id.CompareTo(b.id));
             cardSkinList = cardPool.cardSkinList.ConvertAll(s => new SerializableCardSkinData(s));
+            cardSkinList.Sort((a, b) =>
+            {
+                int result = a._id.CompareTo(b._id);
+                if (result != 0)
+                    return result;
+                return a._skinId.CompareTo(b._skinId);
+            });
             buffDefineList = cardPool.buffDefineList.ConvertAll(b => new SerializableBuffDefine(b));
+            buffDefineList.Sort((a, b) => a.id.CompareTo(b.id));
             buffSkinList = cardPool.buffSkinList.ConvertAll(s => new SerializableBuffSkin(s));
+            buffSkinList.Sort((a, b) => a.buffId.CompareTo(b.buffId));
             if (cardPool.actionDefineList.Count > 0)
                 actionDefineList = cardPool.actionDefineList.ConvertAll(a => new SerializableActionDefine(a));
             else
                 actionDefineList = new List<SerializableActionDefine>();
+            actionDefineList.Sort((a, b) => a.id.CompareTo(b.id));
             animationDefineList = cardPool.animationDefineList.ConvertAll(a => new SerializableAnimationDefine(a));
+            animationDefineList.Sort((a, b) => a.id.CompareTo(b.id));
             ruleLogicList = cardPool.ruleLogicList.ConvertAll(r => SerializeHelper.ToSerializable(r));
-            localizedStringList = cardPool.localizedStringList.Count(v => v != null) > 0 ? 
+            ruleLogicList.Sort((a, b) => a.id.CompareTo(b.id));
+            localizedStringList = cardPool.localizedStringList.Count(v => v != null) > 0 ?
                 cardPool.localizedStringList.ConvertAll(s => new SerializableLocalizedString(s)) :
                 null;
-            localizedResourceList = cardPool.localizedStringList.Count(v => v != null) > 0 ? 
+            localizedStringList?.Sort((a, b) => GBStringComparer.Default.Compare(a.value, b.value));
+            localizedResourceList = cardPool.localizedStringList.Count(v => v != null) > 0 ?
                 cardPool.localizedResourceList.ConvertAll(s => new SerializableLocalizedResource(s)) :
                 null;
+            localizedResourceList?.Sort((a, b) => GBStringComparer.Default.Compare(a.value, b.value));
         }
         #endregion
         public CardPool toCardPool(long cardPoolId, MainManager mainManager, TypeFinder typeFinder)

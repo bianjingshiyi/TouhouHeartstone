@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 using TouhouCardEngine;
@@ -23,10 +23,11 @@ namespace Game
             desc = skin.descKey;
             imagePath = skin.imagePathKey;
             persAnimRef = skin.persistentAnimRef == null ? null : new SerializablePersistentAnimationRef(skin.persistentAnimRef);
-            foreach (var animRef in skin.getAllAnimRefs())
+            foreach (SkinAnimationRef animRef in skin.getAllAnimRefs())
             {
                 _animationRefs.Add(new SerializableSkinAnimationRef(animRef));
             }
+            _animationRefs.Sort((a, b) => a.CompareTo(b, GBStringComparer.Default));
         }
         public BuffSkin toSkin()
         {

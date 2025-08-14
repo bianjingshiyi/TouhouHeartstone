@@ -1,4 +1,4 @@
-﻿using Game.Animations;
+using Game.Animations;
 using MessagePack;
 using System;
 using System.Collections.Generic;

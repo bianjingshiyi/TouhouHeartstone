@@ -1,7 +1,8 @@
-﻿using Controllers;
+using Controllers;
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TouhouCardEngine;
 
 namespace Game
@@ -27,7 +28,9 @@ namespace Game
             texturesDir = info.texturesDir;
             soundsDir = info.soundsDir;
             localizedStrings = info.localizedStrings.Count >= 0 ? info.localizedStrings.ConvertAll(r => new SerializableLocalizedString(r)) : null;
+            localizedStrings?.Sort((a, b) => GBStringComparer.Default.Compare(a.value, b.value));
             localizedResources = info.localizedResources.Count >= 0 ? info.localizedResources.ConvertAll(r => new SerializableLocalizedResource(r)) : null;
+            localizedResources?.Sort((a, b) => GBStringComparer.Default.Compare(a.value, b.value));
         }
         public CardPoolInfo toInfo()
         {

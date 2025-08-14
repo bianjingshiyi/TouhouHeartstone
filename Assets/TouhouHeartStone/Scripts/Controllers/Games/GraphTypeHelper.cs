@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
@@ -20,8 +20,17 @@ namespace Game
     }
     public class GraphEqualityComparer : IEqualityComparer<object>
     {
+        public GraphEqualityComparer(Func<object, object> selector = null)
+        {
+            _selector = selector;
+        }
         public new bool Equals(object x, object y)
         {
+            if (_selector != null)
+            {
+                x = _selector(x);
+                y = _selector(y);
+            }
             if (x == null)
                 return y == null;
             if (GetSpecific2Types(x, y, out BuffDefine buffDefine, out BuffReference buffRef))
@@ -37,6 +46,8 @@ namespace Game
 
         public int GetHashCode(object obj)
         {
+            if (_selector != null)
+                obj = _selector(obj);
             if (obj is CardDefine cardDefine)
             {
                 return cardDefine.getDefineRef().GetHashCode();
@@ -67,6 +78,7 @@ namespace Game
             t2 = default;
             return false;
         }
+        private readonly Func<object, object> _selector;
     }
     public class CardDefineConversion : ParamConversion
     {

@@ -9,10 +9,10 @@ namespace Game
     [Serializable]
     public class SerializableCardDefine
     {
-        #region ¹«ÓĞ·½·¨
-        #region ¹¹Ôì·½·¨
+        #region å…¬æœ‰æ–¹æ³•
+        #region æ„é€ æ–¹æ³•
         /// <summary>
-        /// ¸øĞòÁĞ»¯ÓÃµÄÄ¬ÈÏ¹¹ÔìÆ÷
+        /// ç»™åºåˆ—åŒ–ç”¨çš„é»˜è®¤æ„é€ å™¨
         /// </summary>
         public SerializableCardDefine()
         {
@@ -27,6 +27,7 @@ namespace Game
                 propDict.Add(propName, ObjectProxy.TryProxy(prop));
             }
             effects.AddRange(Array.ConvertAll(cardDefine.getGeneratedEffects(), e => SerializeHelper.ToSerializable(e)));
+            effects?.Sort((a, b) => GBStringComparer.Default.Compare(a?.name, b?.name));
         }
         #endregion
         public CardDefine toCardDefine(INodeDefiner definer)
@@ -49,14 +50,14 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    throw new FormatException($"·´ĞòÁĞ»¯¿¨ÅÆ¶¨Òå{id}µÄĞ§¹û{i}Ê§°Ü", e);
+                    throw new FormatException($"ååºåˆ—åŒ–å¡ç‰Œå®šä¹‰{id}çš„æ•ˆæœ{i}å¤±è´¥", e);
                 }
             }
             cardDefine.setEffects(effectsList);
             return cardDefine;
         }
         #endregion
-        #region ÊôĞÔ×Ö¶Î
+        #region å±æ€§å­—æ®µ
         [Key(0)]
         public int id;
         [Key(1)]

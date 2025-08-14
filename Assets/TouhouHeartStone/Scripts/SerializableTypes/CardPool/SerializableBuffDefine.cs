@@ -1,4 +1,4 @@
-﻿using MessagePack;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 using TouhouCardEngine;
@@ -25,12 +25,15 @@ namespace Game
             propModifierList = buffDefine.propModifierList != null
                 ? buffDefine.propModifierList.ConvertAll(p => SerializeHelper.ToSerializable(p))
                 : new List<SerializablePropModifier>();
+            propModifierList?.Sort((a, b) => GBStringComparer.Default.Compare(a?.propertyName, b?.propertyName));
             existLimitList = buffDefine.existLimitList != null
                 ? buffDefine.existLimitList.ConvertAll(p => new SerializableBuffExistLimitDefine(p))
                 : new List<SerializableBuffExistLimitDefine>();
+            existLimitList?.Sort((a, b) => a.triggerTime.CompareTo(b.triggerTime, GBStringComparer.Default));
             effects = buffDefine.effectList != null ?
                 buffDefine.effectList.ConvertAll(e => SerializeHelper.ToSerializable(e)) :
                 new List<SerializableEffect>();
+            effects?.Sort((a, b) => GBStringComparer.Default.Compare(a?.name, b?.name));
             props = new Dictionary<string, object>();
             foreach (var propName in buffDefine.getPropNames())
             {
