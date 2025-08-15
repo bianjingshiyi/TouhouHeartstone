@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using BJSYGameCore;
@@ -24,7 +24,7 @@ namespace Game
         {
             base.onAwake();
             checkOldPersistentData();
-            //初始化序列化设置
+            // 初始化序列化设置
             JsonHelper.init();
             // 初始化节点图的类型转换。
             GraphTypeHelper.init();
