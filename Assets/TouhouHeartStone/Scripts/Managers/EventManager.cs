@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BJSYGameCore;
@@ -85,14 +85,14 @@ namespace Game
             string eventName = actionDefine.getEventName();
             var actionRef = actionDefine.getReference();
             List<EventReference> childrenList = new List<EventReference>();
-            generateActionChildrenEventsNonAlloc(actionDefine, childrenList);
+            getActionChildrenEventsNonAlloc(actionDefine, childrenList);
             var define = new GeneratedEventDefine(actionRef)
             {
                 cardPoolId = actionDefine.cardPoolId,
                 eventName = eventName,
                 beforeVariableInfos = actionDefine.getBeforeEventArgVarInfos(),
                 afterVariableInfos = actionDefine.getAfterEventArgVarInfos(),
-                childrenEvents = childrenList.ToArray(),
+                //childrenEvents = childrenList.ToArray(),
             };
             return define;
         }
@@ -100,19 +100,19 @@ namespace Game
         {
             return _hiddenEvents.Contains(define.eventName);
         }
-        public EventReference[] getEventReferenceChildren(EventReference eventRef, IEnumerable<ICardPoolReference> poolSet)
-        {
-            var list = new List<EventReference>()
-            {
-                eventRef
-            };
-            getEventReferenceChildrenNonAlloc(eventRef, poolSet, list);
-            return list.ToArray();
-        }
+        //public EventReference[] getEventReferenceChildren(EventReference eventRef, IEnumerable<ICardPoolReference> poolSet)
+        //{
+        //    var list = new List<EventReference>()
+        //    {
+        //        eventRef
+        //    };
+        //    getEventReferenceChildrenNonAlloc(eventRef, poolSet, list);
+        //    return list.ToArray();
+        //}
         public void getEventReferenceChildrenNonAlloc(EventReference eventRef, IEnumerable<ICardPoolReference> poolSet, List<EventReference> list)
         {
-            var poolRef = game.card.getCardPoolReferenceInEnv(eventRef.cardPoolId, poolSet);
-            var eventDefine = game.card.getEventDefine(poolRef, eventRef.eventName);
+            ICardPoolReference poolRef = game.card.getCardPoolReferenceInEnv(eventRef.cardPoolId, poolSet);
+            EventDefine eventDefine = game.card.getEventDefine(poolRef, eventRef.eventName);
             if (eventDefine?.childrenEvents == null)
                 return;
             foreach (var childRef in eventDefine.childrenEvents)

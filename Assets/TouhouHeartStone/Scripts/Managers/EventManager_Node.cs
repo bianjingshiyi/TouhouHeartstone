@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -18,12 +18,12 @@ namespace Game
         /// <returns></returns>
         public EventReference[] getBuiltinActionBindedEvents(int defineId)
         {
-            var dic = getOrLoadNodeBindingDic();
+            Dictionary<int, string[]> dic = getOrLoadNodeBindingDic();
             if (dic.TryGetValue(defineId, out string[] names))
             {
                 return names.Select(n => new EventReference(0, n)).ToArray();
             }
-            return null;
+            return Array.Empty<EventReference>();
         }
         /// <summary>
         /// 获取一个<b>内置</b>动作所绑定的所有事件引用。（包括事件的子事件）
@@ -32,18 +32,59 @@ namespace Game
         /// <returns></returns>
         public EventReference[] getBuiltinActionBindedEventsRecursive(int defineId)
         {
-            var eventRefs = getBuiltinActionBindedEvents(defineId);
-            List<EventReference> names = new List<EventReference>();
-            if (eventRefs == null)
-                return names.ToArray();
-            foreach (var eventRef in eventRefs)
+            EventReference[] eventRefs = getBuiltinActionBindedEvents(defineId);
+            if (eventRefs == null || eventRefs.Length < 1)
+                return eventRefs;
+            List<EventReference> allEvents = new List<EventReference>();
+            foreach (EventReference eventRef in eventRefs)
             {
-                if (names.Contains(eventRef))
+                if (allEvents.Contains(eventRef))
                     continue;
-                names.Add(eventRef);
-                getEventReferenceChildrenNonAlloc(eventRef, new ICardPoolReference[] { CardManager.builtinCardPoolReference }, names);
+                allEvents.Add(eventRef);
+                getEventReferenceChildrenNonAlloc(eventRef, new ICardPoolReference[] { CardManager.builtinCardPoolReference }, allEvents);
             }
-            return names.ToArray();
+            return allEvents.ToArray();
+        }
+        public EventReference[] getActionChildrenEvents(GeneratedActionDefine actionDefine)
+        {
+            List<EventReference> list = new List<EventReference>();
+            getActionChildrenEventsNonAlloc(actionDefine, list);
+            return list.ToArray();
+        }
+        /// <summary>
+        /// 根据自定义动作的节点图内的节点，生成该自定义动作所具有的所有可能的事件引用。
+        /// </summary>
+        /// <param name="generatedActionDefine">自定义动作。</param>
+        /// <param name="list">传入列表。</param>
+        public void getActionChildrenEventsNonAlloc(GeneratedActionDefine generatedActionDefine, List<EventReference> list)
+        {
+            foreach (Node node in generatedActionDefine.graph.nodes)
+            {
+                if (node is ActionNode action)
+                {
+                    ActionReference actionRef = action.defineRef;
+                    ActionDefine actionDefine = game.card.getLocalActionDefine(actionRef);
+                    if (actionDefine is GeneratedActionDefine gen && gen.type == NodeDefineType.Event) // 自定义事件。
+                    {
+                        EventReference eventRef = CardManager.getEventReferenceOfAction(gen);
+                        if (list.Contains(eventRef))
+                            continue;
+                        list.Add(eventRef);
+                        getActionChildrenEventsNonAlloc(gen, list);
+                    }
+                    else if (game.card.isBuiltinCardPool(actionRef.cardPoolId)) // 内置节点事件。
+                    {
+                        game.card.getLocalActionBindedEventsRecursive(actionRef);
+                        EventReference[] events = getBuiltinActionBindedEventsRecursive(actionRef.defineId);
+                        foreach (EventReference eventRef in events)
+                        {
+                            if (list.Contains(eventRef))
+                                continue;
+                            list.Add(eventRef);
+                        }
+                    }
+                }
+            }
         }
         [Obsolete]
         public EventReference getDefaultNodeEvent(Node node)
@@ -62,40 +103,6 @@ namespace Game
         #endregion
 
         #region 私有方法
-        /// <summary>
-        /// 根据自定义动作的节点图内的节点，生成该自定义动作所具有的所有可能的事件引用。
-        /// </summary>
-        /// <param name="generatedActionDefine">自定义动作。</param>
-        /// <param name="list">传入列表。</param>
-        private void generateActionChildrenEventsNonAlloc(GeneratedActionDefine generatedActionDefine, List<EventReference> list)
-        {
-            foreach (var node in generatedActionDefine.graph.nodes)
-            {
-                if (node is ActionNode action)
-                {
-                    var actionRef = action.defineRef;
-                    var actionDefine = game.card.getLocalActionDefine(actionRef);
-                    if (actionDefine is GeneratedActionDefine gen && gen.type == NodeDefineType.Event) // 自定义事件。
-                    {
-                        var eventRef = CardManager.getEventReferenceOfAction(gen);
-                        if (list.Contains(eventRef))
-                            continue;
-                        generateActionChildrenEventsNonAlloc(gen, list);
-                    }
-                    else if (game.card.isBuiltinCardPool(actionRef.cardPoolId)) // 内置节点事件。
-                    {
-                        game.card.getLocalActionBindedEventsRecursive(actionRef);
-                        var names = getBuiltinActionBindedEventsRecursive(actionRef.defineId);
-                        foreach (var name in names)
-                        {
-                            if (list.Contains(name))
-                                continue;
-                            list.Add(name);
-                        }
-                    }
-                }
-            }
-        }
         private Dictionary<int, string[]> getOrLoadNodeBindingDic()
         {
             if (eventNodeBindingDic == null)

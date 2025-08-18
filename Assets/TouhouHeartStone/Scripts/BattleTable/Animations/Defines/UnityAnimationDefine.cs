@@ -22,10 +22,11 @@ namespace Game.Animations
                 return null;
             Vector3 position = prefab.transform.position + Vector3.up * prefab.heightOffset;
             if (parent != null)
-                position = parent.InverseTransformPoint(position);
-            Quaternion rotation = prefab.transform.rotation;
+                position = parent.TransformPoint(position);
+            Vector3 forward = prefab.transform.forward;
             if (parent != null)
-                rotation = parent.rotation * rotation;
+                forward = parent.TransformDirection(forward);
+            Quaternion rotation = Quaternion.Euler(forward);
             TableEffect effect = Object.Instantiate(prefab, position, rotation, parent);
             return effect;
         }

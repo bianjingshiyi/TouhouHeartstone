@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 5, "cardPoolId" : NumberLong(1), "editTime" : 765, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
+{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 5, "cardPoolId" : NumberLong(1), "editTime" : 767, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -62816,7 +62816,9 @@
                 "posX" : 894.62469482421875,
                 "posY" : 116.61311340332031,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_7"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -63133,7 +63135,9 @@
                 "posX" : 844.912353515625,
                 "posY" : 116.50341796875,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_9"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -63772,6 +63776,10 @@
                     "name" : "priority",
                     "paramIndex" : -1,
                     "value" : 0
+                  }, {
+                    "name" : "condition",
+                    "paramIndex" : -1,
+                    "value" : true
                   }],
                 "propDict" : { },
                 "consts" : null,
@@ -63906,7 +63914,9 @@
                 "posX" : 1925.9886474609375,
                 "posY" : -28.5733642578125,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_9"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -66160,7 +66170,9 @@
                 "posX" : 1693.9547119140625,
                 "posY" : 268.37454223632813,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_9"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -66545,7 +66557,9 @@
                 "posX" : 1569.98681640625,
                 "posY" : 278.46395874023438,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_9"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -67409,7 +67423,9 @@
                 "posX" : 629.54791259765625,
                 "posY" : 97.246322631835938,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_18"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -68615,7 +68631,9 @@
                 "posX" : 638.10003662109375,
                 "posY" : 96.583175659179688,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_18"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -69836,7 +69854,9 @@
                 "posX" : 960.99090576171875,
                 "posY" : 482.22662353515625,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_18"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -70663,7 +70683,9 @@
                 "posX" : 1007.113525390625,
                 "posY" : 463.87322998046875,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_18"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -75551,7 +75573,9 @@
                 "posX" : 1566.6649169921875,
                 "posY" : 434.315185546875,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_11"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -76120,7 +76144,9 @@
                 "posX" : 1937.975341796875,
                 "posY" : 501.8480224609375,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef2_15"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -78079,7 +78105,9 @@
                 "posX" : 827.8868408203125,
                 "posY" : 132.73091125488281,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_11"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -78544,7 +78572,9 @@
                 "posX" : 885.29925537109375,
                 "posY" : 97.7022705078125,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_11"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -79381,7 +79411,9 @@
                 "posX" : 1569.14501953125,
                 "posY" : 577.5804443359375,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_18"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -80218,7 +80250,9 @@
                 "posX" : 1591.41943359375,
                 "posY" : 611.60546875,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_18"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -80985,7 +81019,9 @@
                 "posX" : 1773.7698974609375,
                 "posY" : -91.899894714355469,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_9"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -81486,7 +81522,9 @@
                 "posX" : 1779.82958984375,
                 "posY" : -125.26417541503906,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_9"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -83466,7 +83504,9 @@
                 "posX" : 670.17706298828125,
                 "posY" : 107.74249267578125,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_10"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -83929,7 +83969,9 @@
                 "posX" : 663.49603271484375,
                 "posY" : 131.30776977539063,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef2_10"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -84523,6 +84565,10 @@
                     "name" : "priority",
                     "paramIndex" : -1,
                     "value" : 0
+                  }, {
+                    "name" : "condition",
+                    "paramIndex" : -1,
+                    "value" : true
                   }],
                 "propDict" : { },
                 "consts" : null,
@@ -84657,7 +84703,9 @@
                 "posX" : 1925.9886474609375,
                 "posY" : -28.5733642578125,
                 "inputDefaultValues" : [],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_9"
+                },
                 "defineRef" : {
                   "cardPoolId" : NumberLong(1),
                   "defineId" : 18
@@ -89691,7 +89739,22 @@
       "_name" : "见习魔女 ★",
       "_imagePath" : "8a81176ace747df5bbc5168d491529dfba38aef3e951684f8a5717bf0150533d.jpg",
       "_desc" : "每当你使用法术牌后，获得+1攻击力。（使用3张法术牌后升星，还差{card:star}张）",
-      "_animationRefs" : [],
+      "_animationRefs" : [{
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_7",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
+          },
+          "colorModifies" : []
+        }],
       "_soundRefs" : [{
           "name" : "OnAttack"
         }, {
@@ -89710,6 +89773,21 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 0
+          },
+          "colorModifies" : []
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_9",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
           },
           "colorModifies" : []
         }],
@@ -89751,6 +89829,21 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "MoveCardEvent"
+          },
+          "colorModifies" : []
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_9",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
           },
           "colorModifies" : []
         }],
@@ -90115,6 +90208,21 @@
               "g" : 0.54901969432830811,
               "b" : 0.63921570777893066
             }]
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_9",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : [{
           "name" : "OnAttack"
@@ -90153,6 +90261,21 @@
               "g" : 0.55398702621459961,
               "b" : 0.63921570777893066
             }]
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_9",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : [{
           "name" : "OnAttack"
@@ -90228,6 +90351,21 @@
             "defineId" : 60
           },
           "colorModifies" : []
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_18",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : [{
           "name" : "OnAttack"
@@ -90278,6 +90416,21 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 60
+          },
+          "colorModifies" : []
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_18",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
           },
           "colorModifies" : []
         }],
@@ -90383,6 +90536,21 @@
               "g" : 0.13333320617675781,
               "b" : 1.0
             }]
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_18",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : [{
           "name" : "OnAttack"
@@ -90454,6 +90622,21 @@
               "g" : 0.13333320617675781,
               "b" : 1.0
             }]
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_18",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : [{
           "name" : "OnAttack"
@@ -90681,6 +90864,21 @@
             "eventName" : "DamageEvent"
           },
           "colorModifies" : []
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_11",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : [{
           "name" : "OnAttack"
@@ -90721,6 +90919,21 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "DamageEvent"
+          },
+          "colorModifies" : []
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef2_15",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
           },
           "colorModifies" : []
         }],
@@ -90922,7 +91135,22 @@
       "_name" : "花蘑菇王 ★",
       "_imagePath" : "d36a22cc1e2ffafd762c9ead2ec27d61b4fadfc31e0aa8d30ffe94c5ac78a028.jpg",
       "_desc" : "<b>魔免</b>，相邻的仆从具有<b>魔免</b>。（将3张卡牌置入手牌后升星，还差{card:star}张）",
-      "_animationRefs" : [],
+      "_animationRefs" : [{
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_11",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
+          },
+          "colorModifies" : []
+        }],
       "_soundRefs" : [{
           "name" : "OnAttack"
         }, {
@@ -90936,7 +91164,22 @@
       "_name" : "花蘑菇王 ★★",
       "_imagePath" : "d36a22cc1e2ffafd762c9ead2ec27d61b4fadfc31e0aa8d30ffe94c5ac78a028.jpg",
       "_desc" : "<b>魔免</b>，友方仆从具有<b>魔免</b>。（将3张卡牌置入手牌后升星，还差{card:star}张）",
-      "_animationRefs" : [],
+      "_animationRefs" : [{
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef0_11",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
+          },
+          "colorModifies" : []
+        }],
       "_soundRefs" : [{
           "name" : "OnAttack"
         }, {
@@ -91008,6 +91251,21 @@
             "eventName" : "AddBuffEvent"
           },
           "colorModifies" : []
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_18",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : [{
           "name" : "OnAttack"
@@ -91034,6 +91292,21 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "AddBuffEvent"
+          },
+          "colorModifies" : []
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_18",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
           },
           "colorModifies" : []
         }],
@@ -91087,6 +91360,21 @@
             "defineId" : 60
           },
           "colorModifies" : []
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_9",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : [{
           "name" : "OnAttack"
@@ -91108,6 +91396,21 @@
           "animRef" : {
             "cardPoolId" : NumberLong(0),
             "defineId" : 60
+          },
+          "colorModifies" : []
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_9",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
           },
           "colorModifies" : []
         }],
@@ -91202,6 +91505,21 @@
             "eventName" : "DamageEvent"
           },
           "colorModifies" : []
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_10",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : [{
           "name" : "OnAttack"
@@ -91242,6 +91560,21 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "DamageEvent"
+          },
+          "colorModifies" : []
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef2_10",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
           },
           "colorModifies" : []
         }],
@@ -91297,6 +91630,21 @@
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "MoveCardEvent"
+          },
+          "colorModifies" : []
+        }, {
+          "sourcePosition" : 2,
+          "targetPosition" : 2,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_9",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 67
+          },
+          "eventReference" : {
+            "cardPoolId" : NumberLong(1),
+            "eventName" : "Event(16)From(1)"
           },
           "colorModifies" : []
         }],
@@ -115364,6 +115712,12 @@
         "ja" : "<b>宣言</b>：你使用的下一张法术牌灵力值消耗减少(6)点。"
       }
     }, {
+      "value" : "<b>宣言</b>：如果你的手牌中有<b>升星</b>牌，对目标随从造成3点伤害。",
+      "dictionary" : {
+        "en-US" : "<b>宣言</b>：如果你的手牌中有<b>升星</b>牌，对目标随从造成3点伤害。",
+        "ja" : "<b>宣言</b>：如果你的手牌中有<b>升星</b>牌，对目标随从造成3点伤害。"
+      }
+    }, {
       "value" : "<b>宣言</b>：如果战场上有攻击力大于此牌的仆从，便获得+2攻击力。",
       "dictionary" : {
         "en-US" : "<b>Declare</b>: If any servant's Attack is more than this, gain +2 Attack.",
@@ -116132,6 +116486,18 @@
         "ja" : "从牌库中的随机3张法术中选择1张并抽取，在本回合结束时，对所有敌方仆从造成1点伤害。"
       }
     }, {
+      "value" : "从随机3张其他的<b>升星</b>牌中选择1张置入你的手牌。（使用3张法术牌后升星，还差{card:star}张）",
+      "dictionary" : {
+        "en-US" : "从随机3张其他的<b>升星</b>牌中选择1张置入你的手牌。（使用3张法术牌后升星，还差{card:star}张）",
+        "ja" : "从随机3张其他的<b>升星</b>牌中选择1张置入你的手牌。（使用3张法术牌后升星，还差{card:star}张）"
+      }
+    }, {
+      "value" : "从随机3张其他的<b>升星</b>牌中选择1张置入你的手牌并将其<b>升星</b>。（使用3张法术牌后升星，还差{card:star}张）",
+      "dictionary" : {
+        "en-US" : "从随机3张其他的<b>升星</b>牌中选择1张置入你的手牌并将其<b>升星</b>。（使用3张法术牌后升星，还差{card:star}张）",
+        "ja" : "从随机3张其他的<b>升星</b>牌中选择1张置入你的手牌并将其<b>升星</b>。（使用3张法术牌后升星，还差{card:star}张）"
+      }
+    }, {
       "value" : "从随机3张其他的<b>升星</b>牌中选择1张置入你的手牌并将其<b>升星</b>至<b>3星</b>。",
       "dictionary" : {
         "en-US" : "从随机3张其他的<b>升星</b>牌中选择1张置入你的手牌并将其<b>升星</b>至<b>3星</b>。",
@@ -116680,6 +117046,18 @@
         "ja" : "グレイソ\u30fcマタ\u30fcジ"
       }
     }, {
+      "value" : "恢复1点灵力值。（使用3张法术后升星，还差{card:star}张）",
+      "dictionary" : {
+        "en-US" : "恢复1点灵力值。（使用3张法术后升星，还差{card:star}张）",
+        "ja" : "恢复1点灵力值。（使用3张法术后升星，还差{card:star}张）"
+      }
+    }, {
+      "value" : "恢复2点灵力值。（使用3张法术后升星，还差{card:star}张）",
+      "dictionary" : {
+        "en-US" : "恢复2点灵力值。（使用3张法术后升星，还差{card:star}张）",
+        "ja" : "恢复2点灵力值。（使用3张法术后升星，还差{card:star}张）"
+      }
+    }, {
       "value" : "恢复2点生命值。",
       "dictionary" : {
         "en-US" : "Restore 2 Health.",
@@ -116969,6 +117347,12 @@
         "ja" : "获得魔免"
       }
     }, {
+      "value" : "获得属性加成",
+      "dictionary" : {
+        "en-US" : "获得属性加成",
+        "ja" : "获得属性加成"
+      }
+    }, {
       "value" : "获得一点灵力值。",
       "dictionary" : {
         "en-US" : "Gain 1 Spirit.",
@@ -117111,6 +117495,18 @@
       "dictionary" : {
         "en-US" : "将1张<u>魔药</u>置入你的手牌。",
         "ja" : "将1张<u>魔药</u>置入你的手牌。"
+      }
+    }, {
+      "value" : "将3张<u>流星</u>洗入你的牌库，发现一张牌库中的法术牌。（对敌方英雄造成3次伤害后升星，还差{card:star}次）",
+      "dictionary" : {
+        "en-US" : "将3张<u>流星</u>洗入你的牌库，发现一张牌库中的法术牌。（对敌方英雄造成3次伤害后升星，还差{card:star}次）",
+        "ja" : "将3张<u>流星</u>洗入你的牌库，发现一张牌库中的法术牌。（对敌方英雄造成3次伤害后升星，还差{card:star}次）"
+      }
+    }, {
+      "value" : "将5张<u>流星</u>洗入你的牌库，发现一张牌库中的法术牌。（对敌方英雄造成3次伤害后升星，还差{card:star}次）",
+      "dictionary" : {
+        "en-US" : "将5张<u>流星</u>洗入你的牌库，发现一张牌库中的法术牌。（对敌方英雄造成3次伤害后升星，还差{card:star}次）",
+        "ja" : "将5张<u>流星</u>洗入你的牌库，发现一张牌库中的法术牌。（对敌方英雄造成3次伤害后升星，还差{card:star}次）"
       }
     }, {
       "value" : "将7张<u>流星</u>洗入你的牌库，发现一张牌库中的法术牌。",
@@ -117699,6 +118095,18 @@
       "dictionary" : {
         "en-US" : "After you play a spell to this, trigger the <b>Declare</b> of this. <br><b>Declare</b>: Summon a 1/1 <u>Mouse</u>.",
         "ja" : "自分がこのミニオンに対してスペルを使用する度、このミニオンの<b>宣言</b>を触発させる。<br><b>宣言</b>：１/１の<u>「鼠」</u>を１体召喚する。"
+      }
+    }, {
+      "value" : "每当你使用法术牌后，获得+1/1。（使用3张法术牌后升星，还差{card:star}张）",
+      "dictionary" : {
+        "en-US" : "每当你使用法术牌后，获得+1/1。（使用3张法术牌后升星，还差{card:star}张）",
+        "ja" : "每当你使用法术牌后，获得+1/1。（使用3张法术牌后升星，还差{card:star}张）"
+      }
+    }, {
+      "value" : "每当你使用法术牌后，获得+1攻击力。（使用3张法术牌后升星，还差{card:star}张）",
+      "dictionary" : {
+        "en-US" : "每当你使用法术牌后，获得+1攻击力。（使用3张法术牌后升星，还差{card:star}张）",
+        "ja" : "每当你使用法术牌后，获得+1攻击力。（使用3张法术牌后升星，还差{card:star}张）"
       }
     }, {
       "value" : "每当你使用法术牌后，获得+2/1。",
@@ -118314,6 +118722,12 @@
         "ja" : "食べ物の誘惑"
       }
     }, {
+      "value" : "使目标友方仆从获得+1/2和<b>法术伤害</b>+1。",
+      "dictionary" : {
+        "en-US" : "使目标友方仆从获得+1/2和<b>法术伤害</b>+1。",
+        "ja" : "使目标友方仆从获得+1/2和<b>法术伤害</b>+1。"
+      }
+    }, {
       "value" : "使所有仆从<b>消失</b>，它们会在你的回合开始后重新出现。",
       "dictionary" : {
         "en-US" : "Make all servants <b>Disappear</b>, they will reappear after the start of your next turn.",
@@ -118498,6 +118912,12 @@
       "dictionary" : {
         "en-US" : "Deal 4 damage to a random enemy servant.",
         "ja" : "ランダムな敵のミニオン1体に４ダメ\u30fcジを与える。"
+      }
+    }, {
+      "value" : "随机将3张<b>升星</b>卡置入你的手牌，其中可能包含<b>2星</b>和<b>3星</b>牌！",
+      "dictionary" : {
+        "en-US" : "随机将3张<b>升星</b>卡置入你的手牌，其中可能包含<b>2星</b>和<b>3星</b>牌！",
+        "ja" : "随机将3张<b>升星</b>卡置入你的手牌，其中可能包含<b>2星</b>和<b>3星</b>牌！"
       }
     }, {
       "value" : "随机将4张<b>升星</b>卡置入你的手牌，其中可能包含<b>2星</b>和<b>3星</b>牌！（使用2张法术牌后升星，还差{card:star}次）",
@@ -118926,6 +119346,12 @@
         "ja" : "星尘狂欢 ★★★"
       }
     }, {
+      "value" : "星光抽卡",
+      "dictionary" : {
+        "en-US" : "星光抽卡",
+        "ja" : "星光抽卡"
+      }
+    }, {
       "value" : "星光抽卡 ★★",
       "dictionary" : {
         "en-US" : "星光抽卡 ★★",
@@ -119327,6 +119753,18 @@
       "dictionary" : {
         "en-US" : "造成3点伤害。",
         "ja" : "造成3点伤害。"
+      }
+    }, {
+      "value" : "造成3点伤害。（对敌方英雄造成3次伤害后升星，还差{card:star}次）",
+      "dictionary" : {
+        "en-US" : "造成3点伤害。（对敌方英雄造成3次伤害后升星，还差{card:star}次）",
+        "ja" : "造成3点伤害。（对敌方英雄造成3次伤害后升星，还差{card:star}次）"
+      }
+    }, {
+      "value" : "造成3点伤害，回复(1)点灵力值。（对敌方英雄造成3次伤害后升星，还差{card:star}次）",
+      "dictionary" : {
+        "en-US" : "造成3点伤害，回复(1)点灵力值。（对敌方英雄造成3次伤害后升星，还差{card:star}次）",
+        "ja" : "造成3点伤害，回复(1)点灵力值。（对敌方英雄造成3次伤害后升星，还差{card:star}次）"
       }
     }, {
       "value" : "造成3点伤害，回复(2)点灵力值。",

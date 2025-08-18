@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
@@ -127,21 +127,22 @@ namespace Game
         }
         public EventReference[] getActionBindedEventsRecursive(long poolId, int actionId, IEnumerable<ICardPoolReference> poolSet)
         {
-            var poolRef = getCardPoolReferenceInEnv(poolId, poolSet);
+            ICardPoolReference poolRef = getCardPoolReferenceInEnv(poolId, poolSet);
             if (isBuiltinCardPool(poolRef))
             {
                 return game.eventManager.getBuiltinActionBindedEventsRecursive(actionId);
             }
             else if (getActionDefine(poolRef, actionId) is GeneratedActionDefine gen && gen.type == NodeDefineType.Event)
             {
-                var eventRef = getEventReferenceOfAction(gen);
+                EventReference eventRef = getEventReferenceOfAction(gen);
                 List<EventReference> refs = new List<EventReference>
                 {
                     eventRef
                 };
-                game.eventManager.getEventReferenceChildrenNonAlloc(eventRef, poolSet, refs);
+                game.eventManager.getActionChildrenEventsNonAlloc(gen, refs);
+                return refs.ToArray();
             }
-            return null;
+            return Array.Empty<EventReference>();
         }
         #endregion
 
