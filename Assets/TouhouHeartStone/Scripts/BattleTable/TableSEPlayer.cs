@@ -1,4 +1,4 @@
-﻿using BJSYGameCore;
+using BJSYGameCore;
 using UnityEngine;
 
 namespace Game.BattleTable
@@ -15,23 +15,35 @@ namespace Game.BattleTable
         }
         public void PlaySE(string name)
         {
-            manager?.sounds?.PlaySE(name, _pitch);
+            if (manager != null && manager.sounds != null)
+                manager.sounds.PlaySE(name, _pitch);
         }
         public void PlaySEClip(AudioClip clip)
         {
-            manager?.sounds?.playSE(clip, _pitch);
+            if (manager != null && manager.sounds != null)
+                manager.sounds.playSE(clip, _pitch);
+            else
+            {
+                AudioSource audioSource = new GameObject(nameof(AudioSource)).AddComponent<AudioSource>();
+                audioSource.clip = clip;
+                audioSource.Play();
+                Destroy(audioSource.gameObject, clip.length);
+            }
         }
         public void PlaySEClipLoop(AudioClip clip)
         {
-            manager?.sounds?.playSE(clip, _pitch, true);
+            if (manager != null && manager.sounds != null)
+                manager.sounds.playSE(clip, _pitch, true);
         }
         public void stopSEClip(AudioClip clip)
         {
-            manager?.sounds?.stopSE(clip);
+            if (manager != null && manager.sounds != null)
+                manager.sounds.stopSE(clip);
         }
         public void fadeoutSEClip(AudioClip clip)
         {
-            manager?.sounds?.fadeoutSE(clip, _fadeoutTime);
+            if (manager != null && manager.sounds != null)
+                manager.sounds.fadeoutSE(clip, _fadeoutTime);
         }
         #endregion
         #region 属性字段

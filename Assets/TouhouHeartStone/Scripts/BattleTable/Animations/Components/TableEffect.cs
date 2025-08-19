@@ -71,6 +71,17 @@ namespace Game.Animations
                 {
                     updatePersistentAnim();
                 }
+                // 播放音效
+                if (_sounds != null && _sounds.Length > 0)
+                {
+                    foreach (var sound in _sounds)
+                    {
+                        if (_time <= sound.time && sound.time <= _time + deltaTime && sePlayer)
+                        {
+                            sePlayer.PlaySEClip(sound.clip);
+                        }
+                    }
+                }
                 _time += deltaTime;
                 // 动画结束判断。
                 checkFinished();
@@ -446,6 +457,8 @@ namespace Game.Animations
         private float _heightOffset = 0;
         [SerializeField]
         private bool _playSoundOnStart;
+        [SerializeField]
+        private VisualEffectSoundData[] _sounds;
 #if UNITY_EDITOR
         [SerializeField]
         private bool testMode;
@@ -519,5 +532,11 @@ namespace Game.Animations
     {
         public Transform srcTransform;
         public Transform destTransform;
+    }
+    [Serializable]
+    public class VisualEffectSoundData
+    {
+        public float time;
+        public AudioClip clip;
     }
 }

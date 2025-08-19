@@ -14596,6 +14596,7 @@ GameObject:
   - component: {fileID: 6295687285603653778}
   - component: {fileID: -2485913067742937814}
   - component: {fileID: -814563982097202430}
+  - component: {fileID: -7071912802799786872}
   m_Layer: 0
   m_Name: StarShower
   m_TagString: Untagged
@@ -14634,6 +14635,7 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _heightOffset: 0
   _playSoundOnStart: 1
   testMode: 0
   testColor: {r: 1, g: 0, b: 1, a: 1}
@@ -14655,6 +14657,23 @@ MonoBehaviour:
   blockTime: 1.6
   isPersistent: 0
   colorTargets: []
+--- !u!114 &-7071912802799786872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436867298044792251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98973c954961bb8408d5c6a1e3815c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _manager: {fileID: 0}
+  se_name: 
+  clip: {fileID: 8300000, guid: 1b23018ad9ef87a4094838d9ce152d4c, type: 3}
+  _fadeoutTime: 1
+  _pitch: 1
 --- !u!1 &1486564926929917869
 GameObject:
   m_ObjectHideFlags: 0

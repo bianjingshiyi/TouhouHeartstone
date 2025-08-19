@@ -48654,6 +48654,7 @@ GameObject:
   - component: {fileID: 7212608028182894172}
   - component: {fileID: 533585830475494313}
   - component: {fileID: 5208063886124545389}
+  - component: {fileID: 1859710467966127851}
   m_Layer: 0
   m_Name: MagicLaser
   m_TagString: Untagged
@@ -53580,11 +53581,13 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _heightOffset: 0
   _playSoundOnStart: 1
   testMode: 0
   testColor: {r: 1, g: 0, b: 1, a: 1}
   _decayDuration: 0.67
   _laser: {fileID: 2657067316855821163}
+  _onHit: {fileID: 0}
 --- !u!114 &533585830475494313
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -53724,6 +53727,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _color: {r: 0.9589921, g: 0.9, b: 1, a: 1}
   _colorName: _Hue
+  _renderer: {fileID: 0}
+--- !u!114 &1859710467966127851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8593732777107830456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98973c954961bb8408d5c6a1e3815c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _manager: {fileID: 0}
+  se_name: 
+  clip: {fileID: 8300000, guid: 074cee5e8624aa4428300be00e1d2bd2, type: 3}
+  _fadeoutTime: 1
+  _pitch: 1
 --- !u!1 &9183128833787785950
 GameObject:
   m_ObjectHideFlags: 0
