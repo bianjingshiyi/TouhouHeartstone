@@ -69331,11 +69331,20 @@ MonoBehaviour:
   _playSoundOnStart: 1
   _sounds:
   - time: 0
+    duration: 0
     clip: {fileID: 8300000, guid: d6a3ad711cd7da94ebe15e6072ef0855, type: 3}
+    attachToEffect: 0
+    loop: 0
   - time: 0
+    duration: 0.8
     clip: {fileID: 8300000, guid: 3251716139ce524449bbfc6ac4641047, type: 3}
+    attachToEffect: 1
+    loop: 1
   - time: 0.8
+    duration: 0
     clip: {fileID: 8300000, guid: 5e66af25a50ff5f45bffd43a612d3882, type: 3}
+    attachToEffect: 0
+    loop: 0
   testMode: 0
   testColor: {r: 1, g: 0, b: 1, a: 1}
   _flyCurve:

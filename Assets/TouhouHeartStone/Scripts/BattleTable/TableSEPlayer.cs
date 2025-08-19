@@ -10,7 +10,7 @@ namespace Game.BattleTable
         {
             if (clip)
                 PlaySEClip(clip);
-            else
+            else if (!string.IsNullOrEmpty(se_name))
                 PlaySE(se_name);
         }
         public void PlaySE(string name)
@@ -20,20 +20,27 @@ namespace Game.BattleTable
         }
         public void PlaySEClip(AudioClip clip)
         {
+            PlaySEClip(clip, null, false, 0);
+        }
+        public void PlaySEClip(AudioClip clip, Transform parent = null, bool loop = false, float duration = 0)
+        {
             if (manager != null && manager.sounds != null)
-                manager.sounds.playSE(clip, _pitch);
+                manager.sounds.playSE(clip, parent: parent, pitch: _pitch, loop: loop, duration: duration);
             else
             {
                 AudioSource audioSource = new GameObject(nameof(AudioSource)).AddComponent<AudioSource>();
+                if (parent != null)
+                    audioSource.transform.parent = parent;
                 audioSource.clip = clip;
+                audioSource.loop = loop;
                 audioSource.Play();
-                Destroy(audioSource.gameObject, clip.length);
+                Destroy(audioSource.gameObject, duration > 0 ? duration : clip.length);
             }
         }
         public void PlaySEClipLoop(AudioClip clip)
         {
             if (manager != null && manager.sounds != null)
-                manager.sounds.playSE(clip, _pitch, true);
+                manager.sounds.playSE(clip, null, _pitch, true);
         }
         public void stopSEClip(AudioClip clip)
         {

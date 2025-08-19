@@ -37,7 +37,7 @@ namespace Game.Animations
             }
 
             float t = time;
-            float distanceLength = (distance.magnitude - _flyStartDistance - _flyEndDistance);
+            float distanceLength = distance.magnitude - _flyStartDistance - _flyEndDistance;
             float fly = _flyCurve.Evaluate(t) * distanceLength + _flyStartDistance;
             float offset = _offsetCurve.Evaluate(t, _randomValue) * distanceLength + _flyStartDistance;
 
@@ -72,7 +72,7 @@ namespace Game.Animations
                 {
                     _rotationRoot.localRotation = Quaternion.LookRotation(distance);
                 }
-                else
+                else if (distance != Vector3.zero)
                 {
                     transform.forward = distance.normalized;
                 }

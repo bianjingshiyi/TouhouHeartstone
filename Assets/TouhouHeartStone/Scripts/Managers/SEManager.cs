@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using BJSYGameCore;
 using System;
 using System.Collections.Generic;
@@ -11,19 +11,19 @@ namespace Game
         #region 公有方法
         public void PlaySE(string name, float pitch = 1)
         {
-            var clip = GetSE(name);
+            AudioClip clip = GetSE(name);
             if (clip != null)
-                playSE(clip, pitch);
+                playSE(clip, pitch: pitch);
             else
                 Debug.LogWarning($"Unable to find audio: {name}");
         }
-        public void playSE(AudioClip clip, float pitch = 1, bool loop = false)
+        public void playSE(AudioClip clip, Transform parent = null, float pitch = 1, bool loop = false, float duration = 0)
         {
-            createSource(_seSourceTemplate, clip, pitch, loop);
+            createSource(_seSourceTemplate, clip, parent: parent, pitch: pitch, loop: loop, duration: duration);
         }
         public void playCustomSE(AudioClip clip, float pitch = 1, bool loop = false)
         {
-            createSource(_customSourceTemplate, clip, pitch, loop);
+            createSource(_customSourceTemplate, clip, pitch: pitch, loop: loop);
         }
         public void stopSE(AudioClip clip)
         {
@@ -47,10 +47,18 @@ namespace Game
         }
         public void stopAllLoopingSE()
         {
-            var sources = _seSourceList.Where(s => s.loop).ToArray();
-            foreach (var source in sources)
+            for (int i = 0; i < _seSourceList.Count; i++)
             {
-                removeSource(source);
+                SESource source = _seSourceList[i];
+                if (source == null)
+                {
+                    _seSourceList.RemoveAt(i);
+                    i--;
+                }
+                if (source.loop)
+                {
+                    removeSource(source);
+                }
             }
         }
         public AudioClip GetSE(string name)
@@ -90,25 +98,22 @@ namespace Game
             removeSource(source);
         }
         #endregion
-        
-        public void createSource(SESource template, AudioClip clip, float pitch = 1, bool loop = false)
+
+        public void createSource(SESource template, AudioClip clip, Transform parent = null, float pitch = 1, bool loop = false, float duration = 0)
         {
             if (clip == null)
                 return;
-            SESource source;
-            if (_frameSECache.TryGetValue(clip, out var before))
+            if (!_frameSECache.TryGetValue(clip, out SESource source) || source == null)
             {
-                source = before;
-            }
-            else
-            {
-                source = Instantiate(template.gameObject, _seSourceRoot).GetComponent<SESource>();
+                source = Instantiate(template.gameObject, parent != null ? parent : _seSourceRoot).GetComponent<SESource>();
                 source.gameObject.SetActive(true);
                 source.onFinished += onSourceFinished;
                 source.name = clip.name;
                 source.clip = clip;
                 _seSourceList.Add(source);
                 _frameSECache.Add(clip, source);
+                //if (duration > 0)
+                //    Destroy(source.gameObject, duration);
             }
             source.loop = loop;
             source.pitch = pitch;

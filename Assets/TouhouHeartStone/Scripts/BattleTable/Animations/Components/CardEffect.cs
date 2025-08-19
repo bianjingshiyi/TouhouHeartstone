@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Game.Animations
 {
@@ -8,7 +8,7 @@ namespace Game.Animations
         {
             if (sourceTransform)
             {
-                transform.position = sourceTransform.position;
+                transform.position = sourceTransform.position + Vector3.up * heightOffset;
                 if (_useSourceScale)
                 {
                     transform.localScale = sourceTransform.lossyScale;

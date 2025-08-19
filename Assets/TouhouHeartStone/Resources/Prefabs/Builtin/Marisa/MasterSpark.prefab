@@ -24562,6 +24562,7 @@ GameObject:
   - component: {fileID: 1426563001321775338}
   - component: {fileID: 8650117357826322383}
   - component: {fileID: 6733512309918785579}
+  - component: {fileID: 8939544184959784515}
   m_Layer: 0
   m_Name: MasterSpark
   m_TagString: Untagged
@@ -29617,6 +29618,7 @@ MonoBehaviour:
   _destTransform: {fileID: 0}
   _heightOffset: 0.5
   _playSoundOnStart: 1
+  _sounds: []
   testMode: 0
   testColor: {r: 1, g: 0, b: 1, a: 1}
   _decayDuration: 0.5
@@ -29863,6 +29865,23 @@ MonoBehaviour:
       particleType: 0
       index: 0
     color: {r: 1, g: 0.9814745, b: 0.75, a: 1}
+--- !u!114 &8939544184959784515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6472472249091971489}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98973c954961bb8408d5c6a1e3815c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _manager: {fileID: 0}
+  se_name: 
+  clip: {fileID: 8300000, guid: e35d86432943413409534e4f59a10863, type: 3}
+  _fadeoutTime: 1
+  _pitch: 1
 --- !u!1 &6498309166689889110
 GameObject:
   m_ObjectHideFlags: 0

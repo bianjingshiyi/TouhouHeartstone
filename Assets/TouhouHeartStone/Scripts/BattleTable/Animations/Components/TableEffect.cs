@@ -52,7 +52,7 @@ namespace Game.Animations
                 }
                 _state = EffectState.Started;
                 transform.position = sourceTransform.position;
-                if (_playSoundOnStart && sePlayer)
+                if (_playSoundOnStart && sePlayer != null)
                 {
                     sePlayer.Play();
                 }
@@ -78,7 +78,7 @@ namespace Game.Animations
                     {
                         if (_time <= sound.time && sound.time <= _time + deltaTime && sePlayer)
                         {
-                            sePlayer.PlaySEClip(sound.clip);
+                            sePlayer.PlaySEClip(sound.clip, sound.attachToEffect ? transform : null, loop: sound.loop, duration: sound.duration);
                         }
                     }
                 }
@@ -537,6 +537,9 @@ namespace Game.Animations
     public class VisualEffectSoundData
     {
         public float time;
+        public float duration;
         public AudioClip clip;
+        public bool attachToEffect;
+        public bool loop;
     }
 }

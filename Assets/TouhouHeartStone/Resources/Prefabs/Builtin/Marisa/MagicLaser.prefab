@@ -53583,6 +53583,7 @@ MonoBehaviour:
   _destTransform: {fileID: 0}
   _heightOffset: 0
   _playSoundOnStart: 1
+  _sounds: []
   testMode: 0
   testColor: {r: 1, g: 0, b: 1, a: 1}
   _decayDuration: 0.67
@@ -53742,7 +53743,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _manager: {fileID: 0}
   se_name: 
-  clip: {fileID: 8300000, guid: 074cee5e8624aa4428300be00e1d2bd2, type: 3}
+  clip: {fileID: 8300000, guid: e2eea60d6ce9cac48a9ad48ed0894b13, type: 3}
   _fadeoutTime: 1
   _pitch: 1
 --- !u!1 &9183128833787785950
