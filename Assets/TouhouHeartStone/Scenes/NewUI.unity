@@ -3220,6 +3220,9 @@ MonoBehaviour:
   - {fileID: 7652383366002668231, guid: 487daac4077f40341b445db1a8ca800e, type: 3}
   - {fileID: 2409047589611974418, guid: 762ab7af434521442a267f431397356d, type: 3}
   - {fileID: 1293661610629618873, guid: df1125a8699642a488525ecd73c34d0c, type: 3}
+  - {fileID: 94660435992372039, guid: 9a80ecc877cd2e5448e01de9b568ad9d, type: 3}
+  - {fileID: 1923512601502563066, guid: 46c79e4372634e74b8ac31f53c158f00, type: 3}
+  - {fileID: 5951393940584336570, guid: a4f598a225f245f40aca646b580f8716, type: 3}
 --- !u!114 &123776328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15867,7 +15870,7 @@ PrefabInstance:
     - target: {fileID: 1816045192479623800, guid: 778a84d3066a09b43b655095c1855cf3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -224.99997
+      value: -224.99994
       objectReference: {fileID: 0}
     - target: {fileID: 1982241484689089629, guid: 778a84d3066a09b43b655095c1855cf3,
         type: 3}
@@ -17465,7 +17468,7 @@ PrefabInstance:
     - target: {fileID: 7137159522728872616, guid: fde8c54b96186e446ba2f765c6726d7b,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -234.99985
+      value: -235
       objectReference: {fileID: 0}
     - target: {fileID: 7245641347920217468, guid: fde8c54b96186e446ba2f765c6726d7b,
         type: 3}
@@ -19833,7 +19836,7 @@ PrefabInstance:
     - target: {fileID: 5506443023862532095, guid: e5eda7d1e4b5e7d41be47236088eba8c,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -234.99985
+      value: -235
       objectReference: {fileID: 0}
     - target: {fileID: 5506443023862532095, guid: e5eda7d1e4b5e7d41be47236088eba8c,
         type: 3}
@@ -20331,7 +20334,7 @@ PrefabInstance:
     - target: {fileID: 218766240834303192, guid: dfd017d4e4484df40ae97e3101b4a5e6,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -679.9999
+      value: -679.99994
       objectReference: {fileID: 0}
     - target: {fileID: 1085466668570176274, guid: dfd017d4e4484df40ae97e3101b4a5e6,
         type: 3}

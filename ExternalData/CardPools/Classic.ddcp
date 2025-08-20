@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 5, "cardPoolId" : NumberLong(1), "editTime" : 767, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
+{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 5, "cardPoolId" : NumberLong(1), "editTime" : 770, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -83614,7 +83614,9 @@
                     "paramIndex" : -1,
                     "value" : 0
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef2_1"
+                },
                 "tags" : null,
                 "consts" : null,
                 "targetCheckerList" : [{
@@ -84079,7 +84081,9 @@
                     "paramIndex" : -1,
                     "value" : 0
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef3_1"
+                },
                 "tags" : null,
                 "consts" : null,
                 "targetCheckerList" : [{
@@ -84379,7 +84383,9 @@
                     "paramIndex" : -1,
                     "value" : 0
                   }],
-                "propDict" : { },
+                "propDict" : {
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_1"
+                },
                 "tags" : null,
                 "consts" : null,
                 "targetCheckerList" : []
@@ -91492,13 +91498,14 @@
       "_imagePath" : "48c1657842be9799d457ec1d4659d0ce63a3472b92bc7b3eb2ce9bab0204e40a.jpg",
       "_desc" : "对敌方角色造成8点伤害。（使用2张3星牌后升星，还差{card:star}张）",
       "_animationRefs" : [{
+          "sourcePosition" : 3,
           "targetPosition" : 3,
           "sourcePositionVarName" : "",
           "targetPositionVarName" : "",
           "key" : "AnimRef0_2",
           "animRef" : {
             "cardPoolId" : NumberLong(0),
-            "defineId" : 65
+            "defineId" : 71
           },
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
@@ -91520,6 +91527,16 @@
             "eventName" : "Event(16)From(1)"
           },
           "colorModifies" : []
+        }, {
+          "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef2_1",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 65
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : [{
           "name" : "OnAttack"
@@ -91535,13 +91552,14 @@
       "_imagePath" : "48c1657842be9799d457ec1d4659d0ce63a3472b92bc7b3eb2ce9bab0204e40a.jpg",
       "_desc" : "对敌方角色造成8点伤害，如果目标是仆从，还会对敌方英雄造成8点伤害。（使用2张3星牌后升星，还差{card:star}张）",
       "_animationRefs" : [{
+          "sourcePosition" : 3,
           "targetPosition" : 3,
           "sourcePositionVarName" : "",
           "targetPositionVarName" : "",
           "key" : "AnimRef0_2",
           "animRef" : {
             "cardPoolId" : NumberLong(0),
-            "defineId" : 65
+            "defineId" : 71
           },
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
@@ -91549,13 +91567,14 @@
           },
           "colorModifies" : []
         }, {
+          "sourcePosition" : 3,
           "targetPosition" : 3,
           "sourcePositionVarName" : "",
           "targetPositionVarName" : "",
           "key" : "AnimRef1_5",
           "animRef" : {
             "cardPoolId" : NumberLong(0),
-            "defineId" : 65
+            "defineId" : 71
           },
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
@@ -91577,6 +91596,16 @@
             "eventName" : "Event(16)From(1)"
           },
           "colorModifies" : []
+        }, {
+          "targetPosition" : 3,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef3_1",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 65
+          },
+          "colorModifies" : []
         }],
       "_soundRefs" : [{
           "name" : "OnAttack"
@@ -91592,17 +91621,28 @@
       "_imagePath" : "48c1657842be9799d457ec1d4659d0ce63a3472b92bc7b3eb2ce9bab0204e40a.jpg",
       "_desc" : "对所有敌方角色造成8点伤害。",
       "_animationRefs" : [{
+          "sourcePosition" : 3,
           "targetPosition" : 3,
           "sourcePositionVarName" : "",
           "targetPositionVarName" : "",
           "key" : "AnimRef0_2",
           "animRef" : {
             "cardPoolId" : NumberLong(0),
-            "defineId" : 65
+            "defineId" : 71
           },
           "eventReference" : {
             "cardPoolId" : NumberLong(0),
             "eventName" : "DamageEvent"
+          },
+          "colorModifies" : []
+        }, {
+          "targetPosition" : 1,
+          "sourcePositionVarName" : "",
+          "targetPositionVarName" : "",
+          "key" : "AnimRef1_1",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 70
           },
           "colorModifies" : []
         }],

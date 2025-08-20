@@ -18,6 +18,10 @@ namespace Game.BattleTable
             if (manager != null && manager.sounds != null)
                 manager.sounds.PlaySE(name, _pitch);
         }
+        /// <summary>
+        /// AnimationEvent调用
+        /// </summary>
+        /// <param name="clip"></param>
         public void PlaySEClip(AudioClip clip)
         {
             PlaySEClip(clip, null, false, 0);
@@ -37,16 +41,28 @@ namespace Game.BattleTable
                 Destroy(audioSource.gameObject, duration > 0 ? duration : clip.length);
             }
         }
+        /// <summary>
+        /// AnimationEvent调用
+        /// </summary>
+        /// <param name="clip"></param>
         public void PlaySEClipLoop(AudioClip clip)
         {
             if (manager != null && manager.sounds != null)
                 manager.sounds.playSE(clip, null, _pitch, true);
         }
+        /// <summary>
+        /// AnimationEvent调用
+        /// </summary>
+        /// <param name="clip"></param>
         public void stopSEClip(AudioClip clip)
         {
             if (manager != null && manager.sounds != null)
                 manager.sounds.stopSE(clip);
         }
+        /// <summary>
+        /// AnimationEvent调用
+        /// </summary>
+        /// <param name="clip"></param>
         public void fadeoutSEClip(AudioClip clip)
         {
             if (manager != null && manager.sounds != null)

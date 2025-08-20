@@ -29637,7 +29637,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defineName: "\u9B54\u70AE"
   duration: 4
-  blockTime: 3
+  blockTime: 1
   isPersistent: 0
   colorTargets:
   - targets:

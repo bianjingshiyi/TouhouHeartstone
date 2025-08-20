@@ -872,7 +872,7 @@ ParticleSystem:
     serializedVersion: 4
     rateOverTime:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 1
       scalar: 8
       minScalar: 10
       maxCurve:
@@ -880,15 +880,6 @@ ParticleSystem:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0
-          inSlope: 0
-          outSlope: Infinity
-          tangentMode: 97
-          weightedMode: 0
-          inWeight: 0.33333334
-          outWeight: 0.33333334
-        - serializedVersion: 3
-          time: 0.25
           value: 1
           inSlope: 0
           outSlope: Infinity
@@ -4875,7 +4866,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd656a649e239d246b70718fa65d2d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defineName: "\u7A76\u6781\u706B\u82B1_\u51FB\u4E2D"
+  defineName: "\u9B54\u70AE_\u51FB\u4E2D"
   duration: 2
   blockTime: 1
   isPersistent: 0
@@ -5785,7 +5776,7 @@ ParticleSystem:
     serializedVersion: 4
     rateOverTime:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 1
       scalar: 8
       minScalar: 10
       maxCurve:
@@ -5793,15 +5784,6 @@ ParticleSystem:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0
-          inSlope: 0
-          outSlope: Infinity
-          tangentMode: 97
-          weightedMode: 0
-          inWeight: 0.33333334
-          outWeight: 0.33333334
-        - serializedVersion: 3
-          time: 0.25
           value: 1
           inSlope: 0
           outSlope: Infinity

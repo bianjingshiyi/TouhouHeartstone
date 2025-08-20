@@ -83,6 +83,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: MasterSpark_Large
       objectReference: {fileID: 0}
+    - target: {fileID: 6733512309918785579, guid: 537aacee5ba8d15468a8d1e53505f719,
+        type: 3}
+      propertyPath: defineName
+      value: "\u9B54\u70AE_\u5927\u578B"
+      objectReference: {fileID: 0}
     - target: {fileID: 7067036810801130353, guid: 537aacee5ba8d15468a8d1e53505f719,
         type: 3}
       propertyPath: VelocityModule.x.scalar

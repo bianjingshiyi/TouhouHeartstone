@@ -29,20 +29,39 @@ namespace Game
         {
             if (clip == null)
                 return;
-            var sources = _seSourceList.Where(s => s.clip == clip).ToArray();
-            foreach (var source in sources)
+            for (int i = 0; i < _seSourceList.Count; i++)
             {
-                removeSource(source);
+                SESource source = _seSourceList[i];
+                if (source == null)
+                {
+                    _seSourceList.RemoveAt(i);
+                    i--;
+                }
+                else if (source.clip == clip)
+                {
+                    Destroy(source.gameObject);
+                    source.onFinished -= onSourceFinished;
+                    _seSourceList.RemoveAt(i);
+                    i--;
+                }
             }
         }
         public void fadeoutSE(AudioClip clip, float time)
         {
             if (clip == null)
                 return;
-            var sources = _seSourceList.Where(s => s.clip == clip).ToArray();
-            foreach (var source in sources)
+            for (int i = 0; i < _seSourceList.Count; i++)
             {
-                source.fadeOut(time);
+                SESource source = _seSourceList[i];
+                if (source == null)
+                {
+                    _seSourceList.RemoveAt(i);
+                    i--;
+                }
+                else if(source.clip == clip)
+                {
+                    source.fadeOut(time);
+                }
             }
         }
         public void stopAllLoopingSE()
@@ -57,7 +76,10 @@ namespace Game
                 }
                 if (source.loop)
                 {
-                    removeSource(source);
+                    source.onFinished -= onSourceFinished;
+                    Destroy(source.gameObject);
+                    _seSourceList.RemoveAt(i);
+                    i--;
                 }
             }
         }
@@ -95,7 +117,12 @@ namespace Game
         #region 事件回调
         private void onSourceFinished(SESource source)
         {
-            removeSource(source);
+            if (source == null)
+                return;
+
+            source.onFinished -= onSourceFinished;
+            Destroy(source.gameObject);
+            _seSourceList.Remove(source);
         }
         #endregion
 
@@ -112,18 +139,12 @@ namespace Game
                 source.clip = clip;
                 _seSourceList.Add(source);
                 _frameSECache.Add(clip, source);
-                //if (duration > 0)
-                //    Destroy(source.gameObject, duration);
+                if (duration > 0)
+                    Destroy(source.gameObject, duration);
             }
             source.loop = loop;
             source.pitch = pitch;
             source.play();
-        }
-        private void removeSource(SESource source)
-        {
-            _seSourceList.Remove(source);
-            source.onFinished -= onSourceFinished;
-            source.remove();
         }
         #endregion
         #region 属性字段
