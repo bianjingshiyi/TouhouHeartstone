@@ -53743,7 +53743,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _manager: {fileID: 0}
   se_name: 
-  clip: {fileID: 8300000, guid: e2eea60d6ce9cac48a9ad48ed0894b13, type: 3}
+  clip: {fileID: 8300000, guid: 87d296ac9fc62fd41bad0832683df0e7, type: 3}
   _fadeoutTime: 1
   _pitch: 1
 --- !u!1 &9183128833787785950

@@ -116,7 +116,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 2
+      scalar: 1.8
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -5040,7 +5040,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 2
+      scalar: 1.8
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -9826,7 +9826,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defineName: "\u9B54\u7406\u6C99\u6CD5\u672F"
   duration: 2
-  blockTime: 2
+  blockTime: 1.6
   isPersistent: 0
   colorTargets:
   - targets:
@@ -10086,7 +10086,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 2
+      scalar: 1.8
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -15004,7 +15004,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 2
+      scalar: 1.8
       minScalar: 5
       maxCurve:
         serializedVersion: 2

@@ -14637,6 +14637,17 @@ MonoBehaviour:
   _destTransform: {fileID: 0}
   _heightOffset: 0
   _playSoundOnStart: 1
+  _sounds:
+  - time: 0.8
+    duration: 0
+    clip: {fileID: 8300000, guid: 1b23018ad9ef87a4094838d9ce152d4c, type: 3}
+    attachToEffect: 0
+    loop: 0
+  - time: 1.6
+    duration: 0
+    clip: {fileID: 8300000, guid: 5fc3ec86ffbe8ac4a8977cb69fb1ec31, type: 3}
+    attachToEffect: 0
+    loop: 0
   testMode: 0
   testColor: {r: 1, g: 0, b: 1, a: 1}
   _useSourceScale: 0
@@ -14671,7 +14682,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _manager: {fileID: 0}
   se_name: 
-  clip: {fileID: 8300000, guid: 1b23018ad9ef87a4094838d9ce152d4c, type: 3}
+  clip: {fileID: 0}
   _fadeoutTime: 1
   _pitch: 1
 --- !u!1 &1486564926929917869
@@ -14700,7 +14711,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1486564926929917869}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.38268343, y: 0, z: 0, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -14713,7 +14724,7 @@ Transform:
   - {fileID: 7453183323939287512}
   - {fileID: 7600966592365061243}
   m_Father: {fileID: 6295687285603653778}
-  m_LocalEulerAnglesHint: {x: -45, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
 --- !u!198 &4968304652883741390
 ParticleSystem:
   m_ObjectHideFlags: 0

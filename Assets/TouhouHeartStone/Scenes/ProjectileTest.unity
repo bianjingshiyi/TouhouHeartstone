@@ -1750,7 +1750,7 @@ MonoBehaviour:
   _root: {fileID: 0}
   _sourceTransform: {fileID: 111017287}
   _targetTransform: {fileID: 1468162330}
-  _effectPrefab: {fileID: 8650117357826322383, guid: 537aacee5ba8d15468a8d1e53505f719,
+  _effectPrefab: {fileID: 8052726295607453080, guid: 762ab7af434521442a267f431397356d,
     type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
