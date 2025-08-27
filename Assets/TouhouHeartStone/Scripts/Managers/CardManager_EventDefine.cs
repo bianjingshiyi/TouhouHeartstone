@@ -132,14 +132,13 @@ namespace Game
             {
                 return game.eventManager.getBuiltinActionBindedEventsRecursive(actionId);
             }
-            else if (getActionDefine(poolRef, actionId) is GeneratedActionDefine gen)
+            else if (getActionDefine(poolRef, actionId) is GeneratedActionDefine gen && gen.type == NodeDefineType.Event)
             {
-                List<EventReference> refs = new List<EventReference>();
-                if (gen.type == NodeDefineType.Event && getEventReferenceOfAction(gen) is EventReference eventRef)
+                EventReference eventRef = getEventReferenceOfAction(gen);
+                List<EventReference> refs = new List<EventReference>()
                 {
-                    // 本身也是父事件
-                    refs.Add(eventRef);
-                }
+                    eventRef
+                };
                 game.eventManager.getActionChildrenEventsNonAlloc(gen, refs);
                 return refs.ToArray();
             }

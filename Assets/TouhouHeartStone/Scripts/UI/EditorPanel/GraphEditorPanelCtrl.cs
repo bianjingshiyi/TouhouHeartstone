@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Linq;
 using System.Reflection;
@@ -34,7 +34,7 @@ namespace UI
             updateNodeDefines();
             updateNodesList();
 
-            var positions = visualEffectPositionNames.Select(p => game.lang._p(CONTEXT_VISUAL_EFFECT, p)).ToArray();
+            string[] positions = Array.ConvertAll(visualEffectPositionNames, p => game.lang._p(CONTEXT_VISUAL_EFFECT, p));
             initNodeAnimationPositions(positions);
 
             hideErrorTip();
@@ -224,7 +224,7 @@ namespace UI
             _editVisualEffectDialog.onPreviewStopButtonClicked += onAnimationPreviewStopButtonClickedCallback;
 
             _colorPicker.onValueChanged.AddListener(onColorPickerValueChangedCallback);
-            _colorPicker.onHSVChanged.AddListener((h, s, v) => onColorPickerValueChangedCallback(Color.HSVToRGB(h,s,v)));
+            _colorPicker.onHSVChanged.AddListener((h, s, v) => onColorPickerValueChangedCallback(Color.HSVToRGB(h, s, v)));
             _colorPickerConfirmButton.onClick.AddListener(onColorPickerConfirmButtonClickedCallback);
 
             _createEffectPropDialog.onConfirm += onConfirmCreateEffectPropertyCallback;
@@ -475,9 +475,9 @@ namespace UI
         private void onAnimationPropChangedCallback(VisualEffectDialogInfo info)
         {
             _curVFXSelectSource.changeProp(info);
-            var eventViewData = _curVFXSelectSource.getAnimationViewData();
+            VisualEffectDialogViewData eventViewData = _curVFXSelectSource.getAnimationViewData();
             updateAnimationDialog(eventViewData);
-            var colorViewData = _curVFXSelectSource.getColorViewDatas();
+            ColorModifyViewData[] colorViewData = _curVFXSelectSource.getColorViewDatas();
             updateAnimationDialogColors(colorViewData);
         }
         private void onAnimationConfirmButtonClickedCallback()
@@ -998,6 +998,8 @@ namespace UI
         public const string VISUAL_EFFECT_POSITION_TARGET_CARD = "目标卡牌";
         [TranslateMsg("特效动画的始末位置选项", CONTEXT_VISUAL_EFFECT)]
         public const string VISUAL_EFFECT_POSITION_TEMP_VAR = "临时变量";
+        [TranslateMsg("特效动画的始末位置选项", CONTEXT_VISUAL_EFFECT)]
+        public const string VISUAL_EFFECT_POSITION_EVENT_VAR = "事件变量";
 
         [TranslateMsg("特效动画的预览特效按钮", CONTEXT_VISUAL_EFFECT)]
         public const string VISUAL_EFFECT_HIDE_PREVIEW = "隐藏预览";
@@ -1040,7 +1042,8 @@ namespace UI
             VISUAL_EFFECT_POSITION_ENEMY_MASTER,
             VISUAL_EFFECT_POSITION_THIS_CARD,
             VISUAL_EFFECT_POSITION_TARGET_CARD,
-            VISUAL_EFFECT_POSITION_TEMP_VAR
+            VISUAL_EFFECT_POSITION_TEMP_VAR,
+            VISUAL_EFFECT_POSITION_EVENT_VAR
         };
         private long curCardPoolId => game.editor.currentCardPoolId;
         private EventTriggerTime[] eventTriggerTimes => scene.editor.eventTriggerTimes;
@@ -1052,6 +1055,7 @@ namespace UI
         public const int THIS_CARD = 2;
         public const int TARGET_CARD = 3;
         public const int TEMP_VAR = 4;
+        public const int EVENT_VAR = 5;
     }
     public struct VFXPreviewData
     {

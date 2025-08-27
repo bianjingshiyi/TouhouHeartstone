@@ -207,10 +207,10 @@ namespace Game.BattleTable
         }
         private void addSkinEffectAnim(AnimationDefine animationDef, EventArg arg, EventArg effectTriggerArg, SkinAnimationRef skinAnimRef, Flow flow)
         {
-            var anim = new EventEffectAnim(animationDef, arg, effectTriggerArg, skinAnimRef);
+            EventEffectAnim anim = new EventEffectAnim(animationDef, arg, effectTriggerArg, skinAnimRef);
             if (skinAnimRef.sourcePosition == VisualEffectPosition.TEMP_VAR)
             {
-                var tempVar = flow.getFlowVariable(skinAnimRef.sourcePositionVarName);
+                object tempVar = flow.getFlowVariable(skinAnimRef.sourcePositionVarName);
                 if (FlowConvert.tryConvertType(flow, tempVar, out Card card))
                 {
                     anim.sourceTempVarCardId = card?.id ?? -1;
@@ -218,7 +218,7 @@ namespace Game.BattleTable
             }
             if (skinAnimRef.targetPosition == VisualEffectPosition.TEMP_VAR)
             {
-                var tempVar = flow.getFlowVariable(skinAnimRef.targetPositionVarName);
+                object tempVar = flow.getFlowVariable(skinAnimRef.targetPositionVarName);
                 if (FlowConvert.tryConvertType(flow, tempVar, out Card card))
                 {
                     anim.targetTempVarCardId = card?.id ?? -1;
@@ -249,10 +249,10 @@ namespace Game.BattleTable
         {
             if (arg == null)
                 return;
-            var skinAnimRef = getEffectEntrySkinAnimRef(arg);
+            SkinAnimationRef skinAnimRef = getEffectEntrySkinAnimRef(arg);
             if (skinAnimRef == null)
                 return;
-            var animationDef = getAnimationDefine(skinAnimRef.animRef);
+            AnimationDefine animationDef = getAnimationDefine(skinAnimRef.animRef);
             if (animationDef != null)
             {
                 addSkinEffectAnim(animationDef, arg, arg, skinAnimRef, flow);
@@ -260,7 +260,7 @@ namespace Game.BattleTable
         }
         public EventArg getEffectEventTriggerArg(IEventArg arg)
         {
-            var seekArg = arg;
+            IEventArg seekArg = arg;
             while (seekArg != null)
             {
                 if (seekArg is EventArg effectArg && seekArg.define is IEffectEventDefine)
@@ -286,7 +286,6 @@ namespace Game.BattleTable
 
                 Node node = genEffect.graph.findNodeById(arg.flowNodeId);
                 return getAnimRefOfEventNode(skin, arg, node);
-
             }
             else if (cardDefineRef != null)
             {
@@ -336,27 +335,6 @@ namespace Game.BattleTable
             }
 
             return getAnimRefOfEntryNode(skin, node);
-        }
-        public Card getEventSkinAnimCard(EventArg effectArg, IEventArg arg, int position)
-        {
-            var effectDefine = effectArg.define as IEffectEventDefine;
-            var card = effectDefine.getCard(effectArg);
-            switch (position)
-            {
-                case VisualEffectPosition.SELF_MASTER:
-                    return card.getOwner().getMaster();
-                case VisualEffectPosition.ENEMY_MASTER:
-                    return game.getOpponent(card.getOwner()).getMaster();
-                case VisualEffectPosition.THIS_CARD:
-                    return card;
-                case VisualEffectPosition.TARGET_CARD:
-                    if (arg.define is ICardEventDefine targetEventArg)
-                    {
-                        return targetEventArg.getCard(arg) as Card;
-                    }
-                    break;
-            }
-            return null;
         }
         public TableArea getEventSkinAnimArea(EventArg effectArg, IEventArg arg, int area)
         {

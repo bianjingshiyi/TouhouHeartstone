@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Animations;
@@ -41,11 +41,11 @@ namespace Game
         #region 特效选项
         public VisualEffectDialogViewData getNodeAnimationViewData(Node node, ISkin skin)
         {
-            var defines = getAnimationDefinesForNode();
+            AnimationDefine[] defines = getAnimationDefinesForNode();
             SkinAnimationRef animRef = node.getOrInitNodeAnimationRef(skin);
 
-            var eventRefs = getLocalNodeVisualEffectEventRefs(node);
-            var eventIndex = 0;
+            EventReference[] eventRefs = getLocalNodeVisualEffectEventRefs(node);
+            int eventIndex = 0;
             int animIndex = -1;
             int sourcePosition = 0;
             int targetPosition = 0;
@@ -53,7 +53,7 @@ namespace Game
             string targetPositionVarName = string.Empty;
             if (animRef != null)
             {
-                var animEventRef = animRef.eventReference;
+                EventReference animEventRef = animRef.eventReference;
                 if (animEventRef == null)
                 {
                     animEventRef = main.eventManager.getDefaultNodeEvent(node);
@@ -65,10 +65,10 @@ namespace Game
                         eventIndex = 0;
                 }
 
-                var animDefRef = animRef.animRef;
+                DefineReference animDefRef = animRef.animRef;
                 if (animDefRef != null)
                 {
-                    var define = defines.FirstOrDefault(d => d.cardPoolId == animDefRef.cardPoolId && d.id == animDefRef.defineId);
+                    AnimationDefine define = defines.FirstOrDefault(d => d.cardPoolId == animDefRef.cardPoolId && d.id == animDefRef.defineId);
                     animIndex = Array.IndexOf(defines, define);
                 }
                 sourcePosition = animRef.sourcePosition;
@@ -79,9 +79,9 @@ namespace Game
 
             VFXDialogHideFlags hideFlags = VFXDialogHideFlags.None;
             hideFlags |= eventRefs != null ? 0 : VFXDialogHideFlags.Event;
-            hideFlags |= sourcePosition == VisualEffectPosition.TEMP_VAR ? 0 : VFXDialogHideFlags.SourcePositionVarName;
-            hideFlags |= targetPosition == VisualEffectPosition.TEMP_VAR ? 0 : VFXDialogHideFlags.TargetPositionVarName;
-            var eventViewData = new VisualEffectDialogViewData()
+            hideFlags |= (sourcePosition == VisualEffectPosition.TEMP_VAR || sourcePosition == VisualEffectPosition.EVENT_VAR) ? 0 : VFXDialogHideFlags.SourcePositionVarName;
+            hideFlags |= (targetPosition == VisualEffectPosition.TEMP_VAR || targetPosition == VisualEffectPosition.EVENT_VAR) ? 0 : VFXDialogHideFlags.TargetPositionVarName;
+            VisualEffectDialogViewData eventViewData = new VisualEffectDialogViewData()
             {
                 eventIndex = eventIndex,
                 animIndex = animIndex + 1,
@@ -95,17 +95,17 @@ namespace Game
         }
         public void updateNodeAnimRef(Node node, ISkin skin, VisualEffectDialogInfo info)
         {
-            var animRef = node.getOrInitNodeAnimationRef(skin);
-            var defines = getAnimationDefinesForNode();
-            var eventRefs = getLocalNodeVisualEffectEventRefs(node);
-            var animIndex = info.animIndex;
+            SkinAnimationRef animRef = node.getOrInitNodeAnimationRef(skin);
+            AnimationDefine[] defines = getAnimationDefinesForNode();
+            EventReference[] eventRefs = getLocalNodeVisualEffectEventRefs(node);
+            int animIndex = info.animIndex;
             if (animIndex < 0)
             {
                 animRef.animRef = new DefineReference(0, 0);
             }
             else
             {
-                var define = defines[animIndex];
+                AnimationDefine define = defines[animIndex];
                 animRef.animRef = new DefineReference(define.cardPoolId, define.id);
             }
             animRef.eventReference = eventRefs == null || info.eventIndex < 0 ? null : eventRefs[info.eventIndex];
