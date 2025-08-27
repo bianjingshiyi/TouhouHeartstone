@@ -56,25 +56,32 @@ namespace Game
         /// </summary>
         /// <param name="generatedActionDefine">自定义动作。</param>
         /// <param name="list">传入列表。</param>
-        public void getActionChildrenEventsNonAlloc(GeneratedActionDefine generatedActionDefine, List<EventReference> list)
+        public void getActionChildrenEventsNonAlloc(GeneratedActionDefine generatedActionDefine, List<EventReference> list, HashSet<Node> traversedNodes = null)
         {
+            traversedNodes ??= new HashSet<Node>();
             foreach (Node node in generatedActionDefine.graph.nodes)
             {
+                // 防止节点死循环
+                if (traversedNodes.Contains(node))
+                    continue;
+                else
+                    traversedNodes.Add(node);
                 if (node is ActionNode action)
                 {
                     ActionReference actionRef = action.defineRef;
                     ActionDefine actionDefine = game.card.getLocalActionDefine(actionRef);
-                    if (actionDefine is GeneratedActionDefine gen && gen.type == NodeDefineType.Event) // 自定义事件。
+                    if (actionDefine is GeneratedActionDefine gen) // 自定义事件。
                     {
-                        EventReference eventRef = CardManager.getEventReferenceOfAction(gen);
-                        if (list.Contains(eventRef))
-                            continue;
-                        list.Add(eventRef);
-                        getActionChildrenEventsNonAlloc(gen, list);
+                        if (gen.type == NodeDefineType.Event && CardManager.getEventReferenceOfAction(gen) is EventReference eventRef)
+                        {
+                            if (list.Contains(eventRef))
+                                continue;
+                            list.Add(eventRef);
+                        }
+                        getActionChildrenEventsNonAlloc(gen, list, traversedNodes);
                     }
                     else if (game.card.isBuiltinCardPool(actionRef.cardPoolId)) // 内置节点事件。
                     {
-                        game.card.getLocalActionBindedEventsRecursive(actionRef);
                         EventReference[] events = getBuiltinActionBindedEventsRecursive(actionRef.defineId);
                         foreach (EventReference eventRef in events)
                         {

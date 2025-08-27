@@ -83,7 +83,7 @@ namespace Game
         public EventDefine generateEventDefineForActionDefine(GeneratedActionDefine actionDefine)
         {
             string eventName = actionDefine.getEventName();
-            var actionRef = actionDefine.getReference();
+            ActionReference actionRef = actionDefine.getReference();
             List<EventReference> childrenList = new List<EventReference>();
             getActionChildrenEventsNonAlloc(actionDefine, childrenList);
             var define = new GeneratedEventDefine(actionRef)

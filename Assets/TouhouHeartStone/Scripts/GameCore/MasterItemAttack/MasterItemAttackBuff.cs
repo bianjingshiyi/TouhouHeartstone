@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 
@@ -24,6 +24,6 @@ namespace TouhouHeartstone
         }
         public List<Effect> _effects = new List<Effect>();
         public const string buffPropName = "itemAttack";
-        public static readonly DefineReference buffDefineRef = new DefineReference(0, 1);
+        public static readonly BuffReference buffDefineRef = new BuffReference(0, 1);
     }
 }

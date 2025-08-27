@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
@@ -10,7 +10,7 @@ namespace TouhouHeartstone
     {
         #region 公有方法
         #region 构造方法
-        public MasterItemAttackEffect(DefineReference buffDefineRef)
+        public MasterItemAttackEffect(BuffReference buffDefineRef)
         {
             this.buffDefineRef = buffDefineRef;
         }
@@ -74,7 +74,7 @@ namespace TouhouHeartstone
     public sealed class MasterItemAttackEffectPropChanged : MasterItemAttackEffect
     {
         #region 构造方法
-        public MasterItemAttackEffectPropChanged(DefineReference buffDefineRef) : base(buffDefineRef)
+        public MasterItemAttackEffectPropChanged(BuffReference buffDefineRef) : base(buffDefineRef)
         {
         }
         #endregion
@@ -88,7 +88,7 @@ namespace TouhouHeartstone
         }
         public override Effect Clone()
         {
-            return new MasterItemAttackEffectPropChanged(buffDefineRef.Clone());
+            return new MasterItemAttackEffectPropChanged(buffDefineRef.Clone() as BuffReference);
         }
         protected override Type eventType => typeof(CardPropChangeEventDefine);
         protected override EventTriggerTimeType triggerType => EventTriggerTimeType.After;
@@ -97,7 +97,7 @@ namespace TouhouHeartstone
     public sealed class MasterItemAttackEffectSetDefine : MasterItemAttackEffect
     {
         #region 构造方法
-        public MasterItemAttackEffectSetDefine(DefineReference buffDefineRef) : base(buffDefineRef)
+        public MasterItemAttackEffectSetDefine(BuffReference buffDefineRef) : base(buffDefineRef)
         {
         }
         #endregion
@@ -110,7 +110,7 @@ namespace TouhouHeartstone
         }
         public override Effect Clone()
         {
-            return new MasterItemAttackEffectSetDefine(buffDefineRef.Clone());
+            return new MasterItemAttackEffectSetDefine(buffDefineRef.Clone() as BuffReference);
         }
         protected override Type eventType => typeof(SetCardDefineEventDefine);
         protected override EventTriggerTimeType triggerType => EventTriggerTimeType.After;
@@ -118,7 +118,7 @@ namespace TouhouHeartstone
     public sealed class MasterItemAttackEffectMoveCard: MasterItemAttackEffect
     {
         #region 构造方法
-        public MasterItemAttackEffectMoveCard(DefineReference buffDefineRef) : base(buffDefineRef)
+        public MasterItemAttackEffectMoveCard(BuffReference buffDefineRef) : base(buffDefineRef)
         {
         }
         #endregion
@@ -133,7 +133,7 @@ namespace TouhouHeartstone
         }
         public override Effect Clone()
         {
-            return new MasterItemAttackEffectMoveCard(buffDefineRef.Clone());
+            return new MasterItemAttackEffectMoveCard(buffDefineRef.Clone() as BuffReference);
         }
         protected override Type eventType => typeof(MoveCardEventDefine);
         protected override EventTriggerTimeType triggerType => EventTriggerTimeType.After;

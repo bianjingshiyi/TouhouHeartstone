@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace Game
@@ -63,8 +63,12 @@ namespace Game
         }
         public bool loop
         {
-            get => source.loop;
-            set => source.loop = value;
+            get => source != null ? source.loop : false;
+            set
+            {
+                if (source != null)
+                    source.loop = value;
+            }
         }
         private AudioSource source
         {

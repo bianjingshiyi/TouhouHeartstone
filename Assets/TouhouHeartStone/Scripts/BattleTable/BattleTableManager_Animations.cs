@@ -228,18 +228,18 @@ namespace Game.BattleTable
         }
         private void checkCardSkinEffectAnimations(Flow flow, EventArg arg)
         {
-            if (arg is EventArg eventArg && eventArg.define is IEffectEventDefine)
+            if (arg.define is IEffectEventDefine)
             {
-                checkCardSkinEffectEntryAnimation(flow, eventArg);
+                checkCardSkinEffectEntryAnimation(flow, arg);
                 return;
             }
-            var effectTriggerArg = getEffectEventTriggerArg(arg);
+            EventArg effectTriggerArg = getEffectEventTriggerArg(arg);
             if (effectTriggerArg == null)
                 return;
-            var skinAnimRef = getEventSkinAnimRef(arg, effectTriggerArg);
+            SkinAnimationRef skinAnimRef = getEventSkinAnimRef(arg, effectTriggerArg);
             if (skinAnimRef == null)
                 return;
-            var animationDef = getAnimationDefine(skinAnimRef.animRef);
+            AnimationDefine animationDef = getAnimationDefine(skinAnimRef.animRef);
             if (animationDef != null)
             {
                 addSkinEffectAnim(animationDef, arg, effectTriggerArg, skinAnimRef, flow);
@@ -273,29 +273,29 @@ namespace Game.BattleTable
         }
         public SkinAnimationRef getEventSkinAnimRef(EventArg arg, EventArg effectArg)
         {
-            var effectDefine = effectArg.define as IEffectEventDefine;
-            var effect = effectDefine.getEffect(effectArg);
-            var buffDefineRef = effect.buffDefineRef;
-            var cardDefineRef = effect.cardDefineRef;
+            IEffectEventDefine effectDefine = effectArg.define as IEffectEventDefine;
+            Effect effect = effectDefine.getEffect(effectArg);
+            BuffReference buffDefineRef = effect.buffDefineRef;
+            DefineReference cardDefineRef = effect.cardDefineRef;
             if (buffDefineRef != null)
             {
-                var buffDefine = game.getBuffDefine(buffDefineRef);
-                var skin = getBuffSkin(buffDefine);
+                BuffDefine buffDefine = game.getBuffDefine(buffDefineRef);
+                BuffSkin skin = getBuffSkin(buffDefine);
                 if (effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
                 if (skin == null) return null; // 没有皮肤
 
-                var node = genEffect.graph.findNodeById(arg.flowNodeId);
+                Node node = genEffect.graph.findNodeById(arg.flowNodeId);
                 return getAnimRefOfEventNode(skin, arg, node);
 
             }
             else if (cardDefineRef != null)
             {
-                var cardDefine = game.getDefine(cardDefineRef);
+                CardDefine cardDefine = game.getDefine(cardDefineRef);
                 (_, CardSkinData skin) = getCardSkin(cardDefine);
                 if (effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
                 if (skin == null) return null; // 没有皮肤
 
-                var node = genEffect.graph.findNodeById(arg.flowNodeId);
+                Node node = genEffect.graph.findNodeById(arg.flowNodeId);
                 return getAnimRefOfEventNode(skin, arg, node);
             }
             return null;
@@ -372,8 +372,8 @@ namespace Game.BattleTable
         private SkinAnimationRef getAnimRefOfEventNode(ISkin skin, IEventArg arg, Node node)
         {
             if (node == null || skin == null) return null; // 节点不存在
-            var key = SkinAnimationRef.getNodeKey(node);
-            var animRef = skin.getAnimRef(key);
+            string key = SkinAnimationRef.getNodeKey(node);
+            SkinAnimationRef animRef = skin.getAnimRef(key);
 
             if (!isCorrectEventForAnimRef(arg, animRef, node)) return null; // 事件不正确
 
@@ -383,19 +383,18 @@ namespace Game.BattleTable
         {
             if (animRef == null)
                 return false;
-            var eventRef = animRef.eventReference;
+            EventReference eventRef = animRef.eventReference;
             if (eventRef == null) // 不存在事件名，可能是老版本的引用，获取之前设置的默认的事件
                 eventRef = eventManager.getDefaultNodeEvent(node);
 
             if (eventRef == null) // 还是不存在，获取该节点可能事件的第一个。
             {
-                var cardPoolSet = getCardPoolSet();
-                var eventRefs = animManager.getNodeVisualEffectEventRefs(node, cardPoolSet);
+                EventReference[] eventRefs = animManager.getNodeVisualEffectEventRefs(node, getCardPoolSet());
                 // 该节点的所有事件可能也会因为是入口节点导致是null，那就不改
                 if (eventRefs != null)
                     eventRef = eventRefs.FirstOrDefault();
             }
-            var argRef = CardManager.getEventReferenceOfEventArg(arg);
+            EventReference argRef = CardManager.getEventReferenceOfEventArg(arg);
             return eventRef == argRef;
         }
         #endregion

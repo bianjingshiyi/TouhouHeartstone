@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
@@ -23,11 +23,11 @@ namespace Game.BattleTable
                     {
                         if (_varChanged)
                             break;
-                        var childGroup = insertedAnims[i];
+                        AnimationGroup childGroup = insertedAnims[i];
                         bool blocked = false;
                         for (int j = 0; j < i; j++)
                         {
-                            var prevGroup = insertedAnims[j];
+                            AnimationGroup prevGroup = insertedAnims[j];
                             if (!prevGroup.continueNextGroup(childGroup))
                             {
                                 blocked = true;

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using BJSYGameCore;
 using Game.Animations;
@@ -67,7 +67,7 @@ namespace Game
         }
         public bool canActionAddEffect(ActionReference actionRef)
         {
-            var events = main.card.getLocalActionBindedEventsRecursive(actionRef);
+            EventReference[] events = main.card.getLocalActionBindedEventsRecursive(actionRef);
             return events != null && events.Length > 0;
         }
         #endregion

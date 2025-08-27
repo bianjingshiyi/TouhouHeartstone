@@ -89,7 +89,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0.12109375, y: 7.2, z: 4, w: 0}
+  m_BoundingSphereOverride: {x: 1.02e-43, y: 6e-45, z: 1.83786e-40, w: 2.4805647e+27}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
@@ -5022,7 +5022,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1892806912187644301}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -5031,7 +5031,7 @@ Transform:
   - {fileID: 1892806913197814624}
   - {fileID: 653172861767858787}
   m_Father: {fileID: 1613659467533462553}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!198 &1892806912187644303
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -14790,7 +14790,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0.10546875, y: NaN, z: 2.3999996, w: 0}
+  m_BoundingSphereOverride: {x: 7.31562e+28, y: 0, z: 0, w: 1e-45}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
@@ -19812,8 +19812,11 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _heightOffset: 0
   _playSoundOnStart: 1
+  _sounds: []
   testMode: 0
+  testColor: {r: 1, g: 0, b: 1, a: 1}
   _useSourceScale: 0
 --- !u!114 &3583056798084597182
 MonoBehaviour:
