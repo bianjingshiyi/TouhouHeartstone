@@ -62,6 +62,12 @@ namespace Game.Animations
                 case VisualEffectPosition.TARGET_CARD:
                     if (eventArg.define is ICardEventDefine targetEventArg)
                         return targetEventArg.getCard(eventArg)?.id ?? -1;
+                    if (eventArg.define is EffectTriggerEventDefine targetEffectArg)
+                    {
+                        Card[] targets = eventArg.getVar<Card[]>(EffectTriggerEventDefine.VAR_TARGETS);
+                        if (targets != null && targets.Length > 0)
+                            return targets[0]?.id ?? -1;
+                    }
                     break;
                 case VisualEffectPosition.TEMP_VAR:
                     return isSource ? sourceTempVarCardId : targetTempVarCardId;
