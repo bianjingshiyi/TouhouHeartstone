@@ -1,4 +1,4 @@
-{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 5, "cardPoolId" : NumberLong(1), "editTime" : 793, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
+{ "_t" : "SerializableCardPoolInfo", "versionNumber" : 5, "cardPoolId" : NumberLong(1), "editTime" : 794, "cardPoolName" : "经典卡池", "imageResPath" : "5d210ea77c8e37d4546be706583f13b6be90d4f3748fc3bd645536ccfeb5942f.jpg", "dependencyRefs" : [], "localizedStrings" : [{ "value" : "经典卡池", "dictionary" : { "en-US" : "Classic", "zh-Hans" : "经典卡池" } }], "localizedResources" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -20845,7 +20845,7 @@
                     "paramIndex" : -1,
                     "value" : {
                       "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.PileNameCollection",
+                      "Type" : "TouhouCardEngine.PileNameRange",
                       "Content" : new BinData(0, "kaVGaWVsZA==")
                     }
                   }, {
@@ -80690,11 +80690,6 @@
                 "consts" : null
               }],
             "connections" : [{
-                "sourceName" : "玩家",
-                "sourceNodeId" : 1,
-                "destName" : "player",
-                "destNodeId" : 2
-              }, {
                 "sourceName" : "return",
                 "sourceNodeId" : 2,
                 "destName" : "array",
@@ -80734,6 +80729,11 @@
                 "sourceNodeId" : 3,
                 "destName" : "condition",
                 "destNodeId" : 1
+              }, {
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "player",
+                "destNodeId" : 2
               }]
           }
         }],
@@ -107348,52 +107348,6 @@
                 "inputs" : null,
                 "regVar" : null,
                 "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 7,
-                "posX" : -1029.4273681640625,
-                "posY" : -63.166336059570313,
-                "inputDefaultValues" : [{
-                    "name" : "operator",
-                    "paramIndex" : -1,
-                    "value" : {
-                      "_t" : "ObjectProxy",
-                      "Type" : "TouhouCardEngine.LogicOperator",
-                      "Content" : new BinData(0, "0gAAAAE=")
-                    }
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112005
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 8,
-                "posX" : -1620.7584228515625,
-                "posY" : -373.2322998046875,
-                "inputDefaultValues" : [{
-                    "name" : "type",
-                    "paramIndex" : -1,
-                    "value" : "Spell"
-                  }],
-                "propDict" : { },
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102032
-                },
-                "constDict" : null,
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
               }],
             "connections" : [{
                 "sourceName" : "玩家",
@@ -107428,25 +107382,8 @@
               }, {
                 "sourceName" : "result",
                 "sourceNodeId" : 2,
-                "destName" : "value",
-                "destParamIndex" : 1,
-                "destNodeId" : 7
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 7,
                 "destName" : "condition",
                 "destNodeId" : 1
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 8,
-                "destName" : "value",
-                "destParamIndex" : 2,
-                "destNodeId" : 7
-              }, {
-                "sourceName" : "卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "card",
-                "destNodeId" : 8
               }]
           }
         }, {
@@ -122244,6 +122181,18 @@
         "ja" : "グレイソ\u30fcマタ\u30fcジ"
       }
     }, {
+      "value" : "恢复1点灵力值。（消灭2个敌方仆从后<b>升星</b>，还差{card:star}张）",
+      "dictionary" : {
+        "en-US" : "恢复1点灵力值。（消灭2个敌方仆从后<b>升星</b>，还差{card:star}张）",
+        "ja" : "恢复1点灵力值。（消灭2个敌方仆从后<b>升星</b>，还差{card:star}张）"
+      }
+    }, {
+      "value" : "恢复2点灵力值。（消灭2个敌方仆从后<b>升星</b>，还差{card:star}张）",
+      "dictionary" : {
+        "en-US" : "恢复2点灵力值。（消灭2个敌方仆从后<b>升星</b>，还差{card:star}张）",
+        "ja" : "恢复2点灵力值。（消灭2个敌方仆从后<b>升星</b>，还差{card:star}张）"
+      }
+    }, {
       "value" : "恢复2点生命值。",
       "dictionary" : {
         "en-US" : "Restore 2 Health.",
@@ -124110,6 +124059,12 @@
       "dictionary" : {
         "en-US" : "Beseech Truth",
         "ja" : "俗諦常住"
+      }
+    }, {
+      "value" : "随机抽2张<b>升星</b>牌，有小概率将其<b>升星</b>为<b>2星</b>和<b>3星</b>牌！",
+      "dictionary" : {
+        "en-US" : "随机抽2张<b>升星</b>牌，有小概率将其<b>升星</b>为<b>2星</b>和<b>3星</b>牌！",
+        "ja" : "随机抽2张<b>升星</b>牌，有小概率将其<b>升星</b>为<b>2星</b>和<b>3星</b>牌！"
       }
     }, {
       "value" : "随机对一个敌方仆从造成4点伤害。",

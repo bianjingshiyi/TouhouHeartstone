@@ -165,11 +165,20 @@ namespace TouhouHeartstone
         }
         public static Effect[] getFullTargetActiveEffects(this CardDefine cardDefine, CardEngine game, Card source)
         {
-            return cardDefine.getActiveEffects().Where(e => e.checkCondition(new EffectEnv(game, source, null, null, e)) && e.hasFullTargets(game, source, null)).ToArray();
+            return cardDefine.getActiveEffects().Where(e => {
+                EffectEnv env = new EffectEnv(game, source, null, null, e);
+                env.setArgument(EVENTVAR.PLAYER, source.owner);
+                return e.checkCondition(env) && e.hasFullTargets(game, source, null);
+            }).ToArray();
         }
         public static bool hasFullTargetActiveEffect(this CardDefine cardDefine, CardEngine game, Card source)
         {
-            return cardDefine.getActiveEffects().Any(e => e.checkCondition(new EffectEnv(game, source, null, null, e)) && e.hasFullTargets(game, source, null));
+            return cardDefine.getActiveEffects().Any(e =>
+            {
+                EffectEnv env = new EffectEnv(game, source, null, null, e);
+                env.setArgument(EVENTVAR.PLAYER, source.owner);
+                return e.checkCondition(env) && e.hasFullTargets(game, source, null);
+            });
         }
         public static int getTargetCheckerCount(this CardDefine cardDefine)
         {
