@@ -443,10 +443,6 @@ namespace Game.BattleTable
         /// </summary>
         [SerializeField]
         List<AnimationGroup> _animationGroups = new List<AnimationGroup>();
-        /// <summary>
-        /// 正在被加入待播放队列中的动画列表。
-        /// </summary>
-        List<TableAnimation> insertingAnims = new List<TableAnimation>();
         public void addEventAnim(IEventArg arg, TableAnimation anim)
         {
             bool addedAsChild = addInsertedAnimOfParent(arg, anim);
@@ -471,28 +467,28 @@ namespace Game.BattleTable
             }
             return false;
         }
+        /// <summary>
+        /// 入队动画
+        /// </summary>
         public void queueAnims()
         {
             bool canAddToQueue = false;
             if (game.triggers.currentEvent == null)
-            {
                 canAddToQueue = true;
-            }
-            insertingAnims.Clear();
-            for (int i = _animationCache.Count - 1; i >= 0; i--)
+            List<TableAnimation> insertingAnims = new List<TableAnimation>();
+            for (int i = 0; i < _animationCache.Count; i++)
             {
-                var anim = _animationCache[i];
-                if (anim is TableAnimation tableAnim && tableAnim.forceQueueAnimations)
-                {
+                TableAnimation anim = _animationCache[i];
+                if (anim.forceQueueAnimations)
                     canAddToQueue = true;
+                if (canAddToQueue)
+                {
+                    insertingAnims.Add(anim);
+                    _animationCache.RemoveAt(i);
+                    i--;
                 }
-                if (!canAddToQueue)
-                    continue;
-                insertingAnims.Insert(0, anim);
-                _animationCache.RemoveAt(i);
             }
             _animationQueue.AddRange(insertingAnims);
-            insertingAnims.Clear();
         }
         public AnimationGroup[] getAllPlayingAnimationGroups()
         {
@@ -511,34 +507,39 @@ namespace Game.BattleTable
                 }
             }
         }
+        /// <summary>
+        /// 更新动画
+        /// </summary>
         public void updateAnim()
         {
             while (_animationQueue.Count > 0)
             {
-                TableAnimation first = _animationQueue.FirstOrDefault();
-                if (first == null)
-                {
-                    _animationQueue.RemoveAt(0);
-                    continue;
-                }
+                // 动画队列出队
+                TableAnimation first = _animationQueue[0];
+                _animationQueue.RemoveAt(0);
+                // 创建动画组
                 AnimationGroup group = new AnimationGroup();
                 group.addToGroup(first);
-                foreach (TableAnimation groupedAnim in first.getGroupedAnimations(_animationQueue.Skip(1)).Where(a => a != null))
+                foreach (TableAnimation groupedAnim in first.getGroupedAnimations(_animationQueue))
                 {
                     group.addToGroup(groupedAnim);
                 }
                 _animationGroups.Add(group);
-                _animationQueue.RemoveAll(t => group.Contains(t));
+                foreach (TableAnimation anim in group)
+                {
+                    _animationQueue.Remove(anim);
+                }
             }
             if (_animationGroups.Count > 0)
             {
                 for (int i = 0; i < _animationGroups.Count; i++)
                 {
-                    var group = _animationGroups[i];
+                    AnimationGroup group = _animationGroups[i];
+                    // 检查动画组是否被之前的动画组阻挡
                     bool blocked = false;
                     for (int j = 0; j < i; j++)
                     {
-                        var prevGroup = _animationGroups[j];
+                        AnimationGroup prevGroup = _animationGroups[j];
                         if (!prevGroup.continueNextGroup(group))
                         {
                             blocked = true;
@@ -547,8 +548,9 @@ namespace Game.BattleTable
                     }
                     if (blocked)
                         break;
+                    // 更新动画组
                     group.update(this, Time.deltaTime);
-                    if (group == null || group.Count <= 0)
+                    if (group.Count <= 0)
                     {
                         _animationGroups.RemoveAt(i);
                         i--;

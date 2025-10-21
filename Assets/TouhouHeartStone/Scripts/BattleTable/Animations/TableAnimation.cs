@@ -1,25 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Game.BattleTable
 {
     [Serializable]
-    public abstract class TableAnimation : UIAnimation
+    public abstract class TableAnimation
     {
-        public AnimationGroup group { get; set; }
-        public List<AnimationGroup> insertedAnims { get; } = new List<AnimationGroup>();
-        protected float _deltaTime;
-        protected float _duration;
-        private bool _started = false;
-        private bool _finished = false;
-        private Coroutine _coroutine;
-        /// <summary>
-        /// 该动画是否会强制播放之前的动画，以及自身。
-        /// 一般用于检视卡牌这种需要等待玩家操作的事件。
-        /// </summary>
-        public virtual bool forceQueueAnimations => false;
         public virtual void init(BattleTableManager table)
         {
         }
@@ -27,7 +16,7 @@ namespace Game.BattleTable
         {
             _started = true;
             _deltaTime = time;
-            _duration += _deltaTime;
+            _time += _deltaTime;
             if (_finished)
             {
                 if (_coroutine != null)
@@ -76,6 +65,8 @@ namespace Game.BattleTable
         /// <returns></returns>
         public virtual bool blockAnimInGroup(TableAnimation other)
         {
+            // 检查是否阻挡相同的动画
+            // 检查是否阻挡同组的动画
             return false;
         }
         /// <summary>
@@ -85,7 +76,7 @@ namespace Game.BattleTable
         /// <returns></returns>
         public virtual IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
         {
-            yield break;
+            return Enumerable.Empty<TableAnimation>();
         }
         /// <summary>
         /// 是否会继续下一个动画组？
@@ -96,6 +87,17 @@ namespace Game.BattleTable
         {
             return false;
         }
-
+        /// <summary>
+        /// 该动画是否会强制播放之前的动画，以及自身。
+        /// 一般用于检视卡牌这种需要等待玩家操作的事件。
+        /// </summary>
+        public virtual bool forceQueueAnimations => false;
+        public AnimationGroup group { get; set; }
+        public List<AnimationGroup> insertedAnims { get; } = new List<AnimationGroup>();
+        protected float _deltaTime;
+        protected float _time;
+        private bool _started = false;
+        private bool _finished = false;
+        private Coroutine _coroutine;
     }
 }

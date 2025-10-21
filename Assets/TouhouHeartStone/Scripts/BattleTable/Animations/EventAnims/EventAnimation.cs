@@ -15,9 +15,10 @@ namespace Game.BattleTable
             {
                 _varChanged = false;
                 animState = EventAnimState.Started;
+                // 事件开始动画
                 yield return startUpdate(table);
                 animState = EventAnimState.StartFinished;
-                while (shouldPauseAfterStart())
+                while (shouldPauseAfterStart()) // 检查动画是否暂停
                 {
                     for (int i = 0; i < insertedAnims.Count; i++)
                     {

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Linq;
 using ExcelLibrary.BinaryFileFormat;
 using TouhouCardEngine;
@@ -24,7 +24,7 @@ namespace Game.BattleTable
             }
 
             // 最短持续1秒，防止看回放的时候什么都没看就直接选了
-            while (_duration <= minDisplayTime || table.game.answers.getAllRequests().Contains(request))
+            while (_time <= minDisplayTime || table.game.answers.getAllRequests().Contains(request))
             {
                 yield return null;
             }

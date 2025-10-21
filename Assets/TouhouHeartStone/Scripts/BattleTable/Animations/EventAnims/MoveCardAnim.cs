@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -136,7 +136,7 @@ namespace Game.BattleTable
         {
             if (other is MoveCardAnim move)
             {
-                if (_duration < _breakDuration)
+                if (_time < _breakDuration)
                     return true;
             }
             else if (other.isInstantAnimation())

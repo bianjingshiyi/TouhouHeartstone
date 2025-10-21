@@ -19,8 +19,9 @@ namespace Game.Animations
         }
         public override IEnumerator update(BattleTableManager table)
         {
-            if (!effect)
+            if (effect == null) // 检查是否创建特效
             {
+                // 创建特效
                 Transform srcTransform = initSourceTransform(table);
                 Transform targetTransform = initDestTransform(table);
 
@@ -32,13 +33,14 @@ namespace Game.Animations
                 effect = table.createEffect(define, info);
                 onEffectCreated(effect);
             }
-            while (!effect.isFinished() && !(effect.state == EffectState.None && _duration >= 10f)) // 十秒没播放算超时
+            while (!effect.isFinished() && // 检查特效是否播放完毕
+                !(effect.state == EffectState.None && _time >= 10f)) // 十秒没播放算超时
             {
                 // 防止类似飞刀的弹射物特效在击杀目标后又突然插在其他卡牌上之类的
                 if (!_sourceConfirmed && !effect.sourceTransform)
                 {
                     effect.sourceTransform = initSourceTransform(table);
-                } 
+                }
                 if (!_destConfirmed && !effect.destTransform)
                 {
                     effect.destTransform = initDestTransform(table);
@@ -56,8 +58,7 @@ namespace Game.Animations
                 return true;
             if (effect.state == EffectState.None || effect.state == EffectState.Dormant)
                 return true;
-            var blockTime = effect.blockTime;
-            return _duration > blockTime && blockTime >= 0;
+            return _time > effect.blockTime && effect.blockTime >= 0;
         }
         protected virtual void onEffectCreated(TableEffect effect)
         {
