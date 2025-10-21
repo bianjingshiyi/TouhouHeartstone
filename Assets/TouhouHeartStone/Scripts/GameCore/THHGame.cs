@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -257,10 +257,12 @@ namespace TouhouHeartstone
             if (game.getCurrentPlayer() == player && game.isInsideTurn())
             {
                 int[] cardIdArray = cards.Select(c => c.id).ToArray();
-                var res = await game.answers.ask(player.id, new DiscoverRequest(cardIdArray, title), float.MaxValue);
+                EventArg selectEvent = await RequestEventDefine.doEvent(game, new Player[] { player }, new DiscoverRequest(cardIdArray, title), int.MaxValue);
+                GraphMap responseMap = selectEvent.getVar<GraphMap>(RequestEventDefine.VAR_RESPONSES);
+                DiscoverResponse res = responseMap.GetMapValue(player.id) as DiscoverResponse;
                 selectedCard = cards.First(c =>
                 {
-                    var cardId = (res as DiscoverResponse).cardId;
+                    var cardId = res.cardId;
                     return c.id == cardId;
                 });
                 game.logger.logTrace($"{player}选择{selectedCard}");
@@ -294,10 +296,12 @@ namespace TouhouHeartstone
             if (game.getCurrentPlayer() == player && game.isInsideTurn())
             {
                 DefineReference[] cardArray = cards.Select(c => c.getDefineRef()).ToArray();
-                var res = await game.answers.ask(player.id, new DiscoverRequest(cardArray, title), float.MaxValue);
+                EventArg selectEvent = await RequestEventDefine.doEvent(game, new Player[] { player }, new DiscoverRequest(cardArray, title), int.MaxValue);
+                GraphMap responseMap = selectEvent.getVar<GraphMap>(RequestEventDefine.VAR_RESPONSES);
+                DiscoverResponse res = responseMap.GetMapValue(player.id) as DiscoverResponse;
                 selectedCard = cards.First(c =>
                 {
-                    var defRef = (res as DiscoverResponse).cardDefRef;
+                    var defRef = res.cardDefRef;
                     return c.cardPoolId == defRef.cardPoolId && c.id == defRef.defineId;
                 });
                 game.logger.logTrace($"{player}选择{selectedCard}");
@@ -660,19 +664,21 @@ namespace TouhouHeartstone
         }
         private async Task gameflow(CardEngine game, Action onInited = null)
         {
-            Task<Dictionary<int, IResponse>> task = game.answers.askAll(
-                game.getSortedPlayers().Select(p => p.id).ToArray(),
-                new InitReplaceRequest(), getOption(game).timeoutForInitReplace);
+            Player[] players = game.getSortedPlayers();
+            int initReplaceTimeout = (int)getOption(game).timeoutForInitReplace;
+            Task<EventArg> task = RequestEventDefine.doEvent(game, players, new InitReplaceRequest(), initReplaceTimeout);
             onInited?.Invoke();
-            Dictionary<int, IResponse> initReplaceResponses = await task;
+            EventArg initReplaceEvent = await task;
             if (!game.isRunning)
                 return;
-            foreach (var result in initReplaceResponses)
+            GraphMap responseMap = initReplaceEvent.getVar<GraphMap>(RequestEventDefine.VAR_RESPONSES);
+            foreach (var result in responseMap)
             {
-                Player player = game.getPlayer(result.Key);
-                if (result.Value is InitReplaceResponse initReplace)
+                int playerId = (int)result.key;
+                Player player = game.getPlayer(playerId);
+                if (result.value is InitReplaceResponse initReplace)
                     await player.initReplace(game, game.getCards(initReplace.cardsId));
-                else if (result.Value is SurrenderResponse surrender)
+                else if (result.value is SurrenderResponse)
                     await game.surrender(player);
             }
 

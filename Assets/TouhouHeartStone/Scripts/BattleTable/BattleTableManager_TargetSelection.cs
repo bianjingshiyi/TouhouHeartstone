@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Game.BattleTable.UI;
 using MukioI18n;
@@ -311,7 +311,7 @@ namespace Game.BattleTable
         {
             tryCancelServantPreviewAnim(card);
             _servantUsingPosition = index;
-            var fieldAnim = new HandToFieldAnim(getCardDescriptor(card), pos, player.getHand(), player.getField(), index, canSeeCard(card));
+            HandToFieldAnim fieldAnim = new HandToFieldAnim(getCardDescriptor(card), pos, player.getHand(), player.getField(), index, canSeeCard(card));
             addAnim(fieldAnim);
             _servantPreviewAnimDict.Add(card.id, fieldAnim);
             return fieldAnim;

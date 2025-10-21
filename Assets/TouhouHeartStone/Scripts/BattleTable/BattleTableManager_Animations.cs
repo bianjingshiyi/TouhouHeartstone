@@ -479,7 +479,7 @@ namespace Game.BattleTable
             for (int i = 0; i < _animationCache.Count; i++)
             {
                 TableAnimation anim = _animationCache[i];
-                if (anim.forceQueueAnimations)
+                if (anim is RequestEventAnim) // 询问必定显示
                     canAddToQueue = true;
                 if (canAddToQueue)
                 {

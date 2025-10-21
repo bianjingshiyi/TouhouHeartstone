@@ -32,18 +32,14 @@ namespace Game.BattleTable
             this.player = player;
             if (this.game != null)
             {
-                this.game.triggers.onEventBefore -= onEventBeforeHandler;
-                this.game.triggers.onEventAfter -= onEventAfterHandler;
-                this.game.answers.onRequest -= onRequestHandler;
-                this.game.answers.onResponse -= onResponseHandler;
+                this.game.triggers.onEventBefore -= onEventBefore;
+                this.game.triggers.onEventAfter -= onEventAfter;
             }
             this.game = game;
             if (game != null)
             {
-                game.triggers.onEventBefore += onEventBeforeHandler;
-                game.triggers.onEventAfter += onEventAfterHandler;
-                game.answers.onRequest += onRequestHandler;
-                game.answers.onResponse += onResponseHandler;
+                game.triggers.onEventBefore += onEventBefore;
+                game.triggers.onEventAfter += onEventAfter;
             }
             ui.LogCtrl.setGame(game, main, this, player);
             ui.LogCtrl.reset();
@@ -660,8 +656,6 @@ namespace Game.BattleTable
                 pair.Value.updateNumberPosition(Time.deltaTime);
             }
 
-            //游戏事件处理
-            eventCache.poll();
             //动画
             queueAnims();
             updateAnim();
@@ -820,47 +814,8 @@ namespace Game.BattleTable
             stopHover();
         }
         #endregion
-        void onRequestHandler(IRequest request)
-        {
-            eventCache.cache(onRequest, request);
-        }
-        void onResponseHandler(IResponse response)
-        {
-            eventCache.cache(onResponse, response);
-        }
-        void onEventBeforeHandler(IEventArg arg)
-        {
-            onEventBefore(arg);
-        }
-        private void onEventAfterHandler(IEventArg arg)
-        {
-            onEventAfter(arg);
-        }
         #endregion
         #region 事件处理
-
-        /// <summary>
-        /// 游戏核心Request对应处理
-        /// </summary>
-        /// <param name="obj"></param>
-        private void onRequest(IRequest obj)
-        {
-            TableAnimation anim;
-            switch (obj)
-            {
-                default:
-                    anim = createRequestAnim(obj);
-                    break;
-            }
-            if (anim != null)
-                addAnim(anim);
-            else if (!(obj is FreeActRequest))
-                UberDebug.LogWarningChannel("UI", $"没有与{obj}相应的动画");
-            _allControlDirty = true;
-        }
-        void onResponse(IResponse response)
-        {
-        }
         /// <summary>
         /// 事件前处理
         /// </summary>
@@ -873,8 +828,7 @@ namespace Game.BattleTable
             {
                 addEventAnim(arg, anim);
             }
-
-            _allControlDirty = true;
+            setAllCardHighlightDirty();
         }
         /// <summary>
         /// 事件后处理
@@ -948,7 +902,6 @@ namespace Game.BattleTable
             getAlreadyRatedCardsTask = null;
             alreadyRatedCards.Clear();
 
-            eventCache.clear();
             _mulliganedCards.Clear();
             _animationCache.Clear();
             _animationQueue.Clear();
@@ -1049,7 +1002,6 @@ namespace Game.BattleTable
         public AnimationManager animManager => _main.anims;
         public SEManager sounds => _main.seManager;
         public THHResourceManager resources => _main.getManager<THHResourceManager>();
-        private ActionEventCache eventCache = new ActionEventCache();
         private List<Card> _mulliganedCards = new List<Card>();
         private Dictionary<CardDefine, CardDefine[]> _cardTokenDict = new Dictionary<CardDefine, CardDefine[]>();
         private Dictionary<CardDefine, string[]> _cardKeywordsDict = new Dictionary<CardDefine, string[]>();

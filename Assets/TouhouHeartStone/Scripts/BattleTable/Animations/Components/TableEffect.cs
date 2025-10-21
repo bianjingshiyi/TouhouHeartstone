@@ -42,6 +42,7 @@ namespace Game.Animations
                     if (sourceTransform == null)
                     {
                         gameObject.SetActive(false);
+                        finish();
                         return;
                     }
                     // 源位置存在，启动。
