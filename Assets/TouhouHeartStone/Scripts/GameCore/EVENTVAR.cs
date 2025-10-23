@@ -1,4 +1,4 @@
-﻿using MukioI18n;
+using MukioI18n;
 
 namespace TouhouHeartstone
 {
@@ -76,6 +76,18 @@ namespace TouhouHeartstone
         public const string OPPO_CARD = "对方卡牌";
         [TranslateMsg("信仰对决事件/变量名", CONTEXT_EVENT_VAR)]
         public const string WIN = "是否胜利";
+
+        // 玩家初始化事件
+        [TranslateMsg("玩家初始化/变量名", CONTEXT_EVENT_VAR)]
+        public const string INIT_MASTER_DEF = "初始角色定义";
+        [TranslateMsg("玩家初始化/变量名", CONTEXT_EVENT_VAR)]
+        public const string INIT_MASTER = "初始角色";
+        [TranslateMsg("玩家初始化/变量名", CONTEXT_EVENT_VAR)]
+        public const string INIT_SKILL = "初始技能";
+        [TranslateMsg("玩家初始化/变量名", CONTEXT_EVENT_VAR)]
+        public const string INIT_DECK_DEFS = "初始牌库定义";
+        [TranslateMsg("玩家初始化/变量名", CONTEXT_EVENT_VAR)]
+        public const string INIT_DECK = "初始牌库";
 
         // 初始换牌事件
         [TranslateMsg("初始换牌事件/变量名", CONTEXT_EVENT_VAR)]

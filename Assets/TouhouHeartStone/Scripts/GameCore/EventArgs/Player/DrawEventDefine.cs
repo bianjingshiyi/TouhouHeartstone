@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using MukioI18n;
 using TouhouCardEngine;
@@ -13,13 +13,13 @@ namespace TouhouHeartstone
         {
             beforeVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() {name = VAR_PLAYER,type=typeof(Player)},
-                new EventVariableInfo() {name = VAR_CARD,type=typeof(Card)}
+                new EventVariableInfo() { name = VAR_PLAYER, type=typeof(Player) },
+                new EventVariableInfo() { name = VAR_CARD, type=typeof(Card) }
             };
             afterVariableInfos = new EventVariableInfo[]
             {
-                new EventVariableInfo() {name = VAR_PLAYER,type=typeof(Player)},
-                new EventVariableInfo() {name = VAR_CARD,type=typeof(Card)}
+                new EventVariableInfo() { name = VAR_PLAYER, type=typeof(Player) },
+                new EventVariableInfo() { name = VAR_CARD, type=typeof(Card) }
             };
         }
         [Obsolete]
