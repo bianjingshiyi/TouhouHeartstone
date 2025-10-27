@@ -2389,7 +2389,7 @@ namespace Game.BattleTable
         #region 更新可控制高光
         private void updateAllHighlight()
         {
-            _requesting = _animationQueue.Any(a => a is RequestAnimation);
+            _requesting = _animationQueue.Any(a => a is RequestEventAnim);
             foreach (var player in game.players)
             {
                 updateCardHighlight(player.getMaster());

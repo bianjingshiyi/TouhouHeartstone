@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Linq;
 using TouhouCardEngine.Histories;
 using TouhouHeartstone;
@@ -43,7 +43,7 @@ namespace Game.BattleTable
 
         public override bool continueNextGroup(AnimationGroup nextGroup)
         {
-            if (!nextGroup.Any(a => a is RequestAnimation || a is TurnEndAnimation))
+            if (!nextGroup.Any(a => a is RequestEventAnim || a is TurnEndAnimation))
                 return true;
             return base.continueNextGroup(nextGroup);
         }

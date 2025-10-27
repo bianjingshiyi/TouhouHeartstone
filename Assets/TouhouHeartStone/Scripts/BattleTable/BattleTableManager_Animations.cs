@@ -29,8 +29,7 @@ namespace Game.BattleTable
                 Type baseType = type.BaseType;
                 if (!baseType.IsGenericType)
                     continue;
-                if (baseType.GetGenericTypeDefinition() != typeof(EventAnimation<>) &&
-                    baseType.GetGenericTypeDefinition() != typeof(RequestAnimation<>))
+                if (baseType.GetGenericTypeDefinition() != typeof(EventAnimation<>))
                     continue;
                 Type paraType = baseType.GetGenericArguments()[0];
                 if (!paraType.IsSubclassOf(typeof(EventDefine)) &&
@@ -82,22 +81,6 @@ namespace Game.BattleTable
                 anim.startData = eventData;
 
                 anim.init(this);
-                return anim;
-            }
-            else
-                return null;
-        }
-        public RequestAnimation createRequestAnim(IRequest request)
-        {
-            Type type = request.GetType();
-            if (animConstructorDic.ContainsKey(type))
-            {
-                RequestAnimation anim = null;
-                if (animConstructorDic[type].GetParameters().Length == 0)
-                {
-                    anim = animConstructorDic[type].Invoke(new object[0]) as RequestAnimation;
-                    anim.request = request;
-                }
                 return anim;
             }
             else
@@ -472,15 +455,18 @@ namespace Game.BattleTable
         /// </summary>
         public void queueAnims()
         {
-            bool canAddToQueue = false;
-            if (game.triggers.currentEvent == null)
-                canAddToQueue = true;
+            if (_animationCache.Count < 1)
+                return;
+
+            bool canAddToQueue = true;
+            //if (game.triggers.currentEvent == null)
+            //    canAddToQueue = true;
             List<TableAnimation> insertingAnims = new List<TableAnimation>();
             for (int i = 0; i < _animationCache.Count; i++)
             {
                 TableAnimation anim = _animationCache[i];
-                if (anim is RequestEventAnim) // 询问必定显示
-                    canAddToQueue = true;
+                //if (anim is RequestEventAnim) // 询问必定显示
+                //    canAddToQueue = true;
                 if (canAddToQueue)
                 {
                     insertingAnims.Add(anim);
