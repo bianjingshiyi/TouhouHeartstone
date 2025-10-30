@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 namespace Game.BattleTable
 {
@@ -7,7 +8,7 @@ namespace Game.BattleTable
     /// </summary>
     class AnimAnim : TableAnimation
     {
-        public AnimAnim(Animator animator, string animName, Func<AnimationGroup, bool> onBlockAnim = null)
+        public AnimAnim(Animator animator, string animName, Func<IEnumerable<TableAnimation>, bool> onBlockAnim = null)
         {
             _animator = animator;
             _animName = animName;
@@ -17,7 +18,7 @@ namespace Game.BattleTable
         {
             return AnimHelper.update(_animator, _animName, ref _isPlayed, ref _isFinished);
         }
-        public override bool continueNextGroup(AnimationGroup nextGroup)
+        public override bool continueNextGroup(IEnumerable<TableAnimation> nextGroup)
         {
             if (_onBlockAnim != null)
                 return !_onBlockAnim(nextGroup);
@@ -32,6 +33,6 @@ namespace Game.BattleTable
             get => _isFinished;
             private set => _isFinished = value;
         }
-        Func<AnimationGroup, bool> _onBlockAnim;
+        Func<IEnumerable<TableAnimation>, bool> _onBlockAnim;
     }
 }

@@ -1,11 +1,12 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using UI;
 using UnityEngine;
 namespace Game.BattleTable
 {
     static class SimpleAnimHelper
     {
-        public static bool update(BattleTableManager table, ref AnimAnim anim, SimpleAnim simpleAnim, Animator animator, float time, Func<AnimationGroup, bool> onBlockAnim = null)
+        public static bool update(BattleTableManager table, ref AnimAnim anim, SimpleAnim simpleAnim, Animator animator, float time, Func<IEnumerable<TableAnimation>, bool> onBlockAnim = null)
         {
             if (simpleAnim == null)
                 return true;
@@ -20,7 +21,7 @@ namespace Game.BattleTable
             anim = null;
             return true;
         }
-        public static bool update(BattleTableManager table, ref TableAnimation anim, SimpleAnim simpleAnim, Animator animator, float time, Func<AnimationGroup, bool> onBlockAnim = null)
+        public static bool update(BattleTableManager table, ref TableAnimation anim, SimpleAnim simpleAnim, Animator animator, float time, Func<IEnumerable<TableAnimation>, bool> onBlockAnim = null)
         {
             if (simpleAnim == null)
                 return true;

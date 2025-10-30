@@ -83,7 +83,7 @@ namespace Game.BattleTable
         /// </summary>
         /// <param name="nextGroup">下一个动画组</param>
         /// <returns></returns>
-        public virtual bool continueNextGroup(AnimationGroup nextGroup)
+        public virtual bool continueNextGroup(IEnumerable<TableAnimation> nextGroup)
         {
             return false;
         }

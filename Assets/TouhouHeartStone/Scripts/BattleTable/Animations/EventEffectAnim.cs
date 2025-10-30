@@ -13,12 +13,19 @@ namespace Game.Animations
 {
     public class EventEffectAnim : TableEffectAnim
     {
-        public EventEffectAnim(AnimationDefine define, IEventArg eventArg, EventArg effectArg, SkinAnimationRef animRef) : base(define, -1, -1)
+        public EventEffectAnim(AnimationDefine define, EventArg eventArg, EventArg effectArg, SkinAnimationRef animRef) : base(define, -1, -1)
         {
             this.define = define;
             this.eventArg = eventArg;
             this.effectArg = effectArg;
             this.animRef = animRef;
+        }
+        public EventEffectAnim(AnimationDefine define, EventArg eventArg, SkinAnimationRef animRef, Card card) : base(define, -1, -1)
+        {
+            this.define = define;
+            this.eventArg = eventArg;
+            this.animRef = animRef;
+            this.card = card;
         }
         public override IEnumerator update(BattleTableManager table)
         {
@@ -28,7 +35,7 @@ namespace Game.Animations
                     // 什么都不初始化。
                     break;
                 case AnimationType.Area:
-                    area = table.getEventSkinAnimArea(effectArg, eventArg, 0); // TODO
+                    area = table.getEventSkinAnimArea(eventArg, 0); // TODO
                     break;
                 default:
                     sourceCardId = getEventSkinAnimCardId(table, true);
@@ -49,8 +56,6 @@ namespace Game.Animations
         {
             int position = isSource ? animRef.sourcePosition : animRef.targetPosition;
             string varName = isSource ? animRef.sourcePositionVarName : animRef.targetPositionVarName;
-            IEffectEventDefine effectDefine = effectArg.define as IEffectEventDefine;
-            Card card = effectDefine.getCard(effectArg);
             switch (position)
             {
                 case VisualEffectPosition.SELF_MASTER:
@@ -81,11 +86,12 @@ namespace Game.Animations
         /// <summary>
         /// 触发事件，用于节点
         /// </summary>
-        private IEventArg eventArg;
+        private EventArg eventArg;
         /// <summary>
         /// 效果生效的事件，用于效果根节点特效
         /// </summary>
         private EventArg effectArg;
+        private Card card;
         private SkinAnimationRef animRef;
     }
 }

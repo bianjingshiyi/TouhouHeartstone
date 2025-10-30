@@ -82,7 +82,7 @@ namespace Game.BattleTable
         {
             yield break;
         }
-        public override bool continueNextGroup(AnimationGroup nextGroup)
+        public override bool continueNextGroup(IEnumerable<TableAnimation> nextGroup)
         {
             if (animState == EventAnimState.StartFinished)
             {

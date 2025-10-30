@@ -9,11 +9,51 @@ using UnityEngine;
 using Card = TouhouCardEngine.Card;
 using UI;
 using System.Linq;
+using BJSYGameCore;
+using TreeNode = BJSYGameCore.TreeNode<(TouhouCardEngine.EventArg eventArg, Game.BattleTable.EventAnimation anim, Game.Animations.EventEffectAnim skinAnim, bool isFinished)>;
+using System.Collections;
 
 namespace Game.BattleTable
 {
     partial class BattleTableManager
     {
+        public TreeNode generateAnimForEvent(EventArg eventArg)
+        {
+            TreeNode node = new TreeNode();
+            node.value.eventArg = eventArg;
+            // 事件前
+            foreach (EventArg beforeEvent in eventArg.beforeChildrenEvents)
+            {
+                TreeNode childNode = generateAnimForEvent(beforeEvent);
+                childNode.parent = node;
+                node.children.Add(childNode);
+            }
+            // 本体
+            if (tryGenerateSkinAnimForEvent(game.currentFlow, eventArg, out EventEffectAnim skinAnim))
+            {
+                node.value.skinAnim = skinAnim;
+            }
+            EventAnimation anim = createEventAnim(eventArg);
+            if (anim != null)
+            {
+                node.value.anim = anim;
+            }
+            // 子事件
+            foreach (EventArg childEvent in eventArg.logicChildrenEvents)
+            {
+                TreeNode childNode = generateAnimForEvent(childEvent);
+                childNode.parent = node;
+                node.children.Add(childNode);
+            }
+            // 事件后
+            foreach (EventArg afterEvent in eventArg.afterChildrenEvents)
+            {
+                TreeNode childNode = generateAnimForEvent(afterEvent);
+                childNode.parent = node;
+                node.children.Add(childNode);
+            }
+            return node;
+        }
         #region Builtin
         Dictionary<Type, ConstructorInfo> animConstructorDic { get; } = new Dictionary<Type, ConstructorInfo>();
         /// <summary>
@@ -188,76 +228,173 @@ namespace Game.BattleTable
         {
             return gameManager.getAnimationDefine(animRef);
         }
-        private void addSkinEffectAnim(AnimationDefine animationDef, EventArg arg, EventArg effectTriggerArg, SkinAnimationRef skinAnimRef, Flow flow)
+        private EventEffectAnim createSkinEffectAnim(AnimationDefine animDef, EventArg arg, SkinAnimationRef animRef, Flow flow, Card card)
         {
-            EventEffectAnim anim = new EventEffectAnim(animationDef, arg, effectTriggerArg, skinAnimRef);
-            if (skinAnimRef.sourcePosition == VisualEffectPosition.TEMP_VAR)
+            EventEffectAnim anim = new EventEffectAnim(animDef, arg, animRef, card);
+            if (animRef.sourcePosition == VisualEffectPosition.TEMP_VAR)
             {
-                object tempVar = flow.getFlowVariable(skinAnimRef.sourcePositionVarName);
-                if (FlowConvert.tryConvertType(flow, tempVar, out Card card))
+                object tempVar = flow.getFlowVariable(animRef.sourcePositionVarName);
+                if (FlowConvert.tryConvertType(flow, tempVar, out Card varCard))
                 {
-                    anim.sourceTempVarCardId = card?.id ?? -1;
+                    anim.sourceTempVarCardId = varCard?.id ?? -1;
                 }
             }
-            if (skinAnimRef.targetPosition == VisualEffectPosition.TEMP_VAR)
+            if (animRef.targetPosition == VisualEffectPosition.TEMP_VAR)
             {
-                object tempVar = flow.getFlowVariable(skinAnimRef.targetPositionVarName);
-                if (FlowConvert.tryConvertType(flow, tempVar, out Card card))
+                object tempVar = flow.getFlowVariable(animRef.targetPositionVarName);
+                if (FlowConvert.tryConvertType(flow, tempVar, out Card varCard))
                 {
-                    anim.targetTempVarCardId = card?.id ?? -1;
+                    anim.targetTempVarCardId = varCard?.id ?? -1;
                 }
             }
+            return anim;
+        }
+        private void addSkinEffectAnim(AnimationDefine animationDef, EventArg arg, SkinAnimationRef skinAnimRef, Flow flow, Card card)
+        {
+            EventEffectAnim anim = createSkinEffectAnim(animationDef, arg, skinAnimRef, flow, card);
             addEventAnim(arg, anim);
         }
-        private void checkCardSkinEffectAnimations(Flow flow, EventArg arg)
+        //private void checkCardSkinEffectAnimations(Flow flow, EventArg arg)
+        //{
+        //    if (arg.define is IEffectEventDefine)
+        //    {
+        //        checkCardSkinEffectEntryAnimation(flow, arg);
+        //        return;
+        //    }
+        //    EventArg effectTriggerArg = getEffectEventTriggerArg(arg);
+        //    if (effectTriggerArg == null)
+        //        return;
+        //    SkinAnimationRef skinAnimRef = getEventSkinAnimRef(arg, effectTriggerArg);
+        //    if (skinAnimRef == null)
+        //        return;
+        //    AnimationDefine animationDef = getAnimationDefine(skinAnimRef.animRef);
+        //    if (animationDef != null)
+        //    {
+        //        addSkinEffectAnim(animationDef, arg, effectTriggerArg, skinAnimRef, flow);
+        //    }
+        //}
+        /// <summary>
+        /// 根据卡牌皮肤上记载的事件动画信息创建动画
+        /// </summary>
+        /// <param name="flow"></param>
+        /// <param name="eventArg"></param>
+        /// <param name="anim"></param>
+        /// <returns></returns>
+        private bool tryGenerateSkinAnimForEvent(Flow flow, EventArg eventArg, out EventEffectAnim anim)
         {
-            if (arg.define is IEffectEventDefine)
+            if (eventArg == null)
             {
-                checkCardSkinEffectEntryAnimation(flow, arg);
-                return;
+                anim = null;
+                return false;
             }
-            EventArg effectTriggerArg = getEffectEventTriggerArg(arg);
+
+            if (eventArg.define is EffectActivationEventDefine || eventArg.define is EffectTriggerEventDefine)
+            {
+                return tryGenerateAnimForEffectEvent(flow, eventArg, out anim);
+            }
+            EventArg effectTriggerArg = getEffectEventTriggerArg(eventArg);
             if (effectTriggerArg == null)
-                return;
-            SkinAnimationRef skinAnimRef = getEventSkinAnimRef(arg, effectTriggerArg);
-            if (skinAnimRef == null)
-                return;
-            AnimationDefine animationDef = getAnimationDefine(skinAnimRef.animRef);
-            if (animationDef != null)
             {
-                addSkinEffectAnim(animationDef, arg, effectTriggerArg, skinAnimRef, flow);
+                anim = null;
+                return false;
             }
+            Effect effect = null;
+            Card card = null;
+            if (effectTriggerArg.define is EffectActivationEventDefine)
+            {
+                effect = effectTriggerArg.getVar<Effect>(EffectActivationEventDefine.VAR_EFFECT);
+                card = effectTriggerArg.getVar<Card>(EffectActivationEventDefine.VAR_CARD);
+            }
+            else if (effectTriggerArg.define is EffectTriggerEventDefine)
+            {
+                effect = effectTriggerArg.getVar<Effect>(EffectTriggerEventDefine.VAR_EFFECT);
+                card = effectTriggerArg.getVar<Card>(EffectTriggerEventDefine.VAR_CARD);
+            }
+            else
+            {
+                anim = null;
+                return false;
+            }
+            SkinAnimationRef skinAnimRef = getEventSkinAnimRef(eventArg, effect);
+            if (skinAnimRef == null)
+            {
+                anim = null;
+                return false;
+            }
+            AnimationDefine animationDef = getAnimationDefine(skinAnimRef.animRef);
+            if (animationDef == null)
+            {
+                anim = null;
+                return false;
+            }
+            anim = createSkinEffectAnim(animationDef, eventArg, skinAnimRef, flow, card);
+            return true;
         }
-        private void checkCardSkinEffectEntryAnimation(Flow flow, EventArg arg)
+        private bool tryGenerateAnimForEffectEvent(Flow flow, EventArg arg, out EventEffectAnim anim)
         {
             if (arg == null)
-                return;
+            {
+                anim = null;
+                return false;
+            }
+
             SkinAnimationRef skinAnimRef = getEffectEntrySkinAnimRef(arg);
             if (skinAnimRef == null)
-                return;
-            AnimationDefine animationDef = getAnimationDefine(skinAnimRef.animRef);
-            if (animationDef != null)
             {
-                addSkinEffectAnim(animationDef, arg, arg, skinAnimRef, flow);
+                anim = null;
+                return false;
             }
-        }
-        public EventArg getEffectEventTriggerArg(IEventArg arg)
-        {
-            IEventArg seekArg = arg;
-            while (seekArg != null)
+            AnimationDefine animDef = getAnimationDefine(skinAnimRef.animRef);
+            if (animDef == null)
             {
-                if (seekArg is EventArg effectArg && seekArg.define is IEffectEventDefine)
-                {
-                    return effectArg;
-                }
-                seekArg = seekArg.parent;
+                anim = null;
+                return false;
             }
-            return null;
+            Card card = null;
+            if (arg.define is EffectActivationEventDefine active)
+            {
+                card = arg.getVar<Card>(EffectActivationEventDefine.VAR_CARD);
+            }
+            else if (arg.define is EffectTriggerEventDefine trigger)
+            {
+                card = arg.getVar<Card>(EffectTriggerEventDefine.VAR_CARD);
+            }
+            else
+            {
+                anim = null;
+                return false;
+            }
+            anim = createSkinEffectAnim(animDef, arg, skinAnimRef, flow, card);
+            return true;
         }
-        public SkinAnimationRef getEventSkinAnimRef(EventArg arg, EventArg effectArg)
+        //private void checkCardSkinEffectEntryAnimation(Flow flow, EventArg arg)
+        //{
+        //    if (arg == null)
+        //        return;
+        //    SkinAnimationRef skinAnimRef = getEffectEntrySkinAnimRef(arg);
+        //    if (skinAnimRef == null)
+        //        return;
+        //    AnimationDefine animationDef = getAnimationDefine(skinAnimRef.animRef);
+        //    if (animationDef != null)
+        //    {
+        //        addSkinEffectAnim(animationDef, arg, arg, skinAnimRef, flow);
+        //    }
+        //}
+        public EventArg getEffectEventTriggerArg(EventArg arg)
         {
-            IEffectEventDefine effectDefine = effectArg.define as IEffectEventDefine;
-            Effect effect = effectDefine.getEffect(effectArg);
+            EventArg seekArg = arg;
+            for (int i = 0; i < 100; i++)
+            {
+                if (seekArg == null)
+                    return null;
+                if (seekArg.define is EffectActivationEventDefine || seekArg.define is EffectTriggerEventDefine)
+                    return seekArg;
+                seekArg = seekArg.parent as EventArg;
+            }
+            throw new OverflowException();
+        }
+        public SkinAnimationRef getEventSkinAnimRef(EventArg arg, Effect effect)
+        {
             BuffReference buffDefineRef = effect.buffDefineRef;
             DefineReference cardDefineRef = effect.cardDefineRef;
             if (buffDefineRef != null)
@@ -319,7 +456,7 @@ namespace Game.BattleTable
 
             return getAnimRefOfEntryNode(skin, node);
         }
-        public TableArea getEventSkinAnimArea(EventArg effectArg, IEventArg arg, int area)
+        public TableArea getEventSkinAnimArea(EventArg arg, int area)
         {
             return TableArea.AllField;
         }
@@ -411,21 +548,6 @@ namespace Game.BattleTable
         }
 
         #endregion
-        /// <summary>
-        /// 等待被加入到待播放队列中的动画。
-        /// </summary>
-        [SerializeField]
-        List<TableAnimation> _animationCache = new List<TableAnimation>();
-        /// <summary>
-        /// 待播放队列，会在所有事件都结束，或者需要玩家进行操作时才会加入动画组进行播放。
-        /// </summary>
-        [SerializeField]
-        List<TableAnimation> _animationQueue = new List<TableAnimation>();
-        /// <summary>
-        /// 正在播放的动画组列表。
-        /// </summary>
-        [SerializeField]
-        List<AnimationGroup> _animationGroups = new List<AnimationGroup>();
         public void addEventAnim(IEventArg arg, TableAnimation anim)
         {
             bool addedAsChild = addInsertedAnimOfParent(arg, anim);
@@ -455,26 +577,26 @@ namespace Game.BattleTable
         /// </summary>
         public void queueAnims()
         {
-            if (_animationCache.Count < 1)
-                return;
+            //if (_animationCache.Count < 1)
+            //    return;
 
-            bool canAddToQueue = true;
-            //if (game.triggers.currentEvent == null)
-            //    canAddToQueue = true;
-            List<TableAnimation> insertingAnims = new List<TableAnimation>();
-            for (int i = 0; i < _animationCache.Count; i++)
-            {
-                TableAnimation anim = _animationCache[i];
-                //if (anim is RequestEventAnim) // 询问必定显示
-                //    canAddToQueue = true;
-                if (canAddToQueue)
-                {
-                    insertingAnims.Add(anim);
-                    _animationCache.RemoveAt(i);
-                    i--;
-                }
-            }
-            _animationQueue.AddRange(insertingAnims);
+            //bool canAddToQueue = true;
+            ////if (game.triggers.currentEvent == null)
+            ////    canAddToQueue = true;
+            //List<TableAnimation> insertingAnims = new List<TableAnimation>();
+            //for (int i = 0; i < _animationCache.Count; i++)
+            //{
+            //    TableAnimation anim = _animationCache[i];
+            //    //if (anim is RequestEventAnim) // 询问必定显示
+            //    //    canAddToQueue = true;
+            //    if (canAddToQueue)
+            //    {
+            //        insertingAnims.Add(anim);
+            //        _animationCache.RemoveAt(i);
+            //        i--;
+            //    }
+            //}
+            //_animationQueue.AddRange(insertingAnims);
         }
         public AnimationGroup[] getAllPlayingAnimationGroups()
         {
@@ -498,53 +620,243 @@ namespace Game.BattleTable
         /// </summary>
         public void updateAnim()
         {
-            while (_animationQueue.Count > 0)
+            //while (_animationQueue.Count > 0)
+            //{
+            //    // 动画队列出队
+            //    TableAnimation first = _animationQueue[0];
+            //    _animationQueue.RemoveAt(0);
+            //    // 创建动画组
+            //    AnimationGroup group = new AnimationGroup();
+            //    group.addToGroup(first);
+            //    foreach (TableAnimation groupedAnim in first.getGroupedAnimations(_animationQueue))
+            //    {
+            //        group.addToGroup(groupedAnim);
+            //    }
+            //    _animationGroups.Add(group);
+            //    foreach (TableAnimation anim in group)
+            //    {
+            //        _animationQueue.Remove(anim);
+            //    }
+            //}
+            //if (_animationGroups.Count > 0)
+            //{
+            //    for (int i = 0; i < _animationGroups.Count; i++)
+            //    {
+            //        AnimationGroup group = _animationGroups[i];
+            //        // 检查动画组是否被之前的动画组阻挡
+            //        bool blocked = false;
+            //        for (int j = 0; j < i; j++)
+            //        {
+            //            AnimationGroup prevGroup = _animationGroups[j];
+            //            if (!prevGroup.continueNextGroup(group))
+            //            {
+            //                blocked = true;
+            //                break;
+            //            }
+            //        }
+            //        if (blocked)
+            //            break;
+            //        // 更新动画组
+            //        group.update(this, Time.deltaTime);
+            //        if (group.Count <= 0)
+            //        {
+            //            _animationGroups.RemoveAt(i);
+            //            i--;
+            //        }
+            //    }
+            //    if (_animationGroups.Count <= 0)
+            //        onAllAnimsFinished?.Invoke();
+            //}
+            if (_animationTrees.Count < 1)
+                return;
+
+            for (int i = 0; i < _animationTrees.Count; i++)
             {
-                // 动画队列出队
-                TableAnimation first = _animationQueue[0];
-                _animationQueue.RemoveAt(0);
-                // 创建动画组
-                AnimationGroup group = new AnimationGroup();
-                group.addToGroup(first);
-                foreach (TableAnimation groupedAnim in first.getGroupedAnimations(_animationQueue))
+                TreeNode root = _animationTrees[i];
+                TreeNode node = root;
+                bool blocked = false;
+                foreach (TableAnimation playingAnim in _playingAnimList)
                 {
-                    group.addToGroup(groupedAnim);
+                    if (!playingAnim.continueNextGroup(new TableAnimation[] { node.value.anim }))
+                    {
+                        blocked = true;
+                        break;
+                    }
                 }
-                _animationGroups.Add(group);
-                foreach (TableAnimation anim in group)
+                if (blocked)
+                    break; // 动画受阻，退出以等待正在播放的动画播放完毕。
+                bool isAnyUnfinished = false;
+
+            }
+            if (_animationTrees.Count < 1)
+                onAllAnimsFinished?.Invoke();
+        }
+        /// <summary>
+        /// 更新单棵树的动画
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="playingAnimList"></param>
+        private void updateAnimInTree(AnimationTreeNode node)
+        {
+            // 本动画播放
+            EventAnimation anim = node.anim;
+            bool isBlocked = false;
+            if (_playingAnimList.Count > 0)
+            {
+                //第一个动画永远不被阻挡
+                for (int i = 0; i < _playingAnimList.Count; i++)
                 {
-                    _animationQueue.Remove(anim);
+                    TableAnimation prevAnim = _playingAnimList[i];
+                    if (prevAnim.blockAnimInGroup(anim)) // 判断动画是否被正在播放的动画阻挡
+                    {
+                        isBlocked = true;
+                        break;
+                    }
                 }
             }
-            if (_animationGroups.Count > 0)
+            if (!isBlocked)
             {
-                for (int i = 0; i < _animationGroups.Count; i++)
+                try
                 {
-                    AnimationGroup group = _animationGroups[i];
-                    // 检查动画组是否被之前的动画组阻挡
-                    bool blocked = false;
-                    for (int j = 0; j < i; j++)
+                    if (node.state == EventAnimState.NotStarted)
                     {
-                        AnimationGroup prevGroup = _animationGroups[j];
-                        if (!prevGroup.continueNextGroup(group))
+                        if (node.eventArg.state == EventState.Before)
                         {
-                            blocked = true;
-                            break;
+                            // 事件没有结束，常见于等待玩家回应的情况，播放事件的开始部分动画。
+                            node.state = EventAnimState.Started;
+                            node.coroutine = StartCoroutine(updateStartAnimCoroutine(node));
+                        }
+                        else if (hasUnfinishedChildAnim(node))
+                        {
+                            // 事件有子动画，播放事件的开始部分动画。
+                            node.state = EventAnimState.Started;
+                            node.coroutine = StartCoroutine(updateStartAnimCoroutine(node));
+                        }
+                        else
+                        {
+                            // 事件已经完毕的一般情况。
+                            node.state = EventAnimState.Started;
+                            node.coroutine = StartCoroutine(updateAnimCoroutine(node));
                         }
                     }
-                    if (blocked)
-                        break;
-                    // 更新动画组
-                    group.update(this, Time.deltaTime);
-                    if (group.Count <= 0)
+                    else if (node.state == EventAnimState.StartFinished)
                     {
-                        _animationGroups.RemoveAt(i);
-                        i--;
+                        if (node.eventArg.isCanceled)
+                        {
+                            // 事件被取消了，播放取消的动画
+                            node.state = EventAnimState.Canceled;
+                            node.coroutine = StartCoroutine(updateCancelAnimCoroutine(node));
+                        }
+                        else
+                        {
+                            // 事件正常结束，播放结束的动画
+                            node.state = EventAnimState.Logic;
+                            node.coroutine = StartCoroutine(updateFinishAnimCoroutine(node));
+                        }
                     }
                 }
-                if (_animationGroups.Count <= 0)
-                    onAllAnimsFinished?.Invoke();
+                catch (Exception e)
+                {
+                    node.state = EventAnimState.Finished;
+                    Debug.LogError($"动画{anim}播放异常被跳过：{e}");
+                }
             }
+            // 发生前子事件播放
+            for (int i = 0; i < node.beforeChildren.Count; i++)
+            {
+                AnimationTreeNode childNode = node.beforeChildren[i];
+                updateAnimInTree(childNode);
+            }
+            // 发生后子事件播放
+            for (int i = 0; i < node.afterChildren.Count; i++)
+            {
+                AnimationTreeNode childNode = node.afterChildren[i];
+                updateAnimInTree(childNode);
+            }
+        }
+        private IEnumerator updateAnimCoroutine(AnimationTreeNode node)
+        {
+            if (node.skinAnim != null)
+            {
+                _playingAnimList.Add(node.skinAnim);
+                yield return node.skinAnim.update(this);
+                _playingAnimList.Remove(node.skinAnim);
+            }
+            if (node.anim != null)
+            {
+                _playingAnimList.Add(node.anim);
+                yield return node.anim.startUpdate(this);
+                node.state = EventAnimState.StartFinished;
+                yield return node.anim.logicUpdate(this);
+                _playingAnimList.Remove(node.anim);
+            }
+            node.state = EventAnimState.Finished;
+            node.coroutine = null;
+        }
+        /// <summary>
+        /// 播放动画的开始部分，然后停住。常见于陷阱，事件前等后发先至的效果的动画。
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private IEnumerator updateStartAnimCoroutine(AnimationTreeNode node)
+        {
+            if (node.skinAnim != null)
+            {
+                _playingAnimList.Add(node.skinAnim);
+                yield return node.skinAnim.update(this);
+                _playingAnimList.Remove(node.skinAnim);
+            }
+            if (node.anim != null)
+            {
+                _playingAnimList.Add(node.anim);
+                yield return node.anim.startUpdate(this);
+                _playingAnimList.Remove(node.anim);
+            }
+            node.state = EventAnimState.StartFinished;
+            node.coroutine = null;
+        }
+        /// <summary>
+        /// 播放动画开始之后的部分，用于调用完播放开始部分之后，结束整个动画。
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private IEnumerator updateFinishAnimCoroutine(AnimationTreeNode node)
+        {
+            if (node.anim != null)
+            {
+                _playingAnimList.Add(node.anim);
+                yield return node.anim.logicUpdate(this);
+                _playingAnimList.Remove(node.anim);
+            }
+            node.state = EventAnimState.Finished;
+            node.coroutine = null;
+        }
+        private IEnumerator updateCancelAnimCoroutine(AnimationTreeNode node)
+        {
+            if (node.anim != null)
+            {
+                _playingAnimList.Add(node.anim);
+                yield return node.anim.canceledUpdate(this);
+                _playingAnimList.Remove(node.anim);
+            }
+            node.state = EventAnimState.Finished;
+            node.coroutine = null;
+        }
+        /// <summary>
+        /// 检查给定节点是否有未完成的前序子动画。不检查给定的节点本身。
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private bool hasUnfinishedChildAnim(AnimationTreeNode node)
+        {
+            foreach (AnimationTreeNode childNode in node.beforeChildren)
+            {
+                if (childNode.anim == null && childNode.skinAnim == null)
+                    continue;
+                if (childNode.state != EventAnimState.Finished || hasUnfinishedChildAnim(childNode))
+                    return true;
+            }
+            return false;
         }
         public event Action onAllAnimsFinished;
         #region 属性字段
@@ -552,9 +864,37 @@ namespace Game.BattleTable
         /// 当前回合的玩家（仅限动画显示）。
         /// </summary>
         public Player currentAnimPlayer { get; set; }
+        /// <summary>
+        /// 等待被加入到待播放队列中的动画。
+        /// </summary>
+        [SerializeField]
+        List<TableAnimation> _animationCache = new List<TableAnimation>();
+        /// <summary>
+        /// 待播放队列，会在所有事件都结束，或者需要玩家进行操作时才会加入动画组进行播放。
+        /// </summary>
+        [SerializeField]
+        List<TableAnimation> _animationQueue = new List<TableAnimation>();
+        /// <summary>
+        /// 正在播放的动画组列表。
+        /// </summary>
+        [SerializeField]
+        List<AnimationGroup> _animationGroups = new List<AnimationGroup>();
+        private readonly List<TreeNode> _animationTrees = new List<TreeNode>();
+        private readonly List<TableAnimation> _playingAnimList = new List<TableAnimation>();
         Dictionary<int, HandToFieldAnim> _servantPreviewAnimDict = new Dictionary<int, HandToFieldAnim>();
         Dictionary<int, Transform> deadCardAnchors = new Dictionary<int, Transform>();
         Dictionary<int, Dictionary<int, TableEffect>> cardBuffEffects = new Dictionary<int, Dictionary<int, TableEffect>>();
         #endregion
+    }
+    class AnimationTreeNode
+    {
+        public EventArg eventArg;
+        public EventAnimation anim;
+        public EventEffectAnim skinAnim;
+        public EventAnimState state;
+        public AnimationTreeNode parent;
+        public readonly List<AnimationTreeNode> beforeChildren = new List<AnimationTreeNode>();
+        public readonly List<AnimationTreeNode> afterChildren = new List<AnimationTreeNode>();
+        public Coroutine coroutine;
     }
 }

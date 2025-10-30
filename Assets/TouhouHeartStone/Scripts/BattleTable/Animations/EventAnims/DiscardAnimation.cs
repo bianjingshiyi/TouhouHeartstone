@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
@@ -60,7 +60,7 @@ namespace Game.BattleTable
             }
         }
 
-        public override bool continueNextGroup(AnimationGroup nextGroup)
+        public override bool continueNextGroup(IEnumerable<TableAnimation> nextGroup)
         {
             var parents = getAllParents(eventArg);
             if (nextGroup.All(a => canAnimContinue(a, parents)))

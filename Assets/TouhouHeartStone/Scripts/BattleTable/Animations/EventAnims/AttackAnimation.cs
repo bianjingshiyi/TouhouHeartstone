@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using TouhouHeartstone;
 using UI;
@@ -85,7 +86,7 @@ namespace Game.BattleTable
                 yield break;
             yield return returnFromAttack(table, card.id);
         }
-        public override bool continueNextGroup(AnimationGroup nextGroup)
+        public override bool continueNextGroup(IEnumerable<TableAnimation> nextGroup)
         {
             if (isAnimGroupDamageOfThis(nextGroup))
                 return _attacked;
@@ -121,7 +122,7 @@ namespace Game.BattleTable
             }
             return null;
         }
-        private bool isAnimGroupDamageOfThis(AnimationGroup nextGroup)
+        private bool isAnimGroupDamageOfThis(IEnumerable<TableAnimation> nextGroup)
         {
             var target = eventArg.getVar<Card>(EVENTVAR.TARGET_CARD);
             return nextGroup.Any(a =>

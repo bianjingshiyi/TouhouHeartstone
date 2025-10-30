@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Game.BattleTable;
 using UnityEngine;
 
@@ -52,7 +53,7 @@ namespace Game.Animations
             table.removeEffect(effect);
             effect = null;
         }
-        public override bool continueNextGroup(AnimationGroup nextGroup)
+        public override bool continueNextGroup(IEnumerable<TableAnimation> nextGroup)
         {
             if (!effect)
                 return true;

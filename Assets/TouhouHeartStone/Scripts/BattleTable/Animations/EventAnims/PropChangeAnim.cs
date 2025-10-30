@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using System.Collections;
+using System.Collections.Generic;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UI;
@@ -192,7 +193,7 @@ namespace Game.BattleTable
                 color = PropertyNumberColor.Red;
             return color;
         }
-        public override bool continueNextGroup(AnimationGroup nextGroup)
+        public override bool continueNextGroup(IEnumerable<TableAnimation> nextGroup)
         {
             return true;
         }

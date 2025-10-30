@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using System.Collections;
+using System.Collections.Generic;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 
@@ -24,7 +25,7 @@ namespace Game.BattleTable
             }
             yield break;
         }
-        public override bool continueNextGroup(AnimationGroup nextGroup)
+        public override bool continueNextGroup(IEnumerable<TableAnimation> nextGroup)
         {
             return true;
         }

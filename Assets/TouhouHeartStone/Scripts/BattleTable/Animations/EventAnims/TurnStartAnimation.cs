@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
@@ -52,7 +53,7 @@ namespace Game.BattleTable
                 table.setSecret(secretUI, snapshot);
             }
         }
-        public override bool continueNextGroup(AnimationGroup nextGroup)
+        public override bool continueNextGroup(IEnumerable<TableAnimation> nextGroup)
         {
             if (!nextGroup.Any(a => a is TurnStartAnimation || a is UseAnimation))
                 return true;

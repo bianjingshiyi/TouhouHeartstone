@@ -57,7 +57,7 @@ namespace Game.BattleTable
         {
             return following.OfType<DamageAnimation>().Where(a => a.eventArg.parent == eventArg.parent);
         }
-        public override bool continueNextGroup(AnimationGroup nextGroup)
+        public override bool continueNextGroup(IEnumerable<TableAnimation> nextGroup)
         {
             if (!nextGroup.Any(a => a is RequestEventAnim || a is TurnEndAnimation))
                 return true;

@@ -34,12 +34,14 @@ namespace Game.BattleTable
             {
                 this.game.triggers.onEventBefore -= onEventBefore;
                 this.game.triggers.onEventAfter -= onEventAfter;
+                (this.game.triggers as TriggerManager).onEventCompleted -= onEventCompleted;
             }
             this.game = game;
             if (game != null)
             {
                 game.triggers.onEventBefore += onEventBefore;
                 game.triggers.onEventAfter += onEventAfter;
+                (game.triggers as TriggerManager).onEventCompleted += onEventCompleted;
             }
             ui.LogCtrl.setGame(game, main, this, player);
             ui.LogCtrl.reset();
@@ -436,7 +438,7 @@ namespace Game.BattleTable
             table.TurnEndButton.onClick += onTurnEndClickCallback;
             table.TurnEndButton.onPointerEnter += onTurnEndPointerEnterCallback;
             table.TurnEndButton.onPointerExit += onTurnEndPointerExitCallback;
-
+            
             table.SelfField.onServantClick += onServantClickCallback;
             table.SelfField.onServantBeginDrag += onServantBeginDragCallback;
             table.SelfField.onServantDrag += onServantDragCallback;
@@ -822,13 +824,13 @@ namespace Game.BattleTable
         /// <param name="arg"></param>
         private void onEventBefore(IEventArg arg)
         {
-            checkCardSkinEffectAnimations(game.currentFlow, arg as EventArg);
-            TableAnimation anim = createEventAnim(arg);
-            if (anim != null)
-            {
-                addEventAnim(arg, anim);
-            }
-            setAllCardHighlightDirty();
+            //checkCardSkinEffectAnimations(game.currentFlow, arg as EventArg);
+            //TableAnimation anim = createEventAnim(arg);
+            //if (anim != null)
+            //{
+            //    addEventAnim(arg, anim);
+            //}
+            //setAllCardHighlightDirty();
         }
         /// <summary>
         /// 事件后处理
@@ -836,27 +838,41 @@ namespace Game.BattleTable
         /// <param name="arg"></param>
         private void onEventAfter(IEventArg arg)
         {
-            foreach (var anim in _animationCache.OfType<EventAnimation>().Where(a => a.eventArg == arg))
+            //foreach (var anim in _animationCache.OfType<EventAnimation>().Where(a => a.eventArg == arg))
+            //{
+            //    anim.postEvent(this);
+            //}
+            //foreach (var anim in _animationQueue.OfType<EventAnimation>().Where(a => a.eventArg == arg))
+            //{
+            //    anim.postEvent(this);
+            //}
+            //if (arg.define is UpdateDeathEventDefine)
+            //{
+            //    // 死亡结算事件结束后，清理死亡仆从。
+            //    var anim = new ClearDeadAnchorAnimation();
+            //    addEventAnim(arg, anim);
+            //}
+            //else if (arg.define is GameEndEventDefine)
+            //{
+            //    // 游戏结束后，私酿模式会开始检测有哪些卡牌当前用户已经评分过。
+            //    if (isHomebrewMode() && getAlreadyRatedCardsTask == null)
+            //    {
+            //        getAlreadyRatedCardsTask = getAlreadyRatedCardsAsync();
+            //    }
+            //}
+        }
+        /// <summary>
+        /// 事件完成后处理
+        /// </summary>
+        /// <param name="eventArg"></param>
+        private void onEventCompleted(EventArg eventArg)
+        {
+            if (eventArg.parent == null)
             {
-                anim.postEvent(this);
-            }
-            foreach (var anim in _animationQueue.OfType<EventAnimation>().Where(a => a.eventArg == arg))
-            {
-                anim.postEvent(this);
-            }
-            if (arg.define is UpdateDeathEventDefine)
-            {
-                // 死亡结算事件结束后，清理死亡仆从。
-                var anim = new ClearDeadAnchorAnimation();
-                addEventAnim(arg, anim);
-            }
-            else if (arg.define is GameEndEventDefine)
-            {
-                // 游戏结束后，私酿模式会开始检测有哪些卡牌当前用户已经评分过。
-                if (isHomebrewMode() && getAlreadyRatedCardsTask == null)
-                {
-                    getAlreadyRatedCardsTask = getAlreadyRatedCardsAsync();
-                }
+                // 只对根事件进行处理
+                var animRoot = generateAnimForEvent(eventArg);
+                _animationTrees.Add(animRoot);
+                setAllCardHighlightDirty();
             }
         }
         #endregion

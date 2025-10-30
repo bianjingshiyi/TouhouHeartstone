@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using System.Collections;
+using System.Collections.Generic;
 using TouhouCardEngine;
 
 namespace Game.BattleTable
@@ -30,7 +31,7 @@ namespace Game.BattleTable
                 hand.card.animateFaceup(visible);
             }
         }
-        public override bool continueNextGroup(AnimationGroup nextGroup)
+        public override bool continueNextGroup(IEnumerable<TableAnimation> nextGroup)
         {
             return true;
         }
